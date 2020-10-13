@@ -1,0 +1,16 @@
+.vscode/
+.idea/
+.vs
+node_modules/
+package-lock.json
+yarn.lock
+
+asset/ssl
+asset/upload/
+asset/upload/*
+asset/download/*
+
+public/img/*
+!public/img/flag
+.DS_Store
+.history
