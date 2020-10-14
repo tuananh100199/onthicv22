@@ -1,13 +1,13 @@
 {
   "name": "hiep-phat",
   "version": "1.0.1",
-  "title": "Hiep Phat system",
+  "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
   "dbName": "hiepphat",
-  "port": 5080,
+  "port": 5090,
   "sessionRedisStore": false,
-  "rootUrl": "http://code.bktphcm.net",
+  "rootUrl": "http://hiepphat.bktphcm.net",
   "autoLogin": true,
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",

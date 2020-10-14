@@ -91,7 +91,7 @@ class HomeMenu extends React.Component {
                         <nav className='classy-navbar justify-content-between' ref={this.nav} id='cleverNav'>
                             <Link className='navbar-brand' to='/' style={{ display: 'flex' }}>
                                 {logo ? <img src={logo} style={{ height: '36px', width: 'auto' }} alt='logo' /> : ''}&nbsp;
-                                <h4>Code Tutorial</h4>
+                                <h4>Trung tâm đào tạo lái xe Hiệp Phát</h4>
                             </Link>
 
                             <div className='classy-navbar-toggler'>

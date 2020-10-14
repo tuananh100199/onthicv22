@@ -82,7 +82,7 @@ class AdminHeader extends React.Component {
     render() {
         return [
             <header key={0} className='app-header' >
-                <Link className='app-header__logo' to='/user'>Code Tutorial</Link>
+                <Link className='app-header__logo' to='/user'>Hiệp Phát</Link>
                 <a className='app-sidebar__toggle' href='#' data-toggle='sidebar' aria-label='Hide Sidebar' />
                 <ul className='app-nav'>
                     {this.props.system && this.props.system.isDebug && this.props.system.roles && this.props.system.roles.length ? (
