@@ -10,7 +10,7 @@ const texts = {
         allViews: 'Tổng truy cập: ',
         todayViews: 'Hôm nay: ',
         quickMenu: 'Menu nhanh',
-        copyright: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Code Tutorial.',
+        copyright: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.',
     },
     en: {
         facultyName: 'SV Sport company',

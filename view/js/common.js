@@ -6,9 +6,8 @@ import './sweetalert.min.js';
 
 const T = {
     PropTypes,
-    rootUrl: 'http://code.bktphcm.net',
+    rootUrl: 'http://hiepphat.bktphcm.net',
     sexes: ['male', 'female'],
-    lectureTypes: ['HTML','JavaScript','Java','C-Sharp'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
         '<empty>',

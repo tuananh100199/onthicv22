@@ -2,7 +2,7 @@ module.exports = (app) => {
     app.data = {
         todayViews: 0,
         allViews: 0,
-        logo: '/img/favicon.png',
+        logo: '/img/favicon.jpg',
         map: '/img/map.jpg',
         facebook: 'https://www.facebook.com/bachkhoa.oisp',
         youtube: '',
