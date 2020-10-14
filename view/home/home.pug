@@ -1,0 +1,27 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        title #{htmlWebpackPlugin.options.title}
+        meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1')
+        meta(content=htmlWebpackPlugin.options.keywords.toString())
+        meta(content=htmlWebpackPlugin.options.description name='description')
+        link(href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700', rel='stylesheet')
+        link(rel='stylesheet' href='/home/css/material-button/icheck-material-custom.min.css')
+        link(rel='stylesheet' href='/home/css/material-button/icheck-material.min.css')
+        link(rel='stylesheet' href='/home/css/camera.min.css')
+        link(rel='stylesheet' href='/home/css/style.css')
+    body
+        #app(style={position: 'relative', 'min-height': '100vh'})
+        script(src='/home/js/jquery.min.js')
+        script(src='/home/js/jquery.magnific-popup.min.js')
+        script(src='/home/js/jquery-migrate.min.js')
+        script(src='/home/js/popper.min.js')
+        script(src='/home/js/bootstrap.min.js')
+        script(src='/home/js/owl.carousel.min.js')
+        script(src='/home/js/camera.min.js')
+        script(type='text/javascript' src='/js/plugins/bootstrap-datepicker.min.js')
+        script(src='/js/plugins/bootstrap-notify.min.js')
+        script(src='/home/js/plugins.min.js')
+        script(src='/home/js/active.min.js')
+        script(src=htmlWebpackPlugin.files.chunks.home.entry)

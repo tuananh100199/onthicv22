@@ -1,0 +1,13 @@
+100. Dashboard
+1000. Personal information
+	1010 - Profile (/user)
+2000. Configure
+	2010 - General (/user/settings)
+	2020 - Email (/user/email)
+	2030 - Contact (/user/contact)
+	2060 - Người dùng (/user/user)
+	2080 - Vai trò (/user/role)
+	2090 - Menu (/user/menu)
+	2100 - Thành phần giao diện (/user/component)
+4000. Lecture
+9900. Form
