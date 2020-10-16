@@ -82,6 +82,7 @@ export default class ImageBox extends React.Component {
         if (event.target.files.length > 0) {
             const readOnly = this.props.readOnly ? this.props.readOnly : false;
             !readOnly && this.onUploadFile(event.target.files[0])
+            event.target.value = '';
         }
     };
 

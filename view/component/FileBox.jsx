@@ -65,6 +65,7 @@ export default class FileBox extends React.Component {
     onSelectFileChanged = (event) => {
         if (event.target.files.length > 0) {
             this.onUploadFile(event.target.files[0])
+            event.target.value = '';
         }
     };
 
