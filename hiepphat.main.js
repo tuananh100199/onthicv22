@@ -43,6 +43,7 @@ app.createTemplate('home', 'admin');
 app.loadModules();
 app.setupAdmin();
 app.createFolder(app.publicPath, app.uploadPath);
+app.createFolder(app.path.join(app.publicPath, '/img'), app.path.join(app.publicPath, '/img/draft'))
 
 // Default route ==============================================================
 app.get('/user', app.permission.check(), app.templates.admin);
