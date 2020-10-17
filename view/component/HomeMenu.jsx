@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { logout } from '../../module/_init/reduxSystem.jsx';
 import { Link } from 'react-router-dom';
+import SectionLastNew from '../../module/fwHome/sectionLastNew.jsx';
+import SectionVideo from '../../module/fwHome/sectionVideo.jsx';
 
 // const texts = {
 //     vi: {
@@ -115,6 +117,7 @@ class HomeMenu extends React.Component {
                         </nav>
                     </div>
                 </div>
+                <SectionLastNew></SectionLastNew>
             </header>
         )
     }
