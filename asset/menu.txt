@@ -9,4 +9,8 @@
 	2080 - Vai trò (/user/role)
 	2090 - Menu (/user/menu)
 	2100 - Thành phần giao diện (/user/component)
+7000. Tin tức
+	6001 - Danh mục (/user/news/category)
+	6002 - Tin tức (/user/news/list)
+	6003 - Chờ duyệt (/user/news/draft)
 9900. Form
