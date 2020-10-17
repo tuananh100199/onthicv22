@@ -112,10 +112,42 @@ class SettingsPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle'/> Save
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Save
                                 </button>
                             </div>
                         </div>
+
+                        <div className='tile'>
+                            <h3 className='tile-title'>Address List</h3>
+                            <div className='tile-body'>
+                                <div className='form-group'>
+                                    <label className='control-label'>Name</label>
+                                    <input className='form-control' type='text' placeholder='Name' />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Address</label>
+                                    <input className='form-control' type='email' placeholder='Address' />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Table Phone number</label>
+                                    <input className='form-control' type='text' placeholder='Phone number' />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Phone number</label>
+                                    <input className='form-control' type='text' placeholder='Phone number' />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Email</label>
+                                    <input className='form-control' type='text' placeholder='Facebook' />
+                                </div>
+                            </div>
+                            <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Add
+                                </button>
+                            </div>
+                        </div>
+
 
 
                     </div>
@@ -134,7 +166,7 @@ class SettingsPage extends React.Component {
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-primary' type='button' onClick={this.changePassword}>
-                                            <i className='fa fa-fw fa-lg fa-check-circle'/>Change password
+                                            <i className='fa fa-fw fa-lg fa-check-circle' />Change password
                                         </button>
                                     </div>
                                 </div>
@@ -171,7 +203,7 @@ class SettingsPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveMapInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle'/> Save
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Save
                                 </button>
                             </div>
                         </div>
