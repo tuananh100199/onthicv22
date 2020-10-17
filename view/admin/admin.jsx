@@ -32,9 +32,10 @@ import fwMenu from '../../module/fwMenu/index.jsx';
 import fwContact from '../../module/fwContact/index.jsx';
 import fwEmail from '../../module/fwEmail/index.jsx';
 import fwForm from '../../module/fwForm/index.jsx';
+import fwNews from '../../module/fwNews/index.jsx';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews
 ]
 
 
