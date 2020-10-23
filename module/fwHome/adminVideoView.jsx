@@ -5,6 +5,8 @@ import ImageBox from '../../view/component/ImageBox.jsx';
 import Pagination from '../../view/component/Pagination.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
+console.log("from admin Video View");
+
 class VideoModal extends React.Component {
     constructor(props) {
         super(props);

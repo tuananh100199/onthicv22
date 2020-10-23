@@ -3,6 +3,8 @@ import T from '../../../view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
 const VideoGetPage = 'Video:GetPage';
 const VideoUpdate = 'Video:Update';
+console.log("from ReduxVideo");
+
 
 export default function videoReducer(state = null, data) {
     switch (data.type) {

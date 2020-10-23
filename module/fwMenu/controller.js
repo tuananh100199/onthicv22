@@ -7,13 +7,7 @@ module.exports = app => {
         parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
         menus: { 2100: { title: 'Thành phần giao diện', link: '/user/component' } }
     };
-    app.permission.add(
-        { name: 'menu:read', menu: menuMenu },
-        { name: 'menu:write', menu: menuMenu },
-        { name: 'menu:delete', menu: menuMenu },
-        { name: 'component:read', menu: menuComponent },
-        { name: 'component:write', menu: menuComponent },
-    );
+    app.permission.add({ name: 'menu:read', menu: menuMenu }, { name: 'menu:write', menu: menuMenu }, { name: 'menu:delete', menu: menuMenu }, { name: 'component:read', menu: menuComponent }, { name: 'component:write', menu: menuComponent }, );
     app.get('/user/menu/edit/:_id', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/menu', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
@@ -24,6 +18,7 @@ module.exports = app => {
     app.get('/user/logo/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/testimony/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.buildAppMenus = menuTree => {
@@ -93,7 +88,7 @@ module.exports = app => {
                         } else if (component.viewId && viewType == 'staff group') {
                             app.model.staffGroup.get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
-                        } else if (['all events', 'last events', 'subscribe', 'all staffs',].indexOf(viewType) != -1) {
+                        } else if (['all events', 'last events', 'subscribe', 'all staffs', ].indexOf(viewType) != -1) {
                             getNextComponent(viewType);
                         } else {
                             getNextComponent('<empty>');

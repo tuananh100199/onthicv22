@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getVideo } from './redux/reduxVideo.jsx';
-console.log("from SectionVideo");
+console.log("from SectionListVideo");
 
 
-class SectionVideo extends React.Component {
+class SectionListVideo extends React.Component {
     state = {};
 
     componentDidMount() {
@@ -60,4 +60,4 @@ class SectionVideo extends React.Component {
 
 const mapStateToProps = state => ({ video: state.video });
 const mapActionsToProps = { getVideo };
-export default connect(mapStateToProps, mapActionsToProps)(SectionVideo);
+export default connect(mapStateToProps, mapActionsToProps)(SectionListVideo);

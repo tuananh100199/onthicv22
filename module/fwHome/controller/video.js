@@ -1,4 +1,6 @@
 module.exports = app => {
+    console.log("4");
+
     app.get('/api/video/all', app.permission.check('component:read'), (req, res) =>
         app.model.video.getAll((error, items) => res.send({ error, items })));
 

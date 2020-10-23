@@ -1,4 +1,5 @@
 module.exports = app => {
+
     const schema = app.db.Schema({
         title: String,
         link: String,
