@@ -202,6 +202,7 @@ module.exports = (app) => {
             ],
             active: true,
         };
+
         if (!user) condition.isInternal = false;
         
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => {
@@ -211,6 +212,7 @@ module.exports = (app) => {
             } else {
                 let list = page.list.map((item) => app.clone(item, { content: null }));
                 respone.page = app.clone(page, { list });
+                console.log(respone)
             }
             res.send(respone);
         });

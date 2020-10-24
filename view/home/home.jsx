@@ -23,8 +23,9 @@ import fwHome from '../../module/fwHome/index.jsx';
 import fwMenu from '../../module/fwMenu/index.jsx';
 import fwUser from '../../module/fwUser/index.jsx';
 import fwForm from '../../module/fwForm/index.jsx';
+import fwNews from '../../module/fwNews/index.jsx';
 
-const modules = [ _init, fwHome, fwMenu, fwUser, fwContact, fwForm ];
+const modules = [ _init, fwHome, fwMenu, fwUser, fwContact, fwForm, fwNews ];
 import { getSystemState, register, login, forgotPassword, logout } from '../../module/_init/reduxSystem.jsx';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

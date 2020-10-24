@@ -245,6 +245,7 @@ export function getNews(_id, done) {
         const state = getState();
         T.get(url, data => {
             if (data.error) {
+                console.log(data)
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {

@@ -17,7 +17,7 @@ const T = {
         'contact',
         'content',
         'event',
-        'last events',
+        'last news',
         'logo',
         'slogan',
         'staff group',
