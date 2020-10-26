@@ -2,19 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-const addressList = [{
-    addressName: 'Co so 1',
-    addressDetail: 'Binh Chanh',
-    addressLandlinePhone: '(028) 36 362 362',
-    addressPhone: '0911 739 119',
-    addressEmail: 'daotaolaixehp@gmail.com',
-}, {
-    addressName: 'Co so 1',
-    addressDetail: 'Binh Chanh',
-    addressLandlinePhone: '(028) 36 362 362',
-    addressPhone: '0911 739 119',
-    addressEmail: 'daotaolaixehp@gmail.com',
-}];
+// const addressList = [{
+//     addressName: 'Co so 1',
+//     addressDetail: 'Binh Chanh',
+//     addressLandlinePhone: '(028) 36 362 362',
+//     addressPhone: '0911 739 119',
+//     addressEmail: 'daotaolaixehp@gmail.com',
+// }, {
+//     addressName: 'Co so 1',
+//     addressDetail: 'Binh Chanh',
+//     addressLandlinePhone: '(028) 36 362 362',
+//     addressPhone: '0911 739 119',
+//     addressEmail: 'daotaolaixehp@gmail.com',
+// }];
 const texts = {
     vi: {
         addressPhone: 'Di dong: ',
@@ -44,12 +44,15 @@ const texts = {
 
 class Footer extends React.Component {
     render() {
-        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList } = this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, addressList: '' };
+        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList } =
+            this.props.system ? this.props.system :
+                { logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]) };
         facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook' /></a> : '';
         youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube' /></a> : '';
         twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
         instagram = instagram ? <a href={instagram} target='_blank'><i className='fa fa-instagram' /></a> : '';
-
+        addressList = JSON.parse(addressList);
+        // console.log('adresslist', addressList);
         try {
             addressList = JSON.parse(addressList);
         } catch (e) {
@@ -58,23 +61,27 @@ class Footer extends React.Component {
 
         const language = T.language(texts);
         return (
-            <footer className='footer-area' style={{ width: '100%', position: 'absolute', bottom: 0, color: 'green' }}>
-                <div className='top-footer-area'>
+            <footer className='footer-area' style={{ width: '100%', position: 'absolute', bottom: 0 }}>
+                <div className='top-footer-area' style={{ backgroundColor: '#28a743' }}>
                     <div className='container'>
                         <div className='row'>
-                            <div className='col-12'>
+                            <div className='col-12' style={{
+                                color: '#fff',
+                                lineHeight: 22,
+                                float: 'left',
+                            }}>
                                 {
                                     addressList.map(item => <div>
-                                        <p>{item.addressName}
-                                            <span >{item.addressDetail}</span>
+                                        <p>{item.addressTitle}:
+                                            <span >{item.address}</span>
                                         </p>
                                         <p>{language.addressLine}
-                                            <span >{item.addressLandlinePhone}</span>
+                                            <span >{item.phoneNumber}</span>
                                             <span >{language.addressPhone}</span>
-                                            <span >{item.addressPhone}</span>
+                                            <span >{item.mobile}</span>
                                         </p>
                                         <p>{language.addressEmail}
-                                            <span >{item.addressEmail}</span>
+                                            <span >{item.email}</span>
                                         </p>
                                     </div>)
                                 }

@@ -1,6 +1,5 @@
 module.exports = (app) => {
     app.data = {
-        addressList: JSON.stringify([]),
         todayViews: 0,
         allViews: 0,
         logo: '/img/favicon.jpg',
@@ -15,7 +14,7 @@ module.exports = (app) => {
         emailPassword: app.email.password,
         mobile: '(08) 2214 6555',
         address: 'Block B4 - Ho Chi Minh City University of Technology | 268 Ly Thuong Kiet Street, District 10, Hochiminh City, Vietnam',
-        addressList: JSON.stringify([])
+        addressList: JSON.stringify([]),
     };
 
     app.createFolder(app.assetPath, app.path.join(app.assetPath, '/upload'));
