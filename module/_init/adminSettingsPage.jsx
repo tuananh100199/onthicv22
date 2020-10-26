@@ -3,6 +3,94 @@ import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem.jsx';
 import ImageBox from '../../view/component/ImageBox.jsx';
 
+class AddressListSection extends React.Component {
+    state = { items: [] };
+
+    componentDidMount() {
+        this.setState({ items: this.props.items || [] });
+    }
+
+    textChanged = (index, value, type) => {
+        const items = this.state.items;
+        items[index][type] = value;
+        this.setState({ items });
+    }
+
+    addAddress = () => {
+        const items = this.state.items;
+        items.push({
+            addressTitle: '',
+            address: '',
+            phoneNumber: '',
+            mobile: '',
+            email: ''
+        });
+
+        this.setState({ items });
+    }
+
+    saveAddress = () => this.props.saveAddress(JSON.stringify(this.state.items));
+
+    render() {
+        /*
+        * addressTitle
+        * address
+        * phoneNumber
+        * mobile
+        * email
+        * */
+        return (
+            <div className='tile'>
+                <h3 className='tile-title'>Danh sách địa chỉ</h3>
+                <div className='tile-body'>
+                    {this.state.items.map((item, index) => (
+                        <React.Fragment key={index}>
+                            <div className='form-group row'>
+                                <label className='col-2'>Tên địa chỉ</label>
+                                <div className='col-10'>
+                                    <input className='form-control' type='text' placeholder='Tên địa chỉ' value={item.addressTitle.trim()} onChange={e => this.textChanged(index, e.target.value, 'addressTitle')} />
+                                </div>
+                            </div>
+                            <div className='form-group row'>
+                                <label className='col-2 col-form-label'>Địa chỉ</label>
+                                <div className='col-10'>
+                                    <input className='form-control' type='text' placeholder='Địa chỉ' value={item.address.trim()} onChange={e => this.textChanged(index, e.target.value, 'address')} />
+                                </div>
+                            </div>
+                            <div className='form-group row'>
+                                <label className='col-2 col-form-label'>Số điện thoại</label>
+                                <div className='col-10'>
+                                    <input className='form-control' type='text' placeholder='Số điện thoại' value={item.phoneNumber.trim()} onChange={e => this.textChanged(index, e.target.value, 'phoneNumber')} />
+                                </div>
+                            </div>
+                            <div className='form-group row'>
+                                <label className='col-2 col-form-label'>Di động</label>
+                                <div className='col-10'>
+                                    <input className='form-control' type='text' placeholder='Di động' value={item.mobile.trim()} onChange={e => this.textChanged(index, e.target.value, 'mobile')} />
+                                </div>
+                            </div>
+                            <div className='form-group row'>
+                                <label className='col-2 col-form-label'>Email</label>
+                                <div className='col-10'>
+                                    <input className='form-control' type='text' placeholder='Email' value={item.email.trim()} onChange={e => this.textChanged(index, e.target.value, 'email')} />
+                                </div>
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </div>
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <button className='btn btn-success' type='button' onClick={this.addAddress}>
+                        <i className='fa fa-fw fa-lg fa-plus-circle' />Thêm
+                    </button>&nbsp;
+                    <button className='btn btn-primary' type='button' onClick={this.saveAddress}>
+                        <i className='fa fa-fw fa-lg fa-check-circle' />Lưu
+                    </button>
+                </div>
+            </div>
+        );
+    }
+}
+
 class SettingsPage extends React.Component {
     constructor(props) {
         super(props);
@@ -18,11 +106,11 @@ class SettingsPage extends React.Component {
         this.instagram = React.createRef();
         this.latitude = React.createRef();
         this.longitude = React.createRef();
-        this.addressName = React.createRef();
-        this.addressDetail = React.createRef();
-        this.addressPhone = React.createRef();
-        this.addressLandlinePhone = React.createRef();
-        this.addressEmail = React.createRef();
+        // this.addressName = React.createRef();
+        // this.addressDetail = React.createRef();
+        // this.addressPhone = React.createRef();
+        // this.addressLandlinePhone = React.createRef();
+        // this.addressEmail = React.createRef();
 
     }
 
@@ -43,15 +131,15 @@ class SettingsPage extends React.Component {
         });
     }
 
-    saveAddress = () => {
-        this.props.saveSystemState({
-            addressName: $(this.addressName.current).val().trim(),
-            addressDetail: $(this.addressDetail.current).val().trim(),
-            addressLandlinePhone: $(this.addressLandlinePhone.current).val().trim(),
-            addressPhone: $(this.addressPhone.current).val().trim(),
-            addressEmail: $(this.addressEmail.current).val().trim(),
-        });
-    }
+    // saveAddress = () => {
+    //     this.props.saveSystemState({
+    //         addressName: $(this.addressName.current).val().trim(),
+    //         addressDetail: $(this.addressDetail.current).val().trim(),
+    //         addressLandlinePhone: $(this.addressLandlinePhone.current).val().trim(),
+    //         addressPhone: $(this.addressPhone.current).val().trim(),
+    //         addressEmail: $(this.addressEmail.current).val().trim(),
+    //     });
+    // }
 
     saveMapInfo = () => {
         this.props.saveSystemState({
@@ -80,9 +168,10 @@ class SettingsPage extends React.Component {
     }
 
     render() {
-        const { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, addressList } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '', addressList: '' };
 
+        addressList = JSON.parse(addressList);
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -133,38 +222,7 @@ class SettingsPage extends React.Component {
                             </div>
                         </div>
 
-                        <div className='tile'>
-                            <h3 className='tile-title'>Address List</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Name</label>
-                                    <input className='form-control' type='text' placeholder='Name' ref={this.addressName} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Address</label>
-                                    <input className='form-control' type='email' placeholder='Address' ref={this.addressDetail} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Landline Telephone number</label>
-                                    <input className='form-control' type='text' placeholder='Landline Telephone number' ref={this.addressLandlinePhone} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Phone number</label>
-                                    <input className='form-control' type='text' placeholder='Phone number' ref={this.addressPhone} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Email</label>
-                                    <input className='form-control' type='text' placeholder='Email' ref={this.addressEmail} />
-                                </div>
-                            </div>
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.saveAddress}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Add
-                                </button>
-                            </div>
-                        </div>
-
-
+                        <AddressListSection items={addressList} saveAddress={value => this.props.saveSystemState({ addressList: value })} />
 
                     </div>
 

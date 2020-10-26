@@ -78,6 +78,9 @@ module.exports = (app) => {
             if (req.body.longitude != null || req.body.longitude == '') {
                 changes.longitude = req.body.longitude.trim();
             }
+            if (req.body.addressList != null || req.body.addressList == '') {
+                changes.addressList = req.body.addressList.trim();
+            }
 
             app.model.setting.set(changes, (error) => {
                 if (error) {

@@ -44,13 +44,17 @@ const texts = {
 
 class Footer extends React.Component {
     render() {
-        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews } = this.props.system ? this.props.system : {
-            logo: '', todayViews: 0, allViews: 0,
-        };
+        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList } = this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, addressList: '' };
         facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook' /></a> : '';
         youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube' /></a> : '';
         twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
         instagram = instagram ? <a href={instagram} target='_blank'><i className='fa fa-instagram' /></a> : '';
+
+        try {
+            addressList = JSON.parse(addressList);
+        } catch (e) {
+            console.log(e)
+        }
 
         const language = T.language(texts);
         return (
