@@ -18,6 +18,12 @@ class SettingsPage extends React.Component {
         this.instagram = React.createRef();
         this.latitude = React.createRef();
         this.longitude = React.createRef();
+        this.addressName = React.createRef();
+        this.addressDetail = React.createRef();
+        this.addressPhone = React.createRef();
+        this.addressLandlinePhone = React.createRef();
+        this.addressEmail = React.createRef();
+        
     }
 
     componentDidMount() {
@@ -34,6 +40,16 @@ class SettingsPage extends React.Component {
             youtube: $(this.youtube.current).val().trim(),
             twitter: $(this.twitter.current).val().trim(),
             instagram: $(this.instagram.current).val().trim(),
+        });
+    }
+
+    saveAddress = () => {
+        this.props.saveSystemState({
+            addressName: $(this.addressName.current).val().trim(),
+            addressDetail: $(this.addressDetail.current).val().trim(),
+            addressLandlinePhone: $(this.addressLandlinePhone.current).val().trim(),
+            addressPhone: $(this.addressPhone.current).val().trim(),
+            addressEmail: $(this.addressEmail.current).val().trim(),
         });
     }
 
@@ -122,27 +138,27 @@ class SettingsPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label className='control-label'>Name</label>
-                                    <input className='form-control' type='text' placeholder='Name' />
+                                    <input className='form-control' type='text' placeholder='Name' ref={this.addressName}/>
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Address</label>
-                                    <input className='form-control' type='email' placeholder='Address' />
+                                    <input className='form-control' type='email' placeholder='Address' ref={this.addressDetail}/>
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Table Phone number</label>
-                                    <input className='form-control' type='text' placeholder='Phone number' />
+                                    <label className='control-label'>Landline Telephone number</label>
+                                    <input className='form-control' type='text' placeholder='Landline Telephone number' ref={this.addressLandlinePhone}/>
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Phone number</label>
-                                    <input className='form-control' type='text' placeholder='Phone number' />
+                                    <input className='form-control' type='text' placeholder='Phone number' ref={this.addressPhone}/>
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Email</label>
-                                    <input className='form-control' type='text' placeholder='Facebook' />
+                                    <input className='form-control' type='text' placeholder='Email' ref={this.addressEmail} />
                                 </div>
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
+                                <button className='btn btn-primary' type='button' onClick={this.saveAddress}>
                                     <i className='fa fa-fw fa-lg fa-check-circle' /> Add
                                 </button>
                             </div>

@@ -16,7 +16,10 @@ export default function systemReducer(state = null, data) {
 export function saveSystemState(changes, done) {
     return dispatch => {
         const url = '/api/system';
+
         T.put(url, changes, data => {
+            console.log('data', data);
+            
             if (data.error) {
                 T.notify(data.error, 'danger');
                 console.error('PUT: ' + url + '.', data.error);
