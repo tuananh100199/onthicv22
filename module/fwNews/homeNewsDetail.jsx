@@ -13,11 +13,12 @@ class NewsDetail extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
+        this.props.getNewsByUser(params.id, params.link);
     }
 
     componentDidUpdate() {
         if (this.state.language != T.language()) {
-            this.props.getNewsByUser(this.state._id, this.state.link);
+
             this.setState({ language: T.language() });
         }
 
@@ -29,6 +30,8 @@ class NewsDetail extends React.Component {
 
     render() {
         const item = this.props.news && this.props.news.userNews ? this.props.news.userNews : null;
+        console.log(this.state._id)
+        console.log(this.props)
         if (item == null) {
             return <p>...</p>;
         } else {
@@ -39,7 +42,8 @@ class NewsDetail extends React.Component {
             );
             return (
                 <section>
-                    <div className='site-blocks-cover overlay' style={{ backgroundImage: `url('${item.image}')` }} data-aos='fade' data-stellar-background-ratio='0.5'>
+                    <div className='site-blocks-cover overlay'>
+                        {/* style={{ backgroundImage: `url('${item.image}')` }} data-aos='fade' data-stellar-background-ratio='0.5' */}
                         <div className='container'>
                             <div className='row align-items-center justify-content-start'>
                                 <div className='col-md-6 text-center text-md-left' data-aos='fade-up' data-aos-delay='400'>

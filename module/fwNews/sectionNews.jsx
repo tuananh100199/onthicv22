@@ -78,8 +78,8 @@ class SectionNews extends React.Component {
           return (
             <div className='item ' key={index}>
               <div className='block-12'>
-                <Link to={link}>
-                  <figure>
+                <Link to={link} >
+                  <figure className='border-test'>
                     <img src={`${item.image}`} style={{ height: '95px', width: '130px' }} alt='Image' className='img-fluid float-left' />
                   </figure>
                 </Link>
@@ -109,9 +109,9 @@ class SectionNews extends React.Component {
             <div className="">
               {news}
             </div >
-            <button className='expand-btn' onClick={this.handleClickExpand}>
+            {/* <button className='expand-btn' onClick={this.handleClickExpand}>
               {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}
-            </button>
+            </button> */}
           </div>
         </div>
       </div >

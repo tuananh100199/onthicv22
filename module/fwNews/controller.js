@@ -37,7 +37,7 @@ module.exports = (app) => {
         app.permission.check('news:draft'),
         app.templates.admin
     );
-    
+
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get(
         '/api/news/page/:pageNumber/:pageSize',
@@ -78,7 +78,7 @@ module.exports = (app) => {
             res.send({ error, page });
         });
     });
-    
+
     app.post(
         '/api/news/default',
         app.permission.check('news:write'),
@@ -88,35 +88,35 @@ module.exports = (app) => {
                 (error, item) => res.send({ error, item })
             )
     );
-    
+
     app.delete('/api/news', app.permission.check('news:write'), (req, res) =>
         app.model.news.delete(req.body._id, (error) => res.send({ error }))
     );
-    
+
     app.post('/api/news/draft', app.permission.check('news:draft'), (req, res) =>
         app.model.draft.create(req.body, (error, item) => res.send({ error, item }))
     );
-    
+
     app.delete(
         '/api/draft-news',
         app.permission.check('news:draft'),
         (req, res) =>
             app.model.draft.delete(req.body._id, (error) => res.send({ error }))
     );
-    
+
     app.put('/api/news/swap', app.permission.check('news:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';
         app.model.news.swapPriority(req.body._id, isMoveUp, (error) =>
             res.send({ error })
         );
     });
-    
+
     app.put('/api/news', app.permission.check('news:write'), (req, res) =>
         app.model.news.update(req.body._id, req.body.changes, (error, item) =>
             res.send({ error, item })
         )
     );
-    
+
     app.get(
         '/api/news/item/:newsId',
         app.permission.check('news:read'),
@@ -176,13 +176,13 @@ module.exports = (app) => {
             );
         }
     );
-    
+
     app.put('/api/draft-news', app.permission.check('news:draft'), (req, res) =>
         app.model.draft.update(req.body._id, req.body.changes, (error, item) =>
             res.send({ error, item })
         )
     );
-    
+
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/news/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -204,7 +204,7 @@ module.exports = (app) => {
         };
 
         if (!user) condition.isInternal = false;
-        
+
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => {
             const respone = {};
             if (error || page == null) {
@@ -217,7 +217,7 @@ module.exports = (app) => {
             res.send(respone);
         });
     });
-    
+
     app.get('/news/page/:pageNumber/:pageSize/:categoryType', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
@@ -238,7 +238,7 @@ module.exports = (app) => {
             active: true,
         };
         if (!user) condition.isInternal = false;
-        
+
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => {
             const respone = {};
             if (error || page == null) {
@@ -250,11 +250,11 @@ module.exports = (app) => {
             res.send(respone);
         });
     });
-    
+
     const readNews = (req, res, error, item) => {
-        if (item) {
-            item.content = app.language.parse(req, item.content);
-        }
+        // if (item) {
+        //     item.content = app.language.parse(req, item.content);
+        // }
         res.send({ error, item });
     };
     app.get('/news/item/id/:newsId', (req, res) =>
@@ -278,7 +278,7 @@ module.exports = (app) => {
             });
         })
     );
-    
+
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(
         app.path.join(app.publicPath, '/img/draft'),
@@ -286,7 +286,7 @@ module.exports = (app) => {
         app.path.join(app.publicPath, '/img/news'),
         app.path.join(app.publicPath, '/img/draftNews')
     );
-    
+
     app.uploadHooks.add(
         'uploadNewsCkEditor',
         (req, fields, files, params, done) =>
@@ -297,7 +297,7 @@ module.exports = (app) => {
                 'news:write'
             )
     );
-    
+
     const uploadNewsAvatar = (req, fields, files, params, done) => {
         if (
             fields.userData &&
@@ -324,7 +324,7 @@ module.exports = (app) => {
             'news:write'
         )
     );
-    
+
     const uploadNewsDraftAvatar = (req, fields, files, params, done) => {
         if (
             fields.userData &&
