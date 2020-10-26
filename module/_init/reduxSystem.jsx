@@ -5,6 +5,7 @@ const UPDATE_SYSTEM_STATE = 'system:updateSystemState';
 export default function systemReducer(state = null, data) {
     switch (data.type) {
         case UPDATE_SYSTEM_STATE:
+            console.log('state',data.state);
             return Object.assign({}, state, data.state);
             
         default:
