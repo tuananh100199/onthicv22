@@ -35,7 +35,7 @@ class ListVideoModal extends React.Component {
         let { title, number } = selectedItem ? selectedItem : { title: JSON.stringify({ vi: '', en: '' }), number: 0 };
         title = T.language.parse(title, true);
         $('#sttViTitle').val(title.vi);
-        $('#sttEnTitle').val(title.en);
+        // $('#sttEnTitle').val(title.en);
         $('#sttNumber').val(number);
         $(this.btnSave.current).data('isNewMember', selectedItem == null).data('index', index);
 
@@ -46,6 +46,7 @@ class ListVideoModal extends React.Component {
     }
 
     save = (event) => {
+        console.log('hi');
         const btnSave = $(this.btnSave.current),
             isNewMember = btnSave.data('isNewMember'),
             index = btnSave.data('index'),
@@ -69,8 +70,7 @@ class ListVideoModal extends React.Component {
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <div className='container-fluid row'>
-                                <h5 className='modal-title col-6'>Danh Sách Video (Việt Nam)</h5>
-                                <h5 className='modal-title col-6'>List Video (English)</h5>
+                                <h5 className='modal-title col-6'>Danh Sách Video</h5>
                             </div>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
@@ -85,12 +85,12 @@ class ListVideoModal extends React.Component {
                                     </div>
                                 </div>
 
-                                <div className='col-6'>
+                                {/* <div className='col-6'>
                                     <div className='form-group col-12'>
                                         <label htmlFor='sttEnTitle'>Name</label><br />
                                         <input className='form-control' id='sttEnTitle' type='text' placeholder='Name' />
                                     </div>
-                                </div>
+                                </div> */}
                                 <div className='col-12'>
                                     <div className='form-group col-12'>
                                         <label htmlFor='sttNumber'>Số lượng | Quantity</label><br />
@@ -217,8 +217,8 @@ class ListVideoEditPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
-                            <th style={{ width: '50%' }}>Tên (Việt Nam)</th>
-                            <th style={{ width: '50%' }}>Name (English)</th>
+                            <th style={{ width: '50%' }}>Tên</th>
+                            {/* <th style={{ width: '50%' }}>Name (English)</th> */}
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Số lượng</th>
                             {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
                         </tr>
@@ -232,10 +232,10 @@ class ListVideoEditPage extends React.Component {
                                     <td>
                                         {readOnly ? title.vi : <a href='#' onClick={e => this.showEditListVideoModal(e, item, index)}>{title.vi}</a>}
                                     </td>
-                                    <td>
+                                    {/* <td>
                                         {readOnly ? title.en : <a href='#' onClick={e => this.showEditListVideoModal(e, item, index)}>{title.en}</a>}
-                                    </td>
-                                    <td style={{ textAlign: 'right' }}>{T.numberDisplay(item.number)}</td>
+                                    </td> */}
+                                    <td style={{ textAlign: 'center' }}>{T.numberDisplay(item.number)}</td>
                                     {readOnly ? null :
                                         <td>
                                             <div className='btn-group'>
@@ -285,7 +285,8 @@ class ListVideoEditPage extends React.Component {
                         <div className='tile-body'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#listVideoViTab'>Việt Nam</a>
+                                    {/* <a className='nav-link active show' data-toggle='tab' href='#listVideoViTab'>Việt Nam</a> */}
+                                  <h5> Việt Nam</h5> 
                                 </li>
                             </ul>
                             <div className='tab-content'>

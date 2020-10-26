@@ -143,7 +143,7 @@ class ListVideoPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/list-video/edit/:listVideoId' + item._id} data-id={item._id}>
+                                    <Link to={'/user/list-video/edit/' + item._id} data-id={item._id}>
                                         {T.language.parse(item.title)}
                                     </Link>
                                 </td>
