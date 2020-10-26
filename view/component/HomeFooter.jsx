@@ -17,9 +17,9 @@ const addressList = [{
 }];
 const texts = {
     vi: {
-        addressPhone: 'Di dong',
-        addressLine: 'Dien thoai',
-        addressEmail: 'Email',
+        addressPhone: 'Di dong: ',
+        addressLine: 'Dien thoai: ',
+        addressEmail: 'Email: ',
         facultyName: 'Công ty SV Sport',
         contactUs: 'Thông tin liên hệ:',
         socialNetworks: 'Kết nối với chúng tôi:',
@@ -29,9 +29,9 @@ const texts = {
         copyright: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.',
     },
     en: {
-        addressPhone: 'Tel',
-        addressLine: 'Fixed Tel',
-        addressEmail: 'Email',
+        addressPhone: 'Tel: ',
+        addressLine: 'Fixed Tel: ',
+        addressEmail: 'Email: ',
         facultyName: 'SV Sport company',
         contactUs: 'Contact us:',
         socialNetworks: 'Let us be social:',
@@ -54,7 +54,7 @@ class Footer extends React.Component {
 
         const language = T.language(texts);
         return (
-            <footer className='footer-area' style={{ width: '100%', position: 'absolute', bottom: 0 }}>
+            <footer className='footer-area' style={{ width: '100%', position: 'absolute', bottom: 0, color: 'green' }}>
                 <div className='top-footer-area'>
                     <div className='container'>
                         <div className='row'>

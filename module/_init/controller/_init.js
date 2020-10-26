@@ -1,5 +1,10 @@
 module.exports = (app) => {
     app.data = {
+        addressName: '',
+        addressDetail: '',
+        addressLandlinePhone: '',
+        addressPhone: '',
+        addressEmail: '',
         todayViews: 0,
         allViews: 0,
         logo: '/img/favicon.jpg',
@@ -22,7 +27,7 @@ module.exports = (app) => {
     const ready = () => {
         if (app.model && app.model.setting && app.model.user) {
             app.model.setting.init(app.data, () => {
-                app.model.setting.get([ 'todayViews', 'allViews', 'logo', 'map', 'facebook', 'youtube', 'twitter', 'instagram', 'latitude', 'longitude', 'email', 'emailPassword', 'mobile', 'address' ], (result) => {
+                app.model.setting.get(['todayViews', 'allViews', 'logo', 'map', 'facebook', 'youtube', 'twitter', 'instagram', 'latitude', 'longitude', 'email', 'emailPassword', 'mobile', 'address'], (result) => {
                     app.data.todayViews = parseInt(result.todayViews);
                     app.data.allViews = parseInt(result.allViews);
                     app.data.logo = result.logo;
@@ -39,7 +44,7 @@ module.exports = (app) => {
                     app.data.address = result.address;
                 });
             });
-            
+
             app.model.user.count((error, numberOfUser) => {
                 app.data.numberOfUser = error ? 0 : numberOfUser;
             });

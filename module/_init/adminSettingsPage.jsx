@@ -23,7 +23,7 @@ class SettingsPage extends React.Component {
         this.addressPhone = React.createRef();
         this.addressLandlinePhone = React.createRef();
         this.addressEmail = React.createRef();
-        
+
     }
 
     componentDidMount() {
@@ -138,19 +138,19 @@ class SettingsPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label className='control-label'>Name</label>
-                                    <input className='form-control' type='text' placeholder='Name' ref={this.addressName}/>
+                                    <input className='form-control' type='text' placeholder='Name' ref={this.addressName} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Address</label>
-                                    <input className='form-control' type='email' placeholder='Address' ref={this.addressDetail}/>
+                                    <input className='form-control' type='email' placeholder='Address' ref={this.addressDetail} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Landline Telephone number</label>
-                                    <input className='form-control' type='text' placeholder='Landline Telephone number' ref={this.addressLandlinePhone}/>
+                                    <input className='form-control' type='text' placeholder='Landline Telephone number' ref={this.addressLandlinePhone} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Phone number</label>
-                                    <input className='form-control' type='text' placeholder='Phone number' ref={this.addressPhone}/>
+                                    <input className='form-control' type='text' placeholder='Phone number' ref={this.addressPhone} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Email</label>
