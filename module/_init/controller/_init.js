@@ -1,10 +1,6 @@
 module.exports = (app) => {
     app.data = {
-        addressName: '',
-        addressDetail: '',
-        addressLandlinePhone: '',
-        addressPhone: '',
-        addressEmail: '',
+        addressList: JSON.stringify([]),
         todayViews: 0,
         allViews: 0,
         logo: '/img/favicon.jpg',
