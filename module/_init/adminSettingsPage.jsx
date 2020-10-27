@@ -111,12 +111,6 @@ class SettingsPage extends React.Component {
         this.instagram = React.createRef();
         this.latitude = React.createRef();
         this.longitude = React.createRef();
-        // this.addressName = React.createRef();
-        // this.addressDetail = React.createRef();
-        // this.addressPhone = React.createRef();
-        // this.addressLandlinePhone = React.createRef();
-        // this.addressEmail = React.createRef();
-
     }
 
     componentDidMount() {
@@ -135,16 +129,6 @@ class SettingsPage extends React.Component {
             instagram: $(this.instagram.current).val().trim(),
         });
     }
-
-    // saveAddress = () => {
-    //     this.props.saveSystemState({
-    //         addressName: $(this.addressName.current).val().trim(),
-    //         addressDetail: $(this.addressDetail.current).val().trim(),
-    //         addressLandlinePhone: $(this.addressLandlinePhone.current).val().trim(),
-    //         addressPhone: $(this.addressPhone.current).val().trim(),
-    //         addressEmail: $(this.addressEmail.current).val().trim(),
-    //     });
-    // }
 
     saveMapInfo = () => {
         this.props.saveSystemState({
