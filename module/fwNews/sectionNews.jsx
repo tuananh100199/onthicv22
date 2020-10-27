@@ -79,7 +79,7 @@ class SectionNews extends React.Component {
             <div className='item ' key={index}>
               <div className='block-12'>
                 <Link to={link} >
-                  <figure className='border-test'>
+                  <figure className=''>
                     <img src={`${item.image}`} style={{ height: '95px', width: '130px' }} alt='Image' className='img-fluid float-left' />
                   </figure>
                 </Link>

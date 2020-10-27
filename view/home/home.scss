@@ -773,9 +773,9 @@ label {
   background-color: #4d983c;
   padding-left: 40px;
 }
-// .float-left{
-//   float: left;
-// }
+.float-left{
+  float: left;
+}
 
 .float-right{
   float: right;
@@ -825,6 +825,15 @@ label {
 }
 .news-title{
   padding-left: 15px;
+}
+.news-img-title{
+  background-position: center center; 
+  background-size: 555px 380px; 
+  background-repeat: no-repeat;
+  width: 555px;
+  height: 380px;
+  position: absolute;
+  top: 80px;
 }
 
 

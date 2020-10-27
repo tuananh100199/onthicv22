@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import T from '../../view/js/common.js';
 import { getNewsByUser } from './redux.jsx';
 // import SectionSideBar from '../../view/component/SectionSideBar.jsx';
 
@@ -47,8 +48,8 @@ class NewsDetail extends React.Component {
                         <div className='container'>
                             <div className='row align-items-center justify-content-start'>
                                 <div className='col-md-6 text-center text-md-left' data-aos='fade-up' data-aos-delay='400'>
-                                    <h1 className='bg-text-line'>{T.language.parse(item.title)}</h1>
-                                    <p className='mt-4'>{T.language.parse(item.abstract)}</p>
+                                    {/* <h1 className='bg-text-line'>{T.language.parse(item.title)}</h1>
+                                    <p className='mt-4'>{T.language.parse(item.abstract)}</p> */}
                                 </div>
                             </div>
                         </div>
@@ -67,7 +68,6 @@ class NewsDetail extends React.Component {
                                     </div>
                                 </div>
                                 <div className='col-12 col-md-4 sidebar' data-aos='fade-up'>
-                                    {/*<SectionSideBar />*/}
                                 </div>
                             </div>
                         </div>
