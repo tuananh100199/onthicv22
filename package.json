@@ -7,7 +7,7 @@
   "dbName": "hiepphat",
   "port": 5090,
   "sessionRedisStore": false,
-  "rootUrl": "http://hiepphat.bktphcm.net",
+  "rootUrl": "https://hiepphat.bktphcm.net",
   "autoLogin": true,
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
