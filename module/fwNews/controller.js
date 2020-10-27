@@ -12,31 +12,14 @@ module.exports = (app) => {
         { name: 'news:write', menu },
         { name: 'news:draft', menu }
     );
-    app.get(
-        '/user/news/category',
-        app.permission.check('category:read'),
-        app.templates.admin
-    );
-    app.get(
-        '/user/news/list',
-        app.permission.check('news:read'),
-        app.templates.admin
-    );
-    app.get(
-        '/user/news/edit/:_id',
-        app.permission.check('news:read'),
-        app.templates.admin
-    );
-    app.get(
-        '/user/news/draft',
-        app.permission.check('news:read'),
-        app.templates.admin
-    );
-    app.get(
-        '/user/news/draft/edit/:_id',
-        app.permission.check('news:draft'),
-        app.templates.admin
-    );
+    app.get('/user/news/category', app.permission.check('category:read'), app.templates.admin);
+    app.get('/user/news/list', app.permission.check('news:read'), app.templates.admin);
+    app.get('/user/news/edit/:_id', app.permission.check('news:read'), app.templates.admin);
+    app.get('/user/news/draft', app.permission.check('news:read'), app.templates.admin);
+    app.get('/user/news/draft/edit/:_id', app.permission.check('news:draft'), app.templates.admin);
+    
+    app.get('/news/item/:_id', app.templates.home);
+    app.get('/tintuc/:link', app.templates.home);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get(
