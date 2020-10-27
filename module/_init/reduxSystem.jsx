@@ -5,9 +5,8 @@ const UPDATE_SYSTEM_STATE = 'system:updateSystemState';
 export default function systemReducer(state = null, data) {
     switch (data.type) {
         case UPDATE_SYSTEM_STATE:
-            console.log('state',data.state);
             return Object.assign({}, state, data.state);
-            
+
         default:
             return state;
     }
@@ -19,8 +18,7 @@ export function saveSystemState(changes, done) {
         const url = '/api/system';
 
         T.put(url, changes, data => {
-            console.log('data', data);
-            
+
             if (data.error) {
                 T.notify(data.error, 'danger');
                 console.error('PUT: ' + url + '.', data.error);
