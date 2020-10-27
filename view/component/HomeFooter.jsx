@@ -2,24 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-// const addressList = [{
-//     addressName: 'Co so 1',
-//     addressDetail: 'Binh Chanh',
-//     addressLandlinePhone: '(028) 36 362 362',
-//     addressPhone: '0911 739 119',
-//     addressEmail: 'daotaolaixehp@gmail.com',
-// }, {
-//     addressName: 'Co so 1',
-//     addressDetail: 'Binh Chanh',
-//     addressLandlinePhone: '(028) 36 362 362',
-//     addressPhone: '0911 739 119',
-//     addressEmail: 'daotaolaixehp@gmail.com',
-// }];
 const texts = {
     vi: {
-        addressPhone: 'Di dong: ',
-        addressLine: 'Dien thoai: ',
-        addressEmail: 'Email: ',
+        addressPhone: 'Di động:  ',
+        addressLine: 'Điện thoại:  ',
+        addressEmail: 'Email:  ',
         facultyName: 'Công ty SV Sport',
         contactUs: 'Thông tin liên hệ:',
         socialNetworks: 'Kết nối với chúng tôi:',
@@ -29,9 +16,9 @@ const texts = {
         copyright: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.',
     },
     en: {
-        addressPhone: 'Tel: ',
-        addressLine: 'Fixed Tel: ',
-        addressEmail: 'Email: ',
+        addressPhone: 'Tel:  ',
+        addressLine: 'Fixed Tel:  ',
+        addressEmail: 'Email:  ',
         facultyName: 'SV Sport company',
         contactUs: 'Contact us:',
         socialNetworks: 'Let us be social:',
@@ -52,7 +39,7 @@ class Footer extends React.Component {
         twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
         instagram = instagram ? <a href={instagram} target='_blank'><i className='fa fa-instagram' /></a> : '';
         addressList = JSON.parse(addressList);
-        // console.log('adresslist', addressList);
+
         try {
             addressList = JSON.parse(addressList);
         } catch (e) {
@@ -61,28 +48,42 @@ class Footer extends React.Component {
 
         const language = T.language(texts);
         return (
-            <footer className='footer-area' style={{ width: '100%', position: 'absolute', bottom: 0 }}>
-                <div className='top-footer-area' style={{ backgroundColor: '#28a743' }}>
+            <footer className='footer-area' style={{
+                position: 'absolute',
+                bottom: 0,
+                width: '100%',
+            }}>
+
+                <div className='top-footer-area' style={{
+                    textAlign: "left",
+                }}>
                     <div className='container'>
                         <div className='row'>
                             <div className='col-12' style={{
                                 color: '#fff',
                                 lineHeight: 22,
-                                float: 'left',
+                                float: "left",
+                                // marginLeft: -40,
                             }}>
                                 {
-                                    addressList.map(item => <div>
-                                        <p>{item.addressTitle}:
+                                    addressList.map(item => <div
+                                        style={{
+                                            float: "left",
+                                        }}
+                                    >
+                                        <p>{item.addressTitle}:&nbsp;&nbsp;
                                             <span >{item.address}</span>
                                         </p>
                                         <p>{language.addressLine}
                                             <span >{item.phoneNumber}</span>
+                                            &nbsp;&nbsp;
                                             <span >{language.addressPhone}</span>
                                             <span >{item.mobile}</span>
                                         </p>
                                         <p>{language.addressEmail}
                                             <span >{item.email}</span>
                                         </p>
+                                        <p></p>
                                     </div>)
                                 }
                             </div>
