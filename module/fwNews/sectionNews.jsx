@@ -81,15 +81,16 @@ class SectionNews extends React.Component {
                 <Link to={link} >
                   <figure className=''>
                     <img src={`${item.image}`} style={{ height: '95px', width: '130px' }} alt='Image' className='img-fluid float-left' />
+                    <div className='text border-bot'>
+                      {/* <span className='meta'>{new Date(item.createdDate).getText()}</span> */}
+                      <div className='text-inner'>
+                        <h2 className='heading pb-0 mb-0'><Link to={link} className='text-black news-title'>{T.language.parse(item.title)}</Link></h2>
+                        <p className='news-abstract'>{T.language.parse(item.abstract)}</p>
+                      </div>
+                    </div>
                   </figure>
                 </Link>
-                <div className='text border-bot'>
-                  {/* <span className='meta'>{new Date(item.createdDate).getText()}</span> */}
-                  <div className='text-inner'>
-                    <h2 className='heading pb-0 mb-0'><Link to={link} className='text-black news-title'>{T.language.parse(item.title)}</Link></h2>
-                    <p className='news-abstract'>{T.language.parse(item.abstract)}</p>
-                  </div>
-                </div>
+
               </div>
             </div>
           )

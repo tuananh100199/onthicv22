@@ -43,17 +43,6 @@ class NewsDetail extends React.Component {
             );
             return (
                 <section>
-                    <div className='site-blocks-cover overlay'>
-                        {/* style={{ backgroundImage: `url('${item.image}')` }} data-aos='fade' data-stellar-background-ratio='0.5' */}
-                        <div className='container'>
-                            <div className='row align-items-center justify-content-start'>
-                                <div className='col-md-6 text-center text-md-left' data-aos='fade-up' data-aos-delay='400'>
-                                    {/* <h1 className='bg-text-line'>{T.language.parse(item.title)}</h1>
-                                    <p className='mt-4'>{T.language.parse(item.abstract)}</p> */}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div className='site-section bg-light' data-aos='fade-up'>
                         <div className='container-fluid'>
                             <div className='row align-items-first'>
