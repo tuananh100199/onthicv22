@@ -1,7 +1,7 @@
 100. Dashboard
 1000. Personal information
 	1010 - Profile (/user)
-2000. Cấu hình
+2000. Configure
 	2010 - General (/user/settings)
 	2020 - Email (/user/email)
 	2030 - Contact (/user/contact)

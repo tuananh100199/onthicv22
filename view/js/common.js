@@ -6,7 +6,7 @@ import './sweetalert.min.js';
 
 const T = {
     PropTypes,
-    rootUrl: 'http://hiepphat.bktphcm.net',
+    rootUrl: 'https://hiepphat.bktphcm.net',
     sexes: ['male', 'female'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
