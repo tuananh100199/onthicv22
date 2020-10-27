@@ -5,7 +5,13 @@ const app = express();
 app.fs = require('fs');
 app.path = require('path');
 app.isDebug = !__dirname.startsWith('/var/www/');
-const server = require('http').createServer(app);
+const server = app.isDebug ?
+    require('http').createServer(app) :
+    require('https').createServer({
+        cert: app.fs.readFileSync('/etc/ssl/hiepphat_certificate.crt'),
+        ca: app.fs.readFileSync('/etc/ssl/hiepphat_ca_bundle.crt'),
+        key: app.fs.readFileSync('/etc/ssl/hiepphat_private.key'),
+    }, app);
 
 // Variables ==================================================================
 app.title = package.title;
