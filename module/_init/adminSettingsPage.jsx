@@ -4,7 +4,9 @@ import { saveSystemState } from './reduxSystem.jsx';
 import ImageBox from '../../view/component/ImageBox.jsx';
 
 class AddressListSection extends React.Component {
-    state = { items: [] };
+    state = {
+        items: [],
+    };
 
     componentDidMount() {
         this.setState({ items: this.props.items || [] });
@@ -45,6 +47,9 @@ class AddressListSection extends React.Component {
                 <div className='tile-body'>
                     {this.state.items.map((item, index) => (
                         <React.Fragment key={index}>
+                            <div className='form-group row'>
+                                <label className='col-3'>Địa Chỉ {index += 1}</label>
+                            </div>
                             <div className='form-group row'>
                                 <label className='col-2'>Tên địa chỉ</label>
                                 <div className='col-10'>
