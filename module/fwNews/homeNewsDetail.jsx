@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js';
 import { getNewsByUser } from './redux.jsx';
-// import SectionSideBar from '../../view/component/SectionSideBar.jsx';
+import SectionNews from './SectionNews.jsx';
 
 class NewsDetail extends React.Component {
     constructor(props) {
@@ -31,8 +31,6 @@ class NewsDetail extends React.Component {
 
     render() {
         const item = this.props.news && this.props.news.userNews ? this.props.news.userNews : null;
-        console.log(this.state._id)
-        console.log(this.props)
         if (item == null) {
             return <p>...</p>;
         } else {
@@ -42,24 +40,21 @@ class NewsDetail extends React.Component {
                 </div>
             );
             return (
-                <section>
-                    <div className='site-section bg-light' data-aos='fade-up'>
-                        <div className='container-fluid'>
-                            <div className='row align-items-first'>
-                                <div className='col-12 col-md-8'>
-                                    <div className='bg-white'>
-                                        <div className='p-3 p-lg-5 border'>
-                                            <span className="meta">{new Date(item.createdDate).getText()}</span>
-                                            <h2 className='text-black text-center'>{T.language.parse(item.title)}</h2>
-                                            <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                            {categories}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-12 col-md-4 sidebar' data-aos='fade-up'>
+                <section className='row'>
+                    <div className='col-12 col-md-8'>
+                        <div className='course--content' data-aos='fade-up'>
+                            <div className='clever-description p-2'>
+                                <div className='about-course mb-30'>
+                                    <span className="meta">{new Date(item.createdDate).getText()}</span>
+                                    <h2 className='text-black text-center'>{T.language.parse(item.title)}</h2>
+                                    <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
+                                    {categories}
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className='col-12 col-md-4' data-aos='fade-up'>
+                        <SectionNews />
                     </div>
                 </section>
             );
