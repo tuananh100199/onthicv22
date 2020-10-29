@@ -4,9 +4,7 @@ import { saveSystemState } from './reduxSystem.jsx';
 import ImageBox from '../../view/component/ImageBox.jsx';
 
 class AddressListSection extends React.Component {
-    state = {
-        items: [],
-    };
+    state = { items: [] };
 
     componentDidMount() {
         this.setState({ items: this.props.items || [] });
@@ -34,24 +32,15 @@ class AddressListSection extends React.Component {
     saveAddress = () => this.props.saveAddress(JSON.stringify(this.state.items));
 
     render() {
-        /*
-        * addressTitle
-        * address
-        * phoneNumber
-        * mobile
-        * email
-        * */
         return (
             <div className='tile'>
                 <h3 className='tile-title'>Danh sách địa chỉ</h3>
                 <div className='tile-body'>
                     {this.state.items.map((item, index) => (
                         <React.Fragment key={index}>
+                            <h5>Địa Chỉ {index + 1}</h5>
                             <div className='form-group row'>
-                                <label className='col-3'>Địa Chỉ {index += 1}</label>
-                            </div>
-                            <div className='form-group row'>
-                                <label className='col-2'>Tên địa chỉ</label>
+                                <label className='col-2 col-form-label'>Tên địa chỉ</label>
                                 <div className='col-10'>
                                     <input className='form-control' type='text' placeholder='Tên địa chỉ' value={item.addressTitle.trim()} onChange={e => this.textChanged(index, e.target.value, 'addressTitle')} />
                                 </div>
