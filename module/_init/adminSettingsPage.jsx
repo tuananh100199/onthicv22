@@ -5,17 +5,17 @@ import ImageBox from '../../view/component/ImageBox.jsx';
 
 class AddressListSection extends React.Component {
     state = { items: [] };
-    
+
     componentDidMount() {
         this.setState({ items: this.props.items || [] });
     }
-    
+
     textChanged = (index, value, type) => {
         const items = this.state.items;
         items[index][type] = value;
         this.setState({ items });
     }
-    
+
     addAddress = () => {
         const items = this.state.items;
         items.push({
@@ -25,28 +25,22 @@ class AddressListSection extends React.Component {
             mobile: '',
             email: ''
         });
-        
+
         this.setState({ items });
     }
-    
+
     saveAddress = () => this.props.saveAddress(JSON.stringify(this.state.items));
-    
+
     render() {
-        /*
-        * addressTitle
-        * address
-        * phoneNumber
-        * mobile
-        * email
-        * */
         return (
             <div className='tile'>
                 <h3 className='tile-title'>Danh sách địa chỉ</h3>
                 <div className='tile-body'>
                     {this.state.items.map((item, index) => (
                         <React.Fragment key={index}>
+                            <h5>Địa Chỉ {index + 1}</h5>
                             <div className='form-group row'>
-                                <label className='col-2'>Tên địa chỉ</label>
+                                <label className='col-2 col-form-label'>Tên địa chỉ</label>
                                 <div className='col-10'>
                                     <input className='form-control' type='text' placeholder='Tên địa chỉ' value={item.addressTitle.trim()} onChange={e => this.textChanged(index, e.target.value, 'addressTitle')} />
                                 </div>
@@ -80,10 +74,10 @@ class AddressListSection extends React.Component {
                 </div>
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button className='btn btn-success' type='button' onClick={this.addAddress}>
-                        <i className='fa fa-fw fa-lg fa-plus-circle'/>Thêm
+                        <i className='fa fa-fw fa-lg fa-plus-circle' />Thêm
                     </button>&nbsp;
                     <button className='btn btn-primary' type='button' onClick={this.saveAddress}>
-                        <i className='fa fa-fw fa-lg fa-check-circle'/>Lưu
+                        <i className='fa fa-fw fa-lg fa-check-circle' />Lưu
                     </button>
                 </div>
             </div>
@@ -154,7 +148,7 @@ class SettingsPage extends React.Component {
     render() {
         let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, addressList } = this.props.system ?
             this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '', addressList: '' };
-    
+
         addressList = JSON.parse(addressList);
         return (
             <main className='app-content'>
@@ -201,11 +195,11 @@ class SettingsPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle'/> Save
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Save
                                 </button>
                             </div>
                         </div>
-    
+
                         <AddressListSection items={addressList} saveAddress={value => this.props.saveSystemState({ addressList: value })} />
 
                     </div>
@@ -224,7 +218,7 @@ class SettingsPage extends React.Component {
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-primary' type='button' onClick={this.changePassword}>
-                                            <i className='fa fa-fw fa-lg fa-check-circle'/>Change password
+                                            <i className='fa fa-fw fa-lg fa-check-circle' />Change password
                                         </button>
                                     </div>
                                 </div>
@@ -261,7 +255,7 @@ class SettingsPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveMapInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle'/> Save
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Save
                                 </button>
                             </div>
                         </div>
