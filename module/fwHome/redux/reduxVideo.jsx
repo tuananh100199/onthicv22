@@ -3,13 +3,13 @@ import T from '../../../view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
 const VideoGetPage = 'Video:GetPage';
 const VideoUpdate = 'Video:Update';
-export default function videoReducer(state = null, data) {
+export default function videoReducer(state = {}, data) {
     switch (data.type) {
         case VideoGetPage:
             return Object.assign({}, state, { page: data.page });
 
         case VideoUpdate:
-            let updatedPage = Object.assign({}, state.page),
+            let updatedPage = Object.assign({}, state.page || { list: [] }),
                 updatedItem = data.item;
             for (let i = 0, n = updatedPage.list.length; i < n; i++) {
                 if (updatedPage.list[i]._id == updatedItem._id) {
@@ -66,7 +66,7 @@ export function createVideo(video, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getVideoInPage());
-                if (done) done(data.item);
+                if (done) done(data.video);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
     }

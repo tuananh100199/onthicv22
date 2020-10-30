@@ -25,10 +25,12 @@ class VideoModal extends React.Component {
         $('#videoLink').val(link);
         this.imageBox.current.setData('video:' + (_id ? _id : 'new'), image || '/img/avatar.jpg');
         this.setState({ item: selectedItem })
+        
         $(this.modal.current).modal('show');
     }
     
     save = (event) => {
+        console.log(this.state.item)
         const changes = {
             title: $('#videoTitle').val().trim(),
             link: $('#videoLink').val().trim(),
@@ -40,7 +42,7 @@ class VideoModal extends React.Component {
             T.notify('Link video bị trống!', 'danger');
             $('#videoLink').focus();
         } else {
-            if (this.state.item._id) {
+            if (this.state.item && this.state.item._id ) {
                 this.props.updateVideo(this.state.item._id, changes, () => {
                     $(this.modal.current).modal('hide');
                 });
@@ -205,6 +207,7 @@ class ListVideoEditPage extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
         let table = null, currentVideo = this.state.item || {};
+        console.log(this.state.items)
         if (this.state.items && this.state.items.length) {
             table = (
                 <table className='table table-hover table-bordered' ref={this.table}>
