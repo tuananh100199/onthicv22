@@ -1,13 +1,11 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        description: String,
-        image: String,
+        // image: String,
         items: [{
             title: String,
             image: String,
             link: String,
-            number: Number,
         }]
     });
     const model = app.db.model('ListVideo', schema);

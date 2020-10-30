@@ -21,30 +21,25 @@ class ListVideoModal extends React.Component {
     }
 
     show = () => {
+        console.log('show')
         $('#listVideoViName').val('');
-        // $('#listVideoEnName').val('');
-
-        // this.editor.en.current.html('');
         $(this.modal.current).modal('show');
     }
 
     save = (event) => {
+        console.log('save')
+
         const listVideoName = {
             vi: $('#listVideoViName').val().trim(),
-            // en: $('#listVideoEnName').val().trim()
         };
  
         if (listVideoName.vi === '') {
             T.notify('Tên danh sách video bị trống!', 'danger');
             $('#listVideoViName').focus();
-        
         } 
-        // else if (listVideoName.en === '') {
-        //     T.notify('Name of List Video group is empty!', 'danger');
-        //     $('#listVideoEnName').focus();
-        // } 
         else {
-            this.props.createListVideo(JSON.stringify(listVideoName), '', data => {
+            this.props.createListVideo(JSON.stringify(listVideoName), data => {
+            // console.log('bb')
                 if (data.error === undefined || data.error == null) {
                     $(this.modal.current).modal('hide');
                     if (data.item) {
@@ -68,21 +63,12 @@ class ListVideoModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            {/* <ul id='listVideoTabs' className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#listVideoViTab'>Việt Nam</a>
-                                </li>
-                            </ul> */}
                             <div className='tab-content'>
                                 <div id='listVideoViTab' className='tab-pane fade show active mt-3'>
                                     <div className='form-group'>
                                         <label htmlFor='listVideoViName'>Tên danh sách video</label>
                                         <input className='form-control' id='listVideoViName' type='text' placeholder='List Video 01' />
                                     </div>
-                                    {/* <div className='form-group'>
-                                        <label htmlFor='listVideoViDescription'>Mô tả</label>
-                                        <Editor ref={this.editor.vi} id='listVideoViDescription' /><br />
-                                    </div> */}
                                 </div>
                             </div>
                         </div>

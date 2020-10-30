@@ -18,7 +18,8 @@ export default function listVideoReducer(state = null, data) {
                 state = Object.assign({}, state);
                 state.item.items.push({
                     title: data.title,
-                    number: data.number,
+                    link: data.link,
+                    image : data.image,
                 });
             }
             return state;
@@ -29,7 +30,8 @@ export default function listVideoReducer(state = null, data) {
                 if (0 <= data.index && data.index < state.item.items.length) {
                     state.item.items.splice(data.index, 1, {
                         title: data.title,
-                        number: data.number,
+                        link: data.link,
+                        image : data.image,
                     });
                 }
             }
@@ -58,19 +60,19 @@ export default function listVideoReducer(state = null, data) {
             }
             return state;
 
-            case ListVideoUpdate:
-                state = Object.assign({}, state);
-                const updatedItem = data.item;
-                if (state && state.selectedItem && state.selectedItem._id == updatedItem.listVideoId) {
-                    for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
-                        if (items[i]._id == updatedItem._id) {
-                            state.selectedItem.items.splice(i, 1, updatedItem);
-                            break;
-                        }
+        case ListVideoUpdate:
+            state = Object.assign({}, state);
+            const updatedItem = data.item;
+            if (state && state.selectedItem && state.selectedItem._id == updatedItem.listVideoId) {
+                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
+                    if (items[i]._id == updatedItem._id) {
+                        state.selectedItem.items.splice(i, 1, updatedItem);
+                        break;
                     }
                 }
-                return state;
-    
+            }
+            return state;
+
 
         default:
             return state;
@@ -115,10 +117,10 @@ export function getAllListVideo(done) {
     }
 }
 
-export function createListVideo(title, description, background, done) {
+export function createListVideo(title , done) {
     return dispatch => {
         const url = '/api/list-video';
-        T.post(url, { title, description, background }, data => {
+        T.post(url, { title }, data => {
             if (data.error) {
                 T.notify(texts.createListVideoError, 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
@@ -171,20 +173,18 @@ export function getListVideoItem(_id, done) {
             if (data.error) {
                 T.notify(texts.getListVideoError, 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done({ item: data.item });
-                dispatch({ type: ListVideoUpdate, item: data.item });
             }
+            if (done) done(data);
         }, error => T.notify(texts.getListVideoError, 'danger'));
     }
 }
-
-export function addVideoIntoList(title, number) {
-    return { type: ListVideoAddItem, title, number };
+// video... 
+export function addVideoIntoList(title, link, image) {
+    return { type: ListVideoAddItem, title, link, image };
 }
 
-export function updateVideoInList(index, title, number) {
-    return { type:  ListVideoUpdateItem, index, title, number };
+export function updateVideoInList(index, title, link,image) {
+    return { type:  ListVideoUpdateItem, index, title, link,image };
 }
 
 export function removeVideoFromList(index) {
