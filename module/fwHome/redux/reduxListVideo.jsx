@@ -117,15 +117,14 @@ export function getAllListVideo(done) {
     }
 }
 
-export function createListVideo(title , done) {
+export function createListVideo(newData, done) {
     return dispatch => {
         const url = '/api/list-video';
-        T.post(url, { title }, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify(texts.createListVideoError, 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllListVideo());
                 if (done) done(data);
             }
         }, error => T.notify(texts.createListVideoError, 'danger'));

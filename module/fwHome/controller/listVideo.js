@@ -1,12 +1,13 @@
 module.exports = app => {
-    app.get('/api/list-video/all', app.permission.check('component:read'), (req, res) =>
-        app.model.listVideo.getAll((error, items) => res.send({ error, items })));
+    app.get('/api/list-video/all', app.permission.check('component:read'), (req, res) => {
+        app.model.listVideo.getAll((error, items) => res.send({ error, items }))
+    });
 
     app.get('/api/list-video/item/:listVideoId', app.permission.check('component:read'), (req, res) =>
         app.model.listVideo.get(req.params.listVideoId, (error, item) => res.send({ error, item })));
 
     app.post('/api/list-video', app.permission.check('component:write'), (req, res) =>
-        app.model.listVideo.create({ title: req.body.title, items: [] }, (error, item) => res.send({ error, item })));
+        app.model.listVideo.create(req.body.newData, (error, item) => res.send({ error, item })));
 
     app.put('/api/list-video', app.permission.check('component:write'), (req, res) => {
         const changes = req.body.changes;

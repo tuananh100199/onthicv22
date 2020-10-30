@@ -3,9 +3,6 @@ import T from '../../../view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
 const VideoGetPage = 'Video:GetPage';
 const VideoUpdate = 'Video:Update';
-console.log("from ReduxVideo");
-
-
 export default function videoReducer(state = null, data) {
     switch (data.type) {
         case VideoGetPage:
@@ -28,6 +25,20 @@ export default function videoReducer(state = null, data) {
 }
 
 // ADMIN --------------------------------------------------------------------------------------------------------------------------------------------
+export function getAllVideos(condition, done) {
+    return dispatch => {
+        const url = '/api/video/all';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách video bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.items);
+            }
+        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
+    }
+}
+
 T.initCookiePage('adminVideo');
 export function getVideoInPage(pageNumber, pageSize, done) {
     const page = T.updatePage('adminVideo', pageNumber, pageSize);
@@ -55,7 +66,7 @@ export function createVideo(video, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getVideoInPage());
-                if (done) done(data);
+                if (done) done(data.item);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
     }
@@ -70,14 +81,14 @@ export function updateVideo(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Cập nhật thông tin video thành công!', 'info');
-                done && done();
+                done && done(data.video);
                 dispatch(getVideoInPage());
             }
         }, error => T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));
     }
 }
 
-export function deleteVideo(_id) {
+export function deleteVideo(_id, done) {
     return dispatch => {
         const url = '/api/video';
         T.delete(url, { _id }, data => {
@@ -86,6 +97,7 @@ export function deleteVideo(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Video được xóa thành công!', 'error', false, 800);
+                done && done();
                 dispatch(getVideoInPage());
             }
         }, error => T.notify('Xóa video bị lỗi!', 'danger'));

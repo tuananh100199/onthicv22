@@ -61,7 +61,7 @@ class ComponentPage extends React.Component {
                     <div className='tab-pane fade' id='menuLogo'><LogoPage /></div>
                     <div className='tab-pane fade' id='menuTestimony'><TestimonyPage /></div>
                     <div className='tab-pane fade' id='menuStaffGroup'><StaffGroupPage /></div>
-                    <div className='tab-pane fade' id='menuListVideo'><ListVideoPage /></div>
+                    <div className='tab-pane fade' id='menuListVideo'><ListVideoPage history={this.props.history}/></div>
 
                 </div>
             </main>

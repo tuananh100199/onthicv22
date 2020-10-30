@@ -1,13 +1,14 @@
 module.exports = app => {
-    console.log("4");
-
-    app.get('/api/video/all', app.permission.check('component:read'), (req, res) =>
-        app.model.video.getAll((error, items) => res.send({ error, items })));
+    app.get('/api/video/all', app.permission.check('component:read'), (req, res) => {
+        const condition = req.query.condition || {};
+        app.model.video.getAll(condition, (error, items) => res.send({ error, items }))
+    });
 
     app.get('/api/video/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.video.getPage(pageNumber, pageSize, {}, (error, page) => res.send({ error, page }));
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.condition || { listVideoId: { $exists: false }};
+        app.model.video.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     });
 
     app.post('/api/video', app.permission.check('component:write'), (req, res) => app.model.video.create(req.body.data, (error, video) => {

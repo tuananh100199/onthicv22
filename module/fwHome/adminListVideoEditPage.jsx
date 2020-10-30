@@ -1,29 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getListVideoItem, updateListVideo, addVideoIntoList, updateVideoInList, removeVideoFromList, swapVideoInList } from './redux/reduxListVideo.jsx';
+import { getListVideoItem, updateListVideo } from './redux/reduxListVideo.jsx';
+import { getAllVideos, createVideo, updateVideo, deleteVideo } from './redux/reduxVideo.jsx';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
 import ImageBox from '../../view/component/ImageBox.jsx';
-import { lineBreak } from 'acorn';
-
-const texts = {
-    vi: {
-        getListVideoError: 'Lấy danh sách bị lỗi!',
-    },
-    en: {
-        getListVideoError: 'Failed to get list of videos!'
-    }
-}
-const language = T.language(texts);
 
 class VideoModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-
+        this.state = { item: {}};
         this.modal = React.createRef();
-        this.editor = React.createRef();
-        this.btnSave = React.createRef();
+        this.imageBox = React.createRef();
     }
 
     componentDidMount() {
@@ -32,29 +19,20 @@ class VideoModal extends React.Component {
         }, 250));
     }
 
-    show = (selectedItem, index) => {
+    show = (selectedItem) => {
         let {  _id, title, link, image } = selectedItem ? selectedItem : { _id: null, title: '', link: '', image: '' };
-        title = T.language.parse(title, true);
-
-        $(this.btnSave.current).data('id', _id);
-        $('#videoTitle').val(title.vi);
+        $('#videoTitle').val(title);
         $('#videoLink').val(link);
-
-        $(this.btnSave.current).data('isNewMember', selectedItem == null).data('index', index);
-
-        // this.imageBox.current.setData('video:' + (_id ? _id : 'new'));
+        this.imageBox.current.setData('video:' + (_id ? _id : 'new'), image || '/img/avatar.jpg');
+        this.setState({ item: selectedItem })
         $(this.modal.current).modal('show');
     }
-    hide = () => {
-        $(this.modal.current).modal('hide');
-    }
-
+    
     save = (event) => {
-        const _id = $(this.btnSave.current).data('id'),
-            changes = {
-                title: $('#videoTitle').val().trim(),
-                link: $('#videoLink').val().trim(),
-            };
+        const changes = {
+            title: $('#videoTitle').val().trim(),
+            link: $('#videoLink').val().trim(),
+        };
         if (changes.title == '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
             $('#videoViTitle').focus();
@@ -62,11 +40,8 @@ class VideoModal extends React.Component {
             T.notify('Link video bị trống!', 'danger');
             $('#videoLink').focus();
         } else {
-            changes.title = JSON.stringify(changes.title);
-            changes.link = JSON.stringify(changes.link);
-
-            if (_id) {
-                this.props.updateVideo(_id, changes, () => {
+            if (this.state.item._id) {
+                this.props.updateVideo(this.state.item._id, changes, () => {
                     $(this.modal.current).modal('hide');
                 });
             } else { // Create
@@ -77,23 +52,7 @@ class VideoModal extends React.Component {
         }
         event.preventDefault();
     }
-    // save = (event) => {
-    //     const btnSave = $(this.btnSave.current),
-    //         isNewMember = btnSave.data('isNewMember'),
-    //         index = btnSave.data('index'),
-    //         title = {
-    //             vi: $('#videoTitle').val(),
-    //         };
-        
-
-    //     if (isNewMember) {
-    //         this.props.addVideo(JSON.stringify(title), number);
-    //     } else {
-    //         this.props.updateVideo(index, JSON.stringify(title), number);
-    //     }
-    //     event.preventDefault();
-    // }
-
+    
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
@@ -151,33 +110,21 @@ class VideoModal extends React.Component {
 class ListVideoEditPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { item: {} };
+        this.state = { item: {}, items: [] };
         this.modal = React.createRef();
-        this.editor = { vi: React.createRef(), en: React.createRef() };
-        this.image = React.createRef();
     }
 
     componentDidMount() {
         T.ready('/user/component', () => {
-         const list = 
-         {  
-            "title": "danh sách 22",
-            "items": {  
-               "title": "California",
-               "link": "https://www.youtube.com/watch?v=BqvCD24PILw",
-            }
-         };
-            const route = T.routeMatcher('/user/list-video/edit/:listVideoId'),
-                params = route.parse(window.location.pathname);
-
+            const route = T.routeMatcher('/user/list-video/edit/:listVideoId'), params = route.parse(window.location.pathname);
             this.props.getListVideoItem(params.listVideoId, data => {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    // console.log(data.item)
-                    const title = T.language.parse(data.item.title, true);
-                    $('#tepViTitle').val(title.vi).focus();
-                    this.setState({ item : data.item });
+                    $('#tepViTitle').val(data.item.title).focus();
+                    this.props.getAllVideos({ listVideoId: data.item._id }, (items) => {
+                        this.setState({ item : data.item, items });
+                    })
                 } else {
                     this.props.history.push('/user/component');
                 }
@@ -189,27 +136,50 @@ class ListVideoEditPage extends React.Component {
         this.setState({ image: data.image });
     };
 
-    showAddVideoModal = () => {
+    showAddVideoModal = (e) => {
         this.modal.current.show();
-    };
-
-    showEditVideoModal = (e, selectedVideo, index) => {
-        this.modal.current.show(selectedVideo, index);
         e.preventDefault();
     };
 
-    add = (title, link, image) => {
-        this.props.addVideoIntoList(title, number);
-        this.modal.current.hide();
+    showEditVideoModal = (e, selectedVideo) => {
+        this.modal.current.show(selectedVideo);
+        e.preventDefault();
     };
 
-    update = (index, title, link) => {
-        this.props.updateVideoInList(index, title, link);
-        this.modal.current.hide();
+    add = (newData, done) => {
+        newData.listVideoId = this.state.item._id;
+        this.props.createVideo(newData, newVideo => {
+            let items = this.state.items;
+            items.push(newVideo);
+            this.setState({ items }, done);
+        });
     };
 
-    remove = (e, index) => {
-        this.props.removeVideoFromList(index);
+    update = (_id, changes, done) => {
+        this.props.updateVideo(_id, changes, editedVideo => {
+            let items = this.state.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i]._id == _id) {
+                    items.splice(i, 1, editedVideo);
+                }
+            }
+            
+            this.setState({ items }, done);
+        });
+    };
+
+    remove = (e, _id) => {
+        T.confirm('Xoá video', 'Bạn có chắc muốn xoá video này?', 'info', isConfirm => {
+            isConfirm && this.props.deleteVideo(_id, () => {
+                let items = this.state.items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i]._id == _id) {
+                        items.splice(i, 1);
+                    }
+                }
+                this.setState({ items });
+            });
+        })
         e.preventDefault();
     };
 
@@ -219,20 +189,14 @@ class ListVideoEditPage extends React.Component {
     }
 
     save = () => {
-        const title = {
-            vi: $('#tepViTitle').val().trim(),
+        const changes = {
+            title: $('#tepViTitle').val().trim(),
         };
 
-        if (title.vi === '') {
+        if (changes.title == '') {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#statisticViName').focus();
         }  else {
-            const changes = {
-                title: JSON.stringify(title),
-                // description: JSON.stringify(description),
-                items: this.state.item.items || [],
-            };
-            if (changes.items && changes.items.length == 0) changes.items = 'empty';
             this.props.updateListVideo(this.state.item._id, changes);
         }
     };
@@ -241,8 +205,7 @@ class ListVideoEditPage extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
         let table = null, currentVideo = this.state.item || {};
-
-        if (currentVideo && currentVideo.items && currentVideo.items.length > 0) {
+        if (this.state.items && this.state.items.length) {
             table = (
                 <table className='table table-hover table-bordered' ref={this.table}>
                     <thead>
@@ -255,20 +218,18 @@ class ListVideoEditPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentVideo.items.map((item, index) => {
-                            console.log(item)
-                            const title = T.language.parse(item.title, true);
+                        {this.state.items.map((item, index) => {
                             return (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>
-                                        {readOnly ? title.vi : <a href='#' onClick={e => this.showEditVideoModal(e, item, index)}>{title.vi}</a>}
+                                        {readOnly ? item.title : <a href='#' onClick={e => this.showEditVideoModal(e, item)}>{item.title}</a>}
                                     </td>
                                     <td>
                                         <a href={item.link} target='_blank'>{item.link}</a>
                                      </td>
                                     <td style={{ textAlign: 'center' }}>
-                                        <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
+                                        <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
                                     </td>
                                     {readOnly ? null :
                                         <td>
@@ -279,10 +240,10 @@ class ListVideoEditPage extends React.Component {
                                                 <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
                                                     <i className='fa fa-lg fa-arrow-down' />
                                                 </a>
-                                                <a className='btn btn-primary' href='#' onClick={e => this.showEditVideoModal(e, item, index)}>
+                                                <a className='btn btn-primary' href='#' onClick={e => this.showEditVideoModal(e, item)}>
                                                     <i className='fa fa-lg fa-edit' />
                                                 </a>
-                                                <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
+                                                <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
                                                     <i className='fa fa-lg fa-trash' />
                                                 </a>
                                             </div>
@@ -348,12 +309,11 @@ class ListVideoEditPage extends React.Component {
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-
                 <VideoModal ref={this.modal} addVideo={this.add} updateVideo={this.update} />
             </main>
         );
     }
 }
 const mapStateToProps = state => ({ system: state.system, video: state.video });
-const mapActionsToProps = { getListVideoItem, updateListVideo, addVideoIntoList, updateVideoInList, removeVideoFromList, swapVideoInList };
+const mapActionsToProps = { getListVideoItem, updateListVideo, getAllVideos, createVideo, updateVideo, deleteVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoEditPage);
