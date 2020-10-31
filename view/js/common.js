@@ -11,7 +11,7 @@ const T = {
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
         '<empty>',
-        'all events',
+        'all news',
         'all staffs',
         'carousel',
         'contact',

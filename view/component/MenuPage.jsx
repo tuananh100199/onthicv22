@@ -46,7 +46,10 @@ export default class MenuPage extends React.Component {
                 itemView = <fwContact.Section.SectionContact />;
             } else if (item.viewType == 'last news') {
                 itemView = <fwNews.Section.SectionNews />;
-            } else if (item.viewType == 'content' && item.view) {
+            } else if (item.viewType == 'all news') {
+                itemView = <fwNews.Section.SectionNewsList />;
+            }
+            else if (item.viewType == 'content' && item.view) {
                 itemView = <div dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
             }
 

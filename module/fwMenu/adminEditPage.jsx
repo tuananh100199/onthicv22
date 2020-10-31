@@ -142,7 +142,7 @@ class MenuEditPage extends React.Component {
                 mainStyle.backgroundColor = '#b388ff';
             } else if (component.viewType == 'logo') {
                 mainStyle.backgroundColor = '#ef9a9a';
-            } else if (component.viewType == 'all events') {
+            } else if (component.viewType == 'all news') {
                 mainStyle.backgroundColor = '#82b1ff';
                 component.viewName = '';
             } else if (component.viewType == 'slogan') {
