@@ -40,7 +40,7 @@ class NewsDetail extends React.Component {
                 </div>
             );
             return (
-                <section className='row'>
+                <section className='row mr-0'>
                     <div className='col-12 col-md-8'>
                         <div className='course--content' data-aos='fade-up'>
                             <div className='clever-description p-2'>
@@ -53,7 +53,7 @@ class NewsDetail extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className='col-12 col-md-4' data-aos='fade-up'>
+                    <div className='col-12 col-md-4 mr-0' data-aos='fade-up'>
                         <SectionNews />
                     </div>
                 </section>

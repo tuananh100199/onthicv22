@@ -7,12 +7,12 @@ class SectionNews extends React.Component {
     componentDidMount() {
         this.props.getNewsFeed();
     }
-    
+
     // handleClickExpand = () => {
     //     console.log(this.props.news)
     //
     // }
-    
+
     render() {
         let news = null;
         if (this.props.news && this.props.news.newsFeed) {
@@ -24,7 +24,7 @@ class SectionNews extends React.Component {
                             <div className='row'>
                                 <div style={{ width: '150px', padding: '15px' }}>
                                     <Link to={link}>
-                                        <img src={`${item.image}`} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid'/>
+                                        <img src={`${item.image}`} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                                     </Link>
                                 </div>
                                 <div style={{ width: 'calc(100% - 150px)', paddingRight: '15px' }}>
