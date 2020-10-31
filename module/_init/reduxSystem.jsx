@@ -6,7 +6,7 @@ export default function systemReducer(state = null, data) {
     switch (data.type) {
         case UPDATE_SYSTEM_STATE:
             return Object.assign({}, state, data.state);
-            
+
         default:
             return state;
     }
