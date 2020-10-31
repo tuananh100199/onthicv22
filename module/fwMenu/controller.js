@@ -252,7 +252,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-        } else if (pageType == ' news') {
+        } else if (pageType == 'event') {
             app.model.event.getAll((error, items) => {
                 res.send({
                     error,

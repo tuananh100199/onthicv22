@@ -52,7 +52,7 @@ class NewsListView extends React.Component {
           <div className="col-md-6 col-lg-4 mb-4" key={index}>
             <div className="post-entry h-100">
               <div className="image">
-                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '256px', height: '215PX' }} />
+                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '256px', height: '215px' }}/>
               </div>
               <div className="text p-4">
                 <h2 className="h5 text-black"><Link to={link}>{T.language.parse(item.title)}</Link></h2>
@@ -64,7 +64,6 @@ class NewsListView extends React.Component {
         );
       });
     }
-    
 
     if (userPage && userPage.pageNumber < userPage.pageTotal) {
       elements.push(
