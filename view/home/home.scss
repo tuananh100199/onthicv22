@@ -802,6 +802,7 @@ label {
 
 .border-test{
   border: 10px black solid;
+  width: 100%;
 }
 .news-title{
   padding-left: 15px;
@@ -815,17 +816,28 @@ label {
   position: absolute;
   top: 80px;
 }
-.view-btn{
-  float: right;
-  cursor: pointer;
-}
+
 .viewmode-btn{
   bottom: 0px;
-  border: none;
   cursor: pointer;
   width: 70px;
-  float: right;
+  border: 1px solid black;
 }
+.actived,.btn-icon:hover{
+  color: white;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+.btn-icon:focus,.btn-icon:hover {
+  outline:none;
+  box-shadow: none;
+}
+.btn-group{
+  margin-left: 92%;
+}
+
+
+
 
 
 

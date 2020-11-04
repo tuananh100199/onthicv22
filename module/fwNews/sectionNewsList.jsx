@@ -47,14 +47,19 @@ class NewsListView extends React.Component {
       }
     });
   }
-  handleClickView = () => {
-    (this.state.viewMode == 'list')
-      ? this.setState({
-        viewMode: 'grid'
-      })
-      : this.setState({
-        viewMode: 'list'
-      })
+  // handleClickView = () => {
+  //   (this.state.viewMode == 'list')
+  //     ? this.setState({
+  //       viewMode: 'grid'
+  //     })
+  //     : this.setState({
+  //       viewMode: 'list'
+  //     })
+  // }
+  setViewMode = (e, viewmode) => {
+    this.setState({
+      viewMode: viewmode
+    })
   }
   render() {
     let userPage = this.props.news ? this.props.news.userPage : null,
@@ -71,7 +76,7 @@ class NewsListView extends React.Component {
               </div>
               <div className="text p-4">
                 <h2 className="h5 text-black"><Link to={link}>{T.language.parse(item.title)}</Link></h2>
-                <span className="text-uppercase date d-block mb-3"><small>{new Date(item.createdDate).getText()}</small></span>
+                {/* <span className="text-uppercase date d-block mb-3"><small>{new Date(item.createdDate).getText()}</small></span> */}
                 <p className="mb-0">{T.language.parse(item.abstract)}</p>
               </div>
             </div>
@@ -114,13 +119,15 @@ class NewsListView extends React.Component {
 
     return (
       <section>
-        <div className="site-section">
-          <div className="container">
-            <button className='viewmode-btn' onClick={this.handleClickView}>{(this.state.viewMode=='list')?'Grid view':'List View'}</button>
-            <div className="row mb-5">
-              {(this.state.viewMode == 'list') ? elements_list : elements_grid}
-            </div>
+        <div style={{width:'100%'}}>
+          <div className="btn-group" role="group">
+            <button className={"btn btn-secondary btn-icon " + (this.state.viewMode == "grid" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "grid")}><i class="fa fa-th" aria-hidden="true"></i></button>
+            <button className={"btn btn-secondary btn-icon " + (this.state.viewMode == "list" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "list")}><i class="fa fa-bars" aria-hidden="true"></i></button>
+            {/* <button className='viewmode-btn' onClick={this.handleClickView}>{(this.state.viewMode == 'list') ? 'Grid view' : 'List View'}</button> */}
           </div>
+        </div>
+        <div className="row mb-5">
+          {(this.state.viewMode == 'list') ? elements_list : elements_grid}
         </div>
       </section>
     );
