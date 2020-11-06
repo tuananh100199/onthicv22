@@ -48,6 +48,7 @@ class HomeMenu extends React.Component {
     render() {
         let menus = [];
         if (this.props.system && this.props.system.menus) {
+            console.log(this.props)
             menus = this.props.system.menus.map((item, index) => {
                 if (typeof item.length === 'number') {
                     return null;

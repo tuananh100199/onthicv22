@@ -72,12 +72,12 @@ class NewsListView extends React.Component {
           <div className="col-md-6 col-lg-4 mb-4 mt-2" key={index}>
             <div className="post-entry h-100">
               <div className="image">
-                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '256px', height: '215px' }} />
+                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '350px', height: 'auto' }} />
               </div>
               <div className="text p-4">
                 <h2 className="h5 text-black"><Link to={link}>{T.language.parse(item.title)}</Link></h2>
                 {/* <span className="text-uppercase date d-block mb-3"><small>{new Date(item.createdDate).getText()}</small></span> */}
-                <p className="mb-0">{T.language.parse(item.abstract)}</p>
+                <p className="mb-0 grid-abstract">{T.language.parse(item.abstract)}</p>
               </div>
             </div>
           </div>
