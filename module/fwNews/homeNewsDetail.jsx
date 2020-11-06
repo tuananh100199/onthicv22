@@ -74,7 +74,10 @@ class NewsDetail extends React.Component {
                                 </div>
                             </div>
                             <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
-                                <SectionNews />
+                                <div className='sidebar-widget'>
+                                    <SectionNews />
+                                </div>
+
                             </div>
                         </div>
                     </div>

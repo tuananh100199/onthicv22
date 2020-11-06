@@ -14,20 +14,21 @@ class SectionNews extends React.Component {
     // }
 
     render() {
+        let num_news = 4;
         let news = null;
         if (this.props.news && this.props.news.newsFeed) {
             news = this.props.news.newsFeed.map((item, index) => {
-                if (index < 4) {
+                if (index < num_news) {
                     const link = item.link ? '/tintuc/' + item.link : '/news/item/' + item._id;
                     return (
                         <div key={index}>
-                            <div className={'row'+(index < this.props.news.newsFeed.length-1 ? ' border-bottom' : '')}>
-                                <div style={{ width: '150px', padding: '15px' }}>
+                            <div className='row ml-0'>
+                                <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={(index < num_news-1 ? ' border-bottom' : '')}>
                                     <Link to={link}>
                                         <img src={`${item.image}`} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                                     </Link>
                                 </div>
-                                <div style={{ width: 'calc(100% - 150px)', paddingRight: '15px' }}>
+                                <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < num_news-1 ? ' border-bottom' : '')}>
                                     <div className='text'>
                                         <div className='text-inner'>
                                             <h2 className='heading pb-0 mb-0'>
@@ -45,8 +46,8 @@ class SectionNews extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <div className='text-left pl-4 mb-1' style={{ backgroundColor: '#4d983c' }}>
-                    <h2 className='text-white'>Tin Tức Mới Nhất</h2>
+                <div className='text-left pl-4 mb-1 py-1' style={{ backgroundColor: '#4d983c' }}>
+                    <h3 className='text-white'>Tin Tức Mới Nhất</h3>
                 </div>
                 <div>
                     {news}
