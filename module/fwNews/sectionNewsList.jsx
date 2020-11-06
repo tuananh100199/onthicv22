@@ -69,14 +69,16 @@ class NewsListView extends React.Component {
       elements_grid = userPage.list.map((item, index) => {
         const link = item.link ? linkFormat + item.link : idFormat + item._id;
         return (
-          <div className="col-md-6 col-lg-4 mb-4 mt-2" key={index}>
-            <div className="post-entry h-100">
+          <div className="col-md-6 col-lg-4 mb-2 mt-2" key={index}>
+            <div className="post-entry h-100 single-popular-course mb-100">
               <div className="image">
-                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '350px', height: 'auto' }} />
+                <Link to={link}>
+                  <img src={item.image} alt="Image" className="img-fluid" style={{ width: '350px', height: 'auto' }} />
+                </Link>
               </div>
               <div className="text p-4">
                 <h2 className="h5 text-black"><Link to={link}>{T.language.parse(item.title)}</Link></h2>
-                {/* <span className="text-uppercase date d-block mb-3"><small>{new Date(item.createdDate).getText()}</small></span> */}
+                <span className="text-uppercase date d-block mb-3"><small>{new Date(item.createdDate).getText()}</small></span>
                 <p className="mb-0 grid-abstract">{T.language.parse(item.abstract)}</p>
               </div>
             </div>
@@ -87,7 +89,7 @@ class NewsListView extends React.Component {
         const link = item.link ? linkFormat + item.link : idFormat + item._id;
         return (
           <div className='col-12' key={index}>
-            <div className='row view-list'>
+            <div className={'row view-list' + (index < userPage.list.length-1 ? ' border-bottom' : '')}>
               <div style={{ width: '150px', padding: '15px' }}>
                 <Link to={link}>
                   <img src={`${item.image}`} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
@@ -119,10 +121,10 @@ class NewsListView extends React.Component {
 
     return (
       <section>
-        <div style={{width:'100%'}}>
+        <div className='mb-15' style={{ width: '100%' }}>
           <div className="btn-group" role="group">
-            <button className={"btn btn-secondary btn-icon " + (this.state.viewMode == "grid" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "grid")}><i class="fa fa-th" aria-hidden="true"></i></button>
             <button className={"btn btn-secondary btn-icon " + (this.state.viewMode == "list" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "list")}><i class="fa fa-bars" aria-hidden="true"></i></button>
+            <button className={"btn btn-secondary btn-icon " + (this.state.viewMode == "grid" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "grid")}><i class="fa fa-th" aria-hidden="true"></i></button>
             {/* <button className='viewmode-btn' onClick={this.handleClickView}>{(this.state.viewMode == 'list') ? 'Grid view' : 'List View'}</button> */}
           </div>
         </div>

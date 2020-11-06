@@ -836,6 +836,13 @@ label {
   margin-left: 92%;
 }
 
+.border-bot-list{
+  border-bottom: 1px solid black;
+}
+.border-bot-list:nth-last-child(){
+  border: none;
+}
+
 
 
 

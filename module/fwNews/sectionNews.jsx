@@ -21,7 +21,7 @@ class SectionNews extends React.Component {
                     const link = item.link ? '/tintuc/' + item.link : '/news/item/' + item._id;
                     return (
                         <div key={index}>
-                            <div className='row'>
+                            <div className={'row'+(index < this.props.news.newsFeed.length-1 ? ' border-bottom' : '')}>
                                 <div style={{ width: '150px', padding: '15px' }}>
                                     <Link to={link}>
                                         <img src={`${item.image}`} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
