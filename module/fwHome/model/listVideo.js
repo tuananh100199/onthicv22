@@ -2,7 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String
     });
-    
+
     const model = app.db.model('ListVideo', schema);
 
     app.model.listVideo = {
@@ -36,5 +36,6 @@ module.exports = app => {
                 videoList.remove(done);
             }
         }),
+
     };
 };

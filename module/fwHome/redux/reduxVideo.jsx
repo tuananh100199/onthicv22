@@ -88,6 +88,19 @@ export function updateVideo(_id, changes, done) {
     }
 }
 
+export function swapVideo(_id, isMoveUp, done) {
+    return dispatch => {
+        const url = '/api/video/item/swap/';
+        T.put(url, { _id, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Swap video item failed!', 'danger')
+                console.error('PUT: ' + url + '. ' + data.error);
+            }
+            done && done()
+        }, error => T.notify('Swap video item failed!', 'danger'));
+    }
+}
+
 export function deleteVideo(_id, done) {
     return dispatch => {
         const url = '/api/video';

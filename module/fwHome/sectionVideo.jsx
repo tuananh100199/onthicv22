@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getVideo } from './redux/reduxVideo.jsx';
-console.log("from SectionVideo");
-
 
 class SectionVideo extends React.Component {
     state = {};

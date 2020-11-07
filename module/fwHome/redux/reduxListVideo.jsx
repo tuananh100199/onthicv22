@@ -6,7 +6,6 @@ const ListVideoUpdate = 'ListVideo:Update';
 const ListVideoAddItem = 'ListVideo:AddItem';
 const ListVideoUpdateItem = 'ListVideo:UpdateItem';
 const ListVideoRemoveItem = 'ListVideo:RemoveItem';
-const ListVideoSwapItems = 'ListVideo:SwapItems';
 
 export default function listVideoReducer(state = null, data) {
     switch (data.type) {
@@ -46,19 +45,6 @@ export default function listVideoReducer(state = null, data) {
             }
             return state;
 
-        case ListVideoSwapItems:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                const statistic = state.item.items[data.index];
-                if (data.isMoveUp && data.index > 0) {
-                    state.item.items.splice(data.index, 1);
-                    state.item.items.splice(data.index - 1, 0, statistic);
-                } else if (!data.isMoveUp && data.index < state.item.items.length - 1) {
-                    state.item.items.splice(data.index, 1);
-                    state.item.items.splice(data.index + 1, 0, statistic);
-                }
-            }
-            return state;
 
         case ListVideoUpdate:
             state = Object.assign({}, state);
@@ -174,6 +160,7 @@ export function getListVideoItem(_id, done) {
                 console.error('GET: ' + url + '. ' + data.error);
             }
             if (done) done(data);
+
         }, error => T.notify(texts.getListVideoError, 'danger'));
     }
 }
@@ -190,9 +177,6 @@ export function removeVideoFromList(index) {
     return { type: ListVideoRemoveItem, index };
 }
 
-export function swapVideoInList(index, isMoveUp) {
-    return { type:  ListVideoSwapItems, index, isMoveUp };
-}
 
 
 export function getListVideoByUser(_id, done) {
@@ -214,13 +198,13 @@ export function createListVideoItem(data, done) {
         const url = '/api/list-video/item';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Create carousel item failed!', 'danger');
+                T.notify('Create list video item failed!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getCarousel(data.item.listVideoId));
+                dispatch(getAllListVideo(data.item.listVideoId));
                 if (done) done(data);
             }
-        }, error => T.notify('Create carousel item failed!', 'danger'));
+        }, error => T.notify('Create list video item failed!', 'danger'));
     }
 }
 
@@ -229,14 +213,14 @@ export function updateListVideoItem(_id, changes, done) {
         const url = '/api/list-video/item';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Update carousel item failed!', 'danger');
+                T.notify('Update list video item failed!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Update carousel item successful!', 'info');
-                dispatch(getCarousel(data.item.listVideoId));
+                T.notify('Update list video item successful!', 'info');
+                dispatch(getAllListVideo(data.item.listVideoId));
                 if (done) done();
             }
-        }, error => T.notify('Update carousel item failed!', 'danger'));
+        }, error => T.notify('Update list video item failed!', 'danger'));
     }
 }
 
@@ -245,12 +229,12 @@ export function swapListVideoItem(_id, isMoveUp) {
         const url = '/api/list-video/item/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Swap carousel item failed!', 'danger')
+                T.notify('Swap list video item failed!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                dispatch(getCarousel(data.item1.listVideoId));
+                dispatch(getAllListVideo(data.item1.listVideoId));
             }
-        }, error => T.notify('Swap carousel item failed!', 'danger'));
+        }, error => T.notify('Swap list video item failed!', 'danger'));
     }
 }
 
@@ -263,9 +247,9 @@ export function deleteListVideoItem(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Hình ảnh được xóa thành công!', 'error', false, 800);
-                dispatch(getCarousel(data.listVideoId));
+                dispatch(getAllListVideo(data.listVideoId));
             }
-        }, error => T.notify('Delete carousel item failed!', 'danger'));
+        }, error => T.notify('Delete list video item failed!', 'danger'));
     }
 }
 

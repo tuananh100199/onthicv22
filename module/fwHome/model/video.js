@@ -29,7 +29,7 @@ module.exports = app => {
                     }
                 });
             }
-            
+
             if (data.listVideoId) {
                 model.find({ listVideoId: data.listVideoId }).sort({ priority: -1 }).limit(1).exec((error, items) => {
                     data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
@@ -59,6 +59,31 @@ module.exports = app => {
         get: (_id, done) => model.findById(_id, done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+
+        swapPriority: (_id, isMoveUp, done) => model.findOne({ _id }, (error, item1) => {
+            if (error || item1 === null) {
+                done('Invalid carousel item Id!');
+            } else {
+                model.find({
+                    carouselId: item1.carouselId,
+                    priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority }
+                }).sort({
+                    priority: isMoveUp ? 1 : -1
+                }).limit(1).exec((error, list) => {
+                    if (error) {
+                        done(error);
+                    } else if (list == null || list.length === 0) {
+                        done(null);
+                    } else {
+                        let item2 = list[0],
+                            priority = item1.priority;
+                        item1.priority = item2.priority;
+                        item2.priority = priority;
+                        item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2, item1, item2)));
+                    }
+                });
+            }
+        }),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

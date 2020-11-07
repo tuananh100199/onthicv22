@@ -261,6 +261,13 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
+        } else if (pageType == 'list video') {
+            app.model.listVideo.getAll((error, items) => {
+                res.send({
+                    error,
+                    items: items.map(item => ({ _id: item._id, text: item.title }))
+                })
+            });
         } else {
             res.send({ error: 'Lỗi!' });
         }

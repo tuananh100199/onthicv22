@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListVideoItem, updateListVideo } from './redux/reduxListVideo.jsx';
-import { getAllVideos, createVideo, updateVideo, deleteVideo } from './redux/reduxVideo.jsx';
+import { getAllVideos, createVideo, updateVideo, deleteVideo ,swapVideo} from './redux/reduxVideo.jsx';
 import { Link } from 'react-router-dom';
 import ImageBox from '../../view/component/ImageBox.jsx';
 
@@ -30,7 +30,6 @@ class VideoModal extends React.Component {
     }
     
     save = (event) => {
-        console.log(this.state.item)
         const changes = {
             title: $('#videoTitle').val().trim(),
             link: $('#videoLink').val().trim(),
@@ -79,13 +78,13 @@ class VideoModal extends React.Component {
 
                                 <div className='col-12'>
                                     <div className='form-group col-12'>
-                                        <label htmlFor='videoLink'>Link</label>
+                                        <label htmlFor='videoLink'>Đường dẫn</label>
                                         <input className='form-control' id='videoLink' type='text' placeholder='Link' />
                                    
                                     </div>
                                 </div>
                              
-                                <div className='col-6'>
+                                <div className='col-12'>
                                     <div className='form-group  col-12'>
                                         <label>Hình đại diện</label>
                                         <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image}  />
@@ -107,7 +106,7 @@ class VideoModal extends React.Component {
             </div>
         );
     }
-}
+}  
 
 class ListVideoEditPage extends React.Component {
     constructor(props) {
@@ -124,7 +123,7 @@ class ListVideoEditPage extends React.Component {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
                     $('#tepViTitle').val(data.item.title).focus();
-                    this.props.getAllVideos({ listVideoId: data.item._id }, (items) => {
+                    this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
                         this.setState({ item : data.item, items });
                     })
                 } else {
@@ -184,11 +183,25 @@ class ListVideoEditPage extends React.Component {
         })
         e.preventDefault();
     };
-
-    swap = (e, index, isMoveUp) => {
-        this.props.swapVideoInList(index, isMoveUp);
+    
+    swap = (e,item, index, isMoveUp,done) => {
+        this.props.swapVideo(item._id, isMoveUp, () => {
+            if (this.state && this.state.item) {
+                let items = this.state.items;
+                const video = items[index];
+                if (isMoveUp && index > 0) {
+                    items.splice(index, 1);
+                    items.splice(index - 1, 0, video);
+                } else if (!isMoveUp && index < items.length - 1) {
+                    items.splice(index, 1);
+                   items.splice(index + 1, 0, video);
+                }
+            this.setState({ items }, done);
+            }
+        })
+        
         e.preventDefault();
-    }
+    };
 
     save = () => {
         const changes = {
@@ -207,7 +220,6 @@ class ListVideoEditPage extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
         let table = null, currentVideo = this.state.item || {};
-        console.log(this.state.items)
         if (this.state.items && this.state.items.length) {
             table = (
                 <table className='table table-hover table-bordered' ref={this.table}>
@@ -237,10 +249,10 @@ class ListVideoEditPage extends React.Component {
                                     {readOnly ? null :
                                         <td>
                                             <div className='btn-group'>
-                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
+                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, true)}>
                                                     <i className='fa fa-lg fa-arrow-up' />
                                                 </a>
-                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
+                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, false)}>
                                                     <i className='fa fa-lg fa-arrow-down' />
                                                 </a>
                                                 <a className='btn btn-primary' href='#' onClick={e => this.showEditVideoModal(e, item)}>
@@ -288,6 +300,13 @@ class ListVideoEditPage extends React.Component {
                                         <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='tepViTitle' defaultValue={title.vi} readOnly={readOnly} />
                                     </div>
                                 </div>
+                                <div className="row">
+                                    <div className="col-md-12 mb-3"  style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={this.save}>
+                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
+                                    </button>
+                                    </div>
+                                </div>
                             </div>
                             <div className='form-group'>
                                 {table}
@@ -299,10 +318,7 @@ class ListVideoEditPage extends React.Component {
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-info' type='button' onClick={this.showAddVideoModal}>
                                             <i className='fa fa-fw fa-lg fa-plus' />Thêm video
-                                    </button>&nbsp;
-                                    <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
-                                    </button>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -318,5 +334,5 @@ class ListVideoEditPage extends React.Component {
     }
 }
 const mapStateToProps = state => ({ system: state.system, video: state.video });
-const mapActionsToProps = { getListVideoItem, updateListVideo, getAllVideos, createVideo, updateVideo, deleteVideo };
+const mapActionsToProps = { getListVideoItem, updateListVideo, getAllVideos, createVideo, updateVideo, deleteVideo,swapVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoEditPage);
