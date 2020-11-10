@@ -44,7 +44,7 @@ class SectionListVideo extends React.Component {
     }
     
     render() {
-        let listVideo = Object.assign({color: 'white',height: '228px', overflowY: 'scroll', border: '1px solid #ccc'});
+        let listVideo = Object.assign({color: 'white',height: '230px', overflowY: 'scroll', border: '1px solid #ccc'});
         let noPadding = Object.assign({ padding: '0', margin: '0' });
         let videoTitle = Object.assign({ backgroundColor: 'green', color: 'white', padding: '5px' });
         let arr = this.state.items;
@@ -67,15 +67,15 @@ class SectionListVideo extends React.Component {
                     <div className="row">
                         <div className="col-md-9" style={noPadding}>
                             {firstItem.map((item, index) => (
-                                <div height="100%" key={index}>
-                                    <a height="100%" href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'>
-                                        <img  height="100%" src= {`${item.image}`} />
+                                <div key={index} style={{height: "100%"}}>
+                                    <a href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'>
+                                        <img style={{height: "230px"}} src= {`${item.image}`} />
                                     </a>
                                 </div>   
-                                ))}  
+                                ))}     
                         </div>              
                         <div className="col-md-3" style={noPadding}>
-                            <div style = {listVideo}>
+                            <div style = {listVideo} >
                                 {arr.map((item, index) => (
                                     <div key={index}>
                                         <div height="100%">
