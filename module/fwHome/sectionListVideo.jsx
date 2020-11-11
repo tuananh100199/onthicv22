@@ -44,9 +44,9 @@ class SectionListVideo extends React.Component {
     }
     
     render() {
-        let listVideo = Object.assign({color: 'white',height: '230px', overflowY: 'scroll', border: '1px solid #ccc'});
+        let listVideo = Object.assign({color: 'white',height: '230px', overflowY: 'scroll',margin: "5px 0"});
         let noPadding = Object.assign({ padding: '0', margin: '0' });
-        let videoTitle = Object.assign({ backgroundColor: 'green', color: 'white', padding: '5px' });
+        let videoTitle = Object.assign({ backgroundColor: '#4D983C', color: 'white', padding: '5px', marginBottom: '20px' });
         let arr = this.state.items;
         let firstItem = [];
         if (arr){
@@ -64,10 +64,10 @@ class SectionListVideo extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row" style={{ padding: "5px", border: "1px solid #ccc"}}>
                         <div className="col-md-9" style={noPadding}>
                             {firstItem.map((item, index) => (
-                                <div key={index} style={{height: "100%"}}>
+                                <div key={index} style={{height: "100%", padding: "5px"}}>
                                     <a href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'>
                                         <img style={{height: "230px"}} src= {`${item.image}`} />
                                     </a>
@@ -75,7 +75,7 @@ class SectionListVideo extends React.Component {
                                 ))}     
                         </div>              
                         <div className="col-md-3" style={noPadding}>
-                            <div style = {listVideo} >
+                            <div className="custom-scroll" style = {listVideo} >
                                 {arr.map((item, index) => (
                                     <div key={index}>
                                         <div height="100%">
