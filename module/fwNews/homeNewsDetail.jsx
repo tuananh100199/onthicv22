@@ -83,7 +83,6 @@ class NewsDetail extends React.Component {
                                 <div className='sidebar-widget'>
                                     <SectionNews />
                                 </div>
-
                             </div>
                         </div>
                     </div>

@@ -28,9 +28,8 @@ const T = {
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
-    defaultUserEventPageSize: 6,
     defaultUserSidebarSize: 3,
-    eventFeedPageSize: 4,
+    newsFeedPageSize: 4,
 
     randomPassword: length => Math.random().toString(36).slice(-length),
 
