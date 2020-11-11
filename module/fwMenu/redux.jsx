@@ -99,9 +99,7 @@ export function getMenu(menuId, done) {
 export function createComponent(parentId, component, done) {
     return dispatch => {
         const url = `/api/menu/component`;
-        // console.log(component)
         T.post(url, { parentId, component }, data => {
-        console.log(data)
             if (data.error) {
                 T.notify('Tạo thành phần trang bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);

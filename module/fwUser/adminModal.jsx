@@ -23,7 +23,6 @@ export class UserPasswordModal extends React.Component {
         const _id = this.state._id,
             password1 = $('#userPassword1').val().trim(),
             password2 = $('#userPassword2').val().trim();
-        console.log(_id);
         if (password1 == '') {
             T.notify('Mật khẩu bị trống!', 'danger');
             $('#userPassword1').focus();

@@ -65,41 +65,19 @@ export default function listVideoReducer(state = null, data) {
     }
 }
 
-// Texts -------------------------------------------------------------------------------------------------------------
-const texts = T.language({
-    vi: {
-        getAllListVideoError: 'Lấy tất cả danh sách video bị lỗi!',
-        getListVideoError: 'Lấy danh sách video bị lỗi!',
-        createListVideoError: 'Tạo danh sách video bị lỗi!',
-        updateListVideoError: 'Cập nhật danh sách video bị lỗi!',
-        deleteListVideoError: 'Xóa danh sách video bị lỗi!',
-        updateListVideoSuccess: 'Cập nhật danh sách video thành công!',
-        deleteListVideoSuccess: 'Xóa danh sách video thành công!'
-    },
-    en: {
-        getAllListVideoError: 'Failed to get list of ListVideo!',
-        getListVideoError: 'Failed to get ListVideo!',
-        createListVideoError: 'Failed to create new ListVideo!',
-        updateListVideoError: 'Failed to update information of ListVideo!',
-        deleteListVideoError: 'Failed to delete ListVideo!',
-        updateListVideoSuccess: 'ListVideo is updated!',
-        deleteListVideoSuccess: 'ListVideo is deleted!'
-    }
-});
-
 // Actions ------------------------------------------------------------------------------------------------------------
 export function getAllListVideo(done) {
     return dispatch => {
         const url = '/api/list-video/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getAllListVideoError, 'danger');
+                T.notify('Lấy tất cả danh sách video bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: ListVideoGetAll, items: data.items });
             }
-        }, error => T.notify(texts.getAllListVideoError, 'danger'));
+        }, error => T.notify('Lấy tất cả danh sách video bị lỗi!', 'danger'));
     }
 }
 
@@ -108,12 +86,12 @@ export function createListVideo(newData, done) {
         const url = '/api/list-video';
         T.post(url, { newData }, data => {
             if (data.error) {
-                T.notify(texts.createListVideoError, 'danger');
+                T.notify('Tạo danh sách video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify(texts.createListVideoError, 'danger'));
+        }, error => T.notify('Tạo danh sách video bị lỗi!', 'danger'));
     }
 }
 
@@ -122,15 +100,15 @@ export function updateListVideo(_id, changes, done) {
         const url = '/api/list-video';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify(texts.updateListVideoError, 'danger');
+                T.notify('Cập nhật danh sách video bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify(texts.updateListVideoSuccess, 'info');
+                T.notify('Cập nhật danh sách video thành công!', 'info');
                 dispatch(getAllListVideo());
                 done && done();
             }
-        }, error => T.notify(texts.updateListVideoError, 'danger'));
+        }, error => T.notify('Cập nhật danh sách video bị lỗi!', 'danger'));
     }
 }
 
@@ -139,13 +117,13 @@ export function deleteListVideo(_id) {
         const url = '/api/list-video';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify(texts.deleteListVideoError, 'danger');
+                T.notify('Xóa danh sách video bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert(texts.deleteListVideoSuccess, 'error', false, 800);
+                T.alert('Xóa danh sách video thành công!', 'error', false, 800);
                 dispatch(getAllListVideo());
             }
-        }, error => T.notify(texts.deleteListVideoError, 'danger'));
+        }, error => T.notify('Xóa danh sách video bị lỗi!', 'danger'));
     }
 }
 
@@ -156,12 +134,12 @@ export function getListVideoItem(_id, done) {
         const url = '/api/list-video/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getListVideoError, 'danger');
+                T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             }
             if (done) done(data);
 
-        }, error => T.notify(texts.getListVideoError, 'danger'));
+        }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
     }
 }
 // video... 
@@ -184,12 +162,12 @@ export function getListVideoByUser(_id, done) {
         const url = '/home/list-video/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify(T.getListVideoError, 'danger');
+                T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify(T.getListVideoError, 'danger'));
+        }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
     }
 }
 

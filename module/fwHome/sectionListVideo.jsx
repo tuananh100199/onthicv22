@@ -51,12 +51,6 @@ class SectionListVideo extends React.Component {
         let firstItem = [];
         if (arr){
             firstItem = arr.splice(0,1);
-            let divStyle = {
-                height: '\"' + this.state.item.height + 'px\"',
-                
-            };
-            console.log(divStyle.height)
-
         }
         else{
             console.log('không có list video !')

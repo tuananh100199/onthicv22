@@ -211,7 +211,6 @@ class StatisticEditPage extends React.Component {
             readOnly = !currentPermissions.includes('component:write');
         let table = null,
             currentStatistic = this.props.statistic ? this.props.statistic.item : null;
-            console.log(this.props);
         if (currentStatistic && currentStatistic.items.length > 0) {
             table = (
                 <table className='table table-hover table-bordered' ref={this.table}>

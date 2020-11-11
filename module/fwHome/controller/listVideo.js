@@ -9,12 +9,6 @@ module.exports = app => {
     app.post('/api/list-video', app.permission.check('component:write'), (req, res) =>
         app.model.listVideo.create(req.body.newData, (error, item) => res.send({ error, item })));
 
-    app.put('/api/list-video', app.permission.check('component:write'), (req, res) => {
-        const changes = req.body.changes;
-        if (changes.items && changes.items == 'empty') changes.items = [];
-        app.model.listVideo.update(req.body._id, changes, (error, item) => res.send({ error, item }));
-    });
-
     app.delete('/api/list-video', app.permission.check('component:write'), (req, res) => app.model.listVideo.delete(req.body._id, error => res.send({ error })));
 
     // item...

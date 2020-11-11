@@ -122,7 +122,6 @@ class ListVideoEditPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    // console.log('data',data)
                     $('#tepViTitle').val(data.item.title).focus();
                     this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
                         this.setState({ item : data.item, items });
@@ -274,11 +273,10 @@ class ListVideoEditPage extends React.Component {
                 </table>
             );
         } else {
-            table = <p>Không có thống kê!</p>;
+            table = <p>Không có danh sách các video!</p>;
         }
 
         const title = currentVideo && currentVideo.title ? T.language.parse(currentVideo.title, true) : '<Trống>' ;
-        // console.log(this.state)
         const height = currentVideo.height ;
         return (
             <main className='app-content' >
