@@ -122,7 +122,7 @@ class ListVideoEditPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    $('#tepViTitle').val(data.item.title).focus();
+                    $('#listVideoTitle').val(data.item.title).focus();
                     this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
                         this.setState({ item : data.item, items });
                     })
@@ -205,13 +205,13 @@ class ListVideoEditPage extends React.Component {
 
     save = () => {
         const changes = {
-            title: $('#tepViTitle').val().trim(),
-            height: $('#crsHeight').val().trim(),
+            title: $('#listVideoTitle').val().trim(),
+            height: $('#videoHeight').val().trim(),
         };
 
         if (changes.title == '') {
             T.notify('Tên danh sách bị trống!', 'danger');
-            $('#tepViTitle').focus();
+            $('#listVideoTitle').focus();
         }  else {
             this.props.updateListVideo(this.state.item._id, changes);
         }
@@ -295,39 +295,33 @@ class ListVideoEditPage extends React.Component {
                 <div className='row'>
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
-                            <div className='tab-content'>
-                                <div className='row'>
-                                    <div className="col-md-6">
-                                        <div className='form-group mt-3'>
-                                            <label className='control-label' htmlFor='tepViTitle'>Tiêu đề</label>
-                                            <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='tepViTitle' defaultValue={title} readOnly={readOnly} />
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className='form-group mt-3'>
-                                            <label className='control-label'>Chiều cao</label>
-                                            <input className='form-control' type='number' placeholder='Chiều cao' id='crsHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />
-                                        </div>
+                            <div className='row'>
+                                <div className="col-md-6">
+                                    <div className='form-group mt-3'>
+                                        <label className='control-label' htmlFor='listVideoTitle'>Tiêu đề</label>
+                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='listVideoTitle' defaultValue={title} readOnly={readOnly} />
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-md-12 mb-3"  style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-primary btn-circle' style={{padding: "0 12px",}} type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />
-                                    </button>
+                                <div className="col-md-6">
+                                    <div className='form-group mt-3'>
+                                        <label className='control-label' htmlFor='videoHeight'>Chiều cao (px)</label>
+                                        <input className='form-control' type='number' placeholder='Chiều cao' id='videoHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />
                                     </div>
                                 </div>
                             </div>
                             <div className='form-group'>
                                 {table}
                             </div>
+                            <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                                <i className='fa fa-lg fa-save' />
+                            </button>
                         </div>
                         {readOnly ? null :
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-info btn-circle'  type='button' onClick={this.showAddVideoModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus' style={{ paddingRight: "10px"}} />
+                                        <button className='btn btn-info'  type='button' onClick={this.showAddVideoModal}>
+                                            <i className='fa fa-fw fa-lg fa-plus'/>Thêm video
                                         </button>
                                     </div>
                                 </div>
