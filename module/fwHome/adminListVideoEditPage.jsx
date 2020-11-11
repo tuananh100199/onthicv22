@@ -60,43 +60,35 @@ class VideoModal extends React.Component {
                 <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <div className='container-fluid row'>
-                                <h5 className='modal-title col-6'>Thêm/Sửa Video</h5>
-                            </div>
+                            <h5 className='modal-title'>Thêm/Sửa Video</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <div className='container-fluid row'>
-                                <div className='col-6'>
-                                    <div className='form-group col-12'>
-                                        <label htmlFor='videoTitle'>Tên</label><br />
-                                        <input className='form-control' id='videoTitle' type='text' placeholder='Tên' />
+                            <div className='row'>
+                                <div className='col-12'>
+                                    <div className='form-group'>
+                                        <label htmlFor='videoTitle'>Tiêu đề</label><br />
+                                        <input className='form-control' id='videoTitle' type='text' placeholder='Tiêu đề' />
                                     </div>
                                 </div>
 
                                 <div className='col-12'>
-                                    <div className='form-group col-12'>
+                                    <div className='form-group'>
                                         <label htmlFor='videoLink'>Đường dẫn</label>
-                                        <input className='form-control' id='videoLink' type='text' placeholder='Link' />
-                                   
+                                        <input className='form-control' id='videoLink' type='text' placeholder='Đường dẫn' />
                                     </div>
                                 </div>
-                             
+                                
                                 <div className='col-12'>
-                                    <div className='form-group  col-12'>
+                                    <div className='form-group'>
                                         <label>Hình đại diện</label>
                                         <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image}  />
                                     </div>
                                 </div>
-                                
-                            </div>
-                            <div className='row'>
-                            
                             </div>
                         </div>
-
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                             <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
@@ -132,10 +124,6 @@ class ListVideoEditPage extends React.Component {
             });
         });
     }
-
-    imageChanged = (data) => {
-        this.setState({ image: data.image });
-    };
 
     showAddVideoModal = (e) => {
         this.modal.current.show();
