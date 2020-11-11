@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        title: String
+        title: String,
+        height: { type: Number, default: 255 }
     });
 
     const model = app.db.model('ListVideo', schema);

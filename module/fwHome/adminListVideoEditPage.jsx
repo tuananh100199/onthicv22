@@ -122,6 +122,7 @@ class ListVideoEditPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
+                    // console.log('data',data)
                     $('#tepViTitle').val(data.item.title).focus();
                     this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
                         this.setState({ item : data.item, items });
@@ -206,11 +207,12 @@ class ListVideoEditPage extends React.Component {
     save = () => {
         const changes = {
             title: $('#tepViTitle').val().trim(),
+            height: $('#crsHeight').val().trim(),
         };
 
         if (changes.title == '') {
             T.notify('Tên danh sách bị trống!', 'danger');
-            $('#statisticViName').focus();
+            $('#tepViTitle').focus();
         }  else {
             this.props.updateListVideo(this.state.item._id, changes);
         }
@@ -275,13 +277,15 @@ class ListVideoEditPage extends React.Component {
             table = <p>Không có thống kê!</p>;
         }
 
-        const title = currentVideo && currentVideo.title ? T.language.parse(currentVideo.title, true) : { en: '<empty>', vi: '<Trống>' };
+        const title = currentVideo && currentVideo.title ? T.language.parse(currentVideo.title, true) : '<Trống>' ;
+        // console.log(this.state)
+        const height = currentVideo.height ;
         return (
             <main className='app-content' >
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-bar-chart' /> Danh Sách Video: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi }} />
+                        <p dangerouslySetInnerHTML={{ __html: title }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
@@ -294,16 +298,24 @@ class ListVideoEditPage extends React.Component {
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
                             <div className='tab-content'>
-                                <div id='statisticViTab' className='tab-pane fade show active'>
-                                    <div className='form-group mt-3'>
-                                        <label className='control-label' htmlFor='tepViTitle'>Tiêu đề</label>
-                                        <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='tepViTitle' defaultValue={title.vi} readOnly={readOnly} />
+                                <div className='row'>
+                                    <div className="col-md-6">
+                                        <div className='form-group mt-3'>
+                                            <label className='control-label' htmlFor='tepViTitle'>Tiêu đề</label>
+                                            <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='tepViTitle' defaultValue={title} readOnly={readOnly} />
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className='form-group mt-3'>
+                                            <label className='control-label'>Chiều cao</label>
+                                            <input className='form-control' type='number' placeholder='Chiều cao' id='crsHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-md-12 mb-3"  style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
+                                    <button className='btn btn-primary btn-circle' style={{padding: "0 12px",}} type='button' onClick={this.save}>
+                                            <i className='fa fa-fw fa-lg fa-save' />
                                     </button>
                                     </div>
                                 </div>
@@ -316,8 +328,8 @@ class ListVideoEditPage extends React.Component {
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-info' type='button' onClick={this.showAddVideoModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus' />Thêm video
+                                        <button className='btn btn-info btn-circle'  type='button' onClick={this.showAddVideoModal}>
+                                            <i className='fa fa-fw fa-lg fa-plus' style={{ paddingRight: "10px"}} />
                                         </button>
                                     </div>
                                 </div>
