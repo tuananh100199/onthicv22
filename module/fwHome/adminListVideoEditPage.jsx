@@ -216,7 +216,7 @@ class ListVideoEditPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '50%' }}>Tên </th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Link</th>
+                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Link</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
                         </tr>
@@ -296,12 +296,15 @@ class ListVideoEditPage extends React.Component {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+    
+                    <div className='tile col-md-12'>
+                        <h3 className='tile-title'>Danh sách video</h3>
+                        <div className='tile-body'>
                             <div className='form-group'>
                                 {table}
                             </div>
-                            <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                                <i className='fa fa-lg fa-save' />
-                            </button>
                         </div>
                         {readOnly ? null :
                             <div className='tile-footer'>
@@ -319,6 +322,9 @@ class ListVideoEditPage extends React.Component {
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                    <i className='fa fa-lg fa-save' />
+                </button>
                 <VideoModal ref={this.modal} addVideo={this.add} updateVideo={this.update} />
             </main>
         );
