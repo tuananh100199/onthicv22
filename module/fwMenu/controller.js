@@ -93,7 +93,7 @@ module.exports = app => {
                         } else if (component.viewId && viewType == 'staff group') {
                             app.model.staffGroup.get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
-                        } else if (['all events', 'last events', 'subscribe', 'all staffs',].indexOf(viewType) != -1) {
+                        } else if (['all news', 'last news', 'subscribe', 'all staffs',].indexOf(viewType) != -1) {
                             getNextComponent(viewType);
                         } else {
                             getNextComponent('<empty>');

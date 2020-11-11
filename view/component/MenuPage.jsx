@@ -2,6 +2,7 @@ import React from 'react';
 
 import fwHome from '../../module/fwHome/index.jsx';
 import fwContact from '../../module/fwContact/index.jsx';
+import fwNews from '../../module/fwNews/index.jsx'
 
 export default class MenuPage extends React.Component {
     state = { component: null };
@@ -43,7 +44,12 @@ export default class MenuPage extends React.Component {
                 itemView = <fwHome.Section.SectionTestimony testimonyId={item.viewId} />;
             } else if (item.viewType == 'contact') {
                 itemView = <fwContact.Section.SectionContact />;
-            } else if (item.viewType == 'content' && item.view) {
+            } else if (item.viewType == 'last news') {
+                itemView = <fwNews.Section.SectionNews />;
+            }else if (item.viewType == 'all news') {
+                itemView = <fwNews.Section.SectionNewsList />;
+            } 
+            else if (item.viewType == 'content' && item.view) {
                 itemView = <div dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
             }
 

@@ -4,6 +4,7 @@ import SectionNews from './sectionNews.jsx';
 import SectionNewsList from './sectionNewsList.jsx';
 import news from './redux.jsx';
 
+
 export default {
     redux: {
         news,

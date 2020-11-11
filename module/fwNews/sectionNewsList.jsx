@@ -23,6 +23,12 @@ const texts = {
 class NewsListView extends React.Component {
   state = {};
   loading = false;
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewMode: 'list'
+    }
+  }
 
   componentDidMount() {
     this.props.getNewsInPageByUser(1, T.defaultUserPageSize, () => this.loading = false);
@@ -41,28 +47,68 @@ class NewsListView extends React.Component {
       }
     });
   }
-
+  // handleClickView = () => {
+  //   (this.state.viewMode == 'list')
+  //     ? this.setState({
+  //       viewMode: 'grid'
+  //     })
+  //     : this.setState({
+  //       viewMode: 'list'
+  //     })
+  // }
+  setViewMode = (e, viewmode) => {
+    this.setState({
+      viewMode: viewmode
+    })
+  }
   render() {
     let userPage = this.props.news ? this.props.news.userPage : null,
-      elements = [];
+      elements_grid = [],
+      elements_list = [];
     if (userPage) {
-      elements = userPage.list.map((item, index) => {
+      elements_grid = userPage.list.map((item, index) => {
         const link = item.link ? linkFormat + item.link : idFormat + item._id;
         return (
-          <div className="col-md-6 col-lg-4 mb-4" key={index}>
-            <div className="post-entry h-100">
+          <div className="col-md-6 col-lg-4 mb-2 mt-2" key={index}>
+            <div className="post-entry h-100 single-popular-course mb-100">
               <div className="image">
-                <img src={item.image} alt="Image" className="img-fluid" />
+                <Link to={link}>
+                  <img src={item.image} alt="Image" className="img-fluid" style={{ width: '350px', height: 'auto' }} />
+                </Link>
               </div>
               <div className="text p-4">
                 <h2 className="h5 text-black"><Link to={link}>{T.language.parse(item.title)}</Link></h2>
                 <span className="text-uppercase date d-block mb-3"><small>{new Date(item.createdDate).getText()}</small></span>
-                <p className="mb-0">{T.language.parse(item.abstract)}</p>
+                <p className="mb-0 grid-abstract">{T.language.parse(item.abstract)}</p>
               </div>
             </div>
           </div>
         );
       });
+      elements_list = userPage.list.map((item, index) => {
+        const link = item.link ? linkFormat + item.link : idFormat + item._id;
+        return (
+          <div className='col-12' key={index}>
+            <div className={'row view-list'}>
+              <div style={{ width: '150px', padding: '15px' }} className={(index < userPage.list.length-1 ? ' border-bottom' : '')}>
+                <Link to={link}>
+                  <img src={`${item.image}`} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
+                </Link>
+              </div>
+              <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length-1 ? ' border-bottom' : '')}>
+                <div className='text'>
+                  <div className='text-inner'>
+                    <h2 className='heading pb-0 mb-0'>
+                      <Link to={link} className='text-black news-title'>{T.language.parse(item.title)}</Link>
+                    </h2>
+                    <p className='news-abstract'>{T.language.parse(item.abstract)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })
     }
 
     if (userPage && userPage.pageNumber < userPage.pageTotal) {
@@ -75,22 +121,15 @@ class NewsListView extends React.Component {
 
     return (
       <section>
-        <div className="site-blocks-cover overlay" style={{ backgroundImage: 'url(img/hero_bg_3.jpg)' }} data-aos="fade" data-stellar-background-ratio="0.5">
-          <div className="container">
-            <div className="row align-items-center justify-content-start">
-              <div className="col-md-6 text-center text-md-left" data-aos="fade-up" data-aos-delay={400}>
-                <h1 className="bg-text-line">{T.language.parse('{ "vi": "Tin tức", "en": "News" }')}</h1>
-                {/* <p className="mt-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad maxime velit nostrum praesentium voluptatem. Mollitia perferendis dolore dolores.</p> */}
-              </div>
-            </div>
+        <div className='mb-15' style={{ width: '100%' }}>
+          <div className="btn-group" role="group">
+            <button className={"btn btn-secondary btn-icon btn-sm " + (this.state.viewMode == "list" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "list")}><i class="fa fa-bars" aria-hidden="true"></i></button>
+            <button className={"btn btn-secondary btn-icon btn-sm " + (this.state.viewMode == "grid" ? "actived" : "")} onClick={(e) => this.setViewMode(e, "grid")}><i class="fa fa-th" aria-hidden="true"></i></button>
+            {/* <button className='viewmode-btn' onClick={this.handleClickView}>{(this.state.viewMode == 'list') ? 'Grid view' : 'List View'}</button> */}
           </div>
         </div>
-        <div className="site-section">
-          <div className="container">
-            <div className="row mb-5">
-              {elements}
-            </div>
-          </div>
+        <div className="row mb-5">
+          {(this.state.viewMode == 'list') ? elements_list : elements_grid}
         </div>
       </section>
     );
