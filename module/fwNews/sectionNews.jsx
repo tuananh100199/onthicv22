@@ -14,7 +14,6 @@ class SectionNews extends React.Component {
         if (this.props.news && this.props.news.newsFeed) {
             if(num_news >= this.props.news.newsFeed.length) num_news = this.props.news.newsFeed.length
             news = this.props.news.newsFeed.map((item, index) => {
-                console.log()
                 if (index < num_news) {
                     const link = item.link ? '/tintuc/' + item.link : '/news/item/' + item._id;
                     return (
