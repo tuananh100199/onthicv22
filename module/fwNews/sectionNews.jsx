@@ -7,12 +7,7 @@ class SectionNews extends React.Component {
     componentDidMount() {
         this.props.getNewsFeed();
     }
-
-    // handleClickExpand = () => {
-    //     console.log(this.props.news)
-    //
-    // }
-
+    
     render() {
         let num_news = 4;
         let news = null;

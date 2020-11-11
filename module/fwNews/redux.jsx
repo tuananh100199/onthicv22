@@ -245,7 +245,6 @@ export function getNews(_id, done) {
         const state = getState();
         T.get(url, data => {
             if (data.error) {
-                console.log(data)
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
@@ -311,7 +310,6 @@ export function getNewsByUser(newsId, newsLink, done) {
                 T.notify(language.getNewsByUserError, 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                console.log('redux:' + data)
                 dispatch({ type: NewsGetNewsByUser, item: data.item });
                 done && done(data);
             }
@@ -327,7 +325,6 @@ export function getNewsFeed(done) {
                 T.notify(language.getNewsFeedError, 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                console.log(data)
                 done && done(data.page.list);
                 dispatch({ type: NewsGetNewsFeed, list: data.page.list });
             }

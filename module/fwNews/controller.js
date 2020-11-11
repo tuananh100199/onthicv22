@@ -195,7 +195,6 @@ module.exports = (app) => {
             } else {
                 let list = page.list.map((item) => app.clone(item, { content: null }));
                 respone.page = app.clone(page, { list });
-                console.log(respone)
             }
             res.send(respone);
         });
