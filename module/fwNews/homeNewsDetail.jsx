@@ -17,7 +17,7 @@ class NewsDetail extends React.Component {
         this.props.getNewsByUser(params.id, params.link);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if (this.state.language != T.language()) {
 
             this.setState({ language: T.language() });
@@ -27,6 +27,12 @@ class NewsDetail extends React.Component {
             T.ftcoAnimate();
             $('html, body').stop().animate({ scrollTop: 0 }, 500, 'swing');
         }, 250);
+        if (prevProps.location.pathname != window.location.pathname) {
+            let url = window.location.pathname,
+                params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
+            this.setState({ _id: params.id, link: params.link });
+            this.props.getNewsByUser(params.id, params.link);
+        }
     }
 
     render() {
