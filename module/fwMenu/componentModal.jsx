@@ -40,9 +40,9 @@ export default class ComponentModal extends React.Component {
 
         const types = [
             '<empty>',
-            'last events',
+            'last news',
             'subscribe', 'contact', 'all staffs',
-            'all events',
+            'all news',
         ];
 
         if (types.indexOf(selectedType) == -1) {
