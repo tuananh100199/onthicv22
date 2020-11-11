@@ -20,7 +20,7 @@ module.exports = app => {
         }
     }));
 
-    app.put('/api/list-video/item', app.permission.check('component:write'), (req, res) =>
+    app.put('/api/list-video', app.permission.check('component:write'), (req, res) =>
         app.model.listVideo.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));
 
     app.put('/api/list-video/item/swap', app.permission.check('component:write'), (req, res) => {
