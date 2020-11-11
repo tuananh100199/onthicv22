@@ -271,7 +271,6 @@ class ListVideoEditPage extends React.Component {
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-bar-chart' /> Danh Sách Video: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
