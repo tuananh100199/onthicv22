@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import T from '../../view/js/common.js';
 import { getNewsByUser } from './redux.jsx';
-// import SectionSideBar from '../../view/component/SectionSideBar.jsx';
+import SectionNews from './SectionNews.jsx';
 
 class NewsDetail extends React.Component {
     constructor(props) {
@@ -13,11 +14,12 @@ class NewsDetail extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
+        this.props.getNewsByUser(params.id, params.link);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if (this.state.language != T.language()) {
-            this.props.getNewsByUser(this.state._id, this.state.link);
+
             this.setState({ language: T.language() });
         }
 
@@ -25,6 +27,12 @@ class NewsDetail extends React.Component {
             T.ftcoAnimate();
             $('html, body').stop().animate({ scrollTop: 0 }, 500, 'swing');
         }, 250);
+        if (prevProps.location.pathname != window.location.pathname) {
+            let url = window.location.pathname,
+                params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
+            this.setState({ _id: params.id, link: params.link });
+            this.props.getNewsByUser(params.id, params.link);
+        }
     }
 
     render() {
@@ -38,36 +46,48 @@ class NewsDetail extends React.Component {
                 </div>
             );
             return (
-                <section>
-                    <div className='site-blocks-cover overlay' style={{ backgroundImage: `url('${item.image}')` }} data-aos='fade' data-stellar-background-ratio='0.5'>
-                        <div className='container'>
-                            <div className='row align-items-center justify-content-start'>
-                                <div className='col-md-6 text-center text-md-left' data-aos='fade-up' data-aos-delay='400'>
-                                    <h1 className='bg-text-line'>{T.language.parse(item.title)}</h1>
-                                    <p className='mt-4'>{T.language.parse(item.abstract)}</p>
+                <section className='row mr-0'>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col-12'>
+                                <div
+                                    className='single-course-intro d-flex align-items-center justify-content-center'
+                                    style={{
+                                        backgroundImage: 'url(' + item.image + ')',
+                                        backgroundPosition: 'center center',
+                                        backgroundSize: 'cover',
+                                        backgroundRepeat: 'no-repeat'
+                                    }}
+                                >
+                                    <div className='single-course-intro-content text-center'>
+                                        <h3>{T.language.parse(item.title)}</h3>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className='site-section bg-light' data-aos='fade-up'>
-                        <div className='container-fluid'>
-                            <div className='row align-items-first'>
-                                <div className='col-12 col-md-8'>
-                                    <div className='bg-white'>
-                                        <div className='p-3 p-lg-5 border'>
+                            <div className='col-12 col-lg-8 pt-5'>
+                                <div className='course--content' data-aos='fade-up'>
+                                    <div className='clever-description p-2'>
+                                        <div className='about-course mb-30'>
                                             <span className="meta">{new Date(item.createdDate).getText()}</span>
-                                            <h2 className='text-black text-center'>{T.language.parse(item.title)}</h2>
+                                            <p className="text-center">
+                                                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '30%', height: 'auto' }} />
+                                            </p>
+                                            <h4 className='text-black text-left'>Nội dung tin tức</h4>
                                             <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
                                             {categories}
                                         </div>
                                     </div>
                                 </div>
-                                <div className='col-12 col-md-4 sidebar' data-aos='fade-up'>
-                                    {/*<SectionSideBar />*/}
+                            </div>
+                            <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
+                                <div className='sidebar-widget'>
+                                    <SectionNews />
                                 </div>
+
                             </div>
                         </div>
                     </div>
+
                 </section>
             );
         }
