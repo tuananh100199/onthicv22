@@ -192,7 +192,6 @@ export function createUser(user, done) {
             } else {
                 T.notify('Tạo người dùng thành công!', 'success');
                 dispatch(getUserInPage());
-                console.log(data);
                 done && done(data.user);
             }
         }, error => T.notify('Tạo người dùng bị lỗi!', 'danger'));

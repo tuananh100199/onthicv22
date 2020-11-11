@@ -16,6 +16,7 @@ class CarouselItemModal extends React.Component {
         this.btnSave = React.createRef();
         this.viEditor = React.createRef();
         this.enEditor = React.createRef();
+
     }
 
     componentDidMount() {

@@ -86,7 +86,6 @@ export default class ComponentModal extends React.Component {
         if (viewId) data.viewId = viewId;
 
         if (_id) {
-            console.log(data)
             this.props.onUpdate(_id, data, () => $(this.modal.current).modal('hide'));
         } else {
             if (_id) data._id = _id;

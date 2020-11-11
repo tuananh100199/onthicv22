@@ -9,6 +9,7 @@ import staffGroup from './redux/reduxStaffGroup.jsx';
 import statistic from './redux/reduxStatistic.jsx';
 import testimony from './redux/reduxTestimony.jsx';
 import video from './redux/reduxVideo.jsx';
+import listVideo from './redux/reduxListVideo.jsx';
 
 import SectionCarousel from './sectionCarousel.jsx';
 import SectionLogo from './sectionLogo.jsx';
@@ -17,10 +18,11 @@ import SectionStaffGroup from './sectionStaffGroup.jsx';
 import SectionStatistic from './sectionStatistic.jsx';
 import SectionTestimony from './sectionTestimony.jsx';
 import SectionVideo from './sectionVideo.jsx';
+import SectionListVideo from './sectionListVideo.jsx';
 
 export default {
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video
+        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo
     },
     routes: [
         {
@@ -52,6 +54,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminTestimonyEditPage.jsx') })
         },
         {
+            path: '/user/list-video/edit/:listVideoId',
+            component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage.jsx') })
+        },
+        {
             path: '/user/component',
             component: Loadable({ loading: Loading, loader: () => import('./adminComponentPage.jsx') })
         },
@@ -61,6 +67,6 @@ export default {
         }
     ],
     Section: {
-        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo
+        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
     }
 };
