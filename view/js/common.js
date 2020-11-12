@@ -25,7 +25,7 @@ const T = {
         'subscribe',
         'testimony',
         'video',
-        'list video',
+        'listVideo',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
