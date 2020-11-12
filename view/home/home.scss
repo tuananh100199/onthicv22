@@ -766,5 +766,43 @@ label {
 }
 
 .modal-xl {
-  max-width: 95%;
+    max-width: 95%;
+}
+
+.custom-scroll {
+    &::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+        background-color: #ecedf0;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, .3);
+        background-color: #4D983C;
+    }
+    &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+        background-color: #ecedf0;
+    }
+}
+
+.project-right-component {
+    //background: #0466ff;  /* fallback for old browsers */
+    //background: -webkit-linear-gradient(to top, rgba(250,255,209,0.5), rgba(4,102,255,0.5));  /* Chrome 10-25, Safari 5.1-6 */
+    //background: linear-gradient(to top, rgba(250,255,209,0.5), rgba(4,102,255,0.5)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    padding: 15px 15px 15px 30px;
+    max-height: inherit;
+    &::-webkit-scrollbar {
+        width: 8px;
+        background-color: #ecedf0;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, .3);
+        background-color: #4D983C;
+    }
+    &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+        background-color: #ecedf0;
+    }
 }
