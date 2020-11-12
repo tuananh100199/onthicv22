@@ -12,7 +12,7 @@ class SectionListVideo extends React.Component {
                     if (data.error) {
                        console.log('list các video trống')
                     } 
-                    else if (data.item) { //id và title của list video
+                    else if (data.item) {
                         this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
                             if (items) {
                                 this.setState({ item : data.item, items : items});
