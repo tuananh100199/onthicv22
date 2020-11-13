@@ -3,10 +3,10 @@ module.exports = (app) => {
     const redis = require('redis');
     app.redis = redis.createClient();
     app.redis.on('connect', () => {
-        console.log(` - #${process.pid}: The Redis connection succeeded.`);
+        console.log(` - The Redis connection succeeded.`);
     });
     app.redis.on('error', error => {
-        console.log(` - #${process.pid}: The Redis connection failed!`, error.message);
+        console.log(` - The Redis connection failed!`, error.message);
         app.redis.end(true);
     });
 

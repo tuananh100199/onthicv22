@@ -103,6 +103,7 @@ export function getAllStaffs(done) {
     }
 }
 
+const getPageUrl = (pageNumber, pageSize) => `/api/user/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('adminUser', true);
 export function getUserInPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminUser', pageNumber, pageSize, pageCondition);
@@ -116,7 +117,7 @@ export function getUserInPage(pageNumber, pageSize, pageCondition, done) {
 }
 
 export function ajaxGetUserInPage(pageNumber, pageSize, pageCondition, done) {
-    const url = `/api/user/page/${pageNumber}/${pageSize}`;
+    const url = getPageUrl(pageNumber, pageSize);
     T.get(url, { condition: pageCondition }, data => {
         if (data.error) {
             T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
@@ -126,6 +127,15 @@ export function ajaxGetUserInPage(pageNumber, pageSize, pageCondition, done) {
             done && done(data.page);
         }
     }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
+}
+
+export const ajaxSelectUser = {
+    ajax: true,
+    url: getPageUrl(1, 20),
+    data: params => ({ condition: params.term }),
+    processResults: response => ({
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : []
+    })
 }
 
 export function getUser(userId, done) {
@@ -264,5 +274,19 @@ export function userUpdateProfile(changes, done) {
             }
             done && done(data);
         }, error => T.notify('Error when update profile!', 'danger'));
+    }
+}
+
+export function switchUser(userId) {
+    return dispatch => {
+        const url = `/api/debug/switch-user`;
+        T.post(url, { userId }, data => {
+            if (data.error) {
+                T.notify(data.error.message, 'danger');
+            } else {
+                T.cookie('userId', userId);
+                location.reload();
+            }
+        }, () => T.notify('Switch user has some errors!', 'danger'));
     }
 }
