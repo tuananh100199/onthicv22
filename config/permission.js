@@ -1,17 +1,14 @@
 module.exports = app => {
-    let systemPermission = {};
     let effectChangeUser = new Set();
-
+    
     const checkPermissions = (req, res, next, permissions) => {
         if (req.session.user) {
             const user = req.session.user;
             if (effectChangeUser.has(user._id.toString())) {
-                app.model.user.get(user._id, (error, newUser) => {
-                    if (error || !newUser) {
+                app.updateSessionUser(req, user, (newUser) => {
+                    if (!newUser) {
                         responseError(req, res);
                     } else {
-                        newUser = newUser.clone();
-                        req.session.user = newUser;
                         if (newUser.permissions && newUser.permissions.contains(permissions, req)) {
                             next();
                         } else if (permissions.length == 0) {
@@ -20,7 +17,7 @@ module.exports = app => {
                             responseError(req, res);
                         }
                     }
-                })
+                });
             } else {
                 if (req.session.user.permissions && req.session.user.permissions.contains(permissions, req)) {
                     next();
@@ -34,17 +31,14 @@ module.exports = app => {
             responseError(req, res);
         }
     };
-
     const checkOrPermissions = (req, res, next, permissions) => {
         if (req.session.user) {
             const user = req.session.user;
             if (effectChangeUser.has(user._id.toString())) {
-                app.model.user.get(user._id, (error, newUser) => {
-                    if (error || !newUser) {
+                app.updateSessionUser(req, user, (newUser) => {
+                    if (!newUser) {
                         responseError(req, res);
                     } else {
-                        newUser = newUser.clone();
-                        req.session.user = newUser;
                         if (newUser.permissions && newUser.permissions.exists(permissions, req)) {
                             next();
                         } else if (permissions.length == 0) {
@@ -53,7 +47,7 @@ module.exports = app => {
                             responseError(req, res);
                         }
                     }
-                })
+                });
             } else {
                 if (req.session.user.permissions && req.session.user.permissions.exists(permissions, req)) {
                     next();
@@ -67,19 +61,7 @@ module.exports = app => {
             responseError(req, res);
         }
     };
-
-    const getUserByRole = (req, role, done) => {
-        app.model.user.get({ roles: role._id }, (error, user) => {
-            if (error || user == null) {
-                console.error('System has errors!', error);
-                done('Error');
-            } else {
-                req.session.user = user.clone();
-                done();
-            }
-        });
-    };
-
+    
     const responseError = (req, res) => {
         if (req.method.toLowerCase() === 'get') { // is get method
             if (req.originalUrl.startsWith('/api')) {
@@ -91,10 +73,9 @@ module.exports = app => {
             res.send({ error: `You don't have permission!` });
         }
     };
-
-    const hasPermissions = (req, success, fail, permissions) => {
+    const responseWithPermissions = (req, success, fail, permissions) => {
         if (req.session.user) {
-            if (req.session.user.permissions && req.session.user.permissions.contains(permissions, req)) {
+            if (req.session.user.permissions && req.session.user.permissions.contains(permissions)) {
                 success();
             } else {
                 fail && fail();
@@ -105,143 +86,234 @@ module.exports = app => {
             fail && fail();
         }
     };
-
-    const hashElement = (menus) => {
-        return Object.keys(menus).map(key => {
-            return { [key]: menus[key] }
-        })
-    }
-
+    
+    let systemPermission = [];
     const menuTree = {};
     app.permission = {
-        list: () => app.clone(systemPermission),
-
+        all: () => [...systemPermission],
+    
+        tree: () => app.clone(menuTree),
+        
         pushEffect: (userId) => effectChangeUser.add(userId.toString()),
-
+        
         popEffect: (userId) => effectChangeUser.delete(userId.toString()),
-
+    
         add: (...permissions) => {
             permissions.forEach(permission => {
-                if (permission.menu) {
+                if (typeof permission == 'string') {
+                    permission = { name: permission };
+                } else if (permission.menu) {
                     if (permission.menu.parentMenu) {
-                        if (menuTree[permission.menu.parentMenu.index] == null) {
-                            menuTree[permission.menu.parentMenu.index] = { name: permission.menu.parentMenu.title, menus: [] }
+                        const { index, subMenusRender } = permission.menu.parentMenu;
+                        if (menuTree[index] == null) {
+                            menuTree[index] = {
+                                parentMenu: app.clone(permission.menu.parentMenu),
+                                menus: {},
+                            };
                         }
+                        if (permission.menu.menus == null) {
+                            menuTree[index].parentMenu.permissions = [permission.name];
+                        }
+                        menuTree[index].parentMenu.subMenusRender = menuTree[index].parentMenu.subMenusRender || (subMenusRender != null ? subMenusRender : true);
                     }
-
-                    const menuTreeItem = menuTree[permission.menu.parentMenu.index];
-                    const submenus = permission.menu.menus;
+                
+                    const menuTreeItem = menuTree[permission.menu.parentMenu.index],
+                        submenus = permission.menu.menus;
                     if (submenus) {
                         Object.keys(submenus).forEach(menuIndex => {
-                            const text = `${menuIndex} - ${submenus[menuIndex].title} (${submenus[menuIndex].link})`;
-                            if (menuTreeItem.menus.indexOf(text) == -1) menuTreeItem.menus.push(text);
+                            if (menuTreeItem.menus[menuIndex]) {
+                                const menuTreItemMenus = menuTreeItem.menus[menuIndex];
+                                if (menuTreItemMenus.title == submenus[menuIndex].title && menuTreItemMenus.link == submenus[menuIndex].link) {
+                                    menuTreItemMenus.permissions.push(permission.name);
+                                } else {
+                                    console.error(`Menu index #${menuIndex} is not available!`);
+                                }
+                            } else {
+                                menuTreeItem.menus[menuIndex] = app.clone(submenus[menuIndex], { permissions: [permission.name] });
+                            }
                         });
                     }
                 }
-
-                if (systemPermission[permission.name] == undefined) {
-                    systemPermission[permission.name] = permission.menu || {};
-                } else {
-                    systemPermission[permission.name].menus = app.clone({}, systemPermission[permission.name].menus, permission.menu.menus);
-                }
+            
+                systemPermission.includes(permission.name) || systemPermission.push(permission.name);
             });
         },
-
-        check: (...permissions) => {
-            return (req, res, next) => {
-                if (app.isDebug && app.autoLogin && (req.session.user == null || req.session.user == undefined)) {
-                    let cookieDebugRole = req.cookies.debugRole;
-                    if (cookieDebugRole == null || cookieDebugRole == undefined) {
-                        cookieDebugRole = 'admin';
+    
+        check: (...permissions) => (req, res, next) => {
+            if (app.isDebug && !req.session.user) {
+                const userId = req.cookies.userId;
+                app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
+                    if (error || user == null) {
+                        res.send({ error: `System has errors!` });
+                    } else {
+                        app.updateSessionUser(req, user, _ => checkPermissions(req, res, next, permissions));
                     }
-
-                    app.model.role.get({ name: cookieDebugRole }, (error, role) => {
-                        if (error || role == null) {
-                            app.model.role.get({ name: 'admin' }, (error, role) => {
-                                if (error || role == null) {
-                                    console.error('System has errors!', error);
-                                    res.send({ error: `System has errors!` });
-                                } else {
-                                    getUserByRole(req, role, error => error ? res.send({ error: `System has errors!` }) : checkPermissions(req, res, next, permissions));
-                                }
-                            });
-                        } else {
-                            getUserByRole(req, role, error => error ? res.send({ error: `System has errors!` }) : checkPermissions(req, res, next, permissions));
-                        }
-                    });
-                } else {
-                    checkPermissions(req, res, next, permissions);
-                }
-            };
+                });
+            } else {
+                checkPermissions(req, res, next, permissions);
+            }
         },
-
-        orCheck: (...permissions) => {
-            return (req, res, next) => {
-                if (app.isDebug && app.autoLogin && (req.session.user == null || req.session.user == undefined)) {
-                    let cookieDebugRole = req.cookies.debugRole;
-                    if (cookieDebugRole == null || cookieDebugRole == undefined) {
-                        cookieDebugRole = 'admin';
+        
+        orCheck: (...permissions) => (req, res, next) => {
+            if (app.isDebug && !req.session.user) {
+                const userId = req.cookies.userId;
+                app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
+                    if (error || user == null) {
+                        res.send({ error: `System has errors!` });
+                    } else {
+                        app.updateSessionUser(req, user, _ => checkOrPermissions(req, res, next, permissions));
                     }
-
-                    app.model.role.get({ name: cookieDebugRole }, (error, role) => {
-                        if (error || role == null) {
-                            app.model.role.get({ name: 'admin' }, (error, role) => {
-                                if (error || role == null) {
-                                    console.error('System has errors!', error);
-                                    res.send({ error: `System has errors!` });
-                                } else {
-                                    getUserByRole(req, role, error => error ? res.send({ error: `System has errors!` }) : checkOrPermissions(req, res, next, permissions));
-                                }
-                            });
-                        } else {
-                            getUserByRole(req, role, error => error ? res.send({ error: `System has errors!` }) : checkOrPermissions(req, res, next, permissions));
-                        }
-                    });
-                } else {
-                    checkOrPermissions(req, res, next, permissions);
-                }
-            };
+                });
+            } else {
+                checkOrPermissions(req, res, next, permissions);
+            }
         },
-
+    
         has: (req, success, fail, ...permissions) => {
             if (typeof fail == 'string') {
                 permissions.unshift(fail);
                 fail = null;
             }
-            if (app.isDebug && app.autoLogin && (req.session.user == null || req.session.user == undefined)) {
-                let cookieDebugRole = req.cookies.debugRole;
-                if (cookieDebugRole == null || cookieDebugRole == undefined) {
-                    cookieDebugRole = 'admin';
-                }
-                app.model.role.get({ name: cookieDebugRole }, (error, role) => {
-                    if (error || role == null) {
-                        app.model.role.get({ name: 'admin' }, (error, role) => {
-                            if (error || role == null) {
-                                console.error('System has errors!', error);
-                                fail && fail();
-                            } else {
-                                getUserByRole(req, role, error => error ? (fail && fail()) : hasPermissions(req, success, fail, permissions));
-                            }
-                        });
+            if (app.isDebug && !req.session.user) {
+                const userId = req.cookies.userId;
+                app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
+                    if (error || !user) {
+                        fail && fail({ error: `System has errors!` });
                     } else {
-                        getUserByRole(req, role, error => error ? (fail && fail()) : hasPermissions(req, success, fail, permissions));
+                        app.updateSessionUser(req, user, sessionUser => responseWithPermissions(req, success, fail, permissions));
                     }
                 });
             } else {
-                hasPermissions(req, success, fail, permissions);
+                responseWithPermissions(req, success, fail, permissions);
             }
         },
-
+    
         getTreeMenuText: () => {
             let result = '';
             Object.keys(menuTree).sort().forEach(parentIndex => {
-                result += `${parentIndex}. ${menuTree[parentIndex].name}\n`;
-
-                menuTree[parentIndex].menus.sort().forEach(submenu => {
-                    result += `\t${submenu}\n`;
+                result += `${parentIndex}. ${menuTree[parentIndex].parentMenu.title} (${menuTree[parentIndex].parentMenu.link})\n`;
+            
+                Object.keys(menuTree[parentIndex].menus).sort().forEach(menuIndex => {
+                    const submenu = menuTree[parentIndex].menus[menuIndex];
+                    result += `\t${menuIndex} - ${submenu.title} (${submenu.link})\n`;
                 });
             });
             app.fs.writeFileSync(app.path.join(app.assetPath, 'menu.txt'), result);
         }
     };
+    
+    const hasPermission = (userPermissions, menuPermissions) => {
+        for (let i = 0; i < menuPermissions.length; i++) {
+            if (userPermissions.includes(menuPermissions[i])) return true;
+        }
+        return false;
+    };
+    
+    app.updateSessionUser = (req, user, done) => {
+        if (!done) {
+            done = user;
+            user = {}
+        }
+        
+        user = app.clone(req.session.user || {}, user, { permissions: [], menu: {} });
+        delete user.password;
+        
+        app.model.user.get({ _id: user._id }, (error, result) => {
+            if (error || !result) {
+                console.error('app.updateSessionUser', error);
+            } else {
+                for (let i = 0; i < (user.roles || []).length; i++) {
+                    let role = user.roles[i];
+                    if (role.name == 'admin') {
+                        user.permissions = app.permission.all();
+                        break;
+                    }
+                    (role.permission || []).forEach(permission => app.permissionHooks.pushUserPermission(user, permission.trim()));
+                }
+                // Add login permission => user.active == true => user:login
+                if (user.active) app.permissionHooks.pushUserPermission(user, 'user:login');
+                
+                new Promise(resolve => { // Check user is student
+                    //TODO
+                    resolve();
+                }).then(() => {  // Build menu tree
+                    user.menu = app.permission.tree();
+                    Object.keys(user.menu).forEach(parentMenuIndex => {
+                        let flag = true;
+                        const menuItem = user.menu[parentMenuIndex];
+                        if (menuItem.parentMenu && menuItem.parentMenu.permissions) {
+                            if (hasPermission(user.permissions, menuItem.parentMenu.permissions)) {
+                                delete menuItem.parentMenu.permissions;
+                            } else {
+                                delete user.menu[parentMenuIndex];
+                                flag = false;
+                            }
+                        }
+                        
+                        flag && Object.keys(menuItem.menus).forEach(menuIndex => {
+                            const menu = menuItem.menus[menuIndex];
+                            if (hasPermission(user.permissions, menu.permissions)) {
+                                delete menu.permissions;
+                            } else {
+                                delete menuItem.menus[menuIndex];
+                                if (Object.keys(menuItem.menus).length == 0) delete user.menu[parentMenuIndex];
+                            }
+                        });
+                    });
+                    
+                    req.session.user = user;
+                    app.permission.popEffect(user._id)
+                    req.session.save();
+                    done && done(user);
+                });
+            }
+        });
+    };
+    
+    // Permission Hook ------------------------------------------------------------------------------------------------------------------------------
+    const permissionHookContainer = { student: {}, staff: {} };
+    app.permissionHooks = {
+        add: (type, name, hook) => {
+            if (permissionHookContainer[type]) {
+                permissionHookContainer[type][name] = hook;
+            } else {
+                console.log('Invalid hook type!')
+            }
+        },
+        remove: (type, name) => {
+            if (permissionHookContainer[type] && permissionHookContainer[type][name]) {
+                delete permissionHookContainer[type][name];
+            }
+        },
+        
+        run: (type, user, role) => new Promise((resolve) => {
+            const hookContainer = permissionHookContainer[type],
+                hookKeys = hookContainer ? Object.keys(hookContainer) : [];
+            const runHook = (index = 0) => {
+                if (index < hookKeys.length) {
+                    const hookKey = hookKeys[index];
+                    hookContainer[hookKey](user, role).then(() => runHook(index + 1));
+                } else {
+                    resolve();
+                }
+            };
+            runHook();
+        }),
+        
+        pushUserPermission: function () {
+            if (arguments.length >= 1) {
+                const user = arguments[0];
+                for (let i = 1; i < arguments.length; i++) {
+                    const permission = arguments[i];
+                    if (!user.permissions.includes(permission)) user.permissions.push(permission);
+                }
+            }
+        },
+    };
+    
+    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
+    app.readyHooks.add('permissionInit', {
+        ready: () => app.model != null && app.model.role != null,
+        run: () => app.isDebug && app.permission.getTreeMenuText(),
+    });
 };

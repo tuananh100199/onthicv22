@@ -546,3 +546,27 @@
   padding: 5px;
   margin-top: 15px;
 }
+
+.row {
+  a {
+    text-decoration: none !important;
+  }
+}
+
+.widget-small {
+  background-color: white;
+
+  img {
+    background-color: transparent;
+  }
+
+  .info {
+    flex: 1;
+    padding: 0 20px;
+    align-self: center;
+
+    p {
+      color: black;
+    }
+  }
+}

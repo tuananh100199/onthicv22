@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js';
 import { getNewsByUser } from './redux.jsx';
-import SectionNews from './SectionNews.jsx';
+import SectionNews from './sectionNews.jsx';
 
 class NewsDetail extends React.Component {
     constructor(props) {
