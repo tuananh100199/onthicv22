@@ -91,7 +91,19 @@ const T = {
             document.cookie = cname + '=' + JSON.stringify(cvalue) + ';expires=' + d.toUTCString() + ';path=/';
         }
     },
-
+    
+    storage: (cname, cvalue) => {
+        if (cvalue != null) {
+            window.localStorage.setItem(cname, JSON.stringify(cvalue));
+        } else {
+            try {
+                return JSON.parse(window.localStorage.getItem(cname)) || {};
+            } catch {
+                return {};
+            }
+        }
+    },
+    
     cookieKeyName: {
         pageNumber: 'N',
         pageSize: 'S',
@@ -351,6 +363,10 @@ String.prototype.replaceAll = function(search, replacement) {
 String.prototype.upFirstChar = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
+
+String.prototype.lowFirstChar = function () {
+    return this.charAt(0).toLowerCase() + this.slice(1);
+}
 
 //Array prototype -----------------------------------------------------------------------------------------------------
 Array.prototype.contains = function(...pattern) {

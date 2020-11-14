@@ -6,7 +6,7 @@ import inView from 'in-view';
 
 const linkFormat = '/tintuc/', idFormat = '/news/item/';
 
-class NewsListView extends React.Component {
+class SectionNewsList extends React.Component {
     state = {};
     loading = false;
     
@@ -120,4 +120,4 @@ class NewsListView extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, news: state.news });
 const mapActionsToProps = { getNewsInPageByUser };
-export default connect(mapStateToProps, mapActionsToProps)(NewsListView);
+export default connect(mapStateToProps, mapActionsToProps)(SectionNewsList);

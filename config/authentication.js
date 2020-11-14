@@ -61,6 +61,7 @@ module.exports = app => {
     
     app.logoutUser = (req, res) => {
         if (req.logout) req.logout();
+        if (app.isDebug) res.clearCookie('userId');
         req.session.user = null;
         req.session.today = null;
         res.send({ error: null });

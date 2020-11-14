@@ -26,7 +26,7 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.role.getPage(pageNumber, pageSize, {}, (error, page) => {
-            page.permissionList = Object.keys(app.permission.list());
+            page.permissionList = app.permission.all();
             res.send({ error, page });
         });
     });

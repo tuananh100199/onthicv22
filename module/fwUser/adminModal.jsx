@@ -157,13 +157,7 @@ export class UserModal extends React.Component {
             $(this.modal.current).on('shown.bs.modal', () => $('#userLastname').focus())
         }, 250));
     }
-
-    componentDidUpdate() {
-        $(document).ready(() => {
-
-        });
-    }
-
+    
     show = (_item) => {
         const item = _item ?
             _item : { _id: null, roles: [] };
@@ -193,7 +187,8 @@ export class UserModal extends React.Component {
     };
 
     save = (event) => {
-        const sex = this.sex.current.getSelectedItem().toLowerCase(),
+        event.preventDefault();
+        const sex = this.sex.current.getSelectedItem(),
             birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
         let changes = {
             firstname: $('#userFirstname').val().trim(),
@@ -226,7 +221,6 @@ export class UserModal extends React.Component {
             }
             $(this.modal.current).modal('hide');
         }
-        event.preventDefault();
     };
 
     render() {

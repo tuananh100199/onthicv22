@@ -4,13 +4,61 @@ import { Link } from 'react-router-dom';
 import ContactModal from './AdminContactModal.jsx';
 import { getUnreadContacts, getContact } from '../../module/fwContact/redux.jsx';
 import { changeRole } from '../../module/fwRole/redux.jsx';
+import { switchUser } from '../../module/fwUser/redux.jsx';
 import { updateSystemState, logout } from '../../module/_init/reduxSystem.jsx';
+import { Select } from './Input.jsx';
+import { ajaxSelectUser } from '../../module/fwUser/redux.jsx';
+
+class DebugModal extends React.Component {
+    modal = React.createRef();
+    userSelect = React.createRef();
+    
+    show = () => {
+        this.userSelect.current.val(null);
+        $(this.modal.current).modal('show');
+    }
+    
+    switchUser = () => {
+        const userId = this.userSelect.current.val();
+        this.props.switchUser(userId);
+    }
+    
+    render() {
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <div className='modal-dialog' role='document'>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Switch user</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+                        
+                        <div className='modal-body'>
+                            <div className='form-group'>
+                                <label>Chọn người dùng</label>
+                                <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Người dùng' />
+                            </div>
+                        </div>
+                        
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-success' onClick={this.switchUser}>Switch</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
 
 class AdminHeader extends React.Component {
     constructor(props) {
         super(props);
         this.state = { showContact: true };
         this.contactModal = React.createRef();
+        this.debugModal = React.createRef();
     }
 
     componentDidMount() {
@@ -33,14 +81,10 @@ class AdminHeader extends React.Component {
         this.props.changeRole(role, user => this.props.updateSystemState({ user }));
         e.preventDefault();
     }
-
-    genClassName = (_id) => {
-        if (this.props.system && this.props.system.user) {
-            const roles = this.props.system.user.roles;
-            return roles && roles.contains(_id) ? 'btn btn-success' : 'btn btn-light';
-        } else {
-            return 'btn btn-light';
-        }
+    
+    showDebugModal = e => {
+        e.preventDefault();
+        this.debugModal.current.show();
     }
 
     renderContact = () => {
@@ -80,25 +124,18 @@ class AdminHeader extends React.Component {
     }
 
     render() {
+        const isDebug = this.props.system && this.props.system.isDebug,
+            isAdmin = this.props.system && this.props.system.user && this.props.system.user.roles.some(role => role.name == 'admin');
+        
         return [
             <header key={0} className='app-header' >
                 <Link className='app-header__logo' to='/user'>Hiệp Phát</Link>
                 <a className='app-sidebar__toggle' href='#' data-toggle='sidebar' aria-label='Hide Sidebar' />
                 <ul className='app-nav'>
-                    {this.props.system && this.props.system.isDebug && this.props.system.roles && this.props.system.roles.length ? (
-                        <li className='dropdown'>
-                            <a className='app-nav__item' href='#' data-toggle='dropdown' aria-label='Show notifications'>
-                                Debug as &nbsp;<span style={{ color: '#00F' }}>{(this.props.system.user ? this.props.system.user.roles : []).map(role => role.name.toUpperCase()).toString()}</span>
-                            </a>
-                            <ul className='app-notification dropdown-menu dropdown-menu-right'>
-                                {this.props.system.roles.map((item, index) =>
-                                    <li key={index} className='app-notification__title' style={{ width: '100%' }}>
-                                        <a href='#' style={{ color: 'black', width: '100%', display: 'block' }} onClick={(e) => this.debugAsRole(e, item)}>{item.name}</a>
-                                    </li>
-                                )}
-                            </ul>
-                        </li>
-                    ) : ''}
+                    {isAdmin || isDebug ?
+                        <li className='app-nav__item'>
+                            <a href='#' style={{ color: 'white' }} onClick={this.showDebugModal}>Switch user</a>
+                        </li> : null}
                     {this.state.showContact ? this.renderContact() : null}
                     <li>
                         <Link className='app-nav__item' to='/user'>
@@ -112,11 +149,12 @@ class AdminHeader extends React.Component {
                     </li>
                 </ul>
             </header>,
-            <ContactModal key={1} ref={this.contactModal} />
+            <ContactModal key={1} ref={this.contactModal} />,
+            <DebugModal key={2} ref={this.debugModal} switchUser={this.props.switchUser} updateSystemState={this.props.updateSystemState} />
         ];
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, contact: state.contact, role: state.role });
-const mapActionsToProps = { getUnreadContacts, getContact, changeRole, updateSystemState, logout };
+const mapActionsToProps = { getUnreadContacts, getContact, changeRole, updateSystemState, logout, switchUser };
 export default connect(mapStateToProps, mapActionsToProps)(AdminHeader);

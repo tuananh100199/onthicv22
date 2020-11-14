@@ -45,7 +45,18 @@ module.exports = app => {
             };
         }
     };
-
+    
+    app.parentMenu = {
+        // setting: {
+        //     index: 1000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog',
+        //     subMenusRender: false,
+        // },
+        user: {
+            index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user',
+            subMenusRender: false, groups: ['Thông tin cá nhân', 'Biểu mẫu'],
+        },
+    };
+    
     // Hook -----------------------------------------------------------------------------------------------------------------------------------------
     const hooksList = {};
     app.uploadHooks = {
@@ -55,7 +66,49 @@ module.exports = app => {
         run: (req, fields, files, params, sendResponse) =>
             Object.keys(hooksList).forEach(name => hooksList[name] && hooksList[name](req, fields, files, params, data => data && sendResponse(data))),
     };
-
+    
+    // Ready hook -----------------------------------------------------------------------------------------------------------------------------------
+    const readyHookContainer = {};
+    let readyHooksId = null;
+    app.readyHooks = {
+        add: (name, hook) => {
+            readyHookContainer[name] = hook;
+            app.readyHooks.waiting();
+        },
+        remove: name => {
+            readyHookContainer[name] = null;
+            app.readyHooks.waiting();
+        },
+        
+        waiting: () => {
+            if (readyHooksId) clearTimeout(readyHooksId);
+            readyHooksId = setTimeout(app.readyHooks.run, 2000);
+        },
+        
+        run: () => {
+            let hookKeys = Object.keys(readyHookContainer),
+                ready = true;
+            
+            // Check all hooks
+            for (let i = 0; i < hookKeys.length; i++) {
+                const hook = readyHookContainer[hookKeys[i]];
+                if (!hook.ready()) {
+                    ready = false;
+                    console.log(hookKeys[i]);
+                    break;
+                }
+            }
+            
+            if (ready) {
+                hookKeys.forEach(hookKey => readyHookContainer[hookKey].run());
+                console.log(` - The system is ready!`);
+            } else {
+                app.readyHooks.waiting();
+            }
+        }
+    };
+    app.readyHooks.waiting();
+    
     // Load modules ---------------------------------------------------------------------------------------------------------------------------------
     app.loadModules = (loadController = true) => {
         const modelPaths = [],
@@ -89,7 +142,7 @@ module.exports = app => {
 
     // Setup admin account (default account) --------------------------------------------------------------------------------------------------------
     app.setupAdmin = async () => {
-        const permission = Object.keys(app.permission.list());
+        const permission = app.permission.all();
         let adminRole = {};
         const setAdmin = () => {
             app.model.user.get({ email: app.defaultAdminEmail }, (error, user) => {
