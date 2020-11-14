@@ -12,7 +12,7 @@ export default class CourseCategoryPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa-file' /> Khóa học: Danh mục</h1>
                 </div>
-                <Category type='news' uploadType='courseCategoryImage' />
+                <Category type='course' uploadType='courseCategoryImage' />
             </main>
         );
     }

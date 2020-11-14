@@ -250,12 +250,12 @@ export function getCourse(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } 
             else {
-                // const url2 = '/api/draftcourse/' + state.system.user._id;
-                // T.get(url2, draft => {
-                //     if (done) done(data);
-                //     dispatch({ type: CourseGetCourse, item: data.item, categories: data.categories, docDraftUser: draft });
-                // }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'))
-                // if (done) done(data);
+                const url2 = '/api/course/' + state.system.user._id;
+                T.get(url2, draft => {
+                    if (done) done(data);
+                    dispatch({ type: CourseGetCourse, item: data.item, categories: data.categories, docDraftUser: draft });
+                }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'))
+                if (done) done(data);
             }
         }, error => done({ error }));
     }

@@ -25,13 +25,15 @@ class CourseEditPage extends React.Component {
     }
 
     getData = () => {
+        console.log('getData')
         const route = T.routeMatcher('/user/course/edit/:courseId'),
-            courseId = route.parse(window.location.pathname).courseId;
+        courseId = route.parse(window.location.pathname).courseId;
         this.props.getCourse(courseId, data => {
             if (data.error) {
-                T.notify('Lấy tin tức bị lỗi!', 'danger');
+                T.notify('Lấy khóa học bị lỗi!', 'danger');
                 this.props.history.push('/user/course/list');
             } else if (data.item) {
+                console.log('data',data)
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
                 $('#courseCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const courseStartPost = $('#courseStartPost').datetimepicker(T.dateFormat);
@@ -51,8 +53,8 @@ class CourseEditPage extends React.Component {
                     abstract = T.language.parse(data.item.abstract, true),
                     content = T.language.parse(data.item.content, true);
                 $('#courseTitle').val(title.vi);
-                $('#courseAbstract').val(abstract.vi); $('#neCourseEnAbstract').val(abstract.en);
-                this.viEditor.current.html(content.vi); this.enEditor.current.html(content.en);
+                $('#courseAbstract').val(abstract.vi);
+                this.viEditor.current.html(content.vi); 
                 this.setState(data);
             } else {
                 this.props.history.push('/user/course/list');
@@ -79,6 +81,7 @@ class CourseEditPage extends React.Component {
     }
 
     save = () => {
+        console.log('state',this.state)
         const courseStartPost = $('#courseStartPost').val(),
             courseStopPost = $('#courseStopPost').val(),
             changes = {
@@ -134,13 +137,13 @@ class CourseEditPage extends React.Component {
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
-                        <h1><i className='fa fa-file' /> Tin tức: Chỉnh sửa</h1>
+                        <h1><i className='fa fa-file' /> Khóa học: Chỉnh sửa</h1>
                         <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         &nbsp;/&nbsp;
-                        <Link to='/user/course/list'>Danh sách tin tức</Link>
+                        <Link to='/user/course/list'>Danh sách khóa học</Link>
                         &nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
@@ -150,8 +153,8 @@ class CourseEditPage extends React.Component {
                             <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>Tên bài viết</label>
-                                    <input className='form-control' type='text' placeholder='Tên bài viết' id='courseTitle' defaultValue={title.vi} readOnly={readOnly} />
+                                    <label className='control-label'>Tên khóa học</label>
+                                    <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' defaultValue={title.vi} readOnly={readOnly} />
                                 </div>
                                 <div className='row'>
                                     <div className='col-md-6'>
@@ -170,22 +173,13 @@ class CourseEditPage extends React.Component {
                                                 </label>
                                             </div>
                                         </div> : null}
-                                        <div className='form-group' >
-                                            <label className='control-label'>Tin nội bộ:&nbsp;</label>
-                                            <span className='toggle'>
-                                                <label>
-                                                    <input type='checkbox' checked={item.isInternal} onChange={this.changeisInternal} disabled={readOnly} />
-                                                    <span className='button-indecator' />
-                                                </label>
-                                            </span>
-                                        </div>
-                                        <div className='form-group row'>
+                                        <div className='form-group'>
                                             <label className='control-label col-12'>Lượt xem: {item.view}</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Danh mục bài viết</label>
+                                    <label className='control-label'>Danh mục khóa học</label>
                                     <select className='form-control' id='courseCategories' multiple={true} defaultValue={[]} disabled={readOnly} >
                                         <optgroup label='Lựa chọn danh mục' />
                                     </select>
@@ -223,13 +217,13 @@ class CourseEditPage extends React.Component {
                                     <label className='control-label'>Ngày tạo: {T.dateToText(item.createdDate)}</label>
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Ngày bắt đầu đăng bài viết{readOnly && item.startPost ? ': ' + T.dateToText(item.startPost, 'dd/mm/yyyy HH:MM') : ''}</label>
-                                    <input className='form-control' id='courseStartPost' type='text' placeholder='Ngày bắt đầu đăng bài viết' defaultValue={item.startPost}
+                                    <label className='control-label'>Ngày bắt đầu đăng khóa học{readOnly && item.startPost ? ': ' + T.dateToText(item.startPost, 'dd/mm/yyyy HH:MM') : ''}</label>
+                                    <input className='form-control' id='courseStartPost' type='text' placeholder='Ngày bắt đầu đăng khóa học' defaultValue={item.startPost}
                                         disabled={readOnly} />
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Ngày kết thúc đăng bài viết{readOnly && item.stopPost ? ': ' + T.dateToText(item.stopPost, 'dd/mm/yyyy HH:MM') : ''}</label>
-                                    <input className='form-control' id='courseStopPost' type='text' placeholder='Ngày kết thúc đăng bài viết' defaultValue={item.stopPost}
+                                    <label className='control-label'>Ngày kết thúc đăng khóa học{readOnly && item.stopPost ? ': ' + T.dateToText(item.stopPost, 'dd/mm/yyyy HH:MM') : ''}</label>
+                                    <input className='form-control' id='courseStopPost' type='text' placeholder='Ngày kết thúc đăng khóa học' defaultValue={item.stopPost}
                                         disabled={readOnly} />
                                 </div>
                             </div>
@@ -239,17 +233,12 @@ class CourseEditPage extends React.Component {
                     <div className='col-md-12'>
                         <div className='tile'>
                             <div className='tile-body'>
-                                <ul className='nav nav-tabs'>
-                                    <li className='nav-item'>
-                                        <a className='nav-link active show' data-toggle='tab' href='#courseTab'>Việt Nam</a>
-                                    </li>
-                                </ul>
                                 <div className='tab-content' style={{ paddingTop: '12px' }}>
                                     <div id='courseTab' className='tab-pane fade show active'>
-                                        <label className='control-label'>Tóm tắt bài viết</label>
-                                        <textarea defaultValue='' className='form-control' id='courseAbstract' placeholder='Tóm tắt bài viết' readOnly={readOnly}
+                                        <label className='control-label'>Tóm tắt khóa học</label>
+                                        <textarea defaultValue='' className='form-control' id='courseAbstract' placeholder='Tóm tắt khóa học' readOnly={readOnly}
                                             style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                        <label className='control-label'>Nội dung bài viết</label>
+                                        <label className='control-label'>Nội dung khóa học</label>
                                         <Editor ref={this.viEditor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=course' readOnly={readOnly} />
                                     </div>
                                 </div>

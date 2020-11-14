@@ -13,7 +13,7 @@ class CourseListView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            viewMode: 'list' //TODO: Cookie
+            viewMode: 'list' 
         }
     }
     

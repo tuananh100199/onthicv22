@@ -34,13 +34,13 @@ module.exports = (app) => {
             res.send(respone);
         });
     });
-    // app.get('/api/draft/course/:userId', app.permission.check('course:read'), (req, res) => {
-    //     userId = req.params.userId;
-    //     app.model.draft.userGet('course', userId, (error, page) => {
-    //         if (error) respone.error = 'Danh sách mẫu tin tức không sẵn sàng!';
-    //         res.send(page);
-    //     });
-    // });
+    app.get('/api/course/:userId', app.permission.check('course:read'), (req, res) => {
+        userId = req.params.userId;
+        app.model.course.get(userId, (error, page) => {
+            if (error) respone.error = 'Danh sách khóa học không sẵn sàng!';
+            res.send(page);
+        });
+    });
 
     // app.get('/api/draft-course/page/:pageNumber/:pageSize', app.permission.check('course:draft'), (req, res) => {
     //     const user = req.session.user,
@@ -88,9 +88,11 @@ module.exports = (app) => {
         (req, res) => {
             app.model.category.getAll({ type: 'course', active: true },
                 (error, categories) => {
+                    console.log('categories', categories)
                     if (error || categories == null) {
                         res.send({ error: 'Lỗi khi lấy danh mục!' });
                     } else {
+                        console.log('categories', categories)
                         app.model.course.get(req.params.courseId, (error, item) => {
                             res.send({
                                 error,
@@ -258,14 +260,14 @@ module.exports = (app) => {
         )
     );
 
-    const uploadcourseAvatar = (req, fields, files, params, done) => {
+    const uploadNewsAvatar = (req, fields, files, params, done) => {
         if (
             fields.userData &&
             fields.userData[0].startsWith('course:') &&
             files.CourseImage &&
             files.CourseImage.length > 0
         ) {
-            console.log('Hook: uploadCourseAvatar => course image upload');
+            console.log('Hook: uploadNewsAvatar => course image upload');
             app.uploadComponentImage(
                 req,
                 'course',
@@ -276,10 +278,10 @@ module.exports = (app) => {
             );
         }
     };
-    app.uploadHooks.add('uploadCourseAvatar', (req, fields, files, params, done) =>
+    app.uploadHooks.add('uploadNewsAvatar', (req, fields, files, params, done) =>
         app.permission.has(
             req,
-            () => uploadCourseAvatar(req, fields, files, params, done),
+            () => uploadNewsAvatar(req, fields, files, params, done),
             done,
             'course:write'
         )
