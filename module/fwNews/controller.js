@@ -22,37 +22,30 @@ module.exports = (app) => {
     app.get('/tintuc/:link', app.templates.home);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get(
-        '/api/news/page/:pageNumber/:pageSize',
-        app.permission.check('news:read'),
-        (req, res) => {
-            const pageNumber = parseInt(req.params.pageNumber),
-                pageSize = parseInt(req.params.pageSize);
-            app.model.news.getPage(pageNumber, pageSize, {}, (error, page) => {
-                const respone = {};
-                if (error || page == null) {
-                    respone.error = 'Danh sách tin tức không sẵn sàng!';
-                } else {
-                    let list = page.list.map((item) =>
-                        app.clone(item, { content: null })
-                    );
-                    respone.page = app.clone(page, { list });
-                }
-                res.send(respone);
-            });
-        }
-    );
-    app.get(
-        '/api/draft/news/:userId',
-        app.permission.check('news:read'),
-        (req, res) => {
-            userId = req.params.userId;
-            app.model.draft.userGet('news', userId, (error, page) => {
-                if (error) respone.error = 'Danh sách mẫu tin tức không sẵn sàng!';
-                res.send(page);
-            });
-        }
-    );
+    app.get('/api/news/page/:pageNumber/:pageSize', app.permission.check('news:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize);
+        app.model.news.getPage(pageNumber, pageSize, {}, (error, page) => {
+            const respone = {};
+            if (error || page == null) {
+                respone.error = 'Danh sách tin tức không sẵn sàng!';
+            } else {
+                let list = page.list.map((item) =>
+                    app.clone(item, { content: null })
+                );
+                respone.page = app.clone(page, { list });
+            }
+            res.send(respone);
+        });
+    });
+    app.get('/api/draft/news/:userId', app.permission.check('news:read'), (req, res) => {
+        userId = req.params.userId;
+        app.model.draft.userGet('news', userId, (error, page) => {
+            if (error) respone.error = 'Danh sách mẫu tin tức không sẵn sàng!';
+            res.send(page);
+        });
+    });
+    
     app.get('/api/draft-news/page/:pageNumber/:pageSize', app.permission.check('news:draft'), (req, res) => {
         const user = req.session.user, condition = user.permissions.includes('news:write') ? { documentType: 'news' } : { documentType: 'news', editorId: user._id };
         const pageNumber = parseInt(req.params.pageNumber),
@@ -62,15 +55,11 @@ module.exports = (app) => {
         });
     });
 
-    app.post(
-        '/api/news/default',
-        app.permission.check('news:write'),
-        (req, res) =>
-            app.model.news.create(
-                { title: 'Bài viết', active: false },
-                (error, item) => res.send({ error, item })
-            )
-    );
+    app.post('/api/news/default', app.permission.check('news:write'), (req, res) =>
+        app.model.news.create(
+            { title: 'Bài viết', active: false },
+            (error, item) => res.send({ error, item })
+        ));
 
     app.delete('/api/news', app.permission.check('news:write'), (req, res) =>
         app.model.news.delete(req.body._id, (error) => res.send({ error }))
@@ -80,11 +69,8 @@ module.exports = (app) => {
         app.model.draft.create(req.body, (error, item) => res.send({ error, item }))
     );
 
-    app.delete(
-        '/api/draft-news',
-        app.permission.check('news:draft'),
-        (req, res) =>
-            app.model.draft.delete(req.body._id, (error) => res.send({ error }))
+    app.delete('/api/draft-news', app.permission.check('news:draft'), (req, res) =>
+        app.model.draft.delete(req.body._id, (error) => res.send({ error }))
     );
 
     app.put('/api/news/swap', app.permission.check('news:write'), (req, res) => {

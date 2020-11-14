@@ -25,12 +25,12 @@ const T = {
         'subscribe',
         'testimony',
         'video',
+        'listVideo',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
-    defaultUserEventPageSize: 6,
     defaultUserSidebarSize: 3,
-    eventFeedPageSize: 4,
+    newsFeedPageSize: 4,
 
     randomPassword: length => Math.random().toString(36).slice(-length),
 
@@ -91,7 +91,19 @@ const T = {
             document.cookie = cname + '=' + JSON.stringify(cvalue) + ';expires=' + d.toUTCString() + ';path=/';
         }
     },
-
+    
+    storage: (cname, cvalue) => {
+        if (cvalue != null) {
+            window.localStorage.setItem(cname, JSON.stringify(cvalue));
+        } else {
+            try {
+                return JSON.parse(window.localStorage.getItem(cname)) || {};
+            } catch {
+                return {};
+            }
+        }
+    },
+    
     cookieKeyName: {
         pageNumber: 'N',
         pageSize: 'S',
@@ -107,7 +119,8 @@ const T = {
     },
 
     updatePage: (cookieName, pageNumber, pageSize, pageCondition) => {
-        const updateStatus = {}, oldStatus = T.cookie(cookieName);
+        const updateStatus = {},
+            oldStatus = T.cookie(cookieName);
         updateStatus[T.cookieKeyName.pageNumber] = pageNumber ? pageNumber : oldStatus[T.cookieKeyName.pageNumber];
         updateStatus[T.cookieKeyName.pageSize] = pageSize ? pageSize : oldStatus[T.cookieKeyName.pageSize];
         updateStatus[T.cookieKeyName.pageCondition] = pageCondition ? pageCondition : oldStatus[T.cookieKeyName.pageCondition];
@@ -191,7 +204,9 @@ const T = {
         content.innerHTML = html;
         "Bạn có muốn <b>ghi đè</b> dữ liệu đang có bằng dữ liệu mới không?<br>Nếu không rõ, hãy chọn <b>Không ghi đè</b>!";
         swal({
-            icon, title, content,
+            icon,
+            title,
+            content,
             dangerMode: true,
             buttons: {
                 cancel: { text: "Huỷ", value: null, visible: true },
@@ -205,9 +220,7 @@ const T = {
     birthdayFormat: { format: 'dd/mm/yyyy', autoclose: true, todayBtn: true },
     formatDate: str => {
         try {
-            let [strDate, strTime] = str.split(' '),
-                [date, month, year] = strDate.split('/'),
-                [hours, minutes] = strTime ? strTime.split(':') : [0, 0];
+            let [strDate, strTime] = str.split(' '), [date, month, year] = strDate.split('/'), [hours, minutes] = strTime ? strTime.split(':') : [0, 0];
             return new Date(year, month - 1, date, hours, minutes);
         } catch (ex) {
             return null;
@@ -215,7 +228,7 @@ const T = {
     },
 
     tooltip: (timeOut = 250) => {
-        $(function () {
+        $(function() {
             setTimeout(() => {
                 $('[data-toggle="tooltip"]').tooltip();
             }, timeOut);
@@ -245,7 +258,7 @@ T.language.switch = () => {
 };
 T.language.parse = (text, getAll) => {
     let obj = {};
-    try { obj = JSON.parse(text) } catch { };
+    try { obj = JSON.parse(text) } catch {};
     if (obj.vi == null) obj.vi = text;
     if (obj.en == null) obj.en = text;
     return getAll ? obj : obj[T.language()];
@@ -322,7 +335,7 @@ T.truncate = (str, length) => {
     return tempStr + '...'
 }
 
-T.clone = function () {
+T.clone = function() {
     let result = {};
     for (let i = 0, length = arguments.length; i < length; i++) {
         const obj = JSON.parse(JSON.stringify(arguments[i]));
@@ -335,36 +348,40 @@ export default T;
 
 
 
-String.prototype.getText = function () {
+String.prototype.getText = function() {
     return T.language.parse(this);
 };
 
-String.prototype.viText = function () {
+String.prototype.viText = function() {
     return T.language.parse(this, true).vi;
 };
 
-String.prototype.replaceAll = function (search, replacement) {
+String.prototype.replaceAll = function(search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
 
-String.prototype.upFirstChar = function () {
+String.prototype.upFirstChar = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+String.prototype.lowFirstChar = function () {
+    return this.charAt(0).toLowerCase() + this.slice(1);
+}
+
 //Array prototype -----------------------------------------------------------------------------------------------------
-Array.prototype.contains = function (...pattern) {
+Array.prototype.contains = function(...pattern) {
     return pattern.reduce((result, item) => result && this.includes(item), true);
 };
 
-Date.prototype.getText = function () {
+Date.prototype.getText = function() {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getDateText = function () {
+Date.prototype.getDateText = function() {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear();
 };
-Date.prototype.getTimeText = function () {
+Date.prototype.getTimeText = function() {
     return T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getShortText = function () {
+Date.prototype.getShortText = function() {
     return this.getFullYear() + '/' + T.get2(this.getMonth() + 1) + '/' + T.get2(this.getDate()) + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };

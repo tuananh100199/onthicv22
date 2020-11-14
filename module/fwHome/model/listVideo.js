@@ -1,15 +1,9 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        description: String,
-        image: String,
-        items: [{
-            title: String,
-            image: String,
-            link: String,
-            number: Number,
-        }]
+        height: { type: Number, default: 255 }
     });
+
     const model = app.db.model('ListVideo', schema);
 
     app.model.listVideo = {
@@ -29,14 +23,20 @@ module.exports = app => {
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
-        delete: (_id, done) => model.findById(_id, (error, slogan) => {
+        delete: (_id, done) => model.findById(_id, (error, videoList) => {
             if (error) {
                 done(error);
-            } else if (slogan == null) {
+            } else if (videoList == null) {
                 done('Invalid Id!');
             } else {
-                slogan.remove(done);
+                app.model.video.getAll({ listVideoId: videoList._id }, (error, items) => {
+                    if (!error && items && items.length) {
+                        items.forEach(item => app.model.video.delete(item._id, () => {}))
+                    }
+                })
+                videoList.remove(done);
             }
         }),
+
     };
 };

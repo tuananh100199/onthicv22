@@ -97,7 +97,7 @@ class UserPage extends React.Component {
                                     </label>
                                 </td>
                                 <td>
-                                    <div className={item.default ? '' : 'btn-group'}>
+                                    <div className='btn-group'>
                                         <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
                                             <i className='fa fa-lg fa-edit' />
                                         </a>

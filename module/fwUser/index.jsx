@@ -24,7 +24,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./homeForgotPasswordPage.jsx') })
         },
         {
-            path: '/user',
+            path: '/user/profile',
             component: Loadable({ loading: Loading, loader: () => import('./adminProfilePage.jsx') })
         },
     ],

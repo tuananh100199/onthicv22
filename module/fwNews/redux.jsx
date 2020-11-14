@@ -288,7 +288,7 @@ const texts = {
 };
 const language = T.language(texts);
 
-export function getNewsInPageByUser(pageNumber, pageSize) {
+export function getNewsInPageByUser(pageNumber, pageSize, done) {
     return dispatch => {
         const url = '/news/page/' + pageNumber + '/' + pageSize;
         T.get(url, data => {
@@ -297,6 +297,7 @@ export function getNewsInPageByUser(pageNumber, pageSize) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: NewsGetNewsInPageByUser, page: data.page });
+                done && done()
             }
         }, error => T.notify(language.getNewsInPageByUserError, 'danger'));
     }

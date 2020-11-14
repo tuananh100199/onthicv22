@@ -10,10 +10,6 @@ class ProfilePage extends React.Component {
         this.state = { user: null };
         this.imageBox = React.createRef();
 
-        this.saveCommon = this.saveCommon.bind(this);
-        this.savePassword = this.savePassword.bind(this);
-        this.renderData = this.renderData.bind(this);
-
         this.firstname = React.createRef();
         this.lastname = React.createRef();
         this.email = React.createRef();
@@ -25,7 +21,7 @@ class ProfilePage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user', () => {
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
@@ -38,7 +34,7 @@ class ProfilePage extends React.Component {
         });
     }
 
-    renderData(user, allDivisions, callback) {
+    renderData = (user, allDivisions, callback) => {
         let { firstname, lastname, email, phoneNumber, birthday, sex, image } = user ?
                 user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png' };
 
@@ -52,7 +48,7 @@ class ProfilePage extends React.Component {
         callback && callback();
     }
 
-    saveCommon(e) {
+    saveCommon = (e) => {
         let sex = this.sex.current.getSelectedItem().toLowerCase(),
             birthday = $('#birthday').val() ? T.formatDate($('#birthday').val()) : null,
             changes = {
@@ -76,7 +72,7 @@ class ProfilePage extends React.Component {
         e.preventDefault();
     }
 
-    savePassword() {
+    savePassword = () => {
         const password1 = $(this.password1.current).val(),
             password2 = $(this.password2.current).val();
         if (password1 == '') {

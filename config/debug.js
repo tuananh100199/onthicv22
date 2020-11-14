@@ -3,19 +3,19 @@ module.exports = app => {
     if (app.isDebug) {
         const morgan = require('morgan');
         app.use(morgan('dev'));
-
-        app.post('/api/debug/change-role', (req, res) => {
-            if (app.isDebug) {
-                app.model.user.get({ roles: req.body.role }, (error, user) => {
-                    if (error || user == null) {
-                        res.send({ error });
+    
+        app.post('/api/debug/switch-user', (req, res) => {
+            const userId = req.body.userId, isDebug = app.isDebug || (req.session.user && req.session.user.roles.some(role => role.name == 'admin'));
+            if (userId && isDebug) {
+                app.model.user.get({ _id: userId }, (error, user) => {
+                    if (error || !user) {
+                        res.send({ error: 'System has errors!' });
                     } else {
-                        req.session.user = user.clone();
-                        res.send({ user: req.session.user });
+                        app.updateSessionUser(req, user, _ => res.send({ user }));
                     }
                 });
             } else {
-                res.send({ error: 'Not in debug mode!' });
+                res.send({ error: 'Invalid request!' });
             }
         });
     }

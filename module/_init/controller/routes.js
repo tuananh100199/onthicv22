@@ -1,21 +1,23 @@
 module.exports = (app) => {
+    const menuDashboard = {
+        parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' }
+    };
+    
+    const menuProfile = {
+        parentMenu: app.parentMenu.user,
+        menus:  {
+            1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 }
+        }
+    }
+    
     app.permission.add(
-        {
-            name: 'dashboard:standard',
-            menu: { parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard', }, },
-        },
-        {
-            name: 'user:login',
-            menu: {
-                parentMenu: { index: 1000, title: 'Personal information', icon: 'fa-user', },
-                menus: { 1010: { title: 'Profile', link: '/user' } },
-            },
-        },
+        { name: 'dashboard:standard', menu: menuDashboard },
+        { name: 'user:login', menu: menuProfile },
         {
             name: 'system:settings',
             menu: {
-                parentMenu: { index: 2000, title: 'Configure', icon: 'fa-cog' },
-                menus: { 2010: { title: 'General', link: '/user/settings' } },
+                parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
+                menus: { 2010: { title: 'Thông tin chung', link: '/user/settings' } },
             },
         }
     );
@@ -115,7 +117,14 @@ module.exports = (app) => {
                     }
                 });
             }
-            res.send(data);
+            if (app.isDebug) {
+                app.model.role.getAll((error, roles) => {
+                    data.roles = roles || [];
+                    res.send(data);
+                })
+            } else {
+                res.send(data)
+            }
         });
     });
     

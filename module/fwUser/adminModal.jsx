@@ -23,7 +23,6 @@ export class UserPasswordModal extends React.Component {
         const _id = this.state._id,
             password1 = $('#userPassword1').val().trim(),
             password2 = $('#userPassword2').val().trim();
-        console.log(_id);
         if (password1 == '') {
             T.notify('Mật khẩu bị trống!', 'danger');
             $('#userPassword1').focus();
@@ -158,13 +157,7 @@ export class UserModal extends React.Component {
             $(this.modal.current).on('shown.bs.modal', () => $('#userLastname').focus())
         }, 250));
     }
-
-    componentDidUpdate() {
-        $(document).ready(() => {
-
-        });
-    }
-
+    
     show = (_item) => {
         const item = _item ?
             _item : { _id: null, roles: [] };
@@ -194,7 +187,8 @@ export class UserModal extends React.Component {
     };
 
     save = (event) => {
-        const sex = this.sex.current.getSelectedItem().toLowerCase(),
+        event.preventDefault();
+        const sex = this.sex.current.getSelectedItem(),
             birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
         let changes = {
             firstname: $('#userFirstname').val().trim(),
@@ -227,7 +221,6 @@ export class UserModal extends React.Component {
             }
             $(this.modal.current).modal('hide');
         }
-        event.preventDefault();
     };
 
     render() {

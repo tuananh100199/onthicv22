@@ -61,7 +61,6 @@ export function createContent(done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllContents());
-                console.log(data)
                 if (done) done(data);
             }
         }, error => T.notify('Tạo nội dung bị lỗi!', 'danger'));
