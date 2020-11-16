@@ -25,7 +25,6 @@ class CourseEditPage extends React.Component {
     }
 
     getData = () => {
-        console.log('getData')
         const route = T.routeMatcher('/user/course/edit/:courseId'),
         courseId = route.parse(window.location.pathname).courseId;
         this.props.getCourse(courseId, data => {
@@ -33,7 +32,6 @@ class CourseEditPage extends React.Component {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');
                 this.props.history.push('/user/course/list');
             } else if (data.item) {
-                console.log('data',data)
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
                 $('#courseCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const courseStartPost = $('#courseStartPost').datetimepicker(T.dateFormat);

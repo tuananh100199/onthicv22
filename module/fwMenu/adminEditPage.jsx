@@ -167,6 +167,8 @@ class MenuEditPage extends React.Component {
                 mainStyle.backgroundColor = '#ef9a9a';
             }else if (component.viewType == 'list video') {
                 mainStyle.backgroundColor = '#ef9a9b';
+            }else if (component.viewType == 'course') {
+                mainStyle.backgroundColor = '#ef9a9c';
             }
         }
         let displayText = component.viewType + (component.viewName ? ' - ' + T.language.parse(component.viewName) + ' ' : '');

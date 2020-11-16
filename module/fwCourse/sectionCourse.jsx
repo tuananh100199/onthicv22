@@ -1,11 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseFeed } from './redux.jsx';
+import { getCourse } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class SectionCourse extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            // viewMode: 'list' //TODO: Cookie
+        }
+    }
     componentDidMount() {
-        this.props.getcourseFeed();
+        this.props.getCourse('5faf55b176dfb22dd0be2953');
+        console.log(this.props)
     }
 
     render() {
@@ -44,9 +51,9 @@ class SectionCourse extends React.Component {
                 </div>
                 <div>
                     {course}
-                    {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
-                    {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
-                    {/*</button>*/}
+                    {/* <button className='expand-btn' onClick={this.handleClickExpand}>
+                       {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}
+                    </button> */}
                 </div>
             </div>
         )
@@ -54,5 +61,5 @@ class SectionCourse extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourseFeed };
+const mapActionsToProps = { getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(SectionCourse);
