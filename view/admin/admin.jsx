@@ -33,9 +33,10 @@ import fwContact from '../../module/fwContact/index.jsx';
 import fwEmail from '../../module/fwEmail/index.jsx';
 import fwForm from '../../module/fwForm/index.jsx';
 import fwNews from '../../module/fwNews/index.jsx';
+import fwContentList from '../../module/fwContentList/index.jsx';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwContentList
 ]
 
 
@@ -66,7 +67,7 @@ class App extends React.Component {
 
         T.socket.on('contact-added', item => store.dispatch(addContact(item)));
         T.socket.on('contact-changed', item => store.dispatch(changeContact(item)));
-        
+
         T.socket.on('user-changed', user => {
             if (this.props.system && this.props.system.user && this.props.system.user._id == user._id) {
                 store.dispatch(updateSystemState({ user: Object.assign({}, this.props.system.user, user) }));

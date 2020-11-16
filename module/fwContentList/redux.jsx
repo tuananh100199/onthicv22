@@ -69,59 +69,59 @@ export function getAllContentList(done) {
         const url = '/api/list-content/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy tất cả danh sách video bị lỗi!', 'danger');
+                T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: ContentListGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy tất cả danh sách video bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger'));
     }
 }
 
 export function createContentList(newData, done) {
     return dispatch => {
-        const url = '/api/list-video';
+        const url = '/api/list-content';
         T.post(url, { newData }, data => {
             if (data.error) {
-                T.notify('Tạo danh sách video bị lỗi!', 'danger');
+                T.notify('Tạo danh sách Content bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo danh sách video bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo danh sách Content bị lỗi!', 'danger'));
     }
 }
 
 export function updateContentList(_id, changes, done) {
     return dispatch => {
-        const url = '/api/list-video';
+        const url = '/api/list-content';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật danh sách video bị lỗi!', 'danger');
+                T.notify('Cập nhật danh sách Content bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật danh sách video thành công!', 'info');
+                T.notify('Cập nhật danh sách Content thành công!', 'info');
                 dispatch(getAllContentList());
                 done && done();
             }
-        }, error => T.notify('Cập nhật danh sách video bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật danh sách Content bị lỗi!', 'danger'));
     }
 }
 
 export function deleteContentList(_id) {
     return dispatch => {
-        const url = '/api/list-video';
+        const url = '/api/list-content';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa danh sách video bị lỗi!', 'danger');
+                T.notify('Xóa danh sách Content bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Xóa danh sách video thành công!', 'error', false, 800);
+                T.alert('Xóa danh sách Content thành công!', 'error', false, 800);
                 dispatch(getAllContentList());
             }
-        }, error => T.notify('Xóa danh sách video bị lỗi!', 'danger'));
+        }, error => T.notify('Xóa danh sách Content bị lỗi!', 'danger'));
     }
 }
 
@@ -129,27 +129,27 @@ export function deleteContentList(_id) {
 
 export function getContentListItem(_id, done) {
     return dispatch => {
-        const url = '/api/list-video/item/' + _id;
+        const url = '/api/list-content/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách video bị lỗi', 'danger');
+                T.notify('Lấy danh sách Content bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             }
             if (done) done(data);
 
-        }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
+        }, error => T.notify('Lấy danh sách Content bị lỗi', 'danger'));
     }
 }
-// video... 
-export function addVideoIntoList(title, link, image) {
+// content... 
+export function addContentIntoList(title, link, image) {
     return { type: ContentListAddItem, title, link, image };
 }
 
-export function updateVideoInList(index, title, link, image) {
+export function updateContentInList(index, title, link, image) {
     return { type: ContentListUpdateItem, index, title, link, image };
 }
 
-export function removeVideoFromList(index) {
+export function removeContentFromList(index) {
     return { type: ContentListRemoveItem, index };
 }
 
@@ -157,75 +157,75 @@ export function removeVideoFromList(index) {
 
 export function getContentListByUser(_id, done) {
     return dispatch => {
-        const url = '/home/list-video/' + _id;
+        const url = '/home/list-Content/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách video bị lỗi', 'danger');
+                T.notify('Lấy danh sách Content bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
+        }, error => T.notify('Lấy danh sách Content bị lỗi', 'danger'));
     }
 }
 
 export function createContentListItem(data, done) {
     return dispatch => {
-        const url = '/api/list-video/item';
+        const url = '/api/list-Content/item';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Create list video item failed!', 'danger');
+                T.notify('Create list Content item failed!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllContentList(data.item.ContentListId));
                 if (done) done(data);
             }
-        }, error => T.notify('Create list video item failed!', 'danger'));
+        }, error => T.notify('Create list Content item failed!', 'danger'));
     }
 }
 
 export function updateContentListItem(_id, changes, done) {
     return dispatch => {
-        const url = '/api/list-video/item';
+        const url = '/api/list-Content/item';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Update list video item failed!', 'danger');
+                T.notify('Update list Content item failed!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Update list video item successful!', 'info');
+                T.notify('Update list Content item successful!', 'info');
                 dispatch(getAllContentList(data.item.ContentListId));
                 if (done) done();
             }
-        }, error => T.notify('Update list video item failed!', 'danger'));
+        }, error => T.notify('Update list Content item failed!', 'danger'));
     }
 }
 
 export function swapContentListItem(_id, isMoveUp) {
     return dispatch => {
-        const url = '/api/list-video/item/swap/';
+        const url = '/api/list-Content/item/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Swap list video item failed!', 'danger')
+                T.notify('Swap list Content item failed!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllContentList(data.item1.ContentListId));
             }
-        }, error => T.notify('Swap list video item failed!', 'danger'));
+        }, error => T.notify('Swap list Content item failed!', 'danger'));
     }
 }
 
 export function deleteContentListItem(_id) {
     return dispatch => {
-        const url = '/api/list-video/item';
+        const url = '/api/list-Content/item';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Delete list video item failed!', 'danger');
+                T.notify('Delete list Content item failed!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Hình ảnh được xóa thành công!', 'error', false, 800);
                 dispatch(getAllContentList(data.ContentListId));
             }
-        }, error => T.notify('Delete list video item failed!', 'danger'));
+        }, error => T.notify('Delete list Content item failed!', 'danger'));
     }
 }
 
