@@ -11,7 +11,7 @@ class SectionCourse extends React.Component {
         }
     }
     componentDidMount() {
-        this.props.getCourse('5faf55b176dfb22dd0be2953');
+        this.props.getCourse();
         console.log(this.props)
     }
 

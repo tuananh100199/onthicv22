@@ -84,13 +84,13 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'course'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', ].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
                             app.model.staffGroup.get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
-                        } else if (['all news', 'last news', 'subscribe', 'all staffs', ].indexOf(viewType) != -1) {
+                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'course', ].indexOf(viewType) != -1) {
                             getNextComponent(viewType);
                         } else {
                             getNextComponent('<empty>');

@@ -4,7 +4,7 @@ import { getCourseInPageByUser } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
 
-const linkFormat = '/tintuc/', idFormat = '/course/item/';
+const linkFormat = '/khoahoc/', idFormat = '/course/item/';
 
 class CourseListView extends React.Component {
     state = {};
