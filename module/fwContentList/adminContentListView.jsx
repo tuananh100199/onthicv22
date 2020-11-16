@@ -13,23 +13,23 @@ class ContentListModal extends React.Component {
     componentDidMount() {
         this.props.getAllContents();
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#ContentListName').focus());
+            $(this.modal.current).on('shown.bs.modal', () => $('#contentListName').focus());
         });
     }
 
     show = () => {
-        $('#ContentListName').val('');
+        $('#contentListName').val('');
         $(this.modal.current).modal('show');
     }
 
     save = (event) => {
         const newData = {
-            title: $('#ContentListName').val().trim()
+            title: $('#contentListName').val().trim()
         };
 
         if (newData.title == '') {
             T.notify('Tên danh sách noi dung bị trống!', 'danger');
-            $('#ContentListName').focus();
+            $('#contentListName').focus();
         } else {
             this.props.createContentList(newData, data => {
                 if (data.item) {
