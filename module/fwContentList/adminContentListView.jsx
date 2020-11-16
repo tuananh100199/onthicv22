@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllContentList, createContentList, deleteContentList } from './redux.jsx';
+import { getAllContents } from '../fwHome/redux/reduxContent.jsx'
 import { Link } from 'react-router-dom';
 
 class ContentListModal extends React.Component {
@@ -10,6 +11,7 @@ class ContentListModal extends React.Component {
     }
 
     componentDidMount() {
+        this.props.getAllContents();
         $(document).ready(() => {
             $(this.modal.current).on('shown.bs.modal', () => $('#ContentListName').focus());
         });
@@ -145,6 +147,6 @@ class ContentListPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
-const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
+const mapStateToProps = state => ({ system: state.system, contentList: state.contentList, content: state.content });
+const mapActionsToProps = { getAllContentList, createContentList, deleteContentList, getAllContents };
 export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);
