@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllContentList, createContentList, deleteContentList } from './redux.jsx';
-import { getAllContents } from '../fwHome/redux/reduxContent.jsx'
+// import { getAllContents } from '../fwHome/redux/reduxContent.jsx'
 import { Link } from 'react-router-dom';
+// import ContentListModal from './contentListModal.jsx';
+
 
 class ContentListModal extends React.Component {
     constructor(props) {
@@ -11,7 +13,7 @@ class ContentListModal extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getAllContents();
+        // this.props.getAllContents();
         $(document).ready(() => {
             $(this.modal.current).on('shown.bs.modal', () => $('#contentListName').focus());
         });
@@ -34,7 +36,8 @@ class ContentListModal extends React.Component {
             this.props.createContentList(newData, data => {
                 if (data.item) {
                     $(this.modal.current).modal('hide');
-                    this.props.history.push('/user/list-content/edit/' + data.item._id);
+                    console.log("newData", newData)
+                    // this.props.history.push('/user/list-content/edit/' + data.item._id);
                 }
             });
         }
@@ -72,7 +75,6 @@ class ContentListModal extends React.Component {
         );
     }
 }
-
 class ContentListPage extends React.Component {
     constructor(props) {
         super(props);
@@ -96,7 +98,7 @@ class ContentListPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = null;
-        if (this.props.ContentList && this.props.ContentList.list && this.props.ContentList.list.length > 0) {
+        if (this.props.contentList && this.props.contentList.list && this.props.contentList.list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered' ref={this.table}>
                     <thead>
@@ -107,7 +109,7 @@ class ContentListPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.ContentList.list.map((item, index) => (
+                        {this.props.contentList.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
@@ -148,5 +150,5 @@ class ContentListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, contentList: state.contentList, content: state.content });
-const mapActionsToProps = { getAllContentList, createContentList, deleteContentList, getAllContents };
+const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);
