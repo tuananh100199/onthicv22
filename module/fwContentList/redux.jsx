@@ -8,8 +8,11 @@ const ContentListUpdateItem = 'ContentList:UpdateItem';
 const ContentListRemoveItem = 'ContentList:RemoveItem';
 
 export default function ContentListReducer(state = null, data) {
+    console.log('r', state)
     switch (data.type) {
         case ContentListGetAll:
+            console.log('conGetall', state)
+            console.log('state', Object.assign({}, state, { list: data.items }))
             return Object.assign({}, state, { list: data.items });
 
         case ContentListAddItem:
@@ -17,7 +20,7 @@ export default function ContentListReducer(state = null, data) {
                 state = Object.assign({}, state);
                 state.item.items.push({
                     title: data.title,
-                    listOfContentId: data.listOfContentId,
+                    // listOfContentId: data.listOfContentId,
                 });
             }
             return state;
@@ -28,7 +31,7 @@ export default function ContentListReducer(state = null, data) {
                 if (0 <= data.index && data.index < state.item.items.length) {
                     state.item.items.splice(data.index, 1, {
                         title: data.title,
-                        listOfContentId: data.listOfContentId,
+                        // listOfContentId: data.listOfContentId,
                     });
                 }
             }
@@ -68,11 +71,13 @@ export function getAllContentList(done) {
     return dispatch => {
         const url = '/api/list-content/all';
         T.get(url, data => {
+            console.log('data', data)
             if (data.error) {
                 T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
+                console.log('item', data.items)
                 dispatch({ type: ContentListGetAll, items: data.items });
             }
         }, error => T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger'));
@@ -83,6 +88,7 @@ export function createContentList(newData, done) {
     return dispatch => {
         const url = '/api/list-content';
         T.post(url, { newData }, data => {
+            console.log('datacareate', data)
             if (data.error) {
                 T.notify('Tạo danh sách Content bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
@@ -157,7 +163,7 @@ export function removeContentFromList(index) {
 
 export function getContentListByUser(_id, done) {
     return dispatch => {
-        const url = '/home/list-Content/' + _id;
+        const url = '/home/list-content/' + _id;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách Content bị lỗi', 'danger');
@@ -171,7 +177,7 @@ export function getContentListByUser(_id, done) {
 
 export function createContentListItem(data, done) {
     return dispatch => {
-        const url = '/api/list-Content/item';
+        const url = '/api/list-content/item';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Create list Content item failed!', 'danger');
@@ -186,7 +192,7 @@ export function createContentListItem(data, done) {
 
 export function updateContentListItem(_id, changes, done) {
     return dispatch => {
-        const url = '/api/list-Content/item';
+        const url = '/api/list-content/item';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Update list Content item failed!', 'danger');
@@ -202,7 +208,7 @@ export function updateContentListItem(_id, changes, done) {
 
 export function swapContentListItem(_id, isMoveUp) {
     return dispatch => {
-        const url = '/api/list-Content/item/swap/';
+        const url = '/api/list-content/item/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Swap list Content item failed!', 'danger')
@@ -216,7 +222,7 @@ export function swapContentListItem(_id, isMoveUp) {
 
 export function deleteContentListItem(_id) {
     return dispatch => {
-        const url = '/api/list-Content/item';
+        const url = '/api/list-content/item';
         T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Delete list Content item failed!', 'danger');

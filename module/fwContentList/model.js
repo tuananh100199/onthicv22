@@ -1,20 +1,26 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        listOfContentId: {
-            type: [{
-                type: app.db.Schema.ObjectId,
-                ref: 'Content'
-            }],
-            default: []
-        },
+        //     listOfContentId: {
+        //         type: [{
+        //             type: app.db.Schema.ObjectId,
+        //             ref: 'Content'
+        //         }],
+        //         default: []
+        // },
     });
     const model = app.db.model('ContentList', schema);
 
     app.model.contentList = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) => {
+            model.create(data, done)
+            console.log('data,done in model', data, done)
+        },
 
-        getAll: done => model.find({}).sort({ title: -1 }).exec(done),
+        getAll: done => {
+            console.log('done model', done)
+            model.find({}).sort({ title: -1 }).exec(done)
+        },
 
         get: (_id, done) => model.findById(_id, (error, list) => {
             if (error) {

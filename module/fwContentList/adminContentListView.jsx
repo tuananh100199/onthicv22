@@ -57,10 +57,10 @@ class ContentListModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='tab-content'>
-                                <div id='ContentListViTab' className='tab-pane fade show active mt-3'>
+                                <div id='contentListViTab' className='tab-pane fade show active mt-3'>
                                     <div className='form-group'>
-                                        <label htmlFor='ContentListName'>Tên danh sách noi dung</label>
-                                        <input className='form-control' id='ContentListName' type='text' placeholder='Tên danh sách video' />
+                                        <label htmlFor='contentListName'>Tên danh sách noi dung</label>
+                                        <input className='form-control' id='contentListName' type='text' placeholder='Tên danh sách noi dung' />
                                     </div>
                                 </div>
                             </div>
@@ -98,6 +98,7 @@ class ContentListPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = null;
+        console.log('test', this.props.contentList)
         if (this.props.contentList && this.props.contentList.list && this.props.contentList.list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered' ref={this.table}>
@@ -150,5 +151,6 @@ class ContentListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, contentList: state.contentList, content: state.content });
+// const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
 const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);
