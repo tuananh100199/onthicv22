@@ -1,18 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse } from './redux.jsx';
+import { getCourseFeed } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class SectionCourse extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // viewMode: 'list' //TODO: Cookie
         }
     }
     componentDidMount() {
-        this.props.getCourse();
-        console.log(this.props)
+        this.props.getCourseFeed();
     }
 
     render() {
@@ -61,5 +59,5 @@ class SectionCourse extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourse };
+const mapActionsToProps = { getCourseFeed };
 export default connect(mapStateToProps, mapActionsToProps)(SectionCourse);

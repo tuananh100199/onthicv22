@@ -48,10 +48,10 @@ class CourseEditPage extends React.Component {
                 data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
                 this.imageBox.current.setData('course:' + (data.item._id ? data.item._id : 'new'));
                 let title = T.language.parse(data.item.title, true),
-                    abstract = T.language.parse(data.item.abstract, true),
+                    abstract = data.item.abstract,
                     content = T.language.parse(data.item.content, true);
                 $('#courseTitle').val(title.vi);
-                $('#courseAbstract').val(abstract.vi);
+                $('#courseAbstract').val(abstract);
                 this.viEditor.current.html(content.vi); 
                 this.setState(data);
             } else {
@@ -79,7 +79,6 @@ class CourseEditPage extends React.Component {
     }
 
     save = () => {
-        console.log('state',this.state)
         const courseStartPost = $('#courseStartPost').val(),
             courseStopPost = $('#courseStopPost').val(),
             changes = {
@@ -88,7 +87,7 @@ class CourseEditPage extends React.Component {
                 link: $('#courseLink').val().trim(),
                 active: this.state.item.active,
                 isInternal: this.state.item.isInternal,
-                abstract: JSON.stringify({ vi: $('#courseAbstract').val()}),
+                abstract:  $('#courseAbstract').val().trim(),
                 content: JSON.stringify({ vi: this.viEditor.current.html()}),
             };
         if (courseStartPost) changes.startPost = T.formatDate(courseStartPost);

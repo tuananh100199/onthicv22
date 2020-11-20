@@ -12,7 +12,7 @@ class CourseDetail extends React.Component {
 
     componentDidMount() {
         let url = window.location.pathname,
-            params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/course/item/:id').parse(url);
+            params = T.routeMatcher(url.startsWith('/khoahoc/') ? '/khoahoc/:link' : '/course/item/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
         this.props.getCourseByUser(params.id, params.link);
     }
@@ -29,7 +29,7 @@ class CourseDetail extends React.Component {
         }, 250);
         if (prevProps.location.pathname != window.location.pathname) {
             let url = window.location.pathname,
-                params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/course/item/:id').parse(url);
+                params = T.routeMatcher(url.startsWith('/khoahoc/') ? '/khoahoc/:link' : '/course/item/:id').parse(url);
             this.setState({ _id: params.id, link: params.link });
             this.props.getCourseByUser(params.id, params.link);
         }

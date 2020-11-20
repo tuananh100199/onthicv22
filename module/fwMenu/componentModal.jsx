@@ -42,7 +42,7 @@ export default class ComponentModal extends React.Component {
             '<empty>',
             'last news',
             'subscribe', 'contact', 'all staffs',
-            'all news', 'course'
+            'all news', 'list course', 'last course'
         ];
 
         if (types.indexOf(selectedType) == -1) {

@@ -88,11 +88,9 @@ module.exports = (app) => {
         (req, res) => {
             app.model.category.getAll({ type: 'course', active: true },
                 (error, categories) => {
-                    console.log('categories', categories)
                     if (error || categories == null) {
                         res.send({ error: 'Lỗi khi lấy danh mục!' });
                     } else {
-                        console.log('categories', categories)
                         app.model.course.get(req.params.courseId, (error, item) => {
                             res.send({
                                 error,
@@ -221,11 +219,12 @@ module.exports = (app) => {
         // }
         res.send({ error, item });
     };
-    app.get('/course/item/id/:courseId', (req, res) =>
+    app.get('/course/item/id/:courseId', (req, res) => {
         app.model.course.readById(req.params.courseId, (error, item) =>
             readCourse(req, res, error, item)
         )
-    );
+    });
+
     app.get('/course/item/link/:courseLink', (req, res) =>
         app.model.course.readByLink(req.params.courseLink, (error, item) =>
             readCourse(req, res, error, item)
