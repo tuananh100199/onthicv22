@@ -36,10 +36,10 @@ export default function contentReducer(state = [], data) {
 }
 
 // Action --------------------------------------------------------------------------------------------------------------
-export function getAllContents() {
+export function getAllContents(condition) {
     return dispatch => {
         const url = `/api/content/all`;
-        T.get(url, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -52,22 +52,22 @@ export function getAllContents() {
     }
 }
 
-export function createContent(done) {
+export function createContent(content, done) {
     return dispatch => {
         const url = `/api/content`;
-        T.post(url, data => {
+        T.post(url, { data: content }, data => {
             if (data.error) {
                 T.notify('Tạo nội dung bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllContents());
-                if (done) done(data);
+                if (done) done(data.content);
             }
         }, error => T.notify('Tạo nội dung bị lỗi!', 'danger'));
     }
 }
 
-export function updateContent(_id, changes) {
+export function updateContent(_id, changes, done) {
     return dispatch => {
         const url = `/api/content`;
         T.put(url, { _id, changes }, data => {
@@ -76,9 +76,23 @@ export function updateContent(_id, changes) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Nội dung cập nhật thành công!', 'info');
+                done && done(data.content);
                 dispatch(getAllContents());
             }
         }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
+    }
+}
+
+export function swapContent(_id, isMoveUp, done) {
+    return dispatch => {
+        const url = '/api/content/item/swap/';
+        T.put(url, { _id, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Swap content item failed!', 'danger')
+                console.error('PUT: ' + url + '. ' + data.error);
+            }
+            done && done()
+        }, error => T.notify('Swap content item failed!', 'danger'));
     }
 }
 

@@ -1,6 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        contentListId: { type: app.db.Schema.ObjectId, default: '' },
+        contentListId: { type: app.db.Schema.ObjectId, ref: 'ContentList', default: '' },
         title: String,
         content: String,
         image: String,

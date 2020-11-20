@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getListContentItem, updateListContent } from './redux.jsx';
-import { getAllContents, createContent, updateContent, deleteContent, swapContent } from './redux.jsx';
+import { getContentListItem, updateContentList } from './redux.jsx';
+import { getAllContents, createContent, updateContent, deleteContent, swapContent } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 import ImageBox from '../../view/component/ImageBox.jsx';
 
@@ -20,9 +20,8 @@ class ContentModal extends React.Component {
     }
 
     show = (selectedItem) => {
-        let { _id, title, link, image } = selectedItem ? selectedItem : { _id: null, title: '', link: '', image: '' };
-        $('#ContentTitle').val(title);
-        $('#ContentLink').val(link);
+        let { _id, title, image } = selectedItem ? selectedItem : { _id: null, title: '', image: '' };
+        $('#contentTitle').val(title);
         this.imageBox.current.setData('Content:' + (_id ? _id : 'new'), image || '/img/avatar.jpg');
         this.setState({ item: selectedItem })
 
@@ -31,16 +30,13 @@ class ContentModal extends React.Component {
 
     save = (event) => {
         const changes = {
-            title: $('#ContentTitle').val().trim(),
-            link: $('#ContentLink').val().trim(),
+            title: $('#contentTitle').val().trim()
         };
         if (changes.title == '') {
             T.notify('Tiêu đề Content bị trống!', 'danger');
-            $('#ContentViTitle').focus();
-        } else if (changes.link == '') {
-            T.notify('Link Content bị trống!', 'danger');
-            $('#ContentLink').focus();
-        } else {
+            $('#contentViTitle').focus();
+        }
+        else {
             if (this.state.item && this.state.item._id) {
                 this.props.updateContent(this.state.item._id, changes, () => {
                     $(this.modal.current).modal('hide');
@@ -69,15 +65,8 @@ class ContentModal extends React.Component {
                             <div className='row'>
                                 <div className='col-12'>
                                     <div className='form-group'>
-                                        <label htmlFor='ContentTitle'>Tiêu đề</label><br />
-                                        <input className='form-control' id='ContentTitle' type='text' placeholder='Tiêu đề' />
-                                    </div>
-                                </div>
-
-                                <div className='col-12'>
-                                    <div className='form-group'>
-                                        <label htmlFor='ContentLink'>Đường dẫn</label>
-                                        <input className='form-control' id='ContentLink' type='text' placeholder='Đường dẫn' />
+                                        <label htmlFor='contentTitle'>Tiêu đề</label><br />
+                                        <input className='form-control' id='contentTitle' type='text' placeholder='Tiêu đề' />
                                     </div>
                                 </div>
 
@@ -109,8 +98,8 @@ class ListContentEditPage extends React.Component {
 
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/list-Content/edit/:listContentId'), params = route.parse(window.location.pathname);
-            this.props.getListContentItem(params.listContentId, data => {
+            const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
+            this.props.getContentListItem(params.listContentId, data => {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
@@ -136,7 +125,7 @@ class ListContentEditPage extends React.Component {
     };
 
     add = (newData, done) => {
-        newData.listContentId = this.state.item._id;
+        newData.contentListId = this.state.item._id;
         this.props.createContent(newData, newContent => {
             let items = this.state.items;
             items.push(newContent);
@@ -176,13 +165,13 @@ class ListContentEditPage extends React.Component {
         this.props.swapContent(item._id, isMoveUp, () => {
             if (this.state && this.state.item) {
                 let items = this.state.items;
-                const Content = items[index];
+                const content = items[index];
                 if (isMoveUp && index > 0) {
                     items.splice(index, 1);
-                    items.splice(index - 1, 0, Content);
+                    items.splice(index - 1, 0, content);
                 } else if (!isMoveUp && index < items.length - 1) {
                     items.splice(index, 1);
-                    items.splice(index + 1, 0, Content);
+                    items.splice(index + 1, 0, content);
                 }
                 this.setState({ items }, done);
             }
@@ -194,14 +183,13 @@ class ListContentEditPage extends React.Component {
     save = () => {
         const changes = {
             title: $('#listContentTitle').val().trim(),
-            height: $('#ContentHeight').val().trim(),
         };
 
         if (changes.title == '') {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#listContentTitle').focus();
         } else {
-            this.props.updateListContent(this.state.item._id, changes);
+            this.props.updateContentList(this.state.item._id, changes);
         }
     };
 
@@ -216,7 +204,6 @@ class ListContentEditPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '50%' }}>Tên </th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Link</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
                         </tr>
@@ -228,9 +215,6 @@ class ListContentEditPage extends React.Component {
                                     <td>{index + 1}</td>
                                     <td>
                                         {readOnly ? item.title : <a href='#' onClick={e => this.showEditContentModal(e, item)}>{item.title}</a>}
-                                    </td>
-                                    <td>
-                                        <a href={item.link} target='_blank'>{item.link}</a>
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
                                         <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
@@ -265,7 +249,6 @@ class ListContentEditPage extends React.Component {
         }
 
         const title = currentContent && currentContent.title ? T.language.parse(currentContent.title, true) : '<Trống>';
-        const height = currentContent.height;
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -287,12 +270,6 @@ class ListContentEditPage extends React.Component {
                                     <div className='form-group mt-3'>
                                         <label className='control-label' htmlFor='listContentTitle'>Tiêu đề</label>
                                         <input className='form-control' type='text' placeholder='Tiêu đề' id='listContentTitle' defaultValue={title} readOnly={readOnly} />
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className='form-group mt-3'>
-                                        <label className='control-label' htmlFor='ContentHeight'>Chiều cao (px)</label>
-                                        <input className='form-control' type='number' placeholder='Chiều cao' id='ContentHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />
                                     </div>
                                 </div>
                             </div>
@@ -330,6 +307,6 @@ class ListContentEditPage extends React.Component {
         );
     }
 }
-const mapStateToProps = state => ({ system: state.system, Content: state.Content });
-const mapActionsToProps = { getListContentItem, updateListContent, getAllContents, createContent, updateContent, deleteContent, swapContent };
+const mapStateToProps = state => ({ system: state.system, content: state.content });
+const mapActionsToProps = { getContentListItem, updateContentList, getAllContents, createContent, updateContent, deleteContent, swapContent };
 export default connect(mapStateToProps, mapActionsToProps)(ListContentEditPage);
