@@ -26,7 +26,7 @@ const T = {
         'testimony',
         'video',
         'listVideo',
-        'list course',
+        'all courses',
         'last course'
     ],
     defaultPageSize: 50,

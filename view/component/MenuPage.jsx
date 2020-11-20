@@ -51,7 +51,7 @@ export default class MenuPage extends React.Component {
                 itemView = <fwNews.Section.SectionNews />;
             }else if (item.viewType == 'all news') {
                 itemView = <fwNews.Section.SectionNewsList />;
-            }else if (item.viewType == 'list course') {
+            }else if (item.viewType == 'all courses') {
                 itemView = <fwCourse.Section.SectionCourseList />;
             }else if (item.viewType == 'last course') {
                 itemView = <fwCourse.Section.SectionCourse />;
