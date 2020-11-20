@@ -90,11 +90,30 @@ const T = {
             document.cookie = cname + '=' + JSON.stringify(cvalue) + ';expires=' + d.toUTCString() + ';path=/';
         }
     },
+    
+    getCookie: (cname) => {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length,c.length);
+            }
+        }
+        return "";
+    },
 
     cookieKeyName: {
         pageNumber: 'N',
         pageSize: 'S',
         pageCondition: 'C'
+    },
+
+    cookieViewMode: () => {
+
     },
 
     initCookiePage: (cookieName, hasCondition = false) => {
@@ -329,6 +348,7 @@ T.clone = function () {
     }
     return result;
 };
+
 
 export default T;
 
