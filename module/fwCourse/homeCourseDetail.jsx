@@ -49,7 +49,7 @@ class CourseDetail extends React.Component {
                 <section className='row mr-0'>
                     <div className='container'>
                         <div className='row'>
-                            <div className='col-12'>
+                            {/* <div className='col-12'>
                                 <div
                                     className='single-course-intro d-flex align-items-center justify-content-center'
                                     style={{
@@ -63,27 +63,27 @@ class CourseDetail extends React.Component {
                                         <h3>{T.language.parse(item.title)}</h3>
                                     </div>
                                 </div>
-                            </div>
-                            <div className='col-12 col-lg-8 pt-5'>
+                            </div> */}
+                            <div className='col-12 col-lg-12 pt-5'>
                                 <div className='course--content' data-aos='fade-up'>
                                     <div className='clever-description p-2'>
                                         <div className='about-course mb-30'>
                                             <span className="meta">{new Date(item.createdDate).getText()}</span>
-                                            <p className="text-center">
+                                            {/* <p className="text-center">
                                                 <img src={item.image} alt="Image" className="img-fluid" style={{ width: '30%', height: 'auto' }} />
-                                            </p>
-                                            <h4 className='text-black text-left'>Nội dung tin tức</h4>
+                                            </p> */}
+                                            {/* <h4 className='text-black text-left'>Nội dung khóa học</h4> */}
                                             <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                            {categories}
+                                            {/* {categories} */}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
+                            {/* <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
                                 <div className='sidebar-widget'>
                                     <SectionCourse />
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

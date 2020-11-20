@@ -45,7 +45,7 @@ class SectionCourse extends React.Component {
         return (
             <div className='mt-2'>
                 <div className='text-left pl-4 mb-1 py-1' style={{ backgroundColor: '#4d983c' }}>
-                    <h3 className='text-white'>Tin Tức Mới Nhất</h3>
+                    <h3 className='text-white'>Khóa Học Mới</h3>
                 </div>
                 <div>
                     {course}

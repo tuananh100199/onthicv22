@@ -170,7 +170,6 @@ export function getCourseInPageByUser(pageNumber, pageSize, done) {
 }
 
 export function getCourseByUser(courseId, courseLink, done) {
-    
     return dispatch => {
         const url = courseId ? '/course/item/id/' + courseId : '/course/item/link/' + courseLink;
         T.get(url, data => {
