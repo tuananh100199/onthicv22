@@ -31,7 +31,6 @@ const T = {
     defaultUserPageSize: 21,
     defaultUserSidebarSize: 3,
     newsFeedPageSize: 4,
-    defaultViewMode: 'grid',
 
     randomPassword: length => Math.random().toString(36).slice(-length),
 
@@ -110,10 +109,6 @@ const T = {
         pageNumber: 'N',
         pageSize: 'S',
         pageCondition: 'C'
-    },
-
-    cookieViewMode: () => {
-
     },
 
     initCookiePage: (cookieName, hasCondition = false) => {

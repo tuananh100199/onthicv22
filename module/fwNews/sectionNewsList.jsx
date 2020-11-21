@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getNewsInPageByUser } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
-import T from '../../view/js/common.js';
 
 const linkFormat = '/tintuc/', idFormat = '/news/item/';
 class SectionNewsList extends React.Component {
@@ -13,7 +12,7 @@ class SectionNewsList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          viewMode: (T.cookie('viewMode') == '' ? T.defaultViewMode : T.cookie('viewMode'))
+          viewMode: (T.cookie('viewMode') ? T.cookie('viewMode') : 'grid')
         }
     }
     
