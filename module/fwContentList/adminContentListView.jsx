@@ -36,11 +36,11 @@ class ContentListModal extends React.Component {
             this.props.createContentList(newData, data => {
                 if (data.item) {
                     $(this.modal.current).modal('hide');
-                    console.log("newData", newData)
-                    // this.props.history.push('/user/list-content/edit/' + data.item._id);
+                    this.props.history.push('/user/list-content/edit/' + data.item._id);
                 }
             });
         }
+        // this.props.getAllContentList();
         event.preventDefault();
     }
 

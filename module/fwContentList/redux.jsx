@@ -8,11 +8,8 @@ const ContentListUpdateItem = 'ContentList:UpdateItem';
 const ContentListRemoveItem = 'ContentList:RemoveItem';
 
 export default function ContentListReducer(state = null, data) {
-    console.log('r', state)
     switch (data.type) {
         case ContentListGetAll:
-            console.log('conGetall', state)
-            console.log('state', Object.assign({}, state, { list: data.items }))
             return Object.assign({}, state, { list: data.items });
 
         case ContentListAddItem:
@@ -71,13 +68,11 @@ export function getAllContentList(done) {
     return dispatch => {
         const url = '/api/list-content/all';
         T.get(url, data => {
-            console.log('data', data)
             if (data.error) {
                 T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
-                console.log('item', data.items)
                 dispatch({ type: ContentListGetAll, items: data.items });
             }
         }, error => T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger'));
@@ -88,12 +83,12 @@ export function createContentList(newData, done) {
     return dispatch => {
         const url = '/api/list-content';
         T.post(url, { newData }, data => {
-            console.log('datacareate', data)
             if (data.error) {
                 T.notify('Tạo danh sách Content bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
+                dispatch(getAllContentList());
             }
         }, error => T.notify('Tạo danh sách Content bị lỗi!', 'danger'));
     }

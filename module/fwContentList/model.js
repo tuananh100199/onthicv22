@@ -14,11 +14,9 @@ module.exports = app => {
     app.model.contentList = {
         create: (data, done) => {
             model.create(data, done)
-            console.log('data,done in model', data, done)
         },
 
         getAll: done => {
-            console.log('done model', done)
             model.find({}).sort({ title: -1 }).exec(done)
         },
 

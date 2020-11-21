@@ -99,6 +99,7 @@ class ListContentEditPage extends React.Component {
     componentDidMount() {
         T.ready('/user/component', () => {
             const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
+            console.log('param', params)
             this.props.getContentListItem(params.listContentId, data => {
                 if (data.error) {
                     this.props.history.push('/user/component');
@@ -189,7 +190,9 @@ class ListContentEditPage extends React.Component {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#listContentTitle').focus();
         } else {
-            this.props.updateContentList(this.state.item._id, changes);
+            console.log("this.state", this.state)
+            // this.props.updateContentList(this.state.item._id, changes);
+            this.props.updateContentList(T.routeMatcher('/user/list-content/edit/:listContentId').parse(window.location.pathname).listContentId, changes);
         }
     };
 

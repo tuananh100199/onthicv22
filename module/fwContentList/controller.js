@@ -1,8 +1,6 @@
 module.exports = app => {
     app.get('/api/list-content/all', app.permission.check('component:read'), (req, res) => {
-        console.log('res in controll', res)
         app.model.contentList.getAll((error, items) => {
-            console.log('items in control', items)
             res.send({ error, items })
         })
     });
@@ -11,9 +9,7 @@ module.exports = app => {
         app.model.contentList.get(req.params.contentListId, (error, item) => res.send({ error, item })));
 
     app.post('/api/list-content', app.permission.check('component:write'), (req, res) => {
-        console.log("req", req)
         app.model.contentList.create(req.body.newData, (error, item) => res.send({ error, item }))
-        console.log('error,item in controller', error, item)
     });
 
     app.delete('/api/list-content', app.permission.check('component:write'), (req, res) => app.model.contentList.delete(req.body._id, error => res.send({ error })));

@@ -9,7 +9,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/list-content/edit/:contentListId',
+            path: '/user/list-content/edit/:listContentId',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage.jsx') })
         },
         // { path: '/news/item/:newsId', component: Loadable({ loading: Loading, loader: () => import('./homeNewsDetail.jsx') }) },
