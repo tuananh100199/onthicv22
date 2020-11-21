@@ -13,7 +13,7 @@ class SectionNewsList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          viewMode: (T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1) == '' ? T.defaultViewMode : T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1))
+          viewMode: (T.cookie('viewMode') == '' ? T.defaultViewMode : T.cookie('viewMode'))
         }
     }
     
