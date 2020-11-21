@@ -92,6 +92,7 @@ const T = {
         }
     },
     
+
     storage: (cname, cvalue) => {
         if (cvalue != null) {
             window.localStorage.setItem(cname, JSON.stringify(cvalue));
@@ -343,6 +344,7 @@ T.clone = function() {
     }
     return result;
 };
+
 
 export default T;
 
