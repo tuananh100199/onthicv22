@@ -30,6 +30,7 @@ const T = {
     defaultUserPageSize: 21,
     defaultUserSidebarSize: 3,
     newsFeedPageSize: 4,
+    defaultViewMode: 'grid',
 
     randomPassword: length => Math.random().toString(36).slice(-length),
 

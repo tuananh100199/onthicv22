@@ -14,7 +14,7 @@ class NewsListView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      viewMode: (T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1) == '' ? 'list' : T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1)) //TODO: Cookie
+      viewMode: (T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1) == '' ? T.defaultViewMode : T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1)) //TODO: Cookie
     }
   }
 
@@ -39,7 +39,6 @@ class NewsListView extends React.Component {
   }
 
   render() {
-    console.log(T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1))
     let userPage = this.props.news ? this.props.news.userPage : null,
       elements_grid = [],
       elements_list = [];
