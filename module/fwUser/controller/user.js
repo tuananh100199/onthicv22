@@ -11,6 +11,7 @@ module.exports = app => {
         { name: 'user:search' },
     );
 
+    app.get('/user/profile', app.permission.check(), app.templates.admin);
     app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
 
     app.get('/api/user-search/:email', app.permission.check('user:read'), (req, res) => app.model.user.get({ email: req.params.email }, (error, user) => {
@@ -19,17 +20,15 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/user/page/:pageNumber/:pageSize',
-        app.permission.orCheck('user:read', 'user:search', (req, permissions) => {
-            return permissions.some(permission => permission.startsWith('league:'));
-        }),
+        app.permission.orCheck('user:read', 'user:search'),
         (req, res) => {
             let pageNumber = parseInt(req.params.pageNumber),
                 pageSize = parseInt(req.params.pageSize),
-                condition = req.query.condition ? req.query.condition : {},
+                condition = req.query.condition || '',
                 pageCondition = {};
             try {
-                if (condition.searchText) {
-                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                if (condition) {
+                    const value = { $regex: `.*${condition}.*`, $options: 'i' };
                     pageCondition['$or'] = [
                         { facebook: value },
                         { phoneNumber: value },

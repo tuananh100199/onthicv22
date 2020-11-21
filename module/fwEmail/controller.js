@@ -3,7 +3,7 @@ module.exports = app => {
         {
             name: 'system:email',
             menu: {
-                parentMenu: { index: 2000, title: 'Configure', icon: 'fa-cog' },
+                parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
                 menus: { 2020: { title: 'Email', link: '/user/email' } }
             },
         }

@@ -6,17 +6,26 @@ import inView from 'in-view';
 import T from '../../view/js/common.js';
 
 const linkFormat = '/tintuc/', idFormat = '/news/item/';
-
-class NewsListView extends React.Component {
-  state = {};
-  loading = false;
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      viewMode: (T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1) == '' ? T.defaultViewMode : T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1)) //TODO: Cookie
+class SectionNewsList extends React.Component {
+    state = {};
+    loading = false;
+    
+    constructor(props) {
+        super(props);
+        this.state = {
+          viewMode: (T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1) == '' ? T.defaultViewMode : T.getCookie('viewMode').slice(1, T.getCookie('viewMode').length - 1))
+        }
     }
-  }
+    
+    ready = () => {
+        inView('.listViewLoading').on('enter', () => {
+            let userPage = this.props.news.userPage;
+            if (!this.loading && this.props.getNewsInPageByUser && userPage && userPage.pageNumber < userPage.pageTotal) {
+                this.loading = true;
+                this.props.getNewsInPageByUser(userPage.pageNumber + 1, T.defaultUserPageSize, () => this.loading = false);
+            }
+        });
+    }
 
   componentDidMount() {
     this.props.getNewsInPageByUser(1, T.defaultUserPageSize, () => this.loading = false);
@@ -126,4 +135,4 @@ class NewsListView extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, news: state.news });
 const mapActionsToProps = { getNewsInPageByUser };
-export default connect(mapStateToProps, mapActionsToProps)(NewsListView);
+export default connect(mapStateToProps, mapActionsToProps)(SectionNewsList);

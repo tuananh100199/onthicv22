@@ -34,6 +34,8 @@ export default class MenuPage extends React.Component {
                 itemView = <fwHome.Section.SectionSlogan sloganId={item.viewId} />;
             } else if (item.viewType == 'video') {
                 itemView = <fwHome.Section.SectionVideo videoId={item.viewId} />;
+            } else if (item.viewType == 'listVideo') {
+                itemView = <fwHome.Section.SectionListVideo listVideoId={item.viewId} />;
             } else if (item.viewType == 'statistic') {
                 itemView = <fwHome.Section.SectionStatistic statisticId={item.viewId} />;
             } else if (item.viewType == 'logo') {

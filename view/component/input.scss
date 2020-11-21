@@ -1,0 +1,13 @@
+.validated select.form-control.invalid + .select2-container--default .select2-selection--single,
+.validated select.form-control.invalid + .select2-container--default .select2-selection--multiple,
+.validated       .form-control.invalid,
+.validated       .custom-select.invalid {
+  border-color: #dc3545;
+}
+
+.validated select.form-control.valid + .select2-container--default .select2-selection--single,
+.validated select.form-control.valid + .select2-container--default .select2-selection--multiple,
+.validated       .form-control.valid,
+.validated       .custom-select.valid {
+  border-color: #28a745;
+}
