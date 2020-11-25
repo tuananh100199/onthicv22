@@ -1,6 +1,7 @@
 100. Dashboard (/user/dashboard)
 1000. Trang cá nhân (/user)
 	1010 - Hồ sơ cá nhân (/user/profile)
+	1020 - Đơn đề nghị học, sát hạch (/user/user-form)
 2000. Cấu hình (undefined)
 	2010 - Thông tin chung (/user/settings)
 	2020 - Email (/user/email)

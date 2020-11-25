@@ -34,6 +34,8 @@ import fwEmail from '../../module/fwEmail/index.jsx';
 import fwForm from '../../module/fwForm/index.jsx';
 import fwNews from '../../module/fwNews/index.jsx';
 import fwCourse from '../../module/fwCourse/index.jsx';
+// import fwUserForm from '../../module/fwUserForm/index.jsx';
+
 
 
 const modules = [

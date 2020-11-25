@@ -27,5 +27,9 @@ export default {
             path: '/user/profile',
             component: Loadable({ loading: Loading, loader: () => import('./adminProfilePage.jsx') })
         },
+        {
+            path: '/user/user-form',
+            component: Loadable({ loading: Loading, loader: () => import('../fwUserForm/admin/adminPage.jsx') })
+        },
     ],
 };
