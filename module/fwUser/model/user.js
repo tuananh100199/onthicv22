@@ -9,18 +9,17 @@ module.exports = (app) => {
         password: String,
         phoneNumber: String,
         image: String,
-
         active: { type: Boolean, default: false },
         createdDate: Date,
         token: String,
         tokenDate: Date,
     });
 
-    schema.methods.equalPassword = function (password) {
+    schema.methods.equalPassword = function(password) {
         return app.crypt.compareSync(password, this.password);
     };
 
-    schema.methods.clone = function () {
+    schema.methods.clone = function() {
         let user = app.clone(this, { permissions: [], menu: {} });
         delete user.password;
 
@@ -62,15 +61,15 @@ module.exports = (app) => {
 
         auth: (email, password, done) =>
             model
-                .findOne({ email })
-                .populate('roles')
-                .exec((error, user) =>
-                    done(
-                        error == null && user != null && user.equalPassword(password)
-                            ? user
-                            : null
-                    )
-                ),
+            .findOne({ email })
+            .populate('roles')
+            .exec((error, user) =>
+                done(
+                    error == null && user != null && user.equalPassword(password) ?
+                    user :
+                    null
+                )
+            ),
 
         create: (data, done) =>
             app.model.user.get({ email: data.email }, (error, user) => {
@@ -127,8 +126,8 @@ module.exports = (app) => {
             }),
 
         get: (condition, done) =>
-            typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done)
-                : model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
+            typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) :
+            model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
 
         getPlayerInfo: (_id, done) => {
             const userSelect = '-password -token -tokenDate -roles -active';
@@ -151,9 +150,9 @@ module.exports = (app) => {
                         pageTotal: Math.ceil(totalItem / pageSize),
                     };
                     result.pageNumber =
-                        pageNumber === -1
-                            ? result.pageTotal
-                            : Math.min(pageNumber, result.pageTotal);
+                        pageNumber === -1 ?
+                        result.pageTotal :
+                        Math.min(pageNumber, result.pageTotal);
                     const skipNumber =
                         (result.pageNumber > 0 ? result.pageNumber - 1 : 0) *
                         result.pageSize;
@@ -176,17 +175,17 @@ module.exports = (app) => {
             }),
 
         getAll: (condition, done) =>
-            done
-                ? model
-                    .find(condition)
-                    .sort({ lastname: 1, firstname: 1 })
-                    .select('-password -token -tokenDate')
-                    .exec(done)
-                : model
-                    .find({})
-                    .sort({ lastname: 1, firstname: 1 })
-                    .select('-password -token -tokenDate')
-                    .exec(condition),
+            done ?
+            model
+            .find(condition)
+            .sort({ lastname: 1, firstname: 1 })
+            .select('-password -token -tokenDate')
+            .exec(done) :
+            model
+            .find({})
+            .sort({ lastname: 1, firstname: 1 })
+            .select('-password -token -tokenDate')
+            .exec(condition),
 
         update: (_id, $set, $unset, done) => {
             if (!done) {

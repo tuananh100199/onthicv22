@@ -5,13 +5,11 @@ module.exports = app => {
             2060: { title: 'Người dùng', link: '/user/user' },
         },
     };
-    app.permission.add(
-        { name: 'user:read', menu: userMenu },
-        { name: 'user:write', menu: userMenu },
-        { name: 'user:search' },
-    );
+    app.permission.add({ name: 'user:read', menu: userMenu }, { name: 'user:write', menu: userMenu }, { name: 'user:search' }, );
 
     app.get('/user/profile', app.permission.check(), app.templates.admin);
+    app.get('/user/user-form', app.permission.check(), app.templates.admin);
+
     app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
 
     app.get('/api/user-search/:email', app.permission.check('user:read'), (req, res) => app.model.user.get({ email: req.params.email }, (error, user) => {
@@ -66,11 +64,11 @@ module.exports = app => {
                     const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                         mailTitle = result.emailCreateMemberByAdminTitle,
                         mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
+                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
+                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
                     app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                 });
             }
@@ -104,11 +102,11 @@ module.exports = app => {
                                     app.model.setting.get(['emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml'], result => {
                                         let mailTitle = result.emailNewPasswordTitle,
                                             mailText = result.emailNewPasswordText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', password),
+                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                            .replaceAll('{email}', user.email).replaceAll('{password}', password),
                                             mailHtml = result.emailNewPasswordHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', password);
+                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                            .replaceAll('{email}', user.email).replaceAll('{password}', password);
                                         app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
                                     });
                                 }
@@ -131,7 +129,8 @@ module.exports = app => {
     });
 
     app.put('/api/profile', app.permission.check(), (req, res) => {
-        const changes = req.body.changes, $unset = {};
+        const changes = req.body.changes,
+            $unset = {};
         if (changes.birthday && changes.birthday == 'empty') {
             delete changes.birthday;
             $unset.birthday = '';
