@@ -1,5 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        user: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
         title: String,
         nationality: String,
         licenseDated: String,
