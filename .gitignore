@@ -14,3 +14,4 @@ public/img/*
 !public/img/flag
 .DS_Store
 .history
+yarn-error.log
