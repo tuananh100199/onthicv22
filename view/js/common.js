@@ -26,6 +26,8 @@ const T = {
         'testimony',
         'video',
         'listVideo',
+        'all courses',
+        'last course'
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
@@ -91,7 +93,6 @@ const T = {
             document.cookie = cname + '=' + JSON.stringify(cvalue) + ';expires=' + d.toUTCString() + ';path=/';
         }
     },
-    
 
     storage: (cname, cvalue) => {
         if (cvalue != null) {
@@ -104,7 +105,7 @@ const T = {
             }
         }
     },
-    
+
     cookieKeyName: {
         pageNumber: 'N',
         pageSize: 'S',
@@ -366,7 +367,7 @@ String.prototype.upFirstChar = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-String.prototype.lowFirstChar = function () {
+String.prototype.lowFirstChar = function() {
     return this.charAt(0).toLowerCase() + this.slice(1);
 }
 
