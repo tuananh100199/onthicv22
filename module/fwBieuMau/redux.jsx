@@ -33,14 +33,14 @@ export default function userFormReducer(state = null, data) {
 
 // Actions (admin) ----------------------------------------------------------------------------------------------------
 export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, done) {
-    const url = '/api/form/page/' + pageNumber + '/' + pageSize;
+    const url = '/api/user-form/page/' + pageNumber + '/' + pageSize;
     T.get(url, { pageCondition }, data => {
         done(data)
     }, error => T.notify('Lấy danh sách form bị lỗi!', 'danger'))
 }
 
 export function ajaxGetForm(_id, option, done) {
-    const url = '/api/form/item/' + _id;
+    const url = '/api/user-form/item/' + _id;
     T.get(url, { option }, data => {
         done(data)
     }, error => T.notify('Lấy form bị lỗi!', 'danger'))
@@ -77,8 +77,9 @@ export function getForm(_id, option, done) {
 }
 
 export function createForm(done) {
+    console.log('here')
     return dispatch => {
-        const url = '/api/form';
+        const url = '/api/user-form';
         const data = {
             title: JSON.stringify({ vi: 'Biểu mẫu mới', en: 'New form' })
         };
@@ -95,7 +96,7 @@ export function createForm(done) {
 
 export function updateForm(_id, changes, done) {
     return dispatch => {
-        const url = '/api/form';
+        const url = '/api/user-form';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
@@ -111,7 +112,7 @@ export function updateForm(_id, changes, done) {
 
 export function deleteForm(_id) {
     return dispatch => {
-        const url = '/api/form';
+        const url = '/api/user-form';
         T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xóa form bị lỗi!', 'danger');
@@ -127,7 +128,7 @@ export function deleteForm(_id) {
 // Actions (user) -----------------------------------------------------------------------------------------------------
 export function homeGetForm(_id, done) {
     return dispatch => {
-        const url = '/form/item/' + _id;
+        const url = '/user-form/item/' + _id;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy form bị lỗi!', 'danger');

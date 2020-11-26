@@ -1,16 +1,12 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        image: String, //Cover image
-        description: String,
-        active: { type: Boolean, default: false },
-        lock: { type: Boolean, default: false },
-
-        maxRegisterUsers: { type: Number, default: -1 }, // -1 is infinity
-        createdDate: { type: Date, default: Date.now },
-        startRegister: { type: Date, default: Date.now },
-        stopRegister: Date, // null is forever
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
+        nationality: String,
+        licenseDated: String,
+        formName: String,
+        residence: String,
+        identityCard: Number,
+        integration: Boolean,
     });
     const model = app.db.model('DriverForm', schema);
 

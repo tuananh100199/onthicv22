@@ -13,7 +13,7 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             pageCondition = req.query.pageCondition ? req.query.pageCondition : {};
-        app.model.form.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+        app.model.driverForm.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             if (error || page == null) {
                 res.send({ error: 'Danh sách form không sẵn sàng!' });
             } else {
@@ -23,12 +23,19 @@ module.exports = app => {
     });
 
     app.get('/api/user-form/item/:id', app.permission.check('form:read'), (req, res) => {
-        app.model.form.get(req.params.id, req.query.option ? req.query.option : {}, (error, item) => res.send({ error, item }));
+        app.model.driverForm.get(req.params.id, req.query.option ? req.query.option : {}, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/user-form', app.permission.check('user-form:write'), (req, res) => app.model.form.create(req.body.data, (error, item) => {
-        res.send({ error, item })
-    }));
+    app.post('/api/user-form', app.permission.check('user-form:write'), (req, res) => {
+        const {
+            data
+        } = req.body;
+        // data.
+        console.log(req.session.user);
+        app.model.driverForm.create(data, (error, item) => {
+            res.send({ error, item })
+        })
+    });
 
     app.put('/api/user-form', app.permission.check('user-form:write'), (req, res) => {
         const $set = req.body.changes,
@@ -42,10 +49,10 @@ module.exports = app => {
             $unset.stopRegister = '';
             delete $set.stopRegister;
         }
-        app.model.form.update(req.body._id, $set, $unset, (error, item) => res.send({ error, item }));
+        app.model.driverForm.update(req.body._id, $set, $unset, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/user-form', app.permission.check('user-form:write'), (req, res) => app.model.form.delete(req.body._id, error => res.send({ error })));
+    app.delete('/api/user-form', app.permission.check('user-form:write'), (req, res) => app.model.driverForm.delete(req.body._id, error => res.send({ error })));
 
     app.get('/user-form/item/:id', (req, res) => {
         const condition = {
@@ -57,7 +64,7 @@ module.exports = app => {
             select: '-lock -active',
             populate: true
         };
-        app.model.form.get(condition, option, (error, item) => res.send({ error, item }));
+        app.model.driverForm.get(condition, option, (error, item) => res.send({ error, item }));
     });
     //End form ---------------------------------------------------------------------------------------------------------
 
@@ -94,9 +101,9 @@ module.exports = app => {
         app.permission.has(req, () => uploadFormCkEditor(req, fields, files, params, done), done, 'user-form:write'));
 
     const uploadFormImage = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('form:') && files.FormImage && files.FormImage.length > 0) {
+        if (fields.userData && fields.userData[0].startsWith('form:') && files.driverFormImage && files.driverFormImage.length > 0) {
             console.log('Hook: uploadFormImage => form image upload');
-            app.uploadComponentImage(req, 'form', app.model.form.get, fields.userData[0].substring(5), files.FormImage[0].path, done);
+            app.uploadComponentImage(req, 'form', app.model.driverForm.get, fields.userData[0].substring(5), files.driverFormImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadFormImage', (req, fields, files, params, done) =>
