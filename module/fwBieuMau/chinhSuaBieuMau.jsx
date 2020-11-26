@@ -2,19 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateForm, getForm } from './redux.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
-import Countries  from 'react-select-country';
+const countryList = require('country-list');
 
 
 class FormEditPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { item: null, nationality: null};
+        this.state = { item: null};
+        this.quocGiaTemp = React.createRef();
         this.sex = React.createRef();
-        this.onSelectCountry=this.onSelectCountry.bind(this);
+
     }
 
     componentDidMount() {
-        console.log(this.state)
         $('#formTitle').focus();
         T.ready('/user', () => {
             if (this.props.system && this.props.system.user) {
@@ -35,7 +35,6 @@ class FormEditPage extends React.Component {
             const route = T.routeMatcher('/user/user-form/edit/:formId'),
                 formId = route.parse(window.location.pathname).formId;
             this.props.getForm(formId, { select: '-questions' }, data => {
-                console.log('data',data)
                 if (data.error) {
                     this.props.history.push('/user/user-form');
                 } else if (data.item) {
@@ -45,9 +44,18 @@ class FormEditPage extends React.Component {
                     $('#formName').val(data.item.formName);
                     $('#residence').val(data.item.residence);
                     $('#identityCard').val(data.item.identityCard);
+                    $('#dnDoanhNghiepEditTenVietTat').val(data.item.nationality.text);
+
                     // $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
                     // $('#licenseDated').val(data.item.licenseDated ? T.dateToText(licenseDated, 'dd/mm/yyyy') : '');
-
+                    $(this.quocGiaTemp.current).select2({
+                        data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
+                        placeholder: 'Chọn quốc gia'
+                    }).val($('#dnDoanhNghiepEditTenVietTat') || null).trigger('change');
+                    $(this.quocGiaTemp.current).on('change', e => {
+                        this.setState({ item: Object.assign({}, this.state.item, { nationality:  $('#dnDoanhNghiepEditTenVietTat').val()}) });
+                    console.log(this.state)
+                    })
                 } else {
                     this.props.history.push('/user/user-form/list');
                 }
@@ -62,16 +70,8 @@ class FormEditPage extends React.Component {
         this.sex.current.setText(sex ? sex : '');
         callback && callback();
     }
-    onSelectCountry(event){
-        this.state.selectedCountry={
-             id:event.target.value,
-             name:event.target.options[event.target.selectedIndex].text
-        }
-        //OR,if you assign "ref" to the component , ,
-        this.state.selectedCountry=this.refs.country.selected; // {value,name}
-      }
+
     changeActive = (event) => {
-        console.log('event',event.target.value)
         this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
     }
 
@@ -80,7 +80,7 @@ class FormEditPage extends React.Component {
             birthday = $('#birthday').val(),
             // licenseDated = $('#licenseDated').val(),
             changes = {
-                nationality: this.state.value,
+                nationality: $('#dnDoanhNghiepEditTenVietTat').val(),
                 title: JSON.stringify($('#formTitle').val()),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 // licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
@@ -89,7 +89,6 @@ class FormEditPage extends React.Component {
                 identityCard: $('#identityCard').val(),
                 integration: this.state.item.integration,
             };
-            console.log(changes)
 
         this.props.updateForm(this.state.item._id, changes, () => {
             T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
@@ -103,9 +102,8 @@ class FormEditPage extends React.Component {
             _id: '', title: '', nationality: '',birthday:'',licenseDated:'',formName:'',
             residence:'',identityCard:'',
         };
-        console.log('item',item)
         const title = T.language.parse(item.title, true);
-    
+        console.log('item',item)
 
         return (
             <main className='app-content'>
@@ -133,7 +131,7 @@ class FormEditPage extends React.Component {
                                         </div>
                                         <div className="form-group">
                                             <label className='control-label' htmlFor="country">Quốc tịch:</label>
-                                            <Countries style={{borderRadius:'20px',marginLeft:'20px',padding:'5px',outline:'none',width:'265px'}} ref="country" name="country" empty="--------------Chọn quốc tịch--------------" onChange={(e)=>this.onSelectCountry(e)} />
+                                            <select className='form-control select2-input' id='dnDoanhNghiepEditTenVietTat' ref={this.quocGiaTemp} multiple={false} />
                                         </div>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
