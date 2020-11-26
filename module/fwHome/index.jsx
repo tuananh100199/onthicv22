@@ -11,6 +11,8 @@ import testimony from './redux/reduxTestimony.jsx';
 import video from './redux/reduxVideo.jsx';
 import listVideo from './redux/reduxListVideo.jsx';
 
+
+
 import SectionCarousel from './sectionCarousel.jsx';
 import SectionLogo from './sectionLogo.jsx';
 import SectionSlogan from './sectionSlogan.jsx';
@@ -19,6 +21,7 @@ import SectionStatistic from './sectionStatistic.jsx';
 import SectionTestimony from './sectionTestimony.jsx';
 import SectionVideo from './sectionVideo.jsx';
 import SectionListVideo from './sectionListVideo.jsx';
+
 
 export default {
     redux: {

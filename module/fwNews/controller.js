@@ -7,17 +7,13 @@ module.exports = (app) => {
             6003: { title: 'Chờ duyệt', link: '/user/news/draft' },
         },
     };
-    app.permission.add(
-        { name: 'news:read', menu },
-        { name: 'news:write', menu },
-        { name: 'news:draft', menu }
-    );
+    // app.permission.add({ name: 'news:read', menu }, { name: 'news:write', menu }, { name: 'news:draft', menu });
     app.get('/user/news/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/news/list', app.permission.check('news:read'), app.templates.admin);
     app.get('/user/news/edit/:_id', app.permission.check('news:read'), app.templates.admin);
     app.get('/user/news/draft', app.permission.check('news:read'), app.templates.admin);
     app.get('/user/news/draft/edit/:_id', app.permission.check('news:draft'), app.templates.admin);
-    
+
     app.get('/news/item/:_id', app.templates.home);
     app.get('/tintuc/:link', app.templates.home);
 
@@ -45,9 +41,10 @@ module.exports = (app) => {
             res.send(page);
         });
     });
-    
+
     app.get('/api/draft-news/page/:pageNumber/:pageSize', app.permission.check('news:draft'), (req, res) => {
-        const user = req.session.user, condition = user.permissions.includes('news:write') ? { documentType: 'news' } : { documentType: 'news', editorId: user._id };
+        const user = req.session.user,
+            condition = user.permissions.includes('news:write') ? { documentType: 'news' } : { documentType: 'news', editorId: user._id };
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.draft.getPage(pageNumber, pageSize, condition, (error, page) => {
@@ -56,8 +53,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/news/default', app.permission.check('news:write'), (req, res) =>
-        app.model.news.create(
-            { title: 'Bài viết', active: false },
+        app.model.news.create({ title: 'Bài viết', active: false },
             (error, item) => res.send({ error, item })
         ));
 
@@ -90,8 +86,7 @@ module.exports = (app) => {
         '/api/news/item/:newsId',
         app.permission.check('news:read'),
         (req, res) => {
-            app.model.category.getAll(
-                { type: 'news', active: true },
+            app.model.category.getAll({ type: 'news', active: true },
                 (error, categories) => {
                     if (error || categories == null) {
                         res.send({ error: 'Lỗi khi lấy danh mục!' });
@@ -124,8 +119,7 @@ module.exports = (app) => {
         '/api/draft-news/item/:newsId',
         app.permission.check('news:draft'),
         (req, res) => {
-            app.model.category.getAll(
-                { type: 'news', active: true },
+            app.model.category.getAll({ type: 'news', active: true },
                 (error, categories) => {
                     if (error || categories == null) {
                         res.send({ error: 'Lỗi khi lấy danh mục!' });
@@ -238,11 +232,9 @@ module.exports = (app) => {
     app.put('/news/item/check-link', (req, res) =>
         app.model.news.getByLink(req.body.link, (error, item) => {
             res.send({
-                error: error
-                    ? 'Lỗi hệ thống'
-                    : item == null || item._id == req.body._id
-                        ? null
-                        : 'Link không hợp lệ',
+                error: error ?
+                    'Lỗi hệ thống' : item == null || item._id == req.body._id ?
+                    null : 'Link không hợp lệ',
             });
         })
     );
@@ -258,12 +250,12 @@ module.exports = (app) => {
     app.uploadHooks.add(
         'uploadNewsCkEditor',
         (req, fields, files, params, done) =>
-            app.permission.has(
-                req,
-                () => app.uploadCkEditorImage('news', fields, files, params, done),
-                done,
-                'news:write'
-            )
+        app.permission.has(
+            req,
+            () => app.uploadCkEditorImage('news', fields, files, params, done),
+            done,
+            'news:write'
+        )
     );
 
     const uploadNewsAvatar = (req, fields, files, params, done) => {
@@ -314,11 +306,11 @@ module.exports = (app) => {
     app.uploadHooks.add(
         'uploadNewsDraftAvatar',
         (req, fields, files, params, done) =>
-            app.permission.has(
-                req,
-                () => uploadNewsDraftAvatar(req, fields, files, params, done),
-                done,
-                'news:draft'
-            )
+        app.permission.has(
+            req,
+            () => uploadNewsDraftAvatar(req, fields, files, params, done),
+            done,
+            'news:draft'
+        )
     );
 };

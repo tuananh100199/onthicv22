@@ -7,7 +7,7 @@ module.exports = app => {
                 '<empty>',
                 'carousel', 'slogan', 'video', 'statistic', 'staff group', 'testimony', 'all staffs', 'last news',
                 'subscribe', 'contact', 'logo',
-                'content', 'all news', 'event', 'all leagues', 'listVideo'
+                'content', 'all news', 'event', 'all leagues', 'listVideo', 'all courses', 'last course'
             ],
         },
         viewId: app.db.Schema.Types.ObjectId,

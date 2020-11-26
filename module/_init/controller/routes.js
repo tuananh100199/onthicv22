@@ -2,25 +2,22 @@ module.exports = (app) => {
     const menuDashboard = {
         parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' }
     };
-    
+
     const menuProfile = {
         parentMenu: app.parentMenu.user,
-        menus:  {
-            1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 }
+        menus: {
+            1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 },
+            1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/user-form', icon: 'fa-id-card-o', backgroundColor: '#032b91', groupIndex: 1 }
         }
     }
-    
-    app.permission.add(
-        { name: 'dashboard:standard', menu: menuDashboard },
-        { name: 'user:login', menu: menuProfile },
-        {
-            name: 'system:settings',
-            menu: {
-                parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
-                menus: { 2010: { title: 'Thông tin chung', link: '/user/settings' } },
-            },
-        }
-    );
+
+    app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, {
+        name: 'system:settings',
+        menu: {
+            parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
+            menus: { 2010: { title: 'Thông tin chung', link: '/user/settings' } },
+        },
+    });
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
@@ -127,7 +124,7 @@ module.exports = (app) => {
             }
         });
     });
-    
+
     app.get('/api/menu/path', (req, res) => {
         let pathname = req.query.pathname;
         if (pathname) {
@@ -251,7 +248,7 @@ module.exports = (app) => {
             }
         }
     };
-    
+
     app.uploadHooks.add('uploadSettingImage', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadSettingImage(req, fields, files, params, done), done, 'system:settings')
     );
