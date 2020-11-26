@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFormInPage, createForm, updateForm, deleteForm } from '../redux.jsx';
+import { getFormInPage, createForm, updateForm, deleteForm } from './redux.jsx';
 import { Link } from 'react-router-dom';
-import Pagination from '../../../view/component/Pagination.jsx';
+import Pagination from '../../view/component/Pagination.jsx';
 
 class FormPage extends React.Component {
     constructor(props) {

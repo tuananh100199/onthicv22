@@ -9,11 +9,11 @@ export default {
     routes: [ 
         {
             path: '/user/user-form',
-            component: Loadable({ loading: Loading, loader: () => import('./admin/adminPage.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./danhSachBieuMau.jsx') })
         },
         {
             path: '/user/user-form/edit/:id',
-            component: Loadable({ loading: Loading, loader: () => import('./admin/adminEditPage.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./chinhSuaBieuMau.jsx') }),
         },
        
     ],

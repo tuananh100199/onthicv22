@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateForm, getForm } from '../redux.jsx';
-import Dropdown from '../../../view/component/Dropdown.jsx';
+import { updateForm, getForm } from './redux.jsx';
+import Dropdown from '../../view/component/Dropdown.jsx';
 import Countries  from 'react-select-country';
 
 

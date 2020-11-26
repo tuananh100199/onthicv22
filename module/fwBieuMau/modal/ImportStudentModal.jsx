@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { importRegisters, clearParticipantsSession } from '../../reduxAnswer.jsx';
-import FileBox from '../../../../view/component/FileBox.jsx';
+import FileBox from '../../../view/component/FileBox.jsx';
 
 class ImportStudentModal extends React.Component {
     constructor(props) {
