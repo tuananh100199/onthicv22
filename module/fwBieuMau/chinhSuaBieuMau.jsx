@@ -15,7 +15,7 @@ class FormEditPage extends React.Component {
     }
 
     componentDidMount() {
-        $('#formTitle').focus();
+        // $('#formTitle').focus();
         T.ready('/user', () => {
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png',
@@ -27,7 +27,7 @@ class FormEditPage extends React.Component {
                 this.renderData(this.props.system.user, [], () => {
                     setTimeout(() => {
                         $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-                        // $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+                        $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
                     }, 250);
                 });
             }
@@ -39,15 +39,15 @@ class FormEditPage extends React.Component {
                     this.props.history.push('/user/user-form');
                 } else if (data.item) {
                     this.setState({ item: Object.assign({},data.item) });
-                    let title = T.language.parse(data.item.title, true);
-                    $('#formTitle').val(title);
+                    // let title = T.language.parse(data.item.title, true);
+                    // $('#formTitle').val(title);
                     $('#formName').val(data.item.formName);
                     $('#residence').val(data.item.residence);
                     $('#identityCard').val(data.item.identityCard);
-                    $('#dnDoanhNghiepEditTenVietTat').val(data.item.nationality.text);
+                    $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
 
-                    // $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-                    // $('#licenseDated').val(data.item.licenseDated ? T.dateToText(licenseDated, 'dd/mm/yyyy') : '');
+                    // console.log($('#dnDoanhNghiepEditTenVietTat').val(data.item.nationality.text));
+
                     $(this.quocGiaTemp.current).select2({
                         data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
                         placeholder: 'Chọn quốc gia'
@@ -78,12 +78,12 @@ class FormEditPage extends React.Component {
     save = () => {
         const
             birthday = $('#birthday').val(),
-            // licenseDated = $('#licenseDated').val(),
+            licenseDated = $('#licenseDated').val(),
             changes = {
                 nationality: $('#dnDoanhNghiepEditTenVietTat').val(),
-                title: JSON.stringify($('#formTitle').val()),
+                title:  $('#formName').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
-                // licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
+                licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
                 formName: $('#formName').val(),
                 residence: $('#residence').val(),
                 identityCard: $('#identityCard').val(),
@@ -102,14 +102,14 @@ class FormEditPage extends React.Component {
             _id: '', title: '', nationality: '',birthday:'',licenseDated:'',formName:'',
             residence:'',identityCard:'',
         };
-        const title = T.language.parse(item.title, true);
+        const title = item.title;
         console.log('item',item)
 
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                        <h1 style={{ marginBottom: '15px' }}><i className='fa fa-edit' /> Form: {title.vi} </h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
+                        <h1 style={{ marginBottom: '15px' }}><i className='fa fa-edit' /> Form: {title} </h1>
+                        <p dangerouslySetInnerHTML={{ __html: title != '' ? 'Tiêu đề: <b>' + title + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
                 </div>
                     <div className='col-md-12'>
                         <div className='tile'>
@@ -155,7 +155,7 @@ class FormEditPage extends React.Component {
                                             <label className='control-label' htmlFor='licenseDated'>Cấp ngày</label>
                                             <input className='form-control' type='text' placeholder='Cấp ngày' id='licenseDated' />
                                         </div>
-                                        <div className='form-group' style={{ display: 'inline-flex' }}>
+                                        {/* <div className='form-group' style={{ display: 'inline-flex' }}>
                                             <label className='control-label' >   Đăng ký tích hợp giấy phép lái xe&nbsp;&nbsp;&nbsp; </label>
                                             <div className="toggle">
                                                 <label>
@@ -163,7 +163,7 @@ class FormEditPage extends React.Component {
                                                     <span className='button-indecator' />
                                                 </label>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className='form-group'>
                                             <h5 className='control-label'>Xin gửi kèm theo:</h5>
                                             <div style={{marginLeft:'15px', marginTop:'15px'}}>
