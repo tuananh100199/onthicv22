@@ -23,9 +23,6 @@ class FormPage extends React.Component {
         this.props.updateForm(item._id, { active: !item.active }, () => T.notify((item.active ? 'Hủy kích hoạt ' : 'Kích hoạt ') + 'thành công!'));
     };
 
-    changeLock = (item) => {
-        this.props.updateForm(item._id, { lock: !item.lock }, () => T.notify((!item.lock ? 'Khóa form ' : 'Hủy khóa form ') + 'thành công!'));
-    };
 
     delete = (e, item) => {
         T.confirm('Xóa form', `Bạn có chắc bạn muốn xóa form <strong>${item.title.viText()}</strong>?`, 'warning', true, isConfirm =>
@@ -46,7 +43,6 @@ class FormPage extends React.Component {
                     <th style={{ width: '80%' }}>Tiêu đề</th>
                     <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Khóa form</th>
                     <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                 </tr>
                 </thead>
@@ -63,12 +59,6 @@ class FormPage extends React.Component {
                         <td className='toggle' style={{ textAlign: 'center' }} >
                             <label>
                                 <input type='checkbox' checked={item.active} onChange={() => this.changeActive(item)} disabled={readOnly} />
-                                <span className='button-indecator' />
-                            </label>
-                        </td>
-                        <td className='toggle' style={{ textAlign: 'center' }} >
-                            <label>
-                                <input type='checkbox' checked={item.lock} onChange={() => this.changeLock(item)} disabled={readOnly} />
                                 <span className='button-indecator' />
                             </label>
                         </td>

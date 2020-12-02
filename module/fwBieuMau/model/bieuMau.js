@@ -8,6 +8,10 @@ module.exports = app => {
         residence: String,
         identityCard: Number,
         integration: Boolean,
+        phoneNumber: String,
+        issuedBy: String,
+        content: String,
+        licenseNumber: String,
     });
     const model = app.db.model('DriverForm', schema);
 

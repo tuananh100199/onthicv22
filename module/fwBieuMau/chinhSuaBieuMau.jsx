@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateForm, getForm } from './redux.jsx';
-import Dropdown from '../../view/component/Dropdown.jsx';
+import Editor from '../../view/component/CkEditor4.jsx' ;
+
 const countryList = require('country-list');
 
 
@@ -9,27 +10,27 @@ class FormEditPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = { item: null};
+        this.editor = React.createRef();
         this.quocGiaTemp = React.createRef();
-        this.sex = React.createRef();
 
     }
 
     componentDidMount() {
-        // $('#formTitle').focus();
         T.ready('/user', () => {
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png',
                     firstname = this.props.system.user.firstname ? this.props.system.user.firstname : 'Không có tên',
-                    lastname = this.props.system.user.lastname ? this.props.system.user.lastname : 'Không có họ';
+                    lastname = this.props.system.user.lastname ? this.props.system.user.lastname : 'Không có họ',
+                    sex = this.props.system.user.sex ? this.props.system.user.sex : 'Không có thông tin giới tính';
 
-
-                this.setState({ image, firstname, lastname });
                 this.renderData(this.props.system.user, [], () => {
-                    setTimeout(() => {
-                        $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-                        $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-                    }, 250);
-                });
+                        setTimeout(() => {
+                            $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+                            $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+                        }, 250);
+                    });
+
+                this.setState({ image, firstname, lastname,sex });
             }
 
             const route = T.routeMatcher('/user/user-form/edit/:formId'),
@@ -39,27 +40,31 @@ class FormEditPage extends React.Component {
                     this.props.history.push('/user/user-form');
                 } else if (data.item) {
                     this.setState({ item: Object.assign({},data.item) });
-                    // let title = T.language.parse(data.item.title, true);
-                    // $('#formTitle').val(title);
                     $('#formName').val(data.item.formName);
                     $('#residence').val(data.item.residence);
                     $('#identityCard').val(data.item.identityCard);
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
+                    $('#nationality').val(data.item.nationality);
+                    $('#phoneNumber').val(data.item.phoneNumber);
+                    $('#issuedBy').val(data.item.issuedBy);
+                    this.editor.current.html(data.item.content);
+                    $('#licenseNumber').val(data.item.licenseNumber);
 
-                    // console.log($('#dnDoanhNghiepEditTenVietTat').val(data.item.nationality.text));
 
                     $(this.quocGiaTemp.current).select2({
                         data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
                         placeholder: 'Chọn quốc gia'
-                    }).val($('#dnDoanhNghiepEditTenVietTat') || null).trigger('change');
-                    $(this.quocGiaTemp.current).on('change', e => {
-                        this.setState({ item: Object.assign({}, this.state.item, { nationality:  $('#dnDoanhNghiepEditTenVietTat').val()}) });
-                    console.log(this.state)
-                    })
+                    }).val($('#nationality') || null).trigger('change');
+                    //  $(this.quocGiaTemp.current).on('change', e => {
+                    //     this.setState({ item: Object.assign({}, this.state.item, { nationality: $('#dnDoanhNghiepEditTenVietTat').val()}) });
+                    // })
                 } else {
                     this.props.history.push('/user/user-form/list');
                 }
             });
+            $('#nationality').on('change',(e)=>{
+                this.setState({ item: Object.assign({}, this.state.item, { nationality: $('#nationality').val()}) });
+            })
         });
     }
     renderData = (user, allDivisions, callback) => {
@@ -67,7 +72,6 @@ class FormEditPage extends React.Component {
                 user : { birthday: '', sex: ''};
 
         $('#birthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
-        this.sex.current.setText(sex ? sex : '');
         callback && callback();
     }
 
@@ -80,7 +84,7 @@ class FormEditPage extends React.Component {
             birthday = $('#birthday').val(),
             licenseDated = $('#licenseDated').val(),
             changes = {
-                nationality: $('#dnDoanhNghiepEditTenVietTat').val(),
+                nationality: $('#nationality').val(),
                 title:  $('#formName').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
@@ -88,6 +92,11 @@ class FormEditPage extends React.Component {
                 residence: $('#residence').val(),
                 identityCard: $('#identityCard').val(),
                 integration: this.state.item.integration,
+                phoneNumber: $('#phoneNumber').val(),
+                issuedBy: $('#issuedBy').val(),
+                content: this.editor.current.html(),
+                licenseNumber:  $('#licenseNumber').val(),
+                
             };
 
         this.props.updateForm(this.state.item._id, changes, () => {
@@ -100,11 +109,9 @@ class FormEditPage extends React.Component {
         const readOnly = !currentPermission.contains('user-form:write');
         const item = this.state.item ? this.state.item : {
             _id: '', title: '', nationality: '',birthday:'',licenseDated:'',formName:'',
-            residence:'',identityCard:'',
+            residence:'',identityCard:'',integration: false, phoneNumber:'',issuedBy:''
         };
         const title = item.title;
-        console.log('item',item)
-
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -116,69 +123,68 @@ class FormEditPage extends React.Component {
                             <h3 className='tile-title'>Thông tin biểu mẫu</h3>
                             <div className='tile-body'>
                                 <div className='tab-content' style={{ paddingTop: '12px' }}>
-                                        <div className="row">
-                                            <div className='form-group col-md-6'>
-                                                <label className='control-label'>Họ và tên lót: {this.state.lastname}</label>
-                                            </div>
-                                            <div className='form-group col-md-6'>
-                                                <label className='control-label'>Tên: {this.state.firstname}</label>
-                                            </div>
+                                    <div className="row">
+                                        <div className='form-group col-md-6'>
+                                            <label className='control-label'>Họ và tên lót: {this.state.lastname}</label>
                                         </div>
-                                        <div className='form-group'
-                                             style={{ display: 'inline-flex', width: '100%' }}>
-                                            <label className='control-label'>Giới tính: </label> &nbsp;&nbsp;
-                                            <Dropdown ref={this.sex} text='' items={T.sexes} />
+                                        <div className='form-group col-md-6'>
+                                            <label className='control-label'>Tên: {this.state.firstname}</label>
                                         </div>
-                                        <div className="form-group">
-                                            <label className='control-label' htmlFor="country">Quốc tịch:</label>
-                                            <select className='form-control select2-input' id='dnDoanhNghiepEditTenVietTat' ref={this.quocGiaTemp} multiple={false} />
+                                    </div>
+                                    <div className='form-group'
+                                            style={{ display: 'inline-flex', width: '100%' }}>
+                                        <label className='control-label'>Giới tính: {this.state.sex}</label> &nbsp;&nbsp;
+                                    </div>
+                                    <div className="form-group">
+                                        <label className='control-label' htmlFor="country">Quốc tịch:</label>
+                                        <select className='form-control select2-input' id='nationality'  ref={this.quocGiaTemp} multiple={false} />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
+                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label'>Số điện thoại</label>
+                                        <input className='form-control' type='text' placeholder='Nhập số điện thoại' id='phoneNumber' />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='formName'>Tên đơn</label>
+                                        <textarea defaultValue='' className='form-control' id='formName' placeholder='Đơn đăng ký...' readOnly={readOnly}
+                                        style={{ minHeight: '100px', marginBottom: '12px' }} />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='residence'>Nơi cư trú</label>
+                                        <textarea defaultValue='' className='form-control' id='residence' placeholder='Nhập nơi cư trú...' readOnly={readOnly}
+                                        style={{ minHeight: '100px', marginBottom: '12px' }} />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='identityCard'>CMND</label>
+                                        <input className='form-control' type='text' id='identityCard' placeholder='Nhập số cmnd...' />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='licenseDated'>Cấp ngày</label>
+                                        <input className='form-control' type='text' placeholder='Cấp ngày' id='licenseDated' />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='licenseDated'>Nơi cập</label>
+                                        <input className='form-control' type='text' placeholder='Nơi cấp' id='issuedBy' />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label className='control-label' htmlFor='licenseDated'>Số giấy phép lái xe</label>
+                                        <input className='form-control' type='text' placeholder='Số giấy phép lái xe' id='licenseNumber' />
+                                    </div>
+                                    <div className='form-group' style={{ display: 'inline-flex' }}>
+                                        <label className='control-label' >   Đăng ký tích hợp giấy phép lái xe&nbsp;&nbsp;&nbsp; </label>
+                                        <div className="toggle">
+                                            <label>
+                                                <input type='checkbox' checked={item.integration} onChange={this.changeActive} disabled={readOnly} />
+                                                <span className='button-indecator' />
+                                            </label>
                                         </div>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
-                                            <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' />
-                                        </div>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='formName'>Tên đơn</label>
-                                            <textarea defaultValue='' className='form-control' id='formName' placeholder='Đơn đăng ký...' readOnly={readOnly}
-                                            style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                        </div>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='residence'>Nơi cư trú</label>
-                                            <textarea defaultValue='' className='form-control' id='residence' placeholder='Nhập nơi cư trú...' readOnly={readOnly}
-                                            style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                        </div>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='identityCard'>CMND</label>
-                                            <input className='form-control' type='text' id='identityCard' placeholder='Nhập số cmnd...' />
-                                        </div>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='licenseDated'>Cấp ngày</label>
-                                            <input className='form-control' type='text' placeholder='Cấp ngày' id='licenseDated' />
-                                        </div>
-                                        {/* <div className='form-group' style={{ display: 'inline-flex' }}>
-                                            <label className='control-label' >   Đăng ký tích hợp giấy phép lái xe&nbsp;&nbsp;&nbsp; </label>
-                                            <div className="toggle">
-                                                <label>
-                                                    <input type='checkbox' checked={item.integration} onChange={this.changeActive} disabled={readOnly} />
-                                                    <span className='button-indecator' />
-                                                </label>
-                                            </div>
-                                        </div> */}
-                                        <div className='form-group'>
-                                            <h5 className='control-label'>Xin gửi kèm theo:</h5>
-                                            <div style={{marginLeft:'15px', marginTop:'15px'}}>
-                                            <p>- 01 giấy chứng nhận đủ sức khỏe;</p>
-                                            <p>- 05 ảnh màu cỡ 3 cm x 4 cm (Hạng A1), chụp không quá 06 tháng.</p>
-                                            <p>- 10 ảnh màu cỡ 3 cm x 4 cm (Hạng B2), chụp không quá 06 tháng.</p>
-                                            <p>- Bản sao giấy chứng minh nhân dân hoặc thẻ căn cước công dân hoặc hộ chiếu còn thời hạn có ghi
-                                                số giấy chứng minh nhân dân hoặc thẻ căn cước công dân (đối với người Việt Nam) hoặc hộ chiếu (
-                                                    đối với người nước ngoài
-                                                ).
-                                            </p>
-                                            <p>- Các tài liệu khác có liên quan gồm: 
-                                            </p>
-                                            <p>............................................................................................</p>
-                                        </div>
+                                    </div>
+                                    <div className='form-group'>
+                                        <h5 className='control-label'>Xin gửi kèm theo:</h5>
+                                        <Editor ref={this.editor} />
                                     </div>
                                 </div>
                             </div>

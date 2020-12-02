@@ -77,11 +77,10 @@ export function getForm(_id, option, done) {
 }
 
 export function createForm(done) {
-    console.log('here')
     return dispatch => {
         const url = '/api/user-form';
         const data = {
-            title: JSON.stringify({ vi: 'Biểu mẫu mới', en: 'New form' })
+            title: 'Form mới '
         };
         T.post(url, { data }, data => {
             if (data.error) {
