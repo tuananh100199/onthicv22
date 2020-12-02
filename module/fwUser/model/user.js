@@ -8,18 +8,18 @@ module.exports = (app) => {
         email: String,
         password: String,
         phoneNumber: String,
-        
+
         nationality: String, // Quoc tich
         residence: String, // Noi cu tru
-    
+
         identityCard: Number, // CMND, CCCD
         issuedBy: String, // Noi cap CMND, CCCD
         identityDate: Date, // Ngay cap CMND, CCCD
-        
+
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,
-        
+
         token: String,
         tokenDate: Date,
     });
@@ -30,6 +30,7 @@ module.exports = (app) => {
 
     schema.methods.clone = function() {
         let user = app.clone(this, { permissions: [], menu: {} });
+        console.log('user', user)
         delete user.password;
 
         const systemMenu = app.permission.list();
@@ -135,8 +136,7 @@ module.exports = (app) => {
             }),
 
         get: (condition, done) =>
-            typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) :
-            model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
+            typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) : model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
 
         getPlayerInfo: (_id, done) => {
             const userSelect = '-password -token -tokenDate -roles -active';
@@ -189,8 +189,7 @@ module.exports = (app) => {
             .find(condition)
             .sort({ lastname: 1, firstname: 1 })
             .select('-password -token -tokenDate')
-            .exec(done) :
-            model
+            .exec(done) : model
             .find({})
             .sort({ lastname: 1, firstname: 1 })
             .select('-password -token -tokenDate')

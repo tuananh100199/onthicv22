@@ -141,6 +141,7 @@ module.exports = app => {
 
         app.model.user.update(req.session.user._id, changes, $unset, (error, user) => {
             if (user) {
+                console.log('controller fwUser');
                 req.session.user = user.clone();
             }
             res.send({ error, user: req.session.user });
