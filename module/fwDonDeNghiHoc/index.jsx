@@ -1,12 +1,16 @@
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
-import bieuMau from './redux.jsx';
+import donDeNghiHoc from './redux.jsx';
 
 export default {
     redux: {
-        bieuMau,
+        donDeNghiHoc
     },
-    routes: [ 
+    routes: [
+        {
+            path: '/user/bieu-mau/don-de-nghi-hoc',
+            component: Loadable({ loading: Loading, loader: () => import('./userDonDeNghiPage.jsx') })
+        },
         {
             path: '/user/user-form',
             component: Loadable({ loading: Loading, loader: () => import('./danhSachBieuMau.jsx') })
