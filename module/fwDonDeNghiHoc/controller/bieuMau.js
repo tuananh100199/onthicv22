@@ -4,8 +4,6 @@ module.exports = app => {
 
     app.get('/user/user-form/list', app.permission.check('form:read'), app.templates.admin);
     app.get('/user/user-form/edit/:_id', app.permission.check('form:read'), app.templates.admin);
-    app.get('/user/user-form/registration/:_id', app.permission.check('form:read'), app.templates.admin);
-    app.get('/user-form/registration/item/:id', app.templates.home);
 
     //APIs --------------------------------------------------------------------------------------------------------------
     //user-form --------------------------------------------------------------------------------------------------------------

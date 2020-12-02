@@ -1,10 +1,10 @@
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
-import BieuMau from './redux.jsx';
+import bieuMau from './redux.jsx';
 
 export default {
     redux: {
-        BieuMau,
+        bieuMau,
     },
     routes: [ 
         {

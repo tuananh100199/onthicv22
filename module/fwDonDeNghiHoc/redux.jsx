@@ -12,14 +12,13 @@ export default function userFormReducer(state = null, data) {
 
         case UPDATE: {
             let page = state && state.page ? state.page : { list: [] }, list = page.list;
-            let i = 0;
-            for (i; i < list.length; i++) {
-                console.log('redux',data.item)
+            for (let i = 0; i < list.length; i++) {
                 if (list[i]._id == data.item._id) {
+                    list.splice(i, 1, data.item);
                     break;
                 }
             }
-            list.splice(i, 1, data.item);
+            
             page.list = list;
             return Object.assign({}, state, { page });
         }

@@ -8,9 +8,18 @@ module.exports = (app) => {
         email: String,
         password: String,
         phoneNumber: String,
+        
+        nationality: String, // Quoc tich
+        residence: String, // Noi cu tru
+    
+        identityCard: Number, // CMND, CCCD
+        issuedBy: String, // Noi cap CMND, CCCD
+        identityDate: Date, // Ngay cap CMND, CCCD
+        
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,
+        
         token: String,
         tokenDate: Date,
     });
