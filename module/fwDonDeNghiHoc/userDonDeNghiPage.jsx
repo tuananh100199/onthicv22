@@ -31,7 +31,9 @@ class UserDonDeNghiPage extends React.Component {
                     $('#phoneNumber').val(data.item.phoneNumber);
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
-                    
+                    $('#otherDocumentation').val(data.item.otherDocumentation);
+                    $('#licenseClass').val(data.item.licenseClass);
+
                     $(this.quocGia.current).select2({
                         data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
                         placeholder: 'Chọn quốc gia'
@@ -54,18 +56,22 @@ class UserDonDeNghiPage extends React.Component {
             licenseDated = $('#licenseDated').val(),
             changes = {
                 nationality: $('#nationality').val(),
-                title: $('#formName').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
-                licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
-                formName: $('#formName').val(),
                 residence: $('#residence').val(),
-                identityCard: $('#identityCard').val(),
                 integration: this.state.item.integration,
                 phoneNumber: $('#phoneNumber').val(),
-                issuedBy: $('#issuedBy').val(),
-                content: this.editor.current.html(),
+                otherDocumentation: $('#otherDocumentation').val(),
+
+                //license
                 licenseNumber: $('#licenseNumber').val(),
-                
+                licenseClass: $('#licenseClass').val(),
+                licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
+                licenseIssuedBy: $('#isslicenseIssuedByuedBy').val(),
+
+                //identity
+                identityCard: $('#identityCard').val(),
+                identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
+                identityIssuedBy: $('#identityIssuedBy').val(),
             };
         
         this.props.updateForm(this.state.item._id, changes, () => {
@@ -76,8 +82,10 @@ class UserDonDeNghiPage extends React.Component {
     render() {
         //TODO: Ko can read ONly
         const item = this.state.item ? this.state.item : {
-            _id: '', title: '', nationality: '', birthday: '', licenseDated: '', formName: '',
-            residence: '', identityCard: '', integration: false, phoneNumber: '', issuedBy: ''
+            _id: '', nationality: '', birthday: '',
+            residence: '', integration: false, phoneNumber: '', 
+            licenseNumber: '', licenseClass:'', licenseDated:'', licenseIssuedBy:'',
+            identityCard:'',identityDate:'', identityIssuedBy:'',otherDocumentation:'',
         };
         return (
             <main className='app-content'>
@@ -122,8 +130,8 @@ class UserDonDeNghiPage extends React.Component {
                         </div>
                         
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='residence'>Nơi đăng ký hộ khẩu thường trú: TODO</label>
-                            <textarea className='form-control' id='residence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3'/>
+                            <label className='control-label' htmlFor='otherDocumentation'>Nơi đăng ký hộ khẩu thường trú:</label>
+                            <textarea className='form-control' id='otherDocumentation' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3'/>
                         </div>
                         
                         <div className='form-group'>
@@ -135,24 +143,36 @@ class UserDonDeNghiPage extends React.Component {
                             <div className='form-group col-md-6'>
                                 <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu)</label>
                                 <input className='form-control' type='text' id='identityCard'
-                                       placeholder='Nhập số cmnd...'/>
+                                       placeholder='Nhập số CMND'/>
                             </div>
                             <div className='form-group col-md-3' id='identityDateSection'>
                                 <label className='control-label' htmlFor='identityDate'>Cấp ngày</label>
-                                <input className='form-control' type='text' placeholder='Cấp ngày' id='identityDate' data-date-container='#identityDateSection'/>
+                                <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection'/>
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='issuedBy'>Nơi cấp</label>
-                                <input className='form-control' type='text' placeholder='Nơi cấp' id='issuedBy'/>
+                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp</label>
+                                <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy'/>
                             </div>
                         </div>
-                        
-                        <div className='form-group'>
-                            <label className='control-label' htmlFor='licenseDated'>Đã có giấy phép lái xe số TODO: Hạng, Do ...</label>
-                            <input className='form-control' type='text' placeholder='Số giấy phép lái xe' id='licenseNumber'/>
+                        <div className='row'>
+                            <div className='form-group col-md-3'>
+                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số:</label>
+                                <input className='form-control' type='text' id='licenseNumber'
+                                       placeholder='Số giấy phép lái xe'/>
+                            </div>
+                            <div className='form-group col-md-2' id='licenseDateSection'>
+                                <label className='control-label' htmlFor='licenseDate'>Hạng: </label>
+                                <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseDate' data-date-container='#identityDateSection'/>
+                            </div>
+                            <div className='form-group col-md-7'>
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Do: </label>
+                                <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy'/>
+                            </div>
                         </div>
-                        
-                        {/*//TODO: đề nghị cho tôi được học ....*/}
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='licenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
+                            <input className='form-control' type='text' placeholder='Hạng' id='licenseClass'/>
+                        </div>
                         <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
@@ -164,7 +184,7 @@ class UserDonDeNghiPage extends React.Component {
                         </div>
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm:</label>
-                            {/*<textarea/>*/}
+                            <textarea className='form-control' id='residence' placeholder='Tài liệu liên quan bao gồm' rows='3'/>
                         </div>
                     </div>
                 </div>

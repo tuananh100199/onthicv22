@@ -1,12 +1,16 @@
 module.exports = app => {
     const schema = app.db.Schema({
         user: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
-        
+
         integration: Boolean, // Tich hop
         content: String,
-        
+
         licenseNumber: String, // So GPLX
         licenseDate: Date, // Ngay cap GPLX
+        licenseIssuedBy: String, // Noi cap GPLX
+
+        otherDocumentation: String, // Tai lieu khac
+        licenseClass: String, // Hang bang lai xe 
     });
     const model = app.db.model('ApplicationForm', schema);
 
@@ -27,7 +31,7 @@ module.exports = app => {
                 });
             }
         }),
-    
+
         get: (condition, done) => typeof condition == 'object' ? model.findOne(condition, done) : model.findById(condition, done),
 
         update: (_id, $set, $unset, done) => done ? model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) : model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
