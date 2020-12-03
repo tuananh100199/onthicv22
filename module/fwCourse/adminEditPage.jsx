@@ -26,13 +26,14 @@ class CourseEditPage extends React.Component {
 
     getData = () => {
         const route = T.routeMatcher('/user/course/edit/:courseId'),
-        courseId = route.parse(window.location.pathname).courseId;
+            courseId = route.parse(window.location.pathname).courseId;
         this.props.getCourse(courseId, data => {
             if (data.error) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');
                 this.props.history.push('/user/course/list');
             } else if (data.item) {
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
+                console.log(categories)
                 $('#courseCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const courseStartPost = $('#courseStartPost').datetimepicker(T.dateFormat);
                 const courseStopPost = $('#courseStopPost').datetimepicker(T.dateFormat);
@@ -52,7 +53,7 @@ class CourseEditPage extends React.Component {
                     content = T.language.parse(data.item.content, true);
                 $('#courseTitle').val(title.vi);
                 $('#courseAbstract').val(abstract);
-                this.viEditor.current.html(content.vi); 
+                this.viEditor.current.html(content.vi);
                 this.setState(data);
             } else {
                 this.props.history.push('/user/course/list');
@@ -83,12 +84,12 @@ class CourseEditPage extends React.Component {
             courseStopPost = $('#courseStopPost').val(),
             changes = {
                 categories: $('#courseCategories').val(),
-                title: JSON.stringify({ vi: $('#courseTitle').val()}),
+                title: JSON.stringify({ vi: $('#courseTitle').val() }),
                 link: $('#courseLink').val().trim(),
                 active: this.state.item.active,
                 isInternal: this.state.item.isInternal,
-                abstract:  $('#courseAbstract').val().trim(),
-                content: JSON.stringify({ vi: this.viEditor.current.html()}),
+                abstract: $('#courseAbstract').val().trim(),
+                content: JSON.stringify({ vi: this.viEditor.current.html() }),
             };
         if (courseStartPost) changes.startPost = T.formatDate(courseStartPost);
         if (courseStopPost) changes.stopPost = T.formatDate(courseStopPost);
@@ -257,5 +258,5 @@ class CourseEditPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { updateCourse, getCourse, checkLink};
+const mapActionsToProps = { updateCourse, getCourse, checkLink };
 export default connect(mapStateToProps, mapActionsToProps)(CourseEditPage);

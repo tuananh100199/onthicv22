@@ -9,7 +9,6 @@ class ContentPage extends React.Component {
     }
 
     create = (e) => {
-        console.log("this.props.history", this.props.history)
         this.props.createContent(data => this.props.history.push('/user/content/edit/' + data.item._id));
         e.preventDefault();
     }

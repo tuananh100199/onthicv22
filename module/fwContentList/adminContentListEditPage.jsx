@@ -3,127 +3,39 @@ import { connect } from 'react-redux';
 import { getContentListItem, updateContentList } from './redux.jsx';
 import { getAllContents, createContent, updateContent, deleteContent, swapContent } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
-
-class ContentModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: {} };
-        this.modal = React.createRef();
-        this.imageBox = React.createRef();
-    }
-
-    componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#sttTitle').focus())
-        }, 250));
-    }
-
-    show = (selectedItem) => {
-        let { _id, title, image } = selectedItem ? selectedItem : { _id: null, title: '', image: '' };
-        $('#contentTitle').val(title);
-        this.imageBox.current.setData('Content:' + (_id ? _id : 'new'), image || '/img/avatar.jpg');
-        this.setState({ item: selectedItem })
-
-        $(this.modal.current).modal('show');
-    }
-
-    save = (event) => {
-        const changes = {
-            title: $('#contentTitle').val().trim()
-        };
-        if (changes.title == '') {
-            T.notify('Tiêu đề Content bị trống!', 'danger');
-            $('#contentViTitle').focus();
-        }
-        else {
-            if (this.state.item && this.state.item._id) {
-                this.props.updateContent(this.state.item._id, changes, () => {
-                    $(this.modal.current).modal('hide');
-                });
-            } else { // Create
-                this.props.addContent(changes, () => {
-                    $(this.modal.current).modal('hide');
-                });
-            }
-        }
-        event.preventDefault();
-    }
-
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thêm/Sửa Content</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='row'>
-                                <div className='col-12'>
-                                    <div className='form-group'>
-                                        <label htmlFor='contentTitle'>Tiêu đề</label><br />
-                                        <input className='form-control' id='contentTitle' type='text' placeholder='Tiêu đề' />
-                                    </div>
-                                </div>
-
-                                <div className='col-12'>
-                                    <div className='form-group'>
-                                        <label>Hình đại diện</label>
-                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ContentImage' image={this.state.image} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        );
-    }
-}
-
+// import ImageBox from '../../view/component/ImageBox.jsx';
 class ListContentEditPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = { item: {}, items: [] };
-        this.modal = React.createRef();
     }
 
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
-            console.log('param', params)
-            this.props.getContentListItem(params.listContentId, data => {
-                if (data.error) {
-                    this.props.history.push('/user/component');
-                } else if (data.item) {
-                    $('#listContentTitle').val(data.item.title).focus();
-                    this.props.getAllContents({ listContentId: data.item._id }, (items) => {
-                        this.setState({ item: data.item, items });
-                    })
-                } else {
-                    this.props.history.push('/user/component');
-                }
-            });
+            this.getData();
+            $('#listContentTitle').focus();
+            $('#contentListSelect').select2();
         });
     }
 
-    showAddContentModal = (e) => {
-        this.modal.current.show();
-        e.preventDefault();
-    };
+    getData = () => {
+        const route = T.routeMatcher('/user/list-content/edit/:listContentId'),
+            params = route.parse(window.location.pathname);
+        const currentList = this.props.contentList.find(list => list._id === params.listContentId);
+        console.log('currentList', currentList)
+        let title = T.language.parse(currentList.title, true);
+        $('#listContentTitle').val(title.vi).focus();
+        let categories = this.props.content.map(item => ({ id: item._id, text: T.language.parse(item.title) }));
+        $('#contentListSelect').select2({ data: categories }).val(currentList.listOfContentId).trigger('change');
+        this.setState({ item: currentList });
+        this.getListContentItem();
+        console.log('state', this.state)
+    }
 
-    showEditContentModal = (e, selectedContent) => {
-        this.modal.current.show(selectedContent);
-        e.preventDefault();
-    };
+    getListContentItem = () => {
+        const listItem = this.state.item.listOfContentId.map(item => this.props.content.find(ele => ele._id === item))
+        this.setState({ items: listItem });
+    }
 
     add = (newData, done) => {
         newData.contentListId = this.state.item._id;
@@ -146,18 +58,17 @@ class ListContentEditPage extends React.Component {
             this.setState({ items }, done);
         });
     };
-
+    deleteItem = (_id) => {
+        const remainList = this.state.items.filter(item => item._id != _id)
+        this.setState({
+            item: Object.assign({}, this.state.item, { listOfContentId: remainList.map(ele => ele._id) }),
+            items: remainList
+        });
+        console.log('state delete', this.state)
+    }
     remove = (e, _id) => {
         T.confirm('Xoá Content', 'Bạn có chắc muốn xoá Content này?', 'info', isConfirm => {
-            isConfirm && this.props.deleteContent(_id, () => {
-                let items = this.state.items;
-                for (let i = 0; i < items.length; i++) {
-                    if (items[i]._id == _id) {
-                        items.splice(i, 1);
-                    }
-                }
-                this.setState({ items });
-            });
+            isConfirm && this.deleteItem(_id);
         })
         e.preventDefault();
     };
@@ -183,7 +94,8 @@ class ListContentEditPage extends React.Component {
 
     save = () => {
         const changes = {
-            title: $('#listContentTitle').val().trim(),
+            title: JSON.stringify({ vi: $('#listContentTitle').val() }),
+            listOfContentId: $('#contentListSelect').val()
         };
 
         if (changes.title == '') {
@@ -194,6 +106,7 @@ class ListContentEditPage extends React.Component {
             // this.props.updateContentList(this.state.item._id, changes);
             this.props.updateContentList(T.routeMatcher('/user/list-content/edit/:listContentId').parse(window.location.pathname).listContentId, changes);
         }
+        this.getListContentItem();
     };
 
     render() {
@@ -213,11 +126,12 @@ class ListContentEditPage extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.items.map((item, index) => {
+                            let title = T.language.parse(item.title, true);
                             return (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>
-                                        {readOnly ? item.title : <a href='#' onClick={e => this.showEditContentModal(e, item)}>{item.title}</a>}
+                                        {readOnly ? title.vi : <a href='#'>{title.vi}</a>}
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
                                         <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
@@ -231,9 +145,9 @@ class ListContentEditPage extends React.Component {
                                                 <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, false)}>
                                                     <i className='fa fa-lg fa-arrow-down' />
                                                 </a>
-                                                <a className='btn btn-primary' href='#' onClick={e => this.showEditContentModal(e, item)}>
+                                                {/* <a className='btn btn-primary' href='#' onClick={this.props.history.push('/user/content/edit/' + item._id)}>
                                                     <i className='fa fa-lg fa-edit' />
-                                                </a>
+                                                </a> */}
                                                 <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
                                                     <i className='fa fa-lg fa-trash' />
                                                 </a>
@@ -251,7 +165,7 @@ class ListContentEditPage extends React.Component {
             table = <p>Không có danh sách các Content!</p>;
         }
 
-        const title = currentContent && currentContent.title ? T.language.parse(currentContent.title, true) : '<Trống>';
+        const title = currentContent && currentContent.title ? T.language.parse(currentContent.title, true).vi : '<Trống>';
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -275,6 +189,12 @@ class ListContentEditPage extends React.Component {
                                         <input className='form-control' type='text' placeholder='Tiêu đề' id='listContentTitle' defaultValue={title} readOnly={readOnly} />
                                     </div>
                                 </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Chen/xoa bài viết trong list</label>
+                                    <select className='form-control' id='contentListSelect' multiple={true} defaultValue={[]} disabled={readOnly} >
+                                        <optgroup label='Lựa chọn bài viết' />
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -286,17 +206,6 @@ class ListContentEditPage extends React.Component {
                                 {table}
                             </div>
                         </div>
-                        {readOnly ? null :
-                            <div className='tile-footer'>
-                                <div className='row'>
-                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-info' type='button' onClick={this.showAddContentModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus' />Thêm Content
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        }
                     </div>
                 </div>
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
@@ -305,11 +214,10 @@ class ListContentEditPage extends React.Component {
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save' />
                 </button>
-                <ContentModal ref={this.modal} addContent={this.add} updateContent={this.update} />
             </main>
         );
     }
 }
-const mapStateToProps = state => ({ system: state.system, content: state.content });
+const mapStateToProps = state => ({ system: state.system, content: state.content, contentList: state.contentList.list });
 const mapActionsToProps = { getContentListItem, updateContentList, getAllContents, createContent, updateContent, deleteContent, swapContent };
 export default connect(mapStateToProps, mapActionsToProps)(ListContentEditPage);

@@ -1,10 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllContentList, createContentList, deleteContentList } from './redux.jsx';
-// import { getAllContents } from '../fwHome/redux/reduxContent.jsx'
 import { Link } from 'react-router-dom';
-// import ContentListModal from './contentListModal.jsx';
-
 
 class ContentListModal extends React.Component {
     constructor(props) {
@@ -13,7 +10,6 @@ class ContentListModal extends React.Component {
     }
 
     componentDidMount() {
-        // this.props.getAllContents();
         $(document).ready(() => {
             $(this.modal.current).on('shown.bs.modal', () => $('#contentListName').focus());
         });
@@ -26,7 +22,8 @@ class ContentListModal extends React.Component {
 
     save = (event) => {
         const newData = {
-            title: $('#contentListName').val().trim()
+            title: JSON.stringify({ vi: $('#contentListName').val() }),
+            listOfContentId: []
         };
 
         if (newData.title == '') {
@@ -40,7 +37,6 @@ class ContentListModal extends React.Component {
                 }
             });
         }
-        // this.props.getAllContentList();
         event.preventDefault();
     }
 
@@ -98,7 +94,6 @@ class ContentListPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = null;
-        // console.log('test', this.props.contentList)
         if (this.props.contentList && this.props.contentList.list && this.props.contentList.list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered' ref={this.table}>
@@ -115,7 +110,9 @@ class ContentListPage extends React.Component {
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     <Link to={'/user/list-content/edit/' + item._id}>
-                                        {T.language.parse(item.title)}
+                                        {
+                                            T.language.parse(item.title, true).vi
+                                        }
                                     </Link>
                                 </td>
                                 <td>
@@ -151,6 +148,5 @@ class ContentListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, contentList: state.contentList, content: state.content });
-// const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
 const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);

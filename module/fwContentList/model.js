@@ -1,13 +1,13 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        //     listOfContentId: {
-        //         type: [{
-        //             type: app.db.Schema.ObjectId,
-        //             ref: 'Content'
-        //         }],
-        //         default: []
-        // },
+        listOfContentId: {
+            type: [{
+                type: app.db.Schema.ObjectId,
+                ref: 'Content'
+            }],
+            default: []
+        },
     });
     const model = app.db.model('ContentList', schema);
 
@@ -21,6 +21,7 @@ module.exports = app => {
         },
 
         get: (_id, done) => model.findById(_id, (error, list) => {
+            console.log('list in model', list)
             if (error) {
                 done(error);
             } else if (list == null) {
