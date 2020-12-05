@@ -1,80 +1,62 @@
 const fs = require('fs'),
     path = require('path'),
-    package = require('./package'),
-    HtmlWebpackPlugin = require('html-webpack-plugin'),
-    MiniCssExtractPlugin = require('mini-css-extract-plugin');
+    package = require('./package');
 
-let cleanFilesluginOptions = null,
-    CleanFileslugin = function (options) {
-        cleanFilesluginOptions = [];
+const cleanFilesPluginOptions = [],
+    CleanFilesPlugin = function (options) {
         options.forEach(option => {
             if (option.path) {
-                option = Object.assign({
-                    fileExtension: '.js',
-                    recursive: false
-                }, option);
-                option.path = __dirname + option.path;
-                cleanFilesluginOptions.push(option);
-                console.log('\x1b[46m%s\x1b[0m', 'Clean file ' + option.path + '!');
+                option = Object.assign({ fileExtension: '.js' }, option, { path: __dirname + option.path });
+                cleanFilesPluginOptions.push(option);
+                console.log('\x1b[46m%s\x1b[0m', `Clean file in folder ${option.path}!`);
             }
         });
     };
-CleanFileslugin.prototype.apply = compiler => {
+CleanFilesPlugin.prototype.apply = compiler => {
     const removeFiles = (option) => {
         fs.readdirSync(option.path).forEach(filePath => {
             filePath = option.path + '/' + filePath;
             const state = fs.statSync(filePath);
             if (option.recursive && state.isDirectory()) {
-                removeFiles({
-                    path: filePath,
-                    fileExtension: option.fileExtension,
-                    excludeExtension: option.excludeExtension,
-                    recursive: option.recursive
-                });
+                removeFiles(Object.assign({}, option, { path: filePath }));
             } else if (state.isFile() && filePath.endsWith(option.fileExtension) && (option.excludeExtension == null || !filePath.endsWith(option.excludeExtension))) {
                 console.log('Delete file \x1b[36m%s\x1b[0m!', filePath);
                 fs.unlinkSync(filePath);
             }
         });
     };
-
-    compiler.plugin('done', () => {
-        cleanFilesluginOptions.forEach(option => removeFiles(option));
-
-        if (cleanFilesluginOptions.length == 0) { // production mode
-            //TODO
-        }
-    });
+    
+    compiler.hooks.done.tap('CleanFiles', () => cleanFilesPluginOptions.forEach(removeFiles));
 };
 
 const entry = {};
 fs.readdirSync('./view').forEach(folder => {
     if (fs.lstatSync('./view/' + folder).isDirectory() && fs.existsSync('./view/' + folder + '/' + folder + '.jsx')) {
-        entry[folder] = path.join(__dirname, 'view', folder, folder + '.jsx');
+        entry[folder] = path.join(__dirname, '/view', folder, folder + '.jsx');
     }
 });
 
-const plugins = [],
-    htmlPluginOptions = {
-        inject: false,
-        hash: true,
-        minifyOptions: { removeComments: true, collapseWhitespace: true, conservativeCollapse: true },
-        title: package.title,
-        keywords: package.keywords,
-        description: package.description
-    };
-fs.readdirSync('./view').forEach(filename => {
-    const template = `./view/${filename}/${filename}.pug`;
-    if (filename != '.DS_Store' && fs.existsSync(template) && fs.lstatSync(template).isFile()) {
-        console.log(template)
-        plugins.push(
-            new HtmlWebpackPlugin(Object.assign({}, htmlPluginOptions, {
-                template,
-                filename: filename + '.template'
-            }))
-        );
-    }
-});
+const genHtmlWebpackPlugins = (isProductionMode) => {
+    const HtmlWebpackPlugin = isProductionMode ? require(require.resolve('html-webpack-plugin', { paths: [require.main.path] })) : require('html-webpack-plugin'),
+        plugins = [],
+        htmlPluginOptions = {
+            inject: false,
+            hash: true,
+            minifyOptions: { removeComments: true, collapseWhitespace: true, conservativeCollapse: true },
+            title: package.title,
+            keywords: package.keywords,
+            version: package.version,
+            description: package.description,
+        };
+    fs.readdirSync('./view').forEach(filename => {
+        const template = `./view/${filename}/${filename}.pug`;
+        if (filename != '.DS_Store' && fs.existsSync(template) && fs.lstatSync(template).isFile()) {
+            const options = Object.assign({ template, filename: filename + '.template' }, htmlPluginOptions);
+            plugins.push(new HtmlWebpackPlugin(options));
+        }
+    });
+    return plugins;
+};
 
 module.exports = (env, argv) => ({
     entry,
@@ -83,49 +65,42 @@ module.exports = (env, argv) => ({
         publicPath: '/',
         filename: 'js/[name].js',
     },
-    module: {
-        rules: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            use: {
-                query: {
-                    plugins: ['@babel/syntax-dynamic-import', "@babel/plugin-proposal-class-properties"],
-                    presets: ['@babel/preset-env', '@babel/preset-react']
-                },
-                loader: 'babel-loader'
-            }
-        }, {
-            test: /\.scss$/,
-            use: ['style-loader', 'css-loader', 'sass-loader']
-        }, {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader']
-        }, {
-            test: /\.pug$/,
-            use: 'pug-loader'
-        }]
-    },
     plugins: [
-        ...plugins,
-        new MiniCssExtractPlugin({
-            filename: '[name].css',
-            chunkFilename: '[id].css'
-        }),
-        new CleanFileslugin(argv.mode === 'production' ? [] : [{
-            path: '/public/js',
-            fileExtension: '.js',
-            excludeExtension: '.min.js',
-            recursive: false
-        }, {
-            path: '/public',
-            fileExtension: '.template',
-            recursive: true
-        }])
+        ...genHtmlWebpackPlugins(argv.mode === 'production'),
+        new CleanFilesPlugin(argv.mode === 'production' ?
+            [
+                { path: '/public/js', fileExtension: '.txt' },
+            ] : [
+                { path: '/public/js', fileExtension: '.txt' },
+                { path: '/public/js', fileExtension: '.js', excludeExtension: '.min.js' },
+                { path: '/public', fileExtension: '.template' }
+            ])
     ],
+    module: {
+        rules: [
+            { test: /\.pug$/, use: ['pug-loader'] },
+            { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+            { test: /\.s[ac]ss$/i, use: ['style-loader', 'css-loader', 'sass-loader'] },
+            {
+                test: /\.jsx?$/, exclude: /node_modules/,
+                use: {
+                    options: {
+                        plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties'],
+                        presets: ['@babel/preset-env', '@babel/preset-react'],
+                        cacheDirectory: true,
+                        cacheCompression: false
+                    },
+                    loader: 'babel-loader'
+                }
+            }
+        ]
+    },
     devServer: {
         contentBase: path.join(__dirname, 'public'),
         port: package.port + 1,
+        compress: true,
         historyApiFallback: true,
-        disableHostCheck: true,
-    }
+        disableHostCheck: true
+    },
+    optimization: { minimize: true }
 });

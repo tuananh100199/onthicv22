@@ -39,9 +39,7 @@ class SectionNews extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <div className='text-left pl-4 mb-1 py-1' style={{ backgroundColor: '#4d983c' }}>
-                    <h3 className='text-white'>Tin Tức Mới Nhất</h3>
-                </div>
+                <h3>Tin Tức Mới Nhất</h3>
                 <div>
                     {news}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
