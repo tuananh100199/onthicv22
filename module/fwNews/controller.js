@@ -1,13 +1,13 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 7000, title: 'Tin tức', icon: 'fa-file' },
+        parentMenu: { index: 6000, title: 'Tin tức', icon: 'fa-file' },
         menus: {
             6001: { title: 'Danh mục', link: '/user/news/category' },
             6002: { title: 'Tin tức', link: '/user/news/list' },
             6003: { title: 'Chờ duyệt', link: '/user/news/draft' },
         },
     };
-    // app.permission.add({ name: 'news:read', menu }, { name: 'news:write', menu }, { name: 'news:draft', menu });
+    app.permission.add({ name: 'news:read', menu }, { name: 'news:write', menu }, { name: 'news:draft', menu });
     app.get('/user/news/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/news/list', app.permission.check('news:read'), app.templates.admin);
     app.get('/user/news/edit/:_id', app.permission.check('news:read'), app.templates.admin);
