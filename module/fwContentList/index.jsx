@@ -12,7 +12,10 @@ export default {
             path: '/user/list-content/edit/:listContentId',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage.jsx') })
         },
-        // { path: '/news/item/:newsId', component: Loadable({ loading: Loading, loader: () => import('./homeNewsDetail.jsx') }) },
+        {
+            path: '/content-list',
+            component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
+        },
         // {
         //     path: '/user/list-content',
         //     component: Loadable({ loading: Loading, loader: () => import('./adminContentListPage.jsx') })
