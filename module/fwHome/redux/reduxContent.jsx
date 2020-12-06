@@ -52,16 +52,16 @@ export function getAllContents(condition) {
     }
 }
 
-export function createContent(content, done) {
+export function createContent(done) {
     return dispatch => {
-        const url = `/api/content`;
-        T.post(url, { data: content }, data => {
+        const url = '/api/content';
+        T.post(url, data => {
             if (data.error) {
                 T.notify('Tạo nội dung bị lỗi!', 'danger');
-                console.error('POST: ' + url + '. ' + data.error);
+                console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getAllContents());
-                if (done) done(data.content);
+                if (done) done(data);
             }
         }, error => T.notify('Tạo nội dung bị lỗi!', 'danger'));
     }
@@ -83,16 +83,19 @@ export function updateContent(_id, changes, done) {
     }
 }
 
-export function swapContent(_id, isMoveUp, done) {
+export function swapContent(_id, isMoveUp) {
     return dispatch => {
-        const url = '/api/content/item/swap/';
+        const url = '/api/content/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Swap content item failed!', 'danger')
+                T.notify('Thay đổi thứ tự bị lỗi!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
             }
-            done && done()
-        }, error => T.notify('Swap content item failed!', 'danger'));
+            else {
+                T.notify('Thay đổi thứ tự thành công!', 'info');
+                dispatch(getAllContents());
+            }
+        }, error => T.notify('Thay đổi thứ tự bị lỗi!', 'danger'));
     }
 }
 

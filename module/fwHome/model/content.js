@@ -1,6 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        contentListId: { type: app.db.Schema.ObjectId, ref: 'ContentList', default: '' },
+        // contentListId: { type: app.db.Schema.ObjectId, ref: 'ContentList', default: '' },
         title: String,
         content: String,
         image: String,
@@ -11,34 +11,25 @@ module.exports = app => {
 
     app.model.content = {
         // create: (data, done) => model.create(data, done),
-        create: (data, done) => {
-            const finalCreate = (data) => {
-                model.create(data, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else {
-                        item.image = '/img/content/' + item._id + '.jpg';
-                        const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                            destPath = app.path.join(app.publicPath, item.image);
-                        app.fs.copyFile(srcPath, destPath, error => {
-                            if (error) {
-                                done(error);
-                            } else {
-                                item.save(done);
-                            }
-                        });
-                    }
-                });
-            }
-
-            if (data.contentListId) {
-                model.find({ contentListId: data.contentListId }).sort({ _id: -1 }).limit(1).exec((error, items) => {
-                    finalCreate(data);
-                })
-            } else {
-                finalCreate(data);
-            }
-        },
+        create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+            data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+            model.create(data, (error, item) => {
+                if (error) {
+                    done(error);
+                } else {
+                    item.image = '/img/content/' + item._id + '.jpg';
+                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                        destPath = app.path.join(app.publicPath, item.image);
+                    app.fs.copyFile(srcPath, destPath, error => {
+                        if (error) {
+                            done(error);
+                        } else {
+                            item.save(done);
+                        }
+                    });
+                }
+            });
+        }),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -62,27 +53,24 @@ module.exports = app => {
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
-        swapPriority: (_id, isMoveUp, done) => model.findOne({ _id }, (error, item1) => {
+        swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {
-                done('Invalid item Id!');
+                done('Invalid content Id!');
             } else {
-                model.find({
-                    priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority }
-                }).sort({
-                    priority: isMoveUp ? 1 : -1
-                }).limit(1).exec((error, list) => {
-                    if (error) {
-                        done(error);
-                    } else if (list == null || list.length === 0) {
-                        done(null);
-                    } else {
-                        let item2 = list[0],
-                            priority = item1.priority;
-                        item1.priority = item2.priority;
-                        item2.priority = priority;
-                        item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2, item1, item2)));
-                    }
-                });
+                model.find({ priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority } })
+                    .sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {
+                        if (error) {
+                            done(error);
+                        } else if (list == null || list.length === 0) {
+                            done(null);
+                        } else {
+                            let item2 = list[0],
+                                priority = item1.priority;
+                            item1.priority = item2.priority;
+                            item2.priority = priority;
+                            item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2)));
+                        }
+                    });
             }
         }),
 
