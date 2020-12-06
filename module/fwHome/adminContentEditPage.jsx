@@ -2,13 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getContent, updateContent } from './redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
+import ImageBox from '../../view/component/ImageBox.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
 class ContentEditPage extends React.Component {
-    state = { _id: null, title: '', active: false, content: '' };
-    viEditor = React.createRef();
-    enEditor = React.createRef();
-
+    constructor(props) {
+        super(props);
+        this.state = { item: null };
+        this.imageBox = React.createRef();
+        this.viEditor = React.createRef();
+        this.enEditor = React.createRef();
+    }
     componentDidMount() {
         T.ready('/user/component', () => {
             $('#cntViTitle').focus();
@@ -20,6 +24,8 @@ class ContentEditPage extends React.Component {
                     T.notify('Lấy bài viết bị lỗi!', 'danger');
                     this.props.history.push('/user/component');
                 } else if (data.item) {
+                    data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
+                    this.imageBox.current.setData('content:' + (data.item._id ? data.item._id : 'new'));
                     const title = T.language.parse(data.item.title, true),
                         content = T.language.parse(data.item.content, true);
 
@@ -27,7 +33,7 @@ class ContentEditPage extends React.Component {
                     $('#cntEnTitle').val(title.en).focus();
                     this.viEditor.current.html(content.vi);
                     this.enEditor.current.html(content.en);
-                    this.setState(data.item);
+                    this.setState(data);
                 } else {
                     this.props.history.push('/user/component');
                 }
@@ -36,13 +42,13 @@ class ContentEditPage extends React.Component {
     }
 
     changeActive = (event) => {
-        this.setState({ active: event.target.checked });
+        this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
     save = () => {
         const changes = {
             title: JSON.stringify({ vi: $('#cntViTitle').val(), en: $('#cntEnTitle').val() }),
             content: JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() }),
-            active: this.state.active ? 1 : 0,
+            active: this.state.item.active,
         };
 
         this.props.updateContent(this.state._id, changes);
@@ -51,7 +57,8 @@ class ContentEditPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
-        const title = this.state.title ? T.language.parse(this.state.title, true) : { en: '<empty>', vi: '<Trống>' };
+        const title = this.state.item.title ? T.language.parse(this.state.item.title, true) : { en: '<empty>', vi: '<Trống>' };
+        const image = this.state.item.image ? this.state.item.image : T.url('/image/avatar.jpg');
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -67,6 +74,22 @@ class ContentEditPage extends React.Component {
                     </ul>
                 </div>
                 <div className='row'>
+                    <div className='col-md-6'>
+                        <div className='tile'>
+                            <h3 className='tile-title'>Hình ảnh</h3>
+                            <div className='tile-body'>
+                                <div className='row'>
+                                    <div className='col-md-6'>
+                                        <div className='form-group'>
+                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ContentImage' image={image} readOnly={!currentPermissions.includes('component:write')} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className='row'>
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
                             <ul className='nav nav-tabs'>
@@ -79,7 +102,7 @@ class ContentEditPage extends React.Component {
                                 <div className='form-group' style={{ whiteSpace: 'nowrap', position: 'absolute', right: '10px' }}>
                                     <label className='control-label'>Kích hoạt: &nbsp;&nbsp;&nbsp;</label>
                                     <label className='toggle'>
-                                        <input type='checkbox' checked={this.state.active} onChange={(e) => !readOnly && this.changeActive(e)} />
+                                        <input type='checkbox' checked={this.state.item.active} onChange={(e) => !readOnly && this.changeActive(e)} />
                                         <span className='button-indecator' />
                                     </label>
                                 </div>
@@ -89,7 +112,7 @@ class ContentEditPage extends React.Component {
                                 <div id='contentViTab' className='tab-pane fade show active'>
                                     <div className='form-group'>
                                         <label className='control-label'>Tiêu đề</label>
-                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='cntViTitle' defaultValue={this.state.title} readOnly={readOnly} />
+                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='cntViTitle' defaultValue={this.state.item.title} readOnly={readOnly} />
                                     </div>
                                     <div className='form-group'>
                                         <label className='control-label'>Nội dung</label>
@@ -99,7 +122,7 @@ class ContentEditPage extends React.Component {
                                 <div id='contentEnTab' className='tab-pane fade'>
                                     <div className='form-group'>
                                         <label className='control-label'>Title</label>
-                                        <input className='form-control' type='text' placeholder='Title' id='cntEnTitle' defaultValue={this.state.title} readOnly={readOnly} />
+                                        <input className='form-control' type='text' placeholder='Title' id='cntEnTitle' defaultValue={this.state.item.title} readOnly={readOnly} />
                                     </div>
                                     <div className='form-group'>
                                         <label className='control-label'>Content</label>
