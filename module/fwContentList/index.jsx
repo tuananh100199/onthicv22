@@ -22,6 +22,6 @@ export default {
         // }
     ],
     Section: {
-        SectionContentList
+        SectionContentList, SectionContent
     }
 };
