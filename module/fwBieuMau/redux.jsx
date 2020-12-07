@@ -14,7 +14,6 @@ export default function userFormReducer(state = null, data) {
             let page = state && state.page ? state.page : { list: [] }, list = page.list;
             let i = 0;
             for (i; i < list.length; i++) {
-                console.log('redux',data.item)
                 if (list[i]._id == data.item._id) {
                     break;
                 }
