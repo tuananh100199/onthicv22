@@ -2,6 +2,7 @@ import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
 import contentList from './redux.jsx';
 import SectionContentList from './sectionContentList.jsx';
+import SectionContent from './sectionContent.jsx';
 
 export default {
     redux: {

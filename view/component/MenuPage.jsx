@@ -4,6 +4,7 @@ import fwHome from '../../module/fwHome/index.jsx';
 import fwContact from '../../module/fwContact/index.jsx';
 import fwNews from '../../module/fwNews/index.jsx'
 import fwCourse from '../../module/fwCourse/index.jsx'
+import fwContentList from '../../module/fwContentList/index.jsx'
 
 export default class MenuPage extends React.Component {
     state = { component: null };
@@ -49,14 +50,16 @@ export default class MenuPage extends React.Component {
                 itemView = <fwContact.Section.SectionContact />;
             } else if (item.viewType == 'last news') {
                 itemView = <fwNews.Section.SectionNews />;
-            }else if (item.viewType == 'all news') {
+            } else if (item.viewType == 'all news') {
                 itemView = <fwNews.Section.SectionNewsList />;
-            }else if (item.viewType == 'all courses') {
+            } else if (item.viewType == 'all courses') {
                 itemView = <fwCourse.Section.SectionCourseList />;
-            }else if (item.viewType == 'last course') {
+            } else if (item.viewType == 'last course') {
                 itemView = <fwCourse.Section.SectionCourse />;
-            }else if (item.viewType == 'content' && item.view) {
+            } else if (item.viewType == 'content' && item.view) {
                 itemView = <div dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
+            } else if (item.viewType == 'all contents') {
+                itemView = <fwContentList.Section.SectionContent />;
             }
 
             let childComponents = [];
