@@ -1,17 +1,40 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
+import { getAllContentList } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class SectionContent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { item: {}, items: [] };
+    }
+
     componentDidMount() {
+        this.props.getAllContentList();
         this.props.getAllContents();
+        this.getData();
+    }
+    getData =()=>{
+        if (this.props.listContentId && this.props.contentList) {
+            const currentList = this.props.contentList.list.find(list => list._id === this.props.listContentId);
+            console.log('currentList', currentList)
+            let title = T.language.parse(currentList.title, true);
+             $('#listContentTitle').val(title.vi).focus();
+            this.setState({ item: currentList });
+            this.getListContentItem();
+            console.log('state', this.state)
+        }
+    }
+    getListContentItem = () => {
+        const listItem = this.state.item.listOfContentId.map(item => this.props.content.find(ele => ele._id === item))
+        this.setState({ items: listItem });
     }
 
     render() {
-        const content = this.props.content ? this.props.content : [];
-        if (content && content.length) {
-            content.map((item, index) => {
+        const items = this.state.items ? this.state.items : [];
+        if ( items &&  items.length) {
+            items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index}>
@@ -37,9 +60,9 @@ class SectionContent extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <h3>Bài viết</h3>
+                <h3>{T.language.parse(this.state.item.title, true).vi}</h3>
                 <div>
-                    {content}
+                    {items}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
                     {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
                     {/*</button>*/}
@@ -49,6 +72,6 @@ class SectionContent extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, content: state.content });
-const mapActionsToProps = { getAllContents };
+const mapStateToProps = state => ({ system: state.system, content: state.content,contentList: state.contentList });
+const mapActionsToProps = { getAllContents,getAllContentList };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContent);

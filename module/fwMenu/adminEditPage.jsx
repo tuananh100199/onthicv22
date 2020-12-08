@@ -173,7 +173,7 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'last course') {
                 mainStyle.backgroundColor = '#ef9a9a';
                 component.viewName = '';
-            } else if (component.viewType == 'all contents') {
+            } else if (component.viewType == 'contentList') {
                 mainStyle.backgroundColor = '#fb6094';
                 component.viewName = '';
             }
