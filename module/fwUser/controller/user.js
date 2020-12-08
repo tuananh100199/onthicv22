@@ -8,8 +8,6 @@ module.exports = app => {
     app.permission.add({ name: 'user:read', menu: userMenu }, { name: 'user:write', menu: userMenu }, { name: 'user:search' }, );
 
     app.get('/user/profile', app.permission.check(), app.templates.admin);
-    app.get('/user/user-form', app.permission.check(), app.templates.admin);
-
     app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
 
     app.get('/api/user-search/:email', app.permission.check('user:read'), (req, res) => app.model.user.get({ email: req.params.email }, (error, user) => {
@@ -141,6 +139,7 @@ module.exports = app => {
 
         app.model.user.update(req.session.user._id, changes, $unset, (error, user) => {
             if (user) {
+                console.log('controller fwUser');
                 req.session.user = user.clone();
             }
             res.send({ error, user: req.session.user });

@@ -34,14 +34,11 @@ import fwEmail from '../../module/fwEmail/index.jsx';
 import fwForm from '../../module/fwForm/index.jsx';
 import fwNews from '../../module/fwNews/index.jsx';
 import fwCourse from '../../module/fwCourse/index.jsx';
-import fwBieuMau from '../../module/fwBieuMau/index.jsx';
-
-
+import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index.jsx';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwBieuMau
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwDonDeNghiHoc
 ]
-
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;

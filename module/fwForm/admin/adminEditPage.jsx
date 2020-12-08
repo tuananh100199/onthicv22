@@ -319,7 +319,6 @@ class FormEditPage extends React.Component {
             _id: '', title: '', maxRegisterUsers: -1, image: '/img/avatar.jpg', createdDate: new Date(),
             startRegister: '', stopRegister: '', active: false, lock: false
         };
-        console.log('item',this.state.item)
 
         const questionList = this.props.question && this.props.question.questions ? this.props.question.questions : [];
         const questionTable = questionList && questionList.length ? (

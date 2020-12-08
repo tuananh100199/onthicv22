@@ -18,7 +18,9 @@ class ProfilePage extends React.Component {
         this.password2 = React.createRef();
 
         this.sex = React.createRef();
+        this.quocGia = React.createRef();
     }
+        
 
     componentDidMount() {
         T.ready('/user', () => {
@@ -28,6 +30,8 @@ class ProfilePage extends React.Component {
                 this.renderData(this.props.system.user, [], () => {
                     setTimeout(() => {
                         $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+                        $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+
                     }, 250);
                 });
             }
@@ -35,14 +39,23 @@ class ProfilePage extends React.Component {
     }
 
     renderData = (user, allDivisions, callback) => {
-        let { firstname, lastname, email, phoneNumber, birthday, sex, image } = user ?
-                user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png' };
+        let { firstname, lastname, email, phoneNumber, birthday, sex, image, identityCard, issuedBy, residence,identityDate } = user ?
+                user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png', identityCard:'', issuedBy:'', residence:'', identityDate:'' };
 
         $('#userLastname').val(lastname);
         $('#userFirstname').val(firstname);
         $('#email').html(email);
         $('#birthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
         $('#phoneNumber').val(phoneNumber);
+        $('#identityCard').val(identityCard);
+        $('#issuedBy').val(issuedBy);
+        $('#residence').val(residence);
+        $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
+
+
+        
+
+        
         this.sex.current.setText(sex ? sex : '');
         this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
         callback && callback();
@@ -51,11 +64,20 @@ class ProfilePage extends React.Component {
     saveCommon = (e) => {
         let sex = this.sex.current.getSelectedItem().toLowerCase(),
             birthday = $('#birthday').val() ? T.formatDate($('#birthday').val()) : null,
+            identityDate = $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
+
             changes = {
                 firstname: $('#userFirstname').val(),
                 lastname: $('#userLastname').val(),
                 phoneNumber: $('#phoneNumber').val(),
                 birthday: birthday ? birthday : 'empty',
+                identityCard: $('#identityCard').val(),
+                issuedBy: $('#issuedBy').val(),
+                residence: $('#residence').val(),
+                identityDate: identityDate ? identityDate : 'empty',
+
+
+                
             };
         if (T.sexes.indexOf(sex) != -1) {
             changes.sex = sex;
@@ -152,6 +174,40 @@ class ProfilePage extends React.Component {
                                                    placeholder='Ngày sinh' id='birthday' />
                                         </div>
                                     </div>
+                                    <div className='col-12 col-sm-6'>
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor="country">Quốc tịch:</label>
+                                            <select className='form-control select2-input' ref={this.quocGia}/>
+                                        </div>
+                                    </div>
+                                    <div className='col-12 col-sm-6'>
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor='identityCard'>CMND</label>
+                                            <input className='form-control' type='text' id='identityCard'
+                                                placeholder='Nhập số cmnd...'/>
+                                        </div>
+                                    </div>
+                                    <div className='col-12 col-sm-12'>
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor='issuedBy'>Nơi cấp</label>
+                                            <input className='form-control' type='text' id='issuedBy'
+                                                placeholder='Nhập số cmnd...'/>
+                                        </div>
+                                    </div>
+                                    <div className='col-12 col-sm-12'>
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor='identityDate'>Ngày cấp</label>
+                                            <input className='form-control' type='text' id='identityDate'
+                                                placeholder='Nhập số cmnd...'/>
+                                        </div>
+                                    </div>
+                                    <div className='col-12 col-sm-12'>
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor='residence'>Nơi cư trú</label>
+                                            <input className='form-control' type='text' id='residence'
+                                                placeholder='Nhập số cmnd...'/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
@@ -171,7 +227,7 @@ class ProfilePage extends React.Component {
                                     <label className='control-label'>Nhập lại mật khẩu</label>
                                     <input className='form-control' type='password' placeholder='Nhập lại mật khẩu' ref={this.password2} defaultValue='' />
                                 </div>
-                            </div>
+                            </div>  
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.savePassword}>Lưu</button>
                             </div>
