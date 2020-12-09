@@ -126,6 +126,7 @@ class ListContentEditPage extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.items.map((item, index) => {
+                            if(item){
                             let title = T.language.parse(item.title, true);
                             return (
                                 <tr key={index}>
@@ -155,7 +156,7 @@ class ListContentEditPage extends React.Component {
                                         </td>
                                     }
                                 </tr>
-                            )
+                            )}
                         })
                         }
                     </tbody>
