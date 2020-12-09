@@ -36,10 +36,10 @@ export default function contentReducer(state = [], data) {
 }
 
 // Action --------------------------------------------------------------------------------------------------------------
-export function getAllContents(condition) {
+export function getAllContents() {
     return dispatch => {
         const url = `/api/content/all`;
-        T.get(url, { condition }, data => {
+        T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -54,11 +54,11 @@ export function getAllContents(condition) {
 
 export function createContent(done) {
     return dispatch => {
-        const url = '/api/content';
+        const url = `/api/content`;
         T.post(url, data => {
             if (data.error) {
                 T.notify('Tạo nội dung bị lỗi!', 'danger');
-                console.error('POST: ' + url + '.', data.error);
+                console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllContents());
                 if (done) done(data);
@@ -67,7 +67,7 @@ export function createContent(done) {
     }
 }
 
-export function updateContent(_id, changes, done) {
+export function updateContent(_id, changes) {
     return dispatch => {
         const url = `/api/content`;
         T.put(url, { _id, changes }, data => {
@@ -76,26 +76,9 @@ export function updateContent(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Nội dung cập nhật thành công!', 'info');
-                done && done(data.content);
                 dispatch(getAllContents());
             }
         }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
-    }
-}
-
-export function swapContent(_id, isMoveUp) {
-    return dispatch => {
-        const url = '/api/content/swap/';
-        T.put(url, { _id, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Thay đổi thứ tự bị lỗi!', 'danger')
-                console.error('PUT: ' + url + '. ' + data.error);
-            }
-            else {
-                T.notify('Thay đổi thứ tự thành công!', 'info');
-                dispatch(getAllContents());
-            }
-        }, error => T.notify('Thay đổi thứ tự bị lỗi!', 'danger'));
     }
 }
 

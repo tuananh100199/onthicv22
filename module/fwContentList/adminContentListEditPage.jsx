@@ -132,7 +132,8 @@ class ListContentEditPage extends React.Component {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>
-                                        {readOnly ? title.vi : <a href='#'>{title.vi}</a>}
+                                        {/* {readOnly ? title.vi : <a>{title.vi}</a>} */}
+                                        {title.vi}
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
                                         <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
@@ -190,11 +191,13 @@ class ListContentEditPage extends React.Component {
                                         <input className='form-control' type='text' placeholder='Tiêu đề' id='listContentTitle' defaultValue={title} readOnly={readOnly} />
                                     </div>
                                 </div>
-                                <div className='form-group'>
+                                <div className="col-md-6">
+                                    <div className='form-group mt-3'>
                                     <label className='control-label'>Chen/xoa bài viết trong list</label>
                                     <select className='form-control' id='contentListSelect' multiple={true} defaultValue={[]} disabled={readOnly} >
                                         <optgroup label='Lựa chọn bài viết' />
                                     </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
