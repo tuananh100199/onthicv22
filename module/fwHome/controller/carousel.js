@@ -17,7 +17,7 @@ module.exports = app => {
         if (error || carousel == null) {
             res.send({ error: 'Get carousel failed!' });
         } else {
-            app.model.carouselItem.getByCarouselId(carousel._id, (error, items) => {
+            app.model.carouselItem.getAll({ carouselId: carousel._id }, (error, items) => {
                 if (error || items == null) {
                     res.send({ error: 'Get carousel items failed!' });
                 } else {
@@ -61,7 +61,7 @@ module.exports = app => {
         if (error || carousel == null) {
             res.send({ error: 'Get carousel failed!' });
         } else {
-            app.model.carouselItem.getByActiveCarouselId(carousel._id, (error, items) => {
+            app.model.carouselItem.getAll({ carouselId: carousel._id, active: true }, (error, items) => {
                 if (error || items == null) {
                     res.send({ error: 'Get carousel failed!'  });
                 } else {
@@ -76,7 +76,7 @@ module.exports = app => {
     app.createFolder(app.path.join(app.publicPath, '/img/carouselItem'));
 
     const uploadCarouselItemImage = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('CarouselItem:') && files.CarouselItemImage && files.CarouselItemImage.length > 0) {
+        if (fields.userData && fields.userData[0].startsWith('carouselItem:') && files.CarouselItemImage && files.CarouselItemImage.length > 0) {
             console.log('Hook: uploadCarouselItemImage => carousel image upload');
             app.uploadComponentImage(req, 'carouselItem', app.model.carouselItem.get, fields.userData[0].substring(13), files.CarouselItemImage[0].path, done);
         }

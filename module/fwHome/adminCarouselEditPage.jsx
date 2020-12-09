@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import ImageBox from '../../view/component/ImageBox.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
-
 class CarouselItemModal extends React.Component {
     constructor(props) {
         super(props);
@@ -14,30 +13,19 @@ class CarouselItemModal extends React.Component {
         this.modal = React.createRef();
         this.imageBox = React.createRef();
         this.btnSave = React.createRef();
-        this.viEditor = React.createRef();
-        this.enEditor = React.createRef();
-
     }
 
     componentDidMount() {
-        $(this.modal.current).on('shown.bs.modal', () => $('#carViName').focus());
+        $(this.modal.current).on('shown.bs.modal', () => $('#carouselName').focus());
     }
 
     show = (item, carouselId) => {
-        let { _id, title, description, image, link } = item ? item : { _id: null, title: '', description: '', image: '/img/avatar.png', link: '' };
-        title = T.language.parse(title, true);
-        description = T.language.parse(description, true);
+        let { _id, title, image, link } = item ? item : { _id: null, title: '', image: '/img/avatar.jpg', link: '' };
 
         $(this.btnSave.current).data('id', _id).data('carouselId', carouselId);
-        $('#carViName').data('title', title.vi).val(title.vi);
-        $('#carEnName').data('title', title.en).val(title.en);
-        $('#carLink').data('link', link).val(link);
-        this.viEditor.current.html(description.vi); 
-        this.enEditor.current.html(description.en);
-
-        this.setState({ image });
-        this.imageBox.current.setData('CarouselItem:' + (_id ? _id : 'new'));
-
+        $('#carouselName').val(title);
+        $('#carouselLink').val(link);
+        this.imageBox.current.setData('carouselItem:' + (_id ? _id : 'new'), image);
         $(this.modal.current).modal('show');
     }
 
@@ -46,16 +34,13 @@ class CarouselItemModal extends React.Component {
         const _id = $(e.target).data('id'),
             carouselId = $(e.target).data('carouselId'),
             changes = {
-                title: JSON.stringify({ vi: $('#carViName').val().trim(), en: $('#carEnName').val().trim() }),
-                link: $('#carLink').val().trim(),
-                description: JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() })
+                title: $('#carouselName').val().trim(),
+                link: $('#carouselLink').val().trim()
             };
-        if (changes.title.vi == '') {
+        
+        if (changes.title == '') {
             T.notify('Tên hình ảnh bị trống!', 'danger');
-            $('#carViName').focus();
-        } else if (changes.title.en == '') {
-            T.notify('Tên hình ảnh bị trống!', 'danger');
-            $('#carEnName').focus();
+            $('#carouselName').focus();
         } else {
             if (_id) { // Update
                 this.props.updateCarouselItem(_id, changes, error => {
@@ -82,44 +67,17 @@ class CarouselItemModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <ul className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#carouselViTab'>Việt Nam</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#carouselEnTab'>English</a>
-                                </li>
-                            </ul>
-                            <div className='tab-content'>
-                                <div id='carouselViTab' className='tab-pane fade show active'>
-                                    <div className='form-group'>
-                                        <label htmlFor='carViName'>Tên hình ảnh</label>
-                                        <input className='form-control' id='carViName' type='text' placeholder='Tên hình ảnh' />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Mô tả hình ảnh</label>
-                                        <Editor ref={this.viEditor} placeholder='Mô tả hình ảnh' height={300} />
-                                    </div>
-                                </div>
-                                <div id='carouselEnTab' className='tab-pane fade'>
-                                    <div className='form-group'>
-                                        <label htmlFor='carEnName'>Image name</label>
-                                        <input className='form-control' id='carEnName' type='text' placeholder='Image name' />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Image description</label>
-                                        <Editor ref={this.enEditor} placeholder='Image description' height={300} />
-                                    </div>
-                                </div>
-                            </div>
-
                             <div className='form-group'>
-                                <label htmlFor='carLink'>Link liên kết</label>
-                                <input className='form-control' id='carLink' type='text' placeholder='Link liên kết' />
+                                <label htmlFor='carouselName'>Tiêu đề</label>
+                                <input className='form-control' id='carouselName' type='text' placeholder='Tiêu đề' />
                             </div>
                             <div className='form-group'>
-                                <label>Hình đại diện</label>
-                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CarouselItemImage' userData='CarouselItem' image={this.state.image} />
+                                <label htmlFor='carouselLink'>Link liên kết</label>
+                                <input className='form-control' id='carouselLink' type='text' placeholder='Link liên kết' />
+                            </div>
+                            <div className='form-group'>
+                                <label>Hình ảnh nền</label>
+                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CarouselItemImage'/>
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -136,8 +94,7 @@ class CarouselItemModal extends React.Component {
 class CarouselEditPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.table = React.createRef();
+        this.state = { single: false, active: false };
         this.modal = React.createRef();
     }
 
@@ -197,7 +154,7 @@ class CarouselEditPage extends React.Component {
 
         if (items.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: '80%' }}>Tiêu đề</th>
@@ -215,7 +172,7 @@ class CarouselEditPage extends React.Component {
                                     </a>}
                                 </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={T.url(item.image)} alt='avatar' style={{ height: '32px' }} />
+                                    <img src={T.url(item.image || '/img/avatar.jpg')} alt='avatar' style={{ height: '32px' }} />
                                 </td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
