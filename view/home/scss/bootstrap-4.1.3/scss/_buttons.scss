@@ -110,7 +110,6 @@ fieldset:disabled a.btn {
 // Button Sizes
 //
 
-
 .btn-lg {
   @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
 }
