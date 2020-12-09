@@ -52,10 +52,6 @@ class ProfilePage extends React.Component {
         $('#residence').val(residence);
         $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
 
-
-        
-
-        
         this.sex.current.setText(sex ? sex : '');
         this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
         callback && callback();

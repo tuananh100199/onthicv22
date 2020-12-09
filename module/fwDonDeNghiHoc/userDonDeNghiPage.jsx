@@ -7,7 +7,7 @@ import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
 
 class UserDonDeNghiPage extends React.Component {
-    state = { item: null };
+    state = {};
     sex = React.createRef();
     quocGia = React.createRef();
     
@@ -27,16 +27,15 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityCard').val(identityCard);
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
-
-                //TODO: set birhtday and sex, firstName, lastName
+                this.sex.current.setText(sex ? sex : '');
             }
             
             this.props.getDonDeNghiHocByUser(data => {
-                console.log('getData',data)
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
                     this.setState(data.item);
+                    console.log(this.state)
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
@@ -58,20 +57,20 @@ class UserDonDeNghiPage extends React.Component {
     
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
-        console.log('this.state.item',this.state.item);
     }
     
     save = () => {
-        //TODO: Luu bieu mau tu user
         const
-            birthday = $('#birthday').val(),
+            sex = this.sex.current.getSelectedItem().toLowerCase(),
+            birthday = $('#userBirthday').val(),
             licenseDated = $('#licenseDated').val(),
             identityDate = $('#identityDate').val(),
+            
             changes = {
                 nationality: $('#nationality').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 residence: $('#residence').val(),
-                integration: this.state.item.integration,
+                // integration: this.state.item.integration,
                 phoneNumber: $('#phoneNumber').val(),
                 otherDocumentation: $('#otherDocumentation').val(),
                 regularResidence: $('#regularResidence').val(),
@@ -88,7 +87,10 @@ class UserDonDeNghiPage extends React.Component {
                 identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
                 identityIssuedBy: $('#identityIssuedBy').val(),
             };
-        console.log('changes',changes)
+            if (T.sexes.indexOf(sex) != -1) {
+                changes.sex = sex;
+            }
+            console.log('changes',changes)
         this.props.updateForm(this.state._id, changes, () => {
             this.props.updateProfile(changes);
             T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
@@ -97,13 +99,14 @@ class UserDonDeNghiPage extends React.Component {
     
     render() {
         //TODO: Ko can read ONly
-        const item = this.state.item ? this.state.item : {
+        const item = this.state ? this.state: {
             _id: '', nationality: '', birthday: '',
-            residence: '', integration: false, phoneNumber: '', 
+            residence: '', phoneNumber: '', 
             licenseNumber: '', licenseClass:'', licenseDated:'', licenseIssuedBy:'',
-            identityCard:'',identityDate:'', identityIssuedBy:'',otherDocumentation:'',newLicenseClass:''
+            identityCard:'',identityDate:'', identityIssuedBy:'',otherDocumentation:'',newLicenseClass:'', integration: ''
         };
-        console.log('item',item)
+
+        console.log('item.integration',item.integration)
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -136,10 +139,13 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label' htmlFor='userBirthday'>Ngày sinh</label>
                                 <input className='form-control' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#donDeNghiSection'/>
                             </div>
+                           
                             <div className='form-group col-md-3'>
-                                <label className='control-label'>Giới tính</label><br/>
-                                <Dropdown ref={this.sex} text='' items={T.sexes} />
-                            </div>
+                                        <div className='form-group' style={{ width: '100%' }}>
+                                            <label className='control-label' style={{marginLeft: '-10px'}}>Giới tính: </label>
+                                            <Dropdown  ref={this.sex} text='' items={T.sexes} />
+                                        </div>
+                                    </div>
                             <div className='form-group col-md-6'>
                                 <label className='control-label'>Số điện thoại</label>
                                 <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber'/>
@@ -190,7 +196,10 @@ class UserDonDeNghiPage extends React.Component {
                             <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
                             <input className='form-control' type='text' placeholder='Hạng' id='newLicenseClass'/>
                         </div>
-                        <div className='form-group' style={{ display: 'inline-flex' }}>
+
+                        {/* Todo đăng ký tích hợp  */}
+
+                        {/* <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
                                 <label>
@@ -198,7 +207,7 @@ class UserDonDeNghiPage extends React.Component {
                                     <span className='button-indecator'/>
                                 </label>
                             </div>
-                        </div>
+                        </div> */}
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm:</label>
                             <textarea className='form-control' id='otherDocumentation' placeholder='Tài liệu liên quan bao gồm' rows='3'/>

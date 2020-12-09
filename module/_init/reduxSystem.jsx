@@ -85,7 +85,6 @@ export function logout(config) {
 }
 
 export function updateProfile(changes) {
-    console.log('changes Updateprofile',changes)
     return dispatch => {
         const url = '/api/profile';
         T.put(url, { changes }, res => {
