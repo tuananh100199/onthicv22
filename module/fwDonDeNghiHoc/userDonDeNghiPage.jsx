@@ -17,7 +17,7 @@ class UserDonDeNghiPage extends React.Component {
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
-                const { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '' };
+                const { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -28,6 +28,10 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.sex.current.setText(sex ? sex : '');
+                $(this.quocGia.current).select2({
+                    data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
+                    placeholder: 'Chọn quốc gia'
+                }).val(nationality).trigger('change');
             }
             
             this.props.getDonDeNghiHocByUser(data => {
@@ -43,11 +47,6 @@ class UserDonDeNghiPage extends React.Component {
                     $('#licenseClass').val(data.item.licenseClass);
                     $('#newLicenseClass').val(data.item.newLicenseClass);
                     $('#licenseIssuedBy').val(data.item.licenseIssuedBy);
-
-                    $(this.quocGia.current).select2({
-                        data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
-                        placeholder: 'Chọn quốc gia'
-                    }).val(data.item.nationality).trigger('changed');
                 } else {
                     this.props.history.push('/user');
                 }
@@ -67,7 +66,6 @@ class UserDonDeNghiPage extends React.Component {
             identityDate = $('#identityDate').val(),
             
             changes = {
-                nationality: $('#nationality').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 residence: $('#residence').val(),
                 // integration: this.state.item.integration,
@@ -79,13 +77,15 @@ class UserDonDeNghiPage extends React.Component {
                 licenseNumber: $('#licenseNumber').val(),
                 licenseClass: $('#licenseClass').val(),
                 newLicenseClass: $('#newLicenseClass').val(),
-                licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
+                // licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
 
                 //identity
                 identityCard: $('#identityCard').val(),
-                identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
+                // identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
                 identityIssuedBy: $('#identityIssuedBy').val(),
+    
+                nationality: $(this.quocGia.current).val()
             };
             if (T.sexes.indexOf(sex) != -1) {
                 changes.sex = sex;
