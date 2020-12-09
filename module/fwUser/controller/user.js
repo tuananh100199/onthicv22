@@ -141,9 +141,10 @@ module.exports = app => {
 
         app.model.user.update(req.session.user._id, changes, $unset, (error, user) => {
             if (user) {
-                req.session.user = user.clone();
+                app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }))
+            } else {
+                res.send({ error, user: req.session.user });
             }
-            res.send({ error, user: req.session.user });
         })
     });
 
