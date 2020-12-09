@@ -1,5 +1,6 @@
 module.exports = app => {
-    app.get('/api/list-video/all', app.permission.check('component:read'), (req, res) => {
+    // app.get('/api/list-video/all', app.permission.check('component:read'), (req, res) => {
+    app.get('/api/list-video/all', (req, res) => {
         app.model.listVideo.getAll((error, items) => res.send({ error, items }))
     });
 

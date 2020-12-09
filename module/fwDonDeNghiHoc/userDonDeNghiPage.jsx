@@ -15,10 +15,19 @@ class UserDonDeNghiPage extends React.Component {
         T.ready('/user', () => {
             $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+
             if (this.props.system && this.props.system.user) {
-                const { firstname, lastname, sex, birthday } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '' };
+                const { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
+                $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
+                $('#phoneNumber').val(phoneNumber);
+                $('#regularResidence').val(regularResidence);
+                $('#residence').val(residence);
+                $('#identityCard').val(identityCard);
+                $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
+                $('#identityIssuedBy').val(identityIssuedBy);
+
                 //TODO: set birhtday and sex, firstName, lastName
             }
             
@@ -28,11 +37,7 @@ class UserDonDeNghiPage extends React.Component {
                     this.props.history.push('/user');
                 } else if (data.item) {
                     this.setState(data.item);
-                    // console.log('this.state',this.state);
-                    $('#residence').val(data.item.residence);
-                    $('#identityCard').val(data.item.identityCard);
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
-                    $('#phoneNumber').val(data.item.phoneNumber);
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
                     $('#otherDocumentation').val(data.item.otherDocumentation);
@@ -53,6 +58,7 @@ class UserDonDeNghiPage extends React.Component {
     
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
+        console.log('this.state.item',this.state.item);
     }
     
     save = () => {
@@ -60,13 +66,15 @@ class UserDonDeNghiPage extends React.Component {
         const
             birthday = $('#birthday').val(),
             licenseDated = $('#licenseDated').val(),
+            identityDate = $('#identityDate').val(),
             changes = {
                 nationality: $('#nationality').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 residence: $('#residence').val(),
-                // integration: this.state.item.integration,
+                integration: this.state.item.integration,
                 phoneNumber: $('#phoneNumber').val(),
                 otherDocumentation: $('#otherDocumentation').val(),
+                regularResidence: $('#regularResidence').val(),
 
                 //license
                 licenseNumber: $('#licenseNumber').val(),
@@ -182,7 +190,7 @@ class UserDonDeNghiPage extends React.Component {
                             <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
                             <input className='form-control' type='text' placeholder='Hạng' id='newLicenseClass'/>
                         </div>
-                        {/* <div className='form-group' style={{ display: 'inline-flex' }}>
+                        <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
                                 <label>
@@ -190,7 +198,7 @@ class UserDonDeNghiPage extends React.Component {
                                     <span className='button-indecator'/>
                                 </label>
                             </div>
-                        </div> */}
+                        </div>
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm:</label>
                             <textarea className='form-control' id='otherDocumentation' placeholder='Tài liệu liên quan bao gồm' rows='3'/>

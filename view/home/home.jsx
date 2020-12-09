@@ -1,3 +1,4 @@
+// import './scss/style.scss';
 import './home.scss';
 import T from '../js/common';
 import React from 'react';
