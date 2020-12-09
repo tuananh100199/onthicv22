@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDonDeNghiHocByUser } from './redux.jsx';
+import { getDonDeNghiHocByUser, updateForm } from './redux.jsx';
+import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
@@ -22,9 +23,12 @@ class UserDonDeNghiPage extends React.Component {
             }
             
             this.props.getDonDeNghiHocByUser(data => {
+                console.log('getData',data)
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
+                    this.setState(data.item);
+                    // console.log('this.state',this.state);
                     $('#residence').val(data.item.residence);
                     $('#identityCard').val(data.item.identityCard);
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
@@ -33,6 +37,8 @@ class UserDonDeNghiPage extends React.Component {
                     $('#licenseNumber').val(data.item.licenseNumber);
                     $('#otherDocumentation').val(data.item.otherDocumentation);
                     $('#licenseClass').val(data.item.licenseClass);
+                    $('#newLicenseClass').val(data.item.newLicenseClass);
+                    $('#licenseIssuedBy').val(data.item.licenseIssuedBy);
 
                     $(this.quocGia.current).select2({
                         data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
@@ -58,23 +64,25 @@ class UserDonDeNghiPage extends React.Component {
                 nationality: $('#nationality').val(),
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 residence: $('#residence').val(),
-                integration: this.state.item.integration,
+                // integration: this.state.item.integration,
                 phoneNumber: $('#phoneNumber').val(),
                 otherDocumentation: $('#otherDocumentation').val(),
 
                 //license
                 licenseNumber: $('#licenseNumber').val(),
                 licenseClass: $('#licenseClass').val(),
+                newLicenseClass: $('#newLicenseClass').val(),
                 licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
-                licenseIssuedBy: $('#isslicenseIssuedByuedBy').val(),
+                licenseIssuedBy: $('#licenseIssuedBy').val(),
 
                 //identity
                 identityCard: $('#identityCard').val(),
                 identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
                 identityIssuedBy: $('#identityIssuedBy').val(),
             };
-        
-        this.props.updateForm(this.state.item._id, changes, () => {
+        console.log('changes',changes)
+        this.props.updateForm(this.state._id, changes, () => {
+            this.props.updateProfile(changes);
             T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
         });
     };
@@ -85,8 +93,9 @@ class UserDonDeNghiPage extends React.Component {
             _id: '', nationality: '', birthday: '',
             residence: '', integration: false, phoneNumber: '', 
             licenseNumber: '', licenseClass:'', licenseDated:'', licenseIssuedBy:'',
-            identityCard:'',identityDate:'', identityIssuedBy:'',otherDocumentation:'',
+            identityCard:'',identityDate:'', identityIssuedBy:'',otherDocumentation:'',newLicenseClass:''
         };
+        console.log('item',item)
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -130,8 +139,8 @@ class UserDonDeNghiPage extends React.Component {
                         </div>
                         
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='otherDocumentation'>Nơi đăng ký hộ khẩu thường trú:</label>
-                            <textarea className='form-control' id='otherDocumentation' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3'/>
+                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú:</label>
+                            <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3'/>
                         </div>
                         
                         <div className='form-group'>
@@ -160,9 +169,9 @@ class UserDonDeNghiPage extends React.Component {
                                 <input className='form-control' type='text' id='licenseNumber'
                                        placeholder='Số giấy phép lái xe'/>
                             </div>
-                            <div className='form-group col-md-2' id='licenseDateSection'>
-                                <label className='control-label' htmlFor='licenseDate'>Hạng: </label>
-                                <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseDate' data-date-container='#identityDateSection'/>
+                            <div className='form-group col-md-2' id='licenseClassSection'>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng: </label>
+                                <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection'/>
                             </div>
                             <div className='form-group col-md-7'>
                                 <label className='control-label' htmlFor='licenseIssuedBy'>Do: </label>
@@ -170,10 +179,10 @@ class UserDonDeNghiPage extends React.Component {
                             </div>
                         </div>
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='licenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
-                            <input className='form-control' type='text' placeholder='Hạng' id='licenseClass'/>
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
+                            <input className='form-control' type='text' placeholder='Hạng' id='newLicenseClass'/>
                         </div>
-                        <div className='form-group' style={{ display: 'inline-flex' }}>
+                        {/* <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
                                 <label>
@@ -181,10 +190,10 @@ class UserDonDeNghiPage extends React.Component {
                                     <span className='button-indecator'/>
                                 </label>
                             </div>
-                        </div>
+                        </div> */}
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm:</label>
-                            <textarea className='form-control' id='residence' placeholder='Tài liệu liên quan bao gồm' rows='3'/>
+                            <textarea className='form-control' id='otherDocumentation' placeholder='Tài liệu liên quan bao gồm' rows='3'/>
                         </div>
                     </div>
                 </div>
@@ -201,5 +210,5 @@ class UserDonDeNghiPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser };
-export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage);
+const mapActionsToProps = { getDonDeNghiHocByUser,updateForm,updateProfile };
+export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

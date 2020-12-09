@@ -11,6 +11,7 @@ module.exports = (app) => {
 
         nationality: String, // Quoc tich
         residence: String, // Noi cu tru
+        regularResidence: String, // Noi dang ky ho khau thuong tru
 
         identityCard: Number, // CMND, CCCD
         identityIssuedBy: String, // Noi cap CMND, CCCD

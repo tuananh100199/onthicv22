@@ -11,7 +11,7 @@
   "autoLogin": true,
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
-    "webpack-server": "webpack-dev-server --mode development --open --color",
+    "webpack-server": "webpack serve --mode development --open --color",
     "build": "webpack --mode production"
   },
   "repository": {
@@ -50,6 +50,7 @@
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.5",
+    "@webpack-cli/serve": "^1.1.0",
     "acorn": "^8.0.4",
     "babel-loader": "^8.1.0",
     "css-loader": "^5.0.1",
@@ -74,8 +75,8 @@
     "sass-loader": "^10.1.0",
     "socket.io-client": "^3.0.1",
     "style-loader": "^2.0.0",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {

@@ -94,7 +94,7 @@ export function createForm(done) {
 
 export function updateForm(_id, changes, done) {
     return dispatch => {
-        const url = '/api/user-form';
+        const url = '/api/application-form';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
