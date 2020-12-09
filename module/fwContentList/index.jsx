@@ -1,7 +1,7 @@
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
 import contentList from './redux.jsx';
-import SectionContentList from './sectionContentList.jsx';
+import SectionAllContent from './SectionAllContent.jsx';
 import SectionContent from './sectionContent.jsx';
 
 export default {
@@ -14,7 +14,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage.jsx') })
         },
         {
-            path: '/content/item/:contentId',
+            path: '/content/item/:id',
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
         },
         // {
@@ -23,6 +23,6 @@ export default {
         // }
     ],
     Section: {
-        SectionContentList, SectionContent
+        SectionAllContent, SectionContent
     }
 };

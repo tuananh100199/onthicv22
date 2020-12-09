@@ -1,34 +1,45 @@
+
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContentList } from './redux.jsx';
+import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 
-class SectionNews extends React.Component {
+class SectionAllContent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { items: [] };
+    }
+
     componentDidMount() {
-        this.props.getAllContentList();
+        this.props.getAllContents();
+        this.getData();
+    }
+    getData =()=>{
+        if (this.props.content) {
+            this.setState({ items: this.props.content });
+            console.log('state', this.state)
+        }
     }
 
     render() {
-        const newsFeed = this.props.news && this.props.news.newsFeed ? this.props.news.newsFeed : [];
-        let news = null;
-        if (newsFeed && newsFeed.length) {
-            news = newsFeed.map((item, index) => {
-                const link = item.link ? '/tintuc/' + item.link : '/news/item/' + item._id;
+        const items = this.state.items ? this.state.items : [];
+        if ( items &&  items.length) {
+            items.map((item, index) => {
+                const link = '/content/item/' + item._id;
                 return (
                     <div key={index}>
                         <div className='row ml-0'>
-                            <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                            <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
                                 <Link to={link}>
                                     <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                                 </Link>
                             </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
                                             <Link to={link} className='text-black'>{T.language.parse(item.title)}</Link>
                                         </h2>
-                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -39,11 +50,9 @@ class SectionNews extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <div className='text-left pl-4 mb-1 py-1' style={{ backgroundColor: '#4d983c' }}>
-                    <h3 className='text-white'>Tin Tức Mới Nhất</h3>
-                </div>
+                <h3>Danh sách bài viết</h3>
                 <div>
-                    {news}
+                    {items}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
                     {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
                     {/*</button>*/}
@@ -53,6 +62,6 @@ class SectionNews extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contentList: state.contentList.list });
-const mapActionsToProps = { getAllContentList };
-export default connect(mapStateToProps, mapActionsToProps)(SectionNews);
+const mapStateToProps = state => ({ system: state.system, content: state.content});
+const mapActionsToProps = { getAllContents };
+export default connect(mapStateToProps, mapActionsToProps)(SectionAllContent);
