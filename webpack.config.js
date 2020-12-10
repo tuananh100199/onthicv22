@@ -82,6 +82,10 @@ module.exports = (env, argv) => ({
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
             { test: /\.s[ac]ss$/i, use: ['style-loader', 'css-loader', 'sass-loader'] },
             {
+                test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
+                use: 'url-loader?limit=100000'
+            },
+            {
                 test: /\.jsx?$/, exclude: /node_modules/,
                 use: {
                     options: {

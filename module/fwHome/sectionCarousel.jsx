@@ -1,39 +1,37 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { homeGetCarousel } from './redux/reduxCarousel.jsx';
-import Slider from 'react-animated-slider';
-import 'react-animated-slider/build/horizontal.css';
 
 class SectionCarousel extends React.Component {
     state = {};
     
     componentDidMount() {
-        this.props.homeGetCarousel(this.props.viewId, carousel => this.setState(carousel));
-    }
-    
-    componentDidUpdate() {
-        const single_id = 'carousel_' + this.props.viewId, logo_id = 'logo_carousel_' + this.props.viewId;
-        
-        const ready = () => {
-            let singleCarousel = $('#' + single_id), logoCarousel = $('#' + logo_id);
-            if (!this.state.single && logoCarousel.length && $.fn.owlCarousel) {
-                logoCarousel.owlCarousel({
-                    loop: true,
-                    margin: 0,
-                    nav: false,
-                    autoplay: true,
-                    autoplayTimeout: 1500,
-                    autoplaySpeed: 500,
-                    autoplayHoverPause: true,
-                    responsiveClass: true,
-                    responsive: {
-                        0: { items: 1 }, 375: { items: 3 }, 600: { items: 5 }, 1000: { items: 7 }
+        $(document).ready(() => {
+            const single_id = 'carousel_' + this.props.viewId, logo_id = 'logo_carousel_' + this.props.viewId;
+            this.props.homeGetCarousel(this.props.viewId, carousel => {
+                this.setState(carousel, () => {
+                    let singleCarousel = $('#' + single_id), logoCarousel = $('#' + logo_id);
+                    if (this.state.single) {
+                        singleCarousel.owlCarousel({
+                            items: 1,
+                            loop: true,
+                            margin: 0,
+                            center: true,
+                            nav: true,
+                            navText : ["<i class='fa fa-chevron-left'></i>","<i class='fa fa-chevron-right'></i>"],
+                            navContainer: '.nav-container',
+                            navSpeed: 1500,
+                            dots: false,
+                            autoplay: true,
+                            autoplayTimeout: 4000,
+                            autoplaySpeed: 1500,
+                            autoplayHoverPause: true,
+                            responsiveClass: true,
+                        });
                     }
-                });
-            }
-        };
-        
-        $(document).ready(ready);
+                })
+            });
+        })
     }
     
     render() {
@@ -43,12 +41,17 @@ class SectionCarousel extends React.Component {
             elements = this.state.items.map((item, index) => {
                 return (
                     this.state.single ?
-                        <div key={index}
-                             style={{ background: `url('${item.image}') no-repeat center center` }}
-                             className='slider-content'>
+                        <div key={index} className='slider-content'
+                             style={{
+                                 height, background: `url('${item.image}')`,
+                                 backgroundRepeat: 'no-repeat',
+                                 backgroundPosition: 'center',
+                                 backgroundSize: 'contain'
+                             }}
+                        >
                             <div className='inner'>
                                 <h2>{T.language.parse(item.title)}</h2>
-                                {item.link ? <a href={item.link} target='_blank'>More</a> : ''}
+                                {item.link ? <a href={item.link} target='_blank'>Xem thêm</a> : ''}
                             </div>
                         </div>
                         :
@@ -63,8 +66,8 @@ class SectionCarousel extends React.Component {
                                 bottom: 0,
                                 backgroundImage: 'url(' + item.image + ')',
                                 backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center center',
-                                backgroundSize: 'auto 100%'
+                                backgroundPosition: 'center',
+                                backgroundSize: 'contain'
                             }}>
                             </div>
                             <a href={item.link} target='_blank'>
@@ -76,10 +79,11 @@ class SectionCarousel extends React.Component {
         }
         
         return this.state.single ?
-            <div style={{ height: height }}>
-                <Slider className='slider-wrapper' autoplay={2000} duration={1500} infinite={true}>
+            <div style={{ height, position: 'relative' }}>
+                <div id={'carousel_' + this.props.viewId} className='owl-carousel owl-theme'>
                     {elements}
-                </Slider>
+                </div>
+                <div className='nav-container'/>
             </div>
             :
             <div className='row'>
