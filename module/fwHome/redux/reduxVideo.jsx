@@ -125,7 +125,7 @@ export function changeVideo(video) {
 // USER ---------------------------------------------------------------------------------------------------------------------------------------------
 export function getVideo(_id, done) {
     return dispatch => {
-        const url = '/home/video/' + _id;
+        const url = '/home/video/item/' + _id;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy video bị lỗi!', 'danger');
@@ -134,5 +134,19 @@ export function getVideo(_id, done) {
                 done(data.item);
             }
         }, error => T.notify('Lấy video bị lỗi!', 'danger'));
+    }
+}
+
+export function getAllVideosByUser(condition, done) {
+    return dispatch => {
+        const url = '/home/video/all';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách video bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.items);
+            }
+        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
     }
 }

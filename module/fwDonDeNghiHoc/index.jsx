@@ -19,6 +19,6 @@ export default {
             path: '/user/user-form/edit/:id',
             component: Loadable({ loading: Loading, loader: () => import('./chinhSuaBieuMau.jsx') }),
         },
-       
+
     ],
 };

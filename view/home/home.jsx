@@ -1,3 +1,4 @@
+import './scss/style.scss';
 import './home.scss';
 import T from '../js/common';
 import React from 'react';
@@ -62,6 +63,7 @@ class App extends React.Component {
                 }
                 handlePaddingFooter();
                 $(window).on('resize', handlePaddingFooter);
+                new WOW().init();
                 
                 this.loader.current.isShown() && this.loader.current.hide();
                 let menuList = [ ...this.props.system.menus ];
@@ -113,7 +115,7 @@ class App extends React.Component {
                                 loader: () => import('../component/MessagePage.jsx')
                             })}/>
                         </Switch>
-                        <div id='paddingFooterSection'/>
+                        <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
                         <HomeFooter/>
                         {/*<LanguageSwitch />*/}
                         <LoginModal ref={this.loginModal} register={this.props.register} login={this.props.login}

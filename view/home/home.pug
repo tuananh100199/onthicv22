@@ -10,7 +10,8 @@ html(lang='en')
         link(rel='stylesheet' href='/home/css/material-button/icheck-material-custom.min.css')
         link(rel='stylesheet' href='/home/css/material-button/icheck-material.min.css')
         link(rel='stylesheet' href='/home/css/camera.min.css')
-        link(rel='stylesheet' href='/home/css/style.css')
+        link(rel='stylesheet' href='/home/css/owl.carousel.min.css')
+        //link(rel='stylesheet' href='/home/css/style.css')
     body
         #app(style={position: 'relative', 'min-height': '100vh'})
         script(src='/home/js/jquery.min.js')
@@ -24,6 +25,7 @@ html(lang='en')
         script(src='/js/plugins/bootstrap-notify.min.js')
         script(src='/home/js/plugins.min.js')
         script(src='/home/js/active.min.js')
+        script(src='/home/js/owl.carousel.min.js')
         each item in htmlWebpackPlugin.files.js
             if item.indexOf('/js/home.js?') == 0
                 script(type='text/javascript' src=item)

@@ -153,15 +153,15 @@ class SettingsPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-cog' /> Configure</h1>
+                    <h1><i className='fa fa-cog' /> Cấu hình</h1>
                 </div>
                 <div className='row'>
                     <div className='col-md-6'>
                         <div className='tile'>
-                            <h3 className='tile-title'>General information</h3>
+                            <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>Address</label>
+                                    <label className='control-label'>Địa chỉ</label>
                                     <input className='form-control' type='text' placeholder='Address' ref={this.address} defaultValue={address} />
                                 </div>
                                 <div className='form-group'>
@@ -169,7 +169,7 @@ class SettingsPage extends React.Component {
                                     <input className='form-control' type='email' placeholder='Email' ref={this.email} defaultValue={email} />
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Phone number</label>
+                                    <label className='control-label'>Số điện thoại</label>
                                     <input className='form-control' type='text' placeholder='Phone number' ref={this.mobile} defaultValue={mobile} />
                                 </div>
                                 <div className='form-group'>
@@ -195,7 +195,7 @@ class SettingsPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Save
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
                                 </button>
                             </div>
                         </div>
@@ -206,19 +206,19 @@ class SettingsPage extends React.Component {
 
                     <div className='col-md-6'>
                         <div className='tile'>
-                            <h3 className='tile-title'>Change password</h3>
+                            <h3 className='tile-title'>Thay đổi mật khẩu</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>New password</label>
-                                    <input className='form-control' type='password' placeholder='New password' ref={this.emailPassword1} defaultValue='' autoComplete='new-password' />
-                                    <input className='form-control mt-1' type='password' placeholder='Retype password' ref={this.emailPassword2} defaultValue='' autoComplete='new-password' />
+                                    <label className='control-label'>Mật khẩu mới</label>
+                                    <input className='form-control' type='password' placeholder='Mật khẩu mới' ref={this.emailPassword1} defaultValue='' autoComplete='new-password' />
+                                    <input className='form-control mt-1' type='password' placeholder='Nhập lại mật khẩu' ref={this.emailPassword2} defaultValue='' autoComplete='new-password' />
                                 </div>
                             </div>
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-primary' type='button' onClick={this.changePassword}>
-                                            <i className='fa fa-fw fa-lg fa-check-circle' />Change password
+                                            <i className='fa fa-fw fa-lg fa-check-circle' />Thay đổi mật khẩu
                                         </button>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@ class SettingsPage extends React.Component {
                         </div>
 
                         <div className='tile'>
-                            <h3 className='tile-title'>Images</h3>
+                            <h3 className='tile-title'>Hình ảnh</h3>
                             <div className='tile-body'>
                                 <div className='tile-body'>
                                     <div className='form-group'>
@@ -241,11 +241,11 @@ class SettingsPage extends React.Component {
                             <h3 className='tile-title'>Maps</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>Latitude</label>
+                                    <label className='control-label'>Vĩ độ</label>
                                     <input className='form-control' type='number' placeholder='Latitude' ref={this.latitude} defaultValue={latitude} />
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Longitude</label>
+                                    <label className='control-label'>Kinh độ</label>
                                     <input className='form-control' type='number' placeholder='Longitude' ref={this.longitude} defaultValue={longitude} />
                                 </div>
                                 <div className='form-group'>
@@ -255,7 +255,7 @@ class SettingsPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveMapInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Save
+                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
                                 </button>
                             </div>
                         </div>

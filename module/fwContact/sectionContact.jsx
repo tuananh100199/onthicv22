@@ -48,7 +48,7 @@ class SectionContact extends React.Component {
         return [
             <div key={0} className='justify-content-center pb-3'>
                 <div className='col-md-12 heading-sections text-center'>
-                    <h2 className='mb-4'>Contact</h2>
+                    <h2 className='mb-4'>Liên hệ</h2>
                 </div>
             </div>,
             <a key={1} href={mapUrl} target='_blank'>

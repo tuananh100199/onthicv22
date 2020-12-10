@@ -29,7 +29,7 @@ class ContactPage extends React.Component {
             this.props.contact.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
-        let table = 'No messages!';
+        let table = 'Không có liên hệ!';
         if (this.props.contact && this.props.contact.page && this.props.contact.page.list && this.props.contact.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
@@ -71,7 +71,7 @@ class ContactPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa fa-envelope-o' /> Contact</h1>
+                    <h1><i className='fa fa fa-envelope-o' /> Liên hệ</h1>
                 </div>
                 <div className='row tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

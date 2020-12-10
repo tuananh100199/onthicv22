@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { updateProfile } from '../_init/reduxSystem.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
 import ImageBox from '../../view/component/ImageBox.jsx';
+const countryList = require('country-list');
 
 class ProfilePage extends React.Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class ProfilePage extends React.Component {
         this.sex = React.createRef();
         this.quocGia = React.createRef();
     }
-        
+
 
     componentDidMount() {
         T.ready('/user', () => {
@@ -39,23 +40,25 @@ class ProfilePage extends React.Component {
     }
 
     renderData = (user, allDivisions, callback) => {
-        let { firstname, lastname, email, phoneNumber, birthday, sex, image, identityCard, issuedBy, residence,identityDate } = user ?
-                user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png', identityCard:'', issuedBy:'', residence:'', identityDate:'' };
-
+        let { firstname, lastname, email, phoneNumber, birthday, sex, image, identityCard, identityIssuedBy, residence, identityDate, nationality } = user ?
+            user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png', identityCard: '', identityIssuedBy: '', residence: '', identityDate: '', nationality:'' };
         $('#userLastname').val(lastname);
         $('#userFirstname').val(firstname);
         $('#email').html(email);
         $('#birthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
         $('#phoneNumber').val(phoneNumber);
         $('#identityCard').val(identityCard);
-        $('#issuedBy').val(issuedBy);
+        $('#identityIssuedBy').val(identityIssuedBy);
         $('#residence').val(residence);
         $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
+        $(this.quocGia.current).select2({
+            data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
+            placeholder: 'Chọn quốc gia'
+        }).val(nationality).trigger('change');
 
 
-        
 
-        
+
         this.sex.current.setText(sex ? sex : '');
         this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
         callback && callback();
@@ -67,18 +70,21 @@ class ProfilePage extends React.Component {
             identityDate = $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
 
             changes = {
+                nationality: $(this.quocGia.current).val(),
                 firstname: $('#userFirstname').val(),
                 lastname: $('#userLastname').val(),
                 phoneNumber: $('#phoneNumber').val(),
                 birthday: birthday ? birthday : 'empty',
                 identityCard: $('#identityCard').val(),
-                issuedBy: $('#issuedBy').val(),
+                identityIssuedBy: $('#identityIssuedBy').val(),
                 residence: $('#residence').val(),
                 identityDate: identityDate ? identityDate : 'empty',
 
 
-                
+
             };
+        var phoneno = /^[0-9\-\+]{1,20}$/;
+        var idno = /^[0-9]{1,20}$/;
         if (T.sexes.indexOf(sex) != -1) {
             changes.sex = sex;
         }
@@ -88,6 +94,12 @@ class ProfilePage extends React.Component {
         } else if (changes.lastname == '') {
             T.notify('Họ và tên lót bị trống!', 'danger');
             $('#userLastName').focus();
+        } else if(!changes.phoneNumber.match(phoneno)){
+            T.notify('Số điện thoại không đúng định dạng', 'danger');
+            $('#phoneNumber').focus();
+        } else if(!changes.identityCard.match(idno)){
+            T.notify('Số CMND không đúng định dạng', 'danger');
+            $('#identityCard').focus();
         } else {
             this.props.updateProfile(changes);
         }
@@ -145,14 +157,14 @@ class ProfilePage extends React.Component {
                                 <div className='row'>
                                     <div className='col-12 col-lg-8'>
                                         <div className='form-group'
-                                             style={{ display: 'inline-flex', width: '100%' }}>
+                                            style={{ display: 'inline-flex', width: '100%' }}>
                                             <label className='control-label'>Email: <span
-                                                    id='email' /></label>
+                                                id='email' /></label>
                                         </div>
                                     </div>
                                     <div className='col-12 col-lg-4'>
                                         <div className='form-group'
-                                             style={{ display: 'inline-flex', width: '100%' }}>
+                                            style={{ display: 'inline-flex', width: '100%' }}>
                                             <label>Giới tính: </label>&nbsp;&nbsp;
                                             <Dropdown ref={this.sex} text='' items={T.sexes} />
                                         </div>
@@ -163,49 +175,52 @@ class ProfilePage extends React.Component {
                                     <div className='col-12 col-sm-6'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='phoneNumber'>Số điện thoại</label>
-                                            <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber' />
+                                            <input className='form-control' type='text' placeholder='+84931234567' id='phoneNumber' />
                                         </div>
                                     </div>
-                                    <div className='col-12 col-sm-6'>
+                                    <div className='col-12 col-sm-6' id='birthdaySection'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='birthday'>Ngày
                                                 sinh</label>
-                                            <input className='form-control' type='text'
-                                                   placeholder='Ngày sinh' id='birthday' />
+                                            <input className='form-control' type='text' data-date-container='#birthdaySection'
+                                                placeholder='Ngày sinh' id='birthday' />
                                         </div>
                                     </div>
                                     <div className='col-12 col-sm-6'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor="country">Quốc tịch:</label>
-                                            <select className='form-control select2-input' ref={this.quocGia}/>
+                                            <select className='form-control select2-input' ref={this.quocGia} />
                                         </div>
                                     </div>
+                                </div>
+                                <div className='row'>
                                     <div className='col-12 col-sm-6'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='identityCard'>CMND</label>
                                             <input className='form-control' type='text' id='identityCard'
-                                                placeholder='Nhập số cmnd...'/>
+                                                placeholder='Số CMND' />
                                         </div>
                                     </div>
-                                    <div className='col-12 col-sm-12'>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='issuedBy'>Nơi cấp</label>
-                                            <input className='form-control' type='text' id='issuedBy'
-                                                placeholder='Nhập số cmnd...'/>
-                                        </div>
-                                    </div>
-                                    <div className='col-12 col-sm-12'>
+                                    <div className='col-12 col-sm-6' id='identityDateSection'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='identityDate'>Ngày cấp</label>
-                                            <input className='form-control' type='text' id='identityDate'
-                                                placeholder='Nhập số cmnd...'/>
+                                            <input className='form-control' type='text' id='identityDate' 
+                                                data-date-container='#identityDateSection'
+                                                placeholder='Ngày cấp CMND' />
+                                        </div>
+                                    </div>
+                                    <div className='col-12 col-sm-12'>
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp</label>
+                                            <input className='form-control' type='text' id='identityIssuedBy'
+                                                placeholder='Nơi cấp CMND' />
                                         </div>
                                     </div>
                                     <div className='col-12 col-sm-12'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='residence'>Nơi cư trú</label>
                                             <input className='form-control' type='text' id='residence'
-                                                placeholder='Nhập số cmnd...'/>
+                                                placeholder='Nơi cư trú' />
                                         </div>
                                     </div>
                                 </div>
@@ -227,7 +242,7 @@ class ProfilePage extends React.Component {
                                     <label className='control-label'>Nhập lại mật khẩu</label>
                                     <input className='form-control' type='password' placeholder='Nhập lại mật khẩu' ref={this.password2} defaultValue='' />
                                 </div>
-                            </div>  
+                            </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.savePassword}>Lưu</button>
                             </div>
