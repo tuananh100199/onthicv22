@@ -57,8 +57,6 @@ class ProfilePage extends React.Component {
         }).val(nationality).trigger('change');
 
 
-
-
         this.sex.current.setText(sex ? sex : '');
         this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
         callback && callback();

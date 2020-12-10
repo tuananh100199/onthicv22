@@ -11,6 +11,7 @@ module.exports = app => {
 
         otherDocumentation: String, // Tai lieu khac
         licenseClass: String, // Hang bang lai xe 
+        newLicenseClass: String,
     });
     const model = app.db.model('ApplicationForm', schema);
 
