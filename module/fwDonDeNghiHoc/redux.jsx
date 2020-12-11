@@ -39,7 +39,7 @@ export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, done) {
 }
 
 export function ajaxGetForm(_id, option, done) {
-    const url = '/api/user-form/item/' + _id;
+    const url = '/api/application-form/item/' + _id;
     T.get(url, { option }, data => {
         done(data)
     }, error => T.notify('Lấy form bị lỗi!', 'danger'))
