@@ -1,13 +1,11 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        listOfContentId: {
-            type: [{
+        items:
+            [{
                 type: app.db.Schema.ObjectId,
                 ref: 'Content'
-            }],
-            default: []
-        },
+            }]
     });
     const model = app.db.model('ContentList', schema);
 

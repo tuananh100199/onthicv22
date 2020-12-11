@@ -126,37 +126,38 @@ class ListContentEditPage extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.items.map((item, index) => {
-                            if(item){
-                            let title = T.language.parse(item.title, true);
-                            return (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                        {readOnly ? title.vi : <a href='#'>{title.vi}</a>}
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                        <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
-                                    </td>
-                                    {readOnly ? null :
+                            if (item) {
+                                let title = T.language.parse(item.title, true);
+                                return (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
                                         <td>
-                                            <div className='btn-group'>
-                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, true)}>
-                                                    <i className='fa fa-lg fa-arrow-up' />
-                                                </a>
-                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, false)}>
-                                                    <i className='fa fa-lg fa-arrow-down' />
-                                                </a>
-                                                {/* <a className='btn btn-primary' href='#' onClick={this.props.history.push('/user/content/edit/' + item._id)}>
+                                            {readOnly ? title.vi : <a href='#'>{title.vi}</a>}
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
+                                        </td>
+                                        {readOnly ? null :
+                                            <td>
+                                                <div className='btn-group'>
+                                                    <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, true)}>
+                                                        <i className='fa fa-lg fa-arrow-up' />
+                                                    </a>
+                                                    <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, false)}>
+                                                        <i className='fa fa-lg fa-arrow-down' />
+                                                    </a>
+                                                    {/* <a className='btn btn-primary' href='#' onClick={this.props.history.push('/user/content/edit/' + item._id)}>
                                                     <i className='fa fa-lg fa-edit' />
                                                 </a> */}
-                                                <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
-                                                    <i className='fa fa-lg fa-trash' />
-                                                </a>
-                                            </div>
-                                        </td>
-                                    }
-                                </tr>
-                            )}
+                                                    <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
+                                                        <i className='fa fa-lg fa-trash' />
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        }
+                                    </tr>
+                                )
+                            }
                         })
                         }
                     </tbody>
