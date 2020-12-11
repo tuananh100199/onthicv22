@@ -131,6 +131,8 @@ class NewsEditPage extends React.Component {
         if (!docMapper[newsId]) readOnly = false;
 
         return (
+
+             
             <main className='app-content'>
                 <div className='app-title'>
                     <div>

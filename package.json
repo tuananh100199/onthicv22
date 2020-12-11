@@ -11,7 +11,7 @@
   "autoLogin": true,
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
-    "webpack-server": "webpack serve --mode development --open --color",
+    "webpack-server": "webpack serve --mode development  --open --color",
     "build": "webpack --mode production"
   },
   "repository": {
@@ -54,6 +54,8 @@
     "babel-loader": "^8.1.0",
     "css-loader": "^5.0.1",
     "dateformat": "^3.0.3",
+    "file-loader": "^6.2.0",
+    "url-loader": "^4.1.1",
     "html-webpack-plugin": "^4.5.0",
     "in-view": "^0.6.1",
     "mini-css-extract-plugin": "^1.3.1",

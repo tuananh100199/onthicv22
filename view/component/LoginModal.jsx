@@ -72,27 +72,17 @@ export default class LoginModal extends React.Component {
         this.state = {
             value: 0
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleChangeIndex = this.handleChangeIndex.bind(this);
-
-        this.showLogin = this.showLogin.bind(this);
-        this.onLogin = this.onLogin.bind(this);
-        this.onSignUp = this.onSignUp.bind(this);
-        this.validate = this.validate.bind(this);
-        this.showValidate = this.showValidate.bind(this);
-        this.onForgotPasswordClick = this.onForgotPasswordClick.bind(this);
     }
 
-    handleChange(event, newValue) {
+    handleChange = (event, newValue) => {
         this.setState({ value: newValue });
-    };
+    }
 
-    handleChangeIndex(index) {
+    handleChangeIndex = (index) => {
         this.setState({ value: index });
-    };
+    }
 
-    validate(input) {
+    validate = (input) => {
         if ($(input).attr('type') == 'email' || $(input).attr('name') == 'email') {
             return T.validateEmail($(input).val().trim());
         } else {
@@ -102,7 +92,7 @@ export default class LoginModal extends React.Component {
         }
     }
 
-    showValidate(input) {
+    showValidate = (input) => {
         let thisAlert = $(input).parent();
         $(thisAlert).addClass('alert-validate');
     }
@@ -169,7 +159,7 @@ export default class LoginModal extends React.Component {
         });
     }
 
-    showLogin() {
+    showLogin = () => {
         $('input').val('');
         $(this.errorMessage.current).html('&nbsp;');
         $(this.signUpErrorMessage.current).html('&nbsp;');
@@ -177,7 +167,7 @@ export default class LoginModal extends React.Component {
         $(this.googleLogin.current).css('border', '1px solid #eee');
     }
 
-    onForgotPasswordClick(event) {
+    onForgotPasswordClick = (event) => {
         const emailInput = $(this.txtEmail.current)[0];
         if (this.validate(emailInput)) {
             const email = emailInput.value.trim(), errorMessage = $(this.errorMessage.current);
@@ -194,7 +184,7 @@ export default class LoginModal extends React.Component {
         event.preventDefault();
     }
 
-    onLogin(e) {
+    onLogin = (e) => {
         e.preventDefault();
         let errorMessage = $(this.errorMessage.current),
             data = {
@@ -216,7 +206,7 @@ export default class LoginModal extends React.Component {
         }
     }
 
-    onSignUp(e) {
+    onSignUp = (e) => {
         e.preventDefault();
         let errorMessage = $(this.signUpErrorMessage.current),
             data = {

@@ -4,7 +4,6 @@ module.exports = app => {
         priority: Number,
         title: String,
         image: String,
-        description: String,
         link: String,
         active: { type: Boolean, default: false },
     });
@@ -17,8 +16,8 @@ module.exports = app => {
                 if (error) {
                     done(error);
                 } else {
-                    item.image = '/img/carouselItem/' + item._id + '.png';
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.png'),
+                    item.image = '/img/carouselItem/' + item._id + '.jpg';
+                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                         destPath = app.path.join(app.publicPath, item.image);
                     app.fs.copyFile(srcPath, destPath, error => {
                         if (error) {
@@ -30,14 +29,10 @@ module.exports = app => {
                 }
             });
         }),
+        
+        getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
 
-        getAll: (done) => model.find({}).sort({ priority: -1 }).exec(done),
-
-        getByCarouselId: (carouselId, done) => model.find({ carouselId }).sort({ priority: -1 }).exec(done),
-
-        getByActiveCarouselId: (carouselId, done) => model.find({ carouselId, active: true }).sort({ priority: -1 }).exec(done),
-
-        get: (_id, done) => model.findById(_id, done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
@@ -76,8 +71,6 @@ module.exports = app => {
                 item.remove(error => done(error, item));
             }
         }),
-
-        deleteByCarouselId: (carouselId, done) => model.deleteMany({ carouselId }, done),
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
