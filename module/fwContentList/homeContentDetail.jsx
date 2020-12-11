@@ -1,19 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js';
-import { getContent} from '../fwHome/redux/reduxContent.jsx';
-import SectionAllContent from './SectionAllContent.jsx';
+import { getContent } from '../fwHome/redux/reduxContent.jsx';
+import SectionAllContent from './sectionAllContent.jsx';
 
 class ContentDetail extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {} ;
+        this.state = {};
     }
 
     componentDidMount() {
         const route = T.routeMatcher('/content/item/:id'),
-        params = route.parse(window.location.pathname);
-        this.setState({ _id: params.id});
+            params = route.parse(window.location.pathname);
+        this.setState({ _id: params.id });
         this.props.getContent(params.id);
     }
 
@@ -24,9 +24,9 @@ class ContentDetail extends React.Component {
         }, 250);
         if (prevProps.location.pathname != window.location.pathname) {
             const route = T.routeMatcher('/content/item/:id'),
-        params = route.parse(window.location.pathname);
-        this.setState({ _id: params.id});
-        this.props.getContent(params.id);
+                params = route.parse(window.location.pathname);
+            this.setState({ _id: params.id });
+            this.props.getContent(params.id);
         }
     }
 

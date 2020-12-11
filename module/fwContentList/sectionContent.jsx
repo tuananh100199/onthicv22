@@ -11,16 +11,18 @@ class SectionContent extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getAllContentList();
-        this.props.getAllContents();
-        this.getData();
+        $(document).ready(() => {
+            this.props.getAllContentList();
+            this.props.getAllContents();
+            this.getData();
+        })
     }
-    getData =()=>{
+    getData = () => {
         if (this.props.listContentId && this.props.contentList) {
             const currentList = this.props.contentList.list.find(list => list._id === this.props.listContentId);
             console.log('currentList', currentList)
             let title = T.language.parse(currentList.title, true);
-             $('#listContentTitle').val(title.vi).focus();
+            $('#listContentTitle').val(title.vi).focus();
             this.setState({ item: currentList });
             this.getListContentItem();
             console.log('state', this.state)
@@ -33,24 +35,22 @@ class SectionContent extends React.Component {
 
     render() {
         const items = this.state.items ? this.state.items : [];
-        if ( items &&  items.length) {
+        if (items && items.length) {
             items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
-                    <div key={index}>
-                        <div className='row ml-0'>
-                            <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
-                                <Link to={link}>
-                                    <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
-                                </Link>
-                            </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
-                                <div className='text'>
-                                    <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                        <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-black'>{T.language.parse(item.title)}</Link>
-                                        </h2>
-                                    </div>
+                    <div key={index} className='row ml-0 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
+                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
+                            <Link to={link}>
+                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
+                            </Link>
+                        </div>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
+                            <div className='text'>
+                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                    <h2 className='heading pb-0 mb-0'>
+                                        <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                    </h2>
                                 </div>
                             </div>
                         </div>
@@ -60,7 +60,7 @@ class SectionContent extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <h3>{T.language.parse(this.state.item.title, true).vi}</h3>
+                <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3>
                 <div>
                     {items}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
@@ -72,6 +72,6 @@ class SectionContent extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, content: state.content,contentList: state.contentList });
-const mapActionsToProps = { getAllContents,getAllContentList };
+const mapStateToProps = state => ({ system: state.system, content: state.content, contentList: state.contentList });
+const mapActionsToProps = { getAllContents, getAllContentList };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContent);
