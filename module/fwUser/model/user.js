@@ -13,7 +13,7 @@ module.exports = (app) => {
         residence: String, // Noi cu tru
         regularResidence: String, // Noi dang ky ho khau thuong tru
 
-        identityCard: Number, // CMND, CCCD
+        identityCard: String, // CMND, CCCD
         identityIssuedBy: String, // Noi cap CMND, CCCD
         identityDate: Date, // Ngay cap CMND, CCCD
 
