@@ -25,8 +25,11 @@ module.exports = app => {
         }
     }));
 
-    app.put('/api/list-content', app.permission.check('component:write'), (req, res) =>
-        app.model.contentList.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));
+    app.put('/api/list-content', app.permission.check('component:write'), (req, res) => {
+        console.log('changes in cotol', req.body.changes);
+        app.model.contentList.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+    })
+        ;
 
     app.put('/api/list-content/item/swap', app.permission.check('component:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';

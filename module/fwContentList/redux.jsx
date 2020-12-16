@@ -97,6 +97,7 @@ export function createContentList(newData, done) {
 export function updateContentList(_id, changes, done) {
     return dispatch => {
         const url = '/api/list-content';
+        console.log('changes in redux', changes)
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật danh sách Content bị lỗi!', 'danger');

@@ -29,7 +29,10 @@ module.exports = app => {
             }
         }),
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        update: (_id, changes, done) => {
+            console.log('req.body.changes in model', changes)
+            model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done)
+        },
 
         delete: (_id, done) => model.findById(_id, (error, contentList) => {
             if (error) {

@@ -149,21 +149,30 @@ class ListContentEditPage extends React.Component {
         e.preventDefault();
     };
 
-    swap = (e, item, index, isMoveUp, done) => {
-        this.props.swapContent(item._id, isMoveUp, () => {
-            if (this.state && this.state.item) {
-                let items = this.state.items;
-                const content = items[index];
-                if (isMoveUp && index > 0) {
-                    items.splice(index, 1);
-                    items.splice(index - 1, 0, content);
-                } else if (!isMoveUp && index < items.length - 1) {
-                    items.splice(index, 1);
-                    items.splice(index + 1, 0, content);
-                }
-                this.setState({ items }, done);
+    swap = (e, item, index, isMoveUp) => {
+        if (this.state && this.state.item) {
+            let items = this.state.item.items;
+            let itemContent = this.state.items;
+            const content = items[index];
+            const contentItem = itemContent[index];
+            if (isMoveUp && index > 0) {
+                items.splice(index, 1);
+                itemContent.splice(index, 1);
+                console.log('items swap', items)
+                items.splice(index - 1, 0, content);
+                itemContent.splice(index - 1, 0, contentItem);
+                console.log('items swap 1', items)
+            } else if (!isMoveUp && index < items.length - 1) {
+                items.splice(index, 1);
+                itemContent.splice(index, 1);
+                items.splice(index + 1, 0, content);
+                itemContent.splice(index + 1, 0, contentItem);
             }
-        })
+            this.state.item.items = items;
+            this.state.items = itemContent;
+            console.log('state', this.state)
+        }
+
 
         e.preventDefault();
     };
@@ -174,7 +183,8 @@ class ListContentEditPage extends React.Component {
     save = () => {
         const changes = {
             title: JSON.stringify({ vi: $('#listContentTitle').val() }),
-            items: $('#contentListSelect').val()
+            items: this.state.item.items,
+            // items: $('#contentListSelect').val()
         };
 
         if (changes.title == '') {
