@@ -29,7 +29,7 @@ class SectionContent extends React.Component {
         }
     }
     getListContentItem = () => {
-        const listItem = this.state.item.listOfContentId.map(item => this.props.content.find(ele => ele._id === item))
+        const listItem = this.state.item.items.map(item => this.props.content.find(ele => ele._id === item))
         this.setState({ items: listItem });
     }
 

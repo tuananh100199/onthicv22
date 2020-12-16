@@ -47,7 +47,7 @@ export default function ContentListReducer(state = null, data) {
         case ContentListUpdate:
             state = Object.assign({}, state);
             const updatedItem = data.item;
-            if (state && state.selectedItem && state.selectedItem._id == updatedItem.ContentListId) {
+            if (state && state.selectedItem && state.selectedItem._id == updatedItem.contentListId) {
                 for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
                     if (items[i]._id == updatedItem._id) {
                         state.selectedItem.items.splice(i, 1, updatedItem);

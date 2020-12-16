@@ -23,11 +23,11 @@ class ContentListModal extends React.Component {
     save = (event) => {
         const newData = {
             title: JSON.stringify({ vi: $('#contentListName').val() }),
-            listOfContentId: []
+            items: []
         };
 
         if (newData.title == '') {
-            T.notify('Tên danh sách noi dung bị trống!', 'danger');
+            T.notify('Tên danh sách bài viết bị trống!', 'danger');
             $('#contentListName').focus();
         } else {
             this.props.createContentList(newData, data => {
@@ -46,7 +46,7 @@ class ContentListModal extends React.Component {
                 <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Danh sách noi dung</h5>
+                            <h5 className='modal-title'>Danh sách bài viết</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
@@ -55,7 +55,7 @@ class ContentListModal extends React.Component {
                             <div className='tab-content'>
                                 <div id='contentListViTab' className='tab-pane fade show active mt-3'>
                                     <div className='form-group'>
-                                        <label htmlFor='contentListName'>Tên danh sách noi dung</label>
+                                        <label htmlFor='contentListName'>Tên danh sách bài viết</label>
                                         <input className='form-control' id='contentListName' type='text' placeholder='Tên danh sách noi dung' />
                                     </div>
                                 </div>
@@ -87,7 +87,7 @@ class ContentListPage extends React.Component {
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa danh sách noi dung', 'Bạn có chắc bạn muốn xóa danh sách noi dung này?', true, isConfirm => isConfirm && this.props.deleteContentList(item._id));
+        T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm => isConfirm && this.props.deleteContentList(item._id));
         e.preventDefault();
     }
 
@@ -132,7 +132,7 @@ class ContentListPage extends React.Component {
                 </table>
             );
         } else {
-            table = <p key={0}>Không có danh sách các noi dung!</p>;
+            table = <p key={0}>Không có danh sách các bài viết!</p>;
         }
 
         const result = [table, <ContentListModal key={1} createContentList={this.props.createContentList} ref={this.modal} history={this.props.history} />];

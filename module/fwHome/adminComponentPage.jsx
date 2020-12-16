@@ -44,7 +44,7 @@ class ComponentPage extends React.Component {
                 </div>
                 <ul className='nav nav-tabs'>
                     <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#menuContent'>Bài viết</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuContentList'>Loại bài viết</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuContentList'>Danh sách bài viết</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuCarousel'>Tập hình ảnh</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuVideo'>Video</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStatistic'>Thống kê</a></li>
