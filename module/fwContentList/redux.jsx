@@ -69,13 +69,13 @@ export function getAllContentList(done) {
         const url = '/api/list-content/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger');
+                T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: ContentListGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy tất cả danh sách Content bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
@@ -84,13 +84,13 @@ export function createContentList(newData, done) {
         const url = '/api/list-content';
         T.post(url, { newData }, data => {
             if (data.error) {
-                T.notify('Tạo danh sách Content bị lỗi!', 'danger');
+                T.notify('Tạo danh sách bài viết bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
                 dispatch(getAllContentList());
             }
-        }, error => T.notify('Tạo danh sách Content bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
@@ -100,15 +100,15 @@ export function updateContentList(_id, changes, done) {
         console.log('changes in redux', changes)
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật danh sách Content bị lỗi!', 'danger');
+                T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật danh sách Content thành công!', 'info');
+                T.notify('Cập nhật danh sách bài viết thành công!', 'info');
                 dispatch(getAllContentList());
                 done && done();
             }
-        }, error => T.notify('Cập nhật danh sách Content bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
@@ -117,13 +117,13 @@ export function deleteContentList(_id) {
         const url = '/api/list-content';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa danh sách Content bị lỗi!', 'danger');
+                T.notify('Xóa danh sách bài viết bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Xóa danh sách Content thành công!', 'error', false, 800);
+                T.alert('Xóa danh sách bài viết thành công!', 'error', false, 800);
                 dispatch(getAllContentList());
             }
-        }, error => T.notify('Xóa danh sách Content bị lỗi!', 'danger'));
+        }, error => T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
@@ -134,12 +134,12 @@ export function getContentListItem(_id, done) {
         const url = '/api/list-content/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách Content bị lỗi', 'danger');
+                T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             }
             if (done) done(data);
 
-        }, error => T.notify('Lấy danh sách Content bị lỗi', 'danger'));
+        }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
     }
 }
 // content... 
@@ -162,12 +162,12 @@ export function getContentListByUser(_id, done) {
         const url = '/home/list-content/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách Content bị lỗi', 'danger');
+                T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify('Lấy danh sách Content bị lỗi', 'danger'));
+        }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
     }
 }
 

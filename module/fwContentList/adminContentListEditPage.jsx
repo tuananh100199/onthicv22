@@ -27,16 +27,15 @@ class ContentModal extends React.Component {
     }
 
     save = (event) => {
-        console.log('$select', $('#contentListSelect').val())
         const changes = {
             items: $('#contentListSelect').val(),
             title: this.state.item.title,
         };
-        console.log('change', !$('#contentListSelect').val())
+
         if (this.state.item && this.state.item._id) {
-            if (!$('#contentListSelect').val()) {
-                console.log('test inselcet')
-                changes.items = stringify([]);
+            if ($('#contentListSelect').val() == '') {
+                // changes.items = JSON.stringify([]);
+                changes.items = [];
             }
             this.props.updateContentList(this.state.item._id, changes, () => {
                 $(this.modal.current).modal('hide');
@@ -158,22 +157,20 @@ class ListContentEditPage extends React.Component {
             if (isMoveUp && index > 0) {
                 items.splice(index, 1);
                 itemContent.splice(index, 1);
-                console.log('items swap', items)
                 items.splice(index - 1, 0, content);
                 itemContent.splice(index - 1, 0, contentItem);
-                console.log('items swap 1', items)
             } else if (!isMoveUp && index < items.length - 1) {
                 items.splice(index, 1);
                 itemContent.splice(index, 1);
                 items.splice(index + 1, 0, content);
                 itemContent.splice(index + 1, 0, contentItem);
             }
-            this.state.item.items = items;
-            this.state.items = itemContent;
+            this.setState({
+                item: Object.assign({}, this.state.item, { items: items }),
+                items: itemContent
+            });
             console.log('state', this.state)
         }
-
-
         e.preventDefault();
     };
     showSelectModal = (e, content, item) => {
@@ -184,7 +181,6 @@ class ListContentEditPage extends React.Component {
         const changes = {
             title: JSON.stringify({ vi: $('#listContentTitle').val() }),
             items: this.state.item.items,
-            // items: $('#contentListSelect').val()
         };
 
         if (changes.title == '') {
@@ -192,8 +188,7 @@ class ListContentEditPage extends React.Component {
             $('#listContentTitle').focus();
         } else {
             console.log("this.state", this.state)
-            // this.props.updateContentList(this.state.item._id, changes);
-            this.props.updateContentList(T.routeMatcher('/user/list-content/edit/:listContentId').parse(window.location.pathname).listContentId, changes);
+            this.props.updateContentList(this.state.item._id, changes);
         }
         this.getListContentItem();
     };
