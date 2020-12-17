@@ -180,9 +180,9 @@ class UserDonDeNghiPage extends React.Component {
                         </div>
                         
                         <div className='row'>
-                            <div className='form-group col-md-3' id='donDeNghiSection'>
+                            <div className='form-group col-md-3' id='birthdaySection'>
                                 <label className='control-label' htmlFor='userBirthday'>Ngày sinh</label>
-                                <input className='form-control' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#donDeNghiSection'/>
+                                <input className='form-control' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#birthdaySection'/>
                             </div>
                            
                             <div className='form-group col-md-3'>

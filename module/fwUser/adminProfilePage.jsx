@@ -26,7 +26,7 @@ class ProfilePage extends React.Component {
 
     componentDidMount() {
         T.ready('/user', () => {
-            $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             
             if (this.props.system && this.props.system.user) {
@@ -36,7 +36,7 @@ class ProfilePage extends React.Component {
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
-                $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
+                $('#birthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
                 $('#phoneNumber').val(phoneNumber);
                 $('#regularResidence').val(regularResidence);
                 $('#residence').val(residence);
@@ -60,7 +60,7 @@ class ProfilePage extends React.Component {
             changesOfUser = {
                 firstname: $('#userFirstname').val(),
                 lastname: $('#userLastname').val(),
-                birthday: $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null,
+                birthday: $('#birthday').val() ? T.formatDate($('#birthday').val()) : null,
                 residence: $('#residence').val(),
                 phoneNumber: $('#phoneNumber').val(),
                 regularResidence: $('#regularResidence').val(),
@@ -83,7 +83,7 @@ class ProfilePage extends React.Component {
             }
             else if (changesOfUser.birthday == null) {
                 T.notify('Ngày sinh bị trống', 'danger');
-                $('#userBirthday').focus();
+                $('#birthday').focus();
             }
             else if (changesOfUser.phoneNumber == '') {
                 T.notify('Số điện thoại bị trống', 'danger');
@@ -136,13 +136,15 @@ class ProfilePage extends React.Component {
 
     render() {
         const { email } = this.props.system && this.props.system.user ? this.props.system.user : { email: '' };
+        let readOnly = true;
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
                     <h1><i className='fa fa-user' /> Thông tin cá nhân</h1>
                 </div>
                 <div className='row'>
-                    <div className='col-12 col-md-8'>
+                    <div className='col-12 col-md-12'>
                         <div className='tile'>
                             <h3 className='tile-title'>Thông tin cá nhân</h3>
                             <div className='tile-body'>
@@ -162,11 +164,10 @@ class ProfilePage extends React.Component {
                                 </div>
                                 
                                 <div className='row'>
-                                    <div className='form-group col-md-3' id='donDeNghiSection'>
-                                        <label className='control-label' htmlFor='userBirthday'>Ngày sinh</label>
-                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#donDeNghiSection'/>
+                                    <div className='form-group col-md-3' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
+                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection'/>
                                     </div>
-                                
                                     <div className='form-group col-md-3'>
                                                 <div className='form-group' style={{ width: '100%' }}>
                                                     <label className='control-label' style={{marginLeft: '-10px'}}>Giới tính: </label>
@@ -182,7 +183,7 @@ class ProfilePage extends React.Component {
                                     <div className="col-md-8">
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú:</label>
-                                            <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='6'/>
+                                            <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='5'/>
                                         </div>
                                     </div>
                                     <div className="col-md-4">
@@ -219,7 +220,9 @@ class ProfilePage extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className='col-12 col-md-4'>
+                </div>
+                <div className='row'>
+                     <div className='col-12 col-md-12'>
                         <div className='tile'>
                             <h3 className='tile-title'>Mật khẩu</h3>
                             <div className='tile-body'>
@@ -236,7 +239,7 @@ class ProfilePage extends React.Component {
                                 <button className='btn btn-primary' type='button' onClick={this.savePassword}>Lưu</button>
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
             </main>
         );
