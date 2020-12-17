@@ -44,17 +44,30 @@ class SectionNewsList extends React.Component {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
                     <div className='col-md-6 col-lg-4 mb-2 mt-2' key={index}>
-                        <div className='post-entry h-100 single-popular-course mb-100'>
-                            <div className='image'>
-                                <Link to={link}>
-                                    <img src={item.image} alt='Image' className='img-fluid'
-                                         style={{ width: '350px', height: 'auto' }}/>
-                                </Link>
-                            </div>
-                            <div className='text p-4'>
-                                <h2 className='h5 text-black'><Link to={link}>{T.language.parse(item.title)}</Link></h2>
-                                <span className='text-uppercase date d-block mb-3'><small>{new Date(item.createdDate).getText()}</small></span>
+                        <div className='h-100 single-popular-course mb-100 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
+                            <Link to={link}>
+                                <img src={item.image} alt={item.title}/>
+                            </Link>
+                            <div className='course-content'>
+                                <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                <div className='meta d-flex align-items-center'>
+                                    <a href='#'>{new Date(item.createdDate).getText()}</a>
+                                </div>
+                                
                                 <p className='mb-0 grid-abstract'>{T.language.parse(item.abstract)}</p>
+                            </div>
+                            <div className='seat-rating-fee d-flex justify-content-between' style={{ position: 'absolute', bottom: 0 }}>
+                                <div className='seat-rating h-100 d-flex align-items-center'>
+                                    {/*<div className='seat'>*/}
+                                    {/*    <i className='fa fa-user' aria-hidden='true'/> 10*/}
+                                    {/*</div>*/}
+                                    {/*<div className='rating'>*/}
+                                    {/*    <i className='fa fa-star' aria-hidden='true'/> 4.5*/}
+                                    {/*</div>*/}
+                                </div>
+                                <div className='course-fee h-100'>
+                                    <Link to={link} className='free'>Xem thêm</Link>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -64,7 +77,7 @@ class SectionNewsList extends React.Component {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
                     <div className='col-12' key={index}>
-                        <div className='row'>
+                        <div className='row wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
                             <div style={{ width: '150px', padding: '15px' }}
                                  className={(index < userPage.list.length - 1 ? 'border-bottom' : '')}>
                                 <Link to={link}>
@@ -75,7 +88,7 @@ class SectionNewsList extends React.Component {
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-black'>{T.language.parse(item.title)}</Link>
+                                            <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
                                         </h2>
                                         <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
                                     </div>
@@ -88,8 +101,15 @@ class SectionNewsList extends React.Component {
         }
         
         if (userPage && userPage.pageNumber < userPage.pageTotal) {
-            elements.push(
-                <div key={elements.length} style={{ width: '100%', textAlign: 'center' }}>
+            elements_grid.push(
+                <div key={elements_grid.length} style={{ width: '100%', textAlign: 'center' }}>
+                    <img alt='Loading' className='listViewLoading' src='/img/loading.gif'
+                         style={{ width: '48px', height: 'auto' }} onLoad={this.ready}/>
+                </div>
+            );
+    
+            elements_list.push(
+                <div key={elements_list.length} style={{ width: '100%', textAlign: 'center' }}>
                     <img alt='Loading' className='listViewLoading' src='/img/loading.gif'
                          style={{ width: '48px', height: 'auto' }} onLoad={this.ready}/>
                 </div>

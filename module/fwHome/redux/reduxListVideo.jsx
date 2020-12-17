@@ -165,7 +165,7 @@ export function getListVideoByUser(_id, done) {
                 T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.item);
+                if (done) done(data);
             }
         }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
     }

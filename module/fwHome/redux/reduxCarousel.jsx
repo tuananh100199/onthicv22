@@ -58,13 +58,13 @@ export function getCarouselInPage(pageNumber, pageSize, done) {
         const url = '/api/carousel/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Get carousel list failed!', 'danger');
+                T.notify('Lấy danh sách tập hình ảnh bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: CarouselGetPage, page: data.page });
             }
-        }, error => T.notify('Get carousel list failed!', 'danger'));
+        }, error => T.notify('Lấy danh sách tập hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -73,13 +73,13 @@ export function getCarousel(_id, done) {
         const url = '/api/carousel/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Get carousel failed!', 'danger');
+                T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
                 dispatch({ type: CarouselGet, item: data.item });
             }
-        }, error => T.notify('Get carousel failed!', 'danger'));
+        }, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -88,13 +88,13 @@ export function createCarousel(data, done) {
         const url = '/api/carousel';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Create carousel failed!', 'danger');
+                T.notify('Tạo tập hình ảnh thành công!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getCarouselInPage());
                 if (done) done(data);
             }
-        }, error => T.notify('Create carousel failed!', 'danger'));
+        }, error => T.notify('Tạo tập hình ảnh thành công!', 'danger'));
     }
 }
 
@@ -103,14 +103,14 @@ export function updateCarousel(_id, changes, done) {
         const url = '/api/carousel';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Update carousel failed!', 'danger');
+                T.notify('Cập nhật tập hình ảnh bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Update carousel successful!', 'info');
+                T.notify('Cập nhật tập hình ảnh thành công!', 'info');
                 dispatch(getCarouselInPage());
                 done && done();
             }
-        }, error => T.notify('Update carousel failed!', 'danger'));
+        }, error => T.notify('Cập nhật tập hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -119,13 +119,13 @@ export function deleteCarousel(id) {
         const url = '/api/carousel';
         T.delete(url, { id }, data => {
             if (data.error) {
-                T.notify('Delete carousel failed!', 'danger');
+                T.notify('Xoá tập hình ảnh bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Delete carousel successful!', 'error', false, 800);
+                T.alert('Xoá tập hình ảnh thành công!', 'error', false, 800);
                 dispatch(getCarouselInPage());
             }
-        }, error => T.notify('Delete carousel failed!', 'danger'));
+        }, error => T.notify('Xoá tập hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -134,13 +134,13 @@ export function createCarouselItem(data, done) {
         const url = '/api/carousel/item';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Create carousel item failed!', 'danger');
+                T.notify('Tạo hình ảnh bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getCarousel(data.item.carouselId));
                 if (done) done(data);
             }
-        }, error => T.notify('Create carousel item failed!', 'danger'));
+        }, error => T.notify('Tạo hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -149,14 +149,14 @@ export function updateCarouselItem(_id, changes, done) {
         const url = '/api/carousel/item';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Update carousel item failed!', 'danger');
+                T.notify('Cập nhật hình ảnh bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Update carousel item successful!', 'info');
+                T.notify('Cập nhật hình ảnh thành công!', 'info');
                 dispatch(getCarousel(data.item.carouselId));
                 if (done) done();
             }
-        }, error => T.notify('Update carousel item failed!', 'danger'));
+        }, error => T.notify('Cập nhật hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -165,12 +165,12 @@ export function swapCarouselItem(_id, isMoveUp) {
         const url = '/api/carousel/item/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Swap carousel item failed!', 'danger')
+                T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 dispatch(getCarousel(data.item1.carouselId));
             }
-        }, error => T.notify('Swap carousel item failed!', 'danger'));
+        }, error => T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -179,20 +179,19 @@ export function deleteCarouselItem(_id) {
         const url = '/api/carousel/item';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Delete carousel item failed!', 'danger');
+                T.notify('Xoá hình ảnh bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Hình ảnh được xóa thành công!', 'error', false, 800);
                 dispatch(getCarousel(data.carouselId));
             }
-        }, error => T.notify('Delete carousel item failed!', 'danger'));
+        }, error => T.notify('Xoá hình ảnh bị lỗi!', 'danger'));
     }
 }
 
 export function changeCarouselItem(item) {
     return { type: CarouselUpdate, item };
 }
-
 
 // Home -------------------------------------------------------------------------------------------
 export function homeGetCarousel(_id, done) {
