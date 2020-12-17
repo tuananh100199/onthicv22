@@ -38,7 +38,6 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-                    this.setState(data.item);
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
@@ -46,6 +45,7 @@ class UserDonDeNghiPage extends React.Component {
                     $('#licenseClass').val(data.item.licenseClass);
                     $('#newLicenseClass').val(data.item.newLicenseClass);
                     $('#licenseIssuedBy').val(data.item.licenseIssuedBy);
+                    this.setState(data);
                 } else {
                     this.props.history.push('/user');
                 }
@@ -64,34 +64,35 @@ class UserDonDeNghiPage extends React.Component {
             licenseDated = $('#licenseDated').val(),
             identityDate = $('#identityDate').val(),
             
-            changes = {
+            changesOfUser = {
                 birthday: birthday ? T.formatDate(birthday) : 'empty',
                 residence: $('#residence').val(),
-                // integration: this.state.item.integration,
                 phoneNumber: $('#phoneNumber').val(),
-                otherDocumentation: $('#otherDocumentation').val(),
                 regularResidence: $('#regularResidence').val(),
 
+                //identity
+                identityCard: $('#identityCard').val(),
+                identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
+                identityIssuedBy: $('#identityIssuedBy').val(),
+                nationality: $(this.quocGia.current).val()
+            },
+            changesOfForm = {
                 //license
                 licenseNumber: $('#licenseNumber').val(),
                 licenseClass: $('#licenseClass').val(),
                 newLicenseClass: $('#newLicenseClass').val(),
-                // licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
+                licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
+                integration: this.state.item.integration,
+                otherDocumentation: $('#otherDocumentation').val(),
 
-                //identity
-                identityCard: $('#identityCard').val(),
-                // identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
-                identityIssuedBy: $('#identityIssuedBy').val(),
-    
-                nationality: $(this.quocGia.current).val()
+
             };
             if (T.sexes.indexOf(sex) != -1) {
-                changes.sex = sex;
+                changesOfUser.sex = sex;
             }
-            console.log('changes',changes)
-        this.props.updateForm(this.state._id, changes, () => {
-            this.props.updateProfile(changes);
+        this.props.updateForm(this.state.item._id, changesOfForm, () => {
+            this.props.updateProfile(changesOfUser);
             T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
         });
     };
@@ -99,11 +100,8 @@ class UserDonDeNghiPage extends React.Component {
     render() {
         console.log(this.props)
         //TODO: Ko can read ONly
-        const item = this.state ? this.state: {
-            _id: '', nationality: '', birthday: '',
-            residence: '', phoneNumber: '', 
-            licenseNumber: '', licenseClass:'', licenseDated:'', licenseIssuedBy:'',
-            identityCard:'',identityDate:'', identityIssuedBy:'',otherDocumentation:'',newLicenseClass:'', integration: ''
+        const item = this.state.item ? this.state.item : {
+             integration: false,
         };
 
         return (
@@ -197,7 +195,7 @@ class UserDonDeNghiPage extends React.Component {
 
                         {/* Todo đăng ký tích hợp  */}
 
-                        {/* <div className='form-group' style={{ display: 'inline-flex' }}>
+                        <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
                                 <label>
@@ -205,7 +203,7 @@ class UserDonDeNghiPage extends React.Component {
                                     <span className='button-indecator'/>
                                 </label>
                             </div>
-                        </div> */}
+                        </div>
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm:</label>
                             <textarea className='form-control' id='otherDocumentation' placeholder='Tài liệu liên quan bao gồm' rows='3'/>

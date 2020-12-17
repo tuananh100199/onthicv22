@@ -26,7 +26,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     render() {
         const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ?
             this.props.donDeNghiHoc.item : { item: 0 };
-
+        console.log(this.props)
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -95,7 +95,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                                 <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số: <span>{item.licenseNumber}</span></label>
                             </div>
                             <div className='form-group col-md-2' id='licenseClassSection'>
-        <label className='control-label' htmlFor='licenseClass'>Hạng: <span>{item.licenseClass}</span></label>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng: <span>{item.licenseClass}</span></label>
                             </div>
                             <div className='form-group col-md-7'>
                                 <label className='control-label' htmlFor='licenseIssuedBy'>Do: <span>{item.licenseIssuedBy}</span></label>

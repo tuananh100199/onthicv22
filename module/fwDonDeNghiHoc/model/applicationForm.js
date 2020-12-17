@@ -33,7 +33,7 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => typeof condition == 'object' ? model.findOne(condition, done) : model.findById(condition, done),
+        get: (condition, done) => typeof condition == 'object' ? model.findOne(condition).populate('user', '_id', 'firstname', 'lastname').exec(done) : model.findById(condition, done),
 
         update: (_id, $set, $unset, done) => done ? model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) : model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getFormInPage, createForm, updateForm, deleteForm } from './redux.jsx';
+import { getUserInPage } from '../fwUser/redux.jsx';
 import { getUser } from '../fwUser/redux.jsx';
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
@@ -22,6 +23,8 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
 
     componentDidMount() {
         this.props.getFormInPage(1, T.defaultUserPageSize, () => this.loading = false);
+        // this.props.getUserInPage(1, 50, {});
+        // T.ready();
     }
 
     render() {
@@ -85,6 +88,6 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm };
+const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system, user: state.user });
+const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDuyetDonDeNghiHoc);
