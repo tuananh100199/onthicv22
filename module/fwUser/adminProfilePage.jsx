@@ -30,8 +30,10 @@ class ProfilePage extends React.Component {
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             
             if (this.props.system && this.props.system.user) {
+                const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
+                this.setState({ image });
+
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
-                console.log(this.props.system.user.password);
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -42,6 +44,7 @@ class ProfilePage extends React.Component {
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.sex.current.setText(sex ? sex : '');
+                this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
                 $(this.quocGia.current).select2({
                     data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
                     placeholder: 'Chọn quốc gia'
@@ -175,10 +178,19 @@ class ProfilePage extends React.Component {
                                         <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber'/>
                                     </div>
                                 </div>
-                                
-                                <div className='form-group'>
-                                    <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú:</label>
-                                    <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3'/>
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        <div className='form-group'>
+                                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú:</label>
+                                            <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='6'/>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className='form-group'>
+                                            <label className='control-label'>Hình đại diện</label>
+                                            < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div className='form-group'>
@@ -186,7 +198,7 @@ class ProfilePage extends React.Component {
                                     <textarea className='form-control' id='residence' placeholder='Nơi cư trú' rows='3'/>
                                 </div>
             
-                                <div className='row'>
+                                <div className='row'>   
                                     <div className='form-group col-md-6'>
                                         <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu)</label>
                                         <input className='form-control' type='text' id='identityCard'
