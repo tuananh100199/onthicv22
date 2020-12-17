@@ -97,7 +97,7 @@ export function updateForm(_id, changes, done) {
         const url = '/api/application-form';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
+                // T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {

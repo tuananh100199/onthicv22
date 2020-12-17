@@ -89,13 +89,13 @@ export function updateProfile(changes) {
         const url = '/api/profile';
         T.put(url, { changes }, res => {
             if (res.error) {
-                T.notify('Update your profile failed!', 'danger');
+                T.notify('Cập nhật thông tin cá nhân lỗi!', 'danger');
                 console.error(`PUT: ${url}.`, res.error);
             } else {
-                T.notify('Update your profile successful!', 'info');
+                // T.notify('Cập nhật thông tin cá nhân thành công!', 'info');
                 dispatch({ type: UPDATE_SYSTEM_STATE, state: { user: res.user } });
             }
-        }, error => T.notify('Update your profile failed!', 'danger'));
+        }, error => T.notify('Cập nhật thông tin cá nhân lỗi!', 'danger'));
     };
 }
 

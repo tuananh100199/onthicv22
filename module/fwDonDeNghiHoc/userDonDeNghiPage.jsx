@@ -17,7 +17,7 @@ class UserDonDeNghiPage extends React.Component {
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
-                const { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
+                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -56,23 +56,21 @@ class UserDonDeNghiPage extends React.Component {
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
     }
-    
+  
     save = () => {
         const
             sex = this.sex.current.getSelectedItem().toLowerCase(),
-            birthday = $('#userBirthday').val(),
-            licenseDated = $('#licenseDated').val(),
-            identityDate = $('#identityDate').val(),
-            
             changesOfUser = {
-                birthday: birthday ? T.formatDate(birthday) : 'empty',
+                firstname: $('#userFirstname').val(),
+                lastname: $('#userLastname').val(),
+                birthday: $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null,
                 residence: $('#residence').val(),
                 phoneNumber: $('#phoneNumber').val(),
                 regularResidence: $('#regularResidence').val(),
 
                 //identity
                 identityCard: $('#identityCard').val(),
-                identityDate: identityDate ? T.formatDate(identityDate) : 'empty',
+                identityDate: $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
                 identityIssuedBy: $('#identityIssuedBy').val(),
                 nationality: $(this.quocGia.current).val()
             },
@@ -81,24 +79,75 @@ class UserDonDeNghiPage extends React.Component {
                 licenseNumber: $('#licenseNumber').val(),
                 licenseClass: $('#licenseClass').val(),
                 newLicenseClass: $('#newLicenseClass').val(),
-                licenseDated: licenseDated ? T.formatDate(licenseDated) : 'empty',
+                licenseDated:  $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
                 integration: this.state.item.integration,
                 otherDocumentation: $('#otherDocumentation').val(),
-
-
             };
             if (T.sexes.indexOf(sex) != -1) {
                 changesOfUser.sex = sex;
             }
-        this.props.updateForm(this.state.item._id, changesOfForm, () => {
-            this.props.updateProfile(changesOfUser);
-            T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
-        });
+            if (!changesOfUser.lastname) {
+                T.notify('Họ và tên lót bị trống', 'danger');
+                $('#userLastname').focus();
+            } else if (changesOfUser.firstname == '') {
+                T.notify('Tên bị trống', 'danger');
+                $('#userFirstName').focus();
+            }
+            else if (changesOfUser.birthday == null) {
+                T.notify('Ngày sinh bị trống', 'danger');
+                $('#userBirthday').focus();
+            }
+            else if (changesOfUser.phoneNumber == '') {
+                T.notify('Số điện thoại bị trống', 'danger');
+                $('#phoneNumber').focus();
+            }
+            else if (changesOfUser.regularResidence == '') {
+                T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
+                $('#regularResidence').focus();
+            }
+            else if (changesOfUser.residence == '') {
+                T.notify('Nơi cư trú bị trống', 'danger');
+                $('#residence').focus();
+            }
+            else if (changesOfUser.identityCard == '') {
+                T.notify('Số chứng minh nhân dân bị trống', 'danger');
+                $('#identityCard').focus();
+            }
+            else if (changesOfUser.identityDate == null) {
+                T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
+                $('#identityDate').focus();
+            }
+            else if (changesOfUser.identityIssuedBy == '') {
+                T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
+                $('#identityIssuedBy').focus();
+            }
+            else if (changesOfForm.licenseNumber == '') {
+                T.notify('Số giấy phép lái xe bị trống', 'danger');
+                $('#licenseNumber').focus();
+            }
+            else if (changesOfForm.licenseClass == '') {
+                T.notify('Hạng bằng lái xe bị trống', 'danger');
+                $('#licenseClass').focus();
+            }
+            else if (changesOfForm.licenseIssuedBy == '') {
+                T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
+                $('#licenseIssuedBy').focus();
+            }
+            else if (changesOfForm.newLicenseClass == '') {
+                T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
+                $('#newLicenseClass').focus();
+            }
+             else {
+                this.props.updateForm(this.state.item._id, changesOfForm, () => {
+                    this.props.updateProfile(changesOfUser);
+                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+                });
+            }
+       
     };
     
     render() {
-        //TODO: Ko can read ONly
         const item = this.state.item ? this.state.item : {
              integration: false,
         };
@@ -192,9 +241,6 @@ class UserDonDeNghiPage extends React.Component {
                             <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
                             <input className='form-control' type='text' placeholder='Hạng' id='newLicenseClass'/>
                         </div>
-
-                        {/* Todo đăng ký tích hợp  */}
-
                         <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
