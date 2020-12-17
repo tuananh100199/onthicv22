@@ -23,11 +23,13 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
 
     componentDidMount() {
         this.props.getFormInPage(1, T.defaultUserPageSize, () => this.loading = false);
-        // this.props.getUserInPage(1, 50, {});
-        // T.ready();
+        this.props.getUserInPage(1, T.defaultUserPageSize, () => this.loading = false)
     }
 
+
+
     render() {
+        console.log(this.props)
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermission.contains('user-form:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
@@ -46,7 +48,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                         <tr key={index}>
                             <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
                             <td>
-                                <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id}>{item._id}</Link>
+                                <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
                             <td className='btn-group'>
                                 <Link to={'/user/form/registration/' + item._id} data-id={item._id} className='btn btn-warning'>

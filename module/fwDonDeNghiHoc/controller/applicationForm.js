@@ -39,6 +39,10 @@ module.exports = app => {
         app.model.applicationForm.get(req.params._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/application-form/info-user/:_id', app.permission.check('applicationForm:read'), (req, res) => {
+        app.model.applicationForm.get(req.params._id, (error, item) => res.send({ error, item }));
+    });
+
     app.post('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => {
         app.model.applicationForm.create(req.body.data, (error, item) => {
             res.send({ error, item })

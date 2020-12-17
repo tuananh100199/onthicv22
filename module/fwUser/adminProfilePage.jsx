@@ -41,7 +41,7 @@ class ProfilePage extends React.Component {
 
     renderData = (user, allDivisions, callback) => {
         let { firstname, lastname, email, phoneNumber, birthday, sex, image, identityCard, identityIssuedBy, residence, identityDate, nationality } = user ?
-            user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png', identityCard: '', identityIssuedBy: '', residence: '', identityDate: '', nationality:'' };
+            user : { firstname: '', lastname: '', phoneNumber: '', birthday: '', sex: '', image: '/img/avatar.png', identityCard: '', identityIssuedBy: '', residence: '', identityDate: '', nationality: '' };
         $('#userLastname').val(lastname);
         $('#userFirstname').val(firstname);
         $('#email').html(email);
@@ -92,10 +92,10 @@ class ProfilePage extends React.Component {
         } else if (changes.lastname == '') {
             T.notify('Họ và tên lót bị trống!', 'danger');
             $('#userLastName').focus();
-        } else if(!changes.phoneNumber.match(phoneno)){
+        } else if (!changes.phoneNumber.match(phoneno)) {
             T.notify('Số điện thoại không đúng định dạng', 'danger');
             $('#phoneNumber').focus();
-        } else if(!changes.identityCard.match(idno)){
+        } else if (!changes.identityCard.match(idno)) {
             T.notify('Số CMND không đúng định dạng', 'danger');
             $('#identityCard').focus();
         } else {
@@ -202,7 +202,7 @@ class ProfilePage extends React.Component {
                                     <div className='col-12 col-sm-6' id='identityDateSection'>
                                         <div className='form-group'>
                                             <label className='control-label' htmlFor='identityDate'>Ngày cấp</label>
-                                            <input className='form-control' type='text' id='identityDate' 
+                                            <input className='form-control' type='text' id='identityDate'
                                                 data-date-container='#identityDateSection'
                                                 placeholder='Ngày cấp CMND' />
                                         </div>
