@@ -14,7 +14,7 @@ class SectionAllContent extends React.Component {
         this.props.getAllContents();
         this.getData();
     }
-    getData =()=>{
+    getData = () => {
         if (this.props.content) {
             this.setState({ items: this.props.content });
             console.log('state', this.state)
@@ -23,16 +23,13 @@ class SectionAllContent extends React.Component {
 
     render() {
         const items = this.state.items ? this.state.items : [];
-        if ( items &&  items.length) {
+        if (items && items.length) {
             items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index}>
                         <div className='row ml-0'>
                             <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
-                                <Link to={link}>
-                                    <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
-                                </Link>
                             </div>
                             <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
                                 <div className='text'>
@@ -62,6 +59,6 @@ class SectionAllContent extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, content: state.content});
+const mapStateToProps = state => ({ system: state.system, content: state.content });
 const mapActionsToProps = { getAllContents };
 export default connect(mapStateToProps, mapActionsToProps)(SectionAllContent);

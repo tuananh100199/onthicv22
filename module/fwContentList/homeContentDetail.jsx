@@ -45,18 +45,8 @@ class ContentDetail extends React.Component {
                     <div className='container'>
                         <div className='row'>
                             <div className='col-12'>
-                                <div
-                                    className='single-course-intro d-flex align-items-center justify-content-center'
-                                    style={{
-                                        backgroundImage: 'url(' + item.image + ')',
-                                        backgroundPosition: 'center center',
-                                        backgroundSize: 'cover',
-                                        backgroundRepeat: 'no-repeat'
-                                    }}
-                                >
-                                    <div className='single-course-intro-content text-center'>
-                                        <h3>{T.language.parse(item.title)}</h3>
-                                    </div>
+                                <div className='single-course-intro-content text-center'>
+                                    <h3>{T.language.parse(item.title)}</h3>
                                 </div>
                             </div>
                             <div className='col-12 col-lg-8 pt-5'>
@@ -65,7 +55,7 @@ class ContentDetail extends React.Component {
                                         <div className='about-course mb-30'>
                                             {/* <span className="meta">{new Date(item.createdDate).getText()}</span> */}
                                             <p className="text-center">
-                                                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '30%', height: 'auto' }} />
+
                                             </p>
                                             <h4 className='text-black text-left'>Nội dung bài viết</h4>
                                             <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />

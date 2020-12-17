@@ -67,12 +67,14 @@ export default function ContentListReducer(state = null, data) {
 export function getAllContentList(done) {
     return dispatch => {
         const url = '/api/list-content/all';
+        console.log('here redux')
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
+                console.log('data.items', data.items)
                 dispatch({ type: ContentListGetAll, items: data.items });
             }
         }, error => T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger'));
