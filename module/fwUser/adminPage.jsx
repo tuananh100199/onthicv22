@@ -55,6 +55,7 @@ class UserPage extends React.Component {
     };
 
     render() {
+        console.log(this.props)
         const permissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             hasUpdate = permissions.includes('user:write');
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?

@@ -45,13 +45,6 @@ export function ajaxGetForm(_id, option, done) {
     }, error => T.notify('Lấy form bị lỗi!', 'danger'))
 }
 
-export function ajaxGetInfoUser(_id, option, done) {
-    const url = '/api/application-form/info-user/' + _id;
-    T.get(url, { option }, data => {
-        done(data)
-    }, error => T.notify('Lấy thông tin user bị lỗi!', 'danger'))
-}
-
 T.initCookiePage('pageForm');
 export function getFormInPage(pageNumber, pageSize, done) {
     const page = T.updatePage('pageForm', pageNumber, pageSize);

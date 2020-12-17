@@ -137,11 +137,6 @@ module.exports = (app) => {
         get: (condition, done) =>
             typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) : model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
 
-        getPlayerInfo: (_id, done) => {
-            const userSelect = '-password -token -tokenDate -roles -active';
-            model.findById({ _id }, userSelect).exec(done);
-        },
-
         getPage: (pageNumber, pageSize, condition, sort, done) =>
             model.countDocuments(condition, (error, totalItem) => {
                 if (done == undefined) {

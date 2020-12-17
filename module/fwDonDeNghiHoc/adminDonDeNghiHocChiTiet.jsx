@@ -28,7 +28,6 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
             this.props.donDeNghiHoc.item : null;
         const table = item ? (
             <div className='tile'>
-                <h3 className='tile-title'>Thông tin biểu mẫu</h3>
                 <div className='tile-body'>
                     <div className='row'>
                         <div className='form-group col-md-6'>
@@ -45,7 +44,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                         </div>
                         <div className='form-group col-md-3'>
                             <div className='form-group' style={{ width: '100%' }}>
-                                <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: <span>{item.user.sex=='male'?'Nam':'Nữ'}</span></label>
+                                <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: <span>{item.user.sex == 'male' ? 'Nam' : 'Nữ'}</span></label>
 
                             </div>
                         </div>
@@ -67,7 +66,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                             <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu): <span>{item.user.identityCard}</span></label>
                         </div>
                         <div className='form-group col-md-3' id='identityDateSection'>
-                            <label className='control-label' htmlFor='identityDate'>Cấp ngày: <span>{item.user.identityDate}</span></label>
+                            <label className='control-label' htmlFor='identityDate'>Cấp ngày: <span>{T.dateToText(item.user.identityDate, 'dd/mm/yyyy')}</span></label>
                         </div>
                         <div className='form-group col-md-3'>
                             <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp: <span>{item.user.identityIssuedBy}</span></label>

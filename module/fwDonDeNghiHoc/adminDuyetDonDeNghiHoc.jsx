@@ -9,6 +9,7 @@ import Pagination from '../../view/component/Pagination.jsx';
 class AdminDuyetDonDeNghiHoc extends React.Component {
     constructor(props) {
         super(props);
+        this.state = { searchText: '', isSearching: false };
     }
 
     ready = () => {
@@ -26,7 +27,17 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
         this.props.getUserInPage(1, T.defaultUserPageSize, () => this.loading = false)
     }
 
+    search = (e) => {
+        e.preventDefault();
+        let condition = {},
+            searchText = $('#searchTextBox').val();
+        if (searchText) condition.searchText = searchText;
 
+        this.props.getUserInPage(undefined, undefined, condition, () => {
+            const isSearching = Object.keys(condition).length > 0;
+            this.setState({ searchText, isSearching });
+        });
+    };
 
     render() {
         console.log(this.props)
@@ -44,14 +55,14 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {list.map((item, index) => (
+                    {list.slice(0).reverse().map((item, index) => (
                         <tr key={index}>
                             <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
                             <td>
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
                             <td className='btn-group'>
-                                <Link to={'/user/form/registration/' + item._id} data-id={item._id} className='btn btn-warning'>
+                                <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id} data-id={item._id} className='btn btn-warning'>
                                     <i className='fa fa-lg fa-list-alt' />
                                 </Link>
                                 <Link to={'/user/user-form/edit/' + item._id} className='btn btn-primary'>
@@ -74,6 +85,16 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe
 </h1>
+                    <ul className='app-breadcrumb breadcrumb'>
+                        <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
+                            <input className='app-search__input' id='searchTextBox' type='search' placeholder='Search' />
+                            <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
+                        </form>
+                        {this.state.isSearching ?
+                            <a href='#' onClick={e => $('#searchTextBox').val('') && this.search(e)} style={{ color: 'red', marginRight: 12, marginTop: 6 }}>
+                                <i className='fa fa-trash' />
+                            </a> : null}
+                    </ul>
                 </div>
 
                 <div className='row tile'>
