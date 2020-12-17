@@ -1,83 +1,140 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllVideos} from './redux/reduxVideo.jsx';
-import { getListVideoItem } from './redux/reduxListVideo.jsx';
+import { getAllVideosByUser } from './redux/reduxVideo.jsx';
+import { getListVideoByUser } from './redux/reduxListVideo.jsx';
 
 class SectionListVideo extends React.Component {
-    state = {};
-
-    componentDidMount() {
-        if (this.props.listVideoId) {
-            this.props.getListVideoItem(this.props.listVideoId, data => {
-                    if (data.error) {
-                       console.log('list các video trống')
-                    } 
-                    else if (data.item) {
-                        this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
-                            if (items) {
-                                this.setState({ item : data.item, items : items});
-                                const done = () => {
-                                    const elements = $('.popup-youtube, .popup-vimeo, .popup-gmaps');
-                                    if (elements.length > 0) {
-                                        $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
-                                            disableOn: 700,
-                                            type: 'iframe',
-                                            mainClass: 'mfp-fade',
-                                            removalDelay: 160,
-                                            preloader: false,
-                                            fixedContentPos: false
-                                        });
-                                    } else {
-                                        setTimeout(done, 100);
-                                    }
-                                };
-                                done();
-                            }
-                        });
-                    } else {
-                        this.props.history.push('/user/component');
-                    }
-                
-            });
+    state = { item: {}, items: [], mobileView: false };
+    handleResize = () => {
+        const windowWidth = $(window).width();
+        const mobileView = this.state.mobileView;
+        const done = () => {
+            setTimeout(() => {
+                $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
+                    disableOn: 700,
+                    type: 'iframe',
+                    mainClass: 'mfp-fade',
+                    removalDelay: 160,
+                    preloader: false,
+                    fixedContentPos: false,
+                    closeOnBgClick: false
+                });
+            },  50)
+        };
+        
+        if (windowWidth < 768 && mobileView == false) {
+            this.setState({ mobileView: true }, done)
+        } else if (windowWidth >= 768 && mobileView == true) {
+            this.setState({ mobileView: false }, done)
         }
     }
     
+    componentDidMount() {
+        $(document).ready(() => {
+            window.addEventListener('resize', this.handleResize);
+    
+            if (this.props.listVideoId) {
+                this.props.getListVideoByUser(this.props.listVideoId, data => {
+                    if (data.error) {
+                        console.log('list các video trống')
+                    } else if (data.item) {
+                        this.props.getAllVideosByUser({ listVideoId: data.item._id }, (items) => {
+                            if (items) {
+                                this.setState({ item: data.item, items }, () => {
+                                    const done = () => {
+                                        const elements = $('.popup-youtube, .popup-vimeo, .popup-gmaps');
+                                        if (elements.length == items.length) {
+                                            this.handleResize()
+                                            setTimeout(() => {
+                                                $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
+                                                    disableOn: 700,
+                                                    type: 'iframe',
+                                                    mainClass: 'mfp-fade',
+                                                    removalDelay: 160,
+                                                    preloader: false,
+                                                    fixedContentPos: false,
+                                                    closeOnBgClick: false
+                                                });
+                                            },  50)
+                                        } else {
+                                            setTimeout(done, 100);
+                                        }
+                                    };
+                                    done();
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        })
+    }
+    
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    }
+    
     render() {
-        let arr = this.state.items;
-        let firstItem = [];
-        if (arr) {
-            firstItem = arr.splice(0,1);
-        }
-        return this.state.items ? (
+        let { item, items, mobileView } = this.state;
+        const firstItem = items && items.length ? items.slice(0 ,1)[0] : null;
+        const remainItems = items.slice(1)
+        return (
             <div>
-                <h3>Video clip</h3>
-                <div className='row' style={{ padding: '5px',  height: this.state.item.height + 20 + 'px'}}>
-                    <div className='col-md-9 p-0 m-0'>
-                        {firstItem.map((item, index) => (
-                            <div key={index} style={{height: '100%', padding: '5px'}}>
-                                <a href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'>
-                                    <img style={{ height: this.state.item.height + 'px' }} src={item.image} alt='videoImage' />
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                    <div className='col-md-3 m-0 p-0'>
-                        <div className='custom-scroll' style = {{ height: this.state.item.height + 'px', color: 'white', overflowY: 'auto', margin: '5px 0' }} >
-                            {arr.map((item, index) => (
-                                <div key={index}>
-                                    <a href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'>
-                                        <img height='85px' src= {item.image} alt='videoImage' />
-                                    </a>
-                                </div>
-                            ))}
+                <h3 className='text-primary'>Video clip</h3>
+                {firstItem ? (
+                    <div className='row'>
+                        <div className={items.length ? 'col-md-12 col-lg-7 col-xl-8 m-0' : 'col-md-12 m-0'} style={{ height: item.height + 'px', padding: '2px' }}>
+                            <a href={firstItem.link} className='button popup-youtube d-flex justify-content-center align-items-center'
+                               style={{
+                                   height: '100%', backgroundImage: `url('${firstItem.image}')`,
+                                   backgroundRepeat: 'no-repeat',
+                                   backgroundPosition: 'center',
+                                   backgroundSize: 'contain'
+                               }}
+                            />
                         </div>
+                        {mobileView ? (
+                            remainItems.length && (
+                                remainItems.map((_item, index) => (
+                                    <div key={index} className='col-md-12 col-lg-5 col-xl-4 m-0' style={{ height: item.height + 'px', padding: '2px' }}>
+                                        <a href={_item.link} className='button popup-youtube d-flex justify-content-center align-items-center'
+                                           style={{
+                                               height: '100%', backgroundImage: `url('${_item.image}')`,
+                                               backgroundRepeat: 'no-repeat',
+                                               backgroundPosition: 'center',
+                                               backgroundSize: 'contain'
+                                           }}
+                                        />
+                                    </div>
+                                ))
+                            )
+                        ) : (
+                            remainItems.length && (
+                                <div className='col-md-12 col-lg-5 col-xl-4 m-0' style={{ height: item.height + 'px' }}>
+                                    <div className='custom-scroll' style={{ height: item.height + 'px', color: 'white', overflowY: 'auto' }}>
+                                        {remainItems.map((item, index) => (
+                                            <div key={index} style={{ height: '85px', padding: '2px',  }}>
+                                                <a href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'
+                                                   style={{
+                                                       height: '100%', backgroundImage: `url('${item.image}')`,
+                                                       backgroundRepeat: 'no-repeat',
+                                                       backgroundPosition: 'center',
+                                                       backgroundSize: 'contain'
+                                                   }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        )}
                     </div>
-                </div>
+                ) : <p>Không có danh sách videos</p>}
             </div>
-        ) : '';
+        )
     }
 }
 
-const mapStateToProps = state => ({ video: state.video });
-const mapActionsToProps = { getAllVideos, getListVideoItem };
+const mapStateToProps = state => ({ });
+const mapActionsToProps = { getAllVideosByUser, getListVideoByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionListVideo);

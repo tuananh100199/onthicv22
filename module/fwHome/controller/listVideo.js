@@ -4,7 +4,7 @@ module.exports = app => {
         app.model.listVideo.getAll((error, items) => res.send({ error, items }))
     });
 
-    app.get('/api/list-video/item/:listVideoId', (req, res) =>
+    app.get('/api/list-video/item/:listVideoId', app.permission.check('component:read'), (req, res) =>
         app.model.listVideo.get(req.params.listVideoId, (error, item) => res.send({ error, item })));
 
     app.post('/api/list-video', app.permission.check('component:write'), (req, res) =>
