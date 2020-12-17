@@ -12,6 +12,9 @@ module.exports = app => {
         otherDocumentation: String, // Tai lieu khac
         licenseClass: String, // Hang bang lai xe 
         newLicenseClass: String,
+
+        approve: { type: String, enum: ['approved', 'waiting', 'eject'], default: 'waiting' },
+
     });
     const model = app.db.model('ApplicationForm', schema);
 

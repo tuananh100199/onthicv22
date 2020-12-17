@@ -129,18 +129,16 @@ module.exports = app => {
     app.put('/api/profile', app.permission.check(), (req, res) => {
         const changes = req.body.changes,
             $unset = {};
-        if (changes.birthday && changes.birthday == 'empty') {
+        if (changes.birthday && changes.birthday == null) {
             delete changes.birthday;
-            $unset.birthday = '';
+            $unset.birthday = null;
         }
         delete changes.roles;
         delete changes.email;
         delete changes.active;
 
         app.model.user.update(req.session.user._id, changes, $unset, (error, user) => {
-            console.log(error)
             if (user) {
-                console.log('req.session.user._id', req.session.user._id)
                 app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }))
             } else {
                 res.send({ error, user: req.session.user });
