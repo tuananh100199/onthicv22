@@ -47,8 +47,8 @@ class SectionContent extends React.Component {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index} className='row ml-0 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
-                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
-                        </div>
+                        {/* <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
+                        </div> */}
                         <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '15px' }}>
@@ -64,7 +64,54 @@ class SectionContent extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3>
+                <div className="tenmoi" style={{
+                    backgroundImage: 'url("http://daotaolaixehiepphat.com/images/v4.png")',
+                    backgroundPositionX: 'left', backgroundPositionY: '10px',
+                    backgroundRepeat: 'repeat-x',
+                    width: '960px',
+
+                }}>
+                    <div className="v1"
+                        style={{
+                            width: '15px',
+                            height: '36px',
+                            float: 'left',
+                            backgroundImage: 'url("http://daotaolaixehiepphat.com/images/v1.png")',
+                        }}></div>
+                    <h3 style={{
+                        // fontSize: '17px',
+                        paddingLeft: '-40px',
+                        margin: '0',
+
+                        // textTransform: 'uppercase',
+                        textShadow: ' 1px -1px 2px #2C2626',
+                        position: 'relative',
+                        fontWeight: 'bold',
+                        float: 'left',
+                        height: '36px',
+                        color: '#fff',
+                        whiteSpace: 'nowrap',
+                        backgroundImage: 'url("http://daotaolaixehiepphat.com/images/v2.png")',
+                        minWidth: '220px',
+                        paddingRight: '3px',
+                    }} >{T.language.parse(this.state.item.title, true).vi}</h3>
+                    <div style={{
+                        width: '17px',
+                        height: '36px',
+                        backgroundImage: 'url("http://daotaolaixehiepphat.com/images/v3.png")',
+                        float: 'left',
+                    }} className="v2"></div>
+                    <div className="clear" style={{
+                        overflow: 'hidden',
+                        clear: 'both'
+                    }}></div>
+                </div>
+                <img src="http://daotaolaixehiepphat.com/images/v5.png" alt="Giới thiệu"></img>
+                <div className="clear" style={{
+                    overflow: 'hidden',
+                    clear: 'both'
+                }}></div>
+                {/* <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3> */}
                 <div>
                     {itemList}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
