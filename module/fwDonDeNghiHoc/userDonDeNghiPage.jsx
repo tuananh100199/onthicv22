@@ -122,6 +122,10 @@ class UserDonDeNghiPage extends React.Component {
                 T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
                 $('#identityIssuedBy').focus();
             }
+            else if (changesOfForm.newLicenseClass == '') {
+                T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
+                $('#newLicenseClass').focus();
+            }
             else if (!changesOfForm.licenseNumber == '') {
                 if (changesOfForm.licenseClass == '') {
                     T.notify('Hạng bằng lái xe bị trống', 'danger');
@@ -131,12 +135,24 @@ class UserDonDeNghiPage extends React.Component {
                     T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
                     $('#licenseIssuedBy').focus();
                 }
+                else {
+                    this.props.updateBieuMau(this.state.item._id, changesOfForm,changesOfUser, () => {
+                        T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+                    });
+                }
             }
-            else if (changesOfForm.newLicenseClass == '') {
-                T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
-                $('#newLicenseClass').focus();
+            else if (changesOfForm.licenseNumber == '') {
+                $('#licenseClass').val('');
+                $('#licenseIssuedBy').val('');
+
+                changesOfForm.licenseClass = '';
+                changesOfForm.licenseIssuedBy = '';
+
+                this.props.updateBieuMau(this.state.item._id, changesOfForm,changesOfUser, () => {
+                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+                });
             }
-             else {
+            else {
                 this.props.updateBieuMau(this.state.item._id, changesOfForm,changesOfUser, () => {
                     T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
                 });

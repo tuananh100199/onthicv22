@@ -150,6 +150,7 @@ export function updateBieuMau(_id, changes1, changes2, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
+                // T.notify('Cập nhật thông tin form thành công!', 'danger');
                 dispatch({ type: UPDATE, item: data.item });
                 done && done();
             }
