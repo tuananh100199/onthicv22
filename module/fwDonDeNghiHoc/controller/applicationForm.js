@@ -64,9 +64,14 @@ module.exports = app => {
         })
     });
     app.put('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
-        const user = req.session.user, { changes, userChanges } = req.body;
+        const user = req.session.user,
+            { changes, userChanges } = req.body;
         delete userChanges.roles;
-        
+        delete userChanges.email;
+        delete userChanges.password;
+
+
+
         app.model.user.update(user._id, userChanges, (error, user) => {
             if (error || !user) {
                 res.send({ error })

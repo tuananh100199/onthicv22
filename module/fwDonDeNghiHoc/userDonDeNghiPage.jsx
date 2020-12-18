@@ -90,74 +90,74 @@ class UserDonDeNghiPage extends React.Component {
             if (!changesOfUser.lastname) {
                 T.notify('Họ và tên lót bị trống', 'danger');
                 $('#userLastname').focus();
-            } else if (changesOfUser.firstname == '') {
+                return;
+            }
+             if (changesOfUser.firstname == '') {
                 T.notify('Tên bị trống', 'danger');
                 $('#userFirstName').focus();
+                return;
             }
-            else if (changesOfUser.birthday == null) {
+            if (changesOfUser.birthday == null) {
                 T.notify('Ngày sinh bị trống', 'danger');
                 $('#userBirthday').focus();
+                return;
             }
-            else if (changesOfUser.phoneNumber == '') {
+             if (changesOfUser.phoneNumber == '') {
                 T.notify('Số điện thoại bị trống', 'danger');
                 $('#phoneNumber').focus();
+                return;
             }
-            else if (changesOfUser.regularResidence == '') {
+            if (changesOfUser.regularResidence == '') {
                 T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
                 $('#regularResidence').focus();
+                return;
             }
-            else if (changesOfUser.residence == '') {
+            if (changesOfUser.residence == '') {
                 T.notify('Nơi cư trú bị trống', 'danger');
                 $('#residence').focus();
+                return;
             }
-            else if (changesOfUser.identityCard == '') {
+            if (changesOfUser.identityCard == '') {
                 T.notify('Số chứng minh nhân dân bị trống', 'danger');
                 $('#identityCard').focus();
+                return;
             }
-            else if (changesOfUser.identityDate == null) {
+            if (changesOfUser.identityDate == null) {
                 T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
                 $('#identityDate').focus();
+                return;
             }
-            else if (changesOfUser.identityIssuedBy == '') {
+            if (changesOfUser.identityIssuedBy == '') {
                 T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
                 $('#identityIssuedBy').focus();
+                return;
             }
-            else if (changesOfForm.newLicenseClass == '') {
+            if (changesOfForm.newLicenseClass == '') {
                 T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
                 $('#newLicenseClass').focus();
+                return;
             }
-            else if (!changesOfForm.licenseNumber == '') {
+            if (changesOfForm.licenseNumber != '') {
                 if (changesOfForm.licenseClass == '') {
                     T.notify('Hạng bằng lái xe bị trống', 'danger');
                     $('#licenseClass').focus();
+                    return;
                 }
-                else if (changesOfForm.licenseIssuedBy == '') {
+                if (changesOfForm.licenseIssuedBy == '') {
                     T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
                     $('#licenseIssuedBy').focus();
-                }
-                else {
-                    this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
-                        T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
-                    });
+                    return;
                 }
             }
-            else if (changesOfForm.licenseNumber == '') {
+            if (changesOfForm.licenseNumber == '') {
                 $('#licenseClass').val('');
                 $('#licenseIssuedBy').val('');
-
                 changesOfForm.licenseClass = '';
                 changesOfForm.licenseIssuedBy = '';
-
-                this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
-                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
-                });
             }
-            else {
-                this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
-                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
-                });
-            }
-       
+            this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
+                T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+            });
     };
     
     render() {
