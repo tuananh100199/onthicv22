@@ -69,8 +69,8 @@ module.exports = app => {
         delete userChanges.roles;
         delete userChanges.email;
         delete userChanges.password;
-
-
+        delete userChanges.token;
+        delete userChanges.tokenDate;
 
         app.model.user.update(user._id, userChanges, (error, user) => {
             if (error || !user) {
