@@ -39,18 +39,19 @@ class Footer extends React.Component {
                                             <span >{item.email}</span>
                                         </p>
                                 </div>)}
-                                
-                                <div className='col-12 text-center'>
-                                    <Link to='/'><img src={logo} alt='Hiep Phat' style={{ height: '36px', width: 'auto' }} /></Link>
-                                    <p dangerouslySetInnerHTML={{ __html: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.' }} />
-                                </div>
                             </div>
                             <div className="col-md-4">
                                 <a href={mapUrl} target='_blank'>
-                                    <div key={0} className='map-area' style={{ height: '250px', background: 'url(' + map + ') no-repeat center center' }} />
+                                    <div className='map-area' style={{ height: '200px', background: 'url(' + map + ') no-repeat center center' }} />
                                 </a>
                             </div>
                         </div>
+                        <div className="row">
+                            <div className='col-12 text-center'>
+                                        <Link to='/'><img src={logo} alt='Hiep Phat' style={{ height: '36px', width: 'auto' }} /></Link>
+                                        <p dangerouslySetInnerHTML={{ __html: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.' }} />
+                                    </div>
+                            </div>
                     </div>
                 </div>
 

@@ -46,14 +46,17 @@ class CourseEditPage extends React.Component {
                     $(this.courseLink.current).html('').attr('');
                 }
                 data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
-                this.imageBox.current.setData('course:' + (data.item._id ? data.item._id : 'new'));
+                // this.imageBox.current.setData('course:' + (data.item._id ? data.item._id : 'new'));
                 let title = T.language.parse(data.item.title, true),
                     abstract = data.item.abstract,
                     content = T.language.parse(data.item.content, true);
                 $('#courseTitle').val(title.vi);
                 $('#courseAbstract').val(abstract);
                 this.viEditor.current.html(content.vi); 
+                // this.imageBox.current.setData('course:' + (_id ? _id : 'new'));
+
                 this.setState(data);
+                console.log(data.item)
             } else {
                 this.props.history.push('/user/course/list');
             }
@@ -92,15 +95,6 @@ class CourseEditPage extends React.Component {
             };
         if (courseStartPost) changes.startPost = T.formatDate(courseStartPost);
         if (courseStopPost) changes.stopPost = T.formatDate(courseStopPost);
-        // let newDraft = {
-        //     title: JSON.stringify({ vi: $('#courseTitle').val()}),
-        //     editorId: this.props.system.user._id,
-        //     documentId: this.state.item._id,
-        //     editorName: this.props.system.user.firstname,
-        //     isInternal: this.state.item.isInternal,
-        //     documentType: 'course',
-        //     documentJson: JSON.stringify(changes),
-        // }
         if (this.props.system.user.permissions.includes('course:write')) {
             this.props.updateCourse(this.state.item._id, changes, () => {
                 $('#courseLink').val(changes.link)
@@ -122,12 +116,11 @@ class CourseEditPage extends React.Component {
             active: false, isInternal: false,
             view: 0
         };
+        // console.log(this.state.item)
         let title = T.language.parse(item.title, true), linkDefaultCourse = T.rootUrl + '/course/item/' + item._id;
         const route = T.routeMatcher('/user/course/edit/:courseId'),
             courseId = route.parse(window.location.pathname).courseId;
-        // const docDraftUser = this.props.course && this.props.course.docDraftUser ? this.props.course.docDraftUser : [];
         const docMapper = {};
-        // docDraftUser.forEach(user => docMapper[user.documentId] = user._id);
         if (!docMapper[courseId]) readOnly = false;
 
         return (
@@ -157,7 +150,8 @@ class CourseEditPage extends React.Component {
                                     <div className='col-md-6'>
                                         <div className='form-group'>
                                             <label className='control-label'>Hình ảnh</label>
-                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseImage' image={this.state.image} readOnly={!currentPermissions.includes('course:write')} />
+                                            {/* <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseImage' image={this.state.image} readOnly={!currentPermissions.includes('course:write')} /> */}
+                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image} readOnly={readOnly} />
                                         </div>
                                     </div>
                                     <div className='col-md-6'>
