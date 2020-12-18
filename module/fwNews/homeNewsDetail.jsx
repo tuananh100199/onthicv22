@@ -66,7 +66,7 @@ class NewsDetail extends React.Component {
                             </div>
                             <div className='col-12 col-lg-8 pt-5'>
                                 <div className='course--content' data-aos='fade-up'>
-                                    <div className='clever-description p-2'>
+                                    <div className='clever-description'>
                                         <div className='about-course mb-30'>
                                             <span className="meta">{new Date(item.createdDate).getText()}</span>
                                             <p className="text-center">
@@ -79,8 +79,8 @@ class NewsDetail extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
-                                <div className='sidebar-widget'>
+                            <div className='col-12 col-lg-4 mr-0 pt-5 clever-description' data-aos='fade-up'>
+                                <div className='sidebar-widget about-course'>
                                     <SectionNews />
                                 </div>
                             </div>
