@@ -73,12 +73,12 @@ module.exports = app => {
 
         app.model.applicationForm.update(req.body._id, $setOfForm, $unset, (error, item) => res.send({ error, item }));
 
-        // app.model.user.update(req.session.user._id, $setOfUser, $unset, (error, user) => {
-        //     if (user) {
-        //         app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }))
-        //     } else {
-        //         res.send({ error, user: req.session.user });
-        //     }
-        // })
+        app.model.user.update(req.session.user._id, $setOfUser, $unset, (error, user) => {
+            if (user) {
+                app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }))
+            } else {
+                res.send({ error, user: req.session.user });
+            }
+        })
     });
 };

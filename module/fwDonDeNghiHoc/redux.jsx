@@ -143,15 +143,13 @@ export function updateBieuMau(_id, changes1, changes2, done) {
     // changes2: changes of user
 
     return dispatch => {
-        const url = 'api/user-application-form';
+        const url = '/api/user-application-form';
         T.put(url, { _id, changes1, changes2 }, data => {
-            console.log('jojo')
             if (data.error) {
                 T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                console.log('hi')
                 dispatch({ type: UPDATE, item: data.item });
                 done && done();
             }
