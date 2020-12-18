@@ -5,16 +5,18 @@ import { getContent } from '../fwHome/redux/reduxContent.jsx';
 import SectionAllContent from './sectionAllContent.jsx';
 
 class ContentDetail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
+    state = { _id: null, title: '', active: false, content: '' };
 
     componentDidMount() {
-        const route = T.routeMatcher('/content/item/:id'),
+        const route = T.routeMatcher('/content/item/:contentId'),
             params = route.parse(window.location.pathname);
-        this.setState({ _id: params.id });
-        this.props.getContent(params.id);
+        this.setState({ _id: params.contentId });
+        console.log('state mount', this.state)
+        this.props.getContent(params.contentId, data => {
+            if (data.item) {
+                this.setState(data.item);
+            }
+        });
     }
 
     componentDidUpdate(prevProps) {
@@ -23,15 +25,15 @@ class ContentDetail extends React.Component {
             $('html, body').stop().animate({ scrollTop: 0 }, 500, 'swing');
         }, 250);
         if (prevProps.location.pathname != window.location.pathname) {
-            const route = T.routeMatcher('/content/item/:id'),
+            const route = T.routeMatcher('/content/item/:contentId'),
                 params = route.parse(window.location.pathname);
-            this.setState({ _id: params.id });
-            this.props.getContent(params.id);
+            this.setState({ _id: params.contentId });
+            this.props.getContent(params.contentId);
         }
     }
 
     render() {
-        const item = this.props.content ? this.props.content : null;
+        const item = this.state ? this.state : null;
         if (item == null) {
             return <p>...</p>;
         } else {
@@ -57,7 +59,7 @@ class ContentDetail extends React.Component {
                                             <p className="text-center">
 
                                             </p>
-                                            <h4 className='text-black text-left'>Nội dung bài viết</h4>
+                                            <h4 className='text-primary'>Nội dung bài viết</h4>
                                             <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
                                             {/* {categories} */}
                                         </div>

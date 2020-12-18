@@ -14,7 +14,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage.jsx') })
         },
         {
-            path: '/content/item/:id',
+            path: '/content/item/:contentId',
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
         },
         // {

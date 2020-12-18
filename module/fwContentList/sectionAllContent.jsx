@@ -11,27 +11,32 @@ class SectionAllContent extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getAllContents();
-        this.getData();
+        this.props.getAllContents(
+            content => {
+                this.setState({
+                    items: content
+                });
+            }
+        );
+        // this.getData();
     }
-    getData = () => {
-        if (this.props.content) {
-            this.setState({ items: this.props.content });
-            console.log('state', this.state)
-        }
-    }
+    // getData = () => {
+    //     if (this.props.content) {
+    //         this.setState({ items: this.props.content });
+    //         console.log('state', this.state)
+    //     }
+    // }
 
     render() {
         const items = this.state.items ? this.state.items : [];
+        let itemList = null;
         if (items && items.length) {
-            items.map((item, index) => {
+            itemList = items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index}>
                         <div className='row ml-0'>
-                            <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
-                            </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < content.length - 1 ? 'border-bottom' : ''}>
+                            <div style={{ width: '250px', marginRight: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
@@ -47,9 +52,9 @@ class SectionAllContent extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <h3>Danh sách bài viết</h3>
+                <h3 className='text-primary'>Danh sách bài viết</h3>
                 <div>
-                    {items}
+                    {itemList}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
                     {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
                     {/*</button>*/}
