@@ -13,52 +13,37 @@ class SectionContent extends React.Component {
     componentDidMount() {
         $(document).ready(() => {
             if (this.props.listContentId) {
-                console.log(' trống a')
                 this.props.getAllContentList(data => {
-                    if (data.error) {
-                        console.log(' trống')
-                    } else if (data.items) {
-                        this.setState({ item: data.items.find(item => item._id === this.props.listContentId) })
-                        console.log('state', this.state)
+                    if (data) {
+                        this.setState({ item: data.find(item => item._id === this.props.listContentId) });
+                        this.getContentItem();
                     }
                 }
-
-
                 );
-
-
-
-                this.props.getAllContents();
                 this.getData();
             }
         })
     }
 
     getData = () => {
-        console.log('listContentId', this.props.listContentId)
-        console.log('contentList', this.props.contentList)
-
-        const currentList = this.props.contentList.list.find(list => list._id === this.props.listContentId);
-        console.log('currentList', currentList)
-        let title = T.language.parse(currentList.title, true);
+        let title = T.language.parse(this.state.item.title, true);
         $('#listContentTitle').val(title.vi).focus();
-        this.setState({ item: currentList });
-        this.getListContentItem();
-        console.log('state', this.state)
-
     }
-    getListContentItem = () => {
-        const listItem = this.state.item.items.map(item => this.props.content.find(ele => ele._id === item))
-        this.setState({ items: listItem });
-        console.log('after contentList', this.props.contentList)
+    getContentItem = () => {
+        const item = this.state.item;
+        this.props.getAllContents(content => {
+            this.setState({
+                items: item.items.map(idC => content.find(ele => ele._id === idC))
+            });
+        }
+        );
     }
 
     render() {
         const items = this.state.items ? this.state.items : [];
-        console.log('render contentList', this.props.contentList)
-        console.log('state render', this.state)
+        let itemList = null;
         if (items && items.length) {
-            items.map((item, index) => {
+            itemList = items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index} className='row ml-0 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
@@ -81,7 +66,7 @@ class SectionContent extends React.Component {
             <div className='mt-2'>
                 <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3>
                 <div>
-                    {items}
+                    {itemList}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
                     {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
                     {/*</button>*/}
@@ -90,9 +75,6 @@ class SectionContent extends React.Component {
         )
     }
 }
-
-const mapStateToProps = state =>
-    ({ system: state.system, content: state.content, contentList: state.contentList })
-    ;
+const mapStateToProps = state => ({});
 const mapActionsToProps = { getAllContents, getAllContentList };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContent);

@@ -36,7 +36,7 @@ export default function contentReducer(state = [], data) {
 }
 
 // Action --------------------------------------------------------------------------------------------------------------
-export function getAllContents() {
+export function getAllContents(done) {
     return dispatch => {
         const url = `/api/content/all`;
         T.get(url, data => {
@@ -44,6 +44,9 @@ export function getAllContents() {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
+                console.log('data.items in redux content', data.items)
+                console.log('redux content')
+                if (done) done(data.items);
                 dispatch({ type: ContentGetAll, items: data.items ? data.items : [] });
             }
         }, error => {
