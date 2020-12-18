@@ -138,22 +138,19 @@ export function getDonDeNghiHocByUser(done) {
         }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
     }
 }
-export function updateBieuMau(_id, changes1, changes2, done) {
-    // changes1: changes of form
-    // changes2: changes of user
 
+export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
     return dispatch => {
         const url = '/api/user-application-form';
-        T.put(url, { _id, changes1, changes2 }, data => {
+        T.put(url, { _id, changes, userChanges }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                // T.notify('Cập nhật thông tin form thành công!', 'danger');
                 dispatch({ type: UPDATE, item: data.item });
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin form bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
     }
 }

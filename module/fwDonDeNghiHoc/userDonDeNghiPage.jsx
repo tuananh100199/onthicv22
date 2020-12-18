@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDonDeNghiHocByUser, updateBieuMau } from './redux.jsx';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -136,7 +136,7 @@ class UserDonDeNghiPage extends React.Component {
                     $('#licenseIssuedBy').focus();
                 }
                 else {
-                    this.props.updateBieuMau(this.state.item._id, changesOfForm,changesOfUser, () => {
+                    this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
                         T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
                     });
                 }
@@ -148,12 +148,12 @@ class UserDonDeNghiPage extends React.Component {
                 changesOfForm.licenseClass = '';
                 changesOfForm.licenseIssuedBy = '';
 
-                this.props.updateBieuMau(this.state.item._id, changesOfForm,changesOfUser, () => {
+                this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
                     T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
                 });
             }
             else {
-                this.props.updateBieuMau(this.state.item._id, changesOfForm,changesOfUser, () => {
+                this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
                     T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
                 });
             }
@@ -282,5 +282,5 @@ class UserDonDeNghiPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser,updateBieuMau,updateProfile };
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

@@ -64,20 +64,16 @@ module.exports = app => {
         })
     });
     app.put('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
-        // changes1: changes of form
-        // changes2: changes of user
-        const user = req.session.user,
-            $setOfForm = req.body.changes1,
-            $setOfUser = req.body.changes2,
-            $unset = {};
-
-        app.model.applicationForm.update(req.body._id, $setOfForm, $unset, (error, item) => res.send({ error, item }));
-
-        app.model.user.update(req.session.user._id, $setOfUser, $unset, (error, user) => {
-            if (user) {
-                app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }))
+        const user = req.session.user, { changes, userChanges } = req.body;
+        delete userChanges.roles;
+        
+        app.model.user.update(user._id, userChanges, (error, user) => {
+            if (error || !user) {
+                res.send({ error })
             } else {
-                res.send({ error, user: req.session.user });
+                app.updateSessionUser(req, user, sessionUser => {
+                    app.model.applicationForm.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+                })
             }
         })
     });
