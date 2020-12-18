@@ -150,13 +150,19 @@ class UserDonDeNghiPage extends React.Component {
                 }
             }
             if (changesOfForm.licenseNumber == '') {
-                $('#licenseClass').val('');
-                $('#licenseIssuedBy').val('');
                 changesOfForm.licenseClass = '';
                 changesOfForm.licenseIssuedBy = '';
             }
-            this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, () => {
-                T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+            
+            this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, (error) => {
+                if (!error) {
+                    if (changesOfForm.licenseNumber == '') {
+                        $('#licenseClass').val('');
+                        $('#licenseIssuedBy').val('');
+                    }
+    
+                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+                }
             });
     };
     
