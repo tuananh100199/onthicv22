@@ -120,10 +120,9 @@ class ListContentEditPage extends React.Component {
             item: Object.assign({}, this.state.item, { items: remainList.map(ele => ele._id) }),
             items: remainList
         });
-        console.log('state delete', this.state)
     }
     remove = (e, _id) => {
-        T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá anh sách bài viết này?', 'info', isConfirm => {
+        T.confirm('Gỡ bài viết ', 'Bạn có chắc muốn gỡ bài viết khỏi danh sách này?', 'info', isConfirm => {
             isConfirm && this.deleteItem(_id);
         })
         e.preventDefault();
@@ -151,7 +150,6 @@ class ListContentEditPage extends React.Component {
                 items: itemContent
             });
             this.props.updateContentList(this.state.item._id, this.state.item);
-            console.log('state', this.state)
         }
         e.preventDefault();
     };
@@ -169,7 +167,6 @@ class ListContentEditPage extends React.Component {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#listContentTitle').focus();
         } else {
-            console.log("this.state", this.state)
             this.props.updateContentList(this.state.item._id, changes);
         }
         this.getContentItem();

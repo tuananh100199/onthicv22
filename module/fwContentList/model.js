@@ -19,7 +19,6 @@ module.exports = app => {
         },
 
         get: (_id, done) => model.findById(_id, (error, list) => {
-            console.log('list in model', list)
             if (error) {
                 done(error);
             } else if (list == null) {
@@ -30,7 +29,6 @@ module.exports = app => {
         }),
 
         update: (_id, changes, done) => {
-            console.log('req.body.changes in model', changes)
             model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done)
         },
 

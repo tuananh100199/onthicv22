@@ -11,7 +11,6 @@ class ContentDetail extends React.Component {
         const route = T.routeMatcher('/content/item/:contentId'),
             params = route.parse(window.location.pathname);
         this.setState({ _id: params.contentId });
-        console.log('state mount', this.state)
         this.props.getContent(params.contentId, data => {
             if (data.item) {
                 this.setState(data.item);

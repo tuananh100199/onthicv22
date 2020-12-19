@@ -18,14 +18,8 @@ class SectionAllContent extends React.Component {
                 });
             }
         );
-        // this.getData();
     }
-    // getData = () => {
-    //     if (this.props.content) {
-    //         this.setState({ items: this.props.content });
-    //         console.log('state', this.state)
-    //     }
-    // }
+
 
     render() {
         const items = this.state.items ? this.state.items : [];
