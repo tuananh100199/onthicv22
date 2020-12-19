@@ -40,7 +40,7 @@ class ContentModal extends React.Component {
             this.props.updateContentList(this.state.item._id, changes, () => {
                 $(this.modal.current).modal('hide');
             });
-            this.props.getAllContentList();
+            this.props.reRenderPage(this.state.item);
         }
         event.preventDefault();
     }
@@ -84,15 +84,6 @@ class ListContentEditPage extends React.Component {
         this.state = { item: {}, items: [] };
         this.modal = React.createRef();
     }
-
-    // componentDidMount() {
-    //     T.ready('/user/component', () => {
-    //         this.getData();
-    //         this.props.getAllContents();
-    //         this.props.getAllContentList();
-    //         $('#listContentTitle').focus();
-    //     });
-    // }
     componentDidMount() {
         T.ready('/user/component', () => {
             const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
@@ -121,37 +112,6 @@ class ListContentEditPage extends React.Component {
             );
         }
     }
-    // getData = () => {
-    //     const route = T.routeMatcher('/user/list-content/edit/:listContentId'),
-    //         params = route.parse(window.location.pathname);
-    //     const currentList = this.props.contentList.find(list => list._id === params.listContentId);
-    //     let title = T.language.parse(currentList.title, true);
-    //     $('#listContentTitle').val(title.vi).focus();
-    //     this.setState({ item: currentList });
-    //     this.getListContentItem();
-    //     console.log('state', this.state)
-    // }
-    //     () => {
-    //     const route = T.routeMatcher('/user/list-video/edit/:listVideoId'), params = route.parse(window.location.pathname);
-    //     this.props.getListVideoItem(params.listVideoId, data => {
-    //         if (data.error) {
-    //             this.props.history.push('/user/component');
-    //         } else if (data.item) {
-    //             $('#listVideoTitle').val(data.item.title).focus();
-    //             this.props.getAllVideos({ listVideoId: data.item._id }, (items) => {
-    //                 this.setState({ item: data.item, items });
-    //             })
-    //         } else {
-    //             this.props.history.push('/user/component');
-    //         }
-    //     });
-    // }
-    // getListContentItem = () => {
-    //     if (this.state.item.items) {
-    //         const listItem = this.state.item.items.map(item => this.props.content.find(ele => ele._id === item))
-    //         this.setState({ items: listItem });
-    //     }
-    // }
 
     deleteItem = (_id) => {
         const remainList = this.state.items.filter(item => item._id != _id)
@@ -212,6 +172,24 @@ class ListContentEditPage extends React.Component {
         }
         this.getContentItem();
     };
+    reRenderPage = (item) => {
+        if (item) {
+            this.props.getAllContentList(data => {
+                if (data) {
+                    this.setState({ item: data.find(item => item._id === this.state.item._id) });
+                };
+                const item = this.state.item;
+                if (item.items) {
+                    this.props.getAllContents(content => {
+                        this.setState({
+                            items: item.items.map(idC => content.find(ele => ele._id === idC))
+                        });
+                    }
+                    );
+                }
+            })
+        }
+    }
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
@@ -322,7 +300,7 @@ class ListContentEditPage extends React.Component {
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save' />
                 </button>
-                <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} getAllContentList={this.props.getAllContentList} />
+                <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} />
             </main>
         );
     }

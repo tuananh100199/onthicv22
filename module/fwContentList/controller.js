@@ -51,6 +51,6 @@ module.exports = app => {
             app.uploadComponentImage(req, 'list-content', app.model.contentList.get, fields.userData[0].substring(10), files.StatisticImage[0].path, done);
         }
     };
-    app.uploadHooks.add('uploadStatistic', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadStatistic(req, fields, files, params, done), done, 'component:write'));
+    app.uploadHooks.add('uploadcontentList', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadcontentList(req, fields, files, params, done), done, 'component:write'));
 };
