@@ -85,32 +85,73 @@ class ListContentEditPage extends React.Component {
         this.modal = React.createRef();
     }
 
+    // componentDidMount() {
+    //     T.ready('/user/component', () => {
+    //         this.getData();
+    //         this.props.getAllContents();
+    //         this.props.getAllContentList();
+    //         $('#listContentTitle').focus();
+    //     });
+    // }
     componentDidMount() {
         T.ready('/user/component', () => {
-            this.getData();
-            this.props.getAllContents();
-            this.props.getAllContentList();
-            $('#listContentTitle').focus();
+            const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
+            this.props.getAllContentList(data => {
+                if (data) {
+                    const currentList = data.find(item => item._id === params.listContentId);
+                    let title = T.language.parse(currentList.title, true);
+                    $('#listContentTitle').val(title.vi).focus();
+                    this.setState({ item: currentList });
+                    this.getContentItem();
+                } else {
+                    this.props.history.push('/user/component');
+                }
+            }
+            );
         });
     }
-
-    getData = () => {
-        const route = T.routeMatcher('/user/list-content/edit/:listContentId'),
-            params = route.parse(window.location.pathname);
-        const currentList = this.props.contentList.find(list => list._id === params.listContentId);
-        let title = T.language.parse(currentList.title, true);
-        $('#listContentTitle').val(title.vi).focus();
-        this.setState({ item: currentList });
-        this.getListContentItem();
-        console.log('state', this.state)
-    }
-
-    getListContentItem = () => {
-        if (this.state.item.items) {
-            const listItem = this.state.item.items.map(item => this.props.content.find(ele => ele._id === item))
-            this.setState({ items: listItem });
+    getContentItem = () => {
+        const item = this.state.item;
+        if (item.items) {
+            this.props.getAllContents(content => {
+                this.setState({
+                    items: item.items.map(idC => content.find(ele => ele._id === idC))
+                });
+            }
+            );
         }
     }
+    // getData = () => {
+    //     const route = T.routeMatcher('/user/list-content/edit/:listContentId'),
+    //         params = route.parse(window.location.pathname);
+    //     const currentList = this.props.contentList.find(list => list._id === params.listContentId);
+    //     let title = T.language.parse(currentList.title, true);
+    //     $('#listContentTitle').val(title.vi).focus();
+    //     this.setState({ item: currentList });
+    //     this.getListContentItem();
+    //     console.log('state', this.state)
+    // }
+    //     () => {
+    //     const route = T.routeMatcher('/user/list-video/edit/:listVideoId'), params = route.parse(window.location.pathname);
+    //     this.props.getListVideoItem(params.listVideoId, data => {
+    //         if (data.error) {
+    //             this.props.history.push('/user/component');
+    //         } else if (data.item) {
+    //             $('#listVideoTitle').val(data.item.title).focus();
+    //             this.props.getAllVideos({ listVideoId: data.item._id }, (items) => {
+    //                 this.setState({ item: data.item, items });
+    //             })
+    //         } else {
+    //             this.props.history.push('/user/component');
+    //         }
+    //     });
+    // }
+    // getListContentItem = () => {
+    //     if (this.state.item.items) {
+    //         const listItem = this.state.item.items.map(item => this.props.content.find(ele => ele._id === item))
+    //         this.setState({ items: listItem });
+    //     }
+    // }
 
     deleteItem = (_id) => {
         const remainList = this.state.items.filter(item => item._id != _id)
@@ -169,7 +210,7 @@ class ListContentEditPage extends React.Component {
             console.log("this.state", this.state)
             this.props.updateContentList(this.state.item._id, changes);
         }
-        this.getListContentItem();
+        this.getContentItem();
     };
 
     render() {

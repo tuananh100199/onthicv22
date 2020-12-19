@@ -201,7 +201,6 @@ class ListVideoEditPage extends React.Component {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#listVideoTitle').focus();
         } else {
-            console.log("this.state", this.state)
             this.props.updateListVideo(this.state.item._id, changes);
         }
     };
