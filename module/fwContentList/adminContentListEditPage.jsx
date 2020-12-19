@@ -1,3 +1,4 @@
+import T from '../../view/js/common';
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllContentList, updateContentList } from './redux.jsx';
@@ -116,13 +117,14 @@ class ListContentEditPage extends React.Component {
     deleteItem = (_id) => {
         const remainList = this.state.items.filter(item => item._id != _id)
         this.props.updateContentList(this.state.item._id, { items: remainList.map(ele => ele._id) });
+        T.alert('Gỡ bài viết trong danh sách thành công!', 'error', false, 800);
         this.setState({
             item: Object.assign({}, this.state.item, { items: remainList.map(ele => ele._id) }),
             items: remainList
         });
     }
     remove = (e, _id) => {
-        T.confirm('Gỡ bài viết ', 'Bạn có chắc muốn gỡ bài viết khỏi danh sách này?', 'info', isConfirm => {
+        T.confirm('Gỡ bài viết ', 'Bạn có chắc muốn gỡ bài viết khỏi danh sách này?', true, isConfirm => {
             isConfirm && this.deleteItem(_id);
         })
         e.preventDefault();
@@ -150,6 +152,7 @@ class ListContentEditPage extends React.Component {
                 items: itemContent
             });
             this.props.updateContentList(this.state.item._id, this.state.item);
+            T.notify('Đổi thứ tự bài viết trong danh sách thành công!', 'success');
         }
         e.preventDefault();
     };
