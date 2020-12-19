@@ -323,6 +323,6 @@ class ListContentEditPage extends React.Component {
         );
     }
 }
-const mapStateToProps = state => ({ system: state.system, content: state.content, contentList: state.contentList.list });
+const mapStateToProps = state => ({ system: state.system, content: state.content });
 const mapActionsToProps = { updateContentList, getAllContents, getAllContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ListContentEditPage);
