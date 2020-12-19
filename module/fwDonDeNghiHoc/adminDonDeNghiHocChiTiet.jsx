@@ -23,6 +23,26 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
         this.props.getForm(params._id, () => this.loading = false);
     }
 
+    accept = () => {
+        const changesOfForm = {
+            approve: "approved",
+        }
+        console.log(this.props.donDeNghiHoc)
+        this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
+            T.notify('Đã chấp nhận đơn đề nghị học!', 'success');
+        });
+    }
+
+    reject = () => {
+        const changesOfForm = {
+            approve: "eject",
+        }
+        console.log(this.props.donDeNghiHoc)
+        this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
+            T.notify('Đã từ chối đơn đề nghị học', 'success');
+        });
+    }
+
     render() {
         const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ?
             this.props.donDeNghiHoc.item : null;
@@ -102,9 +122,13 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     </ul>
                 </div>
                 {table}
-                <button type='button' className='btn btn-primary btn-circle'
-                    style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                    <i className='fa fa-lg fa-save' />
+                <button type='button' className='btn btn-success btn-circle'
+                    style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.accept}>
+                    <i className='fa fa-check-square' />
+                </button>
+                <button type='button' className='btn btn-danger btn-circle'
+                    style={{ position: 'fixed', right: '60px', bottom: '10px' }} onClick={this.reject}>
+                    <i className='fa fa-ban' />
                 </button>
             </main>
         );

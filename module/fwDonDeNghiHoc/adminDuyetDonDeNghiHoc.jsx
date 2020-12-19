@@ -48,7 +48,8 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                 <thead>
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '80%' }}>Người dùng</th>
+                        <th style={{ width: '75%' }}>Người dùng</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }}>Trạng thái</th>
                         <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                     </tr>
                 </thead>
@@ -58,6 +59,9 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                             <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
                             <td>
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
+                            </td>
+                            <td>
+                                {(item.approve === 'waiting'? 'Mới' : (item.approve === 'approved'?'Đã duyệt':'Từ chối'))}
                             </td>
                             <td className='btn-group'>
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id} data-id={item._id} className='btn btn-warning'>
@@ -72,7 +76,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                                     </a> : null
                                 }
                             </td>
-                        </tr>
+                        </tr> 
                     ))}
                 </tbody>
             </table>
@@ -81,8 +85,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe
-</h1>
+                    <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe chờ duyệt </h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
                             <input className='app-search__input' id='searchTextBox' type='search' placeholder='Search' />
