@@ -24,6 +24,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminDuyetDonDeNghiHoc.jsx') }),
         },
         {
+            path: '/user/don-de-nghi-hoc/send-mail',
+            component: Loadable({ loading: Loading, loader: () => import('./adminGuiMailThongBao.jsx') }),
+        },
+        {
             path: '/user/don-de-nghi-hoc-chi-tiet/item/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiHocChiTiet.jsx') }),
         },

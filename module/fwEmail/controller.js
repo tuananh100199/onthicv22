@@ -44,6 +44,13 @@ module.exports = app => {
                 emailContactTitle: 'Hiệp Phát: Contact',
                 emailContactText: 'Dear you, Hiệp Phát have been received your message. Thank you for contacting us. Your subject: "{title}". Your message is: "{message}". Tutorial will reply you soon. Best regard, Tutorial.',
                 emailContactHtml: 'Dear you,<br/><br/>Hiệp Phát have been received your message. Thank you for contacting us.<br/>Your subject: "{title}".<br/>Your message is: "{message}".<br/>Tutorial will reply you soon.<br/><br/>Best regard,<br/>Tutorial.',
+                emailAdminNotifyTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
+                emailAdminNotifyText: 'Dear {name}, Hiệp Phát welcome you as a new member. Before you can login, please click this {url} to active your account. Best regard, Tutorial, Website: ' + app.rootUrl + '',
+                emailAdminNotifyHtml: 'Dear <b>{name}</b>,<br/><br/>' +
+                    'Hiệp Phát welcome you as a new member. Before you can login, please click this <a href="{url}">{url}</a> to active your account.<br/><br/>' +
+                    'Best regard,<br/>' +
+                    'Hiệp Phát<br/>' +
+                    'Website1: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
             });
         } else {
             setTimeout(init, 1000);
@@ -57,7 +64,7 @@ module.exports = app => {
         'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml',
         'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml',
         'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml',
-        'emailContactTitle', 'emailContactText', 'emailContactHtml'
+        'emailContactTitle', 'emailContactText', 'emailContactHtml', 'emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'
     ];
 
     app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(EmailParams, result => res.send(result)));
