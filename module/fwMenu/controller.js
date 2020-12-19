@@ -12,6 +12,7 @@ module.exports = app => {
     app.get('/user/menu', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/list-content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/carousel/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/statistic/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/slogan/edit/:_id', app.permission.check('component:read'), app.templates.admin);
