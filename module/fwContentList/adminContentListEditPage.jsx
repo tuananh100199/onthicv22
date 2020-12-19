@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentListItem, getAllContentList, updateContentList } from './redux.jsx';
-import { getAllContents, createContent, updateContent, deleteContent } from '../fwHome/redux/reduxContent.jsx';
+import { getAllContentList, updateContentList } from './redux.jsx';
+import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 
 class ContentModal extends React.Component {
@@ -112,27 +112,6 @@ class ListContentEditPage extends React.Component {
         }
     }
 
-    add = (newData, done) => {
-        newData.contentListId = this.state.item._id;
-        this.props.createContent(newData, newContent => {
-            let items = this.state.items;
-            items.push(newContent);
-            this.setState({ items }, done);
-        });
-    };
-
-    update = (_id, changes, done) => {
-        this.props.updateContent(_id, changes, editedContent => {
-            let items = this.state.items;
-            for (let i = 0; i < items.length; i++) {
-                if (items[i]._id == _id) {
-                    items.splice(i, 1, editedContent);
-                }
-            }
-
-            this.setState({ items }, done);
-        });
-    };
     deleteItem = (_id) => {
         const remainList = this.state.items.filter(item => item._id != _id)
         this.setState({
@@ -304,5 +283,5 @@ class ListContentEditPage extends React.Component {
     }
 }
 const mapStateToProps = state => ({ system: state.system, content: state.content, contentList: state.contentList.list });
-const mapActionsToProps = { getContentListItem, updateContentList, getAllContents, createContent, updateContent, deleteContent, swapContent, getAllContentList };
+const mapActionsToProps = { updateContentList, getAllContents, getAllContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ListContentEditPage);
