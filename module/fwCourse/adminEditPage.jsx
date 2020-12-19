@@ -33,7 +33,6 @@ class CourseEditPage extends React.Component {
                 this.props.history.push('/user/course/list');
             } else if (data.item) {
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
-                console.log(categories)
                 $('#courseCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const courseStartPost = $('#courseStartPost').datetimepicker(T.dateFormat);
                 const courseStopPost = $('#courseStopPost').datetimepicker(T.dateFormat);

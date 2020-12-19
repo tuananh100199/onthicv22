@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getContentListItem, getAllContentList, updateContentList } from './redux.jsx';
-import { getAllContents, createContent, updateContent, deleteContent, swapContent } from '../fwHome/redux/reduxContent.jsx';
+import { getAllContents, createContent, updateContent, deleteContent } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 
 class ContentModal extends React.Component {
