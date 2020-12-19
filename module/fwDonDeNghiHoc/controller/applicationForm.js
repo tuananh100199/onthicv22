@@ -25,14 +25,29 @@ module.exports = app => {
     // Admin
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber), pageSize = parseInt(req.params.pageSize),
-            pageCondition = req.query.pageCondition ? req.query.pageCondition : {};
-        app.model.applicationForm.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-            if (error || page == null) {
-                res.send({ error: 'Danh sách đơn đề nghị sát hạch không sẵn sàng!' });
+        condition = req.query.condition || { searchText: '' },
+        pageCondition = {};
+        if (condition) {
+            const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+        pageCondition['$or'] = [
+            { firstname: value },
+            { lastname: value },
+        ];
+        }
+        app.model.user.getAll(pageCondition, (error, users) => {
+            if (error) {
+                res.send({ error })
             } else {
-                res.send({ page });
+                const userIds = users.map(user => user._id);
+                app.model.applicationForm.getPage(pageNumber, pageSize, { user: { $in: userIds } }, (error, page) => {
+                    if (error || page == null) {
+                        res.send({ error: 'Danh sách đơn đề nghị sát hạch không sẵn sàng!' });
+                    } else {
+                        res.send({ page });
+                    }
+                });     
             }
-        });
+        })
     });
 
     app.get('/api/application-form/item/:_id', app.permission.check('applicationForm:read'), (req, res) => {

@@ -24,7 +24,6 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
 
     componentDidMount() {
         this.props.getFormInPage(1, T.defaultUserPageSize, () => this.loading = false);
-        this.props.getUserInPage(1, T.defaultUserPageSize, () => this.loading = false)
     }
 
     search = (e) => {
@@ -33,14 +32,13 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
             searchText = $('#searchTextBox').val();
         if (searchText) condition.searchText = searchText;
 
-        this.props.getUserInPage(undefined, undefined, condition, () => {
+        this.props.getFormInPage(undefined, undefined, condition, () => {
             const isSearching = Object.keys(condition).length > 0;
             this.setState({ searchText, isSearching });
         });
     };
 
     render() {
-        console.log(this.props)
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermission.contains('user-form:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
