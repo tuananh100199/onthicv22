@@ -67,7 +67,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id} data-id={item._id} className='btn btn-warning'>
                                     <i className='fa fa-lg fa-list-alt' />
                                 </Link>
-                                <Link to={'/user/user-form/edit/' + item._id} className='btn btn-primary'>
+                                <Link to={'#'} className='btn btn-primary'>
                                     <i className='fa fa-lg fa-edit' />
                                 </Link>
                                 {!readOnly ?
@@ -85,10 +85,10 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe chờ duyệt </h1>
+                    <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
-                            <input className='app-search__input' id='searchTextBox' type='search' placeholder='Search' />
+                            <input className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm người dùng' />
                             <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
                         </form>
                         {this.state.isSearching ?

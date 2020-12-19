@@ -53,7 +53,7 @@ module.exports = app => {
         // },
         user: {
             index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user',
-            subMenusRender: false, groups: ['Thông tin cá nhân', 'Biểu mẫu'],
+            subMenusRender: false, groups: ['Thông tin cá nhân', 'Biểu mẫu '],
         },
     };
     

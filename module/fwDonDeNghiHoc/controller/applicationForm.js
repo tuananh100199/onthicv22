@@ -1,6 +1,14 @@
 module.exports = app => {
+
     const menu = {
-        parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc/list', icon: 'fa-file-text-o' }
+        parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch test', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o',
+        subMenusRender: false, groups: ['Danh sách đơn đề nghị', 'Cấu hình'],
+    },
+        menus:{
+            3010: { title: 'Danh sách đơn đề nghị học, sát hạch', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            3020: { title: 'Cấu hình', link: '/user/don-de-nghi-hoc/setting', icon: 'fa-cog', backgroundColor: '#032b91', groupIndex: 1 }
+            
+        }
     };
     
     const menuDonDeNghiHoc = {
@@ -16,6 +24,7 @@ module.exports = app => {
         { name: 'user:login', menu: menuDonDeNghiHoc }
     );
 
+    app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc-chi-tiet/item/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
