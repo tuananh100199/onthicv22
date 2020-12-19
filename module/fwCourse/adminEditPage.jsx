@@ -32,31 +32,29 @@ class CourseEditPage extends React.Component {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');
                 this.props.history.push('/user/course/list');
             } else if (data.item) {
+                let item = data.item;
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
-                $('#courseCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
+                $('#courseCategories').select2({ data: categories }).val(item.categories).trigger('change');
                 const courseStartPost = $('#courseStartPost').datetimepicker(T.dateFormat);
                 const courseStopPost = $('#courseStopPost').datetimepicker(T.dateFormat);
-                if (data.item.startPost)
-                    courseStartPost.val(T.dateToText(data.item.startPost, 'dd/mm/yyyy HH:MM')).datetimepicker('update');
-                if (data.item.stopPost)
-                    courseStopPost.val(T.dateToText(data.item.stopPost, 'dd/mm/yyyy HH:MM')).datetimepicker('update');
-                if (data.item.link) {
-                    $(this.courseLink.current).html(T.rootUrl + '/tintuc/' + data.item.link).attr('href', '/tintuc/' + data.item.link);
+                if (item.startPost)
+                    courseStartPost.val(T.dateToText(item.startPost, 'dd/mm/yyyy HH:MM')).datetimepicker('update');
+                if (item.stopPost)
+                    courseStopPost.val(T.dateToText(item.stopPost, 'dd/mm/yyyy HH:MM')).datetimepicker('update');
+                if (item.link) {
+                    $(this.courseLink.current).html(T.rootUrl + '/khoahoc/' + item.link).attr('href', '/khoahoc/' + item.link);
                 } else {
                     $(this.courseLink.current).html('').attr('');
                 }
-                data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
-                // this.imageBox.current.setData('course:' + (data.item._id ? data.item._id : 'new'));
-                let title = T.language.parse(data.item.title, true),
+                item.image = item.image ? item.image : '/image/avatar.jpg';
+                this.imageBox.current.setData('course:' + (item._id ? item._id : 'new'));
+                let title = T.language.parse(item.title, true),
                     abstract = data.item.abstract,
-                    content = T.language.parse(data.item.content, true);
+                    content = T.language.parse(item.content, true);
                 $('#courseTitle').val(title.vi);
                 $('#courseAbstract').val(abstract);
                 this.viEditor.current.html(content.vi); 
-                // this.imageBox.current.setData('course:' + (_id ? _id : 'new'));
-
                 this.setState(data);
-                console.log(data.item)
             } else {
                 this.props.history.push('/user/course/list');
             }
@@ -100,7 +98,6 @@ class CourseEditPage extends React.Component {
                 $('#courseLink').val(changes.link)
             })
         } else {
-            // this.props.createDraftCourse(newDraft, result => { this.getData() });
         }
     };
     render() {
@@ -116,7 +113,6 @@ class CourseEditPage extends React.Component {
             active: false, isInternal: false,
             view: 0
         };
-        // console.log(this.state.item)
         let title = T.language.parse(item.title, true), linkDefaultCourse = T.rootUrl + '/course/item/' + item._id;
         const route = T.routeMatcher('/user/course/edit/:courseId'),
             courseId = route.parse(window.location.pathname).courseId;
@@ -150,8 +146,7 @@ class CourseEditPage extends React.Component {
                                     <div className='col-md-6'>
                                         <div className='form-group'>
                                             <label className='control-label'>Hình ảnh</label>
-                                            {/* <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseImage' image={this.state.image} readOnly={!currentPermissions.includes('course:write')} /> */}
-                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image} readOnly={readOnly} />
+                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseImage' image={item.image} readOnly={readOnly} />
                                         </div>
                                     </div>
                                     <div className='col-md-6'>
