@@ -115,6 +115,7 @@ class ListContentEditPage extends React.Component {
 
     deleteItem = (_id) => {
         const remainList = this.state.items.filter(item => item._id != _id)
+        this.props.updateContentList(this.state.item._id, { items: remainList.map(ele => ele._id) });
         this.setState({
             item: Object.assign({}, this.state.item, { items: remainList.map(ele => ele._id) }),
             items: remainList
@@ -122,7 +123,7 @@ class ListContentEditPage extends React.Component {
         console.log('state delete', this.state)
     }
     remove = (e, _id) => {
-        T.confirm('Xoá bài viết', 'Bạn có chắc muốn xoá anh sách bài viết này?', 'info', isConfirm => {
+        T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá anh sách bài viết này?', 'info', isConfirm => {
             isConfirm && this.deleteItem(_id);
         })
         e.preventDefault();
@@ -149,6 +150,7 @@ class ListContentEditPage extends React.Component {
                 item: Object.assign({}, this.state.item, { items: items }),
                 items: itemContent
             });
+            this.props.updateContentList(this.state.item._id, this.state.item);
             console.log('state', this.state)
         }
         e.preventDefault();
@@ -229,6 +231,9 @@ class ListContentEditPage extends React.Component {
                                                     </a>
                                                     <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, false)}>
                                                         <i className='fa fa-lg fa-arrow-down' />
+                                                    </a>
+                                                    <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
+                                                        <i className='fa fa-lg fa-trash' />
                                                     </a>
                                                 </div>
                                             }
