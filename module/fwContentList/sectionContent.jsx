@@ -79,14 +79,11 @@ class SectionContent extends React.Component {
                             backgroundImage: 'url("http://daotaolaixehiepphat.com/images/v1.png")',
                         }}></div>
                     <h3 style={{
-                        // fontSize: '17px',
                         paddingLeft: '-40px',
                         margin: '0',
-
-                        // textTransform: 'uppercase',
                         textShadow: ' 1px -1px 2px #2C2626',
                         position: 'relative',
-                        fontWeight: 'bold',
+                        fontWeight: 'normal',
                         float: 'left',
                         height: '36px',
                         color: '#fff',

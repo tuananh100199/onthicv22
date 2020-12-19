@@ -240,8 +240,12 @@ class ListContentEditPage extends React.Component {
                                         </td>
 
                                         <td>
-                                            {(readOnly || this.state.item.items.length === 1) ? null :
+                                            {/* {(readOnly || this.state.item.items.length === 1) ? null : */}
+                                            {readOnly ? null :
                                                 <div className='btn-group'>
+                                                    <Link to={'/user/content/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                                        <i className='fa fa-lg fa-edit' />
+                                                    </Link>
                                                     <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, true)}>
                                                         <i className='fa fa-lg fa-arrow-up' />
                                                     </a>
