@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux.jsx';
-import { Link } from 'react-router-dom';
 
 
 class SectionContact extends React.Component {
@@ -46,6 +45,15 @@ class SectionContact extends React.Component {
     render() {
         let { addressList, mobile, email, map, latitude, longitude } = this.props.system ? this.props.system : {addressList: JSON.stringify([]) , map: '', latitude: 0, longitude: 0 };
         const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
+        
+        const styles = {
+            border: {
+                borderBottom: 'solid 1px lightgray',
+            },
+            noBorder: {
+                borderBottom: 'none',
+            }   
+          };
         try {
             addressList = JSON.parse(addressList);
         } catch (e) {
@@ -90,7 +98,7 @@ class SectionContact extends React.Component {
                                             <p>Email: 
                                                 <span >{item.email}</span>
                                             </p>
-                                            <p style={{borderBottom: 'solid 1px lightgray'}}></p>
+                                            <p style={(index === addressList.length - 1) ? styles.noBorder: styles.border}></p>
                                     </div>)}
                                     </li>
                                 </ul>

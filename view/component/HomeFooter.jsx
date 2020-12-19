@@ -42,14 +42,14 @@ class Footer extends React.Component {
                             </div>
                             <div className="col-md-4">
                                 <h5>Thông tin liên hệ</h5>
-                                    <p>
-                                        <h6><i className='fa fa-phone' aria-hidden='true' /> Điện thoại</h6>
+                                    <div>
+                                        <h6 className='pt-2'><i className='fa fa-phone' aria-hidden='true' /> Điện thoại</h6>
                                         <a href={'tel:' + email}>{mobile}</a>
-                                    </p>
-                                    <p>
-                                        <h6><i className='fa fa-envelope' aria-hidden='true' />Email</h6>
+                                    </div>
+                                    <div>
+                                        <h6 className='pt-2'><i className='fa fa-envelope' aria-hidden='true' />Email</h6>
                                         <a href={'mailto:' + email}>{email}</a>
-                                    </p>
+                                    </div>
                             </div>
                             <div className="col-md-4">
                                 <a href={mapUrl} target='_blank'>
