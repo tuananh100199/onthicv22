@@ -11,30 +11,24 @@ class VideoModal extends React.Component {
         this.state = {};
         this.modal = React.createRef();
         this.imageBox = React.createRef();
-        this.viEditor = React.createRef();
-        this.enEditor = React.createRef();
+        this.editor = React.createRef();
         this.btnSave = React.createRef();
     }
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#videoViTitle').focus());
+            $(this.modal.current).on('shown.bs.modal', () => $('#videoTitle').focus());
         }, 250));
     }
 
     show = (video) => {
         let { _id, title, link, image, content } = video ? video : { _id: null, title: '', link: '', image: '', content: '' };
-        title = T.language.parse(title, true);
-        content = T.language.parse(content, true);
 
         $(this.btnSave.current).data('id', _id);
-        $('#videoViTitle').val(title.vi);
-        $('#videoEnTitle').val(title.en);
+        $('#videoTitle').val(title);
         $('#videoLink').val(link);
         this.imageBox.current.setData('video:' + (_id ? _id : 'new'));
-        this.viEditor.current.html(content.vi);
-        this.enEditor.current.html(content.en);
-
+        this.editor.current.html(content);
         this.setState({ image });
         $(this.modal.current).modal('show');
     }
@@ -42,26 +36,19 @@ class VideoModal extends React.Component {
     save = (event) => {
         const _id = $(this.btnSave.current).data('id'),
             changes = {
-                title: { vi: $('#videoViTitle').val().trim(), en: $('#videoEnTitle').val().trim() },
+                title: $('#videoTitle').val().trim(),
                 link: $('#videoLink').val().trim(),
-                content: { vi: this.viEditor.current.html(), en: this.enEditor.current.html() },
+                content:  this.editor.current.html(),
             };
-        if (changes.title.vi == '') {
+        if (changes.title== '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
-            $('#videoViTitle').focus();
-        } else if (changes.title.en == '') {
-            T.notify('Video title bị trống!', 'danger');
-            $('#videoEnTitle').focus();
+            $('#videoTitle').focus();
         } else if (changes.link == '') {
             T.notify('Link video bị trống!', 'danger');
             $('#videoLink').focus();
-        } else if (changes.content.vi == '') {
+        } else if (changes.content == '') {
             T.notify('Nội dung video bị trống!', 'danger');
-        } else if (changes.content.en == '') {
-            T.notify('The content of video is empty!', 'danger');
         } else {
-            changes.title = JSON.stringify(changes.title);
-            changes.content = JSON.stringify(changes.content);
             if (_id) {
                 this.props.updateVideo(_id, changes, () => {
                     $(this.modal.current).modal('hide');
@@ -88,36 +75,18 @@ class VideoModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <ul className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#videoViTab'>Việt Nam</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#videoEnTab'>English</a>
-                                </li>
-                            </ul>
-                            <div className='tab-content'>
-                                <div id='videoViTab' className='tab-pane fade show active'>
-                                    <div className='form-group'>
-                                        <label htmlFor='videoViTitle'>Tiêu đề</label>
-                                        <input className='form-control' id='videoViTitle' type='text' placeholder='Tiêu đề video' readOnly={readOnly} />
-                                    </div>
-                                    <Editor ref={this.viEditor} placeholder='Nội dung' readOnly={readOnly} />
+                            <div className='tab-pane fade show active'>
+                                <div className='form-group'>
+                                    <label htmlFor='videoTitle'>Tiêu đề</label>
+                                    <input className='form-control' id='videoTitle' type='text' placeholder='Tiêu đề video' readOnly={readOnly} />
                                 </div>
-
-                                <div id='videoEnTab' className='tab-pane fade'>
-                                    <div className='form-group'>
-                                        <label htmlFor='videoEnTitle'>Title</label>
-                                        <input className='form-control' id='videoEnTitle' type='text' placeholder='Video title' readOnly={readOnly} />
-                                    </div>
-                                    <Editor ref={this.enEditor} placeholder='The content of video' readOnly={readOnly} />
-                                </div>
+                                <Editor ref={this.editor} placeholder='Nội dung' readOnly={readOnly} />
                             </div>
 
                             <div className='row'>
                                 <div className='col-8'>
                                     <div className='form-group'>
-                                        <label htmlFor='videoLink'>Link</label>
+                                        <label htmlFor='videoLink'>Đường dẫn</label>
                                         <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
                                     </div>
                                 </div>
@@ -193,7 +162,7 @@ class VideoPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <a href='#' onClick={e => this.edit(e, item)}>{T.language.parse(item.title)}</a>
+                                    <a href='#' onClick={e => this.edit(e, item)}>{item.title}</a>
                                 </td>
                                 <td>
                                     <a href={item.link} target='_blank'>{item.link}</a>
