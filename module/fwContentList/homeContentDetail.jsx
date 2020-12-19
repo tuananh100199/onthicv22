@@ -25,10 +25,14 @@ class ContentDetail extends React.Component {
             $('html, body').stop().animate({ scrollTop: 0 }, 500, 'swing');
         }, 250);
         if (prevProps.location.pathname != window.location.pathname) {
-            const route = T.routeMatcher('/content/item/:contentId'),
-                params = route.parse(window.location.pathname);
+            let url = window.location.pathname,
+                params = T.routeMatcher('/content/item/:contentId').parse(url);
             this.setState({ _id: params.contentId });
-            this.props.getContent(params.contentId);
+            this.props.getContent(params.contentId, data => {
+                if (data.item) {
+                    this.setState(data.item);
+                }
+            });
         }
     }
 
