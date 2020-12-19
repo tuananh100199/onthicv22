@@ -40,7 +40,7 @@ class SectionAllContent extends React.Component {
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-black'>{T.language.parse(item.title)}</Link>
+                                            <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
                                         </h2>
                                     </div>
                                 </div>
