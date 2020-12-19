@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux.jsx';
+import { Link } from 'react-router-dom';
+
 
 class SectionContact extends React.Component {
     constructor(props) {
@@ -42,9 +44,14 @@ class SectionContact extends React.Component {
     }
     
     render() {
-        const { address, mobile, email, map, latitude, longitude } = this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0 };
+        let { addressList, mobile, email, map, latitude, longitude } = this.props.system ? this.props.system : {addressList: JSON.stringify([]) , map: '', latitude: 0, longitude: 0 };
         const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
-        
+        try {
+            addressList = JSON.parse(addressList);
+        } catch (e) {
+            console.error(e)
+        }
+
         return [
             <div key={0} className='justify-content-center pb-3'>
                 <div className='col-md-12 heading-sections text-center'>
@@ -68,11 +75,23 @@ class SectionContact extends React.Component {
                                         <h6><i className='fa fa-envelope' aria-hidden='true' />Email</h6>
                                         <a href={'mailto:' + email}>{email}</a>
                                     </li>
-                                    <li>
-                                        <h6 style={{ flex: 'none' }}><i className='fa fa-map-pin' aria-hidden='true' /> Địa chỉ</h6>&nbsp;
-                                        <a href={mapUrl} target='_blank'>
-                                            {address}
-                                        </a>
+                                    <li style={{display: 'block'}}>
+                                        <h6><i className='fa fa-envelope' aria-hidden='true' />Địa chỉ</h6>
+                                        {addressList.map((item, index) => <div className='mb-1' key={index}>
+                                            <p><strong>{item.addressTitle}</strong>:&nbsp;&nbsp;
+                                                <span >{item.address}</span>
+                                            </p>
+                                            <p>Điện thoại: 
+                                                <span >{item.phoneNumber}</span>
+                                                &nbsp;&nbsp;
+                                                <span >Di động: </span>
+                                                <span >{item.mobile}</span>
+                                            </p>
+                                            <p>Email: 
+                                                <span >{item.email}</span>
+                                            </p>
+                                            <p style={{borderBottom: 'solid 1px lightgray'}}></p>
+                                    </div>)}
                                     </li>
                                 </ul>
                             </div>

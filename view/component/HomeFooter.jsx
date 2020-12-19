@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 class Footer extends React.Component {
     render() {
-        let { map, latitude, longitude, logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList } =
-            this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0, logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]) };
+        let { map, latitude, longitude, logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList, mobile, email } =
+            this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0, logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]), mobile:'', email:'' };
         facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook' /></a> : '';
         youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube' /></a> : '';
         twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
@@ -24,7 +24,7 @@ class Footer extends React.Component {
                 <div className='top-footer-area text-left'>
                     <div className='container'>
                        <div className='row' >
-                            <div className="col-md-8" >
+                            <div className="col-md-4" >
                                 {addressList.map((item, index) => <div className='mb-1' key={index}>
                                         <p><strong>{item.addressTitle}</strong>:&nbsp;&nbsp;
                                             <span >{item.address}</span>
@@ -39,6 +39,17 @@ class Footer extends React.Component {
                                             <span >{item.email}</span>
                                         </p>
                                 </div>)}
+                            </div>
+                            <div className="col-md-4">
+                                <h5>Thông tin liên hệ</h5>
+                                    <p>
+                                        <h6><i className='fa fa-phone' aria-hidden='true' /> Điện thoại</h6>
+                                        <a href={'tel:' + email}>{mobile}</a>
+                                    </p>
+                                    <p>
+                                        <h6><i className='fa fa-envelope' aria-hidden='true' />Email</h6>
+                                        <a href={'mailto:' + email}>{email}</a>
+                                    </p>
                             </div>
                             <div className="col-md-4">
                                 <a href={mapUrl} target='_blank'>
