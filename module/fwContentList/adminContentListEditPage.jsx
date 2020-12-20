@@ -1,45 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllContentList, updateContentList } from './redux.jsx';
-import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
+import { getAllContents, ajaxSelectUser } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
+import { Select } from '../../view/component/Input.jsx';
+// import { ajaxSelectUser } from '../../module/fwUser/redux.jsx';
 class ContentModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: {} };
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
+    userSelect = React.createRef();
 
-    componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#sttTitle').focus())
-        }, 250));
-        $('#contentListSelect').select2();
-    }
-
-    show = (content, item) => {
-        let activeItems = content.filter(item => item.active === true);
-        let categories = activeItems.map(item => ({ id: item._id, text: T.language.parse(item.title) }));
-        $('#contentListSelect').select2({ data: categories }).val(item.items).trigger('change');
-        this.setState({ item: item })
+    show = () => {
+        this.userSelect.current.val(null);
         $(this.modal.current).modal('show');
     }
 
+    // switchUser = () => {
+    //     const userId = this.userSelect.current.val();
+    //     this.props.switchUser(userId);
+    // }
+
     save = (event) => {
+        const newItem = this.userSelect.current.val();
+        const listItem = this.props.item.items;
+        listItem.push(newItem);
         const changes = {
-            items: $('#contentListSelect').val(),
-            title: this.state.item.title,
+            items: listItem,
+            // items: $('#contentListSelect').val(),
+            // title: this.state.item.title,
         };
 
-        if (this.state.item && this.state.item._id) {
-            if ($('#contentListSelect').val() == '') {
-                // changes.items = JSON.stringify([]);
-                changes.items = [];
-            }
-            this.props.updateContentList(this.state.item._id, changes, () => {
+        if (this.props.item && this.props.item._id) {
+            // if ($('#contentListSelect').val() == '') {
+            //     // changes.items = JSON.stringify([]);
+            //     changes.items = [];
+            // }
+            this.props.updateContentList(this.props.item._id, changes, () => {
                 $(this.modal.current).modal('hide');
             });
-            this.props.reRenderPage(this.state.item);
+            this.props.reRenderPage(this.props.item);
         }
         event.preventDefault();
     }
@@ -47,36 +45,108 @@ class ContentModal extends React.Component {
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+                <div className='modal-dialog' role='document'>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Thêm/Gỡ bài viết</h5>
+                            <h5 className='modal-title'>Thêm bài viết</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
+
                         <div className='modal-body'>
-                            <div className='row'>
-                                <div className='col-12'>
-                                    <div className='form-group'>
-                                        <label className='control-label'>Thêm/gỡ bài viết có sẵn</label>
-                                        <select className='form-control' id='contentListSelect' multiple={true} defaultValue={[]} >
-                                            <optgroup label='Lựa chọn bài viết' />
-                                        </select>
-                                    </div>
-                                </div>
+                            <div className='form-group'>
+                                <label>Chọn bài viết</label>
+                                {/* <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Bài viết' /> */}
+                                <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Bài viết' />
+                                {console.log('ajaxSelectUser conyeny', ajaxSelectUser)}
                             </div>
                         </div>
+
                         <div className='modal-footer'>
+                            <button type='button' className='btn btn-success' onClick={this.save}>Lưu</button>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         );
     }
 }
+// class ContentModal extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         this.state = { item: {} };
+//         this.modal = React.createRef();
+//     }
+
+//     componentDidMount() {
+//         $(document).ready(() => setTimeout(() => {
+//             $(this.modal.current).on('shown.bs.modal', () => $('#sttTitle').focus())
+//         }, 250));
+//         $('#contentListSelect').select2();
+//     }
+
+//     show = (content, item) => {
+//         let activeItems = content.filter(item => item.active === true);
+//         let categories = activeItems.map(item => ({ id: item._id, text: T.language.parse(item.title) }));
+//         $('#contentListSelect').select2({ data: categories }).val(item.items).trigger('change');
+//         this.setState({ item: item })
+//         $(this.modal.current).modal('show');
+//     }
+
+//     save = (event) => {
+//         const changes = {
+//             items: $('#contentListSelect').val(),
+//             title: this.state.item.title,
+//         };
+
+//         if (this.state.item && this.state.item._id) {
+//             if ($('#contentListSelect').val() == '') {
+//                 // changes.items = JSON.stringify([]);
+//                 changes.items = [];
+//             }
+//             this.props.updateContentList(this.state.item._id, changes, () => {
+//                 $(this.modal.current).modal('hide');
+//             });
+//             this.props.reRenderPage(this.state.item);
+//         }
+//         event.preventDefault();
+//     }
+
+//     render() {
+//         return (
+//             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+//                 <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+//                     <div className='modal-content'>
+//                         <div className='modal-header'>
+//                             <h5 className='modal-title'>Thêm/Gỡ bài viết</h5>
+//                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+//                                 <span aria-hidden='true'>&times;</span>
+//                             </button>
+//                         </div>
+//                         <div className='modal-body'>
+//                             <div className='row'>
+//                                 <div className='col-12'>
+//                                     <div className='form-group'>
+//                                         <label className='control-label'>Thêm/gỡ bài viết có sẵn</label>
+//                                         <select className='form-control' id='contentListSelect' multiple={true} defaultValue={[]} >
+//                                             <optgroup label='Lựa chọn bài viết' />
+//                                         </select>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                         <div className='modal-footer'>
+//                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+//                             <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
+//                         </div>
+//                     </div>
+//                 </form>
+//             </div>
+//         );
+//     }
+// }
 class ListContentEditPage extends React.Component {
     constructor(props) {
         super(props);
@@ -154,8 +224,12 @@ class ListContentEditPage extends React.Component {
         }
         e.preventDefault();
     };
-    showSelectModal = (e, content, item) => {
-        this.modal.current.show(content, item);
+    // showSelectModal = (e, content, item) => {
+    //     this.modal.current.show(content, item);
+    //     e.preventDefault();
+    // };
+    showSelectModal = (e) => {
+        this.modal.current.show();
         e.preventDefault();
     };
     save = () => {
@@ -253,7 +327,8 @@ class ListContentEditPage extends React.Component {
         } else {
             table = <p key={0}>Không có danh sách các bài viết!</p>;
         }
-        const result = [table, <ContentModal key={1} ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} history={this.props.history} />];
+        const result = [table, <ContentModal key={1} ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} history={this.props.history}
+            item={this.state.item} content={this.props.content} />];
         if (currentPermissions.includes('component:write')) {
             result.push(
                 <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e, this.props.content, this.state.item)}>

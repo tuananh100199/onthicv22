@@ -12,17 +12,17 @@ import { ajaxSelectUser } from '../../module/fwUser/redux.jsx';
 class DebugModal extends React.Component {
     modal = React.createRef();
     userSelect = React.createRef();
-    
+
     show = () => {
         this.userSelect.current.val(null);
         $(this.modal.current).modal('show');
     }
-    
+
     switchUser = () => {
         const userId = this.userSelect.current.val();
         this.props.switchUser(userId);
     }
-    
+
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
@@ -34,14 +34,15 @@ class DebugModal extends React.Component {
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
-                        
+
                         <div className='modal-body'>
                             <div className='form-group'>
                                 <label>Chọn người dùng</label>
                                 <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Người dùng' />
+                                {console.log('ajaxSelectUser', ajaxSelectUser)}
                             </div>
                         </div>
-                        
+
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-success' onClick={this.switchUser}>Switch</button>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
@@ -81,7 +82,7 @@ class AdminHeader extends React.Component {
         this.props.changeRole(role, user => this.props.updateSystemState({ user }));
         e.preventDefault();
     }
-    
+
     showDebugModal = e => {
         e.preventDefault();
         this.debugModal.current.show();
@@ -126,7 +127,7 @@ class AdminHeader extends React.Component {
     render() {
         const isDebug = this.props.system && this.props.system.isDebug,
             isAdmin = this.props.system && this.props.system.user && this.props.system.user.roles.some(role => role.name == 'admin');
-        
+
         return [
             <header key={0} className='app-header' >
                 <Link className='app-header__logo' to='/user'>Hiệp Phát</Link>

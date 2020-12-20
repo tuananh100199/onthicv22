@@ -115,3 +115,11 @@ export function getContent(id, done) {
         });
     }
 }
+export const ajaxSelectUser = {
+    ajax: true,
+    url: `/api/content/all`,
+    data: {},
+    processResults: response => ({
+        results: response && response.items ? response.items.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : []
+    })
+}
