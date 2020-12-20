@@ -56,7 +56,7 @@ class ContentListModal extends React.Component {
                                 <div id='contentListViTab' className='tab-pane fade show active mt-3'>
                                     <div className='form-group'>
                                         <label htmlFor='contentListName'>Tên danh sách bài viết</label>
-                                        <input className='form-control' id='contentListName' type='text' placeholder='Tên danh sách noi dung' />
+                                        <input className='form-control' id='contentListName' type='text' placeholder='Nhập tên danh sách bài viết' />
                                     </div>
                                 </div>
                             </div>

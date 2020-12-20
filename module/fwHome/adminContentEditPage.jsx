@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
 class ContentEditPage extends React.Component {
-    state = { _id: null, title: '', active: false, content: '' };
-    viEditor = React.createRef();
-    enEditor = React.createRef();
-
+    constructor(props) {
+        super(props);
+        this.state = { _id: null, title: '', active: false, content: '' };
+        this.editor = React.createRef();
+    }
     componentDidMount() {
         T.ready('/user/component', () => {
-            $('#cntViTitle').focus();
-
+            $('#cntTitle').focus();
             const route = T.routeMatcher('/user/content/edit/:contentId'),
                 params = route.parse(window.location.pathname);
             this.props.getContent(params.contentId, data => {
@@ -20,13 +20,11 @@ class ContentEditPage extends React.Component {
                     T.notify('Lấy bài viết bị lỗi!', 'danger');
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    const title = T.language.parse(data.item.title, true),
-                        content = T.language.parse(data.item.content, true);
+                    const title = data.item.title,
+                        content = data.item.content;
 
-                    $('#cntViTitle').val(title.vi).focus();
-                    $('#cntEnTitle').val(title.en).focus();
-                    this.viEditor.current.html(content.vi);
-                    this.enEditor.current.html(content.en);
+                    $('#cntTitle').val(title).focus();
+                    this.editor.current.html(content);
                     this.setState(data.item);
                 } else {
                     this.props.history.push('/user/component');
@@ -40,8 +38,8 @@ class ContentEditPage extends React.Component {
     }
     save = () => {
         const changes = {
-            title: JSON.stringify({ vi: $('#cntViTitle').val(), en: $('#cntEnTitle').val() }),
-            content: JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() }),
+            title: $('#cntTitle').val().trim(),
+            content: this.editor.current.html(),
             active: this.state.active ? 1 : 0,
         };
 
@@ -51,13 +49,13 @@ class ContentEditPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
-        const title = this.state.title ? T.language.parse(this.state.title, true) : { en: '<empty>', vi: '<Trống>' };
+        const title = this.state.title ? this.state.title : '<Trống>';
         return (
             <main className='app-content' >
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-image' /> Bài viết: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi }} />
+                        <p dangerouslySetInnerHTML={{ __html: title }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
@@ -71,10 +69,7 @@ class ContentEditPage extends React.Component {
                         <div className='tile-body'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#contentViTab'>Việt Nam</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#contentEnTab'>English</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#contentTab'>Việt Nam</a>
                                 </li>
                                 <div className='form-group' style={{ whiteSpace: 'nowrap', position: 'absolute', right: '10px' }}>
                                     <label className='control-label'>Kích hoạt: &nbsp;&nbsp;&nbsp;</label>
@@ -86,34 +81,22 @@ class ContentEditPage extends React.Component {
                             </ul>
 
                             <div className='tab-content'>
-                                <div id='contentViTab' className='tab-pane fade show active'>
+                                <div id='contentTab' className='tab-pane fade show active'>
                                     <div className='form-group'>
                                         <label className='control-label'>Tiêu đề</label>
-                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='cntViTitle' defaultValue={this.state.title} readOnly={readOnly} />
+                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='cntTitle' defaultValue={this.state.title} readOnly={readOnly} />
                                     </div>
                                     <div className='form-group'>
                                         <label className='control-label'>Nội dung</label>
-                                        <Editor ref={this.viEditor} placeholder='Nội dung bài biết' height='400px' uploadUrl='/user/upload?category=content' readOnly={readOnly} />
-                                    </div>
-                                </div>
-                                <div id='contentEnTab' className='tab-pane fade'>
-                                    <div className='form-group'>
-                                        <label className='control-label'>Title</label>
-                                        <input className='form-control' type='text' placeholder='Title' id='cntEnTitle' defaultValue={this.state.title} readOnly={readOnly} />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label className='control-label'>Content</label>
-                                        <Editor ref={this.enEditor} placeholder='Content' height='400px' uploadUrl='/user/upload?category=content' readOnly={readOnly} />
+                                        <Editor ref={this.editor} placeholder='Nội dung bài biết' height='400px' uploadUrl='/user/upload?category=content' readOnly={readOnly} />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <a className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }} onClick={() => { window.history.back() }}><i className='fa fa-lg fa-reply' /></a>
 
-                <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>
                 {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                         <i className='fa fa-lg fa-save' />

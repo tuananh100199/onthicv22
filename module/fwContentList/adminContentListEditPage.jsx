@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getAllContentList, updateContentList } from './redux.jsx';
 import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
-
 class ContentModal extends React.Component {
     constructor(props) {
         super(props);
@@ -199,7 +198,7 @@ class ListContentEditPage extends React.Component {
         let table = null, currentContent = this.state.item || {};
         if (this.state.item.items && this.state.item.items.length && this.state.items && this.state.items.length) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table key={0} className='table table-hover table-bordered' ref={this.table}>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
@@ -215,7 +214,12 @@ class ListContentEditPage extends React.Component {
                                     <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>
-                                            {readOnly ? title.vi : <a href='#'>{title.vi}</a>}
+                                            {readOnly ? title.vi :
+                                                <Link to={'/user/content/edit/' + item._id}>
+                                                    {title.vi}
+                                                </Link>
+
+                                            }
                                         </td>
 
                                         <td>
@@ -247,9 +251,16 @@ class ListContentEditPage extends React.Component {
                 </table>
             );
         } else {
-            table = <p>Không có danh sách các bài viết!</p>;
+            table = <p key={0}>Không có danh sách các bài viết!</p>;
         }
-
+        const result = [table, <ContentModal key={1} ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} history={this.props.history} />];
+        if (currentPermissions.includes('component:write')) {
+            result.push(
+                <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e, this.props.content, this.state.item)}>
+                    <i className='fa fa-lg fa-plus' />
+                </button>
+            );
+        }
         const title = currentContent && currentContent.title ? T.language.parse(currentContent.title, true).vi : '<Trống>';
         return (
             <main className='app-content' >
@@ -276,16 +287,21 @@ class ListContentEditPage extends React.Component {
                                 </div>
                             </div>
                         </div>
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-primary' type='button' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
+                                </button>
+                        </div>
                     </div>
 
                     <div className='tile col-md-12'>
                         <h3 className='tile-title'>Danh sách bài viết</h3>
                         <div className='tile-body'>
                             <div className='form-group'>
-                                {table}
+                                {result.slice(0, 2)}
                             </div>
                         </div>
-                        {readOnly ? null :
+                        {/* {readOnly ? null :
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
@@ -295,16 +311,23 @@ class ListContentEditPage extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                        }
+                        } */}
+                        <div className='tile-footer'>
+                            <div className='row'>
+                                <div className='col-md-12' style={{ textAlign: 'right' }}>
+                                    {result[2]}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                {/* <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save' />
-                </button>
-                <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} />
+                </button> */}
+                {/* <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} /> */}
             </main>
         );
     }

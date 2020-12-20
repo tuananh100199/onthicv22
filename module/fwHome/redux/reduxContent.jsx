@@ -76,7 +76,7 @@ export function updateContent(_id, changes) {
                 T.notify('Cập nhật nội dung bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Nội dung cập nhật thành công!', 'info');
+                T.notify('Nội dung cập nhật thành công!', 'success');
                 dispatch(getAllContents());
             }
         }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
