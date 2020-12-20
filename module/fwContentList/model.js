@@ -28,10 +28,12 @@ module.exports = app => {
             }
         }),
 
-        update: (_id, changes, done) => {
-            model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done)
-        },
-
+        // update: (_id, changes, done) => {
+        //     model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done)
+        // },
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
         delete: (_id, done) => model.findById(_id, (error, contentList) => {
             if (error) {
                 done(error);

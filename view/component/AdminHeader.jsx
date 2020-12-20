@@ -39,7 +39,6 @@ class DebugModal extends React.Component {
                             <div className='form-group'>
                                 <label>Chọn người dùng</label>
                                 <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Người dùng' />
-                                {console.log('ajaxSelectUser', ajaxSelectUser)}
                             </div>
                         </div>
 

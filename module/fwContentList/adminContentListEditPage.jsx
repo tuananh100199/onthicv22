@@ -4,7 +4,6 @@ import { getAllContentList, updateContentList } from './redux.jsx';
 import { getAllContents, ajaxSelectUser } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 import { Select } from '../../view/component/Input.jsx';
-// import { ajaxSelectUser } from '../../module/fwUser/redux.jsx';
 class ContentModal extends React.Component {
     modal = React.createRef();
     userSelect = React.createRef();
@@ -13,27 +12,15 @@ class ContentModal extends React.Component {
         this.userSelect.current.val(null);
         $(this.modal.current).modal('show');
     }
-
-    // switchUser = () => {
-    //     const userId = this.userSelect.current.val();
-    //     this.props.switchUser(userId);
-    // }
-
     save = (event) => {
         const newItem = this.userSelect.current.val();
         const listItem = this.props.item.items;
         listItem.push(newItem);
         const changes = {
             items: listItem,
-            // items: $('#contentListSelect').val(),
-            // title: this.state.item.title,
         };
 
         if (this.props.item && this.props.item._id) {
-            // if ($('#contentListSelect').val() == '') {
-            //     // changes.items = JSON.stringify([]);
-            //     changes.items = [];
-            // }
             this.props.updateContentList(this.props.item._id, changes, () => {
                 $(this.modal.current).modal('hide');
             });
@@ -57,9 +44,7 @@ class ContentModal extends React.Component {
                         <div className='modal-body'>
                             <div className='form-group'>
                                 <label>Chọn bài viết</label>
-                                {/* <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Bài viết' /> */}
                                 <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Bài viết' />
-                                {console.log('ajaxSelectUser conyeny', ajaxSelectUser)}
                             </div>
                         </div>
 
@@ -73,80 +58,6 @@ class ContentModal extends React.Component {
         );
     }
 }
-// class ContentModal extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = { item: {} };
-//         this.modal = React.createRef();
-//     }
-
-//     componentDidMount() {
-//         $(document).ready(() => setTimeout(() => {
-//             $(this.modal.current).on('shown.bs.modal', () => $('#sttTitle').focus())
-//         }, 250));
-//         $('#contentListSelect').select2();
-//     }
-
-//     show = (content, item) => {
-//         let activeItems = content.filter(item => item.active === true);
-//         let categories = activeItems.map(item => ({ id: item._id, text: T.language.parse(item.title) }));
-//         $('#contentListSelect').select2({ data: categories }).val(item.items).trigger('change');
-//         this.setState({ item: item })
-//         $(this.modal.current).modal('show');
-//     }
-
-//     save = (event) => {
-//         const changes = {
-//             items: $('#contentListSelect').val(),
-//             title: this.state.item.title,
-//         };
-
-//         if (this.state.item && this.state.item._id) {
-//             if ($('#contentListSelect').val() == '') {
-//                 // changes.items = JSON.stringify([]);
-//                 changes.items = [];
-//             }
-//             this.props.updateContentList(this.state.item._id, changes, () => {
-//                 $(this.modal.current).modal('hide');
-//             });
-//             this.props.reRenderPage(this.state.item);
-//         }
-//         event.preventDefault();
-//     }
-
-//     render() {
-//         return (
-//             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-//                 <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
-//                     <div className='modal-content'>
-//                         <div className='modal-header'>
-//                             <h5 className='modal-title'>Thêm/Gỡ bài viết</h5>
-//                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-//                                 <span aria-hidden='true'>&times;</span>
-//                             </button>
-//                         </div>
-//                         <div className='modal-body'>
-//                             <div className='row'>
-//                                 <div className='col-12'>
-//                                     <div className='form-group'>
-//                                         <label className='control-label'>Thêm/gỡ bài viết có sẵn</label>
-//                                         <select className='form-control' id='contentListSelect' multiple={true} defaultValue={[]} >
-//                                             <optgroup label='Lựa chọn bài viết' />
-//                                         </select>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                         <div className='modal-footer'>
-//                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-//                             <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
-//                         </div>
-//                     </div>
-//                 </form>
-//             </div>
-//         );
-//     }
-// }
 class ListContentEditPage extends React.Component {
     constructor(props) {
         super(props);
@@ -184,7 +95,9 @@ class ListContentEditPage extends React.Component {
 
     deleteItem = (_id) => {
         const remainList = this.state.items.filter(item => item._id != _id)
-        this.props.updateContentList(this.state.item._id, { items: remainList.map(ele => ele._id) });
+        let listIdAfterRemove = remainList.map(ele => ele._id);
+        if (listIdAfterRemove.length == 0) listIdAfterRemove = 'empty';
+        this.props.updateContentList(this.state.item._id, { items: listIdAfterRemove });
         T.alert('Gỡ bài viết trong danh sách thành công!', 'error', false, 800);
         this.setState({
             item: Object.assign({}, this.state.item, { items: remainList.map(ele => ele._id) }),
@@ -224,10 +137,7 @@ class ListContentEditPage extends React.Component {
         }
         e.preventDefault();
     };
-    // showSelectModal = (e, content, item) => {
-    //     this.modal.current.show(content, item);
-    //     e.preventDefault();
-    // };
+
     showSelectModal = (e) => {
         this.modal.current.show();
         e.preventDefault();
@@ -376,17 +286,6 @@ class ListContentEditPage extends React.Component {
                                 {result.slice(0, 2)}
                             </div>
                         </div>
-                        {/* {readOnly ? null :
-                            <div className='tile-footer'>
-                                <div className='row'>
-                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-info' type='button' onClick={e => this.showSelectModal(e, this.props.content, this.state.item)}>
-                                            <i className='fa fa-fw fa-lg fa-plus' />Thêm/Gỡ bài viết
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        } */}
                         <div className='tile-footer'>
                             <div className='row'>
                                 <div className='col-md-12' style={{ textAlign: 'right' }}>
@@ -399,10 +298,6 @@ class ListContentEditPage extends React.Component {
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                {/* <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                    <i className='fa fa-lg fa-save' />
-                </button> */}
-                {/* <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} reRenderPage={this.reRenderPage} /> */}
             </main>
         );
     }

@@ -25,7 +25,9 @@ module.exports = app => {
     }));
 
     app.put('/api/list-content', app.permission.check('component:write'), (req, res) => {
-        app.model.contentList.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        const $set = req.body.changes, $unset = {};
+        if ($set && $set.items && $set.items === 'empty') $set.items = [];
+        app.model.contentList.update(req.body._id, $set, $unset, (error, item) => res.send({ error, item }))
     })
         ;
 
