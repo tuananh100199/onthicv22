@@ -54,7 +54,8 @@ class ContentDetail extends React.Component {
                                     <h3>{T.language.parse(item.title)}</h3>
                                 </div>
                             </div>
-                            <div className='col-12 col-lg-8 pt-5'>
+                            {/* <div className='col-12 col-lg-8 pt-5'> */}
+                            <div className='col-12 '>
                                 <div className='course--content' data-aos='fade-up'>
                                     <div className='clever-description p-2'>
                                         <div className='about-course mb-30'>
@@ -69,11 +70,11 @@ class ContentDetail extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
+                            {/* <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
                                 <div className='sidebar-widget'>
                                     <SectionAllContent />
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

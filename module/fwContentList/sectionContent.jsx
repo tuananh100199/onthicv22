@@ -18,11 +18,10 @@ class SectionContent extends React.Component {
                         this.setState({ item: data.find(item => item._id === this.props.listContentId) });
                         this.getContentItem();
                     }
-                }
-                );
+                });
                 this.getData();
-            }
-        })
+            };
+        });
     }
 
     getData = () => {
@@ -51,7 +50,7 @@ class SectionContent extends React.Component {
                         </div> */}
                         <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
-                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                <div className='text-inner' style={{ paddingLeft: '5px' }}>
                                     <h2 className='heading pb-0 mb-0'>
                                         <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
                                     </h2>
@@ -59,12 +58,14 @@ class SectionContent extends React.Component {
                             </div>
                         </div>
                     </div>
+
+
                 )
             })
         }
         return (
             <div className='mt-2'>
-                <div className="tenmoi" style={{
+                {/* <div className="tenmoi" style={{
                     backgroundImage: 'url("http://daotaolaixehiepphat.com/images/v4.png")',
                     backgroundPositionX: 'left', backgroundPositionY: '10px',
                     backgroundRepeat: 'repeat-x',
@@ -107,8 +108,8 @@ class SectionContent extends React.Component {
                 <div className="clear" style={{
                     overflow: 'hidden',
                     clear: 'both'
-                }}></div>
-                {/* <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3> */}
+                }}></div> */}
+                <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3>
                 <div>
                     {itemList}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
