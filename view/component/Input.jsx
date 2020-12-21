@@ -41,7 +41,12 @@ export class Select extends React.Component {
     
     val = (value) => {
         if (value != undefined) {
-            $(this.input.current).val(value).trigger('change');
+            if (value.constructor === String) {
+                $(this.input.current).val(value).trigger('change');
+            } else if (value.constructor === ({}).constructor) {
+                const option = new Option(value.text, value.id, true, true);
+                $(this.input.current).append(option).trigger('change');
+            }
         } else {
             return $(this.input.current).val()
         }

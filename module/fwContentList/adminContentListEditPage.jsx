@@ -10,9 +10,13 @@ class ContentModal extends React.Component {
     modal = React.createRef();
     contentSelect = React.createRef();
 
-    show = (item) => {
+    show = (item = null) => {
         this.setState({ item }, () => {
-            this.contentSelect.current.val(item ? item._id : null);
+            if (item) {
+                this.contentSelect.current.val({ id: item._id, text: item.title });
+            } else {
+                this.contentSelect.current.val('');
+            }
             $(this.modal.current).modal('show');
         });
     }
@@ -22,7 +26,7 @@ class ContentModal extends React.Component {
         const listItem = this.props.item.items;
         if (this.state.item && this.state.item._id) {
             // Update
-            let index = -1;
+            let index = 0;
             for (;index < listItem.length; index++) {
                 if (this.state.item._id == listItem[index]._id) {
                     break;
@@ -36,6 +40,7 @@ class ContentModal extends React.Component {
         
         if (this.props.item && this.props.item._id) {
             this.props.updateContentList(this.props.item._id, { items: listItem }, () => {
+                T.notify('Cập nhật danh sách bài viết thành công', 'success');
                 $(this.modal.current).modal('hide');
             });
         }
