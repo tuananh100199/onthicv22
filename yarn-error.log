@@ -1,20 +1,29 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add react-select-country-list
+  E:\Term6_ToWork\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js install
 
 PATH: 
-  C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\PC\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\nodejs;C:\Program Files\Git\cmd;C:\Program Files (x86)\Yarn\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\MongoDB\Server\4.4\bin;C:\Program Files\Redis;C:\Program Files\Java\jdk-13.0.2\bin;C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts;C:\Users\PC\AppData\Local\Microsoft\WindowsApps;C:\Users\PC\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\PC\AppData\Roaming\npm;C:\Program Files\nodejs;C:\Program Files\Git\usr\bin;C:\Program Files\Git\cmd;C:\Users\PC\AppData\Local\Yarn\bin
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files\dotnet\;E:\R2016a\runtime\win64;E:\R2016a\bin;E:\R2016a\polyspace\bin;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Java\jdk-11.0.2\bin;E:\Git\cmd;E:\Term6_ToWork\;C:\Program Files (x86)\Yarn\bin\;C:\Users\Dell\AppData\Local\Yarn\bin
 
 Yarn version: 
   1.22.5
 
 Node version: 
-  12.18.3
+  12.18.1
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: EPERM: operation not permitted, unlink 'G:\LVTN\new_hp\hiep-phat\node_modules\node-sass\vendor\win32-x64-72\binding.node'
+  Error: https://registry.yarnpkg.com/@material-ui/core/-/core-4.11.2.tgz: ESOCKETTIMEDOUT
+      at ClientRequest.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141376:19)
+      at Object.onceWrapper (events.js:421:28)
+      at ClientRequest.emit (events.js:315:20)
+      at TLSSocket.emitRequestTimeout (_http_client.js:709:9)
+      at Object.onceWrapper (events.js:421:28)
+      at TLSSocket.emit (events.js:327:22)
+      at TLSSocket.Socket._onTimeout (net.js:481:8)
+      at listOnTimeout (internal/timers.js:549:17)
+      at processTimers (internal/timers.js:492:7)
 
 npm manifest: 
   {
@@ -30,7 +39,7 @@ npm manifest:
     "autoLogin": true,
     "scripts": {
       "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
-      "webpack-server": "webpack-dev-server --mode development --open --color",
+      "webpack-server": "webpack serve --mode development --open --color",
       "build": "webpack --mode production"
     },
     "repository": {
@@ -81,20 +90,21 @@ npm manifest:
       "pug-loader": "^2.4.0",
       "rc-tooltip": "^5.0.1",
       "react": "^17.0.1",
+      "react-animated-slider": "^2.0.0",
       "react-dom": "^17.0.1",
       "react-loadable": "^5.5.0",
       "react-redux": "^7.2.2",
       "react-router-dom": "^5.2.0",
+      "react-select-country": "0.0.15",
       "redux": "^4.0.5",
       "redux-devtools-extension": "^2.13.8",
       "redux-thunk": "^2.3.0",
       "sass-loader": "^10.1.0",
+      "socket.io-client": "^3.0.1",
       "style-loader": "^2.0.0",
-      "webpack": "^4.44.2",
-      "webpack-cli": "^3.3.12",
-      "webpack-dev-server": "^3.11.0",
-      "react-animated-slider": "^2.0.0",
-      "socket.io-client": "^3.0.1"
+      "webpack": "^5.8.0",
+      "webpack-cli": "^4.2.0",
+      "webpack-dev-server": "^3.11.0"
     },
     "dependencies": {
       "@material-ui/core": "^4.11.0",
@@ -130,7 +140,6 @@ npm manifest:
       "pizzip": "^3.0.6",
       "pug": "^3.0.0",
       "react-select": "^3.1.0",
-      "react-select-country-list": "^2.2.1",
       "react-swipeable-views": "^0.13.9",
       "redis": "^3.0.2",
       "serve-favicon": "^2.5.0",

@@ -4,6 +4,9 @@ import { getAllContents, createContent, updateContent, deleteContent } from './r
 import { Link } from 'react-router-dom';
 
 class ContentPage extends React.Component {
+    constructor(props) {
+        super(props);
+    }
     componentDidMount() {
         this.props.getAllContents();
     }
@@ -40,7 +43,7 @@ class ContentPage extends React.Component {
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     <Link to={'/user/content/edit/' + item._id} data-id={item._id}>
-                                        {T.language.parse(item.title)}
+                                        {item.title}
                                     </Link>
                                 </td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >

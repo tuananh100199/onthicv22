@@ -10,7 +10,7 @@ import TestimonyPage from './adminTestimonyView.jsx';
 import StaffGroupPage from './adminStaffView.jsx';
 import LogoPage from './adminLogoView.jsx';
 import ListVideoPage from './adminListVideoView.jsx';
-// import SectionCourse from './sectionCourse.jsx';
+import ContentListPage from '../fwContentList/adminContentListView.jsx';
 
 
 
@@ -44,6 +44,7 @@ class ComponentPage extends React.Component {
                 </div>
                 <ul className='nav nav-tabs'>
                     <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#menuContent'>Bài viết</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuContentList'>Danh sách bài viết</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuCarousel'>Tập hình ảnh</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuVideo'>Video</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStatistic'>Thống kê</a></li>
@@ -52,12 +53,12 @@ class ComponentPage extends React.Component {
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuTestimony'>Testimony</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStaffGroup'>Nhóm nhân viên</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>List Video</a></li>
-                    {/* <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuCourse'>Khóa học</a></li> */}
 
 
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='menuContent'><ContentPage /></div>
+                    <div className='tab-pane fade' id='menuContentList'><ContentListPage history={this.props.history} /></div>
                     <div className='tab-pane fade' id='menuCarousel'><CarouselPage /></div>
                     <div className='tab-pane fade' id='menuVideo'><VideoPage /></div>
                     <div className='tab-pane fade' id='menuStatistic'><StatisticPage /></div>
@@ -65,8 +66,7 @@ class ComponentPage extends React.Component {
                     <div className='tab-pane fade' id='menuLogo'><LogoPage /></div>
                     <div className='tab-pane fade' id='menuTestimony'><TestimonyPage /></div>
                     <div className='tab-pane fade' id='menuStaffGroup'><StaffGroupPage /></div>
-                    <div className='tab-pane fade' id='menuListVideo'><ListVideoPage history={this.props.history}/></div>
-                    {/* <div className='tab-pane fade' id='menuCourse'><SectionCourse history={this.props.history}/></div> */}
+                    <div className='tab-pane fade' id='menuListVideo'><ListVideoPage history={this.props.history} /></div>
 
 
                 </div>

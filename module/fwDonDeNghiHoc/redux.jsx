@@ -18,7 +18,7 @@ export default function applicationFormReducer(state = null, data) {
                     break;
                 }
             }
-            
+
             page.list = list;
             return Object.assign({}, state, { page });
         }

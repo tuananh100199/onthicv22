@@ -36,7 +36,7 @@ export default function contentReducer(state = [], data) {
 }
 
 // Action --------------------------------------------------------------------------------------------------------------
-export function getAllContents() {
+export function getAllContents(done) {
     return dispatch => {
         const url = `/api/content/all`;
         T.get(url, data => {
@@ -44,6 +44,7 @@ export function getAllContents() {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
+                if (done) done(data.items);
                 dispatch({ type: ContentGetAll, items: data.items ? data.items : [] });
             }
         }, error => {
@@ -75,7 +76,7 @@ export function updateContent(_id, changes) {
                 T.notify('Cập nhật nội dung bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Nội dung cập nhật thành công!', 'info');
+                T.notify('Nội dung cập nhật thành công!', 'success');
                 dispatch(getAllContents());
             }
         }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
@@ -113,4 +114,12 @@ export function getContent(id, done) {
             console.error('GET: ' + url + '. ' + error);
         });
     }
+}
+export const ajaxSelectUser = {
+    ajax: true,
+    url: `/api/content/all`,
+    data: {},
+    processResults: response => ({
+        results: response && response.items ? response.items.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : []
+    })
 }

@@ -27,7 +27,8 @@ const T = {
         'video',
         'listVideo',
         'all courses',
-        'last course'
+        'last course',
+        'contentList'
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
@@ -230,7 +231,7 @@ const T = {
     },
 
     tooltip: (timeOut = 250) => {
-        $(function() {
+        $(function () {
             setTimeout(() => {
                 $('[data-toggle="tooltip"]').tooltip();
             }, timeOut);
@@ -260,7 +261,7 @@ T.language.switch = () => {
 };
 T.language.parse = (text, getAll) => {
     let obj = {};
-    try { obj = JSON.parse(text) } catch {};
+    try { obj = JSON.parse(text) } catch { };
     if (obj.vi == null) obj.vi = text;
     if (obj.en == null) obj.en = text;
     return getAll ? obj : obj[T.language()];
@@ -337,7 +338,7 @@ T.truncate = (str, length) => {
     return tempStr + '...'
 }
 
-T.clone = function() {
+T.clone = function () {
     let result = {};
     for (let i = 0, length = arguments.length; i < length; i++) {
         const obj = JSON.parse(JSON.stringify(arguments[i]));
@@ -351,40 +352,40 @@ export default T;
 
 
 
-String.prototype.getText = function() {
+String.prototype.getText = function () {
     return T.language.parse(this);
 };
 
-String.prototype.viText = function() {
+String.prototype.viText = function () {
     return T.language.parse(this, true).vi;
 };
 
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
 
-String.prototype.upFirstChar = function() {
+String.prototype.upFirstChar = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-String.prototype.lowFirstChar = function() {
+String.prototype.lowFirstChar = function () {
     return this.charAt(0).toLowerCase() + this.slice(1);
 }
 
 //Array prototype -----------------------------------------------------------------------------------------------------
-Array.prototype.contains = function(...pattern) {
+Array.prototype.contains = function (...pattern) {
     return pattern.reduce((result, item) => result && this.includes(item), true);
 };
 
-Date.prototype.getText = function() {
+Date.prototype.getText = function () {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getDateText = function() {
+Date.prototype.getDateText = function () {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear();
 };
-Date.prototype.getTimeText = function() {
+Date.prototype.getTimeText = function () {
     return T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getShortText = function() {
+Date.prototype.getShortText = function () {
     return this.getFullYear() + '/' + T.get2(this.getMonth() + 1) + '/' + T.get2(this.getDate()) + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };

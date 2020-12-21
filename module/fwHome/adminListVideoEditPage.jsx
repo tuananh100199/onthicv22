@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListVideoItem, updateListVideo } from './redux/reduxListVideo.jsx';
-import { getAllVideos, createVideo, updateVideo, deleteVideo ,swapVideo} from './redux/reduxVideo.jsx';
+import { getAllVideos, createVideo, updateVideo, deleteVideo, swapVideo } from './redux/reduxVideo.jsx';
 import { Link } from 'react-router-dom';
 import ImageBox from '../../view/component/ImageBox.jsx';
 
 class VideoModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { item: {}};
+        this.state = { item: {} };
         this.modal = React.createRef();
         this.imageBox = React.createRef();
     }
@@ -20,15 +20,15 @@ class VideoModal extends React.Component {
     }
 
     show = (selectedItem) => {
-        let {  _id, title, link, image } = selectedItem ? selectedItem : { _id: null, title: '', link: '', image: '' };
+        let { _id, title, link, image } = selectedItem ? selectedItem : { _id: null, title: '', link: '', image: '' };
         $('#videoTitle').val(title);
         $('#videoLink').val(link);
         this.imageBox.current.setData('video:' + (_id ? _id : 'new'), image || '/img/avatar.jpg');
         this.setState({ item: selectedItem })
-        
+
         $(this.modal.current).modal('show');
     }
-    
+
     save = (event) => {
         const changes = {
             title: $('#videoTitle').val().trim(),
@@ -41,7 +41,7 @@ class VideoModal extends React.Component {
             T.notify('Link video bị trống!', 'danger');
             $('#videoLink').focus();
         } else {
-            if (this.state.item && this.state.item._id ) {
+            if (this.state.item && this.state.item._id) {
                 this.props.updateVideo(this.state.item._id, changes, () => {
                     $(this.modal.current).modal('hide');
                 });
@@ -53,7 +53,7 @@ class VideoModal extends React.Component {
         }
         event.preventDefault();
     }
-    
+
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
@@ -80,11 +80,11 @@ class VideoModal extends React.Component {
                                         <input className='form-control' id='videoLink' type='text' placeholder='Đường dẫn' />
                                     </div>
                                 </div>
-                                
+
                                 <div className='col-12'>
                                     <div className='form-group'>
                                         <label>Hình đại diện</label>
-                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image}  />
+                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image} />
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@ class VideoModal extends React.Component {
             </div>
         );
     }
-}  
+}
 
 class ListVideoEditPage extends React.Component {
     constructor(props) {
@@ -115,8 +115,8 @@ class ListVideoEditPage extends React.Component {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
                     $('#listVideoTitle').val(data.item.title).focus();
-                    this.props.getAllVideos({ listVideoId : data.item._id }, (items) => {
-                        this.setState({ item : data.item, items });
+                    this.props.getAllVideos({ listVideoId: data.item._id }, (items) => {
+                        this.setState({ item: data.item, items });
                     })
                 } else {
                     this.props.history.push('/user/component');
@@ -152,7 +152,7 @@ class ListVideoEditPage extends React.Component {
                     items.splice(i, 1, editedVideo);
                 }
             }
-            
+
             this.setState({ items }, done);
         });
     };
@@ -171,8 +171,8 @@ class ListVideoEditPage extends React.Component {
         })
         e.preventDefault();
     };
-    
-    swap = (e,item, index, isMoveUp,done) => {
+
+    swap = (e, item, index, isMoveUp, done) => {
         this.props.swapVideo(item._id, isMoveUp, () => {
             if (this.state && this.state.item) {
                 let items = this.state.items;
@@ -182,12 +182,12 @@ class ListVideoEditPage extends React.Component {
                     items.splice(index - 1, 0, video);
                 } else if (!isMoveUp && index < items.length - 1) {
                     items.splice(index, 1);
-                   items.splice(index + 1, 0, video);
+                    items.splice(index + 1, 0, video);
                 }
-            this.setState({ items }, done);
+                this.setState({ items }, done);
             }
         })
-        
+
         e.preventDefault();
     };
 
@@ -200,7 +200,7 @@ class ListVideoEditPage extends React.Component {
         if (changes.title == '') {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#listVideoTitle').focus();
-        }  else {
+        } else {
             this.props.updateListVideo(this.state.item._id, changes);
         }
     };
@@ -231,7 +231,7 @@ class ListVideoEditPage extends React.Component {
                                     </td>
                                     <td>
                                         <a href={item.link} target='_blank'>{item.link}</a>
-                                     </td>
+                                    </td>
                                     <td style={{ textAlign: 'center' }}>
                                         <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
                                     </td>
@@ -264,8 +264,8 @@ class ListVideoEditPage extends React.Component {
             table = <p>Không có danh sách các video!</p>;
         }
 
-        const title = currentVideo && currentVideo.title ? T.language.parse(currentVideo.title, true) : '<Trống>' ;
-        const height = currentVideo.height ;
+        const title = currentVideo && currentVideo.title ? T.language.parse(currentVideo.title, true) : '<Trống>';
+        const height = currentVideo.height;
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -298,7 +298,7 @@ class ListVideoEditPage extends React.Component {
                             </div>
                         </div>
                     </div>
-    
+
                     <div className='tile col-md-12'>
                         <h3 className='tile-title'>Danh sách video</h3>
                         <div className='tile-body'>
@@ -310,8 +310,8 @@ class ListVideoEditPage extends React.Component {
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-info'  type='button' onClick={this.showAddVideoModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus'/>Thêm video
+                                        <button className='btn btn-info' type='button' onClick={this.showAddVideoModal}>
+                                            <i className='fa fa-fw fa-lg fa-plus' />Thêm video
                                         </button>
                                     </div>
                                 </div>
@@ -331,5 +331,5 @@ class ListVideoEditPage extends React.Component {
     }
 }
 const mapStateToProps = state => ({ system: state.system, video: state.video });
-const mapActionsToProps = { getListVideoItem, updateListVideo, getAllVideos, createVideo, updateVideo, deleteVideo,swapVideo };
+const mapActionsToProps = { getListVideoItem, updateListVideo, getAllVideos, createVideo, updateVideo, deleteVideo, swapVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoEditPage);
