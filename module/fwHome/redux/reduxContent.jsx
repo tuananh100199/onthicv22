@@ -115,7 +115,7 @@ export function getContent(id, done) {
         });
     }
 }
-export const ajaxSelectUser = {
+export const ajaxSelectContent = {
     ajax: true,
     url: `/api/content/all`,
     data: {},

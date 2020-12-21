@@ -1,39 +1,21 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        items:
-            [{
-                type: app.db.Schema.ObjectId,
-                ref: 'Content'
-            }]
+        items: [{ type: app.db.Schema.ObjectId, ref: 'Content' }]
     });
     const model = app.db.model('ContentList', schema);
 
     app.model.contentList = {
-        create: (data, done) => {
-            model.create(data, done)
-        },
+        create: (data, done) => model.create(data, done),
 
-        getAll: done => {
-            model.find({}).sort({ title: -1 }).exec(done)
-        },
+        getAll: (condition, done) => done ? model.find(condition).sort({ title: -1 }).exec(done) : model.find({}).sort({ title: -1 }).exec(condition),
 
-        get: (_id, done) => model.findById(_id, (error, list) => {
-            if (error) {
-                done(error);
-            } else if (list == null) {
-                done('Invalid Id!');
-            } else {
-                done(null, list);
-            }
-        }),
-
-        // update: (_id, changes, done) => {
-        //     model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done)
-        // },
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
+        
         update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('items', '-content').exec(done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('items', '-content').exec($unset),
+        
         delete: (_id, done) => model.findById(_id, (error, contentList) => {
             if (error) {
                 done(error);

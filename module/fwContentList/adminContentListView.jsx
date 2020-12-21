@@ -108,13 +108,7 @@ class ContentListPage extends React.Component {
                         {this.props.contentList.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td>
-                                    <Link to={'/user/list-content/edit/' + item._id}>
-                                        {
-                                            T.language.parse(item.title, true).vi
-                                        }
-                                    </Link>
-                                </td>
+                                <td><Link to={'/user/list-content/edit/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
                                         <Link to={'/user/list-content/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
