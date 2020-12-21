@@ -73,7 +73,7 @@ class SectionContact extends React.Component {
                     <div className='row'>
                         <div className='col-12 col-lg-6'>
                             <div className='contact--info'>
-                                <h4>Thông tin liên hệ</h4>
+                                <h4>Thông tin liên lạc</h4>
                                 <ul className='contact-list'>
                                     <li>
                                         <h6><i className='fa fa-phone' aria-hidden='true' /> Điện thoại</h6>
@@ -84,22 +84,14 @@ class SectionContact extends React.Component {
                                         <a href={'mailto:' + email}>{email}</a>
                                     </li>
                                     <li style={{display: 'block'}}>
-                                        <h6><i className='fa fa-envelope' aria-hidden='true' />Địa chỉ</h6>
-                                        {addressList.map((item, index) => <div className='mb-1' key={index}>
-                                            <p><strong>{item.addressTitle}</strong>:&nbsp;&nbsp;
-                                                <span >{item.address}</span>
-                                            </p>
-                                            <p>Điện thoại: 
-                                                <span >{item.phoneNumber}</span>
-                                                &nbsp;&nbsp;
-                                                <span >Di động: </span>
-                                                <span >{item.mobile}</span>
-                                            </p>
-                                            <p>Email: 
-                                                <span >{item.email}</span>
-                                            </p>
-                                            <p style={(index === addressList.length - 1) ? styles.noBorder: styles.border}></p>
-                                    </div>)}
+                                        <h6><i className='fa fa-address-book' aria-hidden='true' />Địa chỉ</h6>
+                                        {addressList.map((item, index) => (
+                                            <div className='mb-1' key={index}>
+                                                <p><strong>{item.addressTitle}</strong>:&nbsp;&nbsp;{item.address}</p>
+                                                <p>Điện thoại:&nbsp;&nbsp;{item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;&nbsp;{item.mobile}</p>
+                                                <p>Email:&nbsp;&nbsp;{item.email}</p>
+                                            </div>
+                                        ))}
                                     </li>
                                 </ul>
                             </div>
