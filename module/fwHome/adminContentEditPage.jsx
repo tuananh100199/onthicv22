@@ -67,18 +67,18 @@ class ContentEditPage extends React.Component {
                 <div className='row'>
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
-                            <ul className='nav nav-tabs'>
-                                <li className='nav-item'>
+                            {/* <ul className='nav nav-tabs'> */}
+                            {/* <li className='nav-item'>
                                     <a className='nav-link active show' data-toggle='tab' href='#contentTab'>Việt Nam</a>
-                                </li>
-                                <div className='form-group' style={{ whiteSpace: 'nowrap', position: 'absolute', right: '10px' }}>
-                                    <label className='control-label'>Kích hoạt: &nbsp;&nbsp;&nbsp;</label>
-                                    <label className='toggle'>
-                                        <input type='checkbox' checked={this.state.active} onChange={(e) => !readOnly && this.changeActive(e)} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </div>
-                            </ul>
+                                </li> */}
+                            <div className='form-group' style={{ whiteSpace: 'nowrap', position: 'absolute', right: '10px' }}>
+                                <label className='control-label'>Kích hoạt: &nbsp;&nbsp;&nbsp;</label>
+                                <label className='toggle'>
+                                    <input type='checkbox' checked={this.state.active} onChange={(e) => !readOnly && this.changeActive(e)} />
+                                    <span className='button-indecator' />
+                                </label>
+                            </div>
+                            {/* </ul> */}
 
                             <div className='tab-content'>
                                 <div id='contentTab' className='tab-pane fade show active'>
@@ -95,7 +95,9 @@ class ContentEditPage extends React.Component {
                         </div>
                     </div>
                 </div>
-                <a className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }} onClick={() => { window.history.back() }}><i className='fa fa-lg fa-reply' /></a>
+                <Link className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }} onClick={() => window.history.back()}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
 
                 {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
