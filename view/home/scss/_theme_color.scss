@@ -15,9 +15,7 @@ $dark-color: #1b1b1b;
 // Border Color
 $border-color: #ebebeb;
 // Hover Color
-//$hover-color: #2c56df;
-//$hover-color: #aaebb2;
-$hover-color: #d0f2d4;
+$hover-color: lighten($bg-default, 15%);
 // Footer Color
 $footer-color: #F5F5F7;
 // Border Color

@@ -71,6 +71,9 @@ module.exports = (env, argv) => ({
             [
                 { path: '/public/js', fileExtension: '.txt' },
             ] : [
+                { path: '/public', fileExtension: '.svg' },
+                { path: '/public', fileExtension: '.ttf' },
+                { path: '/public', fileExtension: '.eot' },
                 { path: '/public/js', fileExtension: '.txt' },
                 { path: '/public/js', fileExtension: '.js', excludeExtension: '.min.js' },
                 { path: '/public', fileExtension: '.template' }
