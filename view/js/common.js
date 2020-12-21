@@ -265,7 +265,7 @@ T.language.parse = (text, getAll) => {
     if (obj.en == null) obj.en = text;
     return getAll ? obj : obj[T.language()];
 };
-T.language.getMonth = () => (['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Bốn', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai']);
+T.language.getMonth = () => (['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai']);
 
 T.get2 = x => ('0' + x).slice(-2);
 T.socket.on('connect', () => {

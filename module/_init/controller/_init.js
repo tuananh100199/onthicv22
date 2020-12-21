@@ -4,6 +4,7 @@ module.exports = (app) => {
         allViews: 0,
         logo: '/img/favicon.jpg',
         map: '/img/map.jpg',
+        footer: '/img/footer.jpg',
         facebook: 'https://www.facebook.com/bachkhoa.oisp',
         youtube: '',
         twitter: '',

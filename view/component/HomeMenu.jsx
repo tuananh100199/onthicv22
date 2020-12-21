@@ -3,22 +3,10 @@ import { connect } from 'react-redux';
 import { logout } from '../../module/_init/reduxSystem.jsx';
 import { Link } from 'react-router-dom';
 
-// const texts = {
-//     vi: {
-//         // loginButton: 'Đăng nhập | Đăng ký',
-//         loginButton: 'Đăng nhập',
-//         logoutButton: 'Đăng xuất',
-//     },
-//     en: {
-//         // loginButton: 'Sign in | Sign up',
-//         loginButton: 'Sign in',
-//         logoutButton: 'Sign out',
-//     }
-// };
-
 class HomeMenu extends React.Component {
     constructor(props) {
         super(props);
+        this.state = { link: '' };
         this.nav = React.createRef();
     }
 
@@ -27,15 +15,17 @@ class HomeMenu extends React.Component {
             if ($.fn.classyNav && this.nav.current != null && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
                 $(this.nav.current).classyNav();
                 $('.clever-main-menu').sticky({ topSpacing: 0 });
+                this.setState({ link: window.location.pathname })
             } else {
                 setTimeout(done, 100);
             }
         };
         $(document).ready(done);
     }
-
-    onMenuClick = () => {
-        $('.classy-menu').removeClass('menu-on')
+    
+    onMenuClick = (link) => {
+        this.setState({ link })
+        $('.classy-navbar-toggler').click()
     };
 
     logout = (e) => {
@@ -46,6 +36,7 @@ class HomeMenu extends React.Component {
     };
 
     render() {
+        const currentLink = this.state.link || '/';
         let menus = [];
         if (this.props.system && this.props.system.menus) {
             menus = this.props.system.menus.map((item, index) => {
@@ -59,7 +50,8 @@ class HomeMenu extends React.Component {
 
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index}>
-                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> : (item.link ? <Link to={link} onClick={this.onMenuClick}>{title}</Link> :
+                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> : (item.link ?
+                                <Link className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'text-primary' : ''} to={link} onClick={() => this.onMenuClick(link)}>{title}</Link> :
                                 <a href='#' onClick={e => e.preventDefault()}>{title}</a>)}
                             <ul className='dropdown'>{
                                 item.submenus.map((subMenu, subIndex) => {
@@ -69,7 +61,7 @@ class HomeMenu extends React.Component {
                                     } else {
                                         return isExternalLink ?
                                             <a key={subIndex} href={link}>{T.language.parse(subMenu.title)}</a> :
-                                            <Link key={subIndex} to={link} onClick={this.onMenuClick}>{T.language.parse(subMenu.title)}</Link>
+                                            <Link key={subIndex} to={link} className={currentLink == link ? 'text-primary' : ''} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link>
                                     }
                                 })}
                             </ul>
@@ -77,7 +69,7 @@ class HomeMenu extends React.Component {
                     ) :
                         <li key={index}>
                             {isExternalLink ? <a href={link} target='_blank'>{title}</a> :
-                                (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={this.onMenuClick}>{title}  </Link>)}
+                                (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link className={currentLink == link ? 'text-primary' : ''} to={link} onClick={() => this.onMenuClick(link)}>{title}  </Link>)}
                         </li>;
                 }
             });
@@ -89,7 +81,7 @@ class HomeMenu extends React.Component {
                 <div className='clever-main-menu'>
                     <div className='classy-nav-container breakpoint-off'>
                         <nav className='classy-navbar justify-content-between' ref={this.nav} id='cleverNav'>
-                            <Link className='navbar-brand' to='/' style={{ display: 'flex' }}>
+                            <Link className='navbar-brand d-sm-flex' to='/'>
                                 {logo ? <img src={logo} style={{ height: '36px', width: 'auto' }} alt='logo' /> : ''}&nbsp;
                                 <h4>Trung tâm đào tạo lái xe Hiệp Phát</h4>
                             </Link>

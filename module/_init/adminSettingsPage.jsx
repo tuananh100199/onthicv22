@@ -146,8 +146,8 @@ class SettingsPage extends React.Component {
     }
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '', addressList: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, addressList } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', addressList: '' };
 
         addressList = JSON.parse(addressList);
         return (
@@ -232,6 +232,11 @@ class SettingsPage extends React.Component {
                                     <div className='form-group'>
                                         <label className='control-label'>Logo</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
+                                    </div>
+                                    
+                                    <div className='form-group'>
+                                        <label className='control-label'>Background footer</label>
+                                        <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
                                     </div>
                                 </div>
                             </div>
