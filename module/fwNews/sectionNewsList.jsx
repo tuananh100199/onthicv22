@@ -43,7 +43,7 @@ class SectionNewsList extends React.Component {
             elements_grid = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-md-6 col-lg-4 mb-2 mt-2' key={index}>
+                    <div className='col-md-6 col-lg-4 col-xl-3 mb-2 mt-2' key={index}>
                         <div className='h-100 single-popular-course mb-100 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
                             <Link to={link}>
                                 <img src={item.image} alt={item.title}/>
