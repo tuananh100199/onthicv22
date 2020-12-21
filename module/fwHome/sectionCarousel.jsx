@@ -48,7 +48,7 @@ class SectionCarousel extends React.Component {
                             navContainer: '.nav-container',
                             navSpeed: 1500,
                             dots: false,
-                            autoplay: true,
+                            autoplay: false,
                             autoplayTimeout: 4000,
                             autoplaySpeed: 1500,
                             autoplayHoverPause: true,

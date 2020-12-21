@@ -36,6 +36,7 @@ class NewsDetail extends React.Component {
     }
 
     render() {
+        
         const item = this.props.news && this.props.news.userNews ? this.props.news.userNews : null;
         if (item == null) {
             return <p>...</p>;
@@ -50,23 +51,26 @@ class NewsDetail extends React.Component {
                     <div className='container'>
                         <div className='row'>
                             <div className='col-12'>
-                                <div
-                                    className='single-course-intro d-flex align-items-center justify-content-center'
-                                    style={{
-                                        backgroundImage: 'url(' + item.image + ')',
-                                        backgroundPosition: 'center center',
-                                        backgroundSize: 'cover',
-                                        backgroundRepeat: 'no-repeat'
-                                    }}
-                                >
-                                    <div className='single-course-intro-content text-center'>
-                                        <h3>{T.language.parse(item.title)}</h3>
+                                <div className="owl-theme">                              
+                                    <div className='slider-content'
+                                        style={{
+                                            height: 250,
+                                            background: `url('${item.image}')`,
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center',
+                                            backgroundSize: 'contain'
+                                        }}
+                                    >
+                                    <div className='inner'>
+                                        <h2>{T.language.parse(item.title)}</h2>
+                                        {item.link ? <a href={item.link} target='_blank'>Xem thêm</a> : ''}
                                     </div>
+                                </div>
                                 </div>
                             </div>
                             <div className='col-12 col-lg-8 pt-5'>
                                 <div className='course--content' data-aos='fade-up'>
-                                    <div className='clever-description p-2'>
+                                    <div className='clever-description'>
                                         <div className='about-course mb-30'>
                                             <span className="meta">{new Date(item.createdDate).getText()}</span>
                                             <p className="text-center">
@@ -79,8 +83,8 @@ class NewsDetail extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-12 col-lg-4 mr-0 pt-5' data-aos='fade-up'>
-                                <div className='sidebar-widget'>
+                            <div className='col-12 col-lg-4 mr-0 pt-5 clever-description' data-aos='fade-up'>
+                                <div className='sidebar-widget about-course'>
                                     <SectionNews />
                                 </div>
                             </div>
