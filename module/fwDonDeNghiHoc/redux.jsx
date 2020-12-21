@@ -1,30 +1,29 @@
 import T from '../../view/js/common';
 
 // Reducer -------------------------------------------------------------------------------------------------------------
-const GET_PAGE = 'form:getPage';
-const UPDATE = 'form:updateItem';
-const GET = 'form:getForm';
+const GET_PAGE = 'form:getApplicationForm';
+const UPDATE = 'form:getApplicationForm';
+const GET = 'applicationForm:getApplicationForm';
 
-export default function userFormReducer(state = null, data) {
+export default function applicationFormReducer(state = null, data) {
     switch (data.type) {
         case GET_PAGE:
             return Object.assign({}, state, { page: data.page });
 
         case UPDATE: {
             let page = state && state.page ? state.page : { list: [] }, list = page.list;
-            let i = 0;
-            for (i; i < list.length; i++) {
-                console.log('redux',data.item)
+            for (let i = 0; i < list.length; i++) {
                 if (list[i]._id == data.item._id) {
+                    list.splice(i, 1, data.item);
                     break;
                 }
             }
-            list.splice(i, 1, data.item);
+            
             page.list = list;
             return Object.assign({}, state, { page });
         }
         case GET:
-            return Object.assign({}, state, { form: data.item });
+            return Object.assign({}, state, { item: data.item });
 
         default:
             return state;
@@ -77,11 +76,10 @@ export function getForm(_id, option, done) {
 }
 
 export function createForm(done) {
-    console.log('here')
     return dispatch => {
         const url = '/api/user-form';
         const data = {
-            title: JSON.stringify({ vi: 'Biểu mẫu mới', en: 'New form' })
+            title: 'Form mới '
         };
         T.post(url, { data }, data => {
             if (data.error) {
@@ -96,7 +94,7 @@ export function createForm(done) {
 
 export function updateForm(_id, changes, done) {
     return dispatch => {
-        const url = '/api/user-form';
+        const url = '/api/application-form';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
@@ -126,17 +124,33 @@ export function deleteForm(_id) {
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
-export function homeGetForm(_id, done) {
+export function getDonDeNghiHocByUser(done) {
     return dispatch => {
-        const url = '/user-form/item/' + _id;
+        const url = '/api/user-application-form';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy form bị lỗi!', 'danger');
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: GET, item: data.item });
-                done && done(data.item);
             }
-        }, error => T.notify('Lấy form bị lỗi!', 'danger'));
+            done && done(data);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
+    return dispatch => {
+        const url = '/api/user-application-form';
+        T.put(url, { _id, changes, userChanges }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: UPDATE, item: data.item });
+                done && done();
+            }
+        }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
     }
 }

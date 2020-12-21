@@ -6,8 +6,7 @@ module.exports = (app) => {
     const menuProfile = {
         parentMenu: app.parentMenu.user,
         menus: {
-            1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 },
-            1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/user-form', icon: 'fa-id-card-o', backgroundColor: '#032b91', groupIndex: 1 }
+            1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 }
         }
     }
 
