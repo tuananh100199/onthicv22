@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
-import { getAllContentList } from './redux.jsx';
+import { getContentListItem } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class SectionContent extends React.Component {
@@ -13,33 +12,35 @@ class SectionContent extends React.Component {
     componentDidMount() {
         $(document).ready(() => {
             if (this.props.listContentId) {
-                this.props.getAllContentList(data => {
-                    if (data) {
-                        this.setState({ item: data.find(item => item._id === this.props.listContentId) });
-                        this.getContentItem();
+                this.props.getContentListItem(this.props.listContentId, data => {
+                    if (data.item) {
+                        this.setState({ item: data.item });
+                    } else {
+                        this.props.history.push('/');
                     }
                 });
-                this.getData();
+                // this.props.getAllContentList(data => {
+                //     if (data) {
+                //         this.setState({ item: data.find(item => item._id === this.props.listContentId) });
+                //         this.getContentItem();
+                //     }
+                // });
+                // this.getData();
             };
         });
     }
-
-    getData = () => {
-        let title = T.language.parse(this.state.item.title, true);
-        $('#listContentTitle').val(title.vi).focus();
-    }
-    getContentItem = () => {
-        const item = this.state.item;
-        this.props.getAllContents(content => {
-            this.setState({
-                items: item.items.map(idC => content.find(ele => ele._id === idC))
-            });
-        }
-        );
-    }
+    // getContentItem = () => {
+    //     const item = this.state.item;
+    //     this.props.getAllContents(content => {
+    //         this.setState({
+    //             items: item.items.map(idC => content.find(ele => ele._id === idC))
+    //         });
+    //     }
+    //     );
+    // }
 
     render() {
-        const items = this.state.items ? this.state.items : [];
+        const items = this.state.item.items ? this.state.item.items : [];
         let itemList = null;
         if (items && items.length) {
             itemList = items.map((item, index) => {
@@ -52,7 +53,7 @@ class SectionContent extends React.Component {
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '5px' }}>
                                     <h2 className='heading pb-0 mb-0'>
-                                        <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                        <Link to={link} className='text-primary'>{item.title}</Link>
                                     </h2>
                                 </div>
                             </div>
@@ -109,7 +110,7 @@ class SectionContent extends React.Component {
                     overflow: 'hidden',
                     clear: 'both'
                 }}></div> */}
-                <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3>
+                <h3 className='text-primary'>{this.state.item.title}</h3>
                 <div>
                     {itemList}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
@@ -120,6 +121,6 @@ class SectionContent extends React.Component {
         )
     }
 }
-const mapStateToProps = state => ({});
-const mapActionsToProps = { getAllContents, getAllContentList };
+const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
+const mapActionsToProps = { getContentListItem };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContent);
