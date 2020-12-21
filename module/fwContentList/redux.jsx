@@ -110,17 +110,3 @@ export function deleteContentList(_id) {
         }, error => T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
     }
 }
-
-// export function getContentListByUser(_id, done) {
-//     return dispatch => {
-//         const url = '/home/list-content/' + _id;
-//         T.get(url, data => {
-//             if (data.error) {
-//                 T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
-//                 console.error('GET: ' + url + '. ' + data.error);
-//             } else {
-//                 if (done) done(data.item);
-//             }
-//         }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
-//     }
-// }

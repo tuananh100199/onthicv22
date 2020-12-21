@@ -17,10 +17,6 @@ export default {
             path: '/content/item/:contentId',
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
         },
-        // {
-        //     path: '/user/list-content',
-        //     component: Loadable({ loading: Loading, loader: () => import('./adminContentListPage.jsx') })
-        // }
     ],
     Section: {
         SectionAllContent, SectionContent

@@ -19,26 +19,9 @@ class SectionContent extends React.Component {
                         this.props.history.push('/');
                     }
                 });
-                // this.props.getAllContentList(data => {
-                //     if (data) {
-                //         this.setState({ item: data.find(item => item._id === this.props.listContentId) });
-                //         this.getContentItem();
-                //     }
-                // });
-                // this.getData();
             };
         });
     }
-    // getContentItem = () => {
-    //     const item = this.state.item;
-    //     this.props.getAllContents(content => {
-    //         this.setState({
-    //             items: item.items.map(idC => content.find(ele => ele._id === idC))
-    //         });
-    //     }
-    //     );
-    // }
-
     render() {
         const items = this.state.item.items ? this.state.item.items : [];
         let itemList = null;
@@ -47,8 +30,6 @@ class SectionContent extends React.Component {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index} className='row ml-0 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
-                        {/* <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
-                        </div> */}
                         <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '5px' }}>
@@ -113,9 +94,6 @@ class SectionContent extends React.Component {
                 <h3 className='text-primary'>{this.state.item.title}</h3>
                 <div>
                     {itemList}
-                    {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
-                    {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
-                    {/*</button>*/}
                 </div>
             </div>
         )
