@@ -1,4 +1,6 @@
 module.exports = app => {
+    app.get('/content/item/:contentId', app.templates.home);
+
     app.get('/api/content/all', app.permission.check('component:read'), (req, res) =>
         app.model.content.getAll((error, items) => res.send({ error, items })));
 

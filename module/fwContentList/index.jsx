@@ -1,7 +1,6 @@
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
 import contentList from './redux.jsx';
-import SectionAllContent from './sectionAllContent.jsx';
 import SectionContent from './sectionContent.jsx';
 
 export default {
@@ -15,10 +14,10 @@ export default {
         },
         {
             path: '/content/item/:contentId',
-            component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('../fwHome/homeContentDetail.jsx') })
         },
     ],
     Section: {
-        SectionAllContent, SectionContent
+        SectionContent
     }
 };

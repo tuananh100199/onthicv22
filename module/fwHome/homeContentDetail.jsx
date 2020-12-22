@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContent } from '../fwHome/redux/reduxContent.jsx';
+import { getContent } from './redux/reduxContent.jsx';
 
 class ContentDetail extends React.Component {
     state = { _id: null, title: '', active: false, content: '' };
