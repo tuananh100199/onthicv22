@@ -32,29 +32,6 @@ function a11yProps(index) {
     };
 }
 
-const texts = {
-    vi: {
-        firstname: 'Tên',
-        lastname: 'Họ',
-        email: 'Email',
-        password: 'Mật khẩu',
-        forgotPassword: 'Quên mật khẩu?',
-        close: 'Đóng',
-        register: 'Đăng ký',
-        login: 'Đăng nhập',
-    },
-    en: {
-        firstname: 'Firstname',
-        lastname: 'Lastname',
-        email: 'Email',
-        password: 'Password',
-        forgotPassword: 'Forgot password?',
-        close: 'Close',
-        register: 'Register',
-        login: 'Login',
-    }
-};
-
 export default class LoginModal extends React.Component {
     constructor(props) {
         super(props);
@@ -227,7 +204,6 @@ export default class LoginModal extends React.Component {
     }
 
     render() {
-        const language = T.language(texts);
         return (
             <div ref={this.modal} className='modal fade' id='elegantModalForm' tabIndex='-1' role='dialog'
                 aria-labelledby='myModalLabel' style={{ zIndex: 2000 }}
@@ -238,8 +214,8 @@ export default class LoginModal extends React.Component {
                             <AppBar position="static" color="transparent">
                                 <Tabs value={this.state.value} onChange={this.handleChange} indicatorColor="primary" textColor="primary"
                                     variant="fullWidth" aria-label="full width tabs example">
-                                    <Tab label={language.login} {...a11yProps(0)} />
-                                    <Tab label={language.register} {...a11yProps(1)} />
+                                    <Tab label='Đăng nhập' {...a11yProps(0)} />
+                                    <Tab label='Đăng ký' {...a11yProps(1)} />
                                 </Tabs>
                             </AppBar>
                             <SwipeableViews axis={'x'} index={this.state.value} onChangeIndex={this.handleChangeIndex}>
@@ -249,7 +225,7 @@ export default class LoginModal extends React.Component {
                                             <div className='wrap-input100 validate-input login-validate-input'
                                                 data-validate='Valid email is required: ex@org.com'>
                                                 <input className='input100' type='text' name='email' id='loginModalEmail' ref={this.txtEmail}
-                                                    placeholder={language.email} autoComplete='off' />
+                                                    placeholder='Email' autoComplete='off' />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
                                             </div>
@@ -257,7 +233,7 @@ export default class LoginModal extends React.Component {
                                             <div className='wrap-input100 validate-input login-validate-input'
                                                 data-validate='Password is required'>
                                                 <input className='input100' type='password' name='pass' id='loginModalPassword'
-                                                    ref={this.txtPassword} placeholder={language.password} />
+                                                    ref={this.txtPassword} placeholder='Mật khẩu' />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-lock' aria-hidden='true' /></span>
                                             </div>
@@ -266,13 +242,13 @@ export default class LoginModal extends React.Component {
 
                                             <div className='container-login100-form-btn' style={{ padding: '0' }}>
                                                 <button className='login100-form-btn' type='submit'>
-                                                    {language.login}
+                                                    Đăng nhập
                                                 </button>
                                             </div>
 
                                             <div className='text-center p-t-12'>
                                                 <a className='txt2' href='#' onClick={this.onForgotPasswordClick}>
-                                                    {language.forgotPassword}
+                                                    Quên mật khẩu
                                                 </a>
                                             </div>
                                         </form>
@@ -282,25 +258,25 @@ export default class LoginModal extends React.Component {
                                     <div className='wrap-login100 align-self-center'>
                                         <form className='login100-form validate-form signUp-validate-form' onSubmit={this.onSignUp}>
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Firstname is required'>
-                                                <input className='input100' type='text' autoComplete="off" placeholder={language.firstname} ref={this.txtFirstname} />
+                                                <input className='input100' type='text' autoComplete="off" placeholder='Tên' ref={this.txtFirstname} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Lastname is required'>
-                                                <input className='input100' type='text' autoComplete="off" placeholder={language.lastname} ref={this.txtLastname} />
+                                                <input className='input100' type='text' autoComplete="off" placeholder='Họ' ref={this.txtLastname} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Valid email is required: ex@org.com'>
-                                                <input className='input100' type='text' name='email' autoComplete="off" placeholder={language.email} ref={this.signUpEmail} />
+                                                <input className='input100' type='text' name='email' autoComplete="off" placeholder='Email' ref={this.signUpEmail} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Password is required'>
-                                                <input className='input100' type='password' autoComplete="off" placeholder={language.password} ref={this.signUpPassword} />
+                                                <input className='input100' type='password' autoComplete="off" placeholder='Mật khẩu' ref={this.signUpPassword} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-lock' aria-hidden='true' /></span>
                                             </div>
@@ -309,7 +285,7 @@ export default class LoginModal extends React.Component {
 
                                             <div className='container-login100-form-btn' style={{ padding: '0' }}>
                                                 <button className='login100-form-btn'>
-                                                    {language.register}
+                                                    Đăng ký
                                                 </button>
                                             </div>
                                         </form>
@@ -319,7 +295,7 @@ export default class LoginModal extends React.Component {
                         </div>
                         <div className='modal-footer' style={{ display: 'block' }}>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'
-                                style={{ width: '100px', float: 'right' }}>{language.close}</button>
+                                style={{ width: '100px', float: 'right' }}>Đóng</button>
                         </div>
                     </div>
                 </div>
