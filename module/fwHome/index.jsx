@@ -29,7 +29,7 @@ export default {
     routes: [
         {
             path: '/content/item/:contentId',
-            component: Loadable({ loading: Loading, loader: () => import('../fwHome/homeContentDetail.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
         },
         {
             path: '/user/carousel/edit/:carouselId',
