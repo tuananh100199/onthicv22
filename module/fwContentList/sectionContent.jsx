@@ -19,9 +19,10 @@ class SectionContent extends React.Component {
                         this.props.history.push('/');
                     }
                 });
-            };
+            }
         });
     }
+    
     render() {
         const items = this.state.item.items ? this.state.item.items : [];
         let itemList = null;

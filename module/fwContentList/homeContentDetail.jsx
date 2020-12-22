@@ -35,34 +35,21 @@ class ContentDetail extends React.Component {
 
     render() {
         const item = this.state ? this.state : null;
-        if (item == null) {
+        if (!item) {
             return <p>...</p>;
         } else {
             return (
-                <section className='row mr-0'>
+                <section>
                     <div className='container'>
-                        <div className='row'>
-                            <div className='col-12'>
-                                <div className='single-course-intro-content text-center'>
-                                    <h3>{T.language.parse(item.title)}</h3>
-                                </div>
-                            </div>
-                            <div className='col-12 '>
-                                <div className='course--content' data-aos='fade-up'>
-                                    <div className='clever-description p-2'>
-                                        <div className='about-course mb-30'>
-                                            <p className="text-center">
-
-                                            </p>
-                                            <h4 className='text-primary'>Nội dung bài viết</h4>
-                                            <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                        </div>
-                                    </div>
+                        <div className='course--content wow fadeInUp' data-wow-delay='250ms' >
+                            <div className='clever-description p-2'>
+                                <div className='about-course mb-30'>
+                                    <h3 className='text-primary text-center'>{item.title}</h3>
+                                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </section>
             );
         }
