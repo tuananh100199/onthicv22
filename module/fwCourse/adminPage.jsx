@@ -12,7 +12,6 @@ class CoursePage extends React.Component {
 
     create = (e) => {
         this.props.createCourse(data => this.props.history.push('/user/course/edit/' + data.item._id));
-        // console.log(this.props)
         e.preventDefault();
     }
 

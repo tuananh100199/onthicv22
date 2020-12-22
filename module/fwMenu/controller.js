@@ -7,11 +7,12 @@ module.exports = app => {
         parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
         menus: { 2100: { title: 'Thành phần giao diện', link: '/user/component' } }
     };
-    app.permission.add({ name: 'menu:read', menu: menuMenu }, { name: 'menu:write', menu: menuMenu }, { name: 'menu:delete', menu: menuMenu }, { name: 'component:read', menu: menuComponent }, { name: 'component:write', menu: menuComponent }, );
+    app.permission.add({ name: 'menu:read', menu: menuMenu }, { name: 'menu:write', menu: menuMenu }, { name: 'menu:delete', menu: menuMenu }, { name: 'component:read', menu: menuComponent }, { name: 'component:write', menu: menuComponent },);
     app.get('/user/menu/edit/:_id', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/menu', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/list-content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/carousel/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/statistic/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/slogan/edit/:_id', app.permission.check('component:read'), app.templates.admin);
@@ -84,7 +85,7 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', ].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
@@ -265,6 +266,13 @@ module.exports = app => {
             });
         } else if (pageType == 'listVideo') {
             app.model.listVideo.getAll((error, items) => {
+                res.send({
+                    error,
+                    items: items.map(item => ({ _id: item._id, text: item.title }))
+                })
+            });
+        } else if (pageType == 'contentList') {
+            app.model.contentList.getAll((error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))

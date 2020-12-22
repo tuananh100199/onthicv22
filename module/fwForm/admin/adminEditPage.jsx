@@ -102,7 +102,7 @@ class QuestionModal extends React.Component {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
                 <form className='modal-dialog modal-lg' role='document'
-                      onSubmit={e => this.save(e, this.state.itemId, true)}>
+                    onSubmit={e => this.save(e, this.state.itemId, true)}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>Thông tin câu hỏi</h5>
@@ -324,48 +324,48 @@ class FormEditPage extends React.Component {
         const questionTable = questionList && questionList.length ? (
             <table className='table table-hover table-bordered'>
                 <thead>
-                <tr>
-                    <th style={{ width: 'auto' }}>STT</th>
-                    <th style={{ width: '100%', textAlign: 'center' }}>Câu hỏi</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>Loại</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                    {!readOnly ? <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th> : null}
-                </tr>
+                    <tr>
+                        <th style={{ width: 'auto' }}>STT</th>
+                        <th style={{ width: '100%', textAlign: 'center' }}>Câu hỏi</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }}>Loại</th>
+                        <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                        {!readOnly ? <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th> : null}
+                    </tr>
                 </thead>
                 <tbody>
-                {questionList.map((item, index) => (
-                    <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>
-                            {!readOnly ? <a href='#' onClick={e => this.showModal(e, item)}>{item.title}</a> : item.title}
-                        </td>
-                        <td nowrap='true'>
-                            {T.questionTypes[item.typeName]}
-                        </td>
-                        <td className='toggle' style={{ textAlign: 'center' }}>
-                            <label>
-                                <input type='checkbox' checked={item.active} disabled={readOnly} onChange={() => this.updateQuestion(item._id, { active: !item.active })} /><span className='button-indecator' />
-                            </label>
-                        </td>
-                        {!readOnly ?
-                            <td className='btn-group'>
-                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
-                                    <i className='fa fa-lg fa-arrow-up' />
-                                </a>
-                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
-                                    <i className='fa fa-lg fa-arrow-down' />
-                                </a>
-                                <button type='button' className='btn btn-primary'
+                    {questionList.map((item, index) => (
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                                {!readOnly ? <a href='#' onClick={e => this.showModal(e, item)}>{item.title}</a> : item.title}
+                            </td>
+                            <td nowrap='true'>
+                                {T.questionTypes[item.typeName]}
+                            </td>
+                            <td className='toggle' style={{ textAlign: 'center' }}>
+                                <label>
+                                    <input type='checkbox' checked={item.active} disabled={readOnly} onChange={() => this.updateQuestion(item._id, { active: !item.active })} /><span className='button-indecator' />
+                                </label>
+                            </td>
+                            {!readOnly ?
+                                <td className='btn-group'>
+                                    <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
+                                        <i className='fa fa-lg fa-arrow-up' />
+                                    </a>
+                                    <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
+                                        <i className='fa fa-lg fa-arrow-down' />
+                                    </a>
+                                    <button type='button' className='btn btn-primary'
                                         onClick={e => this.showModal(e, item)}>
-                                    <i className='fa fa-lg fa-edit' />
-                                </button>
-                                <button type='button' className='btn btn-danger' onClick={e => this.removeQuestion(e, item, index)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </button>
-                            </td> : null
-                        }
-                    </tr>
-                ))}
+                                        <i className='fa fa-lg fa-edit' />
+                                    </button>
+                                    <button type='button' className='btn btn-danger' onClick={e => this.removeQuestion(e, item, index)}>
+                                        <i className='fa fa-lg fa-trash' />
+                                    </button>
+                                </td> : null
+                            }
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         ) : <p>Không có câu hỏi</p>;
@@ -443,12 +443,12 @@ class FormEditPage extends React.Component {
                                                 </label>
                                             </div>
                                         </div>
-                                        <br/>
+                                        <br />
                                         <div className='form-group' style={{ display: 'inline-flex' }}>
                                             <label className='control-label'>Khóa form:&nbsp;</label>
                                             <div className='toggle'>
                                                 <label>
-                                                    <input type='checkbox' checked={item.lock} onChange={this.changeLock} disabled={readOnly}/><span className='button-indecator' />
+                                                    <input type='checkbox' checked={item.lock} onChange={this.changeLock} disabled={readOnly} /><span className='button-indecator' />
                                                 </label>
                                             </div>
                                         </div>
@@ -457,7 +457,7 @@ class FormEditPage extends React.Component {
                                 <div className='form-group'>
                                     <label className='control-label'>Số lượng đăng ký tối đa</label><br />
                                     <input className='form-control' id='formMaxRegisterUsers' type='number' placeholder='Số lượng đăng ký tối đa' readOnly={readOnly} defaultValue={item.maxRegisterUsers}
-                                           aria-describedby='formMaxRegisterUsersHelp' />
+                                        aria-describedby='formMaxRegisterUsersHelp' />
                                     <small className='form-text text-success' id='formMaxRegisterUsersHelp'>Điền -1 nếu không giới hạn số lượng đăng ký tối đa.</small>
                                 </div>
                                 <div className='form-group row'>

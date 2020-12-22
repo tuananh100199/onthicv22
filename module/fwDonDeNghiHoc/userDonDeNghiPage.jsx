@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDonDeNghiHocByUser, updateForm } from './redux.jsx';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -84,68 +84,86 @@ class UserDonDeNghiPage extends React.Component {
                 integration: this.state.item.integration,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
-        if (T.sexes.indexOf(sex) != -1) {
-            changesOfUser.sex = sex;
-        }
-        if (!changesOfUser.lastname) {
-            T.notify('Họ và tên lót bị trống', 'danger');
-            $('#userLastname').focus();
-        } else if (changesOfUser.firstname == '') {
-            T.notify('Tên bị trống', 'danger');
-            $('#userFirstName').focus();
-        }
-        else if (changesOfUser.birthday == null) {
-            T.notify('Ngày sinh bị trống', 'danger');
-            $('#userBirthday').focus();
-        }
-        else if (changesOfUser.phoneNumber == '') {
-            T.notify('Số điện thoại bị trống', 'danger');
-            $('#phoneNumber').focus();
-        }
-        else if (changesOfUser.regularResidence == '') {
-            T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
-            $('#regularResidence').focus();
-        }
-        else if (changesOfUser.residence == '') {
-            T.notify('Nơi cư trú bị trống', 'danger');
-            $('#residence').focus();
-        }
-        else if (changesOfUser.identityCard == '') {
-            T.notify('Số chứng minh nhân dân bị trống', 'danger');
-            $('#identityCard').focus();
-        }
-        else if (changesOfUser.identityDate == null) {
-            T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
-            $('#identityDate').focus();
-        }
-        else if (changesOfUser.identityIssuedBy == '') {
-            T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
-            $('#identityIssuedBy').focus();
-        }
-        else if (changesOfForm.licenseNumber == '') {
-            T.notify('Số giấy phép lái xe bị trống', 'danger');
-            $('#licenseNumber').focus();
-        }
-        else if (changesOfForm.licenseClass == '') {
-            T.notify('Hạng bằng lái xe bị trống', 'danger');
-            $('#licenseClass').focus();
-        }
-        else if (changesOfForm.licenseIssuedBy == '') {
-            T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
-            $('#licenseIssuedBy').focus();
-        }
-        else if (changesOfForm.newLicenseClass == '') {
-            T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
-            $('#newLicenseClass').focus();
-        }
-        else {
-            console.log(this.state)
-            this.props.updateForm(this.state.item._id, changesOfForm, () => {
-                this.props.updateProfile(changesOfUser);
-                T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+            if (T.sexes.indexOf(sex) != -1) {
+                changesOfUser.sex = sex;
+            }
+            if (!changesOfUser.lastname) {
+                T.notify('Họ và tên lót bị trống', 'danger');
+                $('#userLastname').focus();
+                return;
+            }
+             if (changesOfUser.firstname == '') {
+                T.notify('Tên bị trống', 'danger');
+                $('#userFirstName').focus();
+                return;
+            }
+            if (changesOfUser.birthday == null) {
+                T.notify('Ngày sinh bị trống', 'danger');
+                $('#userBirthday').focus();
+                return;
+            }
+             if (changesOfUser.phoneNumber == '') {
+                T.notify('Số điện thoại bị trống', 'danger');
+                $('#phoneNumber').focus();
+                return;
+            }
+            if (changesOfUser.regularResidence == '') {
+                T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
+                $('#regularResidence').focus();
+                return;
+            }
+            if (changesOfUser.residence == '') {
+                T.notify('Nơi cư trú bị trống', 'danger');
+                $('#residence').focus();
+                return;
+            }
+            if (changesOfUser.identityCard == '') {
+                T.notify('Số chứng minh nhân dân bị trống', 'danger');
+                $('#identityCard').focus();
+                return;
+            }
+            if (changesOfUser.identityDate == null) {
+                T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
+                $('#identityDate').focus();
+                return;
+            }
+            if (changesOfUser.identityIssuedBy == '') {
+                T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
+                $('#identityIssuedBy').focus();
+                return;
+            }
+            if (changesOfForm.newLicenseClass == '') {
+                T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
+                $('#newLicenseClass').focus();
+                return;
+            }
+            if (changesOfForm.licenseNumber != '') {
+                if (changesOfForm.licenseClass == '') {
+                    T.notify('Hạng bằng lái xe bị trống', 'danger');
+                    $('#licenseClass').focus();
+                    return;
+                }
+                if (changesOfForm.licenseIssuedBy == '') {
+                    T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
+                    $('#licenseIssuedBy').focus();
+                    return;
+                }
+            }
+            if (changesOfForm.licenseNumber == '') {
+                changesOfForm.licenseClass = '';
+                changesOfForm.licenseIssuedBy = '';
+            }
+            
+            this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, (error) => {
+                if (!error) {
+                    if (changesOfForm.licenseNumber == '') {
+                        $('#licenseClass').val('');
+                        $('#licenseIssuedBy').val('');
+                    }
+    
+                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+                }
             });
-        }
-
     };
 
     render() {
@@ -233,8 +251,8 @@ class UserDonDeNghiPage extends React.Component {
                                 <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection' />
                             </div>
                             <div className='form-group col-md-7'>
-                                <label className='control-label' htmlFor='licenseIssuedBy'>Do: </label>
-                                <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy' />
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: </label>
+                                <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy'/>
                             </div>
                         </div>
                         <div className='form-group'>
@@ -269,5 +287,5 @@ class UserDonDeNghiPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser, updateForm, updateProfile };
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

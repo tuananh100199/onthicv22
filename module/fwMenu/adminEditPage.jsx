@@ -165,15 +165,19 @@ class MenuEditPage extends React.Component {
                 component.viewName = '';
             } else if (component.viewType == 'event') {
                 mainStyle.backgroundColor = '#ef9a9a';
-            }else if (component.viewType == 'list video') {
+            } else if (component.viewType == 'list video') {
                 mainStyle.backgroundColor = '#ef9a9b';
-            }else if (component.viewType == 'all courses') {
+            } else if (component.viewType == 'all courses') {
                 mainStyle.backgroundColor = '#ef9a9c';
                 component.viewName = '';
-            }else if (component.viewType == 'last course') {
+            } else if (component.viewType == 'last course') {
                 mainStyle.backgroundColor = '#ef9a9a';
                 component.viewName = '';
+            } else if (component.viewType == 'contentList') {
+                mainStyle.backgroundColor = '#fb6094';
+                component.viewName = '';
             }
+
         }
         let displayText = component.viewType + (component.viewName ? ' - ' + T.language.parse(component.viewName) + ' ' : '');
         if (component.className.trim() != '') displayText += ' (' + component.className.trim() + ')';

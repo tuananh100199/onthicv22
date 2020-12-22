@@ -18,7 +18,7 @@ export default function applicationFormReducer(state = null, data) {
                     break;
                 }
             }
-            
+
             page.list = list;
             return Object.assign({}, state, { page });
         }
@@ -98,7 +98,7 @@ export function updateForm(_id, changes, done) {
         const url = '/api/application-form';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                // T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin form bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
@@ -137,5 +137,21 @@ export function getDonDeNghiHocByUser(done) {
             }
             done && done(data);
         }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
+    return dispatch => {
+        const url = '/api/user-application-form';
+        T.put(url, { _id, changes, userChanges }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: UPDATE, item: data.item });
+                done && done();
+            }
+        }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
     }
 }

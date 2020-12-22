@@ -146,8 +146,8 @@ class SettingsPage extends React.Component {
     }
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '', addressList: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, addressList } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', addressList: '' };
 
         addressList = JSON.parse(addressList);
         return (
@@ -162,7 +162,7 @@ class SettingsPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label className='control-label'>Địa chỉ</label>
-                                    <input className='form-control' type='text' placeholder='Address' ref={this.address} defaultValue={address} />
+                                    <input className='form-control' type='text' placeholder='Địa chỉ' ref={this.address} defaultValue={address} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Email</label>
@@ -170,7 +170,7 @@ class SettingsPage extends React.Component {
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Số điện thoại</label>
-                                    <input className='form-control' type='text' placeholder='Phone number' ref={this.mobile} defaultValue={mobile} />
+                                    <input className='form-control' type='text' placeholder='Số điện thoại' ref={this.mobile} defaultValue={mobile} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Fax</label>
@@ -233,23 +233,28 @@ class SettingsPage extends React.Component {
                                         <label className='control-label'>Logo</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
                                     </div>
+                                    
+                                    <div className='form-group'>
+                                        <label className='control-label'>Background footer</label>
+                                        <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className='tile'>
-                            <h3 className='tile-title'>Maps</h3>
+                            <h3 className='tile-title'>Bản đồ</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label className='control-label'>Vĩ độ</label>
-                                    <input className='form-control' type='number' placeholder='Latitude' ref={this.latitude} defaultValue={latitude} />
+                                    <input className='form-control' type='number' placeholder='Vĩ độ' ref={this.latitude} defaultValue={latitude} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Kinh độ</label>
-                                    <input className='form-control' type='number' placeholder='Longitude' ref={this.longitude} defaultValue={longitude} />
+                                    <input className='form-control' type='number' placeholder='Kinh độ' ref={this.longitude} defaultValue={longitude} />
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Map image</label>
+                                    <label className='control-label'>Hình ảnh bản đồ</label>
                                     <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='map' image={map} />
                                 </div>
                             </div>
