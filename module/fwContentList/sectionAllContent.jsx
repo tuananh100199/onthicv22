@@ -49,9 +49,6 @@ class SectionAllContent extends React.Component {
                 <h3 className='text-primary'>Danh sách bài viết</h3>
                 <div>
                     {itemList}
-                    {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
-                    {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
-                    {/*</button>*/}
                 </div>
             </div>
         )

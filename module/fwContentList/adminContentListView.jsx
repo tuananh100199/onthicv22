@@ -22,7 +22,7 @@ class ContentListModal extends React.Component {
 
     save = (event) => {
         const newData = {
-            title: JSON.stringify({ vi: $('#contentListName').val() }),
+            title: $('#contentListName').val(),
             items: []
         };
 
