@@ -28,6 +28,10 @@ export default {
     },
     routes: [
         {
+            path: '/content/item/:contentId',
+            component: Loadable({ loading: Loading, loader: () => import('../fwHome/homeContentDetail.jsx') })
+        },
+        {
             path: '/user/carousel/edit/:carouselId',
             component: Loadable({ loading: Loading, loader: () => import('./adminCarouselEditPage.jsx') })
         },
