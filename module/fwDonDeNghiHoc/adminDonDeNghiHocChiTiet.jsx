@@ -3,10 +3,15 @@ import { connect } from 'react-redux';
 import { getForm, updateForm } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
+import Editor from '../../view/component/CkEditor4.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
 
 class AdminDonDeNghiHocChiTiet extends React.Component {
+    constructor(props) {
+        super(props);
+        this.viEditor = React.createRef();
+    }
     ready = () => {
         inView('.listViewLoading').on('enter', () => {
             let userForm = this.props.donDeNghiHoc.item;
@@ -33,14 +38,13 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
         });
     }
 
-    reject = () => {
-        const changesOfForm = {
-            approve: "eject",
+    save = () => {
+        const comment = this.viEditor.current.html();
+        if (!comment) {
+            T.notify('Lý do không được để trống', 'danger');
+        } else {
+            T.notify('Cập nhật lý do từ chối thành công', 'success');
         }
-        console.log(this.props.donDeNghiHoc)
-        this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
-            T.notify('Đã từ chối đơn đề nghị học', 'success');
-        });
     }
 
     render() {
@@ -126,10 +130,34 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.accept}>
                     <i className='fa fa-check-square' />
                 </button>
-                <button type='button' className='btn btn-danger btn-circle'
-                    style={{ position: 'fixed', right: '60px', bottom: '10px' }} onClick={this.reject}>
+                <button type='button' className='btn btn-danger btn-circle' data-toggle="modal" data-target="#modal"
+                    style={{ position: 'fixed', right: '60px', bottom: '10px' }}>
                     <i className='fa fa-ban' />
                 </button>
+
+                <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-lg" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">Lý do từ chối đơn đề nghị học, sát hạch</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form>
+                                <div className="modal-body mx-3">
+                                    <div className="form-group">
+                                    <Editor ref={this.viEditor} height='400px' placeholder='Nội dung' />
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                    <button type="button" className="btn btn-primary" onClick={this.save}>Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </main>
         );
     }
