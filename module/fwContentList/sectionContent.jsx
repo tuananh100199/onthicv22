@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContents } from '../fwHome/redux/reduxContent.jsx';
-import { getAllContentList } from './redux.jsx';
+import { getContentListItem } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class SectionContent extends React.Component {
@@ -13,46 +12,30 @@ class SectionContent extends React.Component {
     componentDidMount() {
         $(document).ready(() => {
             if (this.props.listContentId) {
-                this.props.getAllContentList(data => {
-                    if (data) {
-                        this.setState({ item: data.find(item => item._id === this.props.listContentId) });
-                        this.getContentItem();
+                this.props.getContentListItem(this.props.listContentId, data => {
+                    if (data.item) {
+                        this.setState({ item: data.item });
+                    } else {
+                        this.props.history.push('/');
                     }
                 });
-                this.getData();
-            };
+            }
         });
     }
-
-    getData = () => {
-        let title = T.language.parse(this.state.item.title, true);
-        $('#listContentTitle').val(title.vi).focus();
-    }
-    getContentItem = () => {
-        const item = this.state.item;
-        this.props.getAllContents(content => {
-            this.setState({
-                items: item.items.map(idC => content.find(ele => ele._id === idC))
-            });
-        }
-        );
-    }
-
+    
     render() {
-        const items = this.state.items ? this.state.items : [];
+        const items = this.state.item.items ? this.state.item.items : [];
         let itemList = null;
         if (items && items.length) {
             itemList = items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
                     <div key={index} className='row ml-0 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
-                        {/* <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
-                        </div> */}
                         <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '5px' }}>
                                     <h2 className='heading pb-0 mb-0'>
-                                        <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                        <Link to={link} className='text-primary'>{item.title}</Link>
                                     </h2>
                                 </div>
                             </div>
@@ -109,17 +92,14 @@ class SectionContent extends React.Component {
                     overflow: 'hidden',
                     clear: 'both'
                 }}></div> */}
-                <h3 className='text-primary'>{T.language.parse(this.state.item.title, true).vi}</h3>
+                <h3 className='text-primary'>{this.state.item.title}</h3>
                 <div>
                     {itemList}
-                    {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}
-                    {/*    {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}*/}
-                    {/*</button>*/}
                 </div>
             </div>
         )
     }
 }
-const mapStateToProps = state => ({});
-const mapActionsToProps = { getAllContents, getAllContentList };
+const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
+const mapActionsToProps = { getContentListItem };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContent);

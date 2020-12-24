@@ -9,11 +9,11 @@ export default function contentListReducer(state = null, data) {
     switch (data.type) {
         case ContentListGetAll:
             return Object.assign({}, state, { list: data.items });
-            
+
         case ContentListGet: {
             return Object.assign({}, state, { item: data.item });
         }
-        
+
         case ContentListUpdate:
             state = Object.assign({}, state);
             const updatedItem = data.item;
@@ -59,7 +59,7 @@ export function getContentListItem(_id, done) {
                 dispatch({ type: ContentListGet, item: data.item });
             }
             if (done) done(data);
-            
+
         }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
     }
 }
@@ -108,19 +108,5 @@ export function deleteContentList(_id) {
                 dispatch(getAllContentList());
             }
         }, error => T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
-    }
-}
-
-export function getContentListByUser(_id, done) {
-    return dispatch => {
-        const url = '/home/list-content/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.item);
-            }
-        }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
     }
 }
