@@ -6,11 +6,11 @@ module.exports = app => {
     },
         menus:{
             3010: { title: 'Danh sách đơn đề nghị học, sát hạch', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-            3020: { title: 'Email', link: '/user/don-de-nghi-hoc/send-mail', icon: 'fa-envelope-o', backgroundColor: '#032b91', groupIndex: 1 }
+            3020: { title: 'Email', link: '/user/don-de-nghi-hoc/send-mail', icon: 'fa-envelope-o', backgroundColor: '#00FFFF', groupIndex: 1 }
             
         }
     };
-
+    app.get('/user/don-de-nghi-hoc/send-mail', app.permission.check('system:email'), app.templates.admin);
     const menuDonDeNghiHoc = {
         parentMenu: app.parentMenu.user,
         menus: {
@@ -27,7 +27,43 @@ module.exports = app => {
 
     app.get('/user/bieu-mau/don-de-nghi-hoc', app.permission.check(), app.templates.admin);
 
+    // Init ------------------------------------------------------------------------------------------------------------
+    const init = () => {
+        if (app.model && app.model.setting) {
+            app.model.setting.init({
+                emailAdminNotifyTitle: 'Hiệp Phát: Từ chối đơn đề nghị học 123!',
+                emailAdminNotifyText: 'Dear {name}, Hiệp Phát welcome you as a new member. Before you can login, please click this {url} to active your account. Best regard, Tutorial, Website: ' + app.rootUrl + '',
+                emailAdminNotifyHtml: 'Dear <b>{name}</b>,<br/><br/>' +
+                    'Hiệp Phát welcome you as a new member. Before you can login, please click this <a href="{url}">{url}</a> to active your account.<br/><br/>' +
+                    'Best regard,<br/>' +
+                    'Hiệp Phát<br/>' +
+                    'Website1: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
+            });
+        } else {
+            setTimeout(init, 1000);
+        }
+    };
+    init();
+
     //APIs -------------------------------------------------------------------------------------------------------------
+    const EmailParams = [
+        'emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'
+    ];
+
+    app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(EmailParams, result => res.send(result)));
+
+    app.put('/api/email', app.permission.check('system:email'), (req, res) => {
+        const title = req.body.type + 'Title',
+            text = req.body.type + 'Text',
+            html = req.body.type + 'Html',
+            changes = {};
+
+        if (EmailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
+        if (EmailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
+        if (EmailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
+
+        app.model.setting.set(changes, error => res.send({ error }));
+    });
     // Admin
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber), pageSize = parseInt(req.params.pageSize),
