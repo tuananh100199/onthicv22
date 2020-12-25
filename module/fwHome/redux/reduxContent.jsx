@@ -115,6 +115,24 @@ export function getContent(id, done) {
         });
     }
 }
+
+export function getContentByUser(id, done) {
+    return dispatch => {
+        const url = '/home/content/item/' + id;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: ContentUpdate, item: data.item });
+                if (done) done({ item: data.item });
+            }
+        }, error => {
+            console.error('GET: ' + url + '. ' + error);
+        });
+    }
+}
+
 export const ajaxSelectContent = {
     ajax: true,
     url: `/api/content/all`,

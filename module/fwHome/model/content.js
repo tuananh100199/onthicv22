@@ -11,7 +11,7 @@ module.exports = app => {
 
         getAll: (done) => model.find({}, '-content').sort({ _id: -1 }).exec(done),
 
-        get: (_id, done) => model.findById(_id, done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContent } from './redux/reduxContent.jsx';
+import { getContentByUser } from './redux/reduxContent.jsx';
 
 class ContentDetail extends React.Component {
     state = { _id: null, title: '', active: false, content: '' };
@@ -9,7 +9,7 @@ class ContentDetail extends React.Component {
         const route = T.routeMatcher('/content/item/:contentId'),
             params = route.parse(window.location.pathname);
         this.setState({ _id: params.contentId });
-        this.props.getContent(params.contentId, data => {
+        this.props.getContentByUser(params.contentId, data => {
             if (data.item) {
                 this.setState(data.item);
             }
@@ -57,5 +57,5 @@ class ContentDetail extends React.Component {
 }
 
 const mapStateToProps = state => ({ content: state.content });
-const mapActionsToProps = { getContent };
+const mapActionsToProps = { getContentByUser };
 export default connect(mapStateToProps, mapActionsToProps)(ContentDetail);
