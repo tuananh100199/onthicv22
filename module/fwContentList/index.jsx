@@ -12,10 +12,6 @@ export default {
             path: '/user/list-content/edit/:listContentId',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage.jsx') })
         },
-        {
-            path: '/content/item/:contentId',
-            component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail.jsx') })
-        },
     ],
     Section: {
         SectionContent
