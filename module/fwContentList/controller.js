@@ -21,7 +21,10 @@ module.exports = app => {
     });
 
     app.delete('/api/list-content', app.permission.check('component:write'), (req, res) => app.model.contentList.delete(req.body._id, error => res.send({ error })));
-
+    
+    
+    app.get('/list-content/item/:contentListId', (req, res) => app.model.contentList.get(req.params.contentListId, (error, item) => res.send({ error, item })));
+    
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/list-content'));
 

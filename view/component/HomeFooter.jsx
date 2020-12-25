@@ -45,12 +45,13 @@ class Footer extends React.Component {
                             </div>
                             <div className='col-xl-3 col-lg-3 col-md-4 col-6'>
                                 <a href={mapUrl} target='_blank'>
-                                    <div className='map-area' style={{
+                                    <div style={{
                                         height: '200px',
                                         backgroundImage: 'url(' + map + ')',
                                         backgroundRepeat: 'no-repeat',
                                         backgroundPosition: 'center center',
-                                        border: '1px solid gray'
+                                        border: '1px solid gray',
+                                        backgroundSize: 'cover'
                                     }}/>
                                 </a>
                             </div>

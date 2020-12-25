@@ -55,7 +55,7 @@ class DashboardPage extends React.Component {
 
                 <div className='row'>
                     <div className='col-md-6 col-lg-3'>
-                        <DashboardIcon type='primary' icon='fa-users' title='User' value={numberOfUser} link='/user/user' />
+                        <DashboardIcon type='primary' icon='fa-users' title='Nguời dùng' value={numberOfUser} link='/user/user' />
                     </div>
                 </div>
             </main>

@@ -90,13 +90,13 @@ export function getContactAll(done) {
         const url = '/api/contact/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Get all contacts failed!', 'danger');
+                T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: ContactGetAll, items: data.items });
             }
-        }, error => T.notify('Get all contacts failed!', 'danger'));
+        }, error => T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
     }
 }
 
@@ -107,13 +107,13 @@ export function getContactPage(pageNumber, pageSize, done) {
         const url = '/api/contact/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Get contacts failed!', 'danger');
+                T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: ContactGetPage, page: data.page });
             }
-        }, error => T.notify('Get contacts failed!', 'danger'));
+        }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
     }
 }
 
@@ -122,13 +122,13 @@ export function getContact(contactId, done) {
         const url = '/api/contact/item/' + contactId;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Get contact failed!', 'danger');
+                T.notify('Lấy liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
                 dispatch({ type: ContactUpdate, item: data.item });
             }
-        }, error => T.notify('Get contact failed!', 'danger'));
+        }, error => T.notify('Lấy liên hệ bị lỗi!', 'danger'));
     }
 }
 
@@ -143,7 +143,7 @@ export function getUnreadContacts(done) {
                 if (done) done(data.items);
                 dispatch({ type: ContactGetUnread, items: data.items });
             }
-        }, error => T.notify('Get contacts failed!', 'danger'));
+        }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
     }
 }
 
@@ -152,15 +152,15 @@ export function updateContact(_id, changes, done) {
         const url = '/api/contact';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Update contact failed!', 'danger');
+                T.notify('Cập nhật liên hệ bị lỗi', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Update contact successful!', 'info');
+                T.notify('Cập nhật liên hệ thành công!', 'info');
                 dispatch(getContactPage());
                 done && done();
             }
-        }, error => T.notify('Update contact failed!', 'danger'));
+        }, error => T.notify('Cập nhật liên hệ bị lỗi', 'danger'));
     }
 }
 
@@ -169,13 +169,13 @@ export function deleteContact(_id) {
         const url = '/api/contact';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Delete contact failed!', 'danger');
+                T.notify('Xoá liên hệ bị lỗi', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Delete contact successful!', 'error', false, 800);
+                T.alert('Xoá liên hệ thành công!', 'error', false, 800);
                 dispatch(getContactPage());
             }
-        }, error => T.notify('Delete contact failed!', 'danger'));
+        }, error => T.notify('Xoá liên hệ bị lỗi', 'danger'));
     }
 }
 
@@ -191,11 +191,11 @@ export function createContact(contact, done) {
         const url = '/api/contact';
         T.post(url, { contact }, data => {
             if (data.error) {
-                T.notify('Send contact failed!', 'danger');
+                T.notify('Gửi liên hệ bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Send contact failed!', 'danger'));
+        }, error => T.notify('Gửi liên hệ bị lỗi!', 'danger'));
     }
 }
