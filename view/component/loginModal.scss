@@ -3,9 +3,14 @@
 @import 'scss/css/util.css';
 @import 'scss/css/main.css';
 
-$main_color: #2c92d0; //0,123,255
-$secondary_color: #28306a;
-$focusInput: rgba(44, 146, 208, 0.8);
+@import '../home/scss/theme_color';
+//$main_color: #2c92d0; //0,123,255
+//$secondary_color: #28306a;
+//$focusInput: rgba(44, 146, 208, 0.8);
+
+$main_color: $bg-default;
+$secondary_color: $hover-color;
+$focusInput: $bg-hover;
 
 #elegantModalForm {
   a {
@@ -202,4 +207,12 @@ $focusInput: rgba(44, 146, 208, 0.8);
   .login100-form-btn:hover {
     background: $secondary_color;
   }
+}
+
+.MuiTab-textColorPrimary.Mui-selected {
+  color: $bg-default!important;
+}
+
+.PrivateTabIndicator-colorPrimary-2 {
+  background-color: $bg-default!important;
 }

@@ -55,7 +55,7 @@ class MenuPage extends React.Component {
         <li key={menu._id} data-id={menu._id}>
             <div style={{ display: 'inline-flex' }}>
                 <Link to={'/user/menu/edit/' + menu._id} style={{ color: menu.active ? '#009688' : 'gray' }}>
-                    {T.language.parse(menu.title, true).vi}
+                    {menu.title}
                 </Link>&nbsp;
                 {menu.link ? <p>(<a href={menu.link} target='_blank' style={{ color: 'blue' }}>{menu.link}</a>)</p> : null}
 

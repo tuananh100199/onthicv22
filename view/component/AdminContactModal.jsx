@@ -16,19 +16,19 @@ export default class AdminContactModal extends React.Component {
                 <div className='modal-dialog modal-lg' role='document'>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Contact information</h5>
+                            <h5 className='modal-title'>Thông tin liên hệ</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <label>User name: <b>{name}</b></label><br />
+                            <label>Tên người dùng: <b>{name}</b></label><br />
                             <label>Subject: <b>{subject}</b></label><br />
                             <label>Email: <b>{email}</b></label><br />
                             <p>{message}</p>
                         </div>
                         <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Close</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                         </div>
                     </div>
                 </div>
