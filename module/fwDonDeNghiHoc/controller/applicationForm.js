@@ -31,7 +31,7 @@ module.exports = app => {
     const init = () => {
         if (app.model && app.model.setting) {
             app.model.setting.init({
-                emailAdminNotifyTitle: 'Hiệp Phát: Từ chối đơn đề nghị học 123!',
+                emailAdminNotifyTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
                 emailAdminNotifyText: 'Dear {name}, Hiệp Phát welcome you as a new member. Before you can login, please click this {url} to active your account. Best regard, Tutorial, Website: ' + app.rootUrl + '',
                 emailAdminNotifyHtml: 'Dear <b>{name}</b>,<br/><br/>' +
                     'Hiệp Phát welcome you as a new member. Before you can login, please click this <a href="{url}">{url}</a> to active your account.<br/><br/>' +
@@ -145,5 +145,27 @@ module.exports = app => {
                 })
             }
         })
+    });
+
+    app.post('/api/user', app.permission.check('user:write'), (req, res) => {
+        const data = req.body.user;
+        const password = data.password;
+        if (!data.password) data.password = app.randomPassword(8);
+        if (data.roles == 'empty') data.roles = [];
+        app.model.applicationForm.create(data, (error, user) => {
+            res.send({ error, user });
+            if (user) {
+                app.model.setting.get(['emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'], result => {
+                    const mailTitle = result.emailAdminNotifyTitle,
+                        mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
+                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
+                    app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                });
+            }
+        });
     });
 };

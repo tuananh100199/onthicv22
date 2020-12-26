@@ -73,7 +73,7 @@ export default class EmailPage extends React.Component {
                         <div className='tile'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminNotify'>Notify</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminNotify'>Thông báo từ chối</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
