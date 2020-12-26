@@ -26,9 +26,9 @@ class SectionNews extends React.Component {
                         <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                    <h2 className='heading pb-0 mb-0'>
+                                    <h6 className='heading pb-0 mb-0'>
                                         <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
-                                    </h2>
+                                    </h6>
                                     <p className='text-justify' style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
                                 </div>
                             </div>

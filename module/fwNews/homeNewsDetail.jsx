@@ -15,6 +15,12 @@ class NewsDetail extends React.Component {
             params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
         this.props.getNewsByUser(params.id, params.link);
+        window.addEventListener('resize', this.handleResize);
+        this.handleResize();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
     }
 
     componentDidUpdate(prevProps) {
@@ -35,12 +41,31 @@ class NewsDetail extends React.Component {
         }
     }
 
+    handleResize = () => {
+        const viewportWidth = $(window).width();
+        let viewportHeight = $(window).height();
+        if (viewportWidth <= 576) { // Small
+            viewportHeight *= 0.45
+        }
+        if (viewportWidth <= 768) { // Medium
+            viewportHeight *= 0.65
+        }
+        if (viewportWidth <= 992) { //Large
+            viewportHeight *= 0.8
+        }
+        $('.slider-content').css('height', viewportHeight);
+        this.setState({
+            viewportHeight: viewportHeight
+        })
+    }
+
     render() {
         
         const item = this.props.news && this.props.news.userNews ? this.props.news.userNews : null;
         if (item == null) {
             return <p>...</p>;
         } else {
+            const element = 0;
             let categories = !item.categories ? [] : item.categories.map((item, index) =>
                 <div key={index} className='bg-black pb-1 px-2 mb-2 text-white d-inline-block rounded mr-1'>
                     <span><small>{T.language.parse(item.title)}</small></span>
@@ -48,22 +73,21 @@ class NewsDetail extends React.Component {
             );
             return (
                 <section className='row mr-0'>
-                    <div className='container'>
+                    <div className='container-fluid'>
                         <div className='row'>
-                            <div className='col-12'>
+                            <div className='col-12 px-0'>
                                 <div className="owl-theme">                              
                                     <div className='slider-content'
                                         style={{
-                                            height: 250,
+                                            height: this.state.viewportHeight,
                                             background: `url('${item.image}')`,
-                                            backgroundRepeat: 'no-repeat',
+                                            backgroundRepeat: 'repeat',
                                             backgroundPosition: 'center',
-                                            backgroundSize: 'contain'
+                                            backgroundSize: 'cover'
                                         }}
                                     >
                                     <div className='inner'>
                                         <h2>{T.language.parse(item.title)}</h2>
-                                        {item.link ? <a href={item.link} target='_blank'>Xem thêm</a> : ''}
                                     </div>
                                 </div>
                                 </div>
@@ -73,11 +97,7 @@ class NewsDetail extends React.Component {
                                     <div className='clever-description'>
                                         <div className='about-course mb-30'>
                                             <span className="meta">{new Date(item.createdDate).getText()}</span>
-                                            <p className="text-center">
-                                                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '30%', height: 'auto' }} />
-                                            </p>
-                                            <h4 className='text-black text-left'>Nội dung tin tức</h4>
-                                            <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
+                                            <p className="pt-4" dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
                                             {categories}
                                         </div>
                                     </div>

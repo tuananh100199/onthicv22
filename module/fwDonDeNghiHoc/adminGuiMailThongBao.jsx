@@ -78,7 +78,7 @@ export default class EmailPage extends React.Component {
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
                                 <AdminGuiMailThongBao ref={this.emailAdminNotify} id='emailAdminNotify' active={true}
-                                    params='{name}, {subject}, {message}' />
+                                    params='{name}, {reason}' />
                             </div>
                         </div>
                     </div>

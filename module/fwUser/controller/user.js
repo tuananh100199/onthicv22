@@ -67,7 +67,7 @@ module.exports = app => {
                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                         .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
                         .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
-                    app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                    app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
                 });
             }
         });
