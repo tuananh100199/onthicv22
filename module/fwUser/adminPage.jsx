@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getUserInPage, createUser, updateUser, deleteUser } from './redux.jsx';
-import { Link } from 'react-router-dom';
+import { getAllRoles } from '../fwRole/redux.jsx';
 import Pagination from '../../view/component/Pagination.jsx';
 import { UserPasswordModal, RolesModal, UserModal } from './adminModal.jsx';
 
@@ -15,8 +15,10 @@ class UserPage extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getUserInPage(1, 50, {});
-        T.ready();
+        this.props.getAllRoles();
+        T.ready('/user/user', () => {
+            this.props.getUserInPage(1, 50, {});
+        });
     }
 
     edit = (e, item) => {
@@ -58,6 +60,7 @@ class UserPage extends React.Component {
         console.log(this.props)
         const permissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             hasUpdate = permissions.includes('user:write');
+        const allRoles = this.props.role && this.props.role.items ? this.props.role.items : [];
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
             this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: null };
         let table = 'Không có người dùng!';
@@ -144,11 +147,10 @@ class UserPage extends React.Component {
                 ): ''}
 
                 <UserModal ref={this.userModal} hasUpdate={hasUpdate}
-                    allRoles={this.props.system && this.props.system.roles ? this.props.system.roles : []}
-                    allDivisions={this.props.division ? this.props.division : []}
+                    allRoles={allRoles}
                     updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserInPage} />
                 <RolesModal ref={this.rolesModal} hasUpdate={hasUpdate}
-                    allRoles={this.props.system && this.props.system.roles ? this.props.system.roles : []}
+                    allRoles={allRoles}
                     updateUser={this.props.updateUser} getPage={this.props.getUserInPage} />
                 <UserPasswordModal updateUser={this.props.updateUser} hasUpdate={hasUpdate} ref={this.passwordModal} />
             </main>
@@ -156,6 +158,6 @@ class UserPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, division: state.division, user: state.user });
-const mapActionsToProps = { getUserInPage, createUser, updateUser, deleteUser };
+const mapStateToProps = state => ({ system: state.system, user: state.user, role: state.role });
+const mapActionsToProps = { getUserInPage, createUser, updateUser, deleteUser, getAllRoles };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);

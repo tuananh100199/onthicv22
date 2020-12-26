@@ -54,14 +54,13 @@ class MenuEditPage extends React.Component {
         if (link.startsWith('http://') || link.startsWith('https://')) {
             $(this.menuLink.current).html(event.target.value).attr('href', event.target.value);
         } else {
-            $(this.menuLink.current).html(T.rootUrl + event.target.value)
-                .attr('href', event.target.value);
+            $(this.menuLink.current).html(T.rootUrl + event.target.value).attr('href', event.target.value);
         }
     }
 
     save = () => {
         const changes = {
-            title: JSON.stringify({ vi: $('#menuViTitle').val(), en: $('#menuEnTitle').val() }),
+            title: $('#menuTitle').val(),
             link: $('#menuLink').val().trim(),
             active: this.state.active,
         };
@@ -194,13 +193,13 @@ class MenuEditPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             hasUpdate = currentPermissions.includes('menu:write');
-        const title = T.language.parse(this.state.title, true);
+        const title = this.state.title;
         return (
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-edit' /> Menu: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(this.state.createdDate) : '' }} />
+                        <p dangerouslySetInnerHTML={{ __html: title != '' ? 'Tiêu đề: <b>' + title + '</b> - ' + T.dateToText(this.state.createdDate) : '' }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
@@ -215,12 +214,8 @@ class MenuEditPage extends React.Component {
                             <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>Menu (VI)</label>
-                                    <input className='form-control' type='text' placeholder='Menu (VI)' id='menuViTitle' defaultValue={title.vi} autoFocus={true} readOnly={!hasUpdate} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Menu (EN)</label>
-                                    <input className='form-control' type='text' placeholder='Menu (EN)' id='menuEnTitle' defaultValue={title.en} readOnly={!hasUpdate} />
+                                    <label className='control-label'>Menu</label>
+                                    <input className='form-control' type='text' placeholder='Menu' id='menuTitle' defaultValue={title} autoFocus={true} readOnly={!hasUpdate} />
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Link</label><br />

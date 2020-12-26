@@ -20,7 +20,7 @@ class ContactPage extends React.Component {
     changeRead = (item) => this.props.updateContact(item._id, { read: !item.read });
 
     delete = (e, item) => {
-        T.confirm('Delete contact', 'Are you sure want to delete this contact?', true, isConfirm => isConfirm && this.props.deleteContact(item._id));
+        T.confirm('Xoá liên hệ', 'Bạn có chắc muốn xoá liên hệ này?', true, isConfirm => isConfirm && this.props.deleteContact(item._id));
         e.preventDefault();
     }
 
@@ -37,8 +37,8 @@ class ContactPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '60%' }}>Subject</th>
-                            <th style={{ width: '40%' }}>Name & Email</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Action</th>
+                            <th style={{ width: '40%' }}>Tên & Email</th>
+                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -539,6 +539,15 @@ textarea:focus {
         height: 80px;
     }
 
+    @media only screen and (max-width:1100px) {
+        .classy-navbar {
+            h4 {
+                font-size: 1.1rem;
+                overflow: hidden;
+            }
+        }
+    }
+
     @media only screen and (max-width:991px) {
         .navbar-brand {
             width: 100%;
