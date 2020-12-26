@@ -63,7 +63,8 @@ module.exports = (env, argv) => ({
     output: {
         path: path.join(__dirname, 'public'),
         publicPath: '/',
-        filename: 'js/[name].js',
+        filename: argv.mode === 'production' ? "js/[name]-[contenthash].js" : "js/[name].js"
+        // filename: 'js/[name].js',
     },
     plugins: [
         ...genHtmlWebpackPlugins(argv.mode === 'production'),
