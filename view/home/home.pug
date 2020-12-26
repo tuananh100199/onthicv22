@@ -27,5 +27,5 @@ html(lang='en')
         script(src='/home/js/active.min.js')
         script(src='/home/js/owl.carousel.min.js')
         each item in htmlWebpackPlugin.files.js
-            if item.indexOf('/js/home.js?') == 0
+            if item.search(/\/js\/home-?.*.js/) == 0
                 script(type='text/javascript' src=item)

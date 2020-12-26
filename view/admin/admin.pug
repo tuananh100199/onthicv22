@@ -23,7 +23,7 @@ html(lang='en')
         script(type='text/javascript' src='/js/plugins/qrcode.min.js')
         //script(type='text/javascript' src='https://cdn.ckeditor.com/4.10.1/full/ckeditor.js')
         each item in htmlWebpackPlugin.files.js
-            if item.indexOf('/js/admin.js?') == 0
+            if item.search(/\/js\/admin-?.*.js/) == 0
                 script(type='text/javascript' src=item)
         link(rel='stylesheet' type='text/css' href='/css/bootstrap-datetimepicker.min.css')
         //- link(rel='stylesheet' type='text/css' href='/css/admin.css')
