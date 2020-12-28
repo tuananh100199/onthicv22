@@ -59,7 +59,7 @@ export default class EmailPage extends React.Component {
     save = () => {
         const emailType = $('ul.nav.nav-tabs li.nav-item a.nav-link.active').attr('href').substring(1);
         const email = this[emailType].current.get();
-        saveSystemEmails(emailType, email);
+        saveEmailDonDeNghiHoc(emailType, email);
     }
 
     render() {

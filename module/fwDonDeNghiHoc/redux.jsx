@@ -124,6 +124,36 @@ export function deleteForm(_id) {
     }
 }
 
+export function getEmailDonDeNghiHoc(done) {
+    T.get('/api/email/all', done, error => T.notify('Get email information failed!', 'danger'));
+}
+
+export function saveEmailDonDeNghiHoc(type, email) {
+    const url = '/api/email';
+    T.put(url, { type, email }, data => {
+        if (data.error) {
+            console.error('PUT: ' + url + '.', data.error);
+            T.notify('Save email information failed!', 'danger');
+        } else {
+            T.notify('Save email information successful!', 'info');
+        }
+    }, error => T.notify('Save email information failed!', 'danger'));
+}
+export function sendEmailTuChoiDonDeNghiHoc(formID, done){
+    return dispatch => {
+        const url = '/api/application-form/send-mail';
+        T.post(url, { formID }, data => {
+            if (data.error) {
+                T.notify('Gửi mail từ chối bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            } else {
+                T.notify('Gửi mail từ chối người dùng thành công!', 'success');
+                done && done(data.user);
+            }
+        }, error => T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
+    }
+}
+
 // Actions (user) -----------------------------------------------------------------------------------------------------
 export function getDonDeNghiHocByUser(done) {
     return dispatch => {
@@ -154,19 +184,4 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
             }
         }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
     }
-}
-export function getEmailDonDeNghiHoc(done) {
-    T.get('/api/email/all', done, error => T.notify('Get email information failed!', 'danger'));
-}
-
-export function saveEmailDonDeNghiHoc(type, email) {
-    const url = '/api/email';
-    T.put(url, { type, email }, data => {
-        if (data.error) {
-            console.error('PUT: ' + url + '.', data.error);
-            T.notify('Save email information failed!', 'danger');
-        } else {
-            T.notify('Save email information successful!', 'info');
-        }
-    }, error => T.notify('Save email information failed!', 'danger'));
 }

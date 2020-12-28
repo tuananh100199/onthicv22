@@ -4,7 +4,7 @@ module.exports = app => {
 
         integration: Boolean, // Tich hop
         content: String,
-
+        reason: String, //Ly do tu choi don(neu co)
         licenseNumber: String, // So GPLX
         licenseDate: Date, // Ngay cap GPLX
         licenseIssuedBy: String, // Noi cap GPLX

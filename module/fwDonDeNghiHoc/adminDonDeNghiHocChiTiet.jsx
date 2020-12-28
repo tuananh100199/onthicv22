@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getForm, updateForm } from './redux.jsx';
+import { getForm, updateForm, sendEmailTuChoiDonDeNghiHoc } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
@@ -32,18 +32,24 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
         const changesOfForm = {
             approve: "approved",
         }
-        console.log(this.props.donDeNghiHoc)
         this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
             T.notify('Đã chấp nhận đơn đề nghị học!', 'success');
         });
+        console.log(this.props.donDeNghiHoc)
     }
 
     save = () => {
-        const comment = this.viEditor.current.html();
-        if (!comment) {
+        const reasonOfForm = {
+            reason: this.viEditor.current.html(),
+        }
+        if (!this.viEditor.current.html()) {
             T.notify('Lý do không được để trống', 'danger');
         } else {
-            T.notify('Cập nhật lý do từ chối thành công', 'success');
+            this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm, () => {
+                T.notify('Đã gửi email từ chối đơn đề nghị học thành công', 'success');
+            });
+            $('#modal').modal('hide');
+            this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => this.loading = false)
         }
     }
 
@@ -164,5 +170,5 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
 
 }
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getForm, updateForm, updateProfile };
+const mapActionsToProps = { getForm, updateForm, updateProfile, sendEmailTuChoiDonDeNghiHoc };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDonDeNghiHocChiTiet,);

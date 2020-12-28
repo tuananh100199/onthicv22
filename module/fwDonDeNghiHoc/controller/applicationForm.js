@@ -1,13 +1,16 @@
+const applicationForm = require("../model/applicationForm");
+
 module.exports = app => {
 
     const menu = {
-        parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o',
-        subMenusRender: false, groups: ['Danh sách đơn đề nghị', 'Cấu hình'],
-    },
-        menus:{
+        parentMenu: {
+            index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o',
+            subMenusRender: false, groups: ['Danh sách đơn đề nghị', 'Cấu hình'],
+        },
+        menus: {
             3010: { title: 'Danh sách đơn đề nghị học, sát hạch', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
             3020: { title: 'Email', link: '/user/don-de-nghi-hoc/send-mail', icon: 'fa-envelope-o', backgroundColor: '#00FFFF', groupIndex: 1 }
-            
+
         }
     };
     app.get('/user/don-de-nghi-hoc/send-mail', app.permission.check('system:email'), app.templates.admin);
@@ -67,14 +70,14 @@ module.exports = app => {
     // Admin
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber), pageSize = parseInt(req.params.pageSize),
-        condition = req.query.condition || { searchText: '' },
-        pageCondition = {};
+            condition = req.query.condition || { searchText: '' },
+            pageCondition = {};
         if (condition) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-        pageCondition['$or'] = [
-            { firstname: value },
-            { lastname: value },
-        ];
+            pageCondition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+            ];
         }
         app.model.user.getAll(pageCondition, (error, users) => {
             if (error) {
@@ -87,7 +90,7 @@ module.exports = app => {
                     } else {
                         res.send({ page });
                     }
-                });     
+                });
             }
         })
     });
@@ -113,6 +116,28 @@ module.exports = app => {
     });
 
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));
+
+    app.post('/api/application-form/send-mail', app.permission.check('applicationForm:read'), (req, res) => {
+        app.model.applicationForm.get(req.body.formID, (error, item) => {
+            if (error || item == null) {
+                res.send({ error: `System has errors!` })
+            } else {
+                const reason = item.reason;
+                app.model.user.get(item.user._id, (error, user) => {
+                    if (error || user == null) {
+                        res.send({ error: `System has errors!` });
+                    } else {
+                        app.model.setting.get(['emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'], result => {
+                            const mailTitle = result.emailAdminNotifyTitle,
+                                mailText = result.emailAdminNotifyText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
+                                mailHtml = result.emailAdminNotifyHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
+                            app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                        });
+                    }
+                })
+            }
+        });
+    });
 
     // User
     app.get('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
@@ -145,27 +170,5 @@ module.exports = app => {
                 })
             }
         })
-    });
-
-    app.post('/api/user', app.permission.check('user:write'), (req, res) => {
-        const data = req.body.user;
-        const password = data.password;
-        if (!data.password) data.password = app.randomPassword(8);
-        if (data.roles == 'empty') data.roles = [];
-        app.model.applicationForm.create(data, (error, user) => {
-            res.send({ error, user });
-            if (user) {
-                app.model.setting.get(['emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'], result => {
-                    const mailTitle = result.emailAdminNotifyTitle,
-                        mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
-                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
-                    app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                });
-            }
-        });
     });
 };
