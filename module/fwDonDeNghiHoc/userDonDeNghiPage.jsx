@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc } from './redux.jsx';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportToWord } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -19,7 +19,7 @@ class UserDonDeNghiPage extends React.Component {
             if (this.props.system && this.props.system.user) {
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
-                $('#userFirstname').val(firstname);
+                $('#userFirstname').va2l(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
                 $('#phoneNumber').val(phoneNumber);
                 $('#regularResidence').val(regularResidence);
@@ -165,6 +165,13 @@ class UserDonDeNghiPage extends React.Component {
                 }
             });
     };
+    export = () =>{
+        this.props.exportToWord(this.state.item._id,this.state.item, (error) => {
+            if (!error) {
+                T.notify('Xuất file thông tin biểu mẫu thành công!', 'success');
+            }
+        });
+    };
     
     render() {
         const item = this.state.item ? this.state.item : {
@@ -282,11 +289,15 @@ class UserDonDeNghiPage extends React.Component {
                         style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save'/>
                 </button>
+                <button type='button' className='btn btn-primary btn-circle'
+                        style={{ position: 'fixed', right: '80px', bottom: '10px' }} onClick={this.export}>
+                    <i className="fa fa-file-word-o"></i>
+                </button>
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile };
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportToWord };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

@@ -24,7 +24,9 @@ class SectionCourse extends React.Component {
                 return (
                     <div className="col-12 col-md-6"  key={index}>
                         <div className="single-blog-area mb-100 wow fadeInUp" data-wow-delay="250ms" >
-                            <img src={image} alt="" />
+                            <Link to={link}>
+                                <img src={image} alt="" />
+                            </Link>
                             <div className="blog-content">
                                 <a href="#" className="blog-headline">
                                     <h4>{title}</h4>

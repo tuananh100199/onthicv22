@@ -13,9 +13,9 @@ module.exports = app => {
             from: mailFrom,
             cc: mailCc.toString(),
             to: mailTo,
-            subject: mailSubject,
-            text: mailText,
-            html: mailHtml,
+            suxt: mailText,
+            htmlbject: mailSubject,
+            te: mailHtml,
             attachments: mailAttachments
         };
         transporter.sendMail(mailOptions, (error, info) => {
@@ -30,7 +30,8 @@ module.exports = app => {
     };
 
     app.email.validateEmail = email => {
-        const atpos = email.indexOf('@'), dotpos = email.lastIndexOf('.');
+        const atpos = email.indexOf('@'),
+            dotpos = email.lastIndexOf('.');
         return (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length);
     };
 };
