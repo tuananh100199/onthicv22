@@ -27,6 +27,10 @@ module.exports = app => {
 
             // return get2(date.getDate()) + '/' + get2(date.getMonth() + 1) + '/' + date.getFullYear();
         },
+        yearOfBirth: (date) => {
+            const year = date.substring(0, 4);
+            return year;
+        }
 
         // viDateTimeFormat: (date) => {
         //     date.setHours(date.getHours() + 7);

@@ -83,20 +83,90 @@ module.exports = app => {
         })
     });
 
-    //exportToWord
+    //Don De Nghi Hoc
     app.get('/api/user-application-form/export', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
             formItem = app.clone(formItem, user);
             if (!error) {
-                exportReportToWord(formItem, res);
+                exportDonDeNghiHocToWord(formItem, res);
             } else {
                 res.send({ error });
             }
         });
     });
 
-    const exportReportToWord = (formItem, res) => {
+    const exportDonDeNghiHocToWord = (formItem, res) => {
+            let {
+                firstname,
+                lastname,
+                sex,
+                birthday,
+                phoneNumber,
+                regularResidence,
+                residence,
+                identityCard,
+                identityDate,
+                identityIssuedBy,
+                nationality,
+                licenseNumber,
+                licenseDated,
+                licenseIssuedBy,
+                otherDocumentation,
+                licenseClass,
+                newLicenseClass,
+                integration
+
+            } = formItem;
+            const { getName } = require('country-list');
+            if (sex === 'male') {
+                sex = 'Nam';
+            } else {
+                sex = 'Nữ';
+            }
+            const data = {
+                firstname: firstname,
+                lastname: lastname,
+                sex: sex,
+                birthday: app.date.viDateFormat(birthday),
+                phoneNumber: phoneNumber,
+                regularResidence: regularResidence,
+                residence: residence,
+                identityCard: identityCard,
+                identityDate: app.date.viDateFormat(identityDate),
+                identityIssuedBy: identityIssuedBy,
+                nationality: getName(nationality),
+                licenseNumber: licenseNumber,
+                licenseDated: app.date.viDateFormat(licenseDated),
+                licenseIssuedBy: licenseIssuedBy,
+                otherDocumentation: otherDocumentation,
+                licenseClass: licenseClass,
+                newLicenseClass: newLicenseClass,
+                i: integration,
+            }
+            const fileNameOutput = `Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe`;
+            app.docx.writeDocumentFile('/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx', data, `/download/${fileNameOutput}.docx`, () => {
+                res.send({
+                    error: null,
+                    data: data,
+                    link: `/download/${fileNameOutput}.docx?t=${Date.now()}`,
+                });
+            });
+        }
+        //Bien Nhan Lan Dau
+    app.get('/api/user-application-form-receipt/export', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
+            formItem = app.clone(formItem, user);
+            if (!error) {
+                exportBienNhanToWord(formItem, res);
+            } else {
+                res.send({ error });
+            }
+        });
+    });
+
+    const exportBienNhanToWord = (formItem, res) => {
         let {
             firstname,
             lastname,
@@ -104,47 +174,27 @@ module.exports = app => {
             birthday,
             phoneNumber,
             regularResidence,
-            residence,
-            identityCard,
-            identityDate,
-            identityIssuedBy,
-            nationality,
-            licenseNumber,
-            licenseDated,
-            licenseIssuedBy,
-            otherDocumentation,
-            licenseClass,
             newLicenseClass,
-            integration
         } = formItem;
-        const { getName } = require('country-list');
+        let male = false,
+            female = false;
         if (sex === 'male') {
-            sex = 'Nam';
+            male = true;
         } else {
-            sex = 'Nữ';
+            female = true;
         }
         const data = {
             firstname: firstname,
             lastname: lastname,
-            sex: sex,
-            birthday: app.date.viDateFormat(birthday),
+            male: male,
+            female: female,
+            yearOfBirth: app.date.yearOfBirth(birthday),
             phoneNumber: phoneNumber,
             regularResidence: regularResidence,
-            residence: residence,
-            identityCard: identityCard,
-            identityDate: app.date.viDateFormat(identityDate),
-            identityIssuedBy: identityIssuedBy,
-            nationality: getName(nationality),
-            licenseNumber: licenseNumber,
-            licenseDated: app.date.viDateFormat(licenseDated),
-            licenseIssuedBy: licenseIssuedBy,
-            otherDocumentation: otherDocumentation,
-            licenseClass: licenseClass,
             newLicenseClass: newLicenseClass,
-            i: integration,
         }
-        const fileNameOutput = `Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe`;
-        app.docx.writeDocumentFile('/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx', data, `/download/${fileNameOutput}.docx`, () => {
+        const fileNameOutput = `Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau`;
+        app.docx.writeDocumentFile('/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx', data, `/download/${fileNameOutput}.docx`, () => {
             res.send({
                 error: null,
                 data: data,
@@ -152,4 +202,5 @@ module.exports = app => {
             });
         });
     }
+
 };

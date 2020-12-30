@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js'
-import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportToWord } from './redux.jsx';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -41,7 +41,6 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-                    // console.log(country.name('US'));
 
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
@@ -178,9 +177,14 @@ class UserDonDeNghiPage extends React.Component {
                 }
             });
     };
-    export = () =>{
-        this.props.exportToWord(this.state.item._id, (data) => {
+    exportDonDeNghiHoc = () =>{
+        this.props.exportDonDeNghiHocToWord(this.state.item._id, (data) => {
             T.download(data.link, 'Đơn đề nghị học.docx');
+        });
+    };
+    exportBienNhan = () => {
+        this.props.exportBienNhanLanDauToWord(this.state.item._id, (data) => {
+            T.download(data.link, 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
         });
     };
     
@@ -305,8 +309,12 @@ class UserDonDeNghiPage extends React.Component {
                     <i className='fa fa-lg fa-save'/>
                 </button>
                 <button type='button' className='btn btn-primary btn-circle'
-                        style={{ position: 'fixed', right: '80px', bottom: '10px' }} onClick={this.export}>
+                        style={{ position: 'fixed', right: '80px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
+                </button>
+                <button type='button' className='btn btn-primary btn-circle'
+                        style={{ position: 'fixed', right: '150px', bottom: '10px' }} onClick={this.exportBienNhan}>
+                    <i className="fa fa-file-text-o"></i>
                 </button>
             </main>
         );
@@ -314,5 +322,5 @@ class UserDonDeNghiPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportToWord };
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);
