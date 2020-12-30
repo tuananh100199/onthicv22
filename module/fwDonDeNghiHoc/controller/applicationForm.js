@@ -85,51 +85,65 @@ module.exports = app => {
 
     //exportToWord
     app.get('/api/user-application-form/export', app.permission.check('user:login'), (req, res) => {
-        const weekStart = new Date(req.query.weekStart),
-            weekNumber = parseInt(req.query.weekNumber),
-            updateDate = new Date(),
-            shcc = req.query.shcc ? req.query.shcc : req.session.user.shcc,
-            startDate = new Date(weekStart),
-            endDate = new Date(weekStart.setDate(weekStart.getDate() + 7)),
-            condition = {
-                statement: 'shcc = :shcc AND startDate >= :startDate AND startDate < :endDate',
-                parameter: {
-                    startDate: new Date(startDate).getTime(),
-                    endDate: new Date(endDate).getTime(),
-                    shcc: shcc
-                }
-            };
-        app.model.fwCalendar.getAll(condition, '*', 'startDate ASC', (error, items) => {
+        const user = req.session.user;
+        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
+            formItem = app.clone(formItem, user);
             if (!error) {
-                const item = {
-                    weekNumber: weekNumber,
-                    startDate: startDate,
-                    endDate: endDate,
-                    updateDate: updateDate,
-                    shcc: shcc,
-                    jobs: items
-                };
-                exportReportToWord(item, res);
+                exportReportToWord(formItem, res);
             } else {
                 res.send({ error });
             }
         });
     });
 
-    const exportReportToWord = (item, res) => {
-        const { weekNumber, startDate, endDate, updateDate, jobs, shcc } = item;
-        const data = {
-            weekNumber: weekNumber,
-            start: app.date.viDateFormat(startDate),
-            end: app.date.viDateFormat(new Date(endDate.setDate(endDate.getDate() - 1))),
-            uT: ('0' + updateDate.getHours()).slice(-2) + 'g' + ('0' + updateDate.getMinutes()).slice(-2),
-            uD: ('0' + updateDate.getDate()).slice(-2) + '/' + ('0' + (updateDate.getMonth() + 1)).slice(-2),
-            jobsByDay: jobsByDay.filter(j => j.jobs.length > 0).map(item => ({
-                day: item.day,
-                jobLast: item.jobs.splice(item.jobs.length - 1, 1),
-                jobs: item.jobs
-            }))
+    const exportReportToWord = (formItem, res) => {
+        let {
+            firstname,
+            lastname,
+            sex,
+            birthday,
+            phoneNumber,
+            regularResidence,
+            residence,
+            identityCard,
+            identityDate,
+            identityIssuedBy,
+            nationality,
+            licenseNumber,
+            licenseDated,
+            licenseIssuedBy,
+            otherDocumentation,
+            licenseClass,
+            newLicenseClass,
+            integration
+        } = formItem;
+        const { getName } = require('country-list');
+        if (sex === 'male') {
+            sex = 'Nam';
+        } else {
+            sex = 'Nữ';
         }
+        const data = {
+            firstname: firstname,
+            lastname: lastname,
+            sex: sex,
+            birthday: app.date.viDateFormat(birthday),
+            phoneNumber: phoneNumber,
+            regularResidence: regularResidence,
+            residence: residence,
+            identityCard: identityCard,
+            identityDate: app.date.viDateFormat(identityDate),
+            identityIssuedBy: identityIssuedBy,
+            nationality: getName(nationality),
+            licenseNumber: licenseNumber,
+            licenseDated: app.date.viDateFormat(licenseDated),
+            licenseIssuedBy: licenseIssuedBy,
+            otherDocumentation: otherDocumentation,
+            licenseClass: licenseClass,
+            newLicenseClass: newLicenseClass,
+            i: integration,
+        }
+        console.log(data);
         const fileNameOutput = `Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe`;
         app.docx.writeDocumentFile('/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx', data, `/download/${fileNameOutput}.docx`, () => {
             res.send({

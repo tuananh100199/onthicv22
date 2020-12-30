@@ -156,10 +156,10 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
 }
 
 //exportToWord
-export function exportToWord(data, done) {
+export function exportToWord(_id, done) {
     return dispatch => {
         const url = `/api/user-application-form/export`;
-        T.get(url, { data }, data => {
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
                 console.error(`GET: ${url}.`, data.error);

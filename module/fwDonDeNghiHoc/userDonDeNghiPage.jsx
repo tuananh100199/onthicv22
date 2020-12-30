@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import T from '../../view/js/common.js'
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportToWord } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
+// var country = require('countryjs');
 
 class UserDonDeNghiPage extends React.Component {
     state = {};
@@ -15,11 +17,12 @@ class UserDonDeNghiPage extends React.Component {
         T.ready('/user', () => {
             $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
-                $('#userFirstname').va2l(firstname);
+                $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
                 $('#phoneNumber').val(phoneNumber);
                 $('#regularResidence').val(regularResidence);
@@ -38,6 +41,8 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
+                    // console.log(country.name('US'));
+
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
@@ -148,10 +153,16 @@ class UserDonDeNghiPage extends React.Component {
                     $('#licenseIssuedBy').focus();
                     return;
                 }
+                if (changesOfForm.licenseDated == null) {
+                    T.notify('Ngày cấp giấy phép lái xe bị trống', 'danger');
+                    $('#licenseDated').focus();
+                    return;
+                }
             }
             if (changesOfForm.licenseNumber == '') {
                 changesOfForm.licenseClass = '';
                 changesOfForm.licenseIssuedBy = '';
+                changesOfForm.licenseDated = null;
             }
             
             this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, (error) => {
@@ -159,6 +170,8 @@ class UserDonDeNghiPage extends React.Component {
                     if (changesOfForm.licenseNumber == '') {
                         $('#licenseClass').val('');
                         $('#licenseIssuedBy').val('');
+                        $('#licenseDated').val(null);
+
                     }
     
                     T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
@@ -166,10 +179,8 @@ class UserDonDeNghiPage extends React.Component {
             });
     };
     export = () =>{
-        this.props.exportToWord(this.state.item._id,this.state.item, (error) => {
-            if (!error) {
-                T.notify('Xuất file thông tin biểu mẫu thành công!', 'success');
-            }
+        this.props.exportToWord(this.state.item._id, (data) => {
+            T.download(data.link, 'Đơn đề nghị học.docx');
         });
     };
     
@@ -258,9 +269,13 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label' htmlFor='licenseClass'>Hạng: </label>
                                 <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection'/>
                             </div>
-                            <div className='form-group col-md-7'>
+                            <div className='form-group col-md-5'>
                                 <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: </label>
                                 <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy'/>
+                            </div>
+                            <div className='form-group col-md-2'>
+                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày: </label>
+                                <input className='form-control' type='text' placeholder='Ngày cấp GPLX' id='licenseDated'/>
                             </div>
                         </div>
                         <div className='form-group'>

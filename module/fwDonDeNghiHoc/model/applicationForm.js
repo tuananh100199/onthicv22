@@ -6,7 +6,7 @@ module.exports = app => {
         content: String,
 
         licenseNumber: String, // So GPLX
-        licenseDate: Date, // Ngay cap GPLX
+        licenseDated: Date, // Ngay cap GPLX
         licenseIssuedBy: String, // Noi cap GPLX
 
         otherDocumentation: String, // Tai lieu khac
