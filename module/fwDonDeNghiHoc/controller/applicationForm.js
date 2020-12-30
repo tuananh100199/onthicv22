@@ -143,7 +143,6 @@ module.exports = app => {
             newLicenseClass: newLicenseClass,
             i: integration,
         }
-        console.log(data);
         const fileNameOutput = `Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe`;
         app.docx.writeDocumentFile('/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx', data, `/download/${fileNameOutput}.docx`, () => {
             res.send({
