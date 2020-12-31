@@ -39,6 +39,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     }
 
     save = () => {
+        $("#submit-btn").attr("disabled", true);
         let reasonOfForm = {
             reason: this.viEditor.current.html(),
         }
@@ -51,7 +52,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
             }
             this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm);
             this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => {
-                T.notify('Tin nhắn của bạn đã được gửi đi thành công!', 'success');
+                $("#submit-btn").removeAttr("disabled");
                 $('#modal').modal('hide');
             })
 
@@ -163,7 +164,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                    <button type="button" className="btn btn-primary" onClick={this.save}>Gửi</button>
+                                    <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
                                 </div>
                             </form>
                         </div>

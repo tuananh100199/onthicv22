@@ -131,12 +131,15 @@ module.exports = app => {
                             const mailTitle = result.emailAdminNotifyTitle,
                                 mailText = result.emailAdminNotifyText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
                                 mailHtml = result.emailAdminNotifyHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
-                            app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
+                            app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
+                                res.end()
+                            }, (error) => {
+                                res.send({ error })
+                            });
                         });
                     }
                 })
             }
-            res.send({ error, item });
         });
     });
 

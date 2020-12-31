@@ -47,7 +47,7 @@ export function ajaxGetForm(_id, option, done) {
 
 T.initCookiePage('pageForm');
 export function getFormInPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageForm', pageNumber, pageSize,pageCondition);
+    const page = T.updatePage('pageForm', pageNumber, pageSize, pageCondition);
     if (page.pageCondition && typeof page.pageCondition == 'object') page.pageCondition = JSON.stringify(page.pageCondition);
     return dispatch => {
         ajaxGetFormInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, data => {
@@ -139,7 +139,7 @@ export function saveEmailDonDeNghiHoc(type, email) {
         }
     }, error => T.notify('Save email information failed!', 'danger'));
 }
-export function sendEmailTuChoiDonDeNghiHoc(formID, done){
+export function sendEmailTuChoiDonDeNghiHoc(formID, done) {
     return dispatch => {
         const url = '/api/application-form/send-mail';
         T.post(url, { formID }, data => {
@@ -147,8 +147,8 @@ export function sendEmailTuChoiDonDeNghiHoc(formID, done){
                 T.notify('Gửi mail từ chối bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                //T.notify('Gửi mail từ chối người dùng thành công!', 'success');
-                done && done(data);
+                T.notify('Gửi mail từ chối người dùng thành công!', 'success');
+                done && done();
             }
         }, error => T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
     }
