@@ -147,8 +147,8 @@ export function sendEmailTuChoiDonDeNghiHoc(formID, done){
                 T.notify('Gửi mail từ chối bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                T.notify('Gửi mail từ chối người dùng thành công!', 'success');
-                done && done(data.user);
+                //T.notify('Gửi mail từ chối người dùng thành công!', 'success');
+                done && done(data);
             }
         }, error => T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
     }

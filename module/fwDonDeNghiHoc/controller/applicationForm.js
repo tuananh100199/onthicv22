@@ -117,7 +117,7 @@ module.exports = app => {
 
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));
 
-    app.post('/api/application-form/send-mail', app.permission.check('applicationForm:read'), (req, res) => {
+    app.post('/api/application-form/send-mail', (req, res) => {
         app.model.applicationForm.get(req.body.formID, (error, item) => {
             if (error || item == null) {
                 res.send({ error: `System has errors!` })
@@ -131,11 +131,12 @@ module.exports = app => {
                             const mailTitle = result.emailAdminNotifyTitle,
                                 mailText = result.emailAdminNotifyText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
                                 mailHtml = result.emailAdminNotifyHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
-                            app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                            app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
                         });
                     }
                 })
             }
+            res.send({ error, item });
         });
     });
 

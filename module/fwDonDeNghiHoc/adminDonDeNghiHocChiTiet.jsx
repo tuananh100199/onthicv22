@@ -39,17 +39,22 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     }
 
     save = () => {
-        const reasonOfForm = {
+        let reasonOfForm = {
             reason: this.viEditor.current.html(),
         }
         if (!this.viEditor.current.html()) {
             T.notify('Lý do không được để trống', 'danger');
         } else {
-            this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm, () => {
-                T.notify('Đã gửi email từ chối đơn đề nghị học thành công', 'success');
-            });
-            $('#modal').modal('hide');
-            this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => this.loading = false)
+            reasonOfForm = {
+                reason: this.viEditor.current.html(),
+                approve: "eject"
+            }
+            this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm);
+            this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => {
+                T.notify('Tin nhắn của bạn đã được gửi đi thành công!', 'success');
+                $('#modal').modal('hide');
+            })
+
         }
     }
 
@@ -153,12 +158,12 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                             <form>
                                 <div className="modal-body mx-3">
                                     <div className="form-group">
-                                    <Editor ref={this.viEditor} height='400px' placeholder='Nội dung' />
+                                        <Editor ref={this.viEditor} height='400px' placeholder='Nội dung' />
                                     </div>
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                    <button type="button" className="btn btn-primary" onClick={this.save}>Lưu</button>
+                                    <button type="button" className="btn btn-primary" onClick={this.save}>Gửi</button>
                                 </div>
                             </form>
                         </div>
