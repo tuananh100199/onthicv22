@@ -185,3 +185,19 @@ export function exportBienNhanLanDauToWord(_id, done) {
     }
 }
 
+export function exportBanCamKetToWord(_id, done) {
+    return dispatch => {
+        const url = `/api/user-application-form-commitment/export`;
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
+    }
+}
+
+

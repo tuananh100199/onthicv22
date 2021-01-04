@@ -165,34 +165,90 @@ module.exports = app => {
     });
 
     const exportBienNhanToWord = (formItem, res) => {
+            let {
+                firstname,
+                lastname,
+                sex,
+                birthday,
+                phoneNumber,
+                regularResidence,
+                newLicenseClass,
+            } = formItem;
+            let male = false,
+                female = false;
+            if (sex === 'male') {
+                male = true;
+            } else {
+                female = true;
+            }
+            const data = {
+                firstname: firstname,
+                lastname: lastname,
+                male: male,
+                female: female,
+                yearOfBirth: app.date.yearOfBirth(birthday),
+                phoneNumber: phoneNumber,
+                regularResidence: regularResidence,
+                newLicenseClass: newLicenseClass,
+            }
+
+            app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
+                res.send({
+                    error: null,
+                    buf: buf,
+                });
+            });
+        }
+        //Ban Cam Ket
+    app.get('/api/user-application-form-commitment/export', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
+            formItem = app.clone(formItem, user);
+            if (!error) {
+                exportBanCamKetToWord(formItem, res);
+            } else {
+                res.send({ error });
+            }
+        });
+    });
+
+    const exportBanCamKetToWord = (formItem, res) => {
         let {
             firstname,
             lastname,
             sex,
             birthday,
-            phoneNumber,
-            regularResidence,
-            newLicenseClass,
+            residence,
+            identityCard,
+            identityDate,
+            identityIssuedBy,
+            licenseNumber,
+            licenseDated,
+            licenseIssuedBy,
+            otherDocumentation,
+            licenseClass,
         } = formItem;
-        let male = false,
-            female = false;
         if (sex === 'male') {
-            male = true;
+            sex = 'Nam';
         } else {
-            female = true;
+            sex = 'Nữ';
         }
         const data = {
             firstname: firstname,
             lastname: lastname,
-            male: male,
-            female: female,
-            yearOfBirth: app.date.yearOfBirth(birthday),
-            phoneNumber: phoneNumber,
-            regularResidence: regularResidence,
-            newLicenseClass: newLicenseClass,
+            sex: sex,
+            birthday: app.date.customDateFormat(birthday),
+            residence: residence,
+            identityCard: identityCard,
+            identityDate: app.date.customDateFormat(identityDate),
+            identityIssuedBy: identityIssuedBy,
+            licenseNumber: licenseNumber,
+            licenseDated: app.date.customDateFormat(licenseDated),
+            licenseIssuedBy: licenseIssuedBy,
+            otherDocumentation: otherDocumentation,
+            licenseClass: licenseClass,
         }
-
-        app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
+        app.docx.generateFile(`/document/Ban_Cam_Ket.docx`, data, (error, buf) => {
             res.send({
                 error: null,
                 buf: buf,

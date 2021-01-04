@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js'
-import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord } from './redux.jsx';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -187,7 +187,11 @@ class UserDonDeNghiPage extends React.Component {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
         });
     };
-    
+    exportBanCamKet = () => {
+        this.props.exportBanCamKetToWord(this.state.item._id, (data) => {
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Bản Cam Kết.docx');
+        });
+    };
     render() {
         const item = this.state.item ? this.state.item : {
              integration: false,
@@ -316,11 +320,15 @@ class UserDonDeNghiPage extends React.Component {
                         style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
+                <button type='button' className='btn btn-secondary btn-circle' title='Xuất Bản Cam Kết Thành Word'
+                        style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
+                    <i className="fa fa-file-text-o"></i>
+                </button>
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord };
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);
