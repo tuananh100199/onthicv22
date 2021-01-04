@@ -5,8 +5,8 @@ import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
+import FileSaver from 'file-saver'
 const countryList = require('country-list');
-// var country = require('countryjs');
 
 class UserDonDeNghiPage extends React.Component {
     state = {};
@@ -179,12 +179,12 @@ class UserDonDeNghiPage extends React.Component {
     };
     exportDonDeNghiHoc = () =>{
         this.props.exportDonDeNghiHocToWord(this.state.item._id, (data) => {
-            T.download(data.link, 'Đơn đề nghị học.docx');
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Đơn Đề Nghị Học.docx');
         });
     };
     exportBienNhan = () => {
         this.props.exportBienNhanLanDauToWord(this.state.item._id, (data) => {
-            T.download(data.link, 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
         });
     };
     
@@ -304,16 +304,16 @@ class UserDonDeNghiPage extends React.Component {
                 <Link to='/user' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply'/>
                 </Link>
-                <button type='button' className='btn btn-primary btn-circle'
+                <button type='button' className='btn btn-primary btn-circle' title='Lưu'
                         style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save'/>
                 </button>
-                <button type='button' className='btn btn-primary btn-circle'
-                        style={{ position: 'fixed', right: '80px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
+                <button type='button' className='btn btn-success btn-circle' title='Xuất Đơn Đề Nghị Học Thành Word'
+                        style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
                 </button>
-                <button type='button' className='btn btn-primary btn-circle'
-                        style={{ position: 'fixed', right: '150px', bottom: '10px' }} onClick={this.exportBienNhan}>
+                <button type='button' className='btn btn-info btn-circle' title='Xuất Biên Nhận Học Viên Thành Word'
+                        style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
             </main>
