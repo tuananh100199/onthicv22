@@ -185,3 +185,34 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
         }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
     }
 }
+
+//exportToWord
+export function exportDonDeNghiHocToWord(_id, done) {
+    return dispatch => {
+        const url = `/api/user-application-form/export`;
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
+    }
+}
+export function exportBienNhanLanDauToWord(_id, done) {
+    return dispatch => {
+        const url = `/api/user-application-form-receipt/export`;
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xuất file word bị lỗi!', 'danger');
+                console.error(`GET: ${url}.`, data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Xuất file word thành công!', 'success');
+            }
+        }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
+    }
+}
+
