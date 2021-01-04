@@ -29,7 +29,6 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
     }
 
     exportDonDeNghiHoc = (e, item) => {
-        console.log(item)
         this.props.exportDonDeNghiHocToWord(item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Đơn Đề Nghị Học.docx');
         });

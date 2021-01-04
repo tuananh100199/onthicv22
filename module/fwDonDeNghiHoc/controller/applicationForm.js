@@ -35,9 +35,10 @@ module.exports = app => {
         if (app.model && app.model.setting) {
             app.model.setting.init({
                 emailAdminNotifyTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
-                emailAdminNotifyText: 'Dear {name}, Hiệp Phát welcome you as a new member. Before you can login, please click this {url} to active your account. Best regard, Tutorial, Website: ' + app.rootUrl + '',
+                emailAdminNotifyText: 'Dear {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
                 emailAdminNotifyHtml: 'Dear <b>{name}</b>,<br/><br/>' +
-                    'Hiệp Phát welcome you as a new member. Before you can login, please click this <a href="{url}">{url}</a> to active your account.<br/><br/>' +
+                    'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
+                    '{reason}<br/><br/>' +
                     'Best regard,<br/>' +
                     'Hiệp Phát<br/>' +
                     'Website1: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
@@ -47,6 +48,7 @@ module.exports = app => {
         }
     };
     init();
+
 
     //APIs -------------------------------------------------------------------------------------------------------------
     const EmailParams = [
@@ -175,6 +177,8 @@ module.exports = app => {
             }
         })
     });
+
+
 
     //Don De Nghi Hoc
     app.get('/api/user-application-form/export/:_id', app.permission.check('user:login'), (req, res) => {

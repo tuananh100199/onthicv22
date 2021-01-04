@@ -13,9 +13,9 @@ module.exports = app => {
             from: mailFrom,
             cc: mailCc.toString(),
             to: mailTo,
-            suxt: mailText,
-            htmlbject: mailSubject,
-            te: mailHtml,
+            subject: mailSubject,
+            text: mailText,
+            html: mailHtml,
             attachments: mailAttachments
         };
         transporter.sendMail(mailOptions, (error, info) => {
