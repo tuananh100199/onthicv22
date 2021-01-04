@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Children } from 'react';
 import { connect } from 'react-redux';
-import { getFormInPage, createForm, updateForm, deleteForm } from './redux.jsx';
+import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord } from './redux.jsx';
 import { getUserInPage } from '../fwUser/redux.jsx';
 import { getUser } from '../fwUser/redux.jsx';
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
+import FileSaver from 'file-saver'
 
 class AdminDuyetDonDeNghiHoc extends React.Component {
     constructor(props) {
@@ -26,6 +27,18 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
         T.ready('user/don-de-nghi-hoc');
         this.props.getFormInPage(1, T.defaultUserPageSize, () => this.loading = false);
     }
+
+    exportDonDeNghiHoc = (e, item) => {
+        console.log(item)
+        this.props.exportDonDeNghiHocToWord(item._id, (data) => {
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Đơn Đề Nghị Học.docx');
+        });
+    };
+    exportBienNhan = (e, item) => {
+        this.props.exportBienNhanLanDauToWord(item._id, (data) => {
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
+        });
+    };
 
     search = (e) => {
         e.preventDefault();
@@ -68,9 +81,14 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id} data-id={item._id} className='btn btn-warning'>
                                     <i className='fa fa-lg fa-list-alt' />
                                 </Link>
-                                <Link to={'#'} className='btn btn-primary'>
-                                    <i className='fa fa-lg fa-edit' />
-                                </Link>
+                                <button type='button' className='btn btn-success' title='Xuất Đơn Đề Nghị Học Thành Word'
+                                    onClick={e => this.exportDonDeNghiHoc(e, item)}>
+                                    <i className="fa fa-file-word-o"></i>
+                                </button>
+                                <button type='button' className='btn btn-info' title='Xuất Biên Nhận Học Viên Thành Word'
+                                    onClick={e => this.exportBienNhan(e, item)}>
+                                    <i className="fa fa-file-text-o"></i>
+                                </button>
                                 {!readOnly ?
                                     <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                         <i className='fa fa-lg fa-trash' />
@@ -114,5 +132,5 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system, user: state.user });
-const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage };
+const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDuyetDonDeNghiHoc);
