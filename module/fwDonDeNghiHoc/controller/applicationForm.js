@@ -128,28 +128,26 @@ module.exports = app => {
                 firstname: firstname,
                 lastname: lastname,
                 sex: sex,
-                birthday: app.date.viDateFormat(birthday),
+                birthday: app.date.customDateFormat(birthday),
                 phoneNumber: phoneNumber,
                 regularResidence: regularResidence,
                 residence: residence,
                 identityCard: identityCard,
-                identityDate: app.date.viDateFormat(identityDate),
+                identityDate: app.date.customDateFormat(identityDate),
                 identityIssuedBy: identityIssuedBy,
                 nationality: getName(nationality),
                 licenseNumber: licenseNumber,
-                licenseDated: app.date.viDateFormat(licenseDated),
+                licenseDated: app.date.customDateFormat(licenseDated),
                 licenseIssuedBy: licenseIssuedBy,
                 otherDocumentation: otherDocumentation,
                 licenseClass: licenseClass,
                 newLicenseClass: newLicenseClass,
                 i: integration,
             }
-            const fileNameOutput = `Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe`;
-            app.docx.writeDocumentFile('/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx', data, `/download/${fileNameOutput}.docx`, () => {
+            app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
                 res.send({
                     error: null,
-                    data: data,
-                    link: `/download/${fileNameOutput}.docx?t=${Date.now()}`,
+                    buf: buf,
                 });
             });
         }
@@ -193,12 +191,11 @@ module.exports = app => {
             regularResidence: regularResidence,
             newLicenseClass: newLicenseClass,
         }
-        const fileNameOutput = `Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau`;
-        app.docx.writeDocumentFile('/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx', data, `/download/${fileNameOutput}.docx`, () => {
+
+        app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
             res.send({
                 error: null,
-                data: data,
-                link: `/download/${fileNameOutput}.docx?t=${Date.now()}`,
+                buf: buf,
             });
         });
     }
