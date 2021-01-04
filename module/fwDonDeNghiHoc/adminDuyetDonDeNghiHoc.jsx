@@ -1,6 +1,6 @@
 import React, { Children } from 'react';
 import { connect } from 'react-redux';
-import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord } from './redux.jsx';
+import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
 import { getUserInPage } from '../fwUser/redux.jsx';
 import { getUser } from '../fwUser/redux.jsx';
 import { Link } from 'react-router-dom';
@@ -36,6 +36,12 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
     exportBienNhan = (e, item) => {
         this.props.exportBienNhanLanDauToWord(item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
+        });
+    };
+
+    exportBanCamKet = (e, item) => {
+        this.props.exportBanCamKetToWord(item._id, (data) => {
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Bản Cam Kết.docx');
         });
     };
 
@@ -88,6 +94,10 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                                     onClick={e => this.exportBienNhan(e, item)}>
                                     <i className="fa fa-file-text-o"></i>
                                 </button>
+                                <button type='button' className='btn btn-secondary' title='Xuất Bản Cam Kết Thành Word'
+                                    onClick={e => this.exportBanCamKet(e, item)}>
+                                    <i className="fa fa-file-text-o"></i>
+                                </button>
                                 {!readOnly ?
                                     <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                         <i className='fa fa-lg fa-trash' />
@@ -131,5 +141,5 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system, user: state.user });
-const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord };
+const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDuyetDonDeNghiHoc);
