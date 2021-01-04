@@ -32,29 +32,30 @@ export default function applicationFormReducer(state = null, data) {
 
 // Actions (admin) ----------------------------------------------------------------------------------------------------
 export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, done) {
-    const url = '/api/user-form/page/' + pageNumber + '/' + pageSize;
-    T.get(url, { pageCondition }, data => {
+    const url = '/api/application-form/page/' + pageNumber + '/' + pageSize;
+    T.get(url, { condition: pageCondition }, data => {
         done(data)
     }, error => T.notify('Lấy danh sách form bị lỗi!', 'danger'))
 }
 
 export function ajaxGetForm(_id, option, done) {
-    const url = '/api/user-form/item/' + _id;
+    const url = '/api/application-form/item/' + _id;
     T.get(url, { option }, data => {
         done(data)
     }, error => T.notify('Lấy form bị lỗi!', 'danger'))
 }
 
 T.initCookiePage('pageForm');
-export function getFormInPage(pageNumber, pageSize, done) {
-    const page = T.updatePage('pageForm', pageNumber, pageSize);
+export function getFormInPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageForm', pageNumber, pageSize, pageCondition);
+    if (page.pageCondition && typeof page.pageCondition == 'object') page.pageCondition = JSON.stringify(page.pageCondition);
     return dispatch => {
-        ajaxGetFormInPage(page.pageNumber, page.pageSize, {}, data => {
+        ajaxGetFormInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, data => {
             if (data.error) {
                 T.notify('Lấy danh sách form bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                if (done) done(data);
                 dispatch({ type: GET_PAGE, page: data.page });
             }
         })
@@ -120,6 +121,36 @@ export function deleteForm(_id) {
                 dispatch(getFormInPage());
             }
         }, error => T.notify('Xóa form bị lỗi!', 'danger'));
+    }
+}
+
+export function getEmailDonDeNghiHoc(done) {
+    T.get('/api/email/all', done, error => T.notify('Get email information failed!', 'danger'));
+}
+
+export function saveEmailDonDeNghiHoc(type, email) {
+    const url = '/api/email';
+    T.put(url, { type, email }, data => {
+        if (data.error) {
+            console.error('PUT: ' + url + '.', data.error);
+            T.notify('Save email information failed!', 'danger');
+        } else {
+            T.notify('Save email information successful!', 'info');
+        }
+    }, error => T.notify('Save email information failed!', 'danger'));
+}
+export function sendEmailTuChoiDonDeNghiHoc(formID, done) {
+    return dispatch => {
+        const url = '/api/application-form/send-mail';
+        T.post(url, { formID }, data => {
+            if (data.error) {
+                T.notify('Gửi mail từ chối bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            } else {
+                T.notify('Gửi mail từ chối người dùng thành công!', 'success');
+                done && done();
+            }
+        }, error => T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
     }
 }
 

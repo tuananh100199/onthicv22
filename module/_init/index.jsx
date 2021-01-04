@@ -21,6 +21,10 @@ export default {
         {
             path: '/user',
             component: () => <SubMenusPage menuLink='/user' menuKey={1000} headerIcon='fa-user' />
+        },
+        {
+            path: '/user/don-de-nghi-hoc',
+            component: () => <SubMenusPage menuLink='/user/don-de-nghi-hoc' menuKey={3000} headerIcon='fa-user' />
         }
     ],
 };

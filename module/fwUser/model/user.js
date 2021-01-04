@@ -8,15 +8,14 @@ module.exports = (app) => {
         email: String,
         password: String,
         phoneNumber: String,
-
         nationality: String, // Quoc tich
         residence: String, // Noi cu tru
+        identityCard: String, // CMND, CCCD
         regularResidence: String, // Noi dang ky ho khau thuong tru
 
         identityCard: String, // CMND, CCCD
         identityIssuedBy: String, // Noi cap CMND, CCCD
         identityDate: Date, // Ngay cap CMND, CCCD
-
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,
@@ -25,13 +24,12 @@ module.exports = (app) => {
         tokenDate: Date,
     });
 
-    schema.methods.equalPassword = function(password) {
+    schema.methods.equalPassword = function (password) {
         return app.crypt.compareSync(password, this.password);
     };
 
-    schema.methods.clone = function() {
+    schema.methods.clone = function () {
         let user = app.clone(this, { permissions: [], menu: {} });
-        console.log('user', user)
         delete user.password;
 
         const systemMenu = app.permission.list();
@@ -72,15 +70,15 @@ module.exports = (app) => {
 
         auth: (email, password, done) =>
             model
-            .findOne({ email })
-            .populate('roles')
-            .exec((error, user) =>
-                done(
-                    error == null && user != null && user.equalPassword(password) ?
-                    user :
-                    null
-                )
-            ),
+                .findOne({ email })
+                .populate('roles')
+                .exec((error, user) =>
+                    done(
+                        error == null && user != null && user.equalPassword(password) ?
+                            user :
+                            null
+                    )
+                ),
 
         create: (data, done) =>
             app.model.user.get({ email: data.email }, (error, user) => {
@@ -139,11 +137,6 @@ module.exports = (app) => {
         get: (condition, done) =>
             typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) : model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
 
-        getPlayerInfo: (_id, done) => {
-            const userSelect = '-password -token -tokenDate -roles -active';
-            model.findById({ _id }, userSelect).exec(done);
-        },
-
         getPage: (pageNumber, pageSize, condition, sort, done) =>
             model.countDocuments(condition, (error, totalItem) => {
                 if (done == undefined) {
@@ -161,8 +154,8 @@ module.exports = (app) => {
                     };
                     result.pageNumber =
                         pageNumber === -1 ?
-                        result.pageTotal :
-                        Math.min(pageNumber, result.pageTotal);
+                            result.pageTotal :
+                            Math.min(pageNumber, result.pageTotal);
                     const skipNumber =
                         (result.pageNumber > 0 ? result.pageNumber - 1 : 0) *
                         result.pageSize;
@@ -186,15 +179,15 @@ module.exports = (app) => {
 
         getAll: (condition, done) =>
             done ?
-            model
-            .find(condition)
-            .sort({ lastname: 1, firstname: 1 })
-            .select('-password -token -tokenDate')
-            .exec(done) : model
-            .find({})
-            .sort({ lastname: 1, firstname: 1 })
-            .select('-password -token -tokenDate')
-            .exec(condition),
+                model
+                    .find(condition)
+                    .sort({ lastname: 1, firstname: 1 })
+                    .select('-password -token -tokenDate')
+                    .exec(done) : model
+                        .find({})
+                        .sort({ lastname: 1, firstname: 1 })
+                        .select('-password -token -tokenDate')
+                        .exec(condition),
 
         update: (_id, $set, $unset, done) => {
             if (!done) {

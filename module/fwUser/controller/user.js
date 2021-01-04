@@ -20,11 +20,11 @@ module.exports = app => {
         (req, res) => {
             let pageNumber = parseInt(req.params.pageNumber),
                 pageSize = parseInt(req.params.pageSize),
-                condition = req.query.condition || '',
+                condition = req.query.condition || { searchText: '' },
                 pageCondition = {};
             try {
                 if (condition) {
-                    const value = { $regex: `.*${condition}.*`, $options: 'i' };
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition['$or'] = [
                         { facebook: value },
                         { phoneNumber: value },
@@ -67,7 +67,7 @@ module.exports = app => {
                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                         .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
                         .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
-                    app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                    app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
                 });
             }
         });

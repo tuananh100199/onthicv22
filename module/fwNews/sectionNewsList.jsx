@@ -38,6 +38,7 @@ class SectionNewsList extends React.Component {
     }
     
     render() {
+        console.log(this.props)
         let userPage = this.props.news ? this.props.news.userPage : null, elements_grid = [], elements_list = [];
         if (userPage) {
             elements_grid = userPage.list.map((item, index) => {
