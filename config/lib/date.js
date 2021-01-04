@@ -18,14 +18,14 @@ module.exports = app => {
         dateFormat: (date) => {
             return get2(date.getMonth() + 1) + '/' + get2(date.getDate()) + '/' + date.getFullYear();
         },
-
         viDateFormat: (date) => {
+            return get2(date.getDate()) + '/' + get2(date.getMonth() + 1) + '/' + date.getFullYear();
+        },
+        customDateFormat: (date) => {
             const year = date.substring(0, 4),
                 month = date.substring(5, 7),
                 day = date.substring(8, 10);
             return get2(day) + '/' + get2(month) + '/' + year;
-
-            // return get2(date.getDate()) + '/' + get2(date.getMonth() + 1) + '/' + date.getFullYear();
         },
         yearOfBirth: (date) => {
             const year = date.substring(0, 4);
