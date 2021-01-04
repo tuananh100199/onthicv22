@@ -23,6 +23,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
     }
 
     componentDidMount() {
+        T.ready('user/don-de-nghi-hoc');
         this.props.getFormInPage(1, T.defaultUserPageSize, () => this.loading = false);
     }
 
@@ -61,7 +62,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
                             <td>
-                                {(item.approve === 'waiting'? 'Mới' : (item.approve === 'approved'?'Đã duyệt':'Từ chối'))}
+                                {(item.approve === 'waiting' ? 'Mới' : (item.approve === 'approved' ? 'Đã duyệt' : 'Từ chối'))}
                             </td>
                             <td className='btn-group'>
                                 <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id} data-id={item._id} className='btn btn-warning'>
@@ -76,7 +77,7 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                                     </a> : null
                                 }
                             </td>
-                        </tr> 
+                        </tr>
                     ))}
                 </tbody>
             </table>

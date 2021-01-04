@@ -11,8 +11,7 @@ class CourseEditPage extends React.Component {
         this.state = { item: null };
         this.courseLink = React.createRef();
         this.imageBox = React.createRef();
-        this.viEditor = React.createRef();
-        this.enEditor = React.createRef();
+        this.editor = React.createRef();
     }
     componentDidMount() {
         T.ready('/user/course/list', () => {
@@ -48,12 +47,12 @@ class CourseEditPage extends React.Component {
                 }
                 item.image = item.image ? item.image : '/image/avatar.jpg';
                 this.imageBox.current.setData('course:' + (item._id ? item._id : 'new'));
-                let title = T.language.parse(item.title, true),
+                let title = item.title,
                     abstract = data.item.abstract,
-                    content = T.language.parse(item.content, true);
-                $('#courseTitle').val(title.vi);
+                    content =item.content;
+                $('#courseTitle').val(title);
                 $('#courseAbstract').val(abstract);
-                this.viEditor.current.html(content.vi);
+                this.editor.current.html(content);
                 this.setState(data);
             } else {
                 this.props.history.push('/user/course/list');
@@ -84,12 +83,12 @@ class CourseEditPage extends React.Component {
             courseStopPost = $('#courseStopPost').val(),
             changes = {
                 categories: $('#courseCategories').val(),
-                title: JSON.stringify({ vi: $('#courseTitle').val() }),
+                title: $('#courseTitle').val().trim(),
                 link: $('#courseLink').val().trim(),
                 active: this.state.item.active,
                 isInternal: this.state.item.isInternal,
                 abstract: $('#courseAbstract').val().trim(),
-                content: JSON.stringify({ vi: this.viEditor.current.html() }),
+                content: this.editor.current.html(),
             };
         if (courseStartPost) changes.startPost = T.formatDate(courseStartPost);
         if (courseStopPost) changes.stopPost = T.formatDate(courseStopPost);
@@ -113,7 +112,7 @@ class CourseEditPage extends React.Component {
             active: false, isInternal: false,
             view: 0
         };
-        let title = T.language.parse(item.title, true), linkDefaultCourse = T.rootUrl + '/course/item/' + item._id;
+        let title= item.title, linkDefaultCourse = T.rootUrl + '/course/item/' + item._id;
         const route = T.routeMatcher('/user/course/edit/:courseId'),
             courseId = route.parse(window.location.pathname).courseId;
         const docMapper = {};
@@ -124,7 +123,7 @@ class CourseEditPage extends React.Component {
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-file' /> Khóa học: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
+                        <p dangerouslySetInnerHTML={{ __html: title != '' ? 'Tiêu đề: <b>' + title + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
@@ -140,7 +139,7 @@ class CourseEditPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label className='control-label'>Tên khóa học</label>
-                                    <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' defaultValue={title.vi} readOnly={readOnly} />
+                                    <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' defaultValue={title} readOnly={readOnly} />
                                 </div>
                                 <div className='row'>
                                     <div className='col-md-6'>
@@ -225,7 +224,7 @@ class CourseEditPage extends React.Component {
                                         <textarea defaultValue='' className='form-control' id='courseAbstract' placeholder='Tóm tắt khóa học' readOnly={readOnly}
                                             style={{ minHeight: '100px', marginBottom: '12px' }} />
                                         <label className='control-label'>Nội dung khóa học</label>
-                                        <Editor ref={this.viEditor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=course' readOnly={readOnly} />
+                                        <Editor ref={this.editor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=course' readOnly={readOnly} />
                                     </div>
                                 </div>
                             </div>

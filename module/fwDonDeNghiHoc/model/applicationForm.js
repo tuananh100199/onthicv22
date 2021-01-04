@@ -6,7 +6,7 @@ module.exports = app => {
         content: String,
         reason: String, //Ly do tu choi don(neu co)
         licenseNumber: String, // So GPLX
-        licenseDate: Date, // Ngay cap GPLX
+        licenseDated: Date, // Ngay cap GPLX
         licenseIssuedBy: String, // Noi cap GPLX
 
         otherDocumentation: String, // Tai lieu khac

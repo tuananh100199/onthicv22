@@ -175,4 +175,122 @@ module.exports = app => {
             }
         })
     });
+
+    //Don De Nghi Hoc
+    app.get('/api/user-application-form/export', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
+            formItem = app.clone(formItem, user);
+            if (!error) {
+                exportDonDeNghiHocToWord(formItem, res);
+            } else {
+                res.send({ error });
+            }
+        });
+    });
+
+    const exportDonDeNghiHocToWord = (formItem, res) => {
+            let {
+                firstname,
+                lastname,
+                sex,
+                birthday,
+                phoneNumber,
+                regularResidence,
+                residence,
+                identityCard,
+                identityDate,
+                identityIssuedBy,
+                nationality,
+                licenseNumber,
+                licenseDated,
+                licenseIssuedBy,
+                otherDocumentation,
+                licenseClass,
+                newLicenseClass,
+                integration
+
+            } = formItem;
+            const { getName } = require('country-list');
+            if (sex === 'male') {
+                sex = 'Nam';
+            } else {
+                sex = 'Nữ';
+            }
+            const data = {
+                firstname: firstname,
+                lastname: lastname,
+                sex: sex,
+                birthday: app.date.customDateFormat(birthday),
+                phoneNumber: phoneNumber,
+                regularResidence: regularResidence,
+                residence: residence,
+                identityCard: identityCard,
+                identityDate: app.date.customDateFormat(identityDate),
+                identityIssuedBy: identityIssuedBy,
+                nationality: getName(nationality),
+                licenseNumber: licenseNumber,
+                licenseDated: app.date.customDateFormat(licenseDated),
+                licenseIssuedBy: licenseIssuedBy,
+                otherDocumentation: otherDocumentation,
+                licenseClass: licenseClass,
+                newLicenseClass: newLicenseClass,
+                i: integration,
+            }
+            app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
+                res.send({
+                    error: null,
+                    buf: buf,
+                });
+            });
+        }
+        //Bien Nhan Lan Dau
+    app.get('/api/user-application-form-receipt/export', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
+            formItem = app.clone(formItem, user);
+            if (!error) {
+                exportBienNhanToWord(formItem, res);
+            } else {
+                res.send({ error });
+            }
+        });
+    });
+
+    const exportBienNhanToWord = (formItem, res) => {
+        let {
+            firstname,
+            lastname,
+            sex,
+            birthday,
+            phoneNumber,
+            regularResidence,
+            newLicenseClass,
+        } = formItem;
+        let male = false,
+            female = false;
+        if (sex === 'male') {
+            male = true;
+        } else {
+            female = true;
+        }
+        const data = {
+            firstname: firstname,
+            lastname: lastname,
+            male: male,
+            female: female,
+            yearOfBirth: app.date.yearOfBirth(birthday),
+            phoneNumber: phoneNumber,
+            regularResidence: regularResidence,
+            newLicenseClass: newLicenseClass,
+        }
+
+        app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
+            res.send({
+                error: null,
+                buf: buf,
+            });
+        });
+    }
+
 };
