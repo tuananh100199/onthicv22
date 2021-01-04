@@ -189,7 +189,7 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
 //exportToWord
 export function exportDonDeNghiHocToWord(_id, done) {
     return dispatch => {
-        const url = `/api/user-application-form/export`;
+        const url = `/api/user-application-form/export/` + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
@@ -203,7 +203,7 @@ export function exportDonDeNghiHocToWord(_id, done) {
 }
 export function exportBienNhanLanDauToWord(_id, done) {
     return dispatch => {
-        const url = `/api/user-application-form-receipt/export`;
+        const url = `/api/user-application-form-receipt/export/` + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');

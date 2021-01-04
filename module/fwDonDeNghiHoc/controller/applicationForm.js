@@ -177,10 +177,8 @@ module.exports = app => {
     });
 
     //Don De Nghi Hoc
-    app.get('/api/user-application-form/export', app.permission.check('user:login'), (req, res) => {
-        const user = req.session.user;
-        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
-            formItem = app.clone(formItem, user);
+    app.get('/api/user-application-form/export/:_id', app.permission.check('user:login'), (req, res) => {
+        app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {
                 exportDonDeNghiHocToWord(formItem, res);
             } else {
@@ -191,46 +189,36 @@ module.exports = app => {
 
     const exportDonDeNghiHocToWord = (formItem, res) => {
         let {
-            firstname,
-            lastname,
-            sex,
-            birthday,
-            phoneNumber,
-            regularResidence,
-            residence,
-            identityCard,
-            identityDate,
-            identityIssuedBy,
-            nationality,
             licenseNumber,
             licenseDated,
             licenseIssuedBy,
             otherDocumentation,
             licenseClass,
             newLicenseClass,
-            integration
+            integration,
+            user
 
         } = formItem;
         const { getName } = require('country-list');
-        if (sex === 'male') {
-            sex = 'Nam';
+        if (user.sex === 'male') {
+            user.sex = 'Nam';
         } else {
-            sex = 'Nữ';
+            user.sex = 'Nữ';
         }
         const data = {
-            firstname: firstname,
-            lastname: lastname,
-            sex: sex,
-            birthday: app.date.customDateFormat(birthday),
-            phoneNumber: phoneNumber,
-            regularResidence: regularResidence,
-            residence: residence,
-            identityCard: identityCard,
-            identityDate: app.date.customDateFormat(identityDate),
-            identityIssuedBy: identityIssuedBy,
-            nationality: getName(nationality),
+            firstname: user.firstname,
+            lastname: user.lastname,
+            sex: user.sex,
+            birthday: app.date.viDateFormat(user.birthday),
+            phoneNumber: user.phoneNumber,
+            regularResidence: user.regularResidence,
+            residence: user.residence,
+            identityCard: user.identityCard,
+            identityDate: app.date.viDateFormat(user.identityDate),
+            identityIssuedBy: user.identityIssuedBy,
+            nationality: getName(user.nationality),
             licenseNumber: licenseNumber,
-            licenseDated: app.date.customDateFormat(licenseDated),
+            licenseDated: app.date.viDateFormat(licenseDated),
             licenseIssuedBy: licenseIssuedBy,
             otherDocumentation: otherDocumentation,
             licenseClass: licenseClass,
@@ -245,10 +233,8 @@ module.exports = app => {
         });
     }
     //Bien Nhan Lan Dau
-    app.get('/api/user-application-form-receipt/export', app.permission.check('user:login'), (req, res) => {
-        const user = req.session.user;
-        app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
-            formItem = app.clone(formItem, user);
+    app.get('/api/user-application-form-receipt/export/:_id', app.permission.check('user:login'), (req, res) => {
+        app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {
                 exportBienNhanToWord(formItem, res);
             } else {
@@ -259,29 +245,24 @@ module.exports = app => {
 
     const exportBienNhanToWord = (formItem, res) => {
         let {
-            firstname,
-            lastname,
-            sex,
-            birthday,
-            phoneNumber,
-            regularResidence,
-            newLicenseClass,
+            user,
+            newLicenseClass
         } = formItem;
         let male = false,
             female = false;
-        if (sex === 'male') {
+        if (user.sex === 'male') {
             male = true;
         } else {
             female = true;
         }
         const data = {
-            firstname: firstname,
-            lastname: lastname,
+            firstname: user.firstname,
+            lastname: user.lastname,
             male: male,
             female: female,
-            yearOfBirth: app.date.yearOfBirth(birthday),
-            phoneNumber: phoneNumber,
-            regularResidence: regularResidence,
+            yearOfBirth: user.birthday.getFullYear(),
+            phoneNumber: user.phoneNumber,
+            regularResidence: user.regularResidence,
             newLicenseClass: newLicenseClass,
         }
 
