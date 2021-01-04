@@ -5,6 +5,7 @@ import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
+import T from '../../view/js/common.js';
 const countryList = require('country-list');
 
 class AdminDonDeNghiHocChiTiet extends React.Component {
@@ -23,6 +24,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     }
 
     componentDidMount() {
+        T.ready('user/don-de-nghi-hoc');
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc-chi-tiet/item/:_id').parse(url);
         this.props.getForm(params._id, () => this.loading = false);

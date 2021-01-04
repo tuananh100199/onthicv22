@@ -4,8 +4,12 @@ module.exports = app => {
 
     const menu = {
         parentMenu: {
-            index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o',
-            subMenusRender: false, groups: ['Danh sách đơn đề nghị', 'Cấu hình'],
+            index: 3000,
+            title: 'Đơn đề nghị học - sát hạch',
+            link: '/user/don-de-nghi-hoc',
+            icon: 'fa-file-text-o',
+            subMenusRender: false,
+            groups: ['Danh sách đơn đề nghị', 'Cấu hình'],
         },
         menus: {
             3010: { title: 'Danh sách đơn đề nghị học, sát hạch', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
@@ -69,7 +73,8 @@ module.exports = app => {
     });
     // Admin
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
-        const pageNumber = parseInt(req.params.pageNumber), pageSize = parseInt(req.params.pageSize),
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || { searchText: '' },
             pageCondition = {};
         if (condition) {
@@ -178,6 +183,7 @@ module.exports = app => {
 
     //Don De Nghi Hoc
     app.get('/api/user-application-form/export', app.permission.check('user:login'), (req, res) => {
+        console.log(req.body);
         const user = req.session.user;
         app.model.applicationForm.get({ user: user._id }, (error, formItem) => {
             formItem = app.clone(formItem, user);

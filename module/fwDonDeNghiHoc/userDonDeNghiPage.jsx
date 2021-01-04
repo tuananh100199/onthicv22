@@ -83,7 +83,7 @@ class UserDonDeNghiPage extends React.Component {
                 licenseNumber: $('#licenseNumber').val(),
                 licenseClass: $('#licenseClass').val(),
                 newLicenseClass: $('#newLicenseClass').val(),
-                licenseDated: $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
+                licenseDated:  $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
                 integration: this.state.item.integration,
                 otherDocumentation: $('#otherDocumentation').val(),
@@ -177,14 +177,15 @@ class UserDonDeNghiPage extends React.Component {
                 }
             });
     };
+
     exportDonDeNghiHoc = () =>{
         this.props.exportDonDeNghiHocToWord(this.state.item._id, (data) => {
-            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Đơn Đề Nghị Học.docx');
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Đơn Đề Nghị Học.docx');
         });
     };
     exportBienNhan = () => {
         this.props.exportBienNhanLanDauToWord(this.state.item._id, (data) => {
-            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
         });
     };
     exportBanCamKet = () => {
@@ -278,11 +279,11 @@ class UserDonDeNghiPage extends React.Component {
                             </div>
                             <div className='form-group col-md-5'>
                                 <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: </label>
-                                <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy'/>
+                                <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy' />
                             </div>
                             <div className='form-group col-md-2'>
                                 <label className='control-label' htmlFor='licenseDated'>Cấp ngày: </label>
-                                <input className='form-control' type='text' placeholder='Ngày cấp GPLX' id='licenseDated'/>
+                                <input className='form-control' type='text' placeholder='Ngày cấp GPLX' id='licenseDated' />
                             </div>
                         </div>
                         <div className='form-group'>
@@ -312,11 +313,11 @@ class UserDonDeNghiPage extends React.Component {
                     <i className='fa fa-lg fa-save'/>
                 </button>
                 <button type='button' className='btn btn-success btn-circle' title='Xuất Đơn Đề Nghị Học Thành Word'
-                        style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
+                    style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
                 </button>
                 <button type='button' className='btn btn-info btn-circle' title='Xuất Biên Nhận Học Viên Thành Word'
-                        style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
+                    style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
                 <button type='button' className='btn btn-secondary btn-circle' title='Xuất Bản Cam Kết Thành Word'
