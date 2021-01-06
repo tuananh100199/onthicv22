@@ -35,7 +35,6 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
         this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
             T.notify('Đã chấp nhận đơn đề nghị học!', 'success');
         });
-        console.log(this.props.donDeNghiHoc)
     }
 
     save = () => {
