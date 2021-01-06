@@ -42,7 +42,7 @@ module.exports = app => {
                 emailAdminThongBaoTuChoiDonText: 'Dear {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
                 emailAdminThongBaoTuChoiDonHtml: 'Dear <b>{name}</b>,<br/><br/>' +
                     'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
-                    '{reason}<br/><br/>' +
+                    '<b>{reason}</b><br/><br/>' +
                     'Best regard,<br/>' +
                     'Hiệp Phát<br/>' +
                     'Website1: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
