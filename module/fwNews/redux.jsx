@@ -218,7 +218,7 @@ export function deleteNews(_id) {
                 T.notify('Xóa tin tức bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.alert('Người dùng được xóa thành công!', 'error', false, 800);
+                T.alert('Tin tức được xóa thành công!', 'error', false, 800);
                 dispatch(getNewsInPage());
             }
         }, error => T.notify('Xóa tin tức bị lỗi!', 'danger'));

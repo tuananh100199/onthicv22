@@ -45,13 +45,13 @@ class AdminGuiMailThongBao extends React.Component {
 export default class EmailPage extends React.Component {
     constructor(props) {
         super(props);
-        this.emailAdminNotify = React.createRef();
+        this.emailAdminThongBaoTuChoiDon = React.createRef();
     }
 
     componentDidMount() {
         T.ready(() => {
             getSystemEmails(data => {
-                this.emailAdminNotify.current.set(data.emailAdminNotifyTitle, data.emailAdminNotifyText, data.emailAdminNotifyHtml);
+                this.emailAdminThongBaoTuChoiDon.current.set(data.emailAdminThongBaoTuChoiDonTitle, data.emailAdminThongBaoTuChoiDonText, data.emailAdminThongBaoTuChoiDonHtml);
             });
         });
     }
@@ -73,11 +73,11 @@ export default class EmailPage extends React.Component {
                         <div className='tile'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminNotify'>Thông báo từ chối</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminThongBaoTuChoiDon'>Thông báo từ chối</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
-                                <AdminGuiMailThongBao ref={this.emailAdminNotify} id='emailAdminNotify' active={true}
+                                <AdminGuiMailThongBao ref={this.emailAdminThongBaoTuChoiDon} id='emailAdminThongBaoTuChoiDon' active={true}
                                     params='{name}, {reason}' />
                             </div>
                         </div>

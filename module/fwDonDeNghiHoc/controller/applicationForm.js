@@ -38,9 +38,9 @@ module.exports = app => {
     const init = () => {
         if (app.model && app.model.setting) {
             app.model.setting.init({
-                emailAdminNotifyTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
-                emailAdminNotifyText: 'Dear {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
-                emailAdminNotifyHtml: 'Dear <b>{name}</b>,<br/><br/>' +
+                emailAdminThongBaoTuChoiDonTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
+                emailAdminThongBaoTuChoiDonText: 'Dear {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
+                emailAdminThongBaoTuChoiDonHtml: 'Dear <b>{name}</b>,<br/><br/>' +
                     'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
                     '{reason}<br/><br/>' +
                     'Best regard,<br/>' +
@@ -56,7 +56,7 @@ module.exports = app => {
 
     //APIs -------------------------------------------------------------------------------------------------------------
     const EmailParams = [
-        'emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'
+        'emailAdminThongBaoTuChoiDonTitle', 'emailAdminThongBaoTuChoiDonText', 'emailAdminThongBaoTuChoiDonHtml'
     ];
 
     app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(EmailParams, result => res.send(result)));
@@ -134,10 +134,10 @@ module.exports = app => {
                     if (error || user == null) {
                         res.send({ error: `System has errors!` });
                     } else {
-                        app.model.setting.get(['emailAdminNotifyTitle', 'emailAdminNotifyText', 'emailAdminNotifyHtml'], result => {
-                            const mailTitle = result.emailAdminNotifyTitle,
-                                mailText = result.emailAdminNotifyText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
-                                mailHtml = result.emailAdminNotifyHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
+                        app.model.setting.get(['emailAdminThongBaoTuChoiDonTitle', 'emailAdminThongBaoTuChoiDonText', 'emailAdminThongBaoTuChoiDonHtml'], result => {
+                            const mailTitle = result.emailAdminThongBaoTuChoiDonTitle,
+                                mailText = result.emailAdminThongBaoTuChoiDonText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
+                                mailHtml = result.emailAdminThongBaoTuChoiDonHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
                             app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
                                 res.end()
                             }, (error) => {
@@ -197,51 +197,51 @@ module.exports = app => {
     });
 
     const exportDonDeNghiHocToWord = (formItem, res) => {
-            let {
-                licenseNumber,
-                licenseDated,
-                licenseIssuedBy,
-                otherDocumentation,
-                licenseClass,
-                newLicenseClass,
-                integration,
-                user
+        let {
+            licenseNumber,
+            licenseDated,
+            licenseIssuedBy,
+            otherDocumentation,
+            licenseClass,
+            newLicenseClass,
+            integration,
+            user
 
-            } = formItem;
-            const { getName } = require('country-list');
-            if (user.sex === 'male') {
-                user.sex = 'Nam';
-            } else {
-                user.sex = 'Nữ';
-            }
-            const data = {
-                firstname: user.firstname,
-                lastname: user.lastname,
-                sex: user.sex,
-                birthday: app.date.viDateFormat(user.birthday),
-                phoneNumber: user.phoneNumber,
-                regularResidence: user.regularResidence,
-                residence: user.residence,
-                identityCard: user.identityCard,
-                identityDate: app.date.viDateFormat(user.identityDate),
-                identityIssuedBy: user.identityIssuedBy,
-                nationality: getName(user.nationality),
-                licenseNumber: licenseNumber,
-                licenseDated: app.date.viDateFormat(licenseDated),
-                licenseIssuedBy: licenseIssuedBy,
-                otherDocumentation: otherDocumentation,
-                licenseClass: licenseClass,
-                newLicenseClass: newLicenseClass,
-                i: integration,
-            }
-            app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
-                res.send({
-                    error: null,
-                    buf: buf,
-                });
-            });
+        } = formItem;
+        const { getName } = require('country-list');
+        if (user.sex === 'male') {
+            user.sex = 'Nam';
+        } else {
+            user.sex = 'Nữ';
         }
-        //Bien Nhan Lan Dau
+        const data = {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            sex: user.sex,
+            birthday: app.date.viDateFormat(user.birthday),
+            phoneNumber: user.phoneNumber,
+            regularResidence: user.regularResidence,
+            residence: user.residence,
+            identityCard: user.identityCard,
+            identityDate: app.date.viDateFormat(user.identityDate),
+            identityIssuedBy: user.identityIssuedBy,
+            nationality: getName(user.nationality),
+            licenseNumber: licenseNumber,
+            licenseDated: app.date.viDateFormat(licenseDated),
+            licenseIssuedBy: licenseIssuedBy,
+            otherDocumentation: otherDocumentation,
+            licenseClass: licenseClass,
+            newLicenseClass: newLicenseClass,
+            i: integration,
+        }
+        app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
+            res.send({
+                error: null,
+                buf: buf,
+            });
+        });
+    }
+    //Bien Nhan Lan Dau
     app.get('/api/user-application-form-receipt/export/:_id', app.permission.check('user:login'), (req, res) => {
         app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {

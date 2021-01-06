@@ -133,11 +133,11 @@ export function saveEmailDonDeNghiHoc(type, email) {
     T.put(url, { type, email }, data => {
         if (data.error) {
             console.error('PUT: ' + url + '.', data.error);
-            T.notify('Save email information failed!', 'danger');
+            T.notify('Lưu thông tin email bị lỗi!', 'danger');
         } else {
-            T.notify('Save email information successful!', 'info');
+            T.notify('Lưu thông tin email thành công!', 'info');
         }
-    }, error => T.notify('Save email information failed!', 'danger'));
+    }, error => T.notify('Lưu thông tin email bị lỗi!', 'danger'));
 }
 export function sendEmailTuChoiDonDeNghiHoc(formID, done) {
     return dispatch => {
@@ -218,7 +218,7 @@ export function exportBienNhanLanDauToWord(_id, done) {
 
 export function exportBanCamKetToWord(_id, done) {
     return dispatch => {
-        const url = `/api/user-application-form-commitment/export/` +  _id;
+        const url = `/api/user-application-form-commitment/export/` + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
