@@ -16,9 +16,6 @@ const server = app.isDebug ?
 // Variables ==================================================================
 app.title = package.title;
 app.port = package.port;
-app.version = package.version;
-app.description = package.description;
-app.autoLogin = package.autoLogin;
 app.rootUrl = package.rootUrl;
 app.debugUrl = `http://localhost:${app.port}`;
 app.mongodb = `mongodb://localhost:27017/${package.dbName}`;
@@ -26,12 +23,17 @@ app.email = package.email;
 app.defaultAdminEmail = package.default.adminEmail;
 app.defaultAdminPassword = package.default.adminPassword;
 app.assetPath = app.path.join(__dirname, 'asset');
+
 app.viewPath = app.path.join(__dirname, package.path.view);
 app.modulePath = app.path.join(__dirname, package.path.module);
 app.publicPath = app.path.join(__dirname, package.path.public);
 app.imagePath = app.path.join(package.path.public, 'img');
 app.uploadPath = app.path.join(__dirname, package.path.upload);
 app.faviconPath = app.path.join(__dirname, package.path.favicon);
+
+// app.version = package.version;
+// app.description = package.description;
+// app.autoLogin = package.autoLogin;
 
 // Configure ==================================================================
 app.use(passport.initialize());

@@ -1,23 +1,4 @@
-module.exports = app => {
-    // Redirect to webpack server -------------------------------------------------------------------------------------------------------------------
-    app.redirectToWebpackServer = () => {
-        if (app.isDebug) {
-            app.get('/*.js', (req, res) => {
-                if (req.originalUrl.endsWith('.min.js')) {
-                    console.log(req.originalUrl);
-                    res.next();
-                } else {
-                    const http = require('http');
-                    http.get('http://localhost:' + (app.port + 1) + req.originalUrl, response => {
-                        let data = '';
-                        response.on('data', chunk => data += chunk);
-                        response.on('end', () => res.send(data));
-                    });
-                }
-            });
-        }
-    };
-
+module.exports = (app, appName) => {
     // Response html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
     app.createTemplate = function() {

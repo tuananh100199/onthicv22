@@ -283,5 +283,4 @@ module.exports = (app) => {
     app.uploadHooks.add('uploadSettingImage', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadSettingImage(req, fields, files, params, done), done, 'system:settings')
     );
-    app.redirectToWebpackServer();
 };

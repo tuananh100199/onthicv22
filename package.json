@@ -34,11 +34,12 @@
   "path": {
     "view": "view",
     "module": "module",
-    "log": "asset/log",
+    "asset": "asset",
     "temp": "asset/temp",
     "upload": "asset/upload",
     "public": "public",
-    "favicon": "public/img/favicon.ico"
+    "favicon": "public/img/favicon.ico",
+    "log": "asset/log"
   },
   "author": "Nguyen Thanh Tung",
   "license": "ISC",
