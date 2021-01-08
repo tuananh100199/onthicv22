@@ -53,7 +53,7 @@ export default class EmailPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/settings', () => {
             getSystemEmails(data => {
                 this.emailRegisterMember.current.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
                 this.emailCreateMemberByAdmin.current.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);

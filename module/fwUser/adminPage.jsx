@@ -16,7 +16,7 @@ class UserPage extends React.Component {
 
     componentDidMount() {
         this.props.getAllRoles();
-        T.ready('/user/user', () => {
+        T.ready('/user/settings', () => {
             this.props.getUserInPage(1, 50, {});
         });
     }

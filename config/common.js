@@ -47,13 +47,13 @@ module.exports = (app, appName) => {
     
     // Parent menu -----------------------------------------------------------------------------------------------------
     app.parentMenu = {
-        // setting: {
-        //     index: 1000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog',
-        //     subMenusRender: false,
-        // },
         user: {
             index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user',
             subMenusRender: false, groups: ['Thông tin cá nhân', 'Biểu mẫu'],
+        },
+        setting: {
+            index: 2000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog',
+            subMenusRender: false,
         },
     };
 

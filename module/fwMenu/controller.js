@@ -1,11 +1,15 @@
 module.exports = app => {
     const menuMenu = {
-        parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
-        menus: { 2090: { title: 'Menu', link: '/user/menu' } }
+        parentMenu: app.parentMenu.setting,
+        menus: {
+            2090: { title: 'Menu', link: '/user/menu', icon: 'fa-bars', backgroundColor: '#00b0ff' }
+        }
     };
     const menuComponent = {
-        parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
-        menus: { 2100: { title: 'Thành phần giao diện', link: '/user/component' } }
+        parentMenu: app.parentMenu.setting,
+        menus: {
+            2100: { title: 'Thành phần giao diện', link: '/user/component', icon: 'fa-object-group', backgroundColor: '#00897b' }
+        }
     };
     app.permission.add({ name: 'menu:read', menu: menuMenu }, { name: 'menu:write', menu: menuMenu }, { name: 'menu:delete', menu: menuMenu }, { name: 'component:read', menu: menuComponent }, { name: 'component:write', menu: menuComponent },);
     app.get('/user/menu/edit/:_id', app.permission.check('menu:read'), app.templates.admin);

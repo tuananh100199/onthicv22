@@ -85,7 +85,7 @@ class AddressListSection extends React.Component {
     }
 }
 
-class SettingsPage extends React.Component {
+class MultimediaPage extends React.Component {
     constructor(props) {
         super(props);
         this.address = React.createRef();
@@ -103,7 +103,7 @@ class SettingsPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready();
+        T.ready('/user/settings');
     }
 
     saveCommonInfo = () => {
@@ -273,4 +273,4 @@ class SettingsPage extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system });
 const mapActionsToProps = { saveSystemState };
-export default connect(mapStateToProps, mapActionsToProps)(SettingsPage);
+export default connect(mapStateToProps, mapActionsToProps)(MultimediaPage);
