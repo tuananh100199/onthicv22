@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseInPage, createCourse, updateCourse, swapCourse, deleteCourse } from './redux.jsx'
+import { getCourseInPage, createCourse, updateCourse, deleteCourse } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 
@@ -15,16 +15,9 @@ class CoursePage extends React.Component {
         e.preventDefault();
     }
 
-    swap = (e, item, isMoveUp) => {
-        this.props.swapCourse(item._id, isMoveUp);
-        e.preventDefault();
-    }
-
     changeActive = (item) => {
         this.props.updateCourse(item._id, { active: !item.active });
     }
-
-    changeisInternal = (item) => this.props.updateCourse(item._id, { isInternal: !item.isInternal })
 
     delete = (e, item) => {
         T.confirm('Khóa học', 'Bạn có chắc bạn muốn xóa khóa học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteCourse(item._id));
@@ -38,8 +31,6 @@ class CoursePage extends React.Component {
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = 'Không có khóa học!';
         if (this.props.course && this.props.course.page && this.props.course.page.list && this.props.course.page.list.length > 0) {
-            const { list } = this.props.course.page ? this.props.course.page : { list: [] };
-
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -52,16 +43,13 @@ class CoursePage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {list.map((item, index) => (
+                        {this.props.course.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td>
-                                    <Link to={'/user/course/edit/' + item._id}>{T.language.parse(item.title)}</Link>
-                                </td>
+                                <td><Link to={'/user/course/edit/' + item._id}>{item.title}</Link></td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
                                     <img src={item.image} alt='avatar' style={{ height: '32px' }} />
                                 </td>
-
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} disabled={readOnly} />
@@ -70,18 +58,9 @@ class CoursePage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        {readOnly ? null : [
-                                            <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, item, true)}>
-                                                <i className='fa fa-lg fa-arrow-up' />
-                                            </a>,
-                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, item, false)}>
-                                                <i className='fa fa-lg fa-arrow-down' />
-                                            </a>
-                                        ]}
-                                        <Link to={'/user/course/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                        <Link to={'/user/course/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-
                                         {currentPermissions.contains('course:write') ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
@@ -114,5 +93,5 @@ class CoursePage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourseInPage, createCourse, updateCourse, swapCourse, deleteCourse };
+const mapActionsToProps = { getCourseInPage, createCourse, updateCourse, deleteCourse };
 export default connect(mapStateToProps, mapActionsToProps)(CoursePage);

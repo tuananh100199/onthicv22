@@ -1,7 +1,4 @@
 import T from '../../view/js/common';
-T.initCookiePage('pageCourse');
-// T.initCookiePage('pageDraftCourse');
-
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseGetCourseInPage = 'Course:GetCourseInPage';
 const CourseGetCourse = 'Course:GetCourse';
@@ -15,7 +12,7 @@ export default function courseReducer(state = null, data) {
             return Object.assign({}, state, { page: data.page });
        
         case CourseGetCourse:
-            return Object.assign({}, state, { Course: data.item, categories: data.categories});
+            return Object.assign({}, state, { course: data.item, categories: data.categories});
 
         case CourseGetCourseInPageByUser:
             if (state == null || state.userCondition != data.condition) {
@@ -47,6 +44,7 @@ export default function courseReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
+T.initCookiePage('pageCourse');
 export function getCourseInPage(pageNumber, pageSize, done) {
     const page = T.updatePage('pageCourse', pageNumber, pageSize);
     return (dispatch) => {
@@ -63,9 +61,24 @@ export function getCourseInPage(pageNumber, pageSize, done) {
     }
 }
 
+export function getCourse(_id, done) {
+    return dispatch => {
+        const url = '/api/course/item/' + _id;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: CourseGetCourse, item: data.item, categories: data.categories });
+            }
+        }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
+    }
+}
+
 export function createCourse(done) {
     return dispatch => {
-        const url = '/api/course/default';
+        const url = '/api/course';
         T.post(url, data => {
             if (data.error) {
                 T.notify('Tạo khóa học bị lỗi!', 'danger');
@@ -95,21 +108,6 @@ export function updateCourse(_id, changes, done) {
     }
 }
 
-export function swapCourse(_id, isMoveUp) {
-    return dispatch => {
-        const url = '/api/course/swap/';
-        T.put(url, { _id, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Thay đổi thứ tự khóa học bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                T.notify('Thay đổi thứ tự khóa học thành công!', 'info');
-                dispatch(getCourseInPage());
-            }
-        }, error => T.notify('Thay đổi thứ tự khóa học bị lỗi!', 'danger'));
-    }
-}
-
 export function deleteCourse(_id) {
     return dispatch => {
         const url = '/api/course';
@@ -125,27 +123,6 @@ export function deleteCourse(_id) {
     }
 }
 
-export function getCourse(_id, done) {
-    return (dispatch, getState) => {
-        const url = '/api/course/item/' + _id;
-        const state = getState();
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } 
-            else {
-                const url2 = '/api/course/' + state.system.user._id;
-                T.get(url2, draft => {
-                    if (done) done(data);
-                    dispatch({ type: CourseGetCourse, item: data.item, categories: data.categories, docDraftUser: draft });
-                }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'))
-                if (done) done(data);
-            }
-        }, error => done({ error }));
-    }
-}
-
 // Actions (user) -----------------------------------------------------------------------------------------------------
 const texts = {
     getCourseInPageByUserError: 'Lấy danh sách khóa học bị lỗi!',
@@ -153,19 +130,18 @@ const texts = {
     getCourseFeedError: 'Lấy new feed bị lỗi!',
 };
 
-
 export function getCourseInPageByUser(pageNumber, pageSize, done) {
     return dispatch => {
-        const url = 'course/page/' + pageNumber + '/' + pageSize;
+        const url = '/course/page/' + pageNumber + '/' + pageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getCourseInPageByUserError, 'danger');
+                T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: CourseGetCourseInPageByUser, page: data.page });
                 done && done()
             }
-        }, error => T.notify(texts.getCourseInPageByUserError, 'danger'));
+        }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
     }
 }
 
@@ -174,34 +150,34 @@ export function getCourseByUser(courseId, courseLink, done) {
         const url = courseId ? '/course/item/id/' + courseId : '/course/item/link/' + courseLink;
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getCourseByUserError, 'danger');
+                T.notify('Lấy khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: CourseGetCourseByUser, item: data.item });
                 done && done(data);
             }
-        }, error => T.notify(texts.getCourseByUserError, 'danger'));
+        }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
     }
 }
 
 export function getCourseFeed(done) {
     return dispatch => {
-        const url = 'course/page/1/' + T.courseFeedPageSize
+        const url = '/course/page/1/' + T.courseFeedPageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getCourseFeedError, 'danger');
+                T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data.page.list);
                 dispatch({ type: CourseGetCourseFeed, list: data.page.list });
             }
-        }, error => T.notify(texts.getCourseFeedError, 'danger'));
+        }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
     }
 }
 
 export function checkLink(_id, link) {
     return dispatch => {
-        const url = 'course/item/check-link';
+        const url = '/course/item/check-link';
         T.put(url, { _id, link }, data => {
             if (data.error) {
                 T.notify('Link không hợp lệ!', 'danger');

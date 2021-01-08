@@ -35,6 +35,7 @@ const T = {
     defaultUserPageSize: 21,
     defaultUserSidebarSize: 3,
     newsFeedPageSize: 4,
+    courseFeedPageSize: 3,
 
     randomPassword: length => Math.random().toString(36).slice(-length),
 

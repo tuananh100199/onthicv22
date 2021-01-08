@@ -49,7 +49,7 @@ export default class Dropdown extends React.Component {
         return (
             <div className='dropdown' style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}>
                 <a ref={this.element} className={className} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-                    {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text|| this.props.emptyText || '')}
+                    {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text|| this.props.text || this.props.emptyText || '')}
                 </a>
                 <div ref={this.menu} className='dropdown-menu' style={{ maxHeight: '85vh', overflowY: 'auto', ...menuStyle }}>
                     {dropdownItems}
