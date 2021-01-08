@@ -98,8 +98,6 @@ module.exports = (app) => {
                         if (error) {
                             done && done(error);
                         } else {
-                            if (app.data && app.data.numberOfUser) app.data.numberOfUser++;
-
                             user.image = '/img/user/' + user._id + '.jpg';
                             const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                                 destPath = app.path.join(app.publicPath, user.image);
@@ -233,7 +231,6 @@ module.exports = (app) => {
                 } else if (item.email == app.defaultAdminEmail) {
                     done('Cannot delete default admin menu!');
                 } else {
-                    if (app.data && app.data.numberOfUser) app.data.numberOfUser--;
                     app.deleteImage(item.image);
                     item.remove(done);
                 }

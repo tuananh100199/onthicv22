@@ -19,7 +19,7 @@ module.exports = app => {
         'emailContactTitle', 'emailContactText', 'emailContactHtml'
     ];
 
-    app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(EmailParams, result => res.send(result)));
+    app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(...EmailParams, result => res.send(result)));
 
     app.put('/api/email', app.permission.check('system:email'), (req, res) => {
         const title = req.body.type + 'Title',

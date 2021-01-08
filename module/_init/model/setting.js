@@ -6,9 +6,28 @@ module.exports = (app) => {
 
     const model = app.db.model('Setting', schema);
     app.model.setting = {
-        get: (keys, done) => {
+        get: function () {
+            let result = {}, keys = [...arguments];
+            if (keys.length) {
+                const done = keys.pop();
+                model.find({ key: { $in: keys || [] } }, (error, items) => {
+                    if (error || (items && items.length == 0)) {
+                        done(result);
+                    } else {
+                        for (let i = 0; i <= items.length; i++) {
+                            if (i == items.length) {
+                                done(result)
+                            } else {
+                                result[items[i].key] = items[i].value;
+                            }
+                        }
+                    }
+                });
+            }
+        },
+        get1: (keys, done) => {
             let result = {};
-            model.find({ key: { $in: keys || []} }, (error, items) => {
+            model.find({ key: { $in: keys || [] } }, (error, items) => {
                 if (error || (items && items.length == 0)) {
                     done(result);
                 } else {

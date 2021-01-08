@@ -1,13 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { getStatistic } from './reduxSystem.jsx';
 import CountUp from '../../view/js/countUp';
 import { Link } from 'react-router-dom';
 
 class DashboardIcon extends React.Component {
-    constructor(props) {
-        super(props);
-        this.valueElement = React.createRef();
-    }
+    valueElement = React.createRef();
 
     componentDidMount() {
         setTimeout(() => {
@@ -32,6 +30,7 @@ class DashboardIcon extends React.Component {
 
 class DashboardPage extends React.Component {
     componentDidMount() {
+        this.props.getStatistic();
         T.ready();
     }
 
@@ -64,5 +63,5 @@ class DashboardPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = {};
+const mapActionsToProps = { getStatistic };
 export default connect(mapStateToProps, mapActionsToProps)(DashboardPage);
