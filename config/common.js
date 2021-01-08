@@ -1,34 +1,15 @@
-module.exports = app => {
-    // Redirect to webpack server -------------------------------------------------------------------------------------------------------------------
-    app.redirectToWebpackServer = () => {
-        if (app.isDebug) {
-            app.get('/*.js', (req, res) => {
-                if (req.originalUrl.endsWith('.min.js')) {
-                    console.log(req.originalUrl);
-                    res.next();
-                } else {
-                    const http = require('http');
-                    http.get('http://localhost:' + (app.port + 1) + req.originalUrl, response => {
-                        let data = '';
-                        response.on('data', chunk => data += chunk);
-                        response.on('end', () => res.send(data));
-                    });
-                }
-            });
-        }
-    };
-
+module.exports = (app, appName) => {
     // Response html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
-    app.createTemplate = function() {
+    app.createTemplate = function () {
         for (let i = 0; i < arguments.length; i++) {
             const templateName = arguments[i],
                 path = `/${templateName}.template`;
             app.templates[templateName] = (req, res) => {
                 const today = new Date().yyyymmdd();
                 if (req.session.today != today) {
-                    app.data.todayViews += 1;
-                    app.data.allViews += 1;
+                    app.redis.incr(`${appName}:todayViews`);
+                    app.redis.incr(`${appName}:allViews`);
                     req.session.today = today;
                 }
 
@@ -98,14 +79,13 @@ module.exports = app => {
                 const hook = readyHookContainer[hookKeys[i]];
                 if (!hook.ready()) {
                     ready = false;
-                    console.log(hookKeys[i]);
                     break;
                 }
             }
 
             if (ready) {
                 hookKeys.forEach(hookKey => readyHookContainer[hookKey].run());
-                console.log(` - The system is ready!`);
+                console.log(` - #${process.pid}: The system is ready!`);
             } else {
                 app.readyHooks.waiting();
             }
@@ -145,7 +125,7 @@ module.exports = app => {
     }
 
     // Setup admin account (default account) --------------------------------------------------------------------------------------------------------
-    app.setupAdmin = async() => {
+    app.setupAdmin = async () => {
         const permission = app.permission.all();
         let adminRole = {};
         const setAdmin = () => {

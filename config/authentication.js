@@ -28,19 +28,19 @@ module.exports = app => {
                 } else {
                     res.send({ error: null, user: app.clone({}, user, { password: null }) });
 
-                    app.model.setting.get(['emailRegisterMemberTitle', 'emailRegisterMemberText', 'emailRegisterMemberHtml'], result => {
+                    app.model.setting.get(['email', 'emailPassword', 'emailRegisterMemberTitle', 'emailRegisterMemberText', 'emailRegisterMemberHtml'], result => {
                         let url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                             name = user.firstname + ' ' + user.lastname,
                             mailTitle = result.emailRegisterMemberTitle,
                             mailText = result.emailRegisterMemberText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{url}', url),
                             mailHtml = result.emailRegisterMemberHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{url}', url);
-                        app.email.sendEmail(app.data.email, app.data.emailPassword, data.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                        app.email.sendEmail(result.email, result.emailPassword, data.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                     });
                 }
             });
         }
     };
-    
+
     app.loginUser = (req, res) => {
         if (req.session.user != null) {
             res.send({ error: 'You are logged in!' });
@@ -57,7 +57,7 @@ module.exports = app => {
             });
         }
     };
-    
+
     app.logoutUser = (req, res) => {
         if (req.logout) req.logout();
         if (app.isDebug) res.clearCookie('userId');
@@ -65,7 +65,7 @@ module.exports = app => {
         req.session.today = null;
         res.send({ error: null });
     };
-    
+
     app.loginUserOnMobile = (req, res) => {
         const auth = require('basic-auth');
         const credentials = auth(req);
