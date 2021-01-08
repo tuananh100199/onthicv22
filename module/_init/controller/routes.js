@@ -2,30 +2,68 @@ module.exports = (app) => {
     const menuDashboard = {
         parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' }
     };
-
     const menuProfile = {
         parentMenu: app.parentMenu.user,
         menus: {
             1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 }
         }
-    }
-
-    app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, {
-        name: 'system:settings',
-        menu: {
-            parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
-            menus: { 2010: { title: 'Thông tin chung', link: '/user/settings' } },
+    };
+    const menuSettings = {
+        parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
+        menus: {
+            2010: { title: 'Thông tin chung', link: '/user/settings' }
         },
-    });
+    };
+
+    app.permission.add(
+        { name: 'dashboard:standard', menu: menuDashboard },
+        { name: 'user:login', menu: menuProfile },
+        { name: 'system:settings', menu: menuSettings, }
+    );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
-    // Home -----------------------------------------------------------------------------------------------------------------------------------------
-    [
-        '/index.htm(l)?', '/404.htm(l)?',
-        '/request-permissions(/:roleId?)', '/request-login',
-        '/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken',
-    ].forEach((route) => app.get(route, app.templates.home));
+    ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
+
+    // System data ----------------------------------------------------------------------------------------------------------------------------------
+    app.state = {
+        data: {
+            todayViews: 0,
+            allViews: 0,
+            logo: '/img/favicon.jpg',
+            map: '/img/map.jpg',
+            footer: '/img/footer.jpg',
+            facebook: 'https://www.facebook.com/bachkhoa.oisp',
+            youtube: '',
+            twitter: '',
+            instagram: '',
+            latitude: 10.7744962,
+            longitude: 106.6606518,
+            email: app.email.from,
+            emailPassword: app.email.password,
+            mobile: '(08) 2214 6555',
+            address: 'Block B4 - Ho Chi Minh City University of Technology | 268 Ly Thuong Kiet Street, District 10, Hochiminh City, Vietnam',
+            addressList: JSON.stringify([])
+        },
+
+        refresh: (done) => {
+            const keys = Object.keys(app.state.data);
+            app.model.setting.getValue(...keys, result => {
+                if (result) {
+                    keys.forEach(key => {
+                        if (result[key] != undefined) {
+                            if (key == 'todayViews' || key == 'allViews') {
+                                app.state.data[key] = Number(result[key]);
+                            } else {
+                                app.state.data[key] = result[key];
+                            }
+                        }
+                    });
+                }
+                done && done();
+            });
+        },
+    };
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
@@ -186,8 +224,7 @@ module.exports = (app) => {
     });
 
     app.delete('/api/clear-session', app.permission.check(), (req, res) => {
-        const sessionName = req.body.sessionName;
-        req.session[sessionName] = null;
+        req.session[req.body.sessionName] = null; //TODO: delete Redis session
         res.end();
     });
 

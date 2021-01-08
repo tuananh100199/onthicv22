@@ -25,13 +25,12 @@ module.exports = (app) => {
         tokenDate: Date,
     });
 
-    schema.methods.equalPassword = function(password) {
+    schema.methods.equalPassword = function (password) {
         return app.crypt.compareSync(password, this.password);
     };
 
-    schema.methods.clone = function() {
+    schema.methods.clone = function () {
         let user = app.clone(this, { permissions: [], menu: {} });
-        console.log('user', user)
         delete user.password;
 
         const systemMenu = app.permission.list();
@@ -72,15 +71,15 @@ module.exports = (app) => {
 
         auth: (email, password, done) =>
             model
-            .findOne({ email })
-            .populate('roles')
-            .exec((error, user) =>
-                done(
-                    error == null && user != null && user.equalPassword(password) ?
-                    user :
-                    null
-                )
-            ),
+                .findOne({ email })
+                .populate('roles')
+                .exec((error, user) =>
+                    done(
+                        error == null && user != null && user.equalPassword(password) ?
+                            user :
+                            null
+                    )
+                ),
 
         create: (data, done) =>
             app.model.user.get({ email: data.email }, (error, user) => {
@@ -161,8 +160,8 @@ module.exports = (app) => {
                     };
                     result.pageNumber =
                         pageNumber === -1 ?
-                        result.pageTotal :
-                        Math.min(pageNumber, result.pageTotal);
+                            result.pageTotal :
+                            Math.min(pageNumber, result.pageTotal);
                     const skipNumber =
                         (result.pageNumber > 0 ? result.pageNumber - 1 : 0) *
                         result.pageSize;
@@ -186,15 +185,15 @@ module.exports = (app) => {
 
         getAll: (condition, done) =>
             done ?
-            model
-            .find(condition)
-            .sort({ lastname: 1, firstname: 1 })
-            .select('-password -token -tokenDate')
-            .exec(done) : model
-            .find({})
-            .sort({ lastname: 1, firstname: 1 })
-            .select('-password -token -tokenDate')
-            .exec(condition),
+                model
+                    .find(condition)
+                    .sort({ lastname: 1, firstname: 1 })
+                    .select('-password -token -tokenDate')
+                    .exec(done) : model
+                        .find({})
+                        .sort({ lastname: 1, firstname: 1 })
+                        .select('-password -token -tokenDate')
+                        .exec(condition),
 
         update: (_id, $set, $unset, done) => {
             if (!done) {

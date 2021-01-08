@@ -5,14 +5,17 @@ module.exports = app => {
             2060: { title: 'Người dùng', link: '/user/user' },
         },
     };
-    app.permission.add({ name: 'user:read', menu: userMenu }, { name: 'user:write', menu: userMenu }, { name: 'user:search' },);
+    app.permission.add(
+        { name: 'user:read', menu: userMenu },
+        { name: 'user:write', menu: userMenu },
+    );
 
+    ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
     app.get('/user/profile', app.permission.check(), app.templates.admin);
     app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
 
-
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:search'), (req, res) => {
+    app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || '',
@@ -39,7 +42,7 @@ module.exports = app => {
         app.model.user.getAll((error, items) => res.send({ error, items }));
     });
 
-    app.get('/api/user/:_id', app.permission.orCheck('user:read', 'user:search'), (req, res) => {
+    app.get('/api/user/:_id', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
         app.model.user.get(req.params._id, (error, user) => res.send({ error, user }));
     });
 
@@ -50,7 +53,7 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/user-email/:email', app.permission.orCheck('user:read', 'user:search'), (req, res) => {
+    app.get('/api/user-email/:email', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
         app.model.user.get({ email: req.params.email }, (error, user) => res.send({ error, user }));
     });
 
