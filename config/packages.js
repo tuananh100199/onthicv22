@@ -33,8 +33,9 @@ module.exports = (app, http, config) => {
             saveUninitialized: true,
         };
     if (config && app.redis) {
+        // console.log(` - #${process.pid}: The system used Redis session!`);
         const redisStore = require('connect-redis')(session);
-        sessionOptions.store = new redisStore({ client: app.redis });
+        sessionOptions.store = new redisStore({ client: app.redis, prefix: config.name + '_web:' });
     }
     app.use(session(sessionOptions));
 

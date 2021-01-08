@@ -5,50 +5,54 @@ module.exports = app => {
             2060: { title: 'Người dùng', link: '/user/user' },
         },
     };
-    app.permission.add({ name: 'user:read', menu: userMenu }, { name: 'user:write', menu: userMenu }, { name: 'user:search' }, );
+    app.permission.add({ name: 'user:read', menu: userMenu }, { name: 'user:write', menu: userMenu }, { name: 'user:search' },);
 
     app.get('/user/profile', app.permission.check(), app.templates.admin);
     app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
 
-    app.get('/api/user-search/:email', app.permission.check('user:read'), (req, res) => app.model.user.get({ email: req.params.email }, (error, user) => {
-        res.send({ error, user: user ? app.clone(user, { password: '', token: '', tokenDate: '' }) : null });
-    }));
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/user/page/:pageNumber/:pageSize',
-        app.permission.orCheck('user:read', 'user:search'),
-        (req, res) => {
-            let pageNumber = parseInt(req.params.pageNumber),
-                pageSize = parseInt(req.params.pageSize),
-                condition = req.query.condition || '',
-                pageCondition = {};
-            try {
-                if (condition) {
-                    const value = { $regex: `.*${condition}.*`, $options: 'i' };
-                    pageCondition['$or'] = [
-                        { facebook: value },
-                        { phoneNumber: value },
-                        { organizationId: value },
-                        { email: value },
-                        { firstname: value },
-                        { lastname: value },
-                    ];
-                }
-                app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
-            } catch (error) {
-                res.send({ error });
+    app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:search'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.condition || '',
+            pageCondition = {};
+        try {
+            if (condition) {
+                const value = { $regex: `.*${condition}.*`, $options: 'i' };
+                pageCondition['$or'] = [
+                    { facebook: value },
+                    { phoneNumber: value },
+                    { organizationId: value },
+                    { email: value },
+                    { firstname: value },
+                    { lastname: value },
+                ];
             }
+            app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
+    app.get('/api/user/all', app.permission.check('user:read'), (_, res) => {
+        app.model.user.getAll((error, items) => res.send({ error, items }));
+    });
+
+    app.get('/api/user/:_id', app.permission.orCheck('user:read', 'user:search'), (req, res) => {
+        app.model.user.get(req.params._id, (error, user) => res.send({ error, user }));
+    });
+
+    //TODO: Quang Sang
+    app.get('/api/user-search/:email', app.permission.check('user:read'), (req, res) => {
+        app.model.user.get({ email: req.params.email }, (error, user) => {
+            res.send({ error, user: user ? app.clone(user, { password: '', token: '', tokenDate: '' }) : null });
         });
+    });
 
-    app.get('/api/user/all', app.permission.check('user:read'), (_, res) => app.model.user.getAll((error, items) => res.send({ error, items })));
-
-    app.get('/api/user/:_id',
-        app.permission.orCheck('user:read', 'user:search'),
-        (req, res) => app.model.user.get(req.params._id, (error, user) => res.send({ error, user })));
-
-    app.get('/api/user-email/:email',
-        app.permission.orCheck('user:read', 'user:search'),
-        (req, res) => app.model.user.get({ email: req.params.email }, (error, user) => res.send({ error, user })));
+    app.get('/api/user-email/:email', app.permission.orCheck('user:read', 'user:search'), (req, res) => {
+        app.model.user.get({ email: req.params.email }, (error, user) => res.send({ error, user }));
+    });
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
         const data = req.body.user;
@@ -62,11 +66,11 @@ module.exports = app => {
                     const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                         mailTitle = result.emailCreateMemberByAdminTitle,
                         mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
+                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                        .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
+                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
                     app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                 });
             }
@@ -100,11 +104,11 @@ module.exports = app => {
                                     app.model.setting.get(['emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml'], result => {
                                         let mailTitle = result.emailNewPasswordTitle,
                                             mailText = result.emailNewPasswordText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                            .replaceAll('{email}', user.email).replaceAll('{password}', password),
+                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                .replaceAll('{email}', user.email).replaceAll('{password}', password),
                                             mailHtml = result.emailNewPasswordHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                            .replaceAll('{email}', user.email).replaceAll('{password}', password);
+                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                .replaceAll('{email}', user.email).replaceAll('{password}', password);
                                         app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
                                     });
                                 }
@@ -119,7 +123,7 @@ module.exports = app => {
                                     });
                                 }
                             }
-                        })
+                        });
                     }
                 });
             }
@@ -147,9 +151,7 @@ module.exports = app => {
     });
 
     app.delete('/api/user', app.permission.check('user:write'), (req, res) => {
-        app.model.user.delete(req.body._id, error => {
-            res.send({ error });
-        })
+        app.model.user.delete(req.body._id, error => res.send({ error }));
     });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
@@ -157,48 +159,48 @@ module.exports = app => {
     app.post('/login', app.loginUser);
     app.post('/logout', app.logoutUser);
 
-    app.post('/active-user/:userId', (req, res) => app.model.user.get(req.params.userId, (error, user) => {
-        if (error || user == null) {
-            res.send({
-                message: 'Địa chỉ kích hoạt tài khoản không đúng!'
-            });
-        } else if (user.active) {
-            res.send({
-                message: 'Bạn kích hoạt tài khoản đã được kích hoạt!'
-            });
-        } else {
-            user.active = true;
-            user.token = '';
-            user.save(error => res.send({
-                message: error ? 'Quá trình kích hoạt tài khoản đã lỗi!' : 'Bạn đã kích hoạt tài khoản thành công!'
-            }));
-        }
-    }));
+    app.post('/active-user/:userId', (req, res) => {
+        app.model.user.get(req.params.userId, (error, user) => {
+            if (error || user == null) {
+                res.send({ message: 'Địa chỉ kích hoạt tài khoản không đúng!' });
+            } else if (user.active) {
+                res.send({ message: 'Bạn kích hoạt tài khoản đã được kích hoạt!' });
+            } else {
+                user.active = true;
+                user.token = '';
+                user.save(error => res.send({
+                    message: error ? 'Quá trình kích hoạt tài khoản đã lỗi!' : 'Bạn đã kích hoạt tài khoản thành công!'
+                }));
+            }
+        });
+    });
 
-    app.put('/forgot-password', app.isGuest, (req, res) => app.model.user.get({ email: req.body.email }, (error, user) => {
-        if (error || user === null) {
-            res.send({ error: 'Email không tồn tại!' });
-        } else {
-            user.token = app.getToken(8);
-            user.tokenDate = new Date().getTime() + 24 * 60 * 60 * 1000;
-            user.save(error => {
-                if (error) {
-                    res.send({ error })
-                } else {
-                    app.model.setting.get(['emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml'], result => {
-                        let name = user.firstname + ' ' + user.lastname,
-                            url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/forgot-password/' + user._id + '/' + user.token,
-                            mailTitle = result.emailForgotPasswordTitle,
-                            mailText = result.emailForgotPasswordText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url),
-                            mailHtml = result.emailForgotPasswordHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url);
-                        app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
-                    });
+    app.put('/forgot-password', app.isGuest, (req, res) => {
+        app.model.user.get({ email: req.body.email }, (error, user) => {
+            if (error || user === null) {
+                res.send({ error: 'Email không tồn tại!' });
+            } else {
+                user.token = app.getToken(8);
+                user.tokenDate = new Date().getTime() + 24 * 60 * 60 * 1000;
+                user.save(error => {
+                    if (error) {
+                        res.send({ error })
+                    } else {
+                        app.model.setting.get(['emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml'], result => {
+                            let name = user.firstname + ' ' + user.lastname,
+                                url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/forgot-password/' + user._id + '/' + user.token,
+                                mailTitle = result.emailForgotPasswordTitle,
+                                mailText = result.emailForgotPasswordText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url),
+                                mailHtml = result.emailForgotPasswordHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{email}', user.email).replaceAll('{url}', url);
+                            app.email.sendEmail(app.data.email, app.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null);
+                        });
 
-                    res.send({ error: null });
-                }
-            });
-        }
-    }));
+                        res.send({ error: null });
+                    }
+                });
+            }
+        });
+    });
 
     // app.post('/get_user_on_mobile', app.getUserOnMobile);
     // app.post('/login_on_mobile', app.loginUserOnMobile);

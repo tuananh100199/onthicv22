@@ -9,6 +9,8 @@ module.exports = app => {
         { name: 'contact:read', menu },
         { name: 'contact:write', menu },
     );
+
+    app.get('/contact(.htm(l)?)?', app.templates.home);
     app.get('/user/contact', app.permission.check('contact:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------

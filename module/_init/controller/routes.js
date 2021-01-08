@@ -22,14 +22,9 @@ module.exports = (app) => {
     app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     [
-        '/index.htm(l)?',
-        '/contact(.htm(l)?)?',
-        '/registered(.htm(l)?)?',
-        '/404.htm(l)?',
-        '/request-permissions(/:roleId?)',
-        '/request-login',
-        '/active-user/:userId',
-        '/forgot-password/:userId/:userToken',
+        '/index.htm(l)?', '/404.htm(l)?',
+        '/request-permissions(/:roleId?)', '/request-login',
+        '/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken',
     ].forEach((route) => app.get(route, app.templates.home));
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
