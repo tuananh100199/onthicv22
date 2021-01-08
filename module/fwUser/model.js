@@ -8,18 +8,18 @@ module.exports = (app) => {
         email: String,
         password: String,
         phoneNumber: String,
-
         nationality: String, // Quoc tich
         residence: String, // Noi cu tru
+        identityCard: String, // CMND, CCCD
         regularResidence: String, // Noi dang ky ho khau thuong tru
 
-        identityCard: String, // CMND, CCCD
         identityIssuedBy: String, // Noi cap CMND, CCCD
         identityDate: Date, // Ngay cap CMND, CCCD
-
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,
+
+        isLecture: Boolean,
 
         token: String,
         tokenDate: Date,
@@ -91,11 +91,6 @@ module.exports = (app) => {
 
         get: (condition, done) =>
             typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) : model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
-
-        getPlayerInfo: (_id, done) => {
-            const userSelect = '-password -token -tokenDate -roles -active';
-            model.findById({ _id }, userSelect).exec(done);
-        },
 
         getPage: (pageNumber, pageSize, condition, sort, done) =>
             model.countDocuments(condition, (error, totalItem) => {

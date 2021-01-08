@@ -18,40 +18,48 @@ class SectionCourse extends React.Component {
         let course = null;
         if (courseFeed && courseFeed.length) {
             course = courseFeed.map((item, index) => {
-                const link = item.link ? '/tintuc/' + item.link : '/course/item/' + item._id;
+                let { image, title, abstract } = item ? item : {image:'', title:'', abstract:'' };
+
+                const link = item.link ? '/khoahoc/' + item.link : '/course/item/' + item._id;
                 return (
-                    <div key={index}>
-                        <div className='row ml-0'>
-                            <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < courseFeed.length - 1 ? 'border-bottom' : ''}>
-                                <Link to={link}>
-                                    <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
-                                </Link>
-                            </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < courseFeed.length - 1 ? 'border-bottom' : ''}>
-                                <div className='text'>
-                                    <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                        <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-black'>{T.language.parse(item.title)}</Link>
-                                        </h2>
-                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
-                                    </div>
+                    <div className="col-12 col-md-6"  key={index}>
+                        <div className="single-blog-area mb-100 wow fadeInUp" data-wow-delay="250ms" >
+                            <Link to={link}>
+                                <img src={image} alt="" />
+                            </Link>
+                            <div className="blog-content">
+                                <a href="#" className="blog-headline">
+                                    <h4>{title}</h4>
+                                </a>
+                                <div className="meta d-flex align-items-center">
+                                    <a href="#">Sarah Parker</a>
+                                        <span><i className="fa fa-circle" aria-hidden="true" /></span>
+                                    <a href="#">Art &amp; Design</a>
                                 </div>
+                                <p>{abstract}</p>
                             </div>
                         </div>
                     </div>
-                )
+                );
             })
         }
         return (
             <div className='mt-2'>
-                <div className='text-left pl-4 mb-1 py-1' style={{ backgroundColor: '#4d983c' }}>
-                    <h3 className='text-white'>Khóa Học Mới</h3>
-                </div>
                 <div>
-                    {course}
-                    {/* <button className='expand-btn' onClick={this.handleClickExpand}>
-                       {T.language.parse('{ "vi": "Xem thêm...", "en": "See more..." }')}
-                    </button> */}
+                <section className="blog-area section-padding-100-0">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-12">
+                                <div className="section-heading">
+                                    <h3>Khóa Học</h3>
+                                </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                {course}
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         )

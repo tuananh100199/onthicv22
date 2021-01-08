@@ -4,9 +4,9 @@ module.exports = app => {
 
         integration: Boolean, // Tich hop
         content: String,
-
+        reason: String, //Ly do tu choi don(neu co)
         licenseNumber: String, // So GPLX
-        licenseDate: Date, // Ngay cap GPLX
+        licenseDated: Date, // Ngay cap GPLX
         licenseIssuedBy: String, // Noi cap GPLX
 
         otherDocumentation: String, // Tai lieu khac
@@ -29,14 +29,14 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).populate('user', '_id firstname lastname').exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
             }
         }),
 
-        get: (condition, done) => typeof condition == 'object' ? model.findOne(condition, done) : model.findById(condition, done),
+        get: (condition, done) => typeof condition == 'object' ? model.findOne(condition).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done) : model.findById(condition).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done),
 
         update: (_id, $set, $unset, done) => done ? model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) : model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 

@@ -167,6 +167,7 @@ export class UserModal extends React.Component {
         $('#userEmail').val(item.email);
         $('#userPhoneNumber').val(item.phoneNumber);
         $('#userActive').prop('checked', item.active);
+        $('#isLecture').prop('checked', item.isLecture);
         this.sex && this.sex.current && this.sex.current.setText(item.sex ? item.sex : '');
         T.ready(() => {
             let userRoles = item.roles.map(item => item._id),
@@ -196,6 +197,7 @@ export class UserModal extends React.Component {
             email: $('#userEmail').val().trim(),
             phoneNumber: $('#userPhoneNumber').val().trim(),
             active: $('#userActive').prop('checked'),
+            isLecture: $('#isLecture').prop('checked'),
             roles: $('#userRoles').val(),
             birthday
         };
@@ -287,17 +289,28 @@ export class UserModal extends React.Component {
                                             <optgroup label='Lựa chọn Vai trò' />
                                         </select>
                                     </div>
+                                    <div className='col-12 col-md-4 form-group'>
+                                        <div className='form-group' style={{ display: 'inline-flex', width: '100%' }}>
+                                            <label htmlFor='isLecture' className='control-label'> Giáo Viên: </label>&nbsp;&nbsp;
+                                            <div className='toggle'>
+                                                <label>
+                                                    <input type='checkbox' id='isLecture' disabled={!hasUpdate} onChange={() => {
+                                                    }} /><span className='button-indecator' />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className='col-12 row'>
                                     <div className='col-4'>
                                         <div className='form-group' style={{ display: 'inline-flex', width: '100%' }}>
                                             <label htmlFor='userActive'>Kích hoạt: </label>&nbsp;&nbsp;
                                                 <div className='toggle'>
-                                                <label>
-                                                    <input type='checkbox' id='userActive' disabled={!hasUpdate} onChange={() => {
-                                                    }} /><span className='button-indecator' />
-                                                </label>
-                                            </div>
+                                                    <label>
+                                                        <input type='checkbox' id='userActive' disabled={!hasUpdate} onChange={() => {
+                                                        }} /><span className='button-indecator' />
+                                                    </label>
+                                                </div>
                                         </div>
                                     </div>
                                 </div>

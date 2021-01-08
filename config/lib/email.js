@@ -30,7 +30,8 @@ module.exports = app => {
     };
 
     app.email.validateEmail = email => {
-        const atpos = email.indexOf('@'), dotpos = email.lastIndexOf('.');
+        const atpos = email.indexOf('@'),
+            dotpos = email.lastIndexOf('.');
         return (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length);
     };
 };
