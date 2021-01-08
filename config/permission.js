@@ -173,14 +173,8 @@ module.exports = app => {
     };
     
     app.updateSessionUser = (req, user, done) => {
-        if (!done) {
-            done = user;
-            user = {}
-        }
-        
-        user = app.clone(req.session.user || {}, user, { permissions: [], menu: {} });
+        user = app.clone(user, { permissions: [], menu: {} });
         delete user.password;
-        
         app.model.user.get({ _id: user._id }, (error, result) => {
             if (error || !result) {
                 console.error('app.updateSessionUser', error);

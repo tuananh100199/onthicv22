@@ -44,6 +44,21 @@ export function getSystemState(done) {
     }
 }
 
+export function getStatistic(done) {
+    return dispatch => {
+        const url = `/api/statistic`;
+        T.get(url, data => {
+            if (data) {
+                dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
+            }
+            if (done) done(data);
+        }, error => {
+            T.notify('Get system statistic failed!', 'danger');
+            if (done) done();
+        });
+    }
+}
+
 export function login(data, done) {
     return dispatch => {
         T.post('/login', data, res => {

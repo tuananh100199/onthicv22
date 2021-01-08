@@ -28,7 +28,7 @@ module.exports = app => {
                 } else {
                     res.send({ error: null, user: app.clone({}, user, { password: null }) });
 
-                    app.model.setting.get(['email', 'emailPassword', 'emailRegisterMemberTitle', 'emailRegisterMemberText', 'emailRegisterMemberHtml'], result => {
+                    app.model.setting.get('email', 'emailPassword', 'emailRegisterMemberTitle', 'emailRegisterMemberText', 'emailRegisterMemberHtml', result => {
                         let url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                             name = user.firstname + ' ' + user.lastname,
                             mailTitle = result.emailRegisterMemberTitle,

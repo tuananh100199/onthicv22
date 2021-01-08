@@ -18,7 +18,8 @@ module.exports = (app) => {
     app.permission.add(
         { name: 'dashboard:standard', menu: menuDashboard },
         { name: 'user:login', menu: menuProfile },
-        { name: 'system:settings', menu: menuSettings, }
+        { name: 'system:settings', menu: menuSettings },
+        { name: 'statistic' },
     );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
@@ -48,7 +49,7 @@ module.exports = (app) => {
 
         refresh: (done) => {
             const keys = Object.keys(app.state.data);
-            app.model.setting.getValue(...keys, result => {
+            app.model.setting.get(...keys, result => {
                 if (result) {
                     keys.forEach(key => {
                         if (result[key] != undefined) {
@@ -70,6 +71,7 @@ module.exports = (app) => {
         app.redis.mget([`${app.appName}:todayViews`, `${app.appName}:allViews`], (error, result) => {
             if (error == null && result) {
                 app.io.emit('count', result);
+
                 app.state.data.todayViews = result.todayViews;
                 app.state.data.allViews = result.allViews;
                 app.model.setting.set(result);
@@ -90,8 +92,8 @@ module.exports = (app) => {
                 if (error) {
                     res.send({ error: 'Update email password failed!' });
                 } else {
-                    app.data.emailPassword = req.body.password;
-                    res.send(app.data);
+                    app.model.setting.set({ emailPassword: req.body.password });
+                    res.send(app.state.data);
                 }
             });
         } else {
@@ -133,18 +135,17 @@ module.exports = (app) => {
                 if (error) {
                     res.send({ error: 'Update failed!' });
                 } else {
-                    if (changes.email) {
-                        app.data.email = changes.email;
-                    }
-                    app.data = app.clone(app.data, changes);
-                    res.send(app.data);
+                    app.model.setting.set(changes, () => {
+                        app.worker && app.worker.refreshState();
+                        app.state.refresh(() => res.send(app.state.data));
+                    });
                 }
             });
         }
     });
 
     app.get('/api/state', (req, res) => {
-        const data = app.clone(app.data);
+        const data = app.clone(app.state.data);
         delete data.emailPassword;
 
         if (app.isDebug) data.isDebug = true;
@@ -170,6 +171,12 @@ module.exports = (app) => {
             } else {
                 res.send(data)
             }
+        });
+    });
+
+    app.get('/api/statistic', app.permission.check('statistic'), (req, res) => {
+        app.model.user.count({}, (error, numberOfUser) => {
+            res.send({ numberOfUser: numberOfUser || 0 });
         });
     });
 
@@ -258,42 +265,42 @@ module.exports = (app) => {
             const srcPath = files.SettingImage[0].path;
 
             if (fields.userData == 'logo') {
-                app.deleteImage(app.data.logo);
+                app.deleteImage(app.state.data.logo);
                 let destPath = '/img/favicon' + app.path.extname(srcPath);
                 app.fs.rename(srcPath, app.path.join(app.publicPath, destPath), (error) => {
                     if (error == null) {
                         destPath += '?t=' + new Date().getTime().toString().slice(-8);
                         app.model.setting.set({ logo: destPath }, (error) => {
-                            if (error == null) app.data.logo = destPath;
-                            done({ image: app.data.logo, error });
+                            if (error == null) app.state.data.logo = destPath;
+                            done({ image: app.state.data.logo, error });
                         });
                     } else {
                         done({ error });
                     }
                 });
             } else if (fields.userData == 'footer' && files.SettingImage && files.SettingImage.length > 0) {
-                app.deleteImage(app.data.footer);
+                app.deleteImage(app.state.data.footer);
                 let destPath = '/img/footer' + app.path.extname(srcPath);
                 app.fs.rename(srcPath, app.path.join(app.publicPath, destPath), (error) => {
                     if (error == null) {
                         destPath += '?t=' + new Date().getTime().toString().slice(-8);
                         app.model.setting.set({ footer: destPath }, (error) => {
-                            if (error == null) app.data.footer = destPath;
-                            done({ image: app.data.footer, error });
+                            if (error == null) app.state.data.footer = destPath;
+                            done({ image: app.state.data.footer, error });
                         });
                     } else {
                         done({ error });
                     }
                 });
             } else if (fields.userData == 'map' && files.SettingImage && files.SettingImage.length > 0) {
-                app.deleteImage(app.data.map);
+                app.deleteImage(app.state.data.map);
                 let destPath = '/img/map' + app.path.extname(srcPath);
                 app.fs.rename(srcPath, app.path.join(app.publicPath, destPath), (error) => {
                     if (error == null) {
                         destPath += '?t=' + new Date().getTime().toString().slice(-8);
                         app.model.setting.set({ map: destPath }, (error) => {
-                            if (error == null) app.data.map = destPath;
-                            done({ image: app.data.map, error });
+                            if (error == null) app.state.data.map = destPath;
+                            done({ image: app.state.data.map, error });
                         });
                     } else {
                         done({ error });

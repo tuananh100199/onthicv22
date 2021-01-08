@@ -65,7 +65,7 @@ module.exports = app => {
         app.model.user.create(data, (error, user) => {
             res.send({ error, user });
             if (user) {
-                app.model.setting.get(['email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml'], result => {
+                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                     const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                         mailTitle = result.emailCreateMemberByAdminTitle,
                         mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
@@ -104,7 +104,7 @@ module.exports = app => {
                                 res.send({ error });
                             } else {
                                 if (changes.password) {
-                                    app.model.setting.get(['email', 'emailPassword', 'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml'], result => {
+                                    app.model.setting.get('email', 'emailPassword', 'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml', result => {
                                         let mailTitle = result.emailNewPasswordTitle,
                                             mailText = result.emailNewPasswordText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                                                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
@@ -189,7 +189,7 @@ module.exports = app => {
                     if (error) {
                         res.send({ error })
                     } else {
-                        app.model.setting.get(['email', 'emailPassword', 'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml'], result => {
+                        app.model.setting.get('email', 'emailPassword', 'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml', result => {
                             let name = user.firstname + ' ' + user.lastname,
                                 url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/forgot-password/' + user._id + '/' + user.token,
                                 mailTitle = result.emailForgotPasswordTitle,
