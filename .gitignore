@@ -15,3 +15,4 @@ public/img/*
 .DS_Store
 .history
 yarn-error.log
+debug.log

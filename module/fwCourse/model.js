@@ -23,7 +23,6 @@ module.exports = app => {
                 if (error) {
                     done(error);
                 } else {
-                    if (app.data && app.data.numberOfCourse) app.data.numberOfCourse++;
                     item.image = '/img/course/' + item._id + '.jpg';
                     const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                         destPath = app.path.join(app.publicPath, item.image);
@@ -116,7 +115,6 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                if (app.data && app.data.numberOfCourse) app.data.numberOfCourse--;
                 app.deleteImage(item.image);
                 item.remove(done);
             }

@@ -12,7 +12,7 @@ export default class Editor extends React.Component {
         $(document).ready(() => {
             const config = {
                 filebrowserUploadUrl: this.props.uploadUrl ?
-                    this.props.uploadUrl + (this.props.uploadUrl.includes('?') ? '&' : '?') + 'Type=File' : '/upload?Type=File',
+                    this.props.uploadUrl + (this.props.uploadUrl.includes('?') ? '&' : '?') + 'Type=File' : '/user/upload?Type=File',
             };
             if (this.props.height) config.height = this.props.height;
 
@@ -39,7 +39,7 @@ export default class Editor extends React.Component {
 
     render() {
         return [
-            <div key={0} dangerouslySetInnerHTML={{ __html: this.props.readOnly ? this.state.value : '' }}/>,
+            <div key={0} dangerouslySetInnerHTML={{ __html: this.props.readOnly ? this.state.value : '' }} />,
             <div key={1} style={{ display: this.props.readOnly ? 'none' : 'block' }}>
                 <textarea key={0} ref={this.editor} style={{ width: '100%' }} defaultValue={this.props.defaultValue} />
                 <p style={{ width: '100%', textAlign: 'center', display: this.state.ready ? 'none' : 'block' }}>Loading...</p>

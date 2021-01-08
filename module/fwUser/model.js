@@ -25,61 +25,17 @@ module.exports = (app) => {
         tokenDate: Date,
     });
 
-    schema.methods.equalPassword = function(password) {
+    schema.methods.equalPassword = function (password) {
         return app.crypt.compareSync(password, this.password);
     };
-
-    schema.methods.clone = function() {
-        let user = app.clone(this, { permissions: [], menu: {} });
-        delete user.password;
-
-        const systemMenu = app.permission.list();
-        (user.roles ? user.roles : []).forEach((role) => {
-            (role.permission ? role.permission : []).forEach((permission) => {
-                if (!user.permissions.includes(permission)) {
-                    user.permissions.push(permission);
-                }
-                if (systemMenu[permission]) {
-                    const permissionMenu = systemMenu[permission];
-                    if (permissionMenu.parentMenu) {
-                        if (user.menu[permissionMenu.parentMenu.index] == undefined) {
-                            user.menu[permissionMenu.parentMenu.index] = permissionMenu;
-                        } else {
-                            const userParentMenu = user.menu[permissionMenu.parentMenu.index];
-                            if (userParentMenu.menus == undefined) userParentMenu.menus = {};
-
-                            if (permissionMenu.menus) {
-                                Object.keys(permissionMenu.menus).forEach((menuIndex) => {
-                                    if (userParentMenu.menus[menuIndex] == undefined) {
-                                        userParentMenu.menus[menuIndex] =
-                                            permissionMenu.menus[menuIndex];
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-            });
-        });
-        return user;
-    };
-
+    
     const model = app.db.model('User', schema);
     app.model.user = {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
-        auth: (email, password, done) =>
-            model
-            .findOne({ email })
-            .populate('roles')
-            .exec((error, user) =>
-                done(
-                    error == null && user != null && user.equalPassword(password) ?
-                    user :
-                    null
-                )
-            ),
+        auth: (email, password, done) => model.findOne({ email }).populate('roles').exec((error, user) =>
+            done(error == null && user != null && user.equalPassword(password) ? user : null)),
 
         create: (data, done) =>
             app.model.user.get({ email: data.email }, (error, user) => {
@@ -98,8 +54,6 @@ module.exports = (app) => {
                         if (error) {
                             done && done(error);
                         } else {
-                            if (app.data && app.data.numberOfUser) app.data.numberOfUser++;
-
                             user.image = '/img/user/' + user._id + '.jpg';
                             const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                                 destPath = app.path.join(app.publicPath, user.image);
@@ -155,8 +109,8 @@ module.exports = (app) => {
                     };
                     result.pageNumber =
                         pageNumber === -1 ?
-                        result.pageTotal :
-                        Math.min(pageNumber, result.pageTotal);
+                            result.pageTotal :
+                            Math.min(pageNumber, result.pageTotal);
                     const skipNumber =
                         (result.pageNumber > 0 ? result.pageNumber - 1 : 0) *
                         result.pageSize;
@@ -180,15 +134,15 @@ module.exports = (app) => {
 
         getAll: (condition, done) =>
             done ?
-            model
-            .find(condition)
-            .sort({ lastname: 1, firstname: 1 })
-            .select('-password -token -tokenDate')
-            .exec(done) : model
-            .find({})
-            .sort({ lastname: 1, firstname: 1 })
-            .select('-password -token -tokenDate')
-            .exec(condition),
+                model
+                    .find(condition)
+                    .sort({ lastname: 1, firstname: 1 })
+                    .select('-password -token -tokenDate')
+                    .exec(done) : model
+                        .find({})
+                        .sort({ lastname: 1, firstname: 1 })
+                        .select('-password -token -tokenDate')
+                        .exec(condition),
 
         update: (_id, $set, $unset, done) => {
             if (!done) {
@@ -228,7 +182,6 @@ module.exports = (app) => {
                 } else if (item.email == app.defaultAdminEmail) {
                     done('Cannot delete default admin menu!');
                 } else {
-                    if (app.data && app.data.numberOfUser) app.data.numberOfUser--;
                     app.deleteImage(item.image);
                     item.remove(done);
                 }

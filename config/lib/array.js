@@ -1,23 +1,8 @@
 module.exports = app => {
     
-    Array.prototype.contains = function (pattern, req = null) {
-        if (!req) {
-            return pattern.reduce((result, item) => result && this.includes(item), true);
-        } else {
-            for (let i = 0; i < pattern.length; i++) {
-                const element = pattern[i];
-                if (typeof element == 'function') {
-                    if (!element(req, this)) {
-                        return false;
-                    }
-                } else if (!this.includes(element)) {
-                    return false;
-                }
-            }
-            
-            return true;
-        }
-    };
+    Array.prototype.contains = function (pattern) {
+        return pattern.reduce((result, item) => result && this.includes(item), true);
+    }
     
     Array.prototype.exists = function (pattern, req = null) {
         if (!req) {

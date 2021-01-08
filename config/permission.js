@@ -1,61 +1,28 @@
 module.exports = app => {
-    let effectChangeUser = new Set();
-    
     const checkPermissions = (req, res, next, permissions) => {
         if (req.session.user) {
             const user = req.session.user;
-            if (effectChangeUser.has(user._id.toString())) {
-                app.updateSessionUser(req, user, (newUser) => {
-                    if (!newUser) {
-                        responseError(req, res);
-                    } else {
-                        if (newUser.permissions && newUser.permissions.contains(permissions, req)) {
-                            next();
-                        } else if (permissions.length == 0) {
-                            next();
-                        } else {
-                            responseError(req, res);
-                        }
-                    }
-                });
+            if (user.permissions && user.permissions.contains(permissions)) {
+                next();
+            } else if (permissions.length == 0) {
+                next();
             } else {
-                if (req.session.user.permissions && req.session.user.permissions.contains(permissions, req)) {
-                    next();
-                } else if (permissions.length == 0) {
-                    next();
-                } else {
-                    responseError(req, res);
-                }
+                responseError(req, res);
             }
         } else {
             responseError(req, res);
         }
     };
+    
     const checkOrPermissions = (req, res, next, permissions) => {
         if (req.session.user) {
             const user = req.session.user;
-            if (effectChangeUser.has(user._id.toString())) {
-                app.updateSessionUser(req, user, (newUser) => {
-                    if (!newUser) {
-                        responseError(req, res);
-                    } else {
-                        if (newUser.permissions && newUser.permissions.exists(permissions, req)) {
-                            next();
-                        } else if (permissions.length == 0) {
-                            next();
-                        } else {
-                            responseError(req, res);
-                        }
-                    }
-                });
+            if (user.permissions && user.permissions.exists(permissions, req)) {
+                next();
+            } else if (permissions.length == 0) {
+                next();
             } else {
-                if (req.session.user.permissions && req.session.user.permissions.exists(permissions, req)) {
-                    next();
-                } else if (permissions.length == 0) {
-                    next();
-                } else {
-                    responseError(req, res);
-                }
+                responseError(req, res);
             }
         } else {
             responseError(req, res);
@@ -94,10 +61,6 @@ module.exports = app => {
     
         tree: () => app.clone(menuTree),
         
-        pushEffect: (userId) => effectChangeUser.add(userId.toString()),
-        
-        popEffect: (userId) => effectChangeUser.delete(userId.toString()),
-    
         add: (...permissions) => {
             permissions.forEach(permission => {
                 if (typeof permission == 'string') {
@@ -210,14 +173,8 @@ module.exports = app => {
     };
     
     app.updateSessionUser = (req, user, done) => {
-        if (!done) {
-            done = user;
-            user = {}
-        }
-        
-        user = app.clone(req.session.user || {}, user, { permissions: [], menu: {} });
+        user = app.clone(user, { permissions: [], menu: {} });
         delete user.password;
-        
         app.model.user.get({ _id: user._id }, (error, result) => {
             if (error || !result) {
                 console.error('app.updateSessionUser', error);
@@ -262,7 +219,6 @@ module.exports = app => {
                     });
                     
                     req.session.user = user;
-                    app.permission.popEffect(user._id)
                     req.session.save();
                     done && done(user);
                 });
@@ -270,7 +226,7 @@ module.exports = app => {
         });
     };
     
-    // Permission Hook ------------------------------------------------------------------------------------------------------------------------------
+    // Permission Hook -------------------------------------------------------------------------------------------------
     const permissionHookContainer = { student: {}, staff: {} };
     app.permissionHooks = {
         add: (type, name, hook) => {
