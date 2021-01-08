@@ -43,7 +43,7 @@ module.exports = (app) => {
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
             address: 'Block B4 - Ho Chi Minh City University of Technology | 268 Ly Thuong Kiet Street, District 10, Hochiminh City, Vietnam',
-            addressList: JSON.stringify([])
+            addressList: JSON.stringify([]),
         },
 
         refresh: (done) => {
@@ -64,6 +64,22 @@ module.exports = (app) => {
             });
         },
     };
+
+    // Count views ----------------------------------------------------------------------------------------------------------------------------------
+    app.schedule('*/1 * * * *', () => {
+        app.redis.mget([`${app.appName}:todayViews`, `${app.appName}:allViews`], (error, result) => {
+            if (error == null && result) {
+                app.io.emit('count', result);
+                app.state.data.todayViews = result.todayViews;
+                app.state.data.allViews = result.allViews;
+                app.model.setting.set(result);
+            }
+        });
+    });
+    app.schedule('0 0 * * *', () => {
+        app.redis.set(`${app.appName}:todayViews`, 0);
+        app.model.setting.set({ todayViews: 0 });
+    });
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
@@ -226,6 +242,13 @@ module.exports = (app) => {
     app.delete('/api/clear-session', app.permission.check(), (req, res) => {
         req.session[req.body.sessionName] = null; //TODO: delete Redis session
         res.end();
+    });
+
+
+    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
+    app.readyHooks.add('readyInit', {
+        ready: () => app.model != null && app.model.setting != null && app.state,
+        run: () => app.model.setting.init(app.state.data, () => app.state.refresh()),
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s

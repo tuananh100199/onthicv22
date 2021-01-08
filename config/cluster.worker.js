@@ -36,12 +36,10 @@ module.exports = (cluster, isDebug) => {
     // Configure ------------------------------------------------------------------------------------------------------
     require('./common')(app, package.name);
     require('./view')(app, express);
-    require('./database')(app, package.db);
+    require('./database')(app);
     require('./packages')(app, server, package);
     require('./authentication')(app);
     require('./permission')(app);
-    require('./authentication.cas')(app, package);
-    require('./ldap')(app);
     require('./io')(app, server);
     
     // Init -----------------------------------------------------------------------------------------------------------
@@ -51,16 +49,8 @@ module.exports = (cluster, isDebug) => {
     app.get('*', (req, res, next) => {
         if (app.isDebug && req.session.user) app.updateSessionUser(req, req.session.user);
         const link = req.path.endsWith('/') && req.path.length > 1 ? req.path.substring(0, req.path.length - 1) : req.path;
-        app.model.fwMenu.get({ link }, (error, menu) => {
-            if (menu) {
-                app.templates.home(req, res);
-            } else if (app.model.dvWebsite) {
-                app.model.dvWebsite.get({ shortname: link.substring(1) }, (error, item) => {
-                    item ? app.templates.home(req, res) : next();
-                });
-            } else {
-                next();
-            }
+        app.model.menu.get({ link }, (error, menu) => {
+            (error || menu == null) ? next() : app.templates.home(req, res)
         });
     });
     

@@ -50,15 +50,6 @@ module.exports = app => {
         if (done) done();
     };
     
-    app.clone = function () {
-        let result = {};
-        for (let i = 0, length = arguments.length; i < length; i++) {
-            const obj = JSON.parse(JSON.stringify(arguments[i]));
-            Object.keys(obj).forEach(key => result[key] = obj[key]);
-        }
-        return result;
-    };
-    
     app.parseArgToString = (arguments) => {
         let returnString = '';
         for (let i = 0; i < arguments.length; i++) {

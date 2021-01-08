@@ -40,11 +40,11 @@ module.exports = app => {
         if (item) {
             app.io.emit('contact-added', item);
 
-            app.model.setting.get(['emailContactTitle', 'emailContactText', 'emailContactHtml'], result => {
+            app.model.setting.get(['email', 'emailPassword', 'emailContactTitle', 'emailContactText', 'emailContactHtml'], result => {
                 let mailSubject = result.emailContactTitle.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                     mailText = result.emailContactText.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                     mailHtml = result.emailContactHtml.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
-                app.email.sendEmail(app.data.email, app.data.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
+                app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
             });
         }
         res.send({ error, item });

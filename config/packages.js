@@ -10,8 +10,8 @@ module.exports = (app, http, config) => {
     app.use(helmet.ieNoOpen());
     // app.use(helmet.noCache());
     app.use(helmet.xssFilter());
-    app.use(helmet.referrerPolicy());
-    // app.use(helmet.permittedCrossDomainPolicies());
+    // app.use(helmet.referrerPolicy());
+    app.use(helmet.permittedCrossDomainPolicies());
 
     // Get information from html forms
     const bodyParser = require('body-parser');
@@ -35,7 +35,7 @@ module.exports = (app, http, config) => {
     if (config && app.redis) {
         // console.log(` - #${process.pid}: The system used Redis session!`);
         const redisStore = require('connect-redis')(session);
-        sessionOptions.store = new redisStore({ client: app.redis, prefix: config.name + '_web:' });
+        sessionOptions.store = new redisStore({ client: app.redis, prefix: config.name + '_sess:' });
     }
     app.use(session(sessionOptions));
 

@@ -1,15 +1,33 @@
 module.exports = (app, appName) => {
-    // Response html file ---------------------------------------------------------------------------------------------------------------------------
+    app.clone = function () {
+        const length = arguments.length;
+        let result = null;
+        if (length && Array.isArray(arguments[0])) {
+            result = [];
+            for (let i = 0; i < length; i++) {
+                result = result.concat(arguments[i]);
+            }
+        } else if (length && typeof arguments[0] == 'object') {
+            result = {};
+            for (let i = 0; i < length; i++) {
+                const obj = JSON.parse(JSON.stringify(arguments[i]));
+                Object.keys(obj).forEach(key => result[key] = obj[key]);
+            }
+        }
+        return result;
+    };
+    
+    // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
-    app.createTemplate = function() {
+    app.createTemplate = function () {
         for (let i = 0; i < arguments.length; i++) {
             const templateName = arguments[i],
                 path = `/${templateName}.template`;
             app.templates[templateName] = (req, res) => {
                 const today = new Date().yyyymmdd();
                 if (req.session.today != today) {
-                    app.data.todayViews += 1;
-                    app.data.allViews += 1;
+                    app.redis.incr(`${appName}:todayViews`);
+                    app.redis.incr(`${appName}:allViews`);
                     req.session.today = today;
                 }
 
@@ -26,33 +44,30 @@ module.exports = (app, appName) => {
             };
         }
     };
-
+    
+    // Parent menu -----------------------------------------------------------------------------------------------------
     app.parentMenu = {
         // setting: {
         //     index: 1000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog',
         //     subMenusRender: false,
         // },
         user: {
-            index: 1000,
-            title: 'Trang cá nhân',
-            link: '/user',
-            icon: 'fa-user',
-            subMenusRender: false,
-            groups: ['Thông tin cá nhân', 'Biểu mẫu'],
+            index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user',
+            subMenusRender: false, groups: ['Thông tin cá nhân', 'Biểu mẫu'],
         },
     };
 
-    // Hook -----------------------------------------------------------------------------------------------------------------------------------------
-    const hooksList = {};
+    // Upload Hook -----------------------------------------------------------------------------------------------------
+    const uploadHooksList = {};
     app.uploadHooks = {
-        add: (name, hook) => hooksList[name] = hook,
-        remove: name => hooksList[name] = null,
+        add: (name, hook) => uploadHooksList[name] = hook,
+        remove: name => uploadHooksList[name] = null,
 
         run: (req, fields, files, params, sendResponse) =>
-            Object.keys(hooksList).forEach(name => hooksList[name] && hooksList[name](req, fields, files, params, data => data && sendResponse(data))),
+            Object.keys(uploadHooksList).forEach(name => uploadHooksList[name] && uploadHooksList[name](req, fields, files, params, data => data && sendResponse(data))),
     };
 
-    // Ready hook -----------------------------------------------------------------------------------------------------------------------------------
+    // Ready hook ------------------------------------------------------------------------------------------------------
     const readyHookContainer = {};
     let readyHooksId = null;
     app.readyHooks = {
@@ -64,16 +79,16 @@ module.exports = (app, appName) => {
             readyHookContainer[name] = null;
             app.readyHooks.waiting();
         },
-
+        
         waiting: () => {
             if (readyHooksId) clearTimeout(readyHooksId);
             readyHooksId = setTimeout(app.readyHooks.run, 2000);
         },
-
+        
         run: () => {
             let hookKeys = Object.keys(readyHookContainer),
                 ready = true;
-
+            
             // Check all hooks
             for (let i = 0; i < hookKeys.length; i++) {
                 const hook = readyHookContainer[hookKeys[i]];
@@ -83,10 +98,10 @@ module.exports = (app, appName) => {
                     break;
                 }
             }
-
+            
             if (ready) {
                 hookKeys.forEach(hookKey => readyHookContainer[hookKey].run());
-                console.log(` - The system is ready!`);
+                console.log(` - #${process.pid}: The system is ready!`);
             } else {
                 app.readyHooks.waiting();
             }
@@ -94,7 +109,7 @@ module.exports = (app, appName) => {
     };
     app.readyHooks.waiting();
 
-    // Load modules ---------------------------------------------------------------------------------------------------------------------------------
+    // Load modules ----------------------------------------------------------------------------------------------------
     app.loadModules = (loadController = true) => {
         const modelPaths = [],
             controllerPaths = [],
@@ -125,8 +140,8 @@ module.exports = (app, appName) => {
         if (loadController) controllerPaths.forEach(path => require(path)(app));
     }
 
-    // Setup admin account (default account) --------------------------------------------------------------------------------------------------------
-    app.setupAdmin = async() => {
+    // Setup admin account (default account) ---------------------------------------------------------------------------
+    app.setupAdmin = () => {
         const permission = app.permission.all();
         let adminRole = {};
         const setAdmin = () => {
@@ -163,7 +178,7 @@ module.exports = (app, appName) => {
             })
         };
 
-        await app.model.role.get({ name: 'admin' }, (error, role) => {
+        app.model.role.get({ name: 'admin' }, (error, role) => {
             if (error) {
                 console.log(' - Error: Cannot create admin role!');
             } else if (!role) {
