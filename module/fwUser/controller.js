@@ -206,7 +206,7 @@ module.exports = app => {
     });
 
     // app.post('/get_user_on_mobile', app.getUserOnMobile);
-    // app.post('/login_on_mobile', app.loginUserOnMobile);
+    app.post('/login_on_mobile', app.loginUserOnMobile);
     // app.post('/logout_on_mobile', app.logoutUserOnMobile);
 
 

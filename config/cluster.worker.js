@@ -13,9 +13,9 @@ module.exports = (cluster, isDebug) => {
             ca: app.fs.readFileSync('/etc/ssl/hiepphat_ca_bundle.crt'),
             key: app.fs.readFileSync('/etc/ssl/hiepphat_private.key'),
         }, app);
-    
+
     if (!app.isDebug && app.fs.existsSync('./asset/config.json')) package = Object.assign({}, package, require('../asset/config.json'));
-    
+
     // Variables ------------------------------------------------------------------------------------------------------
     app.port = package.port;
     app.rootUrl = package.rootUrl;
@@ -32,16 +32,16 @@ module.exports = (cluster, isDebug) => {
     app.imagePath = app.path.join(package.path.public, 'img');
     app.uploadPath = app.path.join(__dirname, '..', package.path.upload);
     app.faviconPath = app.path.join(__dirname, '..', package.path.favicon);
-    
+
     // Configure ------------------------------------------------------------------------------------------------------
     require('./common')(app, package.name);
     require('./view')(app, express);
     require('./database')(app);
     require('./packages')(app, server, package);
-    require('./authentication')(app);
+    require('./authentication')(app, package);
     require('./permission')(app);
     require('./io')(app, server);
-    
+
     // Init -----------------------------------------------------------------------------------------------------------
     app.createTemplate('home', 'admin');
     app.loadModules();
@@ -53,7 +53,7 @@ module.exports = (cluster, isDebug) => {
             (error || menu == null) ? next() : app.templates.home(req, res)
         });
     });
-    
+
     // Worker ---------------------------------------------------------------------------------------------------------
     app.worker = {
         refreshState: (option) => process.send({ type: 'refreshState', workerId: process.pid, option }),
@@ -62,7 +62,7 @@ module.exports = (cluster, isDebug) => {
         reset: (workerId) => process.send({ type: 'resetWorker', workerId }),
         shutdown: (workerId) => process.send({ type: 'shutdownWorker', workerId }),
     };
-    
+
     // Listen from MASTER ---------------------------------------------------------------------------------------------
     process.on('message', message => {
         if (message.type == 'refreshState') {
@@ -78,7 +78,7 @@ module.exports = (cluster, isDebug) => {
             process.exit(1);
         }
     });
-    
+
     // Launch website -------------------------------------------------------------------------------------------------
     require('./debug')(app);
     server.listen(app.port);
