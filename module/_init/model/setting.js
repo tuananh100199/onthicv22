@@ -25,30 +25,9 @@ module.exports = (app) => {
                 });
             }
         },
-        get1: (keys, done) => {
-            let result = {};
-            model.find({ key: { $in: keys || [] } }, (error, items) => {
-                if (error || (items && items.length == 0)) {
-                    done(result);
-                } else {
-                    for (let i = 0; i <= items.length; i++) {
-                        if (i == items.length) {
-                            done(result)
-                        } else {
-                            result[items[i].key] = items[i].value;
-                        }
-                    }
-                }
-            })
-        },
 
         set: (data, done) => {
-            const keys = Object.keys(data),
-                options = {
-                    upsert: true,
-                    new: true,
-                    setDefaultsOnInsert: true
-                };
+            const keys = Object.keys(data), options = { upsert: true, new: true, setDefaultsOnInsert: true };
             let error = null;
             const solveAnItem = (index) => {
                 if (index < keys.length) {

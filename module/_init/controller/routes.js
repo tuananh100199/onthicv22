@@ -48,7 +48,11 @@ module.exports = (app) => {
             addressList: JSON.stringify([]),
         },
 
-        refresh: (done) => {
+        refresh: (option, done) => {
+            if (typeof option == 'function') {
+                done = option;
+                option = {};
+            }
             const keys = Object.keys(app.state.data);
             app.model.setting.get(...keys, result => {
                 if (result) {
@@ -62,7 +66,11 @@ module.exports = (app) => {
                         }
                     });
                 }
-                done && done();
+                if (option && option.menuUpdate) {
+                    app.buildAppMenus(null, () => done && done());
+                } else {
+                    done && done()
+                }
             });
         },
     };
@@ -71,11 +79,9 @@ module.exports = (app) => {
     app.schedule('*/1 * * * *', () => {
         app.redis.mget([`${app.appName}:todayViews`, `${app.appName}:allViews`], (error, result) => {
             if (error == null && result) {
-                app.io.emit('count', result);
-
-                app.state.data.todayViews = result.todayViews;
-                app.state.data.allViews = result.allViews;
-                app.model.setting.set(result);
+                app.state.data.todayViews = Number(result[0]);
+                app.state.data.allViews = Number(result[1]);
+                app.model.setting.set({ todayViews: Number(result[0]), allViews: Number(result[1]) });
             }
         });
     });
@@ -188,7 +194,7 @@ module.exports = (app) => {
             if (pathname.length > 1 && pathname.endsWith('/'))
                 pathname = pathname.substring(0, pathname.length - 1);
             if (!pathname) pathname = '/';
-            const menu = app.menus[pathname];
+            const menu = app.state.menus[pathname];
             if (menu) {
                 const menuComponents = [];
                 const getComponent = (index, componentIds, components, done) => {

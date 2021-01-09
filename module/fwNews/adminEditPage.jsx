@@ -12,7 +12,6 @@ class NewsEditPage extends React.Component {
         this.newsLink = React.createRef();
         this.imageBox = React.createRef();
         this.viEditor = React.createRef();
-        this.enEditor = React.createRef();
     }
     componentDidMount() {
         T.ready('/user/news/list', () => {
@@ -47,12 +46,9 @@ class NewsEditPage extends React.Component {
                 }
                 data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
                 this.imageBox.current.setData('news:' + (data.item._id ? data.item._id : 'new'));
-                let title = T.language.parse(data.item.title, true),
-                    abstract = T.language.parse(data.item.abstract, true),
-                    content = T.language.parse(data.item.content, true);
-                $('#neNewsViTitle').val(title.vi); $('#neNewsEnTitle').val(title.en);
-                $('#neNewsViAbstract').val(abstract.vi); $('#neNewsEnAbstract').val(abstract.en);
-                this.viEditor.current.html(content.vi); this.enEditor.current.html(content.en);
+                $('#neNewsViTitle').val(data.item.title);
+                $('#neNewsViAbstract').val(data.item.abstract);
+                this.viEditor.current.html(data.item.content);
                 this.setState(data);
             } else {
                 this.props.history.push('/user/news/list');
@@ -63,13 +59,15 @@ class NewsEditPage extends React.Component {
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
-    changeisInternal = (event) => {
+    
+    changeIsInternal = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { isInternal: event.target.checked }) });
     }
 
     checkLink = (item) => {
         this.props.checkLink(item._id, $('#neNewsLink').val().trim());
     }
+    
     newsLinkChange = (e) => {
         if (e.target.value) {
             $(this.newsLink.current).html(T.rootUrl + '/tintuc/' + e.target.value).attr('href', '/tintuc/' + e.target.value);
@@ -83,17 +81,17 @@ class NewsEditPage extends React.Component {
             neNewsStopPost = $('#neNewsStopPost').val(),
             changes = {
                 categories: $('#neNewsCategories').val(),
-                title: JSON.stringify({ vi: $('#neNewsViTitle').val(), en: $('#neNewsEnTitle').val() }),
+                title: $('#neNewsViTitle').val(),
                 link: $('#neNewsLink').val().trim(),
                 active: this.state.item.active,
                 isInternal: this.state.item.isInternal,
-                abstract: JSON.stringify({ vi: $('#neNewsViAbstract').val(), en: $('#neNewsEnAbstract').val() }),
-                content: JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() }),
+                abstract: $('#neNewsViAbstract').val(),
+                content: this.viEditor.current.html()
             };
         if (neNewsStartPost) changes.startPost = T.formatDate(neNewsStartPost);
         if (neNewsStopPost) changes.stopPost = T.formatDate(neNewsStopPost);
         let newDraft = {
-            title: JSON.stringify({ vi: $('#neNewsViTitle').val(), en: $('#neNewsEnTitle').val() }),
+            title: $('#neNewsViTitle').val(),
             editorId: this.props.system.user._id,
             documentId: this.state.item._id,
             editorName: this.props.system.user.firstname,
@@ -122,7 +120,7 @@ class NewsEditPage extends React.Component {
             active: false, isInternal: false,
             view: 0
         };
-        let title = T.language.parse(item.title, true), linkDefaultNews = T.rootUrl + '/news/item/' + item._id;
+        let title = item.title, linkDefaultNews = T.rootUrl + '/news/item/' + item._id;
         const route = T.routeMatcher('/user/news/edit/:newsId'),
             newsId = route.parse(window.location.pathname).newsId;
         const docDraftUser = this.props.news && this.props.news.docDraftUser ? this.props.news.docDraftUser : [];
@@ -131,13 +129,11 @@ class NewsEditPage extends React.Component {
         if (!docMapper[newsId]) readOnly = false;
 
         return (
-
-             
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-file' /> Tin tức: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
+                        <p dangerouslySetInnerHTML={{ __html: title != '' ? 'Tiêu đề: <b>' + title + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
@@ -154,10 +150,6 @@ class NewsEditPage extends React.Component {
                                 <div className='form-group'>
                                     <label className='control-label'>Tên bài viết</label>
                                     <input className='form-control' type='text' placeholder='Tên bài viết' id='neNewsViTitle' defaultValue={title.vi} readOnly={readOnly} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>News title</label>
-                                    <input className='form-control' type='text' placeholder='News title' id='neNewsEnTitle' defaultValue={title.en} readOnly={readOnly} />
                                 </div>
                                 <div className='row'>
                                     <div className='col-md-6'>
@@ -180,7 +172,7 @@ class NewsEditPage extends React.Component {
                                             <label className='control-label'>Tin nội bộ:&nbsp;</label>
                                             <span className='toggle'>
                                                 <label>
-                                                    <input type='checkbox' checked={item.isInternal} onChange={this.changeisInternal} disabled={readOnly} />
+                                                    <input type='checkbox' checked={item.isInternal} onChange={this.changeIsInternal} disabled={readOnly} />
                                                     <span className='button-indecator' />
                                                 </label>
                                             </span>
@@ -245,30 +237,12 @@ class NewsEditPage extends React.Component {
                     <div className='col-md-12'>
                         <div className='tile'>
                             <div className='tile-body'>
-                                <ul className='nav nav-tabs'>
-                                    <li className='nav-item'>
-                                        <a className='nav-link active show' data-toggle='tab' href='#newsViTab'>Việt Nam</a>
-                                    </li>
-                                    <li className='nav-item'>
-                                        <a className='nav-link' data-toggle='tab' href='#newsEnTab'>English</a>
-                                    </li>
-                                </ul>
-                                <div className='tab-content' style={{ paddingTop: '12px' }}>
-                                    <div id='newsViTab' className='tab-pane fade show active'>
-                                        <label className='control-label'>Tóm tắt bài viết</label>
-                                        <textarea defaultValue='' className='form-control' id='neNewsViAbstract' placeholder='Tóm tắt bài viết' readOnly={readOnly}
-                                            style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                        <label className='control-label'>Nội dung bài viết</label>
-                                        <Editor ref={this.viEditor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=news' readOnly={readOnly} />
-                                    </div>
-                                    <div id='newsEnTab' className='tab-pane fade'>
-                                        <label className='control-label'>News abstract</label>
-                                        <textarea defaultValue='' className='form-control' id='neNewsEnAbstract' placeholder='News abstracts' readOnly={readOnly}
-                                            style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                        <label className='control-label'>News content</label>
-                                        <Editor ref={this.enEditor} height='400px' placeholder='News content' uploadUrl='/user/upload?category=news' readOnly={readOnly} />
-                                    </div>
-                                </div>
+                                <label className='control-label'>Tóm tắt bài viết</label>
+                                <textarea defaultValue='' className='form-control' id='neNewsViAbstract' placeholder='Tóm tắt bài viết' readOnly={readOnly}
+                                          style={{ minHeight: '100px', marginBottom: '12px' }} />
+                                          
+                                <label className='control-label'>Nội dung bài viết</label>
+                                <Editor ref={this.viEditor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=news' readOnly={readOnly} />
                             </div>
                         </div>
                     </div>
@@ -277,7 +251,7 @@ class NewsEditPage extends React.Component {
                 <Link to={'/user/news/list'} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                {readOnly ? '' :
+                {!readOnly &&
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                         <i className='fa fa-lg fa-save' />
                     </button>}

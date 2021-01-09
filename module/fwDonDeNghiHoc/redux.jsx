@@ -124,12 +124,12 @@ export function deleteForm(_id) {
     }
 }
 
-export function getEmailDonDeNghiHoc(done) {
-    T.get('/api/email/all', done, error => T.notify('Get email information failed!', 'danger'));
+export function getApplicationFormEmail(done) {
+    T.get('/api/application-form/email/all', done, () => T.notify('Gửi email bị lỗi', 'danger'));
 }
 
-export function saveEmailDonDeNghiHoc(type, email) {
-    const url = '/api/email';
+export function saveApplicationFormEmail(type, email) {
+    const url = '/api/application-form/email';
     T.put(url, { type, email }, data => {
         if (data.error) {
             console.error('PUT: ' + url + '.', data.error);
@@ -139,6 +139,7 @@ export function saveEmailDonDeNghiHoc(type, email) {
         }
     }, error => T.notify('Lưu thông tin email bị lỗi!', 'danger'));
 }
+
 export function sendEmailTuChoiDonDeNghiHoc(formID, done) {
     return dispatch => {
         const url = '/api/application-form/send-mail';

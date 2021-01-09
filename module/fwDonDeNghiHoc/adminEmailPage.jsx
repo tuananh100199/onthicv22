@@ -1,8 +1,8 @@
 import React from 'react';
-import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem.jsx';
+import { getApplicationFormEmail, saveApplicationFormEmail } from './redux.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
-class AdminGuiMailThongBao extends React.Component {
+class EmailItem extends React.Component {
     constructor(props) {
         super(props);
         this.title = React.createRef();
@@ -42,15 +42,12 @@ class AdminGuiMailThongBao extends React.Component {
     }
 }
 
-export default class EmailPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.emailAdminThongBaoTuChoiDon = React.createRef();
-    }
+export default class AdminEmailPage extends React.Component {
+    emailAdminThongBaoTuChoiDon = React.createRef();
 
     componentDidMount() {
         T.ready(() => {
-            getSystemEmails(data => {
+            getApplicationFormEmail(data => {
                 this.emailAdminThongBaoTuChoiDon.current.set(data.emailAdminThongBaoTuChoiDonTitle, data.emailAdminThongBaoTuChoiDonText, data.emailAdminThongBaoTuChoiDonHtml);
             });
         });
@@ -59,7 +56,7 @@ export default class EmailPage extends React.Component {
     save = () => {
         const emailType = $('ul.nav.nav-tabs li.nav-item a.nav-link.active').attr('href').substring(1);
         const email = this[emailType].current.get();
-        saveSystemEmails(emailType, email);
+        saveApplicationFormEmail(emailType, email);
     }
 
     render() {
@@ -73,12 +70,11 @@ export default class EmailPage extends React.Component {
                         <div className='tile'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminThongBaoTuChoiDon'>Thông báo từ chối</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminThongBaoTuChoiDon'>Từ chối duyệt đơn</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
-                                <AdminGuiMailThongBao ref={this.emailAdminThongBaoTuChoiDon} id='emailAdminThongBaoTuChoiDon' active={true}
-                                    params='{name}, {reason}' />
+                                <EmailItem ref={this.emailAdminThongBaoTuChoiDon} id='emailAdminThongBaoTuChoiDon' active={true} params='{name}, {reason}' />
                             </div>
                         </div>
                     </div>

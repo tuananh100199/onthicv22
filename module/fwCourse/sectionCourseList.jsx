@@ -48,14 +48,13 @@ class CourseListView extends React.Component {
                         <div className='post-entry h-100 single-popular-course mb-100'>
                             <div className='image'>
                                 <Link to={link}>
-                                    <img src={item.image} alt='Image' className='img-fluid'
-                                         style={{ width: '350px', height: 'auto' }}/>
+                                    <img src={item.image} alt='Image' className='img-fluid' style={{ width: '350px', height: 'auto' }}/>
                                 </Link>
                             </div>
                             <div className='text p-4'>
-                                <h2 className='h5 text-black'><Link to={link}>{T.language.parse(item.title)}</Link></h2>
+                                <h2 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h2>
                                 <span className='text-uppercase date d-block mb-3'><small>{new Date(item.createdDate).getText()}</small></span>
-                                <p className='mb-0 grid-abstract'>{T.language.parse(item.abstract)}</p>
+                                <p className='mb-0 grid-abstract'>{item.abstract}</p>
                             </div>
                         </div>
                     </div>
@@ -71,14 +70,13 @@ class CourseListView extends React.Component {
                                     <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid'/>
                                 </Link>
                             </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }}
-                                 className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
+                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-black'>{T.language.parse(item.title)}</Link>
+                                            <Link to={link} className='text-primary'>{item.title}</Link>
                                         </h2>
-                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
+                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{item.abstract}</p>
                                     </div>
                                 </div>
                             </div>
@@ -86,14 +84,6 @@ class CourseListView extends React.Component {
                     </div>
                 )
             })
-        }
-        
-        if (userPage && userPage.pageNumber < userPage.pageTotal) {
-            elements.push(
-                <div key={elements.length} style={{ width: '100%', textAlign: 'center' }}>
-                    <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{ width: '48px', height: 'auto' }} onLoad={this.ready}/>
-                </div>
-            );
         }
         
         return (
@@ -112,6 +102,11 @@ class CourseListView extends React.Component {
                 </div>
                 <div className='row mb-5'>
                     {(this.state.viewMode == 'list') ? elements_list : elements_grid}
+                    {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
+                        <div style={{width: '100%', textAlign: 'center'}}>
+                            <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
+                        </div>
+                    ) : ''}
                 </div>
             </section>
         );

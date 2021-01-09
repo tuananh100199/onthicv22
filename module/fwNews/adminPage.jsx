@@ -24,7 +24,7 @@ class NewsPage extends React.Component {
         this.props.updateNews(item._id, { active: !item.active });
     }
 
-    changeisInternal = (item) => this.props.updateNews(item._id, { isInternal: !item.isInternal })
+    changeIsInternal = (item) => this.props.updateNews(item._id, { isInternal: !item.isInternal })
 
     delete = (e, item) => {
         T.confirm('Tin tức', 'Bạn có chắc bạn muốn xóa tin tức này?', 'warning', true, isConfirm => isConfirm && this.props.deleteNews(item._id));
@@ -57,7 +57,7 @@ class NewsPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <Link to={'/user/news/edit/' + item._id}>{T.language.parse(item.title)}</Link>
+                                    <Link to={'/user/news/edit/' + item._id}>{item.title}</Link>
                                 </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
                                     <img src={item.image} alt='avatar' style={{ height: '32px' }} />
@@ -71,7 +71,7 @@ class NewsPage extends React.Component {
                                 </td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
-                                        <input type='checkbox' checked={item.isInternal} onChange={() => this.changeisInternal(item, index)} disabled={readOnly} />
+                                        <input type='checkbox' checked={item.isInternal} onChange={() => this.changeIsInternal(item, index)} disabled={readOnly} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>

@@ -28,7 +28,7 @@ module.exports = app => {
 
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.buildAppMenus = menuTree => {
+    app.buildAppMenus = (menuTree, callback) => {
         const menus = {},
             getMenu = (index, items, done) => {
                 if (index < items.length) {
@@ -46,16 +46,21 @@ module.exports = app => {
             };
 
         if (menuTree) {
-            getMenu(0, menuTree, () => app.menus = menus);
+            getMenu(0, menuTree, () => {
+                app.state.menus = menus;
+                callback && callback();
+            });
         } else {
-            app.model.menu.getAll({}, (error, menuTree) => getMenu(0, menuTree, () => app.menus = menus));
+            app.model.menu.getAll({}, (error, menuTree) => getMenu(0, menuTree, () => {
+                app.state.menus = menus;
+                callback && callback();
+            }));
         }
     }
     app.buildAppMenus();
 
-
     app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => app.model.menu.getAll({}, (error, menuTree) => {
-        app.buildAppMenus(menuTree);
+        // app.buildAppMenus(menuTree);
         res.send({ error, items: menuTree });
     }));
 
@@ -134,13 +139,23 @@ module.exports = app => {
         app.model.menu.create(data, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/menu/build', app.permission.check('menu:write'), (req, res) => {
-        app.buildAppMenus();
+    app.put('/api/menu/build', app.permission.check('menu:write'), (req, res) => {
+        app.buildAppMenus(null, () => {
+            app.worker.refreshState({ menuUpdate: true });
+        });
         res.send('OK');
     });
 
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
-        app.model.menu.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));
+        app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
+            if (error == null) {
+                app.buildAppMenus(null, () => {
+                    app.worker.refreshState({ menuUpdate: true });
+                });
+            }
+            res.send({ error, item })
+        })
+    );
 
     app.put('/api/menu/priorities', app.permission.check('menu:write'), (req, res) => {
         let error = null;

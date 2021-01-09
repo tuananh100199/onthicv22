@@ -35,7 +35,7 @@ module.exports = app => {
     });
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
-    app.readyHooks.add('readyInit', {
+    app.readyHooks.add('emailInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,
         run: () => app.model.setting.init({
             emailRegisterMemberTitle: 'Hiệp Phát: Welcome to new member!',

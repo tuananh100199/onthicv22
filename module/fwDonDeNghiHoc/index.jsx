@@ -31,7 +31,7 @@ export default {
         },
         {
             path: '/user/don-de-nghi-hoc/send-mail',
-            component: Loadable({ loading: Loading, loader: () => import('./adminGuiMailThongBao.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminEmailPage.jsx') }),
         },
         {
             path: '/user/don-de-nghi-hoc-chi-tiet/item/:_id',

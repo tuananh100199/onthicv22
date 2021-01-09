@@ -7,7 +7,7 @@ module.exports = (cluster, isDebug) => {
     const workers = {},
         numWorkers = isDebug ? 2 : require('os').cpus().length;
     for (let i = 0; i < numWorkers; i++) {
-        const worker = cluster.fork();
+        const worker = cluster.fork({ enableInit: i == 0 });
         worker.status = 'running';
         worker.version = package.version;
         worker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';

@@ -119,7 +119,7 @@
     "react-swipeable-views": "^0.13.9",
     "redis": "^3.0.2",
     "serve-favicon": "^2.5.0",
-    "socket.io": "^3.0.1",
+    "socket.io": "^3.0.5",
     "socket.io-redis": "^6.0.1",
     "xlsx": "^0.16.8"
   }

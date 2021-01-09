@@ -56,7 +56,7 @@ module.exports = (cluster, isDebug) => {
     
     // Worker ---------------------------------------------------------------------------------------------------------
     app.worker = {
-        refreshState: () => process.send({ type: 'refreshState', workerId: process.pid }),
+        refreshState: (option) => process.send({ type: 'refreshState', workerId: process.pid, option }),
         
         create: () => process.send({ type: 'createWorker' }),
         reset: (workerId) => process.send({ type: 'resetWorker', workerId }),
@@ -66,7 +66,7 @@ module.exports = (cluster, isDebug) => {
     // Listen from MASTER ---------------------------------------------------------------------------------------------
     process.on('message', message => {
         if (message.type == 'refreshState') {
-            app.state.refresh();
+            app.state.refresh(message.option);
         } else if (message.type == 'workersChanged') {
             app.io.emit('workers-changed', message.workers);
             app.worker.items = message.workers;

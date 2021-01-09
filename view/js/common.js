@@ -241,7 +241,7 @@ const T = {
     },
 };
 
-T.socket = T.debug ? io() : io.connect(T.rootUrl, { secure: true });
+T.socket = T.debug ? io({ transports:['websocket'] }) : io.connect(T.rootUrl, { transports:['websocket'], secure: true });
 
 T.language = texts => {
     let lg = T.cookie('language');

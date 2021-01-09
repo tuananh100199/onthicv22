@@ -20,21 +20,17 @@ class SectionCourse extends React.Component {
             course = courseFeed.map((item, index) => {
                 let { image, title, abstract } = item ? item : {image:'', title:'', abstract:'' };
 
-                const link = item.link ? '/khoahoc/' + item.link : '/course/item/' + item._id;
+                const link = item.link ? '/khoa-hoc/' + item.link : '/course/item/' + item._id;
                 return (
-                    <div className="col-12 col-md-6"  key={index}>
-                        <div className="single-blog-area mb-100 wow fadeInUp" data-wow-delay="250ms" >
-                            <Link to={link}>
-                                <img src={image} alt="" />
-                            </Link>
-                            <div className="blog-content">
-                                <a href="#" className="blog-headline">
-                                    <h4>{title}</h4>
-                                </a>
-                                <div className="meta d-flex align-items-center">
-                                    <a href="#">Sarah Parker</a>
-                                        <span><i className="fa fa-circle" aria-hidden="true" /></span>
-                                    <a href="#">Art &amp; Design</a>
+                    <div key={index} className='col-12 col-md-6 mt-2 mb-2'>
+                        <div className='h-100 single-blog-area mb-100 wow fadeInUp' data-wow-delay={(index + 1) * 250 + 'ms'}>
+                            <Link to={link}><img src={image} alt={title} /></Link>
+                            <div className='blog-content'>
+                                <Link to={link} className='blog-headline'><h4>{title}</h4></Link>
+                                <div className='meta d-flex align-items-center'>
+                                    {/*<a href="#">Sarah Parker</a>*/}
+                                    {/*    <span><i className="fa fa-circle" aria-hidden="true" /></span>*/}
+                                    {/*<a href="#">Art &amp; Design</a>*/}
                                 </div>
                                 <p>{abstract}</p>
                             </div>
@@ -45,22 +41,25 @@ class SectionCourse extends React.Component {
         }
         return (
             <div className='mt-2'>
-                <div>
-                <section className="blog-area section-padding-100-0">
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-12">
-                                <div className="section-heading">
-                                    <h3>Khóa Học</h3>
-                                </div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                {course}
-                            </div>
-                        </div>
-                    </section>
-                </div>
+                <section className='blog-area section-padding-100-0'>
+                    <div className='section-heading'>
+                        <h3 className='text-primary'>Khóa Học</h3>
+                    </div>
+                    <div className='row'>{course}</div>
+                    
+                    {/*<div className='container'>*/}
+                    {/*    <div className='row'>*/}
+                    {/*        <div className='col-12'>*/}
+                    {/*            <div className='section-heading'>*/}
+                    {/*                <h3 className='text-primary'>Khóa Học</h3>*/}
+                    {/*            </div>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*    <div className='row'>*/}
+                    {/*        {course}*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                </section>
             </div>
         )
     }

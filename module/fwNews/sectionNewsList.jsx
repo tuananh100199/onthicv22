@@ -49,12 +49,11 @@ class SectionNewsList extends React.Component {
                                 <img src={item.image} alt={item.title} />
                             </Link>
                             <div className='course-content'>
-                                <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                <Link to={link} className='text-primary'>{item.title}</Link>
                                 <div className='meta d-flex align-items-center'>
                                     <a href='#'>{new Date(item.createdDate).getText()}</a>
                                 </div>
-
-                                <p className='mb-0 grid-abstract'>{T.language.parse(item.abstract)}</p>
+                                <p className='mb-0 grid-abstract'>{item.abstract}</p>
                             </div>
                             <div className='seat-rating-fee d-flex justify-content-between' style={{ position: 'absolute', bottom: 0 }}>
                                 <div className='seat-rating h-100 d-flex align-items-center'>
@@ -88,9 +87,9 @@ class SectionNewsList extends React.Component {
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                            <Link to={link} className='text-primary'>{item.title}</Link>
                                         </h2>
-                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
+                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{item.abstract}</p>
                                     </div>
                                 </div>
                             </div>
