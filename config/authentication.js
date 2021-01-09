@@ -1,4 +1,4 @@
-module.exports = app => {
+module.exports = (app, config) => {
     app.isGuest = (req, res, next) => {
         if (req.session.user == null) {
             next();
@@ -50,7 +50,7 @@ module.exports = app => {
                 if (user == null) {
                     res.send({ error: 'Invalid email or password!' });
                 } else if (user.active) {
-                    app.updateSessionUser(req, user, sessionUser => res.send({ user: sessionUser }))
+                    app.updateSessionUser(req, user, sessionUser => res.send({ user: sessionUser }));
                 } else {
                     res.send({ error: 'Your account is inactive!' });
                 }
@@ -67,12 +67,43 @@ module.exports = app => {
     };
 
     app.loginUserOnMobile = (req, res) => {
-        const auth = require('basic-auth');
-        const credentials = auth(req);
-        if (credentials) {
-            //TODO: auth => credentials.name, credentials.pass
-        } else {
-            res.send({ error: 'Invalid parameters!' });
-        }
+        let email = req.body.email.trim(), password = req.body.password;
+        app.model.user.auth(email, password, user => {
+            if (user == null) {
+                res.send({ error: 'Invalid email or password!' });
+            } else if (user.active) {
+                const getUserToken = () => {
+                    const token = user._id + '_' + app.getToken(8),
+                        tokenKey = config.name + '_mobile:' + token;
+                    app.redis.get(tokenKey, (error, value) => {
+                        if (error || value) {
+                            getUserToken();
+                        } else {
+                            app.redis.set(tokenKey, JSON.stringify(user), (error) => { //TODO: lưu session user
+                                if (error) {
+                                    getUserToken();
+                                } else {
+                                    app.redis.expire(tokenKey, 30 * 24 * 60 * 60); // 30 days
+                                    res.send({ token });
+                                }
+                            });
+                        }
+                    });
+                }
+                getUserToken();
+            } else {
+                res.send({ error: 'Your account is inactive!' });
+            }
+        });
     };
+
+    // app.loginUserOnMobile = (req, res) => {
+    //     const auth = require('basic-auth');
+    //     const credentials = auth(req);
+    //     if (credentials) {
+    //         //auth => credentials.name, credentials.pass
+    //     } else {
+    //         res.send({ error: 'Invalid parameters!' });
+    //     }
+    // };
 };
