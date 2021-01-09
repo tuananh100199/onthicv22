@@ -51,13 +51,13 @@ module.exports = (app, http, config) => {
     app.jimp = require('jimp');
 
     // Libraries
-    require('./lib/fs')(app);
-    require('./lib/string')(app);
-    require('./lib/date')(app);
     require('./lib/array')(app);
+    require('./lib/date')(app);
+    require('./lib/docx')(app);
     require('./lib/email')(app);
     require('./lib/excel')(app);
-    require('./lib/schedule')(app);
+    require('./lib/fs')(app);
     // require('./lib/language')(app);
-    require('./lib/docxtemplater')(app);
+    require('./lib/schedule')(app);
+    require('./lib/string')(app);
 };

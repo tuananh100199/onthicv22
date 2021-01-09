@@ -11,16 +11,20 @@ export default {
     },
     routes: [
         {
-            path: '/user/settings',
-            component: Loadable({ loading: Loading, loader: () => import('./adminSettingsPage.jsx') })
-        },
-        {
             path: '/user/dashboard',
             component: Loadable({ loading: Loading, loader: () => import('./adminDashboardPage.jsx') })
         },
         {
             path: '/user',
             component: () => <SubMenusPage menuLink='/user' menuKey={1000} headerIcon='fa-user' />
-        }
+        },
+        {
+            path: '/user/multimedia',
+            component: Loadable({ loading: Loading, loader: () => import('./adminMultimediaPage.jsx') })
+        },
+        {
+            path: '/user/settings',
+            component: () => <SubMenusPage menuLink='/user/settings' menuKey={2000} headerIcon='fa-gear' />
+        },
     ],
 };

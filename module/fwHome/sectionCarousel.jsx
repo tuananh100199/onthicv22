@@ -9,7 +9,7 @@ const outGoing = ['bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight
 
 class SectionCarousel extends React.Component {
     state = {};
-    
+
     handleResize = () => {
         const viewportWidth = $(window).width();
         let viewportHeight = $(window).height();
@@ -24,7 +24,7 @@ class SectionCarousel extends React.Component {
         }
         $('.slider-content').css('height', viewportHeight);
     }
-    
+
     componentDidMount() {
         $(document).ready(() => {
             const single_id = 'carousel_' + this.props.viewId, logo_id = 'logo_carousel_' + this.props.viewId;
@@ -44,7 +44,7 @@ class SectionCarousel extends React.Component {
                             margin: 0,
                             center: true,
                             nav: true,
-                            navText : ["<i class='fa fa-chevron-left'></i>","<i class='fa fa-chevron-right'></i>"],
+                            navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
                             navContainer: '.nav-container',
                             navSpeed: 1500,
                             dots: false,
@@ -66,25 +66,25 @@ class SectionCarousel extends React.Component {
             });
         })
     }
-    
+
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize);
     }
-    
+
     render() {
         let elements = null, height = this.state.height;
-        
+
         if (this.state.items) {
             elements = this.state.items.map((item, index) => {
                 return (
                     this.state.single ?
                         <div key={index} className='slider-content'
-                             style={{
-                                 background: `url('${item.image}')`,
-                                 backgroundRepeat: 'no-repeat',
-                                 backgroundPosition: 'center',
-                                 backgroundSize: 'cover'
-                             }}
+                            style={{
+                                background: `url('${item.image}')`,
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center',
+                                backgroundSize: 'cover'
+                            }}
                         >
                             <div className='inner'>
                                 <h2>{T.language.parse(item.title)}</h2>
@@ -93,7 +93,7 @@ class SectionCarousel extends React.Component {
                         </div>
                         :
                         <div key={index} className='single-instagram center-hide'
-                             style={{ maxWidth: '100%', height }}>
+                            style={{ maxWidth: '100%', height }}>
                             <div style={{
                                 overflow: 'hidden',
                                 position: 'absolute',
@@ -108,25 +108,25 @@ class SectionCarousel extends React.Component {
                             }}>
                             </div>
                             <a href={item.link} target='_blank'>
-                                <i className='fa fa-link'/>
+                                <i className='fa fa-link' />
                             </a>
                         </div>
                 );
             });
         }
-        
+
         return this.state.single ?
             <div style={{ position: 'relative' }}>
                 <div id={'carousel_' + this.props.viewId} className='owl-carousel owl-theme'>
                     {elements}
                 </div>
-                <div className='nav-container'/>
+                <div className='nav-container' />
             </div>
             :
             <div className='row'>
                 <div className='follow-us-instagram' style={{ width: '100%', overflow: 'hidden' }}>
                     <div className='instagram-content d-flex flex-wrap align-items-center owl-carousel'
-                         id={'logo_carousel_' + this.props.viewId}>
+                        id={'logo_carousel_' + this.props.viewId}>
                         {elements}
                     </div>
                 </div>

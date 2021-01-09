@@ -2,7 +2,7 @@ import React from 'react';
 import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
-class EmailItem extends React.Component {
+class AdminGuiMailThongBao extends React.Component {
     constructor(props) {
         super(props);
         this.title = React.createRef();
@@ -45,21 +45,13 @@ class EmailItem extends React.Component {
 export default class EmailPage extends React.Component {
     constructor(props) {
         super(props);
-        this.emailRegisterMember = React.createRef();
-        this.emailCreateMemberByAdmin = React.createRef();
-        this.emailNewPassword = React.createRef();
-        this.emailForgotPassword = React.createRef();
-        this.emailContact = React.createRef();
+        this.emailAdminThongBaoTuChoiDon = React.createRef();
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             getSystemEmails(data => {
-                this.emailRegisterMember.current.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
-                this.emailCreateMemberByAdmin.current.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);
-                this.emailNewPassword.current.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
-                this.emailForgotPassword.current.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
-                this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
+                this.emailAdminThongBaoTuChoiDon.current.set(data.emailAdminThongBaoTuChoiDonTitle, data.emailAdminThongBaoTuChoiDonText, data.emailAdminThongBaoTuChoiDonHtml);
             });
         });
     }
@@ -81,32 +73,12 @@ export default class EmailPage extends React.Component {
                         <div className='tile'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>New user</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Create new user</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>New password</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailForgotPassword'>Forgot password</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Contact</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminThongBaoTuChoiDon'>Thông báo từ chối</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
-                                <EmailItem ref={this.emailRegisterMember} id='emailRegisterMember' active={true}
-                                    params='{name}, {url}' />
-                                <EmailItem ref={this.emailCreateMemberByAdmin} id='emailCreateMemberByAdmin'
-                                    params='{name}, {email}, {password}, {url}' />
-                                <EmailItem ref={this.emailNewPassword} id='emailNewPassword'
-                                    params='{name}, {email}, {password}' />
-                                <EmailItem ref={this.emailForgotPassword} id='emailForgotPassword'
-                                    params='{name}, {email}, {url}' />
-                                <EmailItem ref={this.emailContact} id='emailContact'
-                                    params='{name}, {subject}, {message}' />
+                                <AdminGuiMailThongBao ref={this.emailAdminThongBaoTuChoiDon} id='emailAdminThongBaoTuChoiDon' active={true}
+                                    params='{name}, {reason}' />
                             </div>
                         </div>
                     </div>

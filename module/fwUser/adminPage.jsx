@@ -16,7 +16,7 @@ class UserPage extends React.Component {
 
     componentDidMount() {
         this.props.getAllRoles();
-        T.ready('/user/user', () => {
+        T.ready('/user/settings', () => {
             this.props.getUserInPage(1, 50, {});
         });
     }
@@ -91,7 +91,7 @@ class UserPage extends React.Component {
                                         <a href='#' onClick={e => this.editRoles(e, item)}>
                                             {item.roles ? item.roles.map((role, index) => <label style={{ whiteSpace: 'nowrap' }} key={index}>_ {role.name}</label>) : ''}
                                         </a>
-                                    ): (item.roles ? item.roles : []).map((role, index) => <label style={{ whiteSpace: 'nowrap' }} key={index}>_ {role.name}</label>)}
+                                    ) : (item.roles ? item.roles : []).map((role, index) => <label style={{ whiteSpace: 'nowrap' }} key={index}>_ {role.name}</label>)}
                                 </td>
                                 <td className='toggle' style={{ textAlign: 'center' }}>
                                     <label>
@@ -127,10 +127,10 @@ class UserPage extends React.Component {
                             <input className='app-search__input' id='searchTextBox' type='search' placeholder='Search' />
                             <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
                         </form>
-                        { this.state.isSearching ?
+                        {this.state.isSearching ?
                             <a href='#' onClick={e => $('#searchTextBox').val('') && this.search(e)} style={{ color: 'red', marginRight: 12, marginTop: 6 }}>
                                 <i className='fa fa-trash' />
-                            </a> : null }
+                            </a> : null}
                     </ul>
                 </div>
 
@@ -143,7 +143,7 @@ class UserPage extends React.Component {
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
                         <i className='fa fa-lg fa-plus' />
                     </button>
-                ): ''}
+                ) : ''}
 
                 <UserModal ref={this.userModal} hasUpdate={hasUpdate}
                     allRoles={allRoles}

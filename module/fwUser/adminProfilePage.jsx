@@ -22,7 +22,7 @@ class ProfilePage extends React.Component {
         this.sex = React.createRef();
         this.quocGia = React.createRef();
     }
-        
+
 
     componentDidMount() {
         T.ready('/user', () => {
@@ -234,7 +234,7 @@ class ProfilePage extends React.Component {
                                     <label className='control-label'>Nhập lại mật khẩu</label>
                                     <input className='form-control' type='password' placeholder='Nhập lại mật khẩu' ref={this.password2} defaultValue='' />
                                 </div>
-                            </div>  
+                            </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.savePassword}>Lưu</button>
                             </div>

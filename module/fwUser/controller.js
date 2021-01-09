@@ -1,8 +1,8 @@
 module.exports = app => {
     const userMenu = {
-        parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
+        parentMenu: app.parentMenu.setting,
         menus: {
-            2060: { title: 'Người dùng', link: '/user/user' },
+            2060: { title: 'Người dùng', link: '/user/user', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
     app.permission.add(

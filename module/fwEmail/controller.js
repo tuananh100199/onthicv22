@@ -1,13 +1,13 @@
 module.exports = app => {
-    app.permission.add(
-        {
-            name: 'system:email',
-            menu: {
-                parentMenu: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
-                menus: { 2020: { title: 'Email', link: '/user/email' } }
-            },
-        }
-    );
+    app.permission.add({
+        name: 'system:email',
+        menu: {
+            parentMenu: app.parentMenu.setting,
+            menus: {
+                2020: { title: 'Email', link: '/user/email', icon: 'fa-envelope-o', backgroundColor: '#ffcc80' }
+            }
+        },
+    });
     app.get('/user/email', app.permission.check('system:email'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------

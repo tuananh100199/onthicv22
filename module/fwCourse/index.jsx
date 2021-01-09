@@ -13,7 +13,7 @@ export default {
         { path: '/user/course/list', component: Loadable({ loading: Loading, loader: () => import('./adminPage.jsx') }) },
         { path: '/user/course/edit/:courseId', component: Loadable({ loading: Loading, loader: () => import('./adminEditPage.jsx') }) },
         { path: '/course/item/:courseId', component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail.jsx') }) },
-        { path: '/course/:link', component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail.jsx') }) },
+        { path: '/khoa-hoc/:link', component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail.jsx') }) },
     ],
     Section: {
         SectionCourse, SectionCourseList,
