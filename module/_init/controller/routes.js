@@ -15,12 +15,7 @@ module.exports = (app) => {
         },
     };
 
-    app.permission.add(
-        { name: 'dashboard:standard', menu: menuDashboard },
-        { name: 'user:login', menu: menuProfile },
-        { name: 'system:settings', menu: menuSettings },
-        { name: 'statistic' },
-    );
+    app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, { name: 'system:settings', menu: menuSettings }, { name: 'statistic' }, );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
@@ -182,8 +177,24 @@ module.exports = (app) => {
     });
 
     app.get('/api/statistic', app.permission.check('statistic'), (req, res) => {
-        app.model.user.count({}, (error, numberOfUser) => {
-            res.send({ numberOfUser: numberOfUser || 0 });
+        app.model.user.count({}, (error1, numberOfUser) => {
+            if (error1) {
+                res.send({ error1 })
+            } else {
+                app.model.news.count({}, (error2, numberOfNews) => {
+                    if (error2) {
+                        res.send({ error2 })
+                    } else {
+                        app.model.course.count({}, (error3, numberOfCourse) => {
+                            if (error3) {
+                                res.send({ error3 })
+                            } else {
+                                res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0 });
+                            }
+                        });
+                    }
+                });
+            }
         });
     });
 
