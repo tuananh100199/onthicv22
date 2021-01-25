@@ -15,6 +15,7 @@ class UserDonDeNghiPage extends React.Component {
 
     componentDidMount() {
         T.ready('/user', () => {
+            T.tooltip();
             $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
@@ -312,15 +313,15 @@ class UserDonDeNghiPage extends React.Component {
                         style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save'/>
                 </button>
-                <button type='button' className='btn btn-success btn-circle' title='Xuất Đơn Đề Nghị Học Thành Word'
+                <button type='button' className='btn btn-success btn-circle'  data-toggle='tooltip' title='Xuất Đơn Đề Nghị Học Thành Word'
                     style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
                 </button>
-                <button type='button' className='btn btn-info btn-circle' title='Xuất Biên Nhận Học Viên Thành Word'
+                <button type='button' className='btn btn-info btn-circle'  data-toggle='tooltip' title='Xuất Biên Nhận Học Viên Thành Word'
                     style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
-                <button type='button' className='btn btn-secondary btn-circle' title='Xuất Bản Cam Kết Thành Word'
+                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip'  title='Xuất Bản Cam Kết Thành Word'
                         style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
