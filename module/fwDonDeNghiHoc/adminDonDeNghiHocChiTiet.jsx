@@ -7,20 +7,20 @@ import Editor from '../../view/component/CkEditor4.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
 
-class SendEmailDenyModal extends React.Component {
+class ReasonModal extends React.Component {
     constructor(props) {
         super(props);
         this.modal = React.createRef();
+        this.viEditor = React.createRef();
     }
 
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#reasonEmail').focus());
+            $(this.modal.current).on('shown.bs.modal', () => {});
         });
     }
 
     show = () => {
-        $('#reasonEmail').val('');
         $(this.modal.current).modal('show');
     }
 
@@ -41,10 +41,9 @@ class SendEmailDenyModal extends React.Component {
 
         }
     }
-
     render() {
         return (
-            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref={this.modal}>
                 <div className="modal-dialog modal-lg" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -74,6 +73,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     constructor(props) {
         super(props);
         this.viEditor = React.createRef();
+        this.reasonModal = React.createRef();
     }
     ready = () => {
         inView('.listViewLoading').on('enter', () => {
@@ -102,7 +102,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     }
 
     deny = (e) => {
-        this.modal.current.show();
+        this.reasonModal.current.show(null);
         e.preventDefault();
     }
 
@@ -190,11 +190,11 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     <i className='fa fa-check-square' />
                 </button>
                 <button type='button' className='btn btn-danger btn-circle'
-                    data-toggle="tooltip"
+                    data-toggle="tooltip" data-placement="top" title="Từ chối đơn đề nghị học"
                     style={{ position: 'fixed', right: '70px', bottom: '10px' }} onClick={this.deny}>
                     <i className='fa fa-ban' />
                 </button>
-                <SendEmailDenyModal key={1} createVideo={this.props.createVideo} updateVideo={this.props.updateVideo} ref={this.modal} readOnly={readOnly} />
+                <ReasonModal key={1} ref={this.reasonModal} donDeNghiHoc={this.props.donDeNghiHoc} updateForm={this.props.updateForm} sendEmailTuChoiDonDeNghiHoc={this.props.sendEmailTuChoiDonDeNghiHoc} />
             </main>
         );
     }
