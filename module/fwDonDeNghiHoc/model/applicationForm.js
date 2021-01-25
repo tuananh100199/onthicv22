@@ -13,7 +13,7 @@ module.exports = app => {
         licenseClass: String, // Hang bang lai xe 
         newLicenseClass: String,
 
-        approve: { type: String, enum: ['approved', 'waiting', 'eject'], default: 'waiting' },
+        approve: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
 
     });
     const model = app.db.model('ApplicationForm', schema);
@@ -36,7 +36,7 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => typeof condition == 'object' ? model.findOne(condition).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done) : model.findById(condition).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done),
+        get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition)).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done),
 
         update: (_id, $set, $unset, done) => done ? model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) : model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 

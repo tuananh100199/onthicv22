@@ -1,65 +1,60 @@
-import React, { Children } from 'react';
+import React  from 'react';
 import { connect } from 'react-redux';
 import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
 import { getUserInPage } from '../fwUser/redux.jsx';
-import { getUser } from '../fwUser/redux.jsx';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
+import Pagination, { OverlayLoading } from '../../view/component/Pagination.jsx';
 import FileSaver from 'file-saver'
+import Tooltip from 'rc-tooltip';
 
-class AdminDuyetDonDeNghiHoc extends React.Component {
+class AdminDonDeNghiHocPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { searchText: '', isSearching: false };
+        this.state = { searchText: '', isSearching: true };
     }
-
-    ready = () => {
-        inView('.listViewLoading').on('enter', () => {
-            let adminForm = this.props.donDeNghiHoc;
-            if (!this.loading && this.props.getFormInPage && adminForm && adminForm.pageNumber < adminForm.pageTotal) {
-                this.loading = true;
-                this.props.getFormInPage(adminForm.pageNumber + 1, T.defaultUserPageSize, () => this.loading = false);
-            }
-        });
-    }
-
+    
     componentDidMount() {
-        T.ready('user/don-de-nghi-hoc');
-        this.props.getFormInPage(1, T.defaultUserPageSize, () => this.loading = false);
+        T.ready('/user/don-de-nghi-hoc', () => {
+            this.props.getFormInPage(undefined, undefined, {}, () => {
+                this.setState({ isSearching: false })
+            });
+        });
     }
 
     exportDonDeNghiHoc = (e, item) => {
         this.props.exportDonDeNghiHocToWord(item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Đơn Đề Nghị Học.docx');
         });
-    };
+    }
+    
     exportBienNhan = (e, item) => {
         this.props.exportBienNhanLanDauToWord(item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
         });
-    };
+    }
 
     exportBanCamKet = (e, item) => {
         this.props.exportBanCamKetToWord(item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Bản Cam Kết.docx');
         });
-    };
+    }
 
     search = (e) => {
         e.preventDefault();
         let condition = {},
             searchText = $('#searchTextBox').val();
         if (searchText) condition.searchText = searchText;
-
-        this.props.getFormInPage(undefined, undefined, condition, () => {
-            const isSearching = Object.keys(condition).length > 0;
-            this.setState({ searchText, isSearching });
-        });
-    };
+    
+        this.setState({ isSearching: true }, () => {
+            this.props.getFormInPage(undefined, undefined, condition, () => {
+                this.setState({ searchText, isSearching: false });
+            });
+        })
+    }
 
     render() {
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermission.contains('user-form:write');
+        const readOnly = !currentPermission.contains('applicationForm:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
             this.props.donDeNghiHoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const table = list && list.length ? (
@@ -67,42 +62,43 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                 <thead>
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '75%' }}>Người dùng</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>Trạng thái</th>
+                        <th style={{ width: '100%' }}>Người dùng</th>
+                        <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
                         <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {list.slice(0).reverse().map((item, index) => (
+                    {list.map((item, index) => (
                         <tr key={index}>
                             <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
                             <td>
-                                <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
+                                <Link to={'/user/don-de-nghi-hoc/edit/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
                             <td>
-                                {(item.approve === 'waiting' ? 'Mới' : (item.approve === 'approved' ? 'Đã duyệt' : 'Từ chối'))}
+                                {(item.approve == 'waiting' ? 'Mới' : (item.approve == 'approved' ?
+                                    <span className='text-success'>Đã duyệt</span> :
+                                    <span className='text-danger'>Từ chối</span>)
+                                )}
                             </td>
                             <td className='btn-group'>
-                                <Link to={'/user/don-de-nghi-hoc-chi-tiet/item/' + item._id} data-id={item._id} className='btn btn-warning'>
-                                    <i className='fa fa-lg fa-list-alt' />
+                                <Link to={'/user/don-de-nghi-hoc/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                    <i className='fa fa-lg fa-edit' />
                                 </Link>
-                                <button type='button' className='btn btn-success' title='Xuất Đơn Đề Nghị Học Thành Word'
-                                    onClick={e => this.exportDonDeNghiHoc(e, item)}>
-                                    <i className="fa fa-file-word-o"></i>
-                                </button>
-                                <button type='button' className='btn btn-info' title='Xuất Biên Nhận Học Viên Thành Word'
-                                    onClick={e => this.exportBienNhan(e, item)}>
-                                    <i className="fa fa-file-text-o"></i>
-                                </button>
-                                <button type='button' className='btn btn-secondary' title='Xuất Bản Cam Kết Thành Word'
-                                    onClick={e => this.exportBanCamKet(e, item)}>
-                                    <i className="fa fa-file-text-o"></i>
-                                </button>
-                                {!readOnly ?
-                                    <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                        <i className='fa fa-lg fa-trash' />
-                                    </a> : null
-                                }
+                                <Tooltip placement='bottom' overlay='Xuất đơn đề nghị học'>
+                                    <button type='button' className='btn btn-success' onClick={e => this.exportDonDeNghiHoc(e, item)}>
+                                        <i className='fa fa-file-word-o' />
+                                    </button>
+                                </Tooltip>
+                                <Tooltip placement='bottom' overlay='Xuất biên nhận học viên'>
+                                    <button type='button' className='btn btn-info' onClick={e => this.exportBienNhan(e, item)}>
+                                        <i className='fa fa-file-text-o'/>
+                                    </button>
+                                </Tooltip>
+                                <Tooltip placement='bottom' overlay='Xuất bản cam kết'>
+                                    <button type='button' className='btn btn-secondary' onClick={e => this.exportBanCamKet(e, item)}>
+                                        <i className='fa fa-file-text-o'/>
+                                    </button>
+                                </Tooltip>
                             </td>
                         </tr>
                     ))}
@@ -127,14 +123,13 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
                 </div>
 
                 <div className='row tile'>
-                    {table}
+                    {!this.state.isSearching ? table : <OverlayLoading text='Đang tải..' />}
                 </div>
-                <Pagination name='pageForm' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getFormInPage} />
-                {!readOnly ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button> : null
-                }
+                <Link className='btn btn-secondary btn-circle' to='/user/don-de-nghi-hoc' style={{ position: 'fixed', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
+                <Pagination name='pageForm' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                            getPage={this.props.getFormInPage} style={{ marginLeft: '65px' }}/>
             </main>
         );
     }
@@ -142,4 +137,4 @@ class AdminDuyetDonDeNghiHoc extends React.Component {
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system, user: state.user });
 const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
-export default connect(mapStateToProps, mapActionsToProps)(AdminDuyetDonDeNghiHoc);
+export default connect(mapStateToProps, mapActionsToProps)(AdminDonDeNghiHocPage);
