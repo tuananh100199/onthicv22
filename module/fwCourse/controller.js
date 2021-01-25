@@ -1,6 +1,6 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 7000, title: 'Quản lý khóa học', icon: 'fa-file' },
+        parentMenu: { index: 7000, title: 'Quản lý khóa học', icon: 'fa-book' },
         menus: {
             6001: { title: 'Danh mục', link: '/user/course/category' },
             6002: { title: 'Khóa học', link: '/user/course/list' },
