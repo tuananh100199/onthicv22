@@ -35,8 +35,8 @@ class DashboardPage extends React.Component {
     }
 
     render() {
-        const { numberOfUser, todayViews, allViews } = this.props.system ?
-            this.props.system : { numberOfUser: 0, todayViews: 0, allViews: 0 };
+        const { numberOfUser,numberOfNews, numberOfCourse, todayViews, allViews } = this.props.system ?
+            this.props.system : { numberOfUser: 0,  numberOfNews: 0,  numberOfCourse: 0, todayViews: 0, allViews: 0 };
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -55,6 +55,8 @@ class DashboardPage extends React.Component {
                 <div className='row'>
                     <div className='col-md-6 col-lg-3'>
                         <DashboardIcon type='primary' icon='fa-users' title='Nguời dùng' value={numberOfUser} link='/user/user' />
+                        <DashboardIcon type='info' icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news/list' />
+                        <DashboardIcon type='primary' icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course/list' />
                     </div>
                 </div>
             </main>
