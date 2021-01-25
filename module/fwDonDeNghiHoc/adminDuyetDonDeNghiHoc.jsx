@@ -1,8 +1,7 @@
-import React, { Children } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
 import { getUserInPage } from '../fwUser/redux.jsx';
-import { getUser } from '../fwUser/redux.jsx';
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 import FileSaver from 'file-saver'

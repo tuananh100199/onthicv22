@@ -4,7 +4,6 @@ import { getForm, updateForm, sendEmailTuChoiDonDeNghiHoc } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
-import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
 
 class ReasonModal extends React.Component {
