@@ -27,6 +27,7 @@ class ReasonModal extends React.Component {
     save = () => {
         $("#submit-btn").attr("disabled", true);
         if (!this.viEditor.current.html()) {
+            $("#submit-btn").removeAttr("disabled");
             T.notify('Lý do không được để trống', 'danger');
         } else {
             let reasonOfForm = {
