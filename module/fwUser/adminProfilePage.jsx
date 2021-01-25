@@ -36,13 +36,11 @@ class ProfilePage extends React.Component {
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
-                // $('#birthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
                 $('#birthday').datepicker('update', birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
                 $('#phoneNumber').val(phoneNumber);
                 $('#regularResidence').val(regularResidence);
                 $('#residence').val(residence);
                 $('#identityCard').val(identityCard);
-                // $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityDate').datepicker('update', identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.sex.current.setText(sex ? sex : '');
