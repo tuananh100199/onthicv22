@@ -86,7 +86,7 @@ class NewsEditPage extends React.Component {
                 active: this.state.item.active,
                 isInternal: this.state.item.isInternal,
                 abstract: $('#neNewsViAbstract').val(),
-                content: this.viEditor.current.html()
+                content: this.viEditor.current
             };
         if (neNewsStartPost) changes.startPost = T.formatDate(neNewsStartPost);
         if (neNewsStopPost) changes.stopPost = T.formatDate(neNewsStopPost);
