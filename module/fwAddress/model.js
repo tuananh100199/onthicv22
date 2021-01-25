@@ -1,5 +1,4 @@
-
-module.export = (app) => {
+module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         address: String,
@@ -33,13 +32,11 @@ module.export = (app) => {
             });
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ title: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).exec(done) : model.findOne(condition).exec(done),
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

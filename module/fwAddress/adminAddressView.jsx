@@ -42,7 +42,7 @@ class AddressModal extends React.Component {
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+                <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>Địa chỉ mới</h5>
@@ -98,14 +98,15 @@ class AddressPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = null;
-        if (this.props.Address && this.props.address.list && this.props.address.list.length > 0) {
+        if (this.props.address && this.props.address.list && this.props.address.list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered' ref={this.table}>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tên địa chỉ</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: '80%' }}>Tên địa chỉ</th>
+                            <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
+                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,12 +114,15 @@ class AddressPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/address/edit/' + item._id}>{item.title}</Link></td>
+                                <td style={{ width: '20%', textAlign: 'center' }}>
+                                    <img src={item.image} alt='avatarAddress' style={{ height: '32px' }} />
+                                </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
                                         <Link to={'/user/address/edit/' + item._id} data-id={item._id} className='btn btn-primary'>

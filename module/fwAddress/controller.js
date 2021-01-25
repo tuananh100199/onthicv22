@@ -13,9 +13,7 @@ module.exports = app => {
     });
 
     app.put('/api/address', app.permission.check('component:write'), (req, res) => {
-        const $set = req.body.changes;
-        if ($set && $set.items && $set.items === 'empty') $set.items = [];
-        app.model.address.update(req.body._id, $set, (error, item) => res.send({ error, item }))
+        app.model.address.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
     });
 
     app.put('/api/address/swap', app.permission.check('component:write'), (req, res) => {

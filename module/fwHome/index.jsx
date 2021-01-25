@@ -11,6 +11,7 @@ import testimony from './redux/reduxTestimony.jsx';
 import video from './redux/reduxVideo.jsx';
 import listVideo from './redux/reduxListVideo.jsx';
 import contentList from '../fwContentList/redux.jsx';
+import address from '../fwAddress/redux.jsx';
 
 import SectionCarousel from './sectionCarousel.jsx';
 import SectionLogo from './sectionLogo.jsx';
@@ -42,6 +43,10 @@ export default {
         {
             path: '/user/list-content/edit/:listContentId',
             component: Loadable({ loading: Loading, loader: () => import('../fwContentList/adminContentListEditPage.jsx') })
+        },
+        {
+            path: '/user/address/edit/:addressId',
+            component: Loadable({ loading: Loading, loader: () => import('../fwAddress/adminAddressEdit.jsx') })
         },
         {
             path: '/user/slogan/edit/:sloganId',
