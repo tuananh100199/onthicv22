@@ -33,7 +33,7 @@ module.exports = (app) => {
             todayViews: 0,
             allViews: 0,
             logo: '/img/favicon.jpg',
-            map: '/img/map.jpg',
+            map: '/img/map.png',
             footer: '/img/footer.jpg',
             facebook: 'https://www.facebook.com/bachkhoa.oisp',
             youtube: '',
@@ -262,7 +262,12 @@ module.exports = (app) => {
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,
-        run: () => app.model.setting.init(app.state.data, () => app.state.refresh()),
+        run: () => {
+            const enableInit = process.env['enableInit'] == 'true';
+            if (enableInit) {
+                app.model.setting.init(app.state.data, () => app.state.refresh())
+            }
+        },
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
