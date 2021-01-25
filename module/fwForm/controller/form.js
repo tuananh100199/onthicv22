@@ -1,9 +1,11 @@
 module.exports = app => {
     const menu = { parentMenu: { index: 9900, title: 'Form', link: '/user/form/list', icon: 'fa-file-text-o' }, };
-    app.permission.add(
-        { name: 'form:read', menu },
-        { name: 'form:write', menu }
-    );
+    // app.permission.add(
+    //     { name: 'form:read', menu },
+    //     { name: 'form:write', menu }
+    // );
+    
+    app.permission.add({ name: 'form:read' }, { name: 'form:write' });
 
     app.get('/user/form/list', app.permission.check('form:read'), app.templates.admin);
     app.get('/user/form/edit/:_id', app.permission.check('form:read'), app.templates.admin);

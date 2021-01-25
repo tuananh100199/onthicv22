@@ -21,4 +21,3 @@
 7000. Quản lý khóa học (undefined)
 	6001 - Danh mục (/user/course/category)
 	6002 - Khóa học (/user/course/list)
-9900. Form (/user/form/list)

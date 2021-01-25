@@ -266,6 +266,10 @@ module.exports = (app) => {
             const enableInit = process.env['enableInit'] == 'true';
             if (enableInit) {
                 app.model.setting.init(app.state.data, () => app.state.refresh())
+            } else {
+                setTimeout(() => {
+                    app.state.refresh()
+                }, 200);
             }
         },
     });
