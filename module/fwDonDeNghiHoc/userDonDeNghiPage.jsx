@@ -313,15 +313,15 @@ class UserDonDeNghiPage extends React.Component {
                         style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save'/>
                 </button>
-                <button type='button' className='btn btn-success btn-circle'  data-toggle='tooltip' title='Xuất Đơn Đề Nghị Học Thành Word'
+                <button type='button' className='btn btn-success btn-circle'  data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
                 </button>
-                <button type='button' className='btn btn-info btn-circle'  data-toggle='tooltip' title='Xuất Biên Nhận Học Viên Thành Word'
+                <button type='button' className='btn btn-info btn-circle'  data-toggle='tooltip' title='Xuất biên nhận học viên'
                     style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
-                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip'  title='Xuất Bản Cam Kết Thành Word'
+                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip'  title='Xuất bản cam kết'
                         style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
