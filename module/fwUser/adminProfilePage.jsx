@@ -80,36 +80,7 @@ class ProfilePage extends React.Component {
             } else if (changesOfUser.firstname == '') {
                 T.notify('Tên bị trống', 'danger');
                 $('#userFirstName').focus();
-            }
-            else if (changesOfUser.birthday == null) {
-                T.notify('Ngày sinh bị trống', 'danger');
-                $('#birthday').focus();
-            }
-            else if (changesOfUser.phoneNumber == '') {
-                T.notify('Số điện thoại bị trống', 'danger');
-                $('#phoneNumber').focus();
-            }
-            else if (changesOfUser.regularResidence == '') {
-                T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
-                $('#regularResidence').focus();
-            }
-            else if (changesOfUser.residence == '') {
-                T.notify('Nơi cư trú bị trống', 'danger');
-                $('#residence').focus();
-            }
-            else if (changesOfUser.identityCard == '') {
-                T.notify('Số chứng minh nhân dân bị trống', 'danger');
-                $('#identityCard').focus();
-            }
-            else if (changesOfUser.identityDate == null) {
-                T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
-                $('#identityDate').focus();
-            }
-            else if (changesOfUser.identityIssuedBy == '') {
-                T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
-                $('#identityIssuedBy').focus();
-            }
-             else {
+            } else {
                     this.props.updateProfile(changesOfUser);
                     T.notify('Cập nhật thông tin cá nhân thành công','info');
                 };
@@ -163,10 +134,10 @@ class ProfilePage extends React.Component {
                                     </div>
                                 </div>
                                 
-                                <div className='row'>
-                                    <div className='form-group col-md-3' id='birthdaySection'>
+                                <div className='row' id='infoSection'>
+                                    <div className='form-group col-md-3'>
                                         <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
-                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection'/>
+                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#infoSection'/>
                                     </div>
                                     <div className='form-group col-md-3'>
                                                 <div className='form-group' style={{ width: '100%' }}>
@@ -205,9 +176,9 @@ class ProfilePage extends React.Component {
                                         <input className='form-control' type='text' id='identityCard'
                                             placeholder='Nhập số CMND'/>
                                     </div>
-                                    <div className='form-group col-md-3' id='identityDateSection'>
+                                    <div className='form-group col-md-3'>
                                         <label className='control-label' htmlFor='identityDate'>Cấp ngày</label>
-                                        <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection'/>
+                                        <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#infoSection'/>
                                     </div>
                                     <div className='form-group col-md-3'>
                                         <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp</label>
