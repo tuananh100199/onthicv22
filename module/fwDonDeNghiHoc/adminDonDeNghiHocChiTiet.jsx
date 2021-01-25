@@ -7,34 +7,21 @@ import Editor from '../../view/component/CkEditor4.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
 
-class AdminDonDeNghiHocChiTiet extends React.Component {
+class SendEmailDenyModal extends React.Component {
     constructor(props) {
         super(props);
-        this.viEditor = React.createRef();
-    }
-    ready = () => {
-        inView('.listViewLoading').on('enter', () => {
-            let userForm = this.props.donDeNghiHoc.item;
-            if (!this.loading && this.props.getForm && userForm) {
-                this.loading = true;
-                this.props.getForm(userForm._id, () => this.loading = false);
-            }
-        });
+        this.modal = React.createRef();
     }
 
     componentDidMount() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/don-de-nghi-hoc-chi-tiet/item/:_id').parse(url);
-        this.props.getForm(params._id, () => this.loading = false);
+        $(document).ready(() => {
+            $(this.modal.current).on('shown.bs.modal', () => $('#reasonEmail').focus());
+        });
     }
 
-    accept = () => {
-        const changesOfForm = {
-            approve: "approved",
-        }
-        this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
-            T.notify('Đã chấp nhận đơn đề nghị học!', 'success');
-        });
+    show = () => {
+        $('#reasonEmail').val('');
+        $(this.modal.current).modal('show');
     }
 
     save = () => {
@@ -53,6 +40,70 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
             })
 
         }
+    }
+
+    render() {
+        return (
+            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-lg" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Lý do từ chối đơn đề nghị học, sát hạch</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form>
+                            <div className="modal-body mx-3">
+                                <div className="form-group">
+                                    <Editor ref={this.viEditor} height='400px' placeholder='Nội dung' />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+class AdminDonDeNghiHocChiTiet extends React.Component {
+    constructor(props) {
+        super(props);
+        this.viEditor = React.createRef();
+    }
+    ready = () => {
+        inView('.listViewLoading').on('enter', () => {
+            let userForm = this.props.donDeNghiHoc.item;
+            if (!this.loading && this.props.getForm && userForm) {
+                this.loading = true;
+                this.props.getForm(userForm._id, () => this.loading = false);
+            }
+        });
+    }
+
+    componentDidMount() {
+        T.tooltip();
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/don-de-nghi-hoc-chi-tiet/item/:_id').parse(url);
+        this.props.getForm(params._id, () => this.loading = false);
+    }
+
+    accept = () => {
+        const changesOfForm = {
+            approve: "approved",
+        }
+        this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
+            T.notify('Đã chấp nhận đơn đề nghị học!', 'success');
+        });
+    }
+
+    deny = (e) => {
+        this.modal.current.show();
+        e.preventDefault();
     }
 
     render() {
@@ -134,38 +185,16 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     </ul>
                 </div>
                 {table}
-                <button type='button' className='btn btn-success btn-circle'
+                <button type='button' className='btn btn-success btn-circle' data-toggle="tooltip" data-placement="top" title="Duyệt đơn đề nghị học"
                     style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.accept}>
                     <i className='fa fa-check-square' />
                 </button>
-                <button type='button' className='btn btn-danger btn-circle' data-toggle="modal" data-target="#modal"
-                    style={{ position: 'fixed', right: '60px', bottom: '10px' }}>
+                <button type='button' className='btn btn-danger btn-circle'
+                    data-toggle="tooltip"
+                    style={{ position: 'fixed', right: '70px', bottom: '10px' }} onClick={this.deny}>
                     <i className='fa fa-ban' />
                 </button>
-
-                <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-lg" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">Lý do từ chối đơn đề nghị học, sát hạch</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <form>
-                                <div className="modal-body mx-3">
-                                    <div className="form-group">
-                                        <Editor ref={this.viEditor} height='400px' placeholder='Nội dung' />
-                                    </div>
-                                </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                    <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                <SendEmailDenyModal key={1} createVideo={this.props.createVideo} updateVideo={this.props.updateVideo} ref={this.modal} readOnly={readOnly} />
             </main>
         );
     }

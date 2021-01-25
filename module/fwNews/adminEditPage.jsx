@@ -86,7 +86,7 @@ class NewsEditPage extends React.Component {
                 active: this.state.item.active,
                 isInternal: this.state.item.isInternal,
                 abstract: $('#neNewsViAbstract').val(),
-                content: this.viEditor.current.html()
+                content: this.viEditor.current
             };
         if (neNewsStartPost) changes.startPost = T.formatDate(neNewsStartPost);
         if (neNewsStopPost) changes.stopPost = T.formatDate(neNewsStopPost);
@@ -168,15 +168,6 @@ class NewsEditPage extends React.Component {
                                                 </label>
                                             </div>
                                         </div> : null}
-                                        <div className='form-group' >
-                                            <label className='control-label'>Tin nội bộ:&nbsp;</label>
-                                            <span className='toggle'>
-                                                <label>
-                                                    <input type='checkbox' checked={item.isInternal} onChange={this.changeIsInternal} disabled={readOnly} />
-                                                    <span className='button-indecator' />
-                                                </label>
-                                            </span>
-                                        </div>
                                         <div className='form-group row'>
                                             <label className='control-label col-12'>Lượt xem: {item.view}</label>
                                         </div>

@@ -65,11 +65,12 @@ module.exports = app => {
                     if (error || user == null) {
                         res.send({ error: `System has errors!` });
                     } else {
-                        app.model.setting.get(['emailAdminThongBaoTuChoiDonTitle', 'emailAdminThongBaoTuChoiDonText', 'emailAdminThongBaoTuChoiDonHtml'], result => {
+                        app.model.setting.get('emailAdminThongBaoTuChoiDonTitle', 'emailAdminThongBaoTuChoiDonText', 'emailAdminThongBaoTuChoiDonHtml', result => {
+                            console.log(reason)
                             const mailTitle = result.emailAdminThongBaoTuChoiDonTitle,
                                 mailText = result.emailAdminThongBaoTuChoiDonText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
                                 mailHtml = result.emailAdminThongBaoTuChoiDonHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
-                            app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
+                                app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
                                 res.end()
                             }, (error) => {
                                 res.send({ error })
