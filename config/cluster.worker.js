@@ -45,6 +45,16 @@ module.exports = (cluster, isDebug) => {
     // Init -----------------------------------------------------------------------------------------------------------
     app.createTemplate('home', 'admin');
     app.loadModules();
+    app.readyHooks.add('adminInit', {
+        ready: () => app.model != null && app.model.user != null,
+        run: () => {
+            const enableInit = process.env['enableInit'] == 'true';
+            if (enableInit) {
+                app.setupAdmin()
+            }
+        },
+    });
+    
     app.get('/user', app.permission.check(), app.templates.admin);
     app.get('*', (req, res, next) => {
         if (app.isDebug && req.session.user) app.updateSessionUser(req, req.session.user);

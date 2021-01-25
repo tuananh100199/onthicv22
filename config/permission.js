@@ -13,7 +13,7 @@ module.exports = app => {
             responseError(req, res);
         }
     };
-    
+
     const checkOrPermissions = (req, res, next, permissions) => {
         if (req.session.user) {
             const user = req.session.user;
@@ -28,7 +28,7 @@ module.exports = app => {
             responseError(req, res);
         }
     };
-    
+
     const responseError = (req, res) => {
         if (req.method.toLowerCase() === 'get') { // is get method
             if (req.originalUrl.startsWith('/api')) {
@@ -53,14 +53,14 @@ module.exports = app => {
             fail && fail();
         }
     };
-    
-    let systemPermission = [];
+
+    const systemPermission = [];
     const menuTree = {};
     app.permission = {
         all: () => [...systemPermission],
-    
+
         tree: () => app.clone(menuTree),
-        
+
         add: (...permissions) => {
             permissions.forEach(permission => {
                 if (typeof permission == 'string') {
@@ -79,7 +79,7 @@ module.exports = app => {
                         }
                         menuTree[index].parentMenu.subMenusRender = menuTree[index].parentMenu.subMenusRender || (subMenusRender != null ? subMenusRender : true);
                     }
-                
+
                     const menuTreeItem = menuTree[permission.menu.parentMenu.index],
                         submenus = permission.menu.menus;
                     if (submenus) {
@@ -97,11 +97,11 @@ module.exports = app => {
                         });
                     }
                 }
-            
+
                 systemPermission.includes(permission.name) || systemPermission.push(permission.name);
             });
         },
-    
+
         check: (...permissions) => (req, res, next) => {
             if (app.isDebug && !req.session.user) {
                 const userId = req.cookies.userId;
@@ -112,11 +112,23 @@ module.exports = app => {
                         app.updateSessionUser(req, user, _ => checkPermissions(req, res, next, permissions));
                     }
                 });
+            } else if (req.headers.authorization) { // is token
+                app.redis.get(req.headers.authorization, (error, value) => {
+                    if (error) {
+                        res.send({ error: `System has errors!` });
+                    } else if (value) {
+                        if (req.session == null) req.session = {};
+                        req.session.sessionUser = JSON.parse(value);
+                        checkPermissions(req, res, next, permissions);
+                    } else {
+                        res.send({ error: `Invalid token!` });
+                    }
+                });
             } else {
                 checkPermissions(req, res, next, permissions);
             }
         },
-        
+
         orCheck: (...permissions) => (req, res, next) => {
             if (app.isDebug && !req.session.user) {
                 const userId = req.cookies.userId;
@@ -127,11 +139,23 @@ module.exports = app => {
                         app.updateSessionUser(req, user, _ => checkOrPermissions(req, res, next, permissions));
                     }
                 });
+            } else if (req.headers.authorization) { // is token
+                app.redis.get(req.headers.authorization, (error, value) => {
+                    if (error) {
+                        res.send({ error: `System has errors!` });
+                    } else if (value) {
+                        if (req.session == null) req.session = {};
+                        req.session.sessionUser = JSON.parse(value);
+                        checkPermissions(req, res, next, permissions);
+                    } else {
+                        res.send({ error: `Invalid token!` });
+                    }
+                });
             } else {
                 checkOrPermissions(req, res, next, permissions);
             }
         },
-    
+
         has: (req, success, fail, ...permissions) => {
             if (typeof fail == 'string') {
                 permissions.unshift(fail);
@@ -150,12 +174,12 @@ module.exports = app => {
                 responseWithPermissions(req, success, fail, permissions);
             }
         },
-    
+
         getTreeMenuText: () => {
             let result = '';
             Object.keys(menuTree).sort().forEach(parentIndex => {
                 result += `${parentIndex}. ${menuTree[parentIndex].parentMenu.title} (${menuTree[parentIndex].parentMenu.link})\n`;
-            
+
                 Object.keys(menuTree[parentIndex].menus).sort().forEach(menuIndex => {
                     const submenu = menuTree[parentIndex].menus[menuIndex];
                     result += `\t${menuIndex} - ${submenu.title} (${submenu.link})\n`;
@@ -164,14 +188,14 @@ module.exports = app => {
             app.fs.writeFileSync(app.path.join(app.assetPath, 'menu.txt'), result);
         }
     };
-    
+
     const hasPermission = (userPermissions, menuPermissions) => {
         for (let i = 0; i < menuPermissions.length; i++) {
             if (userPermissions.includes(menuPermissions[i])) return true;
         }
         return false;
     };
-    
+
     app.updateSessionUser = (req, user, done) => {
         user = app.clone(user, { permissions: [], menu: {} });
         delete user.password;
@@ -189,7 +213,7 @@ module.exports = app => {
                 }
                 // Add login permission => user.active == true => user:login
                 if (user.active) app.permissionHooks.pushUserPermission(user, 'user:login');
-                
+
                 new Promise(resolve => { // Check user is student
                     //TODO
                     resolve();
@@ -206,7 +230,7 @@ module.exports = app => {
                                 flag = false;
                             }
                         }
-                        
+
                         flag && Object.keys(menuItem.menus).forEach(menuIndex => {
                             const menu = menuItem.menus[menuIndex];
                             if (hasPermission(user.permissions, menu.permissions)) {
@@ -217,15 +241,19 @@ module.exports = app => {
                             }
                         });
                     });
-                    
-                    req.session.user = user;
-                    req.session.save();
+
+                    if (req.session) {
+                        req.session.user = user;
+                        req.session.save();
+                    } else {
+                        req.session = { user };
+                    }
                     done && done(user);
                 });
             }
         });
     };
-    
+
     // Permission Hook -------------------------------------------------------------------------------------------------
     const permissionHookContainer = { student: {}, staff: {} };
     app.permissionHooks = {
@@ -241,7 +269,7 @@ module.exports = app => {
                 delete permissionHookContainer[type][name];
             }
         },
-        
+
         run: (type, user, role) => new Promise((resolve) => {
             const hookContainer = permissionHookContainer[type],
                 hookKeys = hookContainer ? Object.keys(hookContainer) : [];
@@ -255,7 +283,7 @@ module.exports = app => {
             };
             runHook();
         }),
-        
+
         pushUserPermission: function () {
             if (arguments.length >= 1) {
                 const user = arguments[0];
@@ -266,7 +294,7 @@ module.exports = app => {
             }
         },
     };
-    
+
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('permissionInit', {
         ready: () => app.model != null && app.model.role != null,

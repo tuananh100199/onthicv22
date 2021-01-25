@@ -79,13 +79,15 @@ module.exports = (app, config) => {
                         if (error || value) {
                             getUserToken();
                         } else {
-                            app.redis.set(tokenKey, JSON.stringify(user), (error) => { //TODO: lưu session user
-                                if (error) {
-                                    getUserToken();
-                                } else {
-                                    app.redis.expire(tokenKey, 30 * 24 * 60 * 60); // 30 days
-                                    res.send({ token });
-                                }
+                            app.updateSessionUser(req, user, sessionUser => {
+                                app.redis.set(tokenKey, JSON.stringify(sessionUser), (error) => {//Lưu session user
+                                    if (error) {
+                                        getUserToken();
+                                    } else {
+                                        app.redis.expire(tokenKey, 30 * 24 * 60 * 60); // 30 days
+                                        res.send({ token });
+                                    }
+                                });
                             });
                         }
                     });
