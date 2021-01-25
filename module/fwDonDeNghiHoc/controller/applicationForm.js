@@ -38,19 +38,6 @@ module.exports = app => {
     //APIs -------------------------------------------------------------------------------------------------------------
     const emailParams = [ 'emailAdminThongBaoTuChoiDonTitle', 'emailAdminThongBaoTuChoiDonText', 'emailAdminThongBaoTuChoiDonHtml' ];
     app.get('/api/application-form/email/all', app.permission.check('applicationForm:read'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
-
-    app.put('/api/application-form/email', app.permission.check('applicationForm:write'), (req, res) => {
-        const title = req.body.type + 'Title',
-            text = req.body.type + 'Text',
-            html = req.body.type + 'Html',
-            changes = {};
-
-        if (emailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
-        if (emailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
-        if (emailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
-        
-        app.model.setting.set(changes, error => res.send({ error }));
-    });
     
     app.post('/api/application-form/send-mail', (req, res) => {
         app.model.applicationForm.get(req.body.formID, (error, item) => {
