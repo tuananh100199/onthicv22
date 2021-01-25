@@ -18,6 +18,13 @@ module.exports = app => {
         app.model.address.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 
+    app.put('/api/address/swap', app.permission.check('component:write'), (req, res) => {
+        const isMoveUp = req.body.isMoveUp.toString() == 'true';
+        app.model.address.swapPriority(req.body._id, isMoveUp, (error) =>
+            res.send({ error })
+        );
+    });
+
     app.delete('/api/address', app.permission.check('component:write'), (req, res) => app.model.address.delete(req.body._id, error => res.send({ error })));
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
