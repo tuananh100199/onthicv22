@@ -10,27 +10,28 @@ const countryList = require('country-list');
 class SendEmailDenyModal extends React.Component {
     constructor(props) {
         super(props);
-        this.modal = React.createRef();
+        this.SendEmailDenyModal = React.createRef();
+        this.editor = React.createRef();
     }
 
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#reasonEmail').focus());
+            $(this.SendEmailDenyModal.current).on('shown.bs.modal', () => $('#modal').focus());
         });
     }
 
     show = () => {
-        $('#reasonEmail').val('');
-        $(this.modal.current).modal('show');
+        $('#modal').val('');
+        $(this.SendEmailDenyModal.current).modal('show');
     }
 
     save = () => {
         $("#submit-btn").attr("disabled", true);
-        if (!this.viEditor.current.html()) {
+        if (!this.editor.current.html()) {
             T.notify('Lý do không được để trống', 'danger');
         } else {
             let reasonOfForm = {
-                reason: this.viEditor.current.html(),
+                reason: this.editor.current.html(),
                 approve: "eject"
             }
             this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm);
@@ -56,7 +57,7 @@ class SendEmailDenyModal extends React.Component {
                         <form>
                             <div className="modal-body mx-3">
                                 <div className="form-group">
-                                    <Editor ref={this.viEditor} height='400px' placeholder='Nội dung' />
+                                    <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
                                 </div>
                             </div>
                             <div className="modal-footer">
@@ -73,7 +74,7 @@ class SendEmailDenyModal extends React.Component {
 class AdminDonDeNghiHocChiTiet extends React.Component {
     constructor(props) {
         super(props);
-        this.viEditor = React.createRef();
+        this.SendEmailDenyModal = React.createRef();
     }
     ready = () => {
         inView('.listViewLoading').on('enter', () => {
@@ -102,7 +103,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     }
 
     deny = (e) => {
-        this.modal.current.show();
+        this.SendEmailDenyModal.current.show();
         e.preventDefault();
     }
 
@@ -190,11 +191,12 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     <i className='fa fa-check-square' />
                 </button>
                 <button type='button' className='btn btn-danger btn-circle'
+                    id = '#reasonEmail'
                     data-toggle="tooltip"
                     style={{ position: 'fixed', right: '70px', bottom: '10px' }} onClick={this.deny}>
                     <i className='fa fa-ban' />
                 </button>
-                <SendEmailDenyModal key={1} createVideo={this.props.createVideo} updateVideo={this.props.updateVideo} ref={this.modal} readOnly={readOnly} />
+                <SendEmailDenyModal key={1}   ref={this.SendEmailDenyModal} />
             </main>
         );
     }
