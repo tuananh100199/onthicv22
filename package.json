@@ -10,7 +10,7 @@
   "autoLogin": true,
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
-    "webpack-server": "webpack serve --mode development --open --color",
+    "webpack-server": "webpack serve --mode development ",
     "build": "webpack --mode production"
   },
   "repository": {
