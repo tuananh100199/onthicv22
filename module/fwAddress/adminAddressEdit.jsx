@@ -122,7 +122,7 @@ class AddressEditPage extends React.Component {
                                     <div className="col-md-4">
                                         <div className='form-group'>
                                             <label className='control-label'>Hình đại diện</label>
-                                            < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='AddressImage' image={this.state.item.image} />
+                                            < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='AddressImage' />
                                         </div>
                                     </div>
                                 </div>
