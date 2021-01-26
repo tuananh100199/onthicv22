@@ -39,12 +39,45 @@ class AddressEditPage extends React.Component {
             email: $('#email').val(),
             mapURL: $('#mapURL').val()
         };
-        if (Object.values(changes).every(o => o != ''))
-            this.props.updateAddress(this.state.item._id, changes, () => {
-                T.notify('Cập nhật địa chỉ thành công!', 'success');
-            });
-        else T.notify('Cần điền đầy đủ các trường thông tin để cập nhật địa chỉ!', 'danger');
-
+        let foundWrong = false;
+        for (let att in changes) {
+            if (!changes[att]) {
+                foundWrong = true;
+                switch (att) {
+                    case 'title':
+                        T.notify('Tên địa chỉ bị trống!', 'danger');
+                        $('#title').focus();
+                        break;
+                    case 'address':
+                        T.notify('Địa chỉ bị trống!', 'danger');
+                        $('#address').focus();
+                        break;
+                    case 'phoneNumber':
+                        T.notify('Số điện thoại bị trống!', 'danger');
+                        $('#phoneNumber').focus();
+                        break;
+                    case 'mobile':
+                        T.notify('Di động bị trống!', 'danger');
+                        $('#mobile').focus();
+                        break;
+                    case 'email':
+                        T.notify('Email bị trống!', 'danger');
+                        $('#email').focus();
+                        break;
+                    case 'mapURL':
+                        T.notify('Link bị trống!', 'danger');
+                        $('#mapURL').focus();
+                        break;
+                }
+            }
+        }
+        if (changes.email && !T.validateEmail(changes.email)) {
+            T.notify('Email không hợp lệ!', 'danger');
+            $('#email').focus();
+        } else if (foundWrong == false) {
+            this.props.updateAddress(this.state.item._id, changes, () =>
+                T.notify('Cập nhật địa chỉ thành công!', 'success'))
+        }
     }
 
     render() {
@@ -81,7 +114,7 @@ class AddressEditPage extends React.Component {
                                 <div className='row'>
                                     <div className='form-group col-md-6'>
                                         <label className='control-label' htmlFor='email'>Email</label>
-                                        <input className='form-control' type='text' placeholder='Email' id='email' />
+                                        <input className='form-control' type='email' placeholder='Email' id='email' />
                                     </div>
                                     <div className='form-group col-md-6'>
                                         <label className='control-label' htmlFor='mobile'>Di động</label>
