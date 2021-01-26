@@ -11,6 +11,7 @@ import StaffGroupPage from './adminStaffView.jsx';
 import LogoPage from './adminLogoView.jsx';
 import ListVideoPage from './adminListVideoView.jsx';
 import ContentListPage from '../fwContentList/adminContentListView.jsx';
+import AddressPage from '../fwAddress/adminAddressView.jsx';
 
 
 
@@ -53,8 +54,7 @@ class ComponentPage extends React.Component {
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuTestimony'>Testimony</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStaffGroup'>Nhóm nhân viên</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>List Video</a></li>
-
-
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuAddress'>Địa chỉ</a></li>
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='menuContent'><ContentPage /></div>
@@ -67,7 +67,7 @@ class ComponentPage extends React.Component {
                     <div className='tab-pane fade' id='menuTestimony'><TestimonyPage /></div>
                     <div className='tab-pane fade' id='menuStaffGroup'><StaffGroupPage /></div>
                     <div className='tab-pane fade' id='menuListVideo'><ListVideoPage history={this.props.history} /></div>
-
+                    <div className='tab-pane fade' id='menuAddress'><AddressPage history={this.props.history} /></div>
 
                 </div>
             </main>
