@@ -195,23 +195,23 @@ module.exports = app => {
                     user.sex = 'Nữ';
                 }
                 const data = {
-                    firstname: user.firstname,
-                    lastname: user.lastname,
-                    sex: user.sex,
-                    birthday: app.date.viDateFormat(user.birthday),
-                    phoneNumber: user.phoneNumber,
-                    regularResidence: user.regularResidence,
-                    residence: user.residence,
-                    identityCard: user.identityCard,
-                    identityDate: app.date.viDateFormat(user.identityDate),
-                    identityIssuedBy: user.identityIssuedBy,
-                    nationality: getName(user.nationality),
-                    licenseNumber: licenseNumber,
-                    licenseDated: app.date.viDateFormat(licenseDated),
-                    licenseIssuedBy: licenseIssuedBy,
-                    otherDocumentation: otherDocumentation,
-                    licenseClass: licenseClass,
-                    newLicenseClass: newLicenseClass,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                    sex: user.sex || '',
+                    birthday: user.birthday != null ? app.date.viDateFormat(user.birthday) : '',
+                    phoneNumber: user.phoneNumber || '',
+                    regularResidence: user.regularResidence || '',
+                    residence: user.residence || '',
+                    identityCard: user.identityCard || '',
+                    identityDate: user.identityDate != null ? app.date.viDateFormat(user.identityDate) : '',
+                    identityIssuedBy: user.identityIssuedBy || '',
+                    nationality: getName(user.nationality) || '',
+                    licenseNumber: licenseNumber || '',
+                    licenseDated: licenseDated != null ? app.date.viDateFormat(licenseDated) : '',
+                    licenseIssuedBy: licenseIssuedBy || '',
+                    otherDocumentation: otherDocumentation || '',
+                    licenseClass: licenseClass || '',
+                    newLicenseClass: newLicenseClass || '',
                     i: integration,
                 }
                 app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
@@ -229,14 +229,14 @@ module.exports = app => {
             if (!error) {
                 let { user, newLicenseClass } = formItem;
                 const data = {
-                    firstname: user.firstname,
-                    lastname: user.lastname,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
                     male: user.sex == 'male',
                     female: user.sex == 'female',
-                    yearOfBirth: user.birthday.getFullYear(),
-                    phoneNumber: user.phoneNumber,
-                    regularResidence: user.regularResidence,
-                    newLicenseClass: newLicenseClass,
+                    yearOfBirth: user.birthday != null ? user.birthday.getFullYear() : '',
+                    phoneNumber: user.phoneNumber || '',
+                    regularResidence: user.regularResidence || '',
+                    newLicenseClass: newLicenseClass || '',
                 }
 
                 app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
@@ -256,19 +256,19 @@ module.exports = app => {
                 user.sex = user.sex === 'male' ? 'Nam' : 'Nữ';
 
                 const data = {
-                    firstname: user.firstname,
-                    lastname: user.lastname,
-                    sex: user.sex,
-                    birthday: app.date.viDateFormat(user.birthday),
-                    residence: user.residence,
-                    identityCard: user.identityCard,
-                    identityDate: app.date.viDateFormat(user.identityDate),
-                    identityIssuedBy: user.identityIssuedBy,
-                    licenseNumber: licenseNumber,
-                    licenseDated: app.date.viDateFormat(licenseDated),
-                    licenseIssuedBy: licenseIssuedBy,
-                    otherDocumentation: otherDocumentation,
-                    licenseClass: licenseClass,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                    sex: user.sex || '',
+                    birthday: user.birthday != null ? app.date.viDateFormat(user.birthday) : '',
+                    residence: user.residence || '',
+                    identityCard: user.identityCard || '',
+                    identityDate: user.identityDate != null ? app.date.viDateFormat(user.identityDate) : '',
+                    identityIssuedBy: user.identityIssuedBy || '',
+                    licenseNumber: licenseNumber || '',
+                    licenseDated: licenseDated != null ? app.date.viDateFormat(licenseDated) : '',
+                    licenseIssuedBy: licenseIssuedBy || '',
+                    otherDocumentation: otherDocumentation || '',
+                    licenseClass: licenseClass || '',
                 }
                 app.docx.generateFile(`/document/Ban_Cam_Ket.docx`, data, (error, buf) => {
                     res.send({ error: null, buf: buf });

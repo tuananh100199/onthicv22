@@ -171,7 +171,6 @@ class UserDonDeNghiPage extends React.Component {
                         $('#licenseClass').val('');
                         $('#licenseIssuedBy').val('');
                         $('#licenseDated').val(null);
-
                     }
     
                     T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
