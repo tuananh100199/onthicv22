@@ -21,7 +21,7 @@ class DenyModal extends React.Component {
             T.notify('Nội dung từ chối bị trống', 'danger');
         } else {
             this.props.denyApplicationForm(this.props.item._id, this.editor.current.html(), (data) => {
-                if (!data) {
+                if (!data.error) {
                     T.notify('Từ chối duyệt hồ sơ thành công!', 'success');
                 }
                 $('#submit-btn').removeAttr('disabled');
