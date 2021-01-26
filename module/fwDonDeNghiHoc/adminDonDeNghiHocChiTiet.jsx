@@ -4,30 +4,29 @@ import { getForm, updateForm, sendEmailTuChoiDonDeNghiHoc } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
-import Dropdown from '../../view/component/Dropdown.jsx';
 const countryList = require('country-list');
 
-class SendEmailDenyModal extends React.Component {
+class ReasonModal extends React.Component {
     constructor(props) {
         super(props);
-        this.SendEmailDenyModal = React.createRef();
-        this.editor = React.createRef();
+        this.modal = React.createRef();
+        this.viEditor = React.createRef();
     }
 
     componentDidMount() {
         $(document).ready(() => {
-            $(this.SendEmailDenyModal.current).on('shown.bs.modal', () => $('#modal').focus());
+            $(this.modal.current).on('shown.bs.modal', () => {});
         });
     }
 
     show = () => {
-        $('#modal').val('');
-        $(this.SendEmailDenyModal.current).modal('show');
+        $(this.modal.current).modal('show');
     }
 
     save = () => {
         $("#submit-btn").attr("disabled", true);
-        if (!this.editor.current.html()) {
+        if (!this.viEditor.current.html()) {
+            $("#submit-btn").removeAttr("disabled");
             T.notify('Lý do không được để trống', 'danger');
         } else {
             let reasonOfForm = {
@@ -42,10 +41,9 @@ class SendEmailDenyModal extends React.Component {
 
         }
     }
-
     render() {
         return (
-            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref={this.modal}>
                 <div className="modal-dialog modal-lg" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -74,7 +72,8 @@ class SendEmailDenyModal extends React.Component {
 class AdminDonDeNghiHocChiTiet extends React.Component {
     constructor(props) {
         super(props);
-        this.SendEmailDenyModal = React.createRef();
+        this.viEditor = React.createRef();
+        this.reasonModal = React.createRef();
     }
     ready = () => {
         inView('.listViewLoading').on('enter', () => {
@@ -103,7 +102,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
     }
 
     deny = (e) => {
-        this.SendEmailDenyModal.current.show();
+        this.reasonModal.current.show(null);
         e.preventDefault();
     }
 
@@ -191,12 +190,11 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     <i className='fa fa-check-square' />
                 </button>
                 <button type='button' className='btn btn-danger btn-circle'
-                    id = '#reasonEmail'
-                    data-toggle="tooltip"
+                    data-toggle="tooltip" data-placement="top" title="Từ chối đơn đề nghị học"
                     style={{ position: 'fixed', right: '70px', bottom: '10px' }} onClick={this.deny}>
                     <i className='fa fa-ban' />
                 </button>
-                <SendEmailDenyModal key={1}   ref={this.SendEmailDenyModal} />
+                <ReasonModal key={1} ref={this.reasonModal} donDeNghiHoc={this.props.donDeNghiHoc} updateForm={this.props.updateForm} sendEmailTuChoiDonDeNghiHoc={this.props.sendEmailTuChoiDonDeNghiHoc} />
             </main>
         );
     }
