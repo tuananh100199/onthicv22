@@ -116,12 +116,12 @@ export function swapAddress(_id, isMoveUp) {
         const url = '/api/address/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Thay đổi thứ tự tin tức bị lỗi!', 'danger');
+                T.notify('Thay đổi thứ tự địa chỉ bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                T.notify('Thay đổi thứ tự tin tức thành công!', 'info');
+                T.notify('Thay đổi thứ tự địa chỉ thành công!', 'info');
                 dispatch(getAllAddress());
             }
-        }, error => T.notify('Thay đổi thứ tự tin tức bị lỗi!', 'danger'));
+        }, error => T.notify('Thay đổi thứ tự địa chỉ bị lỗi!', 'danger'));
     }
 }
