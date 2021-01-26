@@ -170,7 +170,7 @@ class Category extends React.Component {
                 </table>
             );
         } else {
-            table = <p>No categories!</p>;
+            table = <p>Không có danh mục!</p>;
         }
 
         return (

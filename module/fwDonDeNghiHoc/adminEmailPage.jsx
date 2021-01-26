@@ -1,6 +1,7 @@
 import React from 'react';
 import { getApplicationFormEmail, saveApplicationFormEmail } from './redux.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
+import { Link } from 'react-router-dom';
 
 class EmailItem extends React.Component {
     constructor(props) {
@@ -43,12 +44,12 @@ class EmailItem extends React.Component {
 }
 
 export default class AdminEmailPage extends React.Component {
-    emailAdminThongBaoTuChoiDon = React.createRef();
+    rejectDonDeNghiHoc = React.createRef();
 
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/don-de-nghi-hoc', () => {
             getApplicationFormEmail(data => {
-                this.emailAdminThongBaoTuChoiDon.current.set(data.emailAdminThongBaoTuChoiDonTitle, data.emailAdminThongBaoTuChoiDonText, data.emailAdminThongBaoTuChoiDonHtml);
+                this.rejectDonDeNghiHoc.current.set(data.rejectDonDeNghiHocTitle, data.rejectDonDeNghiHocText, data.rejectDonDeNghiHocHtml);
             });
         });
     }
@@ -70,15 +71,18 @@ export default class AdminEmailPage extends React.Component {
                         <div className='tile'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailAdminThongBaoTuChoiDon'>Từ chối duyệt đơn</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#rejectDonDeNghiHoc'>Từ chối duyệt đơn</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
-                                <EmailItem ref={this.emailAdminThongBaoTuChoiDon} id='emailAdminThongBaoTuChoiDon' active={true} params='{name}, {reason}' />
+                                <EmailItem ref={this.rejectDonDeNghiHoc} id='rejectDonDeNghiHoc' active={true} params='{name}, {reason}' />
                             </div>
                         </div>
                     </div>
                 </div>
+                <Link className='btn btn-secondary btn-circle' to='/user/don-de-nghi-hoc' style={{ position: 'fixed', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save' />
                 </button>

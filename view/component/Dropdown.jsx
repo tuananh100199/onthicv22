@@ -47,7 +47,7 @@ export default class Dropdown extends React.Component {
             </a>);
         
         return (
-            <div className='dropdown' style={{ whiteSpace: 'nowrap', textDecoration: 'none' }}>
+            <div className='dropdown' style={{ whiteSpace: 'nowrap', textDecoration: 'none', ...(this.props.style || {}) }}>
                 <a ref={this.element} className={className} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                     {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text|| this.props.text || this.props.emptyText || '')}
                 </a>

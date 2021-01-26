@@ -140,17 +140,15 @@ export function saveApplicationFormEmail(type, email) {
     }, error => T.notify('Lưu thông tin email bị lỗi!', 'danger'));
 }
 
-export function sendEmailTuChoiDonDeNghiHoc(formID, done) {
+export function denyApplicationForm(_id, reason, done) {
     return dispatch => {
-        const url = '/api/application-form/send-mail';
-        T.post(url, { formID }, data => {
+        const url = '/api/application-form/reject';
+        T.post(url, { _id, reason }, data => {
             if (data.error) {
-                T.notify('Gửi mail từ chối bị lỗi!', 'danger');
+                T.notify('Thao tác từ chối bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
-            } else {
-                T.notify('Gửi mail từ chối người dùng thành công!', 'success');
-                done && done();
             }
+            done && done(data);
         }, error => T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
     }
 }
