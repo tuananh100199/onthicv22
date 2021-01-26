@@ -34,12 +34,13 @@ import fwEmail from '../../module/fwEmail/index.jsx';
 import fwForm from '../../module/fwForm/index.jsx';
 import fwNews from '../../module/fwNews/index.jsx';
 import fwContentList from '../../module/fwContentList/index.jsx';
+import fwAddress from '../../module/fwAddress/index.jsx';
 import fwCourse from '../../module/fwCourse/index.jsx';
 import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index.jsx';
 import fwCluster from '../../module/fwCluster/index.jsx';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress
 ]
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
