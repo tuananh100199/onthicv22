@@ -27,15 +27,15 @@ export default {
         },
         {
             path: '/user/don-de-nghi-hoc/list',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDuyetDonDeNghiHoc.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiHocPage.jsx') }),
         },
         {
-            path: '/user/don-de-nghi-hoc/send-mail',
+            path: '/user/don-de-nghi-hoc/edit/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiHocEditPage.jsx') }),
+        },
+        {
+            path: '/user/don-de-nghi-hoc/email',
             component: Loadable({ loading: Loading, loader: () => import('./adminEmailPage.jsx') }),
         },
-        {
-            path: '/user/don-de-nghi-hoc-chi-tiet/item/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiHocChiTiet.jsx') }),
-        }
     ],
 };
