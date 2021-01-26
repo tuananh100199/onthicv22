@@ -39,17 +39,12 @@ class AddressEditPage extends React.Component {
             email: $('#email').val(),
             mapURL: $('#mapURL').val()
         };
-        console.log('j', this.state.item._id)
         this.props.updateAddress(this.state.item._id, changes, () => {
             T.notify('Cập nhật địa chỉ thành công!', 'success');
         });
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('component:write');
-        const item = this.props.address && this.props.address.item ? this.props.address.item : {};
-
         return (
             <main className='app-content' >
                 <div className='app-title'>

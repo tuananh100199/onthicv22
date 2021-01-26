@@ -50,7 +50,7 @@ module.exports = app => {
         }),
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {
-                done('Invalid address Id!');
+                done('Invalid Address Id!');
             } else {
                 model.find({ priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority } })
                     .sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {

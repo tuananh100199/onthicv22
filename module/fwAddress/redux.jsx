@@ -38,13 +38,13 @@ export function getAllAddress(done) {
         const url = '/api/address/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy tất cả dia chi bị lỗi!', 'danger');
+                T.notify('Lấy tất cả địa chỉ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: AddressGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy tất cả địa chỉ bị lỗi!', 'danger'));
     }
 }
 
@@ -53,14 +53,14 @@ export function getAddressItem(_id, done) {
         const url = '/api/address/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
+                T.notify('Lấy địa chỉ bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 dispatch({ type: AddressGet, item: data.item });
             }
             if (done) done(data);
 
-        }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
+        }, error => T.notify('Lấy địa chỉ bị lỗi', 'danger'));
     }
 }
 
@@ -69,13 +69,13 @@ export function createAddress(newData, done) {
         const url = '/api/address';
         T.post(url, { newData }, data => {
             if (data.error) {
-                T.notify('Tạo danh sách bài viết bị lỗi!', 'danger');
+                T.notify('Tạo địa chỉ bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
                 dispatch(getAllAddress());
             }
-        }, error => T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo địa chỉ bị lỗi!', 'danger'));
     }
 }
 
@@ -84,7 +84,7 @@ export function updateAddress(_id, changes, done) {
         const url = '/api/address';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger');
+                T.notify('Cập nhật địa chỉ bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
@@ -92,7 +92,7 @@ export function updateAddress(_id, changes, done) {
                 dispatch(getAllAddress());
                 done && done();
             }
-        }, error => T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật địa chỉ bị lỗi!', 'danger'));
     }
 }
 
@@ -101,13 +101,13 @@ export function deleteAddress(_id) {
         const url = '/api/address';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa danh sách bài viết bị lỗi!', 'danger');
+                T.notify('Xóa địa chỉ bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Xóa danh sách bài viết thành công!', 'error', false, 800);
+                T.alert('Xóa địa chỉ thành công!', 'error', false, 800);
                 dispatch(getAllAddress());
             }
-        }, error => T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
+        }, error => T.notify('Xóa địa chỉ bị lỗi!', 'danger'));
     }
 }
 

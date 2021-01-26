@@ -26,7 +26,7 @@ class AddressModal extends React.Component {
         };
 
         if (newData.title == '') {
-            T.notify('Tên dia chi bị trống!', 'danger');
+            T.notify('Tên địa chỉ bị trống!', 'danger');
             $('#addressName').focus();
         } else {
             this.props.createAddress(newData, data => {
