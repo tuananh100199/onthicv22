@@ -25,7 +25,7 @@ import SectionListVideo from './sectionListVideo.jsx';
 
 export default {
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList
+        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList, address
     },
     routes: [
         {
@@ -43,10 +43,6 @@ export default {
         {
             path: '/user/list-content/edit/:listContentId',
             component: Loadable({ loading: Loading, loader: () => import('../fwContentList/adminContentListEditPage.jsx') })
-        },
-        {
-            path: '/user/address/edit/:addressId',
-            component: Loadable({ loading: Loading, loader: () => import('../fwAddress/adminAddressEdit.jsx') })
         },
         {
             path: '/user/slogan/edit/:sloganId',

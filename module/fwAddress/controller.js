@@ -31,7 +31,7 @@ module.exports = app => {
 
     const uploadAddress = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('address:') && files.AddressImage && files.AddressImage.length > 0) {
-            console.log('Hook: uploadVideo => video image upload');
+            console.log('Hook: uploadAddress => address image upload');
             app.uploadComponentImage(req, 'address', app.model.address.get, fields.userData[0].substring(8), files.AddressImage[0].path, done);
         }
     };

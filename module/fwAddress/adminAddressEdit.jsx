@@ -39,9 +39,12 @@ class AddressEditPage extends React.Component {
             email: $('#email').val(),
             mapURL: $('#mapURL').val()
         };
-        this.props.updateAddress(this.state.item._id, changes, () => {
-            T.notify('Cập nhật địa chỉ thành công!', 'success');
-        });
+        if (Object.values(changes).every(o => o != ''))
+            this.props.updateAddress(this.state.item._id, changes, () => {
+                T.notify('Cập nhật địa chỉ thành công!', 'success');
+            });
+        else T.notify('Cần điền đầy đủ các trường thông tin để cập nhật địa chỉ!', 'danger');
+
     }
 
     render() {
