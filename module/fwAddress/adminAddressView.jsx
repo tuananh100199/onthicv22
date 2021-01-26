@@ -51,13 +51,9 @@ class AddressModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <div className='tab-content'>
-                                <div className='tab-pane fade show active mt-3'>
-                                    <div className='form-group'>
-                                        <label htmlFor='addressName'>Tên địa chỉ</label>
-                                        <input className='form-control' id='addressName' type='text' placeholder='Nhập tên địa chỉ' />
-                                    </div>
-                                </div>
+                            <div className='form-group'>
+                                <label htmlFor='addressName'>Tên địa chỉ</label>
+                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên địa chỉ' />
                             </div>
                         </div>
                         <div className='modal-footer'>

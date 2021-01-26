@@ -11,13 +11,13 @@ class AddressEditPage extends React.Component {
         this.imageBox = React.createRef();
     }
     componentDidMount() {
-        T.ready('/user/component', () => {
+        T.ready('/user/settings', () => {
             const route = T.routeMatcher('/user/address/edit/:addressId'), params = route.parse(window.location.pathname);
             this.props.getAddressItem(params.addressId, data => {
                 if (data.item) {
                     this.setState({ item: data.item });
                     let { _id, title, address, mobile, phoneNumber, email, image, mapURL } = data.item;
-                    $('#title').val(title);
+                    $('#title').val(title).focus();
                     $('#address').val(address);
                     $('#phoneNumber').val(phoneNumber);
                     $('#mobile').val(mobile);
@@ -42,27 +42,27 @@ class AddressEditPage extends React.Component {
         if (!changes.title) {
             T.notify('Tên địa chỉ bị trống!', 'danger');
             $('#title').focus();
+        } else if (!changes.phoneNumber) {
+            T.notify('Số điện thoại bị trống!', 'danger');
+            $('#phoneNumber').focus();
         } else if (!changes.email) {
             T.notify('Email bị trống!', 'danger');
             $('#email').focus();
         } else if (!T.validateEmail(changes.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             $('#email').focus();
-        } else if (!changes.address) {
-            T.notify('Địa chỉ bị trống!', 'danger');
-            $('#address').focus();
-        } else if (!changes.phoneNumber) {
-            T.notify('Số điện thoại bị trống!', 'danger');
-            $('#phoneNumber').focus();
         } else if (!changes.mobile) {
             T.notify('Di động bị trống!', 'danger');
             $('#mobile').focus();
         } else if (!changes.mapURL) {
             T.notify('Đường dẫn Google Map bị trống!', 'danger');
             $('#mapURL').focus();
-        } else this.props.updateAddress(this.state.item._id, changes, () =>
-            T.notify('Cập nhật địa chỉ thành công!', 'success'))
-
+        } else if (!changes.address) {
+            T.notify('Địa chỉ bị trống!', 'danger');
+            $('#address').focus();
+        } else {
+            this.props.updateAddress(this.state.item._id, changes, () => T.notify('Cập nhật địa chỉ thành công!', 'success'))
+        }
     }
 
     render() {
@@ -93,7 +93,6 @@ class AddressEditPage extends React.Component {
                                         <label className='control-label' htmlFor='phoneNumber'>Số điện thoại</label>
                                         <input type='text' className='form-control' id='phoneNumber' placeholder='Số điện thoại' />
                                     </div>
-
                                 </div>
 
                                 <div className='row'>

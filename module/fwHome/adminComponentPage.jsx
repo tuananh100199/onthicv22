@@ -13,11 +13,9 @@ import ListVideoPage from './adminListVideoView.jsx';
 import ContentListPage from '../fwContentList/adminContentListView.jsx';
 import AddressPage from '../fwAddress/adminAddressView.jsx';
 
-
-
 class ComponentPage extends React.Component {
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/settings', () => {
             let tabIndex = parseInt(T.cookie('componentPageTab')),
                 navTabs = $('#componentPage ul.nav.nav-tabs');
             if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
