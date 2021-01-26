@@ -39,45 +39,30 @@ class AddressEditPage extends React.Component {
             email: $('#email').val(),
             mapURL: $('#mapURL').val()
         };
-        let foundWrong = false;
-        for (let att in changes) {
-            if (!changes[att]) {
-                foundWrong = true;
-                switch (att) {
-                    case 'title':
-                        T.notify('Tên địa chỉ bị trống!', 'danger');
-                        $('#title').focus();
-                        break;
-                    case 'address':
-                        T.notify('Địa chỉ bị trống!', 'danger');
-                        $('#address').focus();
-                        break;
-                    case 'phoneNumber':
-                        T.notify('Số điện thoại bị trống!', 'danger');
-                        $('#phoneNumber').focus();
-                        break;
-                    case 'mobile':
-                        T.notify('Di động bị trống!', 'danger');
-                        $('#mobile').focus();
-                        break;
-                    case 'email':
-                        T.notify('Email bị trống!', 'danger');
-                        $('#email').focus();
-                        break;
-                    case 'mapURL':
-                        T.notify('Link bị trống!', 'danger');
-                        $('#mapURL').focus();
-                        break;
-                }
-            }
-        }
-        if (changes.email && !T.validateEmail(changes.email)) {
+        if (!changes.title) {
+            T.notify('Tên địa chỉ bị trống!', 'danger');
+            $('#title').focus();
+        } else if (!changes.email) {
+            T.notify('Email bị trống!', 'danger');
+            $('#email').focus();
+        } else if (!T.validateEmail(changes.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             $('#email').focus();
-        } else if (foundWrong == false) {
-            this.props.updateAddress(this.state.item._id, changes, () =>
-                T.notify('Cập nhật địa chỉ thành công!', 'success'))
-        }
+        } else if (!changes.address) {
+            T.notify('Địa chỉ bị trống!', 'danger');
+            $('#address').focus();
+        } else if (!changes.phoneNumber) {
+            T.notify('Số điện thoại bị trống!', 'danger');
+            $('#phoneNumber').focus();
+        } else if (!changes.mobile) {
+            T.notify('Di động bị trống!', 'danger');
+            $('#mobile').focus();
+        } else if (!changes.mapURL) {
+            T.notify('Đường dẫn Google Map bị trống!', 'danger');
+            $('#mapURL').focus();
+        } else this.props.updateAddress(this.state.item._id, changes, () =>
+            T.notify('Cập nhật địa chỉ thành công!', 'success'))
+
     }
 
     render() {
@@ -123,8 +108,8 @@ class AddressEditPage extends React.Component {
                                 </div>
                                 <div className='row'>
                                     <div className='form-group col-md-12'>
-                                        <label className='control-label' htmlFor='mapURL'>Link</label>
-                                        <input className='form-control' type='text' placeholder='Link' id='mapURL' />
+                                        <label className='control-label' htmlFor='mapURL'>Đường dẫn Google Map</label>
+                                        <input className='form-control' type='text' placeholder='Đường dẫn Google Map' id='mapURL' />
                                     </div>
                                 </div>
                                 <div className="row">
@@ -142,7 +127,7 @@ class AddressEditPage extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
+                            <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                                 <i className='fa fa-lg fa-reply' />
                             </Link>
                             <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
