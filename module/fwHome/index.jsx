@@ -11,6 +11,7 @@ import testimony from './redux/reduxTestimony.jsx';
 import video from './redux/reduxVideo.jsx';
 import listVideo from './redux/reduxListVideo.jsx';
 import contentList from '../fwContentList/redux.jsx';
+import address from '../fwAddress/redux.jsx';
 
 import SectionCarousel from './sectionCarousel.jsx';
 import SectionLogo from './sectionLogo.jsx';
@@ -24,7 +25,7 @@ import SectionListVideo from './sectionListVideo.jsx';
 
 export default {
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList
+        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList, address
     },
     routes: [
         {
