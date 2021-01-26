@@ -161,7 +161,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                         </div>
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm: &nbsp;</label><br/>
-                            <label>{item.otherDocumentation}</label>
+                            <label className='pl-2'>{item.otherDocumentation}</label>
                         </div>
                     </div>
                 </div>

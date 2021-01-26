@@ -153,7 +153,7 @@ class NewsEditPage extends React.Component {
                                         </div>
                                     </div>
                                     <div className='col-md-6'>
-                                        {currentPermissions.includes('news:write') ? <div className='form-group' style={{ display: 'inline-flex' }}>
+                                        {currentPermissions.includes('news:write') ? <div className='form-group row' style={{ display: 'inline-flex' }}>
                                             <label className='control-label'>Kích hoạt:&nbsp;</label>
                                             <div className='toggle'>
                                                 <label>
