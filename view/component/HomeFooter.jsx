@@ -1,23 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { getAllAddress } from '../../module/fwAddress/redux.jsx'
 
 class Footer extends React.Component {
+    componentDidMount() {
+        this.props.getAllAddress();
+    }
     render() {
-        let { map, latitude, longitude, logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList, footer } =
-            this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0, logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]), footer: '/img/footer.jpg' };
+        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList, footer } =
+            this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]), footer: '/img/footer.jpg' };
         facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook' /></a> : '';
         youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube' /></a> : '';
         twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
         instagram = instagram ? <a href={instagram} target='_blank'><i className='fa fa-instagram' /></a> : '';
-
-        const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
-        try {
-            addressList = JSON.parse(addressList);
-        } catch (e) {
-            console.error(e)
-        }
-
         return (
             <footer className='footer-area' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='top-footer-area text-left' style={{
@@ -30,90 +26,57 @@ class Footer extends React.Component {
                         <div className='row'>
                             <div className='col-xl-6 col-lg-5 col-md-12 col-12'>
                                 <h5 className='text-primary'>Trung tâm đào tạo lái xe Hiệp Phát</h5>
-                                {addressList.map((item, index) => (
-                                    <div className='mb-1' key={index}>
-                                        <p><strong>{item.addressTitle}</strong>:&nbsp;{item.address}</p>
-                                        <p>Điện thoại: {item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;{item.mobile}</p>
-                                        <p>Email:&nbsp;{item.email}</p>
-                                    </div>
-                                ))}
+                                {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                                    this.props.address.list.map((item, index) => (
+                                        <div className='mb-1' key={index}>
+                                            <p><strong>{item.title}</strong>:&nbsp;{item.address}</p>
+                                            <p>Điện thoại: {item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;{item.mobile}</p>
+                                            <p>Email:&nbsp;<a href={'mailto:'+item.email}>{item.email}</a></p>
+                                        </div>
+                                    )) : <p>Chưa cập nhật địa chỉ</p>}
                             </div>
                             <div className='col-xl-3 col-lg-4 col-md-8 col-6'>
                                 <h5 className='text-primary'>Thống kê truy cập</h5>
                                 <div><a href='#'><span>Hôm nay:</span> {todayViews}</a></div>
                                 <div><a href='#'><span>Tổng truy cập:</span> {allViews}</a></div>
                             </div>
-                            <div id="carouselFooter" class="carousel slide col-xl-3 col-lg-3 col-md-4 col-6"
-                                data-ride="carousel"
-                                data-interval="20000"
-                                style={{
-                                    height: 'auto',
-                                }}>
-                                <div class="carousel-inner">
-                                    <a href={mapUrl} class="carousel-item"
-                                        style={{
-                                            height: '200px',
-                                            backgroundImage: `url('${T.url(footer)}')`,
-                                            backgroundRepeat: 'no-repeat',
-                                            backgroundPosition: 'center center',
-                                            border: '1px solid gray',
-                                            backgroundSize: 'cover',
-                                            opacity:1
-                                        }}>
-                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>Cơ sở 1: A1/18B Ấp 1, X. Tân Nhựt, H. Bình Chánh, TP.HCM</span>
+                            {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                                <div id='carouselFooter' className='carousel slide col-xl-3 col-lg-3 col-md-4 col-6'
+                                    data-ride='carousel'
+                                    data-interval='5000'
+                                    style={{
+                                        height: 'auto',
+                                    }}>
+                                    <div className='carousel-inner'>
+                                        {
+                                            this.props.address.list.map((item, index) => (
+                                                <div className={'carousel-item' + (index == 0 ? ' active' : '')}
+                                                    key={index}
+                                                    style={{
+                                                        height: '200px',
+                                                        backgroundImage: `url('${T.url(item.image)}')`,
+                                                        backgroundRepeat: 'no-repeat',
+                                                        backgroundPosition: 'center center',
+                                                        border: '1px solid gray',
+                                                        backgroundSize: 'cover',
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    onClick={() => window.open(item.mapURL, '_blank')}>
+
+                                                    <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>{item.title + ':' + item.address}</span>
+                                                </div>))}
+                                    </div>
+                                    <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
+                                        <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
+                                        <span className='sr-only'>Previous</span>
                                     </a>
-                                    <div class="carousel-item active"
-                                        style={{
-                                            height: '200px',
-                                            backgroundImage: `url('${T.url(footer)}')`,
-                                            backgroundRepeat: 'no-repeat',
-                                            backgroundPosition: 'center center',
-                                            border: '1px solid gray',
-                                            backgroundSize: 'cover'
-                                        }}>
-                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>Cơ sở 1: A1/18B Ấp 1, X. Tân Nhựt, H. Bình Chánh, TP.HCM</span>
-                                        <a href={mapUrl} target='_blank'>
-                                            <div style={{ height: '100%', width: '100%' }}></div>
-                                        </a>
-                                    </div>
-                                    <div class="carousel-item"
-                                        style={{
-                                            height: '200px',
-                                            backgroundImage: `url('${T.url(logo)}')`,
-                                            backgroundRepeat: 'no-repeat',
-                                            backgroundPosition: 'center center',
-                                            border: '1px solid gray',
-                                            backgroundSize: 'cover'
-                                        }}>
-                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>Cơ sở 2: Số 271, Đường số 1, P. Bình Hưng Hòa B, Q. Bình Tân, TP.HCM</span>
-                                        <a href={mapUrl} target='_blank'>
-                                            <div style={{ height: '100%', width: '100%' }}></div>
-                                        </a>
-                                    </div>
-                                    <div class="carousel-item"
-                                        style={{
-                                            height: '200px',
-                                            backgroundImage: `url('${T.url(logo)}')`,
-                                            backgroundRepeat: 'no-repeat',
-                                            backgroundPosition: 'center center',
-                                            border: '1px solid gray',
-                                            backgroundSize: 'cover'
-                                        }}>
-                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>VP Tuyển Sinh: Số 46, Lũy Bán Bích, P. Tân Thới Hòa, Q. Tân Phú, TP.HCM</span>
-                                        <a href={mapUrl} target='_blank'>
-                                            <div style={{ height: '100%', width: '100%' }}></div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <a class="carousel-control-prev" href="#carouselFooter" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#carouselFooter" role="button" data-slide="next">
-                                    <span class="carousel-control-next-icon" ></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </div>
+                                    <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
+                                        <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
+                                        <span className='sr-only'>Next</span>
+                                    </a>
+                                </div> : <p>Chưa cập nhật địa chỉ</p>
+                            }
+
                         </div>
                         <div className='row'>
                             <div className='col-12 text-center'>
@@ -139,6 +102,6 @@ class Footer extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = {};
+const mapStateToProps = state => ({ system: state.system, address: state.address });
+const mapActionsToProps = { getAllAddress };
 export default connect(mapStateToProps, mapActionsToProps)(Footer);
