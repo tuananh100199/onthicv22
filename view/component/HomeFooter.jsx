@@ -41,7 +41,7 @@ class Footer extends React.Component {
                                 <div><a href='#'><span>Tổng truy cập:</span> {allViews}</a></div>
                             </div>
                             {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                                <div id='carouselFooter' className='carousel slide col-xl-3 col-lg-3 col-md-4 col-6'
+                                <div id='carouselFooter' className='carousel slide col-xl-3 col-lg-3 col-md-4 col-6 pl-0'
                                     data-ride='carousel'
                                     data-interval='5000'
                                     style={{
@@ -63,14 +63,14 @@ class Footer extends React.Component {
                                                     }}
                                                     onClick={() => window.open(item.mapURL, '_blank')}>
 
-                                                    <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>{item.title + ':' + item.address}</span>
+                                                    <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold', width:'100%', textAlign:'center' }}>{item.title}</span>
                                                 </div>))}
                                     </div>
                                     <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
                                         <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
                                         <span className='sr-only'>Previous</span>
                                     </a>
-                                    <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
+                                    <a className='carousel-control-next mr-3' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
                                         <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
                                         <span className='sr-only'>Next</span>
                                     </a>
