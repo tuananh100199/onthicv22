@@ -43,13 +43,25 @@ class Footer extends React.Component {
                                 <div><a href='#'><span>Hôm nay:</span> {todayViews}</a></div>
                                 <div><a href='#'><span>Tổng truy cập:</span> {allViews}</a></div>
                             </div>
-                            <div id="carouselExampleControls" class="carousel slide col-xl-3 col-lg-3 col-md-4 col-6"
+                            <div id="carouselFooter" class="carousel slide col-xl-3 col-lg-3 col-md-4 col-6"
                                 data-ride="carousel"
                                 data-interval="20000"
                                 style={{
                                     height: 'auto',
                                 }}>
                                 <div class="carousel-inner">
+                                    <a href={mapUrl} class="carousel-item"
+                                        style={{
+                                            height: '200px',
+                                            backgroundImage: `url('${T.url(footer)}')`,
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center center',
+                                            border: '1px solid gray',
+                                            backgroundSize: 'cover',
+                                            opacity:1
+                                        }}>
+                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>Cơ sở 1: A1/18B Ấp 1, X. Tân Nhựt, H. Bình Chánh, TP.HCM</span>
+                                    </a>
                                     <div class="carousel-item active"
                                         style={{
                                             height: '200px',
@@ -59,6 +71,7 @@ class Footer extends React.Component {
                                             border: '1px solid gray',
                                             backgroundSize: 'cover'
                                         }}>
+                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>Cơ sở 1: A1/18B Ấp 1, X. Tân Nhựt, H. Bình Chánh, TP.HCM</span>
                                         <a href={mapUrl} target='_blank'>
                                             <div style={{ height: '100%', width: '100%' }}></div>
                                         </a>
@@ -72,6 +85,7 @@ class Footer extends React.Component {
                                             border: '1px solid gray',
                                             backgroundSize: 'cover'
                                         }}>
+                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>Cơ sở 2: Số 271, Đường số 1, P. Bình Hưng Hòa B, Q. Bình Tân, TP.HCM</span>
                                         <a href={mapUrl} target='_blank'>
                                             <div style={{ height: '100%', width: '100%' }}></div>
                                         </a>
@@ -85,16 +99,17 @@ class Footer extends React.Component {
                                             border: '1px solid gray',
                                             backgroundSize: 'cover'
                                         }}>
+                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>VP Tuyển Sinh: Số 46, Lũy Bán Bích, P. Tân Thới Hòa, Q. Tân Phú, TP.HCM</span>
                                         <a href={mapUrl} target='_blank'>
                                             <div style={{ height: '100%', width: '100%' }}></div>
                                         </a>
                                     </div>
                                 </div>
-                                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                <a class="carousel-control-prev" href="#carouselFooter" role="button" data-slide="prev">
                                     <span class="carousel-control-prev-icon"></span>
                                     <span class="sr-only">Previous</span>
                                 </a>
-                                <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                <a class="carousel-control-next" href="#carouselFooter" role="button" data-slide="next">
                                     <span class="carousel-control-next-icon" ></span>
                                     <span class="sr-only">Next</span>
                                 </a>
