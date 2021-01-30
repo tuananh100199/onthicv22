@@ -1,23 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { getAllAddressByUser } from '../../module/fwAddress/redux.jsx';
 
 class Footer extends React.Component {
     render() {
-        let { map, latitude, longitude, logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList, footer } =
-            this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0, logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]), footer: '/img/footer.jpg' };
-        facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook'/></a> : '';
-        youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube'/></a> : '';
-        twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter'/></a> : '';
-        instagram = instagram ? <a href={instagram} target='_blank'><i className='fa fa-instagram'/></a> : '';
-        
+        let { map, latitude, longitude, logo, facebook, youtube, twitter, instagram, todayViews, allViews, footer } =
+            this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0, logo: '', todayViews: 0, allViews: 0, footer: '/img/footer.jpg' };
+        facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook' /></a> : '';
+        youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube' /></a> : '';
+        twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
+        instagram = instagram ? <a href={instagram} target='_blank'><i className='fa fa-instagram' /></a> : '';
+
         const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
-        try {
-            addressList = JSON.parse(addressList);
-        } catch (e) {
-            console.error(e)
-        }
-        
+
         return (
             <footer className='footer-area' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='top-footer-area text-left' style={{
@@ -30,9 +26,9 @@ class Footer extends React.Component {
                         <div className='row'>
                             <div className='col-xl-6 col-lg-5 col-md-12 col-12'>
                                 <h5 className='text-primary'>Trung tâm đào tạo lái xe Hiệp Phát</h5>
-                                {addressList.map((item, index) => (
+                                {this.props.address.list.map((item, index) => (
                                     <div className='mb-1' key={index}>
-                                        <p><strong>{item.addressTitle}</strong>:&nbsp;{item.address}</p>
+                                        <p><strong>{item.title}</strong>:&nbsp;{item.address}</p>
                                         <p>Điện thoại: {item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;{item.mobile}</p>
                                         <p>Email:&nbsp;{item.email}</p>
                                     </div>
@@ -52,19 +48,19 @@ class Footer extends React.Component {
                                         backgroundPosition: 'center center',
                                         border: '1px solid gray',
                                         backgroundSize: 'cover'
-                                    }}/>
+                                    }} />
                                 </a>
                             </div>
                         </div>
                         <div className='row'>
                             <div className='col-12 text-center'>
-                                <Link to='/'><img src={logo} alt='Hiep Phat' style={{ height: '36px', width: 'auto' }}/></Link>
-                                <p dangerouslySetInnerHTML={{ __html: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.' }}/>
+                                <Link to='/'><img src={logo} alt='Hiep Phat' style={{ height: '36px', width: 'auto' }} /></Link>
+                                <p dangerouslySetInnerHTML={{ __html: 'Copyright &copy;' + new Date().getFullYear() + '. Bản quyền thuộc về Trung tâm đào tạo lái xe Hiệp Phát.' }} />
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div className='bottom-footer-area d-flex justify-content-between align-items-center'>
                     <div className='contact-info'>
                         {/*<a href='#'><span>Hôm nay:</span> {todayViews}</a>*/}
@@ -80,6 +76,6 @@ class Footer extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = {};
+const mapStateToProps = state => ({ system: state.system, address: state.address });
+const mapActionsToProps = { getAllAddressByUser };
 export default connect(mapStateToProps, mapActionsToProps)(Footer);

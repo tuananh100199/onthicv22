@@ -125,3 +125,19 @@ export function swapAddress(_id, isMoveUp) {
         }, error => T.notify('Thay đổi thứ tự địa chỉ bị lỗi!', 'danger'));
     }
 }
+//Home
+export function getAllAddressByUser(done) {
+    return dispatch => {
+        const url = '/address/all/';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách địa chỉ bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: AddressGetAll, items: data.items.filter(i => i.active === true) });
+            }
+            if (done) done(data);
+
+        }, error => T.notify('Lấy danh sách địa chỉ bị lỗi', 'danger'));
+    }
+}
