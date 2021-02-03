@@ -25,7 +25,7 @@ module.exports = app => {
 
     app.delete('/api/address', app.permission.check('component:write'), (req, res) => app.model.address.delete(req.body._id, error => res.send({ error })));
     //Home
-    app.get('/address/all', (req, res) => app.model.address.getAll((error, items) => res.send({ error, items })));
+    app.get('/address/all', (req, res) => app.model.address.getAll((error, items) => res.send({ error, items: items.filter(i => i.active === true) })));
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
 
     app.createFolder(app.path.join(app.publicPath, '/img/address'));
