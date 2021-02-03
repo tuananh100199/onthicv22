@@ -4,6 +4,10 @@ import { Link } from 'react-router-dom';
 import { getAllAddressByUser } from '../../module/fwAddress/redux.jsx';
 
 class Footer extends React.Component {
+    componentDidMount() {
+        this.props.getAllAddressByUser();
+    }
+
     render() {
         let { map, latitude, longitude, logo, facebook, youtube, twitter, instagram, todayViews, allViews, footer } =
             this.props.system ? this.props.system : { map: '', latitude: 0, longitude: 0, logo: '', todayViews: 0, allViews: 0, footer: '/img/footer.jpg' };

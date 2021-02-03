@@ -134,7 +134,8 @@ export function getAllAddressByUser(done) {
                 T.notify('Lấy danh sách địa chỉ bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: AddressGetAll, items: data.items.filter(i => i.active === true) });
+                // dispatch({ type: AddressGetAll, items: data.items.filter(i => i.active === true) });
+                dispatch({ type: AddressGetAll, items: data.items });
             }
             if (done) done(data);
 
