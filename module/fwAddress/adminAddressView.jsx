@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddress, createAddress, deleteAddress, swapAddress } from './redux.jsx';
+import { getAllAddress, createAddress, deleteAddress, swapAddress, updateAddress } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class AddressModal extends React.Component {
@@ -92,7 +92,8 @@ class AddressPage extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            readOnly = !currentPermissions.includes('component:write');
         let table = null;
         if (this.props.address && this.props.address.list && this.props.address.list.length > 0) {
             table = (
@@ -101,6 +102,7 @@ class AddressPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tên địa chỉ</th>
+                            <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }} >Kích hoạt</th>
                             <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -110,6 +112,13 @@ class AddressPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/address/edit/' + item._id}>{item.title}</Link></td>
+                                <td className='toggle' style={{ textAlign: 'center' }} >
+                                    <label>
+                                        <input type='checkbox' checked={item.active}
+                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { active: item.active ? 0 : 1 }, () => T.notify('Kích hoạt địa chỉ thành công!', 'success'))} />
+                                        <span className='button-indecator' />
+                                    </label>
+                                </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
                                     <img src={item.image} alt='avatarAddress' style={{ height: '32px' }} />
                                 </td>
@@ -124,7 +133,7 @@ class AddressPage extends React.Component {
                                         <Link to={'/user/address/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-                                        {currentPermissions.includes('component:write') ?
+                                        {!readOnly ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
@@ -152,5 +161,5 @@ class AddressPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllAddress, createAddress, deleteAddress, swapAddress };
+const mapActionsToProps = { getAllAddress, createAddress, deleteAddress, swapAddress, updateAddress };
 export default connect(mapStateToProps, mapActionsToProps)(AddressPage);

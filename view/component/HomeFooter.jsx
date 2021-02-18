@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllAddress } from '../../module/fwAddress/redux.jsx'
+import { getAllAddressByUser } from '../../module/fwAddress/redux.jsx'
 
 class Footer extends React.Component {
     componentDidMount() {
-        this.props.getAllAddress();
+        this.props.getAllAddressByUser();
     }
     render() {
-        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, addressList, footer } =
-            this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, addressList: JSON.stringify([]), footer: '/img/footer.jpg' };
+        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, footer } =
+            this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, footer: '/img/footer.jpg' };
         facebook = facebook ? <a href={facebook} target='_blank'><i className='fa fa-facebook' /></a> : '';
         youtube = youtube ? <a href={youtube} target='_blank'><i className='fa fa-youtube' /></a> : '';
         twitter = twitter ? <a href={twitter} target='_blank'><i className='fa fa-twitter' /></a> : '';
@@ -31,7 +31,7 @@ class Footer extends React.Component {
                                         <div className='mb-1' key={index}>
                                             <p><strong>{item.title}</strong>:&nbsp;{item.address}</p>
                                             <p>Điện thoại: {item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;{item.mobile}</p>
-                                            <p>Email:&nbsp;<a href={'mailto:'+item.email}>{item.email}</a></p>
+                                            <p>Email:&nbsp;<a href={'mailto:' + item.email}>{item.email}</a></p>
                                         </div>
                                     )) : <p>Chưa cập nhật địa chỉ</p>}
                             </div>
@@ -41,9 +41,9 @@ class Footer extends React.Component {
                                 <div><a href='#'><span>Tổng truy cập:</span> {allViews}</a></div>
                             </div>
                             {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                                <div id='carouselFooter' className='carousel slide col-xl-3 col-lg-3 col-md-4 col-6 pl-0'
+                                <div id='carouselFooter' className='carousel col-xl-3 col-lg-3 col-md-4 col-6 slide-footer'
                                     data-ride='carousel'
-                                    data-interval='5000'
+                                    data-interval='25000'
                                     style={{
                                         height: 'auto',
                                     }}>
@@ -63,14 +63,14 @@ class Footer extends React.Component {
                                                     }}
                                                     onClick={() => window.open(item.mapURL, '_blank')}>
 
-                                                    <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold', width:'100%', textAlign:'center' }}>{item.title}</span>
+                                                    <span className='text-primary' style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold', width: '100%', textAlign: 'center' }}>{item.title}</span>
                                                 </div>))}
                                     </div>
                                     <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
                                         <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
                                         <span className='sr-only'>Previous</span>
                                     </a>
-                                    <a className='carousel-control-next mr-3' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
+                                    <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
                                         <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
                                         <span className='sr-only'>Next</span>
                                     </a>
@@ -88,10 +88,6 @@ class Footer extends React.Component {
                 </div>
 
                 <div className='bottom-footer-area d-flex justify-content-between align-items-center'>
-                    <div className='contact-info'>
-                        {/*<a href='#'><span>Hôm nay:</span> {todayViews}</a>*/}
-                        {/*<a href='#'><span>Tổng truy cập:</span> {allViews}</a>*/}
-                    </div>
                     <div className='follow-us'>
                         <span>Kết nối với chúng tôi:</span>
                         {facebook} {youtube} {twitter} {instagram}
@@ -103,5 +99,5 @@ class Footer extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllAddress };
+const mapActionsToProps = { getAllAddressByUser };
 export default connect(mapStateToProps, mapActionsToProps)(Footer);
