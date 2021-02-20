@@ -131,8 +131,17 @@ class HomeMenu extends React.Component {
                     </button>
         
                     <div className='collapse navbar-collapse' id='ftco-nav'>
-                        <ul className='navbar-nav ml-auto'>
-                            {menus}
+                        <div className='classynav'>
+                            <ul className='navbar-nav ml-auto'>{menus}</ul>
+                            {/*<div className='register-login-area'>*/}
+                            {/*    {user && user._id ? [*/}
+                            {/*        <a key={0} href='/user' className='text-primary' style={{ textTransform: 'capitalize', fontWeight: 'normal' }}>User</a>,*/}
+                            {/*        <a key={1} href='#' className='text-danger' onClick={this.logout}><i className='fa fa-power-off' /></a>*/}
+                            {/*    ] : <a href='#' onClick={this.props.showLoginModal}><i className='fa fa-user' /></a>}*/}
+                            {/*</div>*/}
+                        </div>
+                        {/*<ul className='navbar-nav ml-auto'>*/}
+                            {/*{menus}*/}
                             {/*<li className='nav-item active'><a href='index.html' className='nav-link'>Home</a></li>*/}
                             {/*<li className='nav-item'><a href='about.html' className='nav-link'>About</a></li>*/}
                             {/*<li className='nav-item'><a href='departments.html' className='nav-link'>Departments</a>*/}
@@ -144,7 +153,7 @@ class HomeMenu extends React.Component {
                             {/*                                data-toggle='modal'*/}
                             {/*                                data-target='#modalAppointment'><span>Make an Appointment</span></a>*/}
                             {/*</li>*/}
-                        </ul>
+                        {/*</ul>*/}
                     </div>
                 </div>
                 
