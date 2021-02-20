@@ -11,60 +11,53 @@ class HomeMenu extends React.Component {
     }
 
     componentDidMount() {
-        $(document).ready(() => {
-            $(window).scroll(function(){
-                let $w = $(this),
-                    st = $w.scrollTop(),
-                    navbar = $('.ftco_navbar'),
-                    sd = $('.js-scroll-wrap');
+    
+        const done = () => {
+            if ($.fn.classyNav && this.nav.current != null && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
+                $(this.nav.current).classyNav();
+                $('.clever-main-menu').sticky({ topSpacing: 0 });
+                $(window).scroll(function(){
+                    let $w = $(this),
+                        st = $w.scrollTop(),
+                        navbar = $('.ftco_navbar'),
+                        sd = $('.js-scroll-wrap');
         
-                if (st > 150) {
-                    if ( !navbar.hasClass('scrolled') ) {
-                        navbar.addClass('scrolled');
+                    if (st > 150) {
+                        if ( !navbar.hasClass('scrolled') ) {
+                            navbar.addClass('scrolled');
+                        }
                     }
-                }
-                if (st < 150) {
-                    if ( navbar.hasClass('scrolled') ) {
-                        navbar.removeClass('scrolled sleep');
+                    if (st < 150) {
+                        if ( navbar.hasClass('scrolled') ) {
+                            navbar.removeClass('scrolled sleep');
+                        }
                     }
-                }
-                if ( st > 350 ) {
-                    if ( !navbar.hasClass('awake') ) {
-                        navbar.addClass('awake');
-                    }
+                    if ( st > 350 ) {
+                        if ( !navbar.hasClass('awake') ) {
+                            navbar.addClass('awake');
+                        }
             
-                    if(sd.length > 0) {
-                        sd.addClass('sleep');
+                        if(sd.length > 0) {
+                            sd.addClass('sleep');
+                        }
                     }
-                }
-                if ( st < 350 ) {
-                    if ( navbar.hasClass('awake') ) {
-                        navbar.removeClass('awake');
-                        navbar.addClass('sleep');
-                    }
-                    if(sd.length > 0) {
-                        sd.removeClass('sleep');
-                    }
-                }
-            });
-            
-            setTimeout(() => {
-                $(".smoothscroll[href^='#'], #ftco-nav ul li a[href^='#']").on('click', function(e) {
-                    e.preventDefault();
-        
-                    let hash = this.hash, navToggler = $('.navbar-toggler');
-                    $('html, body').animate({
-                        scrollTop: $(hash).offset().top
-                    }, 700, 'easeInOutExpo', function(){
-                        window.location.hash = hash;
-                    });
-        
-                    if ( navToggler.is(':visible') ) {
-                        navToggler.click();
+                    if ( st < 350 ) {
+                        if ( navbar.hasClass('awake') ) {
+                            navbar.removeClass('awake');
+                            navbar.addClass('sleep');
+                        }
+                        if(sd.length > 0) {
+                            sd.removeClass('sleep');
+                        }
                     }
                 });
-            }, 250)
-        });
+                
+                this.setState({ link: window.location.pathname })
+            } else {
+                setTimeout(done, 100);
+            }
+        };
+        $(document).ready(done);
     }
     
     onMenuClick = (link) => {
