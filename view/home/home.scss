@@ -1094,3 +1094,105 @@
     margin-left: 0;
     margin-right: 15px;
 }
+
+
+.clever-main-menu {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 80px;
+    .classy-navbar {
+        height: 80px;
+    }
+
+    @media only screen and (max-width:1100px) {
+        .classy-navbar {
+            h4 {
+                font-size: 1.1rem;
+                overflow: hidden;
+            }
+        }
+    }
+
+    @media only screen and (max-width:991px) {
+        .navbar-brand {
+            width: 100%;
+        }
+    }
+
+    @media only screen and (max-width:576px) {
+        .navbar-brand {
+            width: 80%;
+        }
+
+        .classy-navbar {
+            a {
+                text-align: center;
+            }
+            h4 {
+                font-size: 13px;
+                overflow: hidden;
+            }
+        }
+    }
+
+    .classynav ul li a {
+        color: rgba(0, 0, 0, 0.45);
+        font-weight: 600;
+        @media #{$breakpoint-lg} {
+            padding: 0 8px;
+        }
+        &:hover,
+        &:focus {
+            color: $heading-color;
+        }
+    }
+    .search-area {
+        position: relative;
+        z-index: 1;
+        form {
+            position: relative;
+            z-index: 10;
+            width: 230px;
+            height: 40px;
+            margin: 0 50px;
+            @media #{$breakpoint-lg} {
+                width: 170px;
+                margin: 0 15px;
+            }
+            @media #{$breakpoint-md} {
+                margin: 15px auto;
+            }
+            @media #{$breakpoint-xs} {
+                margin: 15px auto;
+            }
+            input {
+                width: 100%;
+                height: 40px;
+                border-radius: 6px;
+                border: 1px solid $border-color;
+                padding: 0 15px 0 50px;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.35);
+                font-weight: 600;
+                @include trans-duration(500ms);
+                &:focus {
+                    border: 1px solid rgba(0, 0, 0, 0.5);
+                }
+            }
+            button {
+                position: absolute;
+                width: 50px;
+                height: 40px;
+                background-color: transparent;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                border: none;
+                text-align: center;
+                cursor: pointer;
+                outline: none;
+            }
+        }
+    }
+}
