@@ -1,6 +1,6 @@
 @import 'bootstrap/bootstrap';
 @import 'bootstrap/variables';
-@import 'css/classy-nav.min.css';
+@import 'css/classy-nav.css';
 
 $font-primary: 'Roboto',Arial, sans-serif;
 
@@ -80,7 +80,7 @@ h1, h2, h3, h4, h5,
 	background: $white !important;
 	position: relative;
 	@include media-breakpoint-down(md) {
-		background: $black!important;
+		//background: $black!important;
 		position: relative;
 		top: 0;
 	}

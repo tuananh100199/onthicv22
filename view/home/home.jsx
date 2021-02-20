@@ -54,8 +54,6 @@ class App extends React.Component {
     state = { routes: [], isMatch: true };
 
     componentDidMount() {
-        new WOW().init();
-        
         AOS.init({
             duration: 800,
             easing: 'slide'
