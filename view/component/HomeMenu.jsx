@@ -11,16 +11,60 @@ class HomeMenu extends React.Component {
     }
 
     componentDidMount() {
-        const done = () => {
-            if ($.fn.classyNav && this.nav.current != null && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
-                $(this.nav.current).classyNav();
-                $('.clever-main-menu').sticky({ topSpacing: 0 });
-                this.setState({ link: window.location.pathname })
-            } else {
-                setTimeout(done, 100);
-            }
-        };
-        $(document).ready(done);
+        $(document).ready(() => {
+            $(window).scroll(function(){
+                let $w = $(this),
+                    st = $w.scrollTop(),
+                    navbar = $('.ftco_navbar'),
+                    sd = $('.js-scroll-wrap');
+        
+                if (st > 150) {
+                    if ( !navbar.hasClass('scrolled') ) {
+                        navbar.addClass('scrolled');
+                    }
+                }
+                if (st < 150) {
+                    if ( navbar.hasClass('scrolled') ) {
+                        navbar.removeClass('scrolled sleep');
+                    }
+                }
+                if ( st > 350 ) {
+                    if ( !navbar.hasClass('awake') ) {
+                        navbar.addClass('awake');
+                    }
+            
+                    if(sd.length > 0) {
+                        sd.addClass('sleep');
+                    }
+                }
+                if ( st < 350 ) {
+                    if ( navbar.hasClass('awake') ) {
+                        navbar.removeClass('awake');
+                        navbar.addClass('sleep');
+                    }
+                    if(sd.length > 0) {
+                        sd.removeClass('sleep');
+                    }
+                }
+            });
+            
+            setTimeout(() => {
+                $(".smoothscroll[href^='#'], #ftco-nav ul li a[href^='#']").on('click', function(e) {
+                    e.preventDefault();
+        
+                    let hash = this.hash, navToggler = $('.navbar-toggler');
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top
+                    }, 700, 'easeInOutExpo', function(){
+                        window.location.hash = hash;
+                    });
+        
+                    if ( navToggler.is(':visible') ) {
+                        navToggler.click();
+                    }
+                });
+            }, 250)
+        });
     }
     
     onMenuClick = (link) => {
@@ -47,12 +91,12 @@ class HomeMenu extends React.Component {
                         isExternalLink = link.startsWith('http://') || link.startsWith('https://');
                     link = item.link ? item.link : '#';
                     const title = T.language.parse(item.title);
-
+    
                     return (item.submenus && item.submenus.length > 0) ? (
-                        <li key={index}>
-                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> : (item.link ?
-                                <Link className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'text-primary' : ''} to={link} onClick={() => this.onMenuClick(link)}>{title}</Link> :
-                                <a href='#' onClick={e => e.preventDefault()}>{title}</a>)}
+                        <li key={index} className={'nav-item ' + (currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : '')}>
+                            {isExternalLink ? <a href={link} className='nav-link' target='_blank'>{title}</a> : (item.link ?
+                                <Link className='nav-link' to={link} onClick={() => this.onMenuClick(link)}>{title}</Link> :
+                                <a href='#' className='nav-link' onClick={e => e.preventDefault()}>{title}</a>)}
                             <ul className='dropdown'>{
                                 item.submenus.map((subMenu, subIndex) => {
                                     const link = subMenu.link ? subMenu.link.toLowerCase().trim() : '/';
@@ -67,9 +111,9 @@ class HomeMenu extends React.Component {
                             </ul>
                         </li>
                     ) :
-                        <li key={index}>
-                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> :
-                                (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link className={currentLink == link ? 'text-primary' : ''} to={link} onClick={() => this.onMenuClick(link)}>{title}  </Link>)}
+                        <li key={index} className={'nav-item ' + (currentLink == link ? 'active' : '')}>
+                            {isExternalLink ? <a href={link} className='nav-link' target='_blank'>{title}</a> :
+                                (link.startsWith('#') ? <a href={link} className='nav-link'>{item.title}</a> : <Link className='nav-link' to={link} onClick={() => this.onMenuClick(link)}>{title}  </Link>)}
                         </li>;
                 }
             });
@@ -77,37 +121,69 @@ class HomeMenu extends React.Component {
 
         const { logo, user } = this.props.system ? this.props.system : {};
         return (
-            <header className='header-area'>
-                <div className='clever-main-menu'>
-                    <div className='classy-nav-container breakpoint-off'>
-                        <nav className='classy-navbar justify-content-between' ref={this.nav} id='cleverNav'>
-                            <Link className='navbar-brand d-sm-flex' to='/'>
-                                {logo ? <img src={logo} style={{ height: '36px', width: 'auto' }} alt='logo' /> : ''}&nbsp;
-                                <h4>Trung tâm đào tạo lái xe Hiệp Phát</h4>
-                            </Link>
-
-                            <div className='classy-navbar-toggler'>
-                                <span className='navbarToggler'><span /><span /><span /></span>
-                            </div>
-
-                            <div className='classy-menu'>
-                                <div className='classycloseIcon'>
-                                    <div className='cross-wrap'><span className='top' /><span className='bottom' /></div>
-                                </div>
-                                <div className='classynav'>
-                                    <ul>{menus}</ul>
-                                    <div className='register-login-area'>
-                                        {user && user._id ? [
-                                            <a key={0} href='/user' className='text-primary' style={{ textTransform: 'capitalize', fontWeight: 'normal' }}>User</a>,
-                                            <a key={1} href='#' className='text-danger' onClick={this.logout}><i className='fa fa-power-off' /></a>
-                                        ] : <a href='#' onClick={this.props.showLoginModal}><i className='fa fa-user' /></a>}
-                                    </div>
-                                </div>
-                            </div>
-                        </nav>
+            <nav className='navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light' id='ftco-navbar'>
+                <div className='container'>
+                    <a className='navbar-brand' href='index.html'>
+                        <i className='flaticon-pharmacy'/><span>Re</span>Medic
+                    </a>
+                    <button className='navbar-toggler' type='button' data-toggle='collapse' data-target='#ftco-nav' aria-controls='ftco-nav' aria-expanded='false' aria-label='Toggle navigation'>
+                        <span className='oi oi-menu'/> Menu
+                    </button>
+        
+                    <div className='collapse navbar-collapse' id='ftco-nav'>
+                        <ul className='navbar-nav ml-auto'>
+                            {menus}
+                            {/*<li className='nav-item active'><a href='index.html' className='nav-link'>Home</a></li>*/}
+                            {/*<li className='nav-item'><a href='about.html' className='nav-link'>About</a></li>*/}
+                            {/*<li className='nav-item'><a href='departments.html' className='nav-link'>Departments</a>*/}
+                            {/*</li>*/}
+                            {/*<li className='nav-item'><a href='doctor.html' className='nav-link'>Doctors</a></li>*/}
+                            {/*<li className='nav-item'><a href='blog.html' className='nav-link'>Blog</a></li>*/}
+                            {/*<li className='nav-item'><a href='contact.html' className='nav-link'>Contact</a></li>*/}
+                            {/*<li className='nav-item cta'><a href='contact.html' className='nav-link'*/}
+                            {/*                                data-toggle='modal'*/}
+                            {/*                                data-target='#modalAppointment'><span>Make an Appointment</span></a>*/}
+                            {/*</li>*/}
+                        </ul>
                     </div>
                 </div>
-            </header>
+                
+                
+                
+                
+                
+                
+                
+                {/*<div className='clever-main-menu'>*/}
+                {/*    <div className='classy-nav-container breakpoint-off'>*/}
+                {/*        <nav className='classy-navbar justify-content-between' ref={this.nav} id='cleverNav'>*/}
+                {/*            <Link className='navbar-brand d-sm-flex' to='/'>*/}
+                {/*                {logo ? <img src={logo} style={{ height: '36px', width: 'auto' }} alt='logo' /> : ''}&nbsp;*/}
+                {/*                <h4>Trung tâm đào tạo lái xe Hiệp Phát</h4>*/}
+                {/*            </Link>*/}
+                
+                {/*            <div className='classy-navbar-toggler'>*/}
+                {/*                <span className='navbarToggler'><span /><span /><span /></span>*/}
+                {/*            </div>*/}
+                
+                {/*            <div className='classy-menu'>*/}
+                {/*                <div className='classycloseIcon'>*/}
+                {/*                    <div className='cross-wrap'><span className='top' /><span className='bottom' /></div>*/}
+                {/*                </div>*/}
+                {/*                <div className='classynav'>*/}
+                {/*                    <ul>{menus}</ul>*/}
+                {/*                    <div className='register-login-area'>*/}
+                {/*                        {user && user._id ? [*/}
+                {/*                            <a key={0} href='/user' className='text-primary' style={{ textTransform: 'capitalize', fontWeight: 'normal' }}>User</a>,*/}
+                {/*                            <a key={1} href='#' className='text-danger' onClick={this.logout}><i className='fa fa-power-off' /></a>*/}
+                {/*                        ] : <a href='#' onClick={this.props.showLoginModal}><i className='fa fa-user' /></a>}*/}
+                {/*                    </div>*/}
+                {/*                </div>*/}
+                {/*            </div>*/}
+                {/*        </nav>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
+            </nav>
         )
     }
 }
