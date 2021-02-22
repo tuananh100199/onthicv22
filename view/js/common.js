@@ -204,23 +204,6 @@ const T = {
         swal({ icon, title, content, dangerMode, buttons: { cancel: true, confirm: true }, }).then(done);
     },
 
-    confirm3: (title, html, icon, buttonDanger, buttonSuccess, done) => {
-        var content = document.createElement('div');
-        content.innerHTML = html;
-        "Bạn có muốn <b>ghi đè</b> dữ liệu đang có bằng dữ liệu mới không?<br>Nếu không rõ, hãy chọn <b>Không ghi đè</b>!";
-        swal({
-            icon,
-            title,
-            content,
-            dangerMode: true,
-            buttons: {
-                cancel: { text: "Huỷ", value: null, visible: true },
-                confirm: { text: buttonDanger, value: true },
-                false: { text: buttonSuccess, value: false }
-            }
-        }).then(done)
-    },
-
     dateFormat: { format: 'dd/mm/yyyy hh:ii', autoclose: true, todayBtn: true },
     birthdayFormat: { format: 'dd/mm/yyyy', autoclose: true, todayBtn: true },
     formatDate: str => {
@@ -307,31 +290,37 @@ $(() => {
     setTimeout(T.onResize, 100);
 });
 
-T.ftcoAnimate = () => {
-    // $('.ftco-animate').waypoint(function (direction) {
-    //     if (direction === 'down' && !$(this.element).hasClass('ftco-animated')) {
-    //         $(this.element).addClass('item-animate');
-    //         setTimeout(function () {
-    //             $('body .ftco-animate.item-animate').each(function (k) {
-    //                 const el = $(this);
-    //                 setTimeout(function () {
-    //                     var effect = el.data('animate-effect');
-    //                     if (effect === 'fadeIn') {
-    //                         el.addClass('fadeIn ftco-animated');
-    //                     } else if (effect === 'fadeInLeft') {
-    //                         el.addClass('fadeInLeft ftco-animated');
-    //                     } else if (effect === 'fadeInRight') {
-    //                         el.addClass('fadeInRight ftco-animated');
-    //                     } else {
-    //                         el.addClass('fadeInUp ftco-animated');
-    //                     }
-    //                     el.removeClass('item-animate');
-    //                 }, k * 50, 'easeInOutExpo');
-    //             });
-    //
-    //         }, 100);
-    //     }
-    // }, { offset: '95%' });
+T.ftcoAnimate = (timeOut = 250) => {
+    setTimeout(() => {
+        let i = 0;
+        $('.ftco-animate').waypoint( function( direction ) {
+            if( direction === 'down' && !$(this.element ? this.element : this).hasClass('ftco-animated') ) {
+                i++;
+                $(this.element ? this.element : this).addClass('item-animate');
+                setTimeout(function(){
+                    $('body .ftco-animate.item-animate').each(function(k){
+                        var el = $(this);
+                        setTimeout( function () {
+                            var effect = el.data('animate-effect');
+                            if ( effect === 'fadeIn') {
+                                el.addClass('fadeIn ftco-animated');
+                            } else if ( effect === 'fadeInLeft') {
+                                el.addClass('fadeInLeft ftco-animated');
+                            } else if ( effect === 'fadeInRight') {
+                                el.addClass('fadeInRight ftco-animated');
+                            } else {
+                                el.addClass('fadeInUp ftco-animated');
+                            }
+                            el.removeClass('item-animate');
+                        },  k * 50, 'easeInOutExpo' );
+                    });
+                
+                }, 100);
+            
+            }
+        
+        } , { offset: '95%' } );
+    }, timeOut)
 };
 
 T.truncate = (str, length) => {

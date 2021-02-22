@@ -54,9 +54,20 @@ class App extends React.Component {
     state = { routes: [], isMatch: true };
 
     componentDidMount() {
-        // $(window).bind('beforeunload', function() {
-        //     return "Do you want to exit this page?";
-        // });
+        AOS.init({
+            duration: 800,
+            easing: 'slide'
+        });
+    
+        $(window).stellar({
+            responsive: true,
+            parallaxBackgrounds: true,
+            parallaxElements: true,
+            horizontalScrolling: false,
+            hideDistantElements: false,
+            scrollProperty: 'scroll'
+        });
+        
         const done = () => {
             if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
                 const handlePaddingFooter = () => {
@@ -65,7 +76,6 @@ class App extends React.Component {
                 }
                 handlePaddingFooter();
                 $(window).on('resize', handlePaddingFooter);
-                new WOW().init();
                 this.loader.current.isShown() && this.loader.current.hide();
                 let menuList = [...this.props.system.menus];
                 while (menuList.length) {
