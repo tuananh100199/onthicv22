@@ -8,6 +8,7 @@ module.exports = app => {
         image: String,
         priority: Number,
         mapURL: String,
+        active: Boolean
     });
     const model = app.db.model('Address', schema);
 
@@ -48,7 +49,7 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-        
+
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {
                 done('Invalid Address Id!');
