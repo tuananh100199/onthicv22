@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux.jsx';
-
+import { getAllAddressByUser } from '../../module/fwAddress/redux.jsx'
 
 class SectionContact extends React.Component {
     constructor(props) {
@@ -11,7 +11,11 @@ class SectionContact extends React.Component {
         this.subject = React.createRef();
         this.message = React.createRef();
     }
-    
+    componentDidMount() {
+        this.props.getAllAddressByUser(() => {
+            T.ftcoAnimate();
+        });
+    }
     sendMessage = (e) => {
         e.preventDefault();
         if (this.name.current.value == '') {
@@ -41,19 +45,19 @@ class SectionContact extends React.Component {
             });
         }
     }
-    
+
     render() {
-        let { addressList, mobile, email, map, latitude, longitude } = this.props.system ? this.props.system : {addressList: JSON.stringify([]) , map: '', latitude: 0, longitude: 0 };
+        let { addressList, mobile, email, map, latitude, longitude } = this.props.system ? this.props.system : { addressList: JSON.stringify([]), map: '', latitude: 0, longitude: 0 };
         const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
-        
+
         const styles = {
             border: {
                 borderBottom: 'solid 1px lightgray',
             },
             noBorder: {
                 borderBottom: 'none',
-            }   
-          };
+            }
+        };
         try {
             addressList = JSON.parse(addressList);
         } catch (e) {
@@ -71,33 +75,31 @@ class SectionContact extends React.Component {
             </a>,
             <section key={2} className='contact-area mt-30'>
                 <div className='container'>
-                    <div className='row'>
-                        <div className='col-12 col-lg-6'>
-                            <div className='contact--info'>
-                                <h4>Thông tin liên lạc</h4>
-                                <ul className='contact-list'>
-                                    <li>
-                                        <h6><i className='fa fa-phone' aria-hidden='true' /> Điện thoại</h6>
-                                        <a href={'tel:' + email}>{mobile}</a>
-                                    </li>
-                                    <li>
-                                        <h6><i className='fa fa-envelope' aria-hidden='true' />Email</h6>
-                                        <a href={'mailto:' + email}>{email}</a>
-                                    </li>
-                                    <li style={{display: 'block'}}>
-                                        <h6><i className='fa fa-address-book' aria-hidden='true' />Địa chỉ</h6>
-                                        {addressList.map((item, index) => (
-                                            <div className='mb-1' key={index}>
-                                                <p><strong>{item.addressTitle}</strong>:&nbsp;&nbsp;{item.address}</p>
-                                                <p>Điện thoại:&nbsp;&nbsp;{item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;&nbsp;{item.mobile}</p>
-                                                <p>Email:&nbsp;&nbsp;{item.email}</p>
-                                            </div>
-                                        ))}
-                                    </li>
-                                </ul>
-                            </div>
+                    <div className='row d-flex mb-5 contact-info'>
+
+                        <div className="col-md-12 mb-4">
+                            <h2 className="h4">Thông tin liên lạc</h2>
                         </div>
-                
+                        <div className="w-100"></div>
+                        {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                            this.props.address.list.map((item, index) => (
+                                [
+                                    <div className="col-md-3" >
+                                        <p><strong>{item.title}</strong>:&nbsp;{item.address}</p>
+                                    </div>,
+                                    <div className="col-md-3" >
+                                        <p><span>Điện thoại:</span> <a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></p>
+                                    </div>,
+                                    <div className="col-md-3" >
+                                        <p><span>Di động:</span> <a href={'tel:' + item.mobile}>{item.mobile}</a></p>
+                                    </div>,
+                                    <div className="col-md-3">
+                                        <p><span>Email:</span> <a href={'mailto:' + item.email}>{item.email}</a></p>
+                                    </div>
+                                ]
+                            )) : <p>Chưa cập nhật địa chỉ</p>}
+
+
                         <div className='col-12 col-lg-6 mb-30'>
                             <div className='contact-form'>
                                 <h4>Liên lạc</h4>
@@ -111,7 +113,7 @@ class SectionContact extends React.Component {
                                     <div className='col-12'>
                                         <input type='text' className='form-control' ref={this.subject} placeholder='Chủ đề' />
                                     </div>
-                            
+
                                     <div className='col-12'>
                                         <textarea name='message' className='form-control' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
                                     </div>
@@ -121,6 +123,40 @@ class SectionContact extends React.Component {
                                 </form>
                             </div>
                         </div>
+                        <div className='col-12 col-lg-6 mb-30'>
+                            {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                                <div id='carouselFooter' className='carousel ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
+                                    <div className='carousel-inner'>
+                                        {
+                                            this.props.address.list.map((item, index) => (
+                                                <div className={'carousel-item' + (index == 0 ? ' active' : '')}
+                                                    key={index}
+                                                    style={{
+                                                        height: '400px',
+                                                        backgroundImage: `url('${T.url(item.image)}')`,
+                                                        backgroundRepeat: 'no-repeat',
+                                                        backgroundPosition: 'center center',
+                                                        border: '1px solid gray',
+                                                        backgroundSize: 'cover',
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    onClick={() => window.open(item.mapURL, '_blank')}>
+
+                                                    <span className='text-primary' style={{ position: 'fixed', bottom: '10px', fontWeight: 'bold', width: '100%', textAlign: 'center' }}>{item.title}</span>
+                                                </div>))}
+                                    </div>
+                                    <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
+                                        <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
+                                        <span className='sr-only'>Previous</span>
+                                    </a>
+                                    <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
+                                        <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
+                                        <span className='sr-only'>Next</span>
+                                    </a>
+                                </div> : <p>Chưa cập nhật địa chỉ</p>
+                            }
+
+                        </div>
                     </div>
                 </div>
             </section >
@@ -128,6 +164,6 @@ class SectionContact extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contact: state.contact });
-const mapActionsToProps = { createContact };
+const mapStateToProps = state => ({ system: state.system, contact: state.contact, address: state.address });
+const mapActionsToProps = { createContact, getAllAddressByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContact);

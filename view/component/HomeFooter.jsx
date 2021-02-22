@@ -45,7 +45,6 @@ class Footer extends React.Component {
                         </div>
                         <div className='col-xl-3 col-lg-3 col-md-4 col-6 pl-0'>
                             <div className='ftco-footer-widget mb-4'>
-                                <h2 className='ftco-heading-2'>Kết nối với chúng tôi</h2>
                                 {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
                                     <div id='carouselFooter' className='carousel ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
                                         <div className='carousel-inner'>
@@ -77,6 +76,7 @@ class Footer extends React.Component {
                                         </a>
                                     </div> : <p>Chưa cập nhật địa chỉ</p>
                                 }
+                                <h2 className='ftco-heading-2'>Kết nối với chúng tôi</h2>
                                 <ul className='ftco-footer-social list-unstyled float-md-left float-lft mt-5'>
                                     {twitter}
                                     {facebook}
