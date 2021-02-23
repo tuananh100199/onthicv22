@@ -104,10 +104,10 @@ class SectionContact extends React.Component {
                             <div className='contact-form'>
                                 <h4>Liên lạc</h4>
                                 <form onSubmit={this.sendMessage} className='row'>
-                                    <div className='col-12 col-lg-6'>
+                                    <div className='col-12'>
                                         <input type='text' className='form-control' ref={this.name} placeholder='Tên' />
                                     </div>
-                                    <div className='col-12 col-lg-6'>
+                                    <div className='col-12'>
                                         <input type='email' className='form-control' ref={this.email} placeholder='Email' />
                                     </div>
                                     <div className='col-12'>
@@ -118,7 +118,7 @@ class SectionContact extends React.Component {
                                         <textarea name='message' className='form-control' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
                                     </div>
                                     <div className='col-12'>
-                                        <button className='btn clever-btn w-100'>Gửi tin nhắn</button>
+                                        <button className='btn clever-btn btn-primary w-100'>Gửi tin nhắn</button>
                                     </div>
                                 </form>
                             </div>

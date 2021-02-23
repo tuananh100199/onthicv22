@@ -43,28 +43,15 @@ class SectionNewsList extends React.Component {
             elements_grid = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-md-6 col-lg-4 col-xl-3 mb-2 mt-2' key={index}>
-                        <div className='h-100 single-popular-course mb-100 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
-                            <Link to={link}>
-                                <img src={item.image} alt={item.title} />
-                            </Link>
-                            <div className='course-content'>
-                                <Link to={link} className='text-primary'>{item.title}</Link>
-                                <div className='meta d-flex align-items-center'>
-                                    <a href='#'>{new Date(item.createdDate).getText()}</a>
-                                </div>
-                                <p className='mb-0 grid-abstract'>{item.abstract}</p>
-                            </div>
-                            <div className='seat-rating-fee d-flex justify-content-between' style={{ position: 'absolute', bottom: 0 }}>
-                                <div className='seat-rating h-100 d-flex align-items-center'>
-                                    {/*<div className='seat'>*/}
-                                    {/*    <i className='fa fa-user' aria-hidden='true'/> 10*/}
-                                    {/*</div>*/}
-                                    {/*<div className='rating'>*/}
-                                    {/*    <i className='fa fa-star' aria-hidden='true'/> 4.5*/}
-                                    {/*</div>*/}
-                                </div>
-                                <div className='course-fee h-100'>
+                    <div className='col-md-6 col-lg-4 col-xl-3 mb-2 mt-2 ftco-animate' key={index}>
+                        <div class="block-2">
+                            <div class="front" style={{ background: 'url(' + item.image + ') no-repeat center center' }} >
+                                <div class="box">
+                                    <Link to={link} className='text-primary'>{item.title}</Link>
+                                    <div className='meta d-flex align-items-center'>
+                                        <a href='#'>{new Date(item.createdDate).getText()}</a>
+                                    </div>
+                                    <p className='mb-0 grid-abstract'>{item.abstract}</p>
                                     <Link to={link} className='free'>Xem thêm</Link>
                                 </div>
                             </div>
