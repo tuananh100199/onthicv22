@@ -44,7 +44,7 @@ class SectionCarousel extends React.Component {
                             margin: 0,
                             center: true,
                             nav: true,
-                            navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
+                            navText: ["<i class='carousel-control-prev-icon'></i>", "<i class='carousel-control-next-icon'></i>"],
                             navContainer: '.nav-container',
                             navSpeed: 1500,
                             dots: false,
