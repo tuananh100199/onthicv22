@@ -46,25 +46,11 @@ class CourseListView extends React.Component {
                 console.log('item',item);
 
                 return (
-                    // <div className='col-md-6 col-lg-4 mb-2 mt-2' key={index}>
-                    //     <div className='post-entry h-100 single-popular-course mb-100'>
-                    //         <div className='image'>
-                    //             <Link to={link}>
-                    //                 <img src={item.image} alt='Image' className='img-fluid' style={{ width: '350px', height: 'auto' }}/>
-                    //             </Link>
-                    //         </div>
-                    //         <div className='text p-4'>
-                    //             <h2 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h2>
-                    //             <span className='text-uppercase date d-block mb-3'><small>{new Date(item.createdDate).getText()}</small></span>
-                    //             <p className='mb-0 grid-abstract'>{item.abstract}</p>
-                    //         </div>
-                    //     </div>
-                    // </div>
                     <div className="col-lg-6 d-flex ftco-animate" key={index} style={{ opacity: 1, visibility: 'visible'}}> 
                         <div className="dept d-md-flex">
-                            <a href="department-single.html" className="img" style={{ backgroundImage: 'url(' + item.image + ')'}} />
+                            <Link to={link} className="img" style={{ backgroundImage: 'url(' + item.image + ')'}}></Link>
                             <div className="text p-4">
-                                <h3><a href="department-single.html">{item.title}</a></h3>
+                               <h3 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h3>
                                 {/* <p><span className="loc">{item.address}</span></p>  */}
                                 <p><span className="doc">25 Bài học</span></p>
                                 <p>{item.abstract} </p>
