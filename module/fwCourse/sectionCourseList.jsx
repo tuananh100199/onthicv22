@@ -43,14 +43,12 @@ class CourseListView extends React.Component {
         if (userPage) {
             elements_grid = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
-                console.log('item',item);
-
                 return (
                     <div className="col-lg-6 d-flex ftco-animate" key={index} style={{ opacity: 1, visibility: 'visible'}}> 
                         <div className="dept d-md-flex">
                             <Link to={link} className="img" style={{ backgroundImage: 'url(' + item.image + ')'}}></Link>
                             <div className="text p-4">
-                               <h3 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h3>
+                            <h3 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h3>
                                 {/* <p><span className="loc">{item.address}</span></p>  */}
                                 <p><span className="doc">25 Bài học</span></p>
                                 <p>{item.abstract} </p>
@@ -67,20 +65,22 @@ class CourseListView extends React.Component {
             elements_list = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-12' key={index}>
-                        <div className='row'>
-                            <div style={{ width: '150px', padding: '15px' }} className={(index < userPage.list.length - 1 ? 'border-bottom' : '')}>
-                                <Link to={link}>
-                                    <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid'/>
-                                </Link>
-                            </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
-                                <div className='text'>
-                                    <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                        <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-primary'>{item.title}</Link>
-                                        </h2>
-                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{item.abstract}</p>
+                    <div className='container'>
+                        <div className='col-12' key={index}>
+                            <div className='row'>
+                                <div style={{ width: '150px', padding: '15px' }} className={(index < userPage.list.length - 1 ? 'border-bottom' : '')}>
+                                    <Link to={link}>
+                                        <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid'/>
+                                    </Link>
+                                </div>
+                                <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
+                                    <div className='text'>
+                                        <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                            <h2 className='heading pb-0 mb-0'>
+                                                <Link to={link} className='text-primary'>{item.title}</Link>
+                                            </h2>
+                                            <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{item.abstract}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -92,6 +92,17 @@ class CourseListView extends React.Component {
         
         return (
             <section>
+                <div className="hero-wrap" style={{backgroundImage: 'url("images/bg_6.jpg")', backgroundAttachment: 'fixed'}}>
+                    <div className="overlay" />
+                    <div className="container-fluid">
+                    <div className="row no-gutters slider-text align-items-center justify-content-center" data-scrollax-parent="true">
+                        <div className="col-md-8 ftco-animate text-center">
+                        <p className="breadcrumbs"><span className="mr-2"><a href="index.html">Trang chủ</a></span> <span>Khóa học</span></p>
+                        <h1 className="mb-3 bread">Khóa Học</h1>
+                        </div>
+                    </div>
+                    </div>
+                </div>
                 <div className='mb-15 text-right'>
                     <div className='btn-group'>
                         <button
@@ -104,13 +115,15 @@ class CourseListView extends React.Component {
                         </button>
                     </div>
                 </div>
-                <div className='row mb-5'>
-                    {(this.state.viewMode == 'list') ? elements_list : elements_grid}
-                    {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
-                        <div style={{width: '100%', textAlign: 'center'}}>
-                            <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
-                        </div>
-                    ) : ''}
+                <div className='container'>
+                    <div className='row'>
+                        {(this.state.viewMode == 'list') ? elements_list : elements_grid}
+                        {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
+                            <div style={{width: '100%', textAlign: 'center'}}>
+                                <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
+                            </div>
+                        ) : ''}
+                    </div>
                 </div>
             </section>
         );
