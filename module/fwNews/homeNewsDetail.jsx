@@ -21,7 +21,7 @@ class NewsDetail extends React.Component {
     }
     
     componentWillUnmount() {
-        $(this.background.current).parallax('destroy');
+        $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
     }
     
     componentDidUpdate(prevProps) {
@@ -33,12 +33,11 @@ class NewsDetail extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
             this.setState({ _id: params.id, link: params.link });
-            $(this.background.current).parallax('destroy');
+            $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
             this.props.getNewsByUser(params.id, params.link, (data) => {
                 if (data.item) {
                     $(this.background.current).parallax({
-                        imageSrc: data.item.image,
-                        speed: 0.7
+                        imageSrc: data.item.image
                     });
                 }
             });

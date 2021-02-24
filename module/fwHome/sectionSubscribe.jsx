@@ -20,7 +20,7 @@ class SectionSubscribe extends React.Component {
     }
     
     componentWillUnmount() {
-        $(this.background.current).parallax('destroy')
+        $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy')
     }
 
     render() {

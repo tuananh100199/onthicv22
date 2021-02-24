@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem } from './redux/reduxCarousel.jsx';
 import { Link } from 'react-router-dom';
 import ImageBox from '../../view/component/ImageBox.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
 
 class CarouselItemModal extends React.Component {
     constructor(props) {
@@ -112,7 +111,7 @@ class CarouselEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/component', () => {
+        T.ready('/user/settings', () => {
             $('#crsTitle').focus();
 
             const route = T.routeMatcher('/user/carousel/edit/:carouselId'),

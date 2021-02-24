@@ -45,7 +45,7 @@ class SectionNewsList extends React.Component {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
                     <div className='blog_post' key={index}>
-                        <div className='blog_post_image'><img src={item && item.image ? item.image : ''} alt='' /></div>
+                        <div className='blog_post_image'><img src={item && item.image ? item.image : ''} style={{ width: '100%' }} alt='' /></div>
                         <div className='blog_post_date d-flex flex-column align-items-center justify-content-center'>
                             <div className='date_day'>{new Date(item.createdDate).getDate()}</div>
                             <div className='date_month'>Tháng {new Date(item.createdDate).getMonth() + 1}</div>

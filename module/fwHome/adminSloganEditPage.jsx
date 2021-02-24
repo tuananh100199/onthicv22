@@ -128,7 +128,7 @@ class SloganEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/component', () => {
+        T.ready('/user/settings', () => {
             const route = T.routeMatcher('/user/slogan/edit/:sloganId'),
                 params = route.parse(window.location.pathname);
 
