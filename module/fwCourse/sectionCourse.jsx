@@ -10,7 +10,7 @@ class SectionCourse extends React.Component {
         }
     }
     componentDidMount() {
-        this.props.getCourseFeed();
+        this.props.getCourseFeed(() => T.ftcoAnimate());
     }
 
     render() {
@@ -19,17 +19,16 @@ class SectionCourse extends React.Component {
         if (courseFeed && courseFeed.length) {
             course = courseFeed.map((item, index) => {
                 let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
-
                 const link = item.link ? '/khoa-hoc/' + item.link : '/course/item/' + item._id;
                 return (
-                    <div className='col-lg-4 team_col' key={index}>
+                    <div className='col-lg-4 col-md-6 col-12 team_col ftco-animate' key={index}>
                         <div className='team_item text-center d-flex flex-column aling-items-center justify-content-end'>
                             <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
                             <div className='team_content text-center'>
-                                <div className='team_name'><a href={link}>{title}</a></div>
-                                {/* <div className='team_title'>Plastic Surgeon</div> */}
+                                <div className='team_name'><Link to={link}>{title}</Link></div>
+                                {/*<div className='team_title'>Plastic Surgeon</div>*/}
                                 <div className='team_text'>
-                                    <p style={{ height: '60px', overflow: 'hidden' }}>{abstract}</p>
+                                    <p>{abstract}</p>
                                 </div>
                             </div>
                         </div>
@@ -38,26 +37,20 @@ class SectionCourse extends React.Component {
             })
         }
         return (
-            <div className='mt-2'>
-                <section className='blog-area section-padding-100-0'>
-                    <div className='section-heading'>
-                        <h3 className='text-primary'>Khóa Học</h3>
+            <div className='team'>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col'>
+                            <div className='section_title_container text-center'>
+                                {/*<div className='section_subtitle'>This is Dr Pro</div>*/}
+                                <div className='section_title ftco-animate'><h2>Khóa học mới nhất</h2></div>
+                            </div>
+                        </div>
                     </div>
-                    <div className='row team_row'>{course}</div>
-
-                    {/*<div className='container'>*/}
-                    {/*    <div className='row'>*/}
-                    {/*        <div className='col-12'>*/}
-                    {/*            <div className='section-heading'>*/}
-                    {/*                <h3 className='text-primary'>Khóa Học</h3>*/}
-                    {/*            </div>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*    <div className='row'>*/}
-                    {/*        {course}*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-                </section>
+                    <div className='row team_row'>
+                        {course}
+                    </div>
+                </div>
             </div>
         )
     }
