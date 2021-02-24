@@ -19,6 +19,10 @@ class SectionContact extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+        $(this.background.current).parallax('destroy')
+    }
+
     sendMessage = (e) => {
         e.preventDefault();
         if (this.name.current.value == '') {
@@ -130,6 +134,24 @@ class SectionContact extends React.Component {
                     </div>
                 </div>
             </div >,
+            // <div class="row google_map_row">
+            //     <div class="col">
+
+            //         <div class="contact_map">
+
+
+            //             <div class="map">
+            //                 <div id="google_map" class="google_map">
+            //                     <div class="map_container">
+            //                         <div id="map"></div>
+            //                     </div>
+            //                 </div>
+            //             </div>
+
+            //         </div>
+
+            //     </div>
+            // </div>
         ];
     }
 }
