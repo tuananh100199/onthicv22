@@ -1531,6 +1531,7 @@ section
 	-o-transition: all 200ms ease;
 	transition: all 200ms ease;
 }
+
 .contact_select
 {
 	-webkit-appearance: none;
@@ -1666,7 +1667,7 @@ section
 }
 .contact_info ul li > div:first-of-type
 {
-	width: 90px;
+	/*width: 110px;*/
 	font-size: 18px;
 	font-weight: 600;
 	color: #4ca758;
@@ -1674,7 +1675,7 @@ section
 }
 .contact_info ul li > div:last-of-type
 {
-	max-width: 170px;
+	/*max-width: 200px;*/
 	font-size: 15px;
 	font-weight: 600;
 	color: #878787;

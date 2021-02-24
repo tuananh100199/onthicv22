@@ -60,10 +60,6 @@ class NewsEditPage extends React.Component {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
     
-    changeIsInternal = (event) => {
-        this.setState({ item: Object.assign({}, this.state.item, { isInternal: event.target.checked }) });
-    }
-
     checkLink = (item) => {
         this.props.checkLink(item._id, $('#neNewsLink').val().trim());
     }
@@ -84,7 +80,6 @@ class NewsEditPage extends React.Component {
                 title: $('#neNewsViTitle').val(),
                 link: $('#neNewsLink').val().trim(),
                 active: this.state.item.active,
-                isInternal: this.state.item.isInternal,
                 abstract: $('#neNewsViAbstract').val(),
                 content: this.viEditor.current.html()
             };
@@ -95,7 +90,6 @@ class NewsEditPage extends React.Component {
             editorId: this.props.system.user._id,
             documentId: this.state.item._id,
             editorName: this.props.system.user.firstname,
-            isInternal: this.state.item.isInternal,
             documentType: 'news',
             documentJson: JSON.stringify(changes),
         }
@@ -117,7 +111,7 @@ class NewsEditPage extends React.Component {
             content: '',
             image: T.url('/image/avatar.jpg'),
             createdDate: new Date(),
-            active: false, isInternal: false,
+            active: false,
             view: 0
         };
         let title = item.title, linkDefaultNews = T.rootUrl + '/news/item/' + item._id;
@@ -159,7 +153,7 @@ class NewsEditPage extends React.Component {
                                         </div>
                                     </div>
                                     <div className='col-md-6'>
-                                        {currentPermissions.includes('news:write') ? <div className='form-group' style={{ display: 'inline-flex' }}>
+                                        {currentPermissions.includes('news:write') ? <div className='form-group row' style={{ display: 'inline-flex' }}>
                                             <label className='control-label'>Kích hoạt:&nbsp;</label>
                                             <div className='toggle'>
                                                 <label>

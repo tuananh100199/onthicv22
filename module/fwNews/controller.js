@@ -166,8 +166,6 @@ module.exports = (app) => {
             active: true,
         };
 
-        if (!user) condition.isInternal = false;
-
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => {
             const respone = {};
             if (error || page == null) {
@@ -199,7 +197,6 @@ module.exports = (app) => {
             ],
             active: true,
         };
-        if (!user) condition.isInternal = false;
 
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => {
             const respone = {};

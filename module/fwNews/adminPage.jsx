@@ -23,7 +23,6 @@ class NewsPage extends React.Component {
     changeActive = (item) => {
         this.props.updateNews(item._id, { active: !item.active });
     }
-    
     delete = (e, item) => {
         T.confirm('Tin tức', 'Bạn có chắc bạn muốn xóa tin tức này?', 'warning', true, isConfirm => isConfirm && this.props.deleteNews(item._id));
         e.preventDefault();

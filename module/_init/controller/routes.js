@@ -15,7 +15,7 @@ module.exports = (app) => {
         },
     };
 
-    app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, { name: 'system:settings', menu: menuSettings }, { name: 'statistic' }, );
+    app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, { name: 'system:settings', menu: menuSettings }, { name: 'statistic' },);
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
@@ -30,6 +30,8 @@ module.exports = (app) => {
             logo: '/img/favicon.jpg',
             map: '/img/map.png',
             footer: '/img/footer.jpg',
+            contact: '/img/contact.jpg',
+            subscribe: '/img/subcribe.jpg',
             facebook: 'https://www.facebook.com/bachkhoa.oisp',
             youtube: '',
             twitter: '',
@@ -314,6 +316,34 @@ module.exports = (app) => {
                         app.model.setting.set({ footer: destPath }, (error) => {
                             if (error == null) app.state.data.footer = destPath;
                             done({ image: app.state.data.footer, error });
+                        });
+                    } else {
+                        done({ error });
+                    }
+                });
+            } else if (fields.userData == 'contact' && files.SettingImage && files.SettingImage.length > 0) {
+                app.deleteImage(app.state.data.contact);
+                let destPath = '/img/contact' + app.path.extname(srcPath);
+                app.fs.rename(srcPath, app.path.join(app.publicPath, destPath), (error) => {
+                    if (error == null) {
+                        destPath += '?t=' + new Date().getTime().toString().slice(-8);
+                        app.model.setting.set({ contact: destPath }, (error) => {
+                            if (error == null) app.state.data.contact = destPath;
+                            done({ image: app.state.data.contact, error });
+                        });
+                    } else {
+                        done({ error });
+                    }
+                });
+            } else if (fields.userData == 'subscribe' && files.SettingImage && files.SettingImage.length > 0) {
+                app.deleteImage(app.state.data.subscribe);
+                let destPath = '/img/subscribe' + app.path.extname(srcPath);
+                app.fs.rename(srcPath, app.path.join(app.publicPath, destPath), (error) => {
+                    if (error == null) {
+                        destPath += '?t=' + new Date().getTime().toString().slice(-8);
+                        app.model.setting.set({ subscribe: destPath }, (error) => {
+                            if (error == null) app.state.data.subscribe = destPath;
+                            done({ image: app.state.data.subscribe, error });
                         });
                     } else {
                         done({ error });

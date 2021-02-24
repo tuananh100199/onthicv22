@@ -6,7 +6,6 @@ module.exports = app => {
         image: String,
         link: String,
         active: { type: Boolean, default: false },
-        isInternal: { type: Boolean, default: false },
         abstract: String,
         content: String,
         createdDate: { type: Date, default: Date.now },

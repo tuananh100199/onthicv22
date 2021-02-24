@@ -64,9 +64,7 @@ class DraftNewsEditPage extends React.Component {
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
-    changeisInternal = (event) => {
-        this.setState({ item: Object.assign({}, this.state.item, { isInternal: event.target.checked }) });
-    }
+
     checkLink = (item) => {
         this.props.checkLink(item._id, $('#neNewsLink').val().trim());
     }
@@ -94,7 +92,6 @@ class DraftNewsEditPage extends React.Component {
             editorId: this.props.system.user._id,
             editorName: this.props.system.user.firstname,
             documentType: 'news',
-            isInternal: this.state.item.isInternal,
             documentJson: JSON.stringify(changes),
         }
         if (this.props.system.user.permissions.includes('news:write')) {
@@ -108,7 +105,7 @@ class DraftNewsEditPage extends React.Component {
         const readOnly = false;
         const item = this.state.item ? this.state.item : {
             priority: 1, categories: [], title: '', content: '', image: T.url('/image/avatar.jpg'),
-            createdDate: new Date(), active: false, isInternal: false, view: 0
+            createdDate: new Date(), active: false, view: 0
         };
         let title = T.language.parse(item.title, true),
             linkDefaultNews = T.rootUrl + '/news/item/' + item._id;
@@ -158,17 +155,6 @@ class DraftNewsEditPage extends React.Component {
                                         <div className='form-group'>
                                             <label className='control-label'>Hình ảnh</label>
                                             <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='NewsDraftImage' image={this.state.image} readOnly={readOnly} />
-                                        </div>
-                                    </div>
-                                    <div className='col-md-6'>
-                                        <div className='form-group' >
-                                            <label className='control-label'>Tin nội bộ:&nbsp;</label>
-                                            <span className='toggle'>
-                                                <label>
-                                                    <input type='checkbox' checked={item.isInternal} onChange={this.changeisInternal} disabled={readOnly} />
-                                                    <span className='button-indecator' />
-                                                </label>
-                                            </span>
                                         </div>
                                     </div>
 
