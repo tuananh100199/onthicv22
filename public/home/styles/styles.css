@@ -675,6 +675,9 @@ section
 }
 .home_content
 {
+	background: white;
+  padding: 10px;
+  opacity: 0.8;
 	max-width: 550px;
 }
 .home_subtitle
