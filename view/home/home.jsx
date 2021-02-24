@@ -1,4 +1,3 @@
-import './scss/style.scss';
 import './home.scss';
 import T from '../js/common';
 import React from 'react';
@@ -54,20 +53,6 @@ class App extends React.Component {
     state = { routes: [], isMatch: true };
 
     componentDidMount() {
-        AOS.init({
-            duration: 800,
-            easing: 'slide'
-        });
-    
-        $(window).stellar({
-            responsive: true,
-            parallaxBackgrounds: true,
-            parallaxElements: true,
-            horizontalScrolling: false,
-            hideDistantElements: false,
-            scrollProperty: 'scroll'
-        });
-        
         const done = () => {
             if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
                 const handlePaddingFooter = () => {

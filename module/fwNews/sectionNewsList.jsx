@@ -35,6 +35,7 @@ class SectionNewsList extends React.Component {
         e.preventDefault()
         this.setState({ viewMode: viewMode })
         T.cookie('viewMode', viewMode)
+        console.log(this.state.viewMode)
     }
 
     render() {
@@ -43,17 +44,17 @@ class SectionNewsList extends React.Component {
             elements_grid = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-md-6 col-lg-4 col-xl-3 mb-2 mt-2 ftco-animate' key={index}>
-                        <div class="block-2">
-                            <div class="front" style={{ background: 'url(' + item.image + ') no-repeat center center' }} >
-                                <div class="box">
-                                    <Link to={link} className='text-primary'>{item.title}</Link>
-                                    <div className='meta d-flex align-items-center'>
-                                        <a href='#'>{new Date(item.createdDate).getText()}</a>
-                                    </div>
-                                    <p className='mb-0 grid-abstract'>{item.abstract}</p>
-                                    <Link to={link} className='free'>Xem thêm</Link>
+                    <div className="col-lg-6 col-12 ftco-animate" key={index}>
+                        <div className="blog-entry align-self-stretch d-flex">
+                            <a href={link} className="block-20 order-md-last" style={{ background: 'url(' + item.image + ') no-repeat center center' }} >
+                            </a>
+                            <div className="text p-4 d-block">
+                                <div className="meta mb-3">
+                                    <div><a href="#">{new Date(item.createdDate).getText()}</a></div>
+                                    <div><a href="#">Admin</a></div>
                                 </div>
+                                <h3 className="heading mt-3"><a href={link}>{item.title}</a></h3>
+                                <p>{item.abstract}</p>
                             </div>
                         </div>
                     </div>
@@ -110,13 +111,13 @@ class SectionNewsList extends React.Component {
                             className={'btn btn-sm ' + (this.state.viewMode == 'list' ? ' btn-primary' : 'btn-secondary')}
                             onClick={(e) =>
                                 this.setViewMode(e, 'list')
-                            }><i className='fa fa-bars' aria-hidden='true' />
+                            }><i className='fa fa-bars' aria-hidden='true' />LIST
                         </button>
                         <button
                             className={'btn btn-sm ' + (this.state.viewMode == 'grid' ? 'btn-primary' : 'btn-secondary')}
                             onClick={
                                 (e) => this.setViewMode(e, 'grid')
-                            }><i className='fa fa-th' aria-hidden='true' />
+                            }><i className='fa fa-th' aria-hidden='true' />GRID
                         </button>
                     </div>
                 </div>

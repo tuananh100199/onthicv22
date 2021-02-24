@@ -5,31 +5,25 @@ module.exports = app => {
             3010: { title: 'Email', link: '/user/don-de-nghi-hoc/email', icon: 'fa-envelope-o', backgroundColor: '#ffcc80', groupIndex: 0 },
         }
     };
-    
+
     const menu = {
         parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
         menus: {
             3020: { title: 'Danh sách', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 }
         }
     };
-    
+
     const menuDonDeNghiHoc = {
         parentMenu: app.parentMenu.user,
         menus: {
             1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
         }
     }
-    app.permission.add(
-        { name: 'applicationForm:read', menu },
-        { name: 'applicationForm:write', menu },
-        { name: 'applicationForm:email', menu: emailMenu },
-        { name: 'user:login', menu: menuDonDeNghiHoc }
-    );
-    
+    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu }, { name: 'user:login', menu: menuDonDeNghiHoc });
+
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
-    
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc', app.permission.check(), app.templates.admin);
 
@@ -53,7 +47,7 @@ module.exports = app => {
         },
     });
     //APIs -------------------------------------------------------------------------------------------------------------
-    const emailParams = [ 'rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml' ];
+    const emailParams = ['rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml'];
     app.get('/api/application-form/email/all', app.permission.check('applicationForm:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
 
     app.put('/api/application-form/email', app.permission.check('applicationForm:email'), (req, res) => {
@@ -62,14 +56,14 @@ module.exports = app => {
             text = emailType + 'Text',
             html = emailType + 'Html',
             changes = {};
-    
+
         if (emailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
         if (emailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
         if (emailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
-    
+
         app.model.setting.set(changes, error => res.send({ error }));
     });
-    
+
     // Admin -----------------------------------------------------------------------------------------------------------
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -83,7 +77,7 @@ module.exports = app => {
                 { lastname: value },
             ];
         }
-        
+
         if (condition.searchText == '') {
             app.model.applicationForm.getPage(pageNumber, pageSize, {}, (error, page) => {
                 if (error || page == null) {
@@ -119,7 +113,7 @@ module.exports = app => {
             res.send({ error, item })
         })
     });
-    
+
     app.post('/api/application-form/reject', app.permission.check('applicationForm:write'), (req, res) => {
         const { _id, reason } = req.body;
         app.model.applicationForm.get(_id, (error, item) => {
@@ -150,7 +144,7 @@ module.exports = app => {
 
     app.put('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => {
         const $set = req.body.changes;
-        app.model.applicationForm.update(req.body._id, $set,(error, item) => res.send({ error, item }));
+        app.model.applicationForm.update(req.body._id, $set, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));
@@ -187,7 +181,7 @@ module.exports = app => {
             }
         })
     });
-    
+
     // Export Don de nghi hoc
     app.get('/api/user-application-form/export/:_id', app.permission.check('user:login'), (req, res) => {
         app.model.applicationForm.get(req.params._id, (error, formItem) => {
@@ -200,23 +194,23 @@ module.exports = app => {
                     user.sex = 'Nữ';
                 }
                 const data = {
-                    firstname: user.firstname,
-                    lastname: user.lastname,
-                    sex: user.sex,
-                    birthday: app.date.viDateFormat(user.birthday),
-                    phoneNumber: user.phoneNumber,
-                    regularResidence: user.regularResidence,
-                    residence: user.residence,
-                    identityCard: user.identityCard,
-                    identityDate: app.date.viDateFormat(user.identityDate),
-                    identityIssuedBy: user.identityIssuedBy,
-                    nationality: getName(user.nationality),
-                    licenseNumber: licenseNumber,
-                    licenseDated: app.date.viDateFormat(licenseDated),
-                    licenseIssuedBy: licenseIssuedBy,
-                    otherDocumentation: otherDocumentation,
-                    licenseClass: licenseClass,
-                    newLicenseClass: newLicenseClass,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                    sex: user.sex || '',
+                    birthday: user.birthday != null ? app.date.viDateFormat(user.birthday) : '',
+                    phoneNumber: user.phoneNumber || '',
+                    regularResidence: user.regularResidence || '',
+                    residence: user.residence || '',
+                    identityCard: user.identityCard || '',
+                    identityDate: user.identityDate != null ? app.date.viDateFormat(user.identityDate) : '',
+                    identityIssuedBy: user.identityIssuedBy || '',
+                    nationality: getName(user.nationality) || '',
+                    licenseNumber: licenseNumber || '',
+                    licenseDated: licenseDated != null ? app.date.viDateFormat(licenseDated) : '',
+                    licenseIssuedBy: licenseIssuedBy || '',
+                    otherDocumentation: otherDocumentation || '',
+                    licenseClass: licenseClass || '',
+                    newLicenseClass: newLicenseClass || '',
                     i: integration,
                 }
                 app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
@@ -227,23 +221,23 @@ module.exports = app => {
             }
         });
     });
-    
+
     // Export bien nhan lan dau
     app.get('/api/user-application-form-receipt/export/:_id', app.permission.check('user:login'), (req, res) => {
         app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {
                 let { user, newLicenseClass } = formItem;
                 const data = {
-                    firstname: user.firstname,
-                    lastname: user.lastname,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
                     male: user.sex == 'male',
                     female: user.sex == 'female',
-                    yearOfBirth: user.birthday.getFullYear(),
-                    phoneNumber: user.phoneNumber,
-                    regularResidence: user.regularResidence,
-                    newLicenseClass: newLicenseClass,
+                    yearOfBirth: user.birthday != null ? user.birthday.getFullYear() : '',
+                    phoneNumber: user.phoneNumber || '',
+                    regularResidence: user.regularResidence || '',
+                    newLicenseClass: newLicenseClass || '',
                 }
-    
+
                 app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
                     res.send({ error: null, buf: buf });
                 });
@@ -252,28 +246,28 @@ module.exports = app => {
             }
         });
     });
-    
+
     //Ban Cam Ket
     app.get('/api/user-application-form-commitment/export/:_id', app.permission.check('user:login'), (req, res) => {
         app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {
                 let { user, licenseNumber, licenseDated, licenseIssuedBy, otherDocumentation, licenseClass, } = formItem;
                 user.sex = user.sex === 'male' ? 'Nam' : 'Nữ';
-                
+
                 const data = {
-                    firstname: user.firstname,
-                    lastname: user.lastname,
-                    sex: user.sex,
-                    birthday: app.date.viDateFormat(user.birthday),
-                    residence: user.residence,
-                    identityCard: user.identityCard,
-                    identityDate: app.date.viDateFormat(user.identityDate),
-                    identityIssuedBy: user.identityIssuedBy,
-                    licenseNumber: licenseNumber,
-                    licenseDated: app.date.viDateFormat(licenseDated),
-                    licenseIssuedBy: licenseIssuedBy,
-                    otherDocumentation: otherDocumentation,
-                    licenseClass: licenseClass,
+                    firstname: user.firstname || '',
+                    lastname: user.lastname || '',
+                    sex: user.sex || '',
+                    birthday: user.birthday != null ? app.date.viDateFormat(user.birthday) : '',
+                    residence: user.residence || '',
+                    identityCard: user.identityCard || '',
+                    identityDate: user.identityDate != null ? app.date.viDateFormat(user.identityDate) : '',
+                    identityIssuedBy: user.identityIssuedBy || '',
+                    licenseNumber: licenseNumber || '',
+                    licenseDated: licenseDated != null ? app.date.viDateFormat(licenseDated) : '',
+                    licenseIssuedBy: licenseIssuedBy || '',
+                    otherDocumentation: otherDocumentation || '',
+                    licenseClass: licenseClass || '',
                 }
                 app.docx.generateFile(`/document/Ban_Cam_Ket.docx`, data, (error, buf) => {
                     res.send({ error: null, buf: buf });

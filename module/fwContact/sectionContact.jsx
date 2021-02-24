@@ -65,101 +65,80 @@ class SectionContact extends React.Component {
         }
 
         return [
-            <div key={0} className='justify-content-center pb-3'>
-                <div className='col-md-12 heading-sections text-center'>
-                    <h2 className='mb-4'>Liên hệ</h2>
-                </div>
-            </div>,
-            <a key={1} href={mapUrl} target='_blank'>
-                <div key={0} className='map-area' style={{ height: '300px', background: 'url(' + map + ') no-repeat center center' }} />
-            </a>,
-            <section key={2} className='contact-area mt-30'>
+            <div className='contact'>
                 <div className='container'>
-                    <div className='row d-flex mb-5 contact-info'>
-
-                        <div className="col-md-12 mb-4">
-                            <h2 className="h4">Thông tin liên lạc</h2>
-                        </div>
-                        <div className="w-100"></div>
-                        {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                            this.props.address.list.map((item, index) => (
-                                [
-                                    <div className="col-md-3" >
-                                        <p><strong>{item.title}</strong>:&nbsp;{item.address}</p>
-                                    </div>,
-                                    <div className="col-md-3" >
-                                        <p><span>Điện thoại:</span> <a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></p>
-                                    </div>,
-                                    <div className="col-md-3" >
-                                        <p><span>Di động:</span> <a href={'tel:' + item.mobile}>{item.mobile}</a></p>
-                                    </div>,
-                                    <div className="col-md-3">
-                                        <p><span>Email:</span> <a href={'mailto:' + item.email}>{item.email}</a></p>
+                    <div className='row'>
+                        <div class="col-lg-6">
+                            <div class="contact_form_container">
+                                <div class="contact_form_title">Make an Appointment</div>
+                                <form action="#" class="contact_form" id="contact_form">
+                                    <div class="d-flex flex-row align-items-start justify-content-between flex-wrap">
+                                        <input type="text" class="contact_input" placeholder="Your Name" required="required" />
+                                        <input type="email" class="contact_input" placeholder="Your E-mail" required="required" />
+                                        <input type="tel" class="contact_input" placeholder="Your Phone" required="required" />
+                                        <select class="contact_select contact_input" required>
+                                            <option disabled="" selected="">Speciality</option>
+                                            <option>Speciality 1</option>
+                                            <option>Speciality 2</option>
+                                            <option>Speciality 3</option>
+                                            <option>Speciality 4</option>
+                                            <option>Speciality 5</option>
+                                        </select>
+                                        <select class="contact_select contact_input" required="required" >
+                                            <option disabled="" selected="">Doctor</option>
+                                            <option>Doctor 1</option>
+                                            <option>Doctor 2</option>
+                                            <option>Doctor 3</option>
+                                            <option>Doctor 4</option>
+                                            <option>Doctor 5</option>
+                                        </select>
+                                        <input type="text" id="datepicker" class="contact_input datepicker" placeholder="Date" required="required" />
                                     </div>
-                                ]
-                            )) : <p>Chưa cập nhật địa chỉ</p>}
-
-
-                        <div className='col-12 col-lg-6 mb-30'>
-                            <div className='contact-form'>
-                                <h4>Liên lạc</h4>
-                                <form onSubmit={this.sendMessage} className='row'>
-                                    <div className='col-12'>
-                                        <input type='text' className='form-control' ref={this.name} placeholder='Tên' />
-                                    </div>
-                                    <div className='col-12'>
-                                        <input type='email' className='form-control' ref={this.email} placeholder='Email' />
-                                    </div>
-                                    <div className='col-12'>
-                                        <input type='text' className='form-control' ref={this.subject} placeholder='Chủ đề' />
-                                    </div>
-
-                                    <div className='col-12'>
-                                        <textarea name='message' className='form-control' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
-                                    </div>
-                                    <div className='col-12'>
-                                        <button className='btn clever-btn btn-primary w-100'>Gửi tin nhắn</button>
-                                    </div>
+                                    <button class="button button_1 contact_button trans_200">make an appointment</button>
                                 </form>
                             </div>
                         </div>
-                        <div className='col-12 col-lg-6 mb-30'>
-                            {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                                <div id='carouselFooter' className='carousel ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
-                                    <div className='carousel-inner'>
-                                        {
-                                            this.props.address.list.map((item, index) => (
-                                                <div className={'carousel-item' + (index == 0 ? ' active' : '')}
-                                                    key={index}
-                                                    style={{
-                                                        height: '400px',
-                                                        backgroundImage: `url('${T.url(item.image)}')`,
-                                                        backgroundRepeat: 'no-repeat',
-                                                        backgroundPosition: 'center center',
-                                                        border: '1px solid gray',
-                                                        backgroundSize: 'cover',
-                                                        cursor: 'pointer',
-                                                    }}
-                                                    onClick={() => window.open(item.mapURL, '_blank')}>
+                        <div class="col-lg-5 offset-lg-1 contact_col">
+                            <div class="contact_content">
+                                <div class="contact_content_title">Thông tin liên lạc</div>
+                                {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                                    this.props.address.list.map((item, index) => (
+                                        [
+                                            <div class="contact_info">
+                                                <ul>
+                                                    <li class="d-flex flex-row align-items-start justify-content-start">
+                                                        <div>Address</div>
+                                                        <div>1481 Creekside Lane Avila Beach, CA 931</div>
+                                                    </li>
+                                                    <li class="d-flex flex-row align-items-start justify-content-start">
+                                                        <div>Phone</div>
+                                                        <div>+53 345 7953 32453</div>
+                                                    </li>
+                                                    <li class="d-flex flex-row align-items-start justify-content-start">
+                                                        <div>E-mail</div>
+                                                        <div>yourmail@gmail.com</div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        ]
+                                    )) : <p>Chưa cập nhật địa chỉ</p>}
 
-                                                    <span className='text-primary' style={{ position: 'fixed', bottom: '10px', fontWeight: 'bold', width: '100%', textAlign: 'center' }}>{item.title}</span>
-                                                </div>))}
-                                    </div>
-                                    <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
-                                        <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
-                                        <span className='sr-only'>Previous</span>
-                                    </a>
-                                    <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
-                                        <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
-                                        <span className='sr-only'>Next</span>
-                                    </a>
-                                </div> : <p>Chưa cập nhật địa chỉ</p>
-                            }
-
+                                <div class="contact_social">
+                                    <ul class="d-flex flex-row align-items-center justify-content-start">
+                                        <li><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-dribbble" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section >
+            </div >,
+
         ];
     }
 }

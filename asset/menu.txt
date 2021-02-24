@@ -21,6 +21,3 @@
 7000. Quản lý khóa học (undefined)
 	6001 - Danh mục (/user/course/category)
 	6002 - Khóa học (/user/course/list)
-8000. Quản lý tài liệu (undefined)
-	8001 - Danh mục (/user/document/category)
-	8002 - Danh sách (/user/document/list)
