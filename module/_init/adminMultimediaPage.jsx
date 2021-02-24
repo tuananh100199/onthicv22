@@ -9,13 +9,13 @@ class AddressListSection extends React.Component {
     componentDidMount() {
         this.setState({ items: this.props.items || [] });
     }
-    
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.items && this.props.items && prevProps.items.length != this.props.items.length) {
             this.setState({ items: this.props.items || [] });
         }
     }
-    
+
     textChanged = (index, value, type) => {
         const items = this.state.items;
         items[index][type] = value;
@@ -152,15 +152,15 @@ class MultimediaPage extends React.Component {
     }
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', addressList: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
 
         try {
             addressList = JSON.parse(addressList);
         } catch (e) {
             addressList = []
         }
-        
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -244,10 +244,20 @@ class MultimediaPage extends React.Component {
                                         <label className='control-label'>Logo</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
                                     </div>
-                                    
+
                                     <div className='form-group'>
                                         <label className='control-label'>Background footer</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
+                                    </div>
+
+                                    <div className='form-group'>
+                                        <label className='control-label'>Contact</label>
+                                        <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='contact' image={contact} />
+                                    </div>
+
+                                    <div className='form-group'>
+                                        <label className='control-label'>Subscibe</label>
+                                        <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='subscribe' image={subscribe} />
                                     </div>
                                 </div>
                             </div>
