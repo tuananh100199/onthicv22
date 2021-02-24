@@ -548,3 +548,14 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
         }
     }
 }
+
+.ftco-animate {
+    opacity: 0;
+    visibility: hidden; }
+
+.ftco-animated {
+    -webkit-animation-duration: .5s;
+    animation-duration: .5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}

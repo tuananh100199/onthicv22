@@ -35,6 +35,8 @@ html(lang='en')
         script(src='/home/plugins/jquery-datepicker/jquery-ui.js')
         script(src='/js/plugins/bootstrap-notify.min.js')
         script(src='/home/js/classyNav.min.js')
+        script(src='/home/js/jquery.easing.1.3.js')
+        script(src='/home/js/jquery.waypoints.min.js')
         each item in htmlWebpackPlugin.files.js
             if item.search(/\/js\/home-?.*.js/) == 0
                 script(type='text/javascript' src=item)

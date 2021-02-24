@@ -16,6 +16,7 @@ class SectionContent extends React.Component {
                 this.props.getContentListByUser(this.props.listContentId, data => {
                     if (data.item) {
                         this.setState({ item: data.item }, () => {
+                            T.ftcoAnimate()
                             $(this.background.current).parallax();
                         });
                     } else {
@@ -39,7 +40,7 @@ class SectionContent extends React.Component {
             itemList = items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
-                    <div key={index} className='row ml-0'>
+                    <div key={index} className='row ml-0 ftco-animate'>
                         <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <Link to={link}>
                                 <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
@@ -68,7 +69,7 @@ class SectionContent extends React.Component {
                     <div className='container'>
                         <div className='row'>
                             <div className='col'>
-                                <div className='home_content'>
+                                <div className='home_content ftco-animate'>
                                     <div className='home_title' style={{ whiteSpace: 'nowrap' }}>{item.title}</div>
                                     <div className='home_text'>{item.abstract}</div>
                                 </div>
