@@ -64,7 +64,7 @@ class HomeMenu extends React.Component {
                 setHeader();
             });
             
-            // done()
+            done()
         });
     }
     
@@ -127,44 +127,27 @@ class HomeMenu extends React.Component {
         instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
         return [
             <header key={0} className='header trans_400'>
-                {/*<div className='clever-main-menu' style={{ width: '100%' }}>*/}
-                {/*    <div className='classy-nav-container breakpoint-off'>*/}
-                {/*        <nav className='classy-navbar justify-content-between' ref={this.nav} id='cleverNav'>*/}
-                {/*            <Link className='navbar-brand d-sm-flex' to='/'>*/}
-                {/*                {logo ? <img src={logo} style={{ height: '36px', width: 'auto' }} alt='logo' /> : ''}&nbsp;*/}
-                {/*                <h4>Trung tâm đào tạo lái xe Hiệp Phát</h4>*/}
-                {/*            </Link>*/}
-                
-                {/*            <div className='classy-navbar-toggler'>*/}
-                {/*                <span className='navbarToggler'><span /><span /><span /></span>*/}
-                {/*            </div>*/}
-                
-                {/*            <div className='classy-menu'>*/}
-                {/*                <div className='classycloseIcon'>*/}
-                {/*                    <div className='cross-wrap'><span className='top' /><span className='bottom' /></div>*/}
-                {/*                </div>*/}
-                {/*                <div className='classynav'>*/}
-                {/*                    <ul style={{ marginBottom: 0 }}>{menus}</ul>*/}
-                {/*                    {user && user._id ? <div className='btn-group'>*/}
-                {/*                        <a href='/user' className='btn btn-primary' style={{ textTransform: 'capitalize', fontWeight: 'normal' }}>User</a>*/}
-                {/*                        <a href='#' className='btn btn-danger text-white' onClick={this.logout}><i className='icon icon-power-off' /></a>*/}
-                {/*                    </div> : <a href='#' className='btn btn-primary' onClick={this.props.showLoginModal}><i className='icon icon-user' /></a>}*/}
-                {/*                </div>*/}
-                {/*            </div>*/}
-                {/*        </nav>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-                <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400'>
+                <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
                     <div className='logo'>
                         <Link to='/'>
                             <img src={logo} alt={logo} width='40' height='40'/>
                             <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
                         </Link>
                     </div>
-                    <nav className='main_nav'>
-                        <ul className='d-flex flex-row align-items-center justify-content-start'>
-                            {menus}
-                        </ul>
+                    <nav className='classy-navbar justify-content-between' ref={this.nav}>
+                        {/*<div className='classy-navbar-toggler'>*/}
+                        {/*    <span className='navbarToggler'><span /><span /><span /></span>*/}
+                        {/*</div>*/}
+                        <div className='classy-menu'>
+                            {/*<div className='classycloseIcon'>*/}
+                            {/*    <div className='cross-wrap'><span className='top' /><span className='bottom' /></div>*/}
+                            {/*</div>*/}
+                            <nav className='main_nav classynav'>
+                                <ul className='d-flex flex-row align-items-center justify-content-start'>
+                                    {menus}
+                                </ul>
+                            </nav>
+                        </div>
                     </nav>
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
                         <div className='social header_social'>
@@ -183,6 +166,36 @@ class HomeMenu extends React.Component {
                     </div>
                 </div>
             </header>,
+            // <header key={0} className='header trans_400'>
+            //     <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400'>
+            //         <div className='logo'>
+            //             <Link to='/'>
+            //                 <img src={logo} alt={logo} width='40' height='40'/>
+            //                 <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
+            //             </Link>
+            //         </div>
+            //         <nav className='main_nav'>
+            //             <ul className='d-flex flex-row align-items-center justify-content-start'>
+            //                 {menus}
+            //             </ul>
+            //         </nav>
+            //         <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
+            //             <div className='social header_social'>
+            //                 <ul className='d-flex flex-row align-items-center justify-content-start'>
+            //                     {user && user._id ? <div className='btn-group'>
+            //                         <div className='button button_2 mr-1'><a href='/user'>USER</a></div>
+            //                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
+            //                     </div> : <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}><i className='fa fa-user' /></a></div>}
+            //                     {twitter}
+            //                     {facebook}
+            //                     {youtube}
+            //                     {instagram}
+            //                 </ul>
+            //             </div>
+            //             <div className='hamburger'><i className='fa fa-bars' aria-hidden='true'/></div>
+            //         </div>
+            //     </div>
+            // </header>,
             <div key={1} className='menu_overlay trans_400'/>,
             <div key={2} className='menu trans_400'>
                 <div className='menu_close_container'>
