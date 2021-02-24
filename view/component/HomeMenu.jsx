@@ -108,8 +108,8 @@ class HomeMenu extends React.Component {
                                             return <li key={subIndex}>---</li>;
                                         } else {
                                             return isExternalLink ?
-                                                <li><a key={subIndex} href={link}>{T.language.parse(subMenu.title)}</a></li> :
-                                                <li className={currentLink == link ? 'active' : ''}><Link key={subIndex} to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
+                                                <li key={subIndex}><a href={link}>{T.language.parse(subMenu.title)}</a></li> :
+                                                <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
                                         }
                                     })}
                                 </ul>
@@ -132,7 +132,11 @@ class HomeMenu extends React.Component {
             <header key={0} className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
                     <div className='logo'>
-                        <Link to='/' onClick={() => this.onMenuClick('/')}>
+                        <Link to='/' onClick={() => {
+                            this.setState({ link: '/' }, () => {
+                                $(this.nav.current).classyNav();
+                            })
+                        }}>
                             <img src={logo} alt={logo} width='40' height='40'/>
                             <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
                         </Link>

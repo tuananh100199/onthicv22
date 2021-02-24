@@ -25,14 +25,14 @@ module.exports = app => {
     app.get('/list-content/item/:contentListId', (req, res) => app.model.contentList.get(req.params.contentListId, (error, item) => res.send({ error, item })));
     
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
-    app.createFolder(app.path.join(app.publicPath, '/img/list-content'));
-
-    // const uploadContentList = (req, fields, files, params, done) => {
-    //     if (fields.userData && fields.userData[0].startsWith('list-content:') && files.StatisticImage && files.StatisticImage.length > 0) {
-    //         console.log('Hook: uploadcontentList => list-content image upload');
-    //         app.uploadComponentImage(req, 'list-content', app.model.contentList.get, fields.userData[0].substring(10), files.StatisticImage[0].path, done);
-    //     }
-    // };
-    // app.uploadHooks.add('uploadcontentList', (req, fields, files, params, done) =>
-    //     app.permission.has(req, () => uploadContentList(req, fields, files, params, done), done, 'component:write'));
+    app.createFolder(app.path.join(app.publicPath, '/img/contentList'));
+    const uploadContentList = (req, fields, files, params, done) => {
+        if (fields.userData && fields.userData[0].startsWith('contentList:') && files.ContentListImage && files.ContentListImage.length > 0) {
+            console.log('Hook: uploadContentList image => content list image upload');
+            app.uploadComponentImage(req, 'contentList', app.model.contentList.get, fields.userData[0].substring(12), files.ContentListImage[0].path, done);
+        }
+    };
+    
+    app.uploadHooks.add('uploadContentList', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadContentList(req, fields, files, params, done), done, 'component:write'));
 };

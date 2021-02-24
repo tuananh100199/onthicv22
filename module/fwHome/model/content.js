@@ -1,6 +1,8 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
+        abstract: String,
+        image: String,
         content: String,
         active: { type: Boolean, default: false }
     });
@@ -21,6 +23,7 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid id!');
             } else {
+                app.deleteImage(item.image);
                 item.remove(error => {
                     if (error) {
                         done(error);
