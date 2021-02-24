@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { homeGetCarousel } from './redux/reduxCarousel.jsx';
 
-const inComing = ['bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'fadeIn', 'fadeInDownBig', 'fadeInLeft', 'fadeInUp', 'fadeInUpBig', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRightIn', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig'];
-// const inComing = ['slideInRight'];
-const outGoing = ['bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight', 'bounceOutUp', 'fadeOut', 'fadeOutDown', 'fadeOutDownBig', 'fadeOutLeft', 'fadeOutLeftBig', 'fadeOutRight', 'fadeOutRightBig', 'fadeOutUp', 'fadeOutUpBig', 'rotateOutDownLeft', 'rotateOutDownRight', 'rotateOutUpLeft', 'rotateOutUpRight', 'flipOutY', 'rotateOut', 'slideOutDown'];
-// const outGoing = ['slideOutLeft'];
+// const inComing = ['bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'fadeIn', 'fadeInDownBig', 'fadeInLeft', 'fadeInUp', 'fadeInUpBig', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRightIn', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig'];
+const inComing = ['slideInRight'];
+// const outGoing = ['bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight', 'bounceOutUp', 'fadeOut', 'fadeOutDown', 'fadeOutDownBig', 'fadeOutLeft', 'fadeOutLeftBig', 'fadeOutRight', 'fadeOutRightBig', 'fadeOutUp', 'fadeOutUpBig', 'rotateOutDownLeft', 'rotateOutDownRight', 'rotateOutUpLeft', 'rotateOutUpRight', 'flipOutY', 'rotateOut', 'slideOutDown'];
+const outGoing = ['slideOutLeft'];
 
 class SectionCarousel extends React.Component {
     state = {};
@@ -43,11 +43,11 @@ class SectionCarousel extends React.Component {
                             loop: true,
                             margin: 0,
                             center: true,
-                            nav: true,
-                            navText: ["<i class='carousel-control-prev-icon'></i>", "<i class='carousel-control-next-icon'></i>"],
-                            navContainer: '.nav-container',
-                            navSpeed: 1500,
-                            dots: false,
+                            // nav: true,
+                            // navText: ["<i class='carousel-control-prev-icon'></i>", "<i class='carousel-control-next-icon'></i>"],
+                            // navContainer: '.nav-container',
+                            // navSpeed: 1500,
+                            dots: true,
                             autoplay: false,
                             autoplayTimeout: 4000,
                             autoplaySpeed: 1500,

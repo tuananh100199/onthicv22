@@ -35,7 +35,9 @@ class CarouselItemModal extends React.Component {
             carouselId = $(e.target).data('carouselId'),
             changes = {
                 title: $('#carouselName').val().trim(),
-                link: $('#carouselLink').val().trim()
+                link: $('#carouselLink').val().trim(),
+                subtitle: $('#carouselSubTitle').val().trim(),
+                description: $('#carouselDescription').val().trim()
             };
         
         if (changes.title == '') {
@@ -68,8 +70,17 @@ class CarouselItemModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='carouselName'>Tiêu đề</label>
+                                <label htmlFor='carouselName'>Tiêu đề chính</label>
                                 <input className='form-control' id='carouselName' type='text' placeholder='Tiêu đề' />
+                            </div>
+                            <div className='form-group'>
+                                <label htmlFor='carouselName'>Tiêu đề phụ</label>
+                                <input className='form-control' id='carouselSubTitle' type='text' placeholder='Tiêu đề' />
+                            </div>
+                            <div className='form-group'>
+                                <label htmlFor='carouselName'>Mô tả</label>
+                                <textarea defaultValue='' className='form-control' id='carouselDescription' placeholder='Mô tả' 
+                                          style={{ minHeight: '100px', marginBottom: '12px' }} />
                             </div>
                             <div className='form-group'>
                                 <label htmlFor='carouselLink'>Link liên kết</label>
