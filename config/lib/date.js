@@ -21,7 +21,7 @@ module.exports = app => {
         },
         
         viDateFormat: (date) => {
-            return get2(date.getDate()) + '/' + get2(date.getMonth() + 1) + '/' + date.getFullYear();
+            return date ? (get2(date.getDate()) + '/' + get2(date.getMonth() + 1) + '/' + date.getFullYear()) : '';
         },
         
         // viDateTimeFormat: (date) => {

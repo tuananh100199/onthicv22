@@ -36,12 +36,12 @@ class ProfilePage extends React.Component {
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
-                $('#birthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
+                $('#birthday').datepicker('update', birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
                 $('#phoneNumber').val(phoneNumber);
                 $('#regularResidence').val(regularResidence);
                 $('#residence').val(residence);
                 $('#identityCard').val(identityCard);
-                $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
+                $('#identityDate').datepicker('update', identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.sex.current.setText(sex ? sex : '');
                 this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
@@ -120,44 +120,46 @@ class ProfilePage extends React.Component {
                             <h3 className='tile-title'>Thông tin cá nhân</h3>
                             <div className='tile-body'>
                                 <div className='row'>
-                                    <div className='form-group col-md-6'>
+                                    <div className='form-group col-sm-12 col-md-8 col-lg-6'>
                                         <label className='control-label' htmlFor='userLastname'>Họ và tên lót</label>
                                         <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
                                     </div>
-                                    <div className='form-group col-md-3'>
+                                    <div className='form-group col-sm-12 col-md-4 col-lg-3'>
                                         <label className='control-label' htmlFor='userFirstname'>Tên</label>
                                         <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                                     </div>
-                                    <div className='form-group col-md-3'>
+                                    <div className='form-group col-md-12 col-lg-3'>
                                         <label className='control-label'>Quốc tịch</label>
                                         <select className='form-control select2-input' ref={this.quocGia}/>
                                     </div>
                                 </div>
                                 
-                                <div className='row' id='infoSection'>
-                                    <div className='form-group col-md-3'>
+                                <div className='row'>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
                                         <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
-                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#infoSection'/>
+                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection'/>
                                     </div>
-                                    <div className='form-group col-md-3'>
-                                                <div className='form-group' style={{ width: '100%' }}>
-                                                    <label className='control-label' style={{marginLeft: '-10px'}}>Giới tính: </label>
-                                                    <Dropdown  ref={this.sex} text='' items={T.sexes} />
-                                                </div>
-                                            </div>
-                                    <div className='form-group col-md-6'>
+                                    
+                                    <div className='form-group col-sm-6 col-xl-3'>
+                                        <label className='control-label'>Giới tính </label>
+                                        <Dropdown  ref={this.sex} style={{ marginLeft: '10px' }} text='' items={T.sexes} />
+                                    </div>
+                                    
+                                    <div className='form-group col-md-6 col-xl-3'>
                                         <label className='control-label'>Số điện thoại</label>
                                         <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber'/>
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-md-8">
+                                
+                                <div className='row'>
+                                    <div className='col-md-12 col-lg-6 col-xl-8'>
                                         <div className='form-group'>
-                                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú:</label>
+                                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú</label>
                                             <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='5'/>
                                         </div>
                                     </div>
-                                    <div className="col-md-4">
+                                    
+                                    <div className='col-md-12 col-lg-6 col-xl-4'>
                                         <div className='form-group'>
                                             <label className='control-label'>Hình đại diện</label>
                                             < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
@@ -171,16 +173,15 @@ class ProfilePage extends React.Component {
                                 </div>
             
                                 <div className='row'>   
-                                    <div className='form-group col-md-6'>
+                                    <div className='form-group col-md-12 col-lg-12 col-xl-5'>
                                         <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu)</label>
-                                        <input className='form-control' type='text' id='identityCard'
-                                            placeholder='Nhập số CMND'/>
+                                        <input className='form-control' type='text' id='identityCard' placeholder='Nhập số CMND'/>
                                     </div>
-                                    <div className='form-group col-md-3'>
+                                    <div className='form-group col-md-12 col-lg-6 col-xl-4' id='identityDateSection'>
                                         <label className='control-label' htmlFor='identityDate'>Cấp ngày</label>
-                                        <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#infoSection'/>
+                                        <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection'/>
                                     </div>
-                                    <div className='form-group col-md-3'>
+                                    <div className='form-group col-md-12 col-lg-6 col-xl-3'>
                                         <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp</label>
                                         <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy'/>
                                     </div>
