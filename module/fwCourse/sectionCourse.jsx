@@ -18,21 +18,19 @@ class SectionCourse extends React.Component {
         let course = null;
         if (courseFeed && courseFeed.length) {
             course = courseFeed.map((item, index) => {
-                let { image, title, abstract } = item ? item : {image:'', title:'', abstract:'' };
+                let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
 
                 const link = item.link ? '/khoa-hoc/' + item.link : '/course/item/' + item._id;
                 return (
-                    <div key={index} className='col-12 col-md-6 mt-2 mb-2'>
-                        <div className='h-100 single-blog-area mb-100 wow fadeInUp' data-wow-delay={(index + 1) * 250 + 'ms'}>
-                            <Link to={link}><img src={image} alt={title} /></Link>
-                            <div className='blog-content'>
-                                <Link to={link} className='blog-headline'><h4>{title}</h4></Link>
-                                <div className='meta d-flex align-items-center'>
-                                    {/*<a href="#">Sarah Parker</a>*/}
-                                    {/*    <span><i className="fa fa-circle" aria-hidden="true" /></span>*/}
-                                    {/*<a href="#">Art &amp; Design</a>*/}
+                    <div className='col-lg-4 team_col' key={index}>
+                        <div className='team_item text-center d-flex flex-column aling-items-center justify-content-end'>
+                            <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
+                            <div className='team_content text-center'>
+                                <div className='team_name'><a href={link}>{title}</a></div>
+                                {/* <div className='team_title'>Plastic Surgeon</div> */}
+                                <div className='team_text'>
+                                    <p style={{ height: '60px', overflow: 'hidden' }}>{abstract}</p>
                                 </div>
-                                <p>{abstract}</p>
                             </div>
                         </div>
                     </div>
@@ -45,8 +43,8 @@ class SectionCourse extends React.Component {
                     <div className='section-heading'>
                         <h3 className='text-primary'>Khóa Học</h3>
                     </div>
-                    <div className='row'>{course}</div>
-                    
+                    <div className='row team_row'>{course}</div>
+
                     {/*<div className='container'>*/}
                     {/*    <div className='row'>*/}
                     {/*        <div className='col-12'>*/}
