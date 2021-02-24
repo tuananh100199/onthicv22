@@ -23,7 +23,7 @@ class SectionCourse extends React.Component {
                 const link = item.link ? '/khoa-hoc/' + item.link : '/course/item/' + item._id;
                 return (
                     <div className='col-lg-4 team_col' key={index}>
-                        <div className='team_item text-center d-flex flex-column aling-items-center justify-content-end'>
+                        <div className='team_item text-center d-flex flex-column aling-items-center'>
                             <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
                             <div className='team_content text-center'>
                                 <div className='team_name'><a href={link}>{title}</a></div>
