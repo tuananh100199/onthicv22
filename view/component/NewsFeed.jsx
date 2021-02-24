@@ -1,83 +1,53 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getEventFeed } from '../../module/fwEvent/redux.jsx';
+import { getNewsFeed } from '../../module/fwNews/redux.jsx';
 import { Link } from 'react-router-dom';
 
 class NewsFeed extends React.Component {
     componentDidMount() {
-        this.props.getEventFeed(0, T.newsFeedPageSize);
+        this.props.getNewsFeed(() => {
+            T.ftcoAnimate()
+        });
     }
-
-    getLink(type, _id, link) {
-        if (type == 'event') {
-            return link ? '/sukien/' + link : '/event/item/' + _id;
-        }
-    }
-
-    renderTab(type, newsFeed) {
-        if (newsFeed.length == 0) {
-            return <p style={{ padding: '12px' }}>Thông tin đang được cập nhật!</p>;
-        } else {
-            const item0 = newsFeed[0],
-                link = this.getLink(type, item0._id, item0.link),
-                rightItems = [];
-            for (let i = 1; i <= 3 && i < newsFeed.length; i++) {
-                const item = newsFeed[i];
-                rightItems.push(
-                    <Link to={this.getLink(type, item._id, item.link)} key={i}>
-                        <img src={item.image} style={{ width: '33%', height: 'auto', display: 'inline-block', verticalAlign: 'top', padding: '6px 0' }} />
-                        <p style={{ width: '66%', margin: 0, display: 'inline-block', verticalAlign: 'top', padding: '12px 0 6px 6px', textAlign: 'justify' }}>{item.title}</p>
-                    </Link >
-                );
-                rightItems.push(<div key={i + 0.5} style={{ clear: 'both' }} />);
-            }
-            return newsFeed.length == 0 ? '' : (
-                <div className='row' style={{ margin: 0 }}>
-                    <div className='col-6'>
-                        <Link to={link} style={{ textDecoration: 'none' }}>
-                            <img src={item0.image} style={{ width: '100%', height: 'auto', padding: '6px 0' }} />
-                        </Link>
-                        <Link to={link} style={{ textDecoration: 'none' }}>
-                            <h4 style={{ color: '#428bca', fontSize: '20px' }}>{item0.title}</h4>
-                        </Link>
-                        <p>{item0.abstract}</p>
-                    </div>
-                    <div className='col-6' style={{ padding: '6px 0' }}>
-                        {rightItems}
-                    </div>
-                </div>
-            );
-        }
-    }
-
+    
     render() {
-        const eventComponents = (this.props.event && this.props.event.newsFeed) ?
-            this.renderTab('event', this.props.event.newsFeed) : 'Đang cập nhật';
-
-        const borderStyle = '1px solid #dee2e6';
-        return (
-            <div style={{ marginTop: '12px' }}>
-                <ul className='nav nav-tabs' style={{ display: 'flex' }}>
-                    <li className='nav-item'>
-                        <a className='nav-link' href='#nfdCompanyNews' data-toggle='tab' role='tab' aria-controls='nfdCompanyNews' aria-selected='false'>Bản tin doanh nghiệp</a>
-                    </li>
-                    <li className='nav-item'>
-                        <a className='nav-link' href='#nfdSeminar' data-toggle='tab' role='tab' aria-controls='nfdSeminar' aria-selected='true'>Hội thảo SV & Doanh nghiệp</a>
-                    </li>
-                    <li className='nav-item'>
-                        <a className='nav-link active' href='#nfdNews' data-toggle='tab' role='tab' aria-controls='nfdNews' aria-selected='true'>Tin tức</a>
-                    </li>
-                </ul>
-                <div className='tab-content' style={{ minHeight: '360px', borderLeft: borderStyle, borderRight: borderStyle, borderBottom: borderStyle, borderBottomLeftRadius: '0.25rem', borderBottomRightRadius: '0.25rem' }}>
-                    <div className='tab-pane fade' id='nfdSeminar' role='tabpanel'>
-                        {eventComponents}
+        const newsFeed = this.props.news && this.props.news.newsFeed ? this.props.news.newsFeed : [];
+        let news = null;
+        if (newsFeed && newsFeed.length) {
+            news = newsFeed.map((item, index) => {
+                const link = item.link ? '/tintuc/' + item.link : '/news/item/' + item._id;
+                return (
+                    <div key={index} className='row ml-0 ftco-animate'>
+                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                            <Link to={link}>
+                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
+                            </Link>
+                        </div>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                            <div className='text'>
+                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                    <h6 className='heading pb-0 mb-0'>
+                                        <Link to={link} style={{ color: '#4CA758' }}>{item.title}</Link>
+                                    </h6>
+                                    <div className="contact_content_text">
+                                        <p className='text-justify' >{item.abstract}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )
+            })
+        }
+        return (
+            <div className='contact_form_container'>
+                <div className='contact_form_title'>Tin tức mới nhất</div>
+                <div>{news}</div>
             </div>
-        );
+        )
     }
 }
 
-const mapStateToProps = state => ({ event: state.event });
-const mapActionsToProps = { getEventFeed };
+const mapStateToProps = state => ({ news: state.news });
+const mapActionsToProps = { getNewsFeed };
 export default connect(mapStateToProps, mapActionsToProps)(NewsFeed);

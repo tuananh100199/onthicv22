@@ -2,33 +2,29 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js';
 import { getNewsByUser } from './redux.jsx';
-import SectionNews from './sectionNews.jsx';
+import NewsFeed from '../../view/component/NewsFeed.jsx';
 
 class NewsDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = { language: '' };
+        this.background = React.createRef();
     }
 
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
-        this.props.getNewsByUser(params.id, params.link);
-        window.addEventListener('resize', this.handleResize);
-        this.handleResize();
+        this.props.getNewsByUser(params.id, params.link, () => {
+            $(this.background.current).parallax();
+        });
     }
-
+    
     componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
+        $(this.background.current).parallax('destroy');
     }
-
+    
     componentDidUpdate(prevProps) {
-        if (this.state.language != T.language()) {
-
-            this.setState({ language: T.language() });
-        }
-
         setTimeout(() => {
             T.ftcoAnimate();
             $('html, body').stop().animate({ scrollTop: 0 }, 500, 'swing');
@@ -37,26 +33,16 @@ class NewsDetail extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
             this.setState({ _id: params.id, link: params.link });
-            this.props.getNewsByUser(params.id, params.link);
+            $(this.background.current).parallax('destroy');
+            this.props.getNewsByUser(params.id, params.link, (data) => {
+                if (data.item) {
+                    $(this.background.current).parallax({
+                        imageSrc: data.item.image,
+                        speed: 0.7
+                    });
+                }
+            });
         }
-    }
-
-    handleResize = () => {
-        const viewportWidth = $(window).width();
-        let viewportHeight = $(window).height();
-        if (viewportWidth <= 576) { // Small
-            viewportHeight *= 0.45
-        }
-        if (viewportWidth <= 768) { // Medium
-            viewportHeight *= 0.65
-        }
-        if (viewportWidth <= 992) { //Large
-            viewportHeight *= 0.8
-        }
-        $('.slider-content').css('height', viewportHeight);
-        this.setState({
-            viewportHeight: viewportHeight
-        })
     }
 
     render() {
@@ -65,59 +51,49 @@ class NewsDetail extends React.Component {
         if (item == null) {
             return <p>...</p>;
         } else {
-            const element = 0;
             let categories = !item.categories ? [] : item.categories.map((item, index) =>
                 <div key={index} className='bg-black pb-1 px-2 mb-2 text-white d-inline-block rounded mr-1'>
-                    <span><small>{T.language.parse(item.title)}</small></span>
+                    <span><small>{item.title}</small></span>
                 </div>
             );
-            return (
-                <div>
-                    <div className='container-fluid'>
-                        <div className='row'>
-                            <div className='col-12 px-0'>
-                                <div className="owl-theme">
-                                    <div className='slider-content'
-                                        style={{
-                                            height: this.state.viewportHeight,
-                                            background: `url('${item.image}')`,
-                                            backgroundRepeat: 'repeat',
-                                            backgroundPosition: 'center',
-                                            backgroundSize: 'cover'
-                                        }}
-                                    >
-                                        <div className='inner'>
-                                            <h2>{T.language.parse(item.title)}</h2>
+            return [
+                <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
+                    <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={item ? item.image : '/img/avatar.jpg'} data-speed='0.8' />
+                    <div className='home_overlay'><img src='/img/home_overlay.png' alt='' /></div>
+                    <div className='home_container'>
+                        <div className='container'>
+                            <div className='row'>
+                                <div className='col'>
+                                    <div className='home_content ftco-animate'>
+                                        <div className='home_text_content'>
+                                            <div className='home_title'>{item.title}</div>
+                                            <div className='home_text'>{item.abstract}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <section className='ftco-section ftco-degree-bg'>
-                        <div className='container-fluid'>
-                            <div className='row'>
-                                <div className='col-12 col-lg-8 pt-5 ftco-animate'>
-                                    <div className='course--content' data-aos='fade-up'>
-                                        <div className='clever-description'>
-                                            <div className='about-course mb-30'>
-                                                {/* <span className="meta">{new Date(item.createdDate).getText()}</span> */}
-                                                <p className="pt-4" dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                                {categories}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-12 col-lg-4 mr-0 pt-5 clever-description ftco-animate' data-aos='fade-up'>
-                                    <div className='sidebar-box ftco-animate'>
-                                        <SectionNews />
+                </div>,
+                <div key={1} className='contact'>
+                    <div className='container-fluid'>
+                        <div className='row'>
+                            <div className='col-xl-8 col-lg-6 col-12'>
+                                <div className='contact_content'>
+                                    <div className='contact_content_title ftco-animate'>{item.title}</div>
+                                    <div className='section_subtitle ftco-animate' style={{ lineHeight: 1.4 }}>{item.abstract}</div>
+                                    <div className='contact_info ftco-animate'>
+                                        <p dangerouslySetInnerHTML={{ __html: item.content }}/>
                                     </div>
                                 </div>
                             </div>
+                            <div className='col-xl-4 col-lg-6 col-12'>
+                                <NewsFeed />
+                            </div>
                         </div>
-                    </section>
+                    </div>
                 </div>
-            );
+            ];
         }
     }
 }

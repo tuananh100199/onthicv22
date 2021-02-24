@@ -59,7 +59,8 @@ class App extends React.Component {
                     const footerHeight = $('footer').height();
                     $('#paddingFooterSection').css('padding-bottom', footerHeight + 'px');
                 }
-                handlePaddingFooter();
+                handlePaddingFooter()
+                setTimeout(handlePaddingFooter, 250)
                 $(window).on('resize', handlePaddingFooter);
                 this.loader.current.isShown() && this.loader.current.hide();
                 let menuList = [...this.props.system.menus];

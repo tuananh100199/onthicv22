@@ -36,7 +36,10 @@ class CourseListView extends React.Component {
     
     setViewMode = (e, viewMode) => {
         e.preventDefault()
-        this.setState({ viewMode }, T.ftcoAnimate)
+        this.setState({ viewMode }, () => {
+            T.ftcoAnimate()
+            $(window).trigger('resize')
+        })
     }
     
     render() {

@@ -64,6 +64,7 @@ class SectionCarousel extends React.Component {
                             }
                         });
                     }
+                    $(window).trigger('resize')
                 })
             });
         })
@@ -101,7 +102,7 @@ class SectionCarousel extends React.Component {
                                                     </div>
                                                 </div>
                                                 <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
-                                                    <div className='button button_1 trans_200'><a href={item.link}>Xem thêm</a></div>
+                                                    <div className='button button_4 trans_200'><a href={item.link}>Xem thêm</a></div>
                                                     {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
                                                 </div>
                                             </div>
