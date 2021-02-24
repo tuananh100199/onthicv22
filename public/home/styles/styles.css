@@ -1667,7 +1667,7 @@ section
 }
 .contact_info ul li > div:first-of-type
 {
-	width: 110px;
+	/*width: 110px;*/
 	font-size: 18px;
 	font-weight: 600;
 	color: #4ca758;
@@ -1675,7 +1675,7 @@ section
 }
 .contact_info ul li > div:last-of-type
 {
-	max-width: 200px;
+	/*max-width: 200px;*/
 	font-size: 15px;
 	font-weight: 600;
 	color: #878787;

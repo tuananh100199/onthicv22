@@ -251,12 +251,12 @@ class MultimediaPage extends React.Component {
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Contact</label>
+                                        <label className='control-label'>Liên hệ</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='contact' image={contact} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Subscibe</label>
+                                        <label className='control-label'>Subscriber</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='subscribe' image={subscribe} />
                                     </div>
                                 </div>

@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux.jsx';
-import { getAllAddressByUser } from '../../module/fwAddress/redux.jsx'
+import { getAllAddressByUser } from '../fwAddress/redux.jsx'
 
 class SectionContact extends React.Component {
     constructor(props) {
         super(props);
+        this.background = React.createRef();
         this.name = React.createRef();
         this.email = React.createRef();
         this.subject = React.createRef();
@@ -13,9 +14,11 @@ class SectionContact extends React.Component {
     }
     componentDidMount() {
         this.props.getAllAddressByUser(() => {
-            T.ftcoAnimate();
+            // T.ftcoAnimate();
+            $(this.background.current).parallax()
         });
     }
+    
     sendMessage = (e) => {
         e.preventDefault();
         if (this.name.current.value == '') {
@@ -47,39 +50,24 @@ class SectionContact extends React.Component {
     }
 
     render() {
-        let { addressList, mobile, email, map, facebook, youtube, twitter, instagram, contact, subscribe, latitude, longitude } =
-            this.props.system ? this.props.system : { addressList: JSON.stringify([]), map: '', facebook: '', youtube: '', twitter: '', instagram: '', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', latitude: 0, longitude: 0 };
+        let { facebook, youtube, twitter, instagram, contact } =
+            this.props.system ? this.props.system : { facebook: '', youtube: '', twitter: '', instagram: '', contact: '/img/contact.jpg' };
         facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
         instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
-        const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
-
-        const styles = {
-            border: {
-                borderBottom: 'solid 1px lightgray',
-            },
-            noBorder: {
-                borderBottom: 'none',
-            }
-        };
-        try {
-            addressList = JSON.parse(addressList);
-        } catch (e) {
-            console.error(e)
-        }
-
+        
         return [
-            <div class="home d-flex flex-column align-items-start justify-content-end">
-                <div class="parallax_background parallax-window" data-parallax="scroll" data-image-src={contact} data-speed="0.8"></div>
-                <div class="home_overlay"><img src="images/home_overlay.png" alt="" /></div>
-                <div class="home_container">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <div class="home_content">
-                                    <div class="home_title">Liên hệ</div>
-                                    <div class="home_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+            <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
+                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={contact} data-speed='0.8'/>
+                <div className='home_overlay'><img src='img/home_overlay.png' alt='' /></div>
+                <div className='home_container'>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col'>
+                                <div className='home_content'>
+                                    <div className='home_title'>Liên hệ</div>
+                                    <div className='home_text'>Trung tâm dạy nghề lái xe Hiệp Phát</div>
                                 </div>
                             </div>
                         </div>
@@ -92,7 +80,7 @@ class SectionContact extends React.Component {
                     <div className='row'>
                         <div className='col-lg-6'>
                             <div className='contact_form_container'>
-                                <div className='contact_form_title'>Gửi Tin Nhắn</div>
+                                <div className='contact_form_title'>Liên hệ</div>
                                 <form className='contact_form' id='contact_form' onSubmit={this.sendMessage}>
                                     <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
                                         <input type='text' className='contact_input' ref={this.name} placeholder='Tên' />
@@ -106,22 +94,22 @@ class SectionContact extends React.Component {
                         </div>
                         <div className='col-lg-5 offset-lg-1 contact_col'>
                             <div className='contact_content'>
-                                <div className='contact_content_title'>Thông tin liên lạc</div>
+                                <div className='contact_content_title'>Thông tin liên hệ</div>
                                 {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
                                     this.props.address.list.map((item, index) => (
                                         [
                                             <div className='contact_info' key={index}>
                                                 <ul>
                                                     <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div>{item.title}:</div>
+                                                        <div style={{ whiteSpace: 'nowrap' }}>{item.title}:&nbsp;</div>
                                                         <div>{item.address}</div>
                                                     </li>
                                                     <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div>Điện thoại:</div>
+                                                        <div style={{ whiteSpace: 'nowrap' }}>Điện thoại:&nbsp;</div>
                                                         <div><a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></div>
                                                     </li>
                                                     <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div>E-mail</div>
+                                                        <div style={{ whiteSpace: 'nowrap' }}>Email:&nbsp;</div>
                                                         <div><a href={'mailto:' + item.email}>{item.email}</a></div>
                                                     </li>
                                                 </ul>

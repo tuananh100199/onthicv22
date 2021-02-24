@@ -16,7 +16,7 @@ class Footer extends React.Component {
         instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
 
         return (
-            <footer className='footer'>
+            <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>
                     <div className='container'>
                         <div className='row'>
