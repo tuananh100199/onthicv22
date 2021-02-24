@@ -180,8 +180,8 @@ class CarouselEditPage extends React.Component {
                         {items.map((item, index) => (
                             <tr key={index}>
                                 <td>
-                                    {readOnly ? T.language.parse(item.title) : <a href='#' onClick={e => this.editItem(e, item, index)}>
-                                        {T.language.parse(item.title)}
+                                    {readOnly ? item.title : <a href='#' onClick={e => this.editItem(e, item, index)}>
+                                        {item.title}
                                     </a>}
                                 </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
