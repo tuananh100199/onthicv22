@@ -392,7 +392,7 @@ section
 	white-space: nowrap;
 }
 .main_nav ul li a:hover,
-.main_nav ul li.active a
+.main_nav ul li.active > a
 {
 	color: #4ca758;
 }
@@ -509,7 +509,7 @@ section
 	width: 350px;
 	height: 100vh;
 	/*background: #4ca758;*/
-	background: #9ae0db;
+	background: #26292d;
 	z-index: 102;
 	padding-left: 30px;
 	padding-right: 30px;
@@ -581,7 +581,7 @@ section
 }
 .menu_close:hover div
 {
-    background: #1befc5;
+		background: #4ca758
 }
 .menu_nav
 {
@@ -597,9 +597,20 @@ section
 	font-weight: 500;
 	color: rgba(255,255,255,0.75);
 }
-.menu_nav ul li a:hover
+.menu_nav ul li ul.dropdown a
 {
-	color: #1befc5;
+	margin-left: 20px;
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(255,255,255,0.75);
+}
+.menu_nav ul li a:hover, .menu_nav ul li ul.dropdown a:hover
+{
+	color: #4ca758;
+}
+.menu_nav ul li.active, .menu_nav ul li.active a
+{
+	color: #4ca758;
 }
 .menu_social
 {

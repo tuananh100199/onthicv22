@@ -13,8 +13,9 @@ class HomeMenu extends React.Component {
     componentDidMount() {
         const done = () => {
             if ($.fn.classyNav && this.nav.current != null && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
-                $(this.nav.current).classyNav();
-                this.setState({ link: window.location.pathname })
+                this.setState({ link: window.location.pathname }, () => {
+                    $(this.nav.current).classyNav();
+                })
             } else {
                 setTimeout(done, 100);
             }
@@ -69,7 +70,9 @@ class HomeMenu extends React.Component {
     }
     
     onMenuClick = (link) => {
-        this.setState({ link })
+        this.setState({ link }, () => {
+            $(this.nav.current).classyNav();
+        })
         $('.hamburger').css('display') == 'block' && $('.menu_close').click();
     };
 
@@ -105,8 +108,8 @@ class HomeMenu extends React.Component {
                                             return <li key={subIndex}>---</li>;
                                         } else {
                                             return isExternalLink ?
-                                                <a key={subIndex} href={link}>{T.language.parse(subMenu.title)}</a> :
-                                                <Link key={subIndex} to={link} className={currentLink == link ? 'text-primary' : ''} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link>
+                                                <li><a key={subIndex} href={link}>{T.language.parse(subMenu.title)}</a></li> :
+                                                <li className={currentLink == link ? 'active' : ''}><Link key={subIndex} to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
                                         }
                                     })}
                                 </ul>
@@ -129,19 +132,13 @@ class HomeMenu extends React.Component {
             <header key={0} className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
                     <div className='logo'>
-                        <Link to='/'>
+                        <Link to='/' onClick={() => this.onMenuClick('/')}>
                             <img src={logo} alt={logo} width='40' height='40'/>
                             <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
                         </Link>
                     </div>
                     <nav className='classy-navbar justify-content-between' ref={this.nav}>
-                        {/*<div className='classy-navbar-toggler'>*/}
-                        {/*    <span className='navbarToggler'><span /><span /><span /></span>*/}
-                        {/*</div>*/}
                         <div className='classy-menu'>
-                            {/*<div className='classycloseIcon'>*/}
-                            {/*    <div className='cross-wrap'><span className='top' /><span className='bottom' /></div>*/}
-                            {/*</div>*/}
                             <nav className='main_nav classynav'>
                                 <ul className='d-flex flex-row align-items-center justify-content-start'>
                                     {menus}
@@ -166,36 +163,6 @@ class HomeMenu extends React.Component {
                     </div>
                 </div>
             </header>,
-            // <header key={0} className='header trans_400'>
-            //     <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400'>
-            //         <div className='logo'>
-            //             <Link to='/'>
-            //                 <img src={logo} alt={logo} width='40' height='40'/>
-            //                 <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
-            //             </Link>
-            //         </div>
-            //         <nav className='main_nav'>
-            //             <ul className='d-flex flex-row align-items-center justify-content-start'>
-            //                 {menus}
-            //             </ul>
-            //         </nav>
-            //         <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
-            //             <div className='social header_social'>
-            //                 <ul className='d-flex flex-row align-items-center justify-content-start'>
-            //                     {user && user._id ? <div className='btn-group'>
-            //                         <div className='button button_2 mr-1'><a href='/user'>USER</a></div>
-            //                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
-            //                     </div> : <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}><i className='fa fa-user' /></a></div>}
-            //                     {twitter}
-            //                     {facebook}
-            //                     {youtube}
-            //                     {instagram}
-            //                 </ul>
-            //             </div>
-            //             <div className='hamburger'><i className='fa fa-bars' aria-hidden='true'/></div>
-            //         </div>
-            //     </div>
-            // </header>,
             <div key={1} className='menu_overlay trans_400'/>,
             <div key={2} className='menu trans_400'>
                 <div className='menu_close_container'>
@@ -208,7 +175,7 @@ class HomeMenu extends React.Component {
                     <ul>
                         {menus}
                     </ul>
-                    {user && user._id ? <div className='btn-group'>
+                    {user && user._id ? <div className='btn-group mt-4'>
                         <div className='button button_4 mr-1'><a href='/user'>USER</a></div>
                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
                     </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
