@@ -9,57 +9,6 @@ $breakpoint-sm: 'only screen and (min-width:576px) and (max-width:767px)';
 $breakpoint-xs: 'only screen and (max-width:767px)';
 $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767px)';
 
-.previousButton,
-.nextButton {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    background: url('http://svgshare.com/i/41_.svg') no-repeat center center / 16px;
-    width: 32px;
-    height: 32px;
-    text-indent: -9999px;
-    cursor: pointer;
-}
-
-.previousButton {
-    left: 0;
-    -webkit-transform: rotate(180deg) translateY(calc(50% + 0px));
-    transform: rotate(180deg) translateY(calc(50% + 0px));
-}
-
-.previousButton:hover {
-    left: -10px;
-}
-
-.nextButton {
-    right: 0;
-}
-
-.nextButton:hover {
-    right: -10px;
-}
-
-//end instagram
-.center-hide {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    align-items: center;
-}
-
-.center-hide div {
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.center-hide img {
-    width: 100%;
-    height: auto;
-    align-self: center;
-}
-
 .central-box {
     position: absolute;
     top: 50%;
@@ -269,8 +218,7 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 }
 
 
-
-
+// ClassyNav
 .classynav ul li {
     display: inline-block;
     clear: both;
