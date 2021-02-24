@@ -77,9 +77,8 @@ class SectionContact extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
-            ,
-            <div className='contact'>
+            </div>,
+            <div key={1} className='contact'>
                 <div className='container'>
                     <div className='row'>
                         <div className='col-lg-6'>
@@ -101,24 +100,22 @@ class SectionContact extends React.Component {
                                 <div className='contact_content_title'>Thông tin liên hệ</div>
                                 {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
                                     this.props.address.list.map((item, index) => (
-                                        [
-                                            <div className='contact_info' key={index}>
-                                                <ul>
-                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div style={{ whiteSpace: 'nowrap' }}>{item.title}:&nbsp;</div>
-                                                        <div>{item.address}</div>
-                                                    </li>
-                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div style={{ whiteSpace: 'nowrap' }}>Điện thoại:&nbsp;</div>
-                                                        <div><a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></div>
-                                                    </li>
-                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div style={{ whiteSpace: 'nowrap' }}>Email:&nbsp;</div>
-                                                        <div><a href={'mailto:' + item.email}>{item.email}</a></div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        ]
+                                        <div className='contact_info' key={index}>
+                                            <ul>
+                                                <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                    <div style={{ whiteSpace: 'nowrap' }}>{item.title}:&nbsp;</div>
+                                                    <div>{item.address}</div>
+                                                </li>
+                                                <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                    <div style={{ whiteSpace: 'nowrap' }}>Điện thoại:&nbsp;</div>
+                                                    <div><a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></div>
+                                                </li>
+                                                <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                    <div style={{ whiteSpace: 'nowrap' }}>Email:&nbsp;</div>
+                                                    <div><a href={'mailto:' + item.email}>{item.email}</a></div>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     )) : <p>Chưa cập nhật địa chỉ</p>}
 
                                 <div className='contact_social'>

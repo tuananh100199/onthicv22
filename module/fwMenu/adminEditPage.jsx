@@ -22,7 +22,7 @@ class MenuEditPage extends React.Component {
 
     componentDidMount() {
         this.getData();
-        T.ready('/user/menu');
+        T.ready('/user/settings');
     }
 
     getData = () => {
