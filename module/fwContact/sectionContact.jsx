@@ -13,10 +13,10 @@ class SectionContact extends React.Component {
         this.message = React.createRef();
     }
     componentDidMount() {
-        this.props.getAllAddressByUser(() => {
-            // T.ftcoAnimate();
+        // this.props.getAllAddressByUser(() => {
+            T.ftcoAnimate();
             $(this.background.current).parallax()
-        });
+        // });
     }
 
     componentWillUnmount() {
@@ -69,7 +69,7 @@ class SectionContact extends React.Component {
                     <div className='container'>
                         <div className='row'>
                             <div className='col'>
-                                <div className='home_content'>
+                                <div className='home_content ftco-animate'>
                                     <div className='home_title'>Liên hệ</div>
                                     <div className='home_text'>Trung tâm dạy nghề lái xe Hiệp Phát</div>
                                 </div>
@@ -77,8 +77,7 @@ class SectionContact extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
-            ,
+            </div>,
             <div key={1} className='contact'>
                 <div className='container'>
                     <div className='row'>
@@ -98,30 +97,28 @@ class SectionContact extends React.Component {
                         </div>
                         <div className='col-lg-5 offset-lg-1 contact_col'>
                             <div className='contact_content'>
-                                <div className='contact_content_title'>Thông tin liên hệ</div>
+                                <div className='contact_content_title ftco-animate'>Thông tin liên hệ</div>
                                 {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
                                     this.props.address.list.map((item, index) => (
-                                        [
-                                            <div className='contact_info' key={index}>
-                                                <ul>
-                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div style={{ whiteSpace: 'nowrap' }}>{item.title}:&nbsp;</div>
-                                                        <div>{item.address}</div>
-                                                    </li>
-                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div style={{ whiteSpace: 'nowrap' }}>Điện thoại:&nbsp;</div>
-                                                        <div><a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></div>
-                                                    </li>
-                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
-                                                        <div style={{ whiteSpace: 'nowrap' }}>Email:&nbsp;</div>
-                                                        <div><a href={'mailto:' + item.email}>{item.email}</a></div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        ]
+                                        <div className='contact_info ftco-animate' key={index}>
+                                            <ul>
+                                                <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                    <div style={{ whiteSpace: 'nowrap' }}>{item.title}:&nbsp;</div>
+                                                    <div>{item.address}</div>
+                                                </li>
+                                                <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                    <div style={{ whiteSpace: 'nowrap' }}>Điện thoại:&nbsp;</div>
+                                                    <div><a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></div>
+                                                </li>
+                                                <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                    <div style={{ whiteSpace: 'nowrap' }}>Email:&nbsp;</div>
+                                                    <div><a href={'mailto:' + item.email}>{item.email}</a></div>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     )) : <p>Chưa cập nhật địa chỉ</p>}
 
-                                <div className='contact_social'>
+                                <div className='contact_social ftco-animate'>
                                     <ul className='d-flex flex-row align-items-center justify-content-start'>
                                         {twitter}
                                         {facebook}
@@ -132,64 +129,46 @@ class SectionContact extends React.Component {
                             </div>
                         </div>
                     </div>
-                    {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                        <div className="row google_map_row" >
-                            <div id='carouselFooter' className='carousel slide col'
-                                data-ride='carousel'
-                                data-interval='2000'
-                                style={{
-                                    height: 'auto',
-                                }}>
-                                <div className='carousel-inner'>
-                                    {
-                                        this.props.address.list.map((item, index) => (
-                                            <div className={'carousel-item' + (index == 0 ? ' active' : '')}
-                                                key={index}
-                                                style={{
-                                                    height: '500px',
-                                                    backgroundImage: `url('${T.url(item.image)}')`,
-                                                    backgroundRepeat: 'no-repeat',
-                                                    backgroundPosition: 'center center',
-                                                    border: '1px solid gray',
-                                                    backgroundSize: 'cover',
-                                                    cursor: 'pointer',
-                                                }}
-                                                onClick={() => window.open(item.mapURL, '_blank')}>
-
-                                                <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>{item.title + ':' + item.address}</span>
-                                            </div>))}
-                                </div>
-                                <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
-                                    <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
-                                    <span className='sr-only'>Previous</span>
-                                </a>
-                                <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
-                                    <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
-                                    <span className='sr-only'>Next</span>
-                                </a>
-                            </div>
-                        </div> : <p>Chưa cập nhật địa chỉ</p>
-                    }
+                    {/*{this.props.address && this.props.address.list && this.props.address.list.length > 0 ?*/}
+                    {/*    <div className="row google_map_row" >*/}
+                    {/*        <div id='carouselContact' className='carousel slide col'*/}
+                    {/*            data-ride='carousel'*/}
+                    {/*            data-interval='2000'*/}
+                    {/*            style={{*/}
+                    {/*                height: 'auto',*/}
+                    {/*            }}>*/}
+                    {/*            <div className='carousel-inner'>*/}
+                    {/*                {*/}
+                    {/*                    this.props.address.list.map((item, index) => (*/}
+                    {/*                        <div className={'carousel-item' + (index == 0 ? ' active' : '')}*/}
+                    {/*                            key={index}*/}
+                    {/*                            style={{*/}
+                    {/*                                height: '500px',*/}
+                    {/*                                backgroundImage: `url('${T.url(item.image)}')`,*/}
+                    {/*                                backgroundRepeat: 'no-repeat',*/}
+                    {/*                                backgroundPosition: 'center center',*/}
+                    {/*                                border: '1px solid gray',*/}
+                    {/*                                backgroundSize: 'cover',*/}
+                    {/*                                cursor: 'pointer',*/}
+                    {/*                            }}*/}
+                    {/*                            onClick={() => window.open(item.mapURL, '_blank')}>*/}
+                    
+                    {/*                            <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>{item.title + ':' + item.address}</span>*/}
+                    {/*                        </div>))}*/}
+                    {/*            </div>*/}
+                    {/*            <a className='carousel-control-prev' href='#carouselContact' role='button' data-slide='prev' style={{ opacity: 1 }}>*/}
+                    {/*                <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}/>*/}
+                    {/*                <span className='sr-only'>Previous</span>*/}
+                    {/*            </a>*/}
+                    {/*            <a className='carousel-control-next' href='#carouselContact' role='button' data-slide='next' style={{ opacity: 1 }}>*/}
+                    {/*                <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}/>*/}
+                    {/*                <span className='sr-only'>Next</span>*/}
+                    {/*            </a>*/}
+                    {/*        </div>*/}
+                    {/*    </div> : <p>Chưa cập nhật địa chỉ</p>*/}
+                    {/*}*/}
                 </div>
-            </div >,
-            // <div className="row google_map_row">
-            //     <div className="col">
-
-            //         <div className="contact_map">
-
-
-            //             <div className="map">
-            //                 <div id="google_map" className="google_map">
-            //                     <div className="map_container">
-            //                         <div id="map"></div>
-            //                     </div>
-            //                 </div>
-            //             </div>
-
-            //         </div>
-
-            //     </div>
-            // </div>
+            </div >
         ];
     }
 }

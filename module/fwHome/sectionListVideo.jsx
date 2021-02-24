@@ -80,7 +80,10 @@ class SectionListVideo extends React.Component {
         const remainItems = items.slice(1)
         return (
             <div>
-                <h3 className='text-primary'>Video clip</h3>
+                <div className='section_title_container'>
+                    {/*<div className='section_subtitle'>This is Dr Pro</div>*/}
+                    <div className='section_title'><h2>Video clip</h2></div>
+                </div>
                 {firstItem ? (
                     <div className='row'>
                         <div className={items.length ? 'col-md-12 col-lg-7 col-xl-8 m-0' : 'col-md-12 m-0'} style={{ height: item.height + 'px', padding: '2px' }}>
@@ -129,7 +132,7 @@ class SectionListVideo extends React.Component {
                             )
                         )}
                     </div>
-                ) : <p>Không có danh sách videos</p>}
+                ) : <p>Không có danh sách video</p>}
             </div>
         )
     }
