@@ -61,6 +61,10 @@
 
 @media only screen and (max-width: 1280px)
 {
+	.header_social li
+	{
+		display: none;
+	}
 	.main_nav ul li:not(:last-child)
 	{
 		margin-right: 29px;
@@ -97,6 +101,10 @@
 	{
 		margin-bottom: 60px;
 	}
+	.button a {
+		padding-left: 20px;
+		padding-right: 18px;
+	}
 }
 
 /************
@@ -105,7 +113,9 @@
 
 @media only screen and (max-width: 1100px)
 {
-	
+	.main_nav ul li:not(:last-child) {
+		margin-right: 15px;
+	}
 }
 
 /************
@@ -126,7 +136,7 @@
 	.main_nav,
 	.header_social
 	{
-		display: none;
+		display: none!important;
 	}
 	.home_slider_dots
 	{

@@ -13,8 +13,9 @@ class HomeMenu extends React.Component {
     componentDidMount() {
         const done = () => {
             if ($.fn.classyNav && this.nav.current != null && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
-                $(this.nav.current).classyNav();
-                this.setState({ link: window.location.pathname })
+                this.setState({ link: window.location.pathname }, () => {
+                    $(this.nav.current).classyNav();
+                })
             } else {
                 setTimeout(done, 100);
             }
@@ -64,12 +65,14 @@ class HomeMenu extends React.Component {
                 setHeader();
             });
             
-            // done()
+            done()
         });
     }
     
     onMenuClick = (link) => {
-        this.setState({ link })
+        this.setState({ link }, () => {
+            $(this.nav.current).classyNav();
+        })
         $('.hamburger').css('display') == 'block' && $('.menu_close').click();
     };
 
@@ -105,8 +108,8 @@ class HomeMenu extends React.Component {
                                             return <li key={subIndex}>---</li>;
                                         } else {
                                             return isExternalLink ?
-                                                <a key={subIndex} href={link}>{T.language.parse(subMenu.title)}</a> :
-                                                <Link key={subIndex} to={link} className={currentLink == link ? 'text-primary' : ''} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link>
+                                                <li><a key={subIndex} href={link}>{T.language.parse(subMenu.title)}</a></li> :
+                                                <li className={currentLink == link ? 'active' : ''}><Link key={subIndex} to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
                                         }
                                     })}
                                 </ul>
@@ -127,44 +130,21 @@ class HomeMenu extends React.Component {
         instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
         return [
             <header key={0} className='header trans_400'>
-                {/*<div className='clever-main-menu' style={{ width: '100%' }}>*/}
-                {/*    <div className='classy-nav-container breakpoint-off'>*/}
-                {/*        <nav className='classy-navbar justify-content-between' ref={this.nav} id='cleverNav'>*/}
-                {/*            <Link className='navbar-brand d-sm-flex' to='/'>*/}
-                {/*                {logo ? <img src={logo} style={{ height: '36px', width: 'auto' }} alt='logo' /> : ''}&nbsp;*/}
-                {/*                <h4>Trung tâm đào tạo lái xe Hiệp Phát</h4>*/}
-                {/*            </Link>*/}
-                
-                {/*            <div className='classy-navbar-toggler'>*/}
-                {/*                <span className='navbarToggler'><span /><span /><span /></span>*/}
-                {/*            </div>*/}
-                
-                {/*            <div className='classy-menu'>*/}
-                {/*                <div className='classycloseIcon'>*/}
-                {/*                    <div className='cross-wrap'><span className='top' /><span className='bottom' /></div>*/}
-                {/*                </div>*/}
-                {/*                <div className='classynav'>*/}
-                {/*                    <ul style={{ marginBottom: 0 }}>{menus}</ul>*/}
-                {/*                    {user && user._id ? <div className='btn-group'>*/}
-                {/*                        <a href='/user' className='btn btn-primary' style={{ textTransform: 'capitalize', fontWeight: 'normal' }}>User</a>*/}
-                {/*                        <a href='#' className='btn btn-danger text-white' onClick={this.logout}><i className='icon icon-power-off' /></a>*/}
-                {/*                    </div> : <a href='#' className='btn btn-primary' onClick={this.props.showLoginModal}><i className='icon icon-user' /></a>}*/}
-                {/*                </div>*/}
-                {/*            </div>*/}
-                {/*        </nav>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-                <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400'>
+                <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
                     <div className='logo'>
-                        <Link to='/'>
+                        <Link to='/' onClick={() => this.onMenuClick('/')}>
                             <img src={logo} alt={logo} width='40' height='40'/>
                             <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
                         </Link>
                     </div>
-                    <nav className='main_nav'>
-                        <ul className='d-flex flex-row align-items-center justify-content-start'>
-                            {menus}
-                        </ul>
+                    <nav className='classy-navbar justify-content-between' ref={this.nav}>
+                        <div className='classy-menu'>
+                            <nav className='main_nav classynav'>
+                                <ul className='d-flex flex-row align-items-center justify-content-start'>
+                                    {menus}
+                                </ul>
+                            </nav>
+                        </div>
                     </nav>
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
                         <div className='social header_social'>
@@ -195,7 +175,7 @@ class HomeMenu extends React.Component {
                     <ul>
                         {menus}
                     </ul>
-                    {user && user._id ? <div className='btn-group'>
+                    {user && user._id ? <div className='btn-group mt-4'>
                         <div className='button button_4 mr-1'><a href='/user'>USER</a></div>
                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
                     </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
