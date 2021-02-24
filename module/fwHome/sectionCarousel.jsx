@@ -44,7 +44,7 @@ class SectionCarousel extends React.Component {
                             margin: 0,
                             center: true,
                             // nav: true,
-                            // navText: ["<i className='carousel-control-prev-icon'></i>", "<i className='carousel-control-next-icon'></i>"],
+                            // navText: ['<i className='carousel-control-prev-icon'></i>', '<i className='carousel-control-next-icon'></i>'],
                             // navContainer: '.nav-container',
                             // navSpeed: 1500,
                             dots: true,
@@ -88,19 +88,21 @@ class SectionCarousel extends React.Component {
                                 backgroundSize: 'cover'
                             }}
                         >
-                            <div className="home_container">
-                                <div className="container">
-                                    <div className="row">
-                                        <div className="col">
-                                            <div className="home_content">
-                                                <div className="home_subtitle">{T.language.parse(item.subtitle)}</div>
-                                                <div className="home_title">{T.language.parse(item.title)}</div>
-                                                <div className="home_text">
-                                                    <p>{item.description}</p>
+                            <div className='home_container'>
+                                <div className='container'>
+                                    <div className='row'>
+                                        <div className='col'>
+                                            <div className='home_content'>
+                                                <div className='home_text_content'>
+                                                    <div className='home_subtitle'>{item.subtitle}</div>
+                                                    <div className='home_title'>{item.title}</div>
+                                                    <div className='home_text'>
+                                                        <p>{item.description}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="home_buttons d-flex flex-row align-items-center justify-content-start">
-                                                    <div className="button button_1 trans_200"><a href={item.link}>Read more</a></div>
-                                                    {/* <div className="button button_2 trans_200"><a href="#">Make an appointment</a></div> */}
+                                                <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
+                                                    <div className='button button_1 trans_200'><a href={item.link}>Xem thêm</a></div>
+                                                    {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -123,19 +125,21 @@ class SectionCarousel extends React.Component {
                                 backgroundPosition: 'center',
                                 backgroundSize: 'cover'
                             }}>
-                                <div className="home_container">
-                                    <div className="container">
-                                        <div className="row">
-                                            <div className="col">
-                                                <div className="home_content">
-                                                    <div className="home_subtitle">{T.language.parse(item.subtitle)}</div>
-                                                    <div className="home_title">{T.language.parse(item.title)}</div>
-                                                    <div className="home_text">
-                                                        <p>{item.descriptiom}</p>
+                                <div className='home_container'>
+                                    <div className='container'>
+                                        <div className='row'>
+                                            <div className='col'>
+                                                <div className='home_content'>
+                                                    <div className='home_text_content'>
+                                                        <div className='home_subtitle'>{item.subtitle}</div>
+                                                        <div className='home_title'>{item.title}</div>
+                                                        <div className='home_text'>
+                                                            <p>{item.description}</p>
+                                                        </div>
                                                     </div>
-                                                    <div className="home_buttons d-flex flex-row align-items-center justify-content-start">
-                                                        <div className="button button_1 trans_200"><a href={item.link}>Read more</a></div>
-                                                        {/* <div className="button button_2 trans_200"><a href="#">Make an appointment</a></div> */}
+                                                    <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
+                                                        <div className='button button_1 trans_200'><a href={item.link}>Read more</a></div>
+                                                        {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
                                                     </div>
                                                 </div>
                                             </div>
