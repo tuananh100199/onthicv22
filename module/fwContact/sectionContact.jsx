@@ -136,7 +136,7 @@ class SectionContact extends React.Component {
                         <div className="row google_map_row" >
                             <div id='carouselFooter' className='carousel slide col'
                                 data-ride='carousel'
-                                data-interval='5000'
+                                data-interval='2000'
                                 style={{
                                     height: 'auto',
                                 }}>
