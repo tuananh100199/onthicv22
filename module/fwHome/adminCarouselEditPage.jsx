@@ -20,11 +20,13 @@ class CarouselItemModal extends React.Component {
     }
 
     show = (item, carouselId) => {
-        let { _id, title, image, link } = item ? item : { _id: null, title: '', image: '/img/avatar.jpg', link: '' };
+        let { _id, title, image, link, subtitle, description } = item ? item : { _id: null, title: '', image: '/img/avatar.jpg', link: '' };
 
         $(this.btnSave.current).data('id', _id).data('carouselId', carouselId);
         $('#carouselName').val(title);
         $('#carouselLink').val(link);
+        $('#carouselSubTitle').val(subtitle);
+        $('#carouselDescription').val(description);
         this.imageBox.current.setData('carouselItem:' + (_id ? _id : 'new'), image);
         $(this.modal.current).modal('show');
     }
@@ -35,7 +37,9 @@ class CarouselItemModal extends React.Component {
             carouselId = $(e.target).data('carouselId'),
             changes = {
                 title: $('#carouselName').val().trim(),
-                link: $('#carouselLink').val().trim()
+                link: $('#carouselLink').val().trim(),
+                subtitle: $('#carouselSubTitle').val().trim(),
+                description: $('#carouselDescription').val().trim()
             };
         
         if (changes.title == '') {
@@ -68,8 +72,17 @@ class CarouselItemModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='carouselName'>Tiêu đề</label>
+                                <label htmlFor='carouselName'>Tiêu đề chính</label>
                                 <input className='form-control' id='carouselName' type='text' placeholder='Tiêu đề' />
+                            </div>
+                            <div className='form-group'>
+                                <label htmlFor='carouselName'>Tiêu đề phụ</label>
+                                <input className='form-control' id='carouselSubTitle' type='text' placeholder='Tiêu đề' />
+                            </div>
+                            <div className='form-group'>
+                                <label htmlFor='carouselName'>Mô tả</label>
+                                <textarea defaultValue='' className='form-control' id='carouselDescription' placeholder='Mô tả' 
+                                          style={{ minHeight: '100px', marginBottom: '12px' }} />
                             </div>
                             <div className='form-group'>
                                 <label htmlFor='carouselLink'>Link liên kết</label>
