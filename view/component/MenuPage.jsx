@@ -68,7 +68,7 @@ export default class MenuPage extends React.Component {
             }
 
             outs.push(
-                <div key={index} className={item.className + (isFirst ? ' first-component' : '')} style={itemStyle}>
+                <div key={index} className={item.className + (isFirst ? ' home' : '')} style={itemStyle}>
                     {itemView}
                     {childComponents}
                 </div>

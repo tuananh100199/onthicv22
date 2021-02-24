@@ -245,8 +245,15 @@ T.language.switch = () => {
     return { language };
 };
 T.language.parse = (text, getAll) => {
+    console.log(typeof(text));
     let obj = {};
     try { obj = JSON.parse(text) } catch {};
+    if (obj && !isNaN(obj)) {
+        obj = {
+            vi: obj,
+            en: obj
+        }
+    }
     if (obj.vi == null) obj.vi = text;
     if (obj.en == null) obj.en = text;
     return getAll ? obj : obj[T.language()];
