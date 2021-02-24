@@ -549,6 +549,29 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 {
 	margin-right: 8px;
 }
+
+@media only screen and (max-width: 767px)
+{
+    .slider-content {
+        height: 600px !important; 
+    }
+	.home_slider_dots
+	{
+		left: calc((100vw - 510px) / 2);
+	}
+	.home_content
+	{
+		max-width: 100%;
+	}
+	.home_title
+	{
+		font-size: 48px;
+	}
+	.home_subtitle
+	{
+		font-size: 24px;
+	}
+}
 // Contact
 .home-contact {
     width: 100%;
