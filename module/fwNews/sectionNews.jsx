@@ -23,13 +23,15 @@ class SectionNews extends React.Component {
                                 <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                             </Link>
                         </div>
-                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                     <h6 className='heading pb-0 mb-0'>
-                                        <Link to={link} className='text-primary'>{T.language.parse(item.title)}</Link>
+                                        <Link to={link} style={{ color: '#4CA758' }}>{item.title}</Link>
                                     </h6>
-                                    <p className='text-justify' style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{T.language.parse(item.abstract)}</p>
+                                    <div className="contact_content_text">
+                                        <p className='text-justify' >{item.abstract}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -38,8 +40,8 @@ class SectionNews extends React.Component {
             })
         }
         return (
-            <div className='mt-2'>
-                <h3 className='text-primary'>Tin Tức Mới Nhất</h3>
+            <div className='section_title_container'>
+                <h2 className='section_title'>Tin Tức Mới Nhất</h2>
                 <div>
                     {news}
                     {/*<button className='expand-btn' onClick={this.handleClickExpand}>*/}

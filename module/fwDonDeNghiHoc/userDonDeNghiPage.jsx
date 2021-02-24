@@ -171,7 +171,6 @@ class UserDonDeNghiPage extends React.Component {
                         $('#licenseClass').val('');
                         $('#licenseIssuedBy').val('');
                         $('#licenseDated').val(null);
-
                     }
     
                     T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
@@ -213,82 +212,82 @@ class UserDonDeNghiPage extends React.Component {
                     <div className='tile-body'>
                         <div className='row'>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='userLastname'>Họ và tên lót</label>
+                                <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{color: 'red'}}>*</span></label>
                                 <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='userFirstname'>Tên</label>
+                                <label className='control-label' htmlFor='userFirstname'>Tên <span style={{color: 'red'}}>*</span></label>
                                 <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label'>Quốc tịch</label>
+                                <label className='control-label'>Quốc tịch <span style={{color: 'red'}}>*</span></label>
                                 <select className='form-control select2-input' ref={this.quocGia} />
                             </div>
                         </div>
 
                         <div className='row'>
                             <div className='form-group col-md-3' id='birthdaySection'>
-                                <label className='control-label' htmlFor='userBirthday'>Ngày sinh</label>
+                                <label className='control-label' htmlFor='userBirthday'>Ngày sinh <span style={{color: 'red'}}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#birthdaySection' />
                             </div>
                             <div className='form-group col-md-3'>
                                 <div className='form-group' style={{ width: '100%' }}>
-                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: </label>
+                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính <span style={{color: 'red'}}>*</span></label>
                                     <Dropdown ref={this.sex} text='' items={T.sexes} />
                                 </div>
                             </div>
                             <div className='form-group col-md-6'>
-                                <label className='control-label'>Số điện thoại</label>
+                                <label className='control-label'>Số điện thoại <span style={{color: 'red'}}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber' />
                             </div>
                         </div>
 
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú:</label>
+                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú <span style={{color: 'red'}}>*</span></label>
                             <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3' />
                         </div>
 
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='residence'>Nơi cư trú</label>
+                            <label className='control-label' htmlFor='residence'>Nơi cư trú <span style={{color: 'red'}}>*</span></label>
                             <textarea className='form-control' id='residence' placeholder='Nơi cư trú' rows='3' />
                         </div>
 
                         <div className='row'>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu)</label>
+                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu) <span style={{color: 'red'}}>*</span></label>
                                 <input className='form-control' type='text' id='identityCard'
                                     placeholder='Nhập số CMND' />
                             </div>
                             <div className='form-group col-md-3' id='identityDateSection'>
-                                <label className='control-label' htmlFor='identityDate'>Cấp ngày</label>
+                                <label className='control-label' htmlFor='identityDate'>Cấp ngày <span style={{color: 'red'}}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection' />
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp</label>
+                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp <span style={{color: 'red'}}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy' />
                             </div>
                         </div>
                         <div className='row'>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số:</label>
+                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số <span style={{color: 'red'}}>*</span></label>
                                 <input className='form-control' type='text' id='licenseNumber'
                                     placeholder='Số giấy phép lái xe' />
                             </div>
                             <div className='form-group col-md-2' id='licenseClassSection'>
-                                <label className='control-label' htmlFor='licenseClass'>Hạng: </label>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng <span style={{color: 'red'}}>*</span> </label>
                                 <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection' />
                             </div>
                             <div className='form-group col-md-5'>
-                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: </label>
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp <span style={{color: 'red'}}>*</span> </label>
                                 <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy' />
                             </div>
                             <div className='form-group col-md-2'>
-                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày: </label>
+                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày <span style={{color: 'red'}}>*</span> </label>
                                 <input className='form-control' type='text' placeholder='Ngày cấp GPLX' id='licenseDated' />
                             </div>
                         </div>
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: </label>
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng <span style={{color: 'red'}}>*</span> </label>
                             <input className='form-control' type='text' placeholder='Hạng' id='newLicenseClass' />
                         </div>
                         <div className='form-group' style={{ display: 'inline-flex' }}>

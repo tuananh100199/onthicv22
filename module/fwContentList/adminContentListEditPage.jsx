@@ -4,6 +4,7 @@ import { getContentListItem, updateContentList } from './redux.jsx';
 import { ajaxSelectContent } from '../fwHome/redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 import { Select } from '../../view/component/Input.jsx';
+import ImageBox from '../../view/component/ImageBox.jsx';
 
 class ContentModal extends React.Component {
     state = { item: null };
@@ -81,13 +82,18 @@ class ListContentEditPage extends React.Component {
         super(props);
         this.state = { item: {}, items: [] };
         this.modal = React.createRef();
+        this.imageBox = React.createRef();
     }
+    
     componentDidMount() {
         T.ready('/user/component', () => {
             const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
             this.props.getContentListItem(params.listContentId, data => {
                 if (data.item) {
+                    const { _id = 'new', title = '', image =  '/img/avatar.jpg' } = data.item || {};
                     $('#listContentTitle').val(data.item.title).focus();
+                    $('#listContentAbstract').val(data.item.abstract);
+                    this.imageBox.current.setData('contentList:' + _id, image);
                     this.setState({ item: data.item });
                 } else {
                     this.props.history.push('/user/component');
@@ -160,7 +166,8 @@ class ListContentEditPage extends React.Component {
     save = () => {
         const changes = {
             title: $('#listContentTitle').val(),
-            items: this.state.item.items,
+            abstract: $('#listContentAbstract').val(),
+            items: this.state.item.items
         };
 
         if (changes.title == '') {
@@ -240,6 +247,14 @@ class ListContentEditPage extends React.Component {
                             <div className='form-group'>
                                 <label className='control-label' htmlFor='listContentTitle'>Tiêu đề</label>
                                 <input className='form-control' type='text' placeholder='Tiêu đề' id='listContentTitle' readOnly={readOnly} />
+                            </div>
+                            <div className='form-group'>
+                                <label className='control-label' htmlFor='listContentAbstract'>Mô tả ngắn</label>
+                                <input className='form-control' type='text' placeholder='Mô tả ngắn' id='listContentAbstract' readOnly={readOnly} />
+                            </div>
+                            <div className='form-group'>
+                                <label className='control-label'>Hình ảnh nền</label>
+                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ContentListImage' readOnly={!currentPermissions.includes('component:write')} />
                             </div>
                         </div>
                         <div className='tile-footer' style={{ textAlign: 'right' }}>

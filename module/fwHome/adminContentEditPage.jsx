@@ -3,16 +3,17 @@ import { connect } from 'react-redux';
 import { getContent, updateContent } from './redux/reduxContent.jsx';
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
+import ImageBox from '../../view/component/ImageBox.jsx';
 
 class ContentEditPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = { _id: null, title: '', active: false, content: '' };
+        this.imageBox = React.createRef();
         this.editor = React.createRef();
     }
     componentDidMount() {
         T.ready('/user/component', () => {
-            $('#cntTitle').focus();
             const route = T.routeMatcher('/user/content/edit/:contentId'),
                 params = route.parse(window.location.pathname);
             this.props.getContent(params.contentId, data => {
@@ -20,11 +21,11 @@ class ContentEditPage extends React.Component {
                     T.notify('Lấy bài viết bị lỗi!', 'danger');
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    const title = data.item.title,
-                        content = data.item.content;
-
+                    const { _id, title, abstract, content, image = '/img/avatar.jpg' } = data.item;
                     $('#cntTitle').val(title).focus();
+                    $('#cntAbstract').val(abstract);
                     this.editor.current.html(content);
+                    this.imageBox.current.setData('content:' + _id, image);
                     this.setState(data.item);
                 } else {
                     this.props.history.push('/user/component');
@@ -39,6 +40,7 @@ class ContentEditPage extends React.Component {
     save = () => {
         const changes = {
             title: $('#cntTitle').val().trim(),
+            abstract: $('#cntAbstract').val(),
             content: this.editor.current.html(),
             active: this.state.active ? 1 : 0,
         };
@@ -64,27 +66,40 @@ class ContentEditPage extends React.Component {
                         &nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                <div className='row'>
-                    <div className='tile col-md-12'>
-                        <div className='tile-body'>
-                            <div className='form-group' style={{ whiteSpace: 'nowrap', position: 'absolute', right: '10px' }}>
-                                <label className='control-label'>Kích hoạt: &nbsp;&nbsp;&nbsp;</label>
-                                <label className='toggle'>
-                                    <input type='checkbox' checked={this.state.active} onChange={(e) => !readOnly && this.changeActive(e)} />
-                                    <span className='button-indecator' />
-                                </label>
+                <div className='tile'>
+                    <div className='tile-body'>
+                        <div className='row'>
+                            <div className='col-12 col-md-8'>
+                                <div className='form-group'>
+                                    <label className='control-label' htmlFor='cntTitle'>Tiêu đề</label>
+                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='cntTitle' readOnly={readOnly} />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label' htmlFor='cntAbstract'>Mô tả ngắn</label>
+                                    <input className='form-control' type='text' placeholder='Mô tả ngắn' id='cntAbstract' readOnly={readOnly} />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Kích hoạt: &nbsp;&nbsp;&nbsp;</label>
+                                    <label className='toggle'>
+                                        <input type='checkbox' checked={this.state.active} onChange={(e) => !readOnly && this.changeActive(e)} />
+                                        <span className='button-indecator' />
+                                    </label>
+                                </div>
                             </div>
-
-                            <div className='tab-content'>
-                                <div id='contentTab' className='tab-pane fade show active'>
-                                    <div className='form-group'>
-                                        <label className='control-label'>Tiêu đề</label>
-                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='cntTitle' defaultValue={this.state.title} readOnly={readOnly} />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label className='control-label'>Nội dung</label>
-                                        <Editor ref={this.editor} placeholder='Nội dung bài biết' height='400px' uploadUrl='/user/upload?category=content' readOnly={readOnly} />
-                                    </div>
+                            <div className='col-12 col-md-4'>
+                                <div className='form-group'>
+                                    <label className='control-label'>Hình ảnh</label>
+                                    <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ContentImage' readOnly={!currentPermissions.includes('component:write')} />
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div className='tab-content'>
+                            <div id='contentTab' className='tab-pane fade show active'>
+                                
+                                <div className='form-group'>
+                                    <label className='control-label'>Nội dung</label>
+                                    <Editor ref={this.editor} placeholder='Nội dung bài biết' height='400px' uploadUrl='/user/upload?category=content' readOnly={readOnly} />
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,8 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
+        abstract: String,
+        image: String,
         items: [{ type: app.db.Schema.ObjectId, ref: 'Content' }]
     });
     const model = app.db.model('ContentList', schema);
@@ -27,6 +29,7 @@ module.exports = app => {
                         items.forEach(item => app.model.content.delete(item._id, () => { }))
                     }
                 })
+                app.deleteImage(contentList.image);
                 contentList.remove(done);
             }
         }),

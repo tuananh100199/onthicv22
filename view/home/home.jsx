@@ -1,4 +1,3 @@
-import './scss/style.scss';
 import './home.scss';
 import T from '../js/common';
 import React from 'react';
@@ -54,18 +53,15 @@ class App extends React.Component {
     state = { routes: [], isMatch: true };
 
     componentDidMount() {
-        // $(window).bind('beforeunload', function() {
-        //     return "Do you want to exit this page?";
-        // });
         const done = () => {
             if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
                 const handlePaddingFooter = () => {
                     const footerHeight = $('footer').height();
                     $('#paddingFooterSection').css('padding-bottom', footerHeight + 'px');
                 }
-                handlePaddingFooter();
+                handlePaddingFooter()
+                setTimeout(handlePaddingFooter, 250)
                 $(window).on('resize', handlePaddingFooter);
-                new WOW().init();
                 this.loader.current.isShown() && this.loader.current.hide();
                 let menuList = [...this.props.system.menus];
                 while (menuList.length) {

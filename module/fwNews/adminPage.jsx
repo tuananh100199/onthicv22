@@ -23,9 +23,6 @@ class NewsPage extends React.Component {
     changeActive = (item) => {
         this.props.updateNews(item._id, { active: !item.active });
     }
-
-    changeIsInternal = (item) => this.props.updateNews(item._id, { isInternal: !item.isInternal })
-
     delete = (e, item) => {
         T.confirm('Tin tức', 'Bạn có chắc bạn muốn xóa tin tức này?', 'warning', true, isConfirm => isConfirm && this.props.deleteNews(item._id));
         e.preventDefault();
@@ -48,7 +45,6 @@ class NewsPage extends React.Component {
                             <th style={{ width: '80%' }}>Tiêu đề</th>
                             <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                            <th style={{ width: 'auto' }} nowrap='true'>Tin nội bộ</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -66,12 +62,6 @@ class NewsPage extends React.Component {
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} disabled={readOnly} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }} >
-                                    <label>
-                                        <input type='checkbox' checked={item.isInternal} onChange={() => this.changeIsInternal(item, index)} disabled={readOnly} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>

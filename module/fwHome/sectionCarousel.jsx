@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { homeGetCarousel } from './redux/reduxCarousel.jsx';
 
-const inComing = ['bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'fadeIn', 'fadeInDownBig', 'fadeInLeft', 'fadeInUp', 'fadeInUpBig', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRightIn', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig'];
-// const inComing = ['slideInRight'];
-const outGoing = ['bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight', 'bounceOutUp', 'fadeOut', 'fadeOutDown', 'fadeOutDownBig', 'fadeOutLeft', 'fadeOutLeftBig', 'fadeOutRight', 'fadeOutRightBig', 'fadeOutUp', 'fadeOutUpBig', 'rotateOutDownLeft', 'rotateOutDownRight', 'rotateOutUpLeft', 'rotateOutUpRight', 'flipOutY', 'rotateOut', 'slideOutDown'];
-// const outGoing = ['slideOutLeft'];
+// const inComing = ['bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'fadeIn', 'fadeInDownBig', 'fadeInLeft', 'fadeInUp', 'fadeInUpBig', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRightIn', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig'];
+const inComing = ['slideInRight'];
+// const outGoing = ['bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight', 'bounceOutUp', 'fadeOut', 'fadeOutDown', 'fadeOutDownBig', 'fadeOutLeft', 'fadeOutLeftBig', 'fadeOutRight', 'fadeOutRightBig', 'fadeOutUp', 'fadeOutUpBig', 'rotateOutDownLeft', 'rotateOutDownRight', 'rotateOutUpLeft', 'rotateOutUpRight', 'flipOutY', 'rotateOut', 'slideOutDown'];
+const outGoing = ['slideOutLeft'];
 
 class SectionCarousel extends React.Component {
     state = {};
@@ -43,12 +43,14 @@ class SectionCarousel extends React.Component {
                             loop: true,
                             margin: 0,
                             center: true,
-                            nav: true,
-                            navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
-                            navContainer: '.nav-container',
-                            navSpeed: 1500,
-                            dots: false,
-                            autoplay: false,
+                            // nav: true,
+                            // navText: ['<i className='carousel-control-prev-icon'></i>', '<i className='carousel-control-next-icon'></i>'],
+                            // navContainer: '.nav-container',
+                            // navSpeed: 1500,
+                            dots: true,
+                            dotsClass: 'home_slider_dots d-flex flex-row align-items-center justify-content-start',
+                            dotClass: 'home_slider_custom_dot trans_200',
+                            autoplay: true,
                             autoplayTimeout: 4000,
                             autoplaySpeed: 1500,
                             autoplayHoverPause: true,
@@ -62,6 +64,7 @@ class SectionCarousel extends React.Component {
                             }
                         });
                     }
+                    $(window).trigger('resize')
                 })
             });
         })
@@ -86,14 +89,31 @@ class SectionCarousel extends React.Component {
                                 backgroundSize: 'cover'
                             }}
                         >
-                            <div className='inner'>
-                                <h2>{T.language.parse(item.title)}</h2>
-                                {item.link ? <a href={item.link} target='_blank'>Xem thêm</a> : ''}
+                            <div className='home_container'>
+                                <div className='container'>
+                                    <div className='row'>
+                                        <div className='col'>
+                                            <div className='home_content'>
+                                                <div className='home_text_content'>
+                                                    <div className='home_subtitle'>{item.subtitle}</div>
+                                                    <div className='home_title'>{item.title}</div>
+                                                    <div className='home_text'>
+                                                        <p>{item.description}</p>
+                                                    </div>
+                                                </div>
+                                                <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
+                                                    <div className='button button_4 trans_200'><a href={item.link}>Xem thêm</a></div>
+                                                    {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         :
-                        <div key={index} className='single-instagram center-hide'
-                            style={{ maxWidth: '100%', height }}>
+                        <div key={index} 
+                            style={{ width: '100%', height: '600px'}}>
                             <div style={{
                                 overflow: 'hidden',
                                 position: 'absolute',
@@ -104,20 +124,38 @@ class SectionCarousel extends React.Component {
                                 backgroundImage: 'url(' + item.image + ')',
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center',
-                                backgroundSize: 'contain'
+                                backgroundSize: 'cover'
                             }}>
+                                <div className='home_container'>
+                                    <div className='container'>
+                                        <div className='row'>
+                                            <div className='col'>
+                                                <div className='home_content'>
+                                                    <div className='home_text_content'>
+                                                        <div className='home_subtitle'>{item.subtitle}</div>
+                                                        <div className='home_title'>{item.title}</div>
+                                                        <div className='home_text'>
+                                                            <p>{item.description}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
+                                                        <div className='button button_1 trans_200'><a href={item.link}>Read more</a></div>
+                                                        {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <a href={item.link} target='_blank'>
-                                <i className='fa fa-link' />
-                            </a>
                         </div>
                 );
             });
         }
 
         return this.state.single ?
-            <div style={{ position: 'relative' }}>
-                <div id={'carousel_' + this.props.viewId} className='owl-carousel owl-theme'>
+            <div className='home_slider_container' style={{ position: 'relative' }}>
+                <div id={'carousel_' + this.props.viewId} className='owl-carousel owl-theme home_slider'>
                     {elements}
                 </div>
                 <div className='nav-container' />
@@ -125,7 +163,7 @@ class SectionCarousel extends React.Component {
             :
             <div className='row'>
                 <div className='follow-us-instagram' style={{ width: '100%', overflow: 'hidden' }}>
-                    <div className='instagram-content d-flex flex-wrap align-items-center owl-carousel'
+                    <div className='instagram-content d-flex flex-wrap align-items-center owl-carousel '
                         id={'logo_carousel_' + this.props.viewId}>
                         {elements}
                     </div>

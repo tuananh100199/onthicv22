@@ -53,24 +53,24 @@ class CategoryModal extends React.Component {
                 <form className='modal-dialog' role='document' onSubmit={e => { this.save(); e.preventDefault(); }}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Category</h5>
+                            <h5 className='modal-title'>Danh mục</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='catName'>Category name</label>
+                                <label htmlFor='catName'>Tên danh mục</label>
                                 <input className='form-control' id='catName' type='text' placeholder='Category name' readOnly={readOnly} />
                             </div>
                             <div className='form-group'>
-                                <label>Image</label>
+                                <label>Hình ảnh</label>
                                 <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CategoryImage' image={this.state.image} readOnly={readOnly} />
                             </div>
                         </div>
                         <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Close</button>
-                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>Save</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>Lưu</button>
                         </div>
                     </div>
                 </form>
@@ -126,10 +126,10 @@ class Category extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Title</th>
-                            <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Image</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Active</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Action</th>
+                            <th style={{ width: '80%' }}>Tiêu đề</th>
+                            <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
+                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
+                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -18,7 +18,10 @@ class CourseListView extends React.Component {
     }
     
     componentDidMount() {
-        this.props.getCourseInPageByUser(1, T.defaultUserPageSize, () => this.loading = false);
+        this.props.getCourseInPageByUser(1, T.defaultUserPageSize, () => {
+            T.ftcoAnimate()
+            this.loading = false
+        });
     }
     
     ready = () => {
@@ -33,7 +36,10 @@ class CourseListView extends React.Component {
     
     setViewMode = (e, viewMode) => {
         e.preventDefault()
-        this.setState({ viewMode })
+        this.setState({ viewMode }, () => {
+            T.ftcoAnimate()
+            $(window).trigger('resize')
+        })
     }
     
     render() {
@@ -42,19 +48,18 @@ class CourseListView extends React.Component {
             elements_list = [];
         if (userPage) {
             elements_grid = userPage.list.map((item, index) => {
+                let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-md-6 col-lg-4 mb-2 mt-2' key={index}>
-                        <div className='post-entry h-100 single-popular-course mb-100'>
-                            <div className='image'>
-                                <Link to={link}>
-                                    <img src={item.image} alt='Image' className='img-fluid' style={{ width: '350px', height: 'auto' }}/>
-                                </Link>
-                            </div>
-                            <div className='text p-4'>
-                                <h2 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h2>
-                                <span className='text-uppercase date d-block mb-3'><small>{new Date(item.createdDate).getText()}</small></span>
-                                <p className='mb-0 grid-abstract'>{item.abstract}</p>
+                    <div className='col-lg-4 col-md-6 col-12 team_col ftco-animate' key={index}>
+                        <div className='team_item text-center d-flex flex-column aling-items-center justify-content-end'>
+                            <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
+                            <div className='team_content text-center'>
+                                <div className='team_name'><Link to={link}>{title}</Link></div>
+                                {/*<div className='team_title'>Plastic Surgeon</div>*/}
+                                <div className='team_text'>
+                                    <p>{abstract}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -63,20 +68,18 @@ class CourseListView extends React.Component {
             elements_list = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-12' key={index}>
-                        <div className='row'>
-                            <div style={{ width: '150px', padding: '15px' }} className={(index < userPage.list.length - 1 ? 'border-bottom' : '')}>
-                                <Link to={link}>
-                                    <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid'/>
-                                </Link>
-                            </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
-                                <div className='text'>
-                                    <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                        <h2 className='heading pb-0 mb-0'>
-                                            <Link to={link} className='text-primary'>{item.title}</Link>
-                                        </h2>
-                                        <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{item.abstract}</p>
+                    <div key={index} className='row ml-0 ftco-animate'>
+                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < userPage.list.length - 1 ? 'border-bottom' : ''}>
+                            <Link to={link}>
+                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
+                            </Link>
+                        </div>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < userPage.list.length - 1 ? 'border-bottom' : ''}>
+                            <div className='text'>
+                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                    <Link to={link}><div className='contact_content_title mt-0'>{item.title}</div></Link>
+                                    <div className='contact_content_text'>
+                                        <p className='text-justify'>{item.abstract}</p>
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +90,7 @@ class CourseListView extends React.Component {
         }
         
         return (
-            <section>
+            <div className='contact' style={{ marginTop: '110px' }}>
                 <div className='mb-15 text-right'>
                     <div className='btn-group'>
                         <button
@@ -100,15 +103,27 @@ class CourseListView extends React.Component {
                         </button>
                     </div>
                 </div>
-                <div className='row mb-5'>
-                    {(this.state.viewMode == 'list') ? elements_list : elements_grid}
-                    {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
-                        <div style={{width: '100%', textAlign: 'center'}}>
-                            <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
+    
+                {(this.state.viewMode == 'list') ? (
+                    <div className='container'>
+                        <div className='mt-2'>
+                            <div>{elements_list}</div>
                         </div>
-                    ) : ''}
-                </div>
-            </section>
+                    </div>
+                ) : (
+                    <div className='container'>
+                        <div className='row team_row'>
+                            {elements_grid}
+                        </div>
+                    </div>
+                )}
+                
+                {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
+                    <div style={{width: '100%', textAlign: 'center'}}>
+                        <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
+                    </div>
+                ) : ''}
+            </div>
         );
     }
 }

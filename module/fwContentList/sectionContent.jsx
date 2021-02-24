@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 class SectionContent extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { item: {}, items: [] };
+        this.state = { item: { items: [] } };
+        this.background = React.createRef();
     }
 
     componentDidMount() {
@@ -14,7 +15,10 @@ class SectionContent extends React.Component {
             if (this.props.listContentId) {
                 this.props.getContentListByUser(this.props.listContentId, data => {
                     if (data.item) {
-                        this.setState({ item: data.item });
+                        this.setState({ item: data.item }, () => {
+                            T.ftcoAnimate()
+                            $(this.background.current).parallax();
+                        });
                     } else {
                         this.props.history.push('/');
                     }
@@ -23,20 +27,32 @@ class SectionContent extends React.Component {
         });
     }
     
+    componentWillUnmount() {
+        $(this.background.current).parallax('destroy');
+    }
+    
     render() {
-        const items = this.state.item.items ? this.state.item.items : [];
+        const item = this.state.item;
+        const items = item.items || [], image = item.image || '/img/avatar.jpg';
+        
         let itemList = null;
         if (items && items.length) {
             itemList = items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
-                    <div key={index} className='row ml-0 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
-                        <div className={index < items.length - 1 ? 'col-12 border-bottom' : 'col-12'}>
+                    <div key={index} className='row ml-0 ftco-animate'>
+                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
+                            <Link to={link}>
+                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
+                            </Link>
+                        </div>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
-                                <div className='text-inner' style={{ paddingLeft: '5px' }}>
-                                    <h2 className='heading pb-0 mb-0'>
-                                        <Link to={link} className='text-primary'>{item.title}</Link>
-                                    </h2>
+                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                    <Link to={link}><div className='contact_content_title mt-0'>{item.title}</div></Link>
+                                    <div className='contact_content_text'>
+                                        <p className='text-justify'>{item.abstract}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -45,12 +61,31 @@ class SectionContent extends React.Component {
             })
         }
         
-        return (
-            <div className='mt-2'>
-                <h3 className='text-primary'>{this.state.item.title}</h3>
-                <div>{itemList}</div>
+        return [
+            <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
+                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={image} data-speed='0.8'/>
+                <div className='home_overlay'><img src='/img/home_overlay.png' alt='' /></div>
+                <div className='home_container'>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col'>
+                                <div className='home_content ftco-animate'>
+                                    <div className='home_title' style={{ whiteSpace: 'nowrap' }}>{item.title}</div>
+                                    <div className='home_text'>{item.abstract}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>,
+            <div key={1} className='contact'>
+                <div className='container'>
+                    <div className='mt-2'>
+                        <div>{itemList}</div>
+                    </div>
+                </div>
             </div>
-        )
+        ]
     }
 }
 const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });

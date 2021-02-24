@@ -21,6 +21,7 @@ import SectionStatistic from './sectionStatistic.jsx';
 import SectionTestimony from './sectionTestimony.jsx';
 import SectionVideo from './sectionVideo.jsx';
 import SectionListVideo from './sectionListVideo.jsx';
+import SectionSubscribe from './sectionSubscribe.jsx';
 
 
 export default {
@@ -78,6 +79,6 @@ export default {
         }
     ],
     Section: {
-        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
+        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo, SectionSubscribe
     }
 };

@@ -121,15 +121,15 @@ class ProfilePage extends React.Component {
                             <div className='tile-body'>
                                 <div className='row'>
                                     <div className='form-group col-sm-12 col-md-8 col-lg-6'>
-                                        <label className='control-label' htmlFor='userLastname'>Họ và tên lót</label>
+                                        <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{color: 'red'}}>*</span></label>
                                         <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
                                     </div>
                                     <div className='form-group col-sm-12 col-md-4 col-lg-3'>
-                                        <label className='control-label' htmlFor='userFirstname'>Tên</label>
+                                        <label className='control-label' htmlFor='userFirstname'>Tên <span style={{color: 'red'}}>*</span></label>
                                         <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                                     </div>
                                     <div className='form-group col-md-12 col-lg-3'>
-                                        <label className='control-label'>Quốc tịch</label>
+                                        <label className='control-label'>Quốc tịch <span style={{color: 'red'}}>*</span></label>
                                         <select className='form-control select2-input' ref={this.quocGia}/>
                                     </div>
                                 </div>
