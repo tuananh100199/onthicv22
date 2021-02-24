@@ -27,7 +27,7 @@ class SectionCourse extends React.Component {
                             <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
                             <div className='team_content text-center'>
                                 <div className='team_name'><a href={link}>{title}</a></div>
-                                <div className='team_title'>Plastic Surgeon</div>
+                                {/* <div className='team_title'>Plastic Surgeon</div> */}
                                 <div className='team_text'>
                                     <p style={{ height: '60px', overflow: 'hidden' }}>{abstract}</p>
                                 </div>
