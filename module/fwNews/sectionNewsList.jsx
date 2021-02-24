@@ -35,6 +35,7 @@ class SectionNewsList extends React.Component {
         e.preventDefault()
         this.setState({ viewMode: viewMode })
         T.cookie('viewMode', viewMode)
+        console.log(this.state.viewMode)
     }
 
     render() {
@@ -43,30 +44,17 @@ class SectionNewsList extends React.Component {
             elements_grid = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='col-md-6 col-lg-4 col-xl-3 mb-2 mt-2' key={index}>
-                        <div className='h-100 single-popular-course mb-100 wow fadeInUp' data-wow-delay={((index + 1) * 250) + 'ms'}>
-                            <Link to={link}>
-                                <img src={item.image} alt={item.title} />
-                            </Link>
-                            <div className='course-content'>
-                                <Link to={link} className='text-primary'>{item.title}</Link>
-                                <div className='meta d-flex align-items-center'>
-                                    <a href='#'>{new Date(item.createdDate).getText()}</a>
+                    <div className="col-lg-6 col-12 ftco-animate" key={index}>
+                        <div className="blog-entry align-self-stretch d-flex">
+                            <a href={link} className="block-20 order-md-last" style={{ background: 'url(' + item.image + ') no-repeat center center' }} >
+                            </a>
+                            <div className="text p-4 d-block">
+                                <div className="meta mb-3">
+                                    <div><a href="#">{new Date(item.createdDate).getText()}</a></div>
+                                    <div><a href="#">Admin</a></div>
                                 </div>
-                                <p className='mb-0 grid-abstract'>{item.abstract}</p>
-                            </div>
-                            <div className='seat-rating-fee d-flex justify-content-between' style={{ position: 'absolute', bottom: 0 }}>
-                                <div className='seat-rating h-100 d-flex align-items-center'>
-                                    {/*<div className='seat'>*/}
-                                    {/*    <i className='fa fa-user' aria-hidden='true'/> 10*/}
-                                    {/*</div>*/}
-                                    {/*<div className='rating'>*/}
-                                    {/*    <i className='fa fa-star' aria-hidden='true'/> 4.5*/}
-                                    {/*</div>*/}
-                                </div>
-                                <div className='course-fee h-100'>
-                                    <Link to={link} className='free'>Xem thêm</Link>
-                                </div>
+                                <h3 className="heading mt-3"><a href={link}>{item.title}</a></h3>
+                                <p>{item.abstract}</p>
                             </div>
                         </div>
                     </div>
@@ -83,7 +71,7 @@ class SectionNewsList extends React.Component {
                                     <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                                 </Link>
                             </div>
-                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
+                            <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
                                 <div className='text'>
                                     <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                         <h2 className='heading pb-0 mb-0'>
@@ -123,13 +111,13 @@ class SectionNewsList extends React.Component {
                             className={'btn btn-sm ' + (this.state.viewMode == 'list' ? ' btn-primary' : 'btn-secondary')}
                             onClick={(e) =>
                                 this.setViewMode(e, 'list')
-                            }><i className='fa fa-bars' aria-hidden='true' />
+                            }><i className='fa fa-bars' aria-hidden='true' />LIST
                         </button>
                         <button
                             className={'btn btn-sm ' + (this.state.viewMode == 'grid' ? 'btn-primary' : 'btn-secondary')}
                             onClick={
                                 (e) => this.setViewMode(e, 'grid')
-                            }><i className='fa fa-th' aria-hidden='true' />
+                            }><i className='fa fa-th' aria-hidden='true' />GRID
                         </button>
                     </div>
                 </div>

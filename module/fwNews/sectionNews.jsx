@@ -23,7 +23,7 @@ class SectionNews extends React.Component {
                                 <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                             </Link>
                         </div>
-                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                     <h6 className='heading pb-0 mb-0'>

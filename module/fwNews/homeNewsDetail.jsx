@@ -60,7 +60,7 @@ class NewsDetail extends React.Component {
     }
 
     render() {
-        
+
         const item = this.props.news && this.props.news.userNews ? this.props.news.userNews : null;
         if (item == null) {
             return <p>...</p>;
@@ -72,11 +72,11 @@ class NewsDetail extends React.Component {
                 </div>
             );
             return (
-                <section className='row mr-0'>
+                <div>
                     <div className='container-fluid'>
                         <div className='row'>
                             <div className='col-12 px-0'>
-                                <div className="owl-theme">                              
+                                <div className="owl-theme">
                                     <div className='slider-content'
                                         style={{
                                             height: this.state.viewportHeight,
@@ -86,32 +86,37 @@ class NewsDetail extends React.Component {
                                             backgroundSize: 'cover'
                                         }}
                                     >
-                                    <div className='inner'>
-                                        <h2>{T.language.parse(item.title)}</h2>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div className='col-12 col-lg-8 pt-5'>
-                                <div className='course--content' data-aos='fade-up'>
-                                    <div className='clever-description'>
-                                        <div className='about-course mb-30'>
-                                            <span className="meta">{new Date(item.createdDate).getText()}</span>
-                                            <p className="pt-4" dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                            {categories}
+                                        <div className='inner'>
+                                            <h2>{T.language.parse(item.title)}</h2>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className='col-12 col-lg-4 mr-0 pt-5 clever-description' data-aos='fade-up'>
-                                <div className='sidebar-widget about-course'>
-                                    <SectionNews />
+                        </div>
+                    </div>
+                    <section className='ftco-section ftco-degree-bg'>
+                        <div className='container-fluid'>
+                            <div className='row'>
+                                <div className='col-12 col-lg-8 pt-5 ftco-animate'>
+                                    <div className='course--content' data-aos='fade-up'>
+                                        <div className='clever-description'>
+                                            <div className='about-course mb-30'>
+                                                {/* <span className="meta">{new Date(item.createdDate).getText()}</span> */}
+                                                <p className="pt-4" dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
+                                                {categories}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-12 col-lg-4 mr-0 pt-5 clever-description ftco-animate' data-aos='fade-up'>
+                                    <div className='sidebar-box ftco-animate'>
+                                        <SectionNews />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                </section>
+                    </section>
+                </div>
             );
         }
     }

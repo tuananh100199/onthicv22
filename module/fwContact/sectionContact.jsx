@@ -1,15 +1,22 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux.jsx';
-
+import { getAllAddressByUser } from '../fwAddress/redux.jsx'
 
 class SectionContact extends React.Component {
     constructor(props) {
         super(props);
+        this.background = React.createRef();
         this.name = React.createRef();
         this.email = React.createRef();
         this.subject = React.createRef();
         this.message = React.createRef();
+    }
+    componentDidMount() {
+        this.props.getAllAddressByUser(() => {
+            // T.ftcoAnimate();
+            $(this.background.current).parallax()
+        });
     }
     
     sendMessage = (e) => {
@@ -41,93 +48,92 @@ class SectionContact extends React.Component {
             });
         }
     }
-    
-    render() {
-        let { addressList, mobile, email, map, latitude, longitude } = this.props.system ? this.props.system : {addressList: JSON.stringify([]) , map: '', latitude: 0, longitude: 0 };
-        const mapUrl = 'https://www.google.com/maps/@' + latitude + ',' + longitude + ',16z';
-        
-        const styles = {
-            border: {
-                borderBottom: 'solid 1px lightgray',
-            },
-            noBorder: {
-                borderBottom: 'none',
-            }   
-          };
-        try {
-            addressList = JSON.parse(addressList);
-        } catch (e) {
-            console.error(e)
-        }
 
+    render() {
+        let { facebook, youtube, twitter, instagram, contact } =
+            this.props.system ? this.props.system : { facebook: '', youtube: '', twitter: '', instagram: '', contact: '/img/contact.jpg' };
+        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+        
         return [
-            <div key={0} className='justify-content-center pb-3'>
-                <div className='col-md-12 heading-sections text-center'>
-                    <h2 className='mb-4'>Liên hệ</h2>
-                </div>
-            </div>,
-            <a key={1} href={mapUrl} target='_blank'>
-                <div key={0} className='map-area' style={{ height: '300px', background: 'url(' + map + ') no-repeat center center' }} />
-            </a>,
-            <section key={2} className='contact-area mt-30'>
-                <div className='container'>
-                    <div className='row'>
-                        <div className='col-12 col-lg-6'>
-                            <div className='contact--info'>
-                                <h4>Thông tin liên lạc</h4>
-                                <ul className='contact-list'>
-                                    <li>
-                                        <h6><i className='fa fa-phone' aria-hidden='true' /> Điện thoại</h6>
-                                        <a href={'tel:' + email}>{mobile}</a>
-                                    </li>
-                                    <li>
-                                        <h6><i className='fa fa-envelope' aria-hidden='true' />Email</h6>
-                                        <a href={'mailto:' + email}>{email}</a>
-                                    </li>
-                                    <li style={{display: 'block'}}>
-                                        <h6><i className='fa fa-address-book' aria-hidden='true' />Địa chỉ</h6>
-                                        {addressList.map((item, index) => (
-                                            <div className='mb-1' key={index}>
-                                                <p><strong>{item.addressTitle}</strong>:&nbsp;&nbsp;{item.address}</p>
-                                                <p>Điện thoại:&nbsp;&nbsp;{item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;&nbsp;{item.mobile}</p>
-                                                <p>Email:&nbsp;&nbsp;{item.email}</p>
-                                            </div>
-                                        ))}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                
-                        <div className='col-12 col-lg-6 mb-30'>
-                            <div className='contact-form'>
-                                <h4>Liên lạc</h4>
-                                <form onSubmit={this.sendMessage} className='row'>
-                                    <div className='col-12 col-lg-6'>
-                                        <input type='text' className='form-control' ref={this.name} placeholder='Tên' />
-                                    </div>
-                                    <div className='col-12 col-lg-6'>
-                                        <input type='email' className='form-control' ref={this.email} placeholder='Email' />
-                                    </div>
-                                    <div className='col-12'>
-                                        <input type='text' className='form-control' ref={this.subject} placeholder='Chủ đề' />
-                                    </div>
-                            
-                                    <div className='col-12'>
-                                        <textarea name='message' className='form-control' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
-                                    </div>
-                                    <div className='col-12'>
-                                        <button className='btn clever-btn w-100'>Gửi tin nhắn</button>
-                                    </div>
-                                </form>
+            <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
+                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={contact} data-speed='0.8'/>
+                <div className='home_overlay'><img src='img/home_overlay.png' alt='' /></div>
+                <div className='home_container'>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col'>
+                                <div className='home_content'>
+                                    <div className='home_title'>Liên hệ</div>
+                                    <div className='home_text'>Trung tâm dạy nghề lái xe Hiệp Phát</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section >
+            </div>
+            ,
+            <div className='contact'>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col-lg-6'>
+                            <div className='contact_form_container'>
+                                <div className='contact_form_title'>Liên hệ</div>
+                                <form className='contact_form' id='contact_form' onSubmit={this.sendMessage}>
+                                    <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
+                                        <input type='text' className='contact_input' ref={this.name} placeholder='Tên' />
+                                        <input type='email' className='contact_input' ref={this.email} placeholder='Email' />
+                                        <input type='text' className='contact_input w-100' ref={this.subject} placeholder='Chủ đề' />
+                                        <textarea name='message' className='contact_input w-100' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
+                                    </div>
+                                    <button className='button button_1 contact_button trans_200'>gửi tin nhắn</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div className='col-lg-5 offset-lg-1 contact_col'>
+                            <div className='contact_content'>
+                                <div className='contact_content_title'>Thông tin liên hệ</div>
+                                {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                                    this.props.address.list.map((item, index) => (
+                                        [
+                                            <div className='contact_info' key={index}>
+                                                <ul>
+                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                        <div style={{ whiteSpace: 'nowrap' }}>{item.title}:&nbsp;</div>
+                                                        <div>{item.address}</div>
+                                                    </li>
+                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                        <div style={{ whiteSpace: 'nowrap' }}>Điện thoại:&nbsp;</div>
+                                                        <div><a href={'tel:' + item.phoneNumber}>{item.phoneNumber}</a></div>
+                                                    </li>
+                                                    <li className='d-flex flex-row align-items-start justify-content-start'>
+                                                        <div style={{ whiteSpace: 'nowrap' }}>Email:&nbsp;</div>
+                                                        <div><a href={'mailto:' + item.email}>{item.email}</a></div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        ]
+                                    )) : <p>Chưa cập nhật địa chỉ</p>}
+
+                                <div className='contact_social'>
+                                    <ul className='d-flex flex-row align-items-center justify-content-start'>
+                                        {twitter}
+                                        {facebook}
+                                        {youtube}
+                                        {instagram}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div >,
         ];
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contact: state.contact });
-const mapActionsToProps = { createContact };
+const mapStateToProps = state => ({ system: state.system, contact: state.contact, address: state.address });
+const mapActionsToProps = { createContact, getAllAddressByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContact);

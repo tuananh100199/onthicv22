@@ -69,8 +69,8 @@ class CategoryModal extends React.Component {
                             </div>
                         </div>
                         <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Close</button>
-                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>Save</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>Lưu</button>
                         </div>
                     </div>
                 </form>
@@ -129,7 +129,7 @@ class Category extends React.Component {
                             <th style={{ width: '80%' }}>Tiêu đề</th>
                             <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hành động</th>
+                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

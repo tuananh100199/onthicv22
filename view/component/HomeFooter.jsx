@@ -10,13 +10,13 @@ class Footer extends React.Component {
     render() {
         let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, footer } =
             this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, footer: '/img/footer.jpg' };
-        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true'/></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
-        
+        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+
         return (
-            <footer className='footer'>
+            <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>
                     <div className='container'>
                         <div className='row'>
@@ -37,12 +37,12 @@ class Footer extends React.Component {
                                                         <div className='location_text mt-0'>Điện thoại: {item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;{item.mobile}</div>
                                                         <div className='location_text mt-0'>Email:&nbsp;<a href={'mailto:' + item.email}>{item.email}</a></div>
                                                     </li>
-                                            )) : ''}
+                                                )) : ''}
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className='col-lg-4 footer_col'>
                                 <div className='footer_location'>
                                     <div className='footer_title'>Thống kê truy cập</div>
@@ -58,7 +58,7 @@ class Footer extends React.Component {
                                     </ul>
                                 </div>
                             </div>
-                            
+
                             <div className='col-lg-3 footer_col'>
                                 <div className='opening_hours'>
                                     <div className='footer_title'>Opening Hours</div>
