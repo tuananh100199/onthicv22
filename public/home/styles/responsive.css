@@ -126,7 +126,7 @@
 	.main_nav,
 	.header_social
 	{
-		display: none;
+		display: none!important;
 	}
 	.home_slider_dots
 	{
