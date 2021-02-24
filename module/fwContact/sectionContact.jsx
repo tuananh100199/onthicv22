@@ -19,6 +19,10 @@ class SectionContact extends React.Component {
         });
     }
     
+    componentWillUnmount() {
+        $(this.background.current).parallax('destroy')
+    }
+    
     sendMessage = (e) => {
         e.preventDefault();
         if (this.name.current.value == '') {
