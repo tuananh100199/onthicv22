@@ -13,6 +13,7 @@ class NewsEditPage extends React.Component {
         this.imageBox = React.createRef();
         this.viEditor = React.createRef();
     }
+    
     componentDidMount() {
         T.ready('/user/news/list', () => {
             this.getData();
@@ -44,7 +45,7 @@ class NewsEditPage extends React.Component {
                 } else {
                     $(this.newsLink.current).html('').attr('');
                 }
-                data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
+                data.image = data.item.image ? data.item.image : '/img/avatar.jpg';
                 this.imageBox.current.setData('news:' + (data.item._id ? data.item._id : 'new'));
                 $('#neNewsViTitle').val(data.item.title);
                 $('#neNewsViAbstract').val(data.item.abstract);
