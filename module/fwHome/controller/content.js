@@ -21,6 +21,16 @@ module.exports = app => {
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/content'));
+    
+    const uploadContent = (req, fields, files, params, done) => {
+        if (fields.userData && fields.userData[0].startsWith('content:') && files.ContentImage && files.ContentImage.length > 0) {
+            console.log('Hook: uploadContent image => content image upload');
+            app.uploadComponentImage(req, 'content', app.model.content.get, fields.userData[0].substring(8), files.ContentImage[0].path, done);
+        }
+    };
+    
+    app.uploadHooks.add('uploadContentImage', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadContent(req, fields, files, params, done), done, 'component:write'));
 
     app.uploadHooks.add('uploadContentCkEditor', (req, fields, files, params, done) =>
         app.permission.has(req, () => app.uploadCkEditorImage('content', fields, files, params, done), done, 'component:write'));

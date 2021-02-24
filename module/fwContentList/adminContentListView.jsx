@@ -96,7 +96,8 @@ class ContentListPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tên danh sách</th>
+                            <th style={{ width: '80%' }}>Tên danh sách</th>
+                            <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh nền</th>
                             <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -105,6 +106,9 @@ class ContentListPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/list-content/edit/' + item._id}>{item.title}</Link></td>
+                                <td style={{ width: '20%', textAlign: 'center' }}>
+                                    <img src={item.image || '/img/avatar.jpg'} alt='background' style={{ height: '32px' }} />
+                                </td>
                                 <td>
                                     <div className='btn-group'>
                                         <Link to={'/user/list-content/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
