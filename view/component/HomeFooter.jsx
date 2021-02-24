@@ -43,7 +43,7 @@ class Footer extends React.Component {
                                 </div>
                             </div>
 
-                            <div className='col-lg-4 footer_col'>
+                            <div className='col-lg-3 footer_col'>
                                 <div className='footer_location'>
                                     <div className='footer_title'>Thống kê truy cập</div>
                                     <ul className='locations_list'>
@@ -59,15 +59,10 @@ class Footer extends React.Component {
                                 </div>
                             </div>
 
-                            <div className='col-lg-3 footer_col'>
+                            <div className='col-lg-4 footer_col'>
                                 {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                                    <div className="row google_map_row" >
-                                        <div id='carouselFooter' className='carousel slide col'
-                                            data-ride='carousel'
-                                            data-interval='5000'
-                                            style={{
-                                                height: 'auto',
-                                            }}>
+                                    <div className='google_map_row'>
+                                        <div id='carouselFooter' className='carousel slide col' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
                                             <div className='carousel-inner'>
                                                 {
                                                     this.props.address.list.map((item, index) => (
@@ -83,16 +78,15 @@ class Footer extends React.Component {
                                                                 cursor: 'pointer',
                                                             }}
                                                             onClick={() => window.open(item.mapURL, '_blank')}>
-
-                                                            <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>{item.title + ':' + item.address}</span>
+                                                            <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: '#4CA758', fontWeight: 'bold' }}>{item.title + ': ' + item.address}</span>
                                                         </div>))}
                                             </div>
                                             <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
-                                                <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
+                                                <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}/>
                                                 <span className='sr-only'>Previous</span>
                                             </a>
                                             <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
-                                                <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}></span>
+                                                <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}/>
                                                 <span className='sr-only'>Next</span>
                                             </a>
                                         </div>
