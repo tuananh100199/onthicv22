@@ -3,6 +3,8 @@ module.exports = app => {
         carouselId: app.db.Schema.Types.ObjectId,
         priority: Number,
         title: String,
+        subtitle: String,
+        description: String,
         image: String,
         link: String,
         active: { type: Boolean, default: false },

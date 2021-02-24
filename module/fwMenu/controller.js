@@ -222,7 +222,7 @@ module.exports = app => {
     app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
         const pageType = req.params.pageType;
         if (pageType == 'carousel') {
-            app.model.carousel.getAll((error, items) => {
+            app.model.carousel.getByActive(true,(error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))
