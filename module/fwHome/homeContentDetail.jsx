@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getContentByUser } from './redux/reduxContent.jsx';
+import NewsFeed from '../../view/component/NewsFeed.jsx';
 
 class ContentDetail extends React.Component {
     state = { _id: null, title: '', active: false, content: '' };
@@ -11,7 +12,7 @@ class ContentDetail extends React.Component {
         this.setState({ _id: params.contentId });
         this.props.getContentByUser(params.contentId, data => {
             if (data.item) {
-                this.setState(data.item);
+                this.setState(data.item, T.ftcoAnimate);
             }
         });
     }
@@ -39,18 +40,16 @@ class ContentDetail extends React.Component {
             return <p>...</p>;
         } else {
             return (
-                <section>
+                <div className='contact' style={{ marginTop: '50px' }}>
                     <div className='container'>
-                        <div className='course--content wow fadeInUp' data-wow-delay='250ms' >
-                            <div className='clever-description p-2'>
-                                <div className='about-course mb-30'>
-                                    <h3 className='text-primary text-center'>{item.title}</h3>
-                                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
-                                </div>
+                        <div className='contact_content'>
+                            <div className='contact_content_title ftco-animate'>{item.title}</div>
+                            <div className='contact_info ftco-animate'>
+                                <p dangerouslySetInnerHTML={{ __html: item.content }}/>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
             );
         }
     }

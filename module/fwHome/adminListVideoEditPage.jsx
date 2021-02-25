@@ -108,7 +108,7 @@ class ListVideoEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/component', () => {
+        T.ready('/user/settings', () => {
             const route = T.routeMatcher('/user/list-video/edit/:listVideoId'), params = route.parse(window.location.pathname);
             this.props.getListVideoItem(params.listVideoId, data => {
                 if (data.error) {

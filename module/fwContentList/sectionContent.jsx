@@ -28,7 +28,7 @@ class SectionContent extends React.Component {
     }
     
     componentWillUnmount() {
-        $(this.background.current).parallax('destroy');
+        $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
     }
     
     render() {
@@ -70,8 +70,10 @@ class SectionContent extends React.Component {
                         <div className='row'>
                             <div className='col'>
                                 <div className='home_content ftco-animate'>
-                                    <div className='home_title' style={{ whiteSpace: 'nowrap' }}>{item.title}</div>
-                                    <div className='home_text'>{item.abstract}</div>
+                                    <div className='home_text_content'>
+                                        <div className='home_title' style={{ whiteSpace: 'nowrap' }}>{item.title}</div>
+                                        <div className='home_text'>{item.abstract}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

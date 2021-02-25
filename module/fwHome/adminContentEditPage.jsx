@@ -13,7 +13,7 @@ class ContentEditPage extends React.Component {
         this.editor = React.createRef();
     }
     componentDidMount() {
-        T.ready('/user/component', () => {
+        T.ready('/user/settings', () => {
             const route = T.routeMatcher('/user/content/edit/:contentId'),
                 params = route.parse(window.location.pathname);
             this.props.getContent(params.contentId, data => {

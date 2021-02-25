@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { homeGetCarousel } from './redux/reduxCarousel.jsx';
 
 // const inComing = ['bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'fadeIn', 'fadeInDownBig', 'fadeInLeft', 'fadeInUp', 'fadeInUpBig', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRightIn', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig'];
-const inComing = ['slideInRight'];
+const inComing = ['bounceInDown'];
 // const outGoing = ['bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight', 'bounceOutUp', 'fadeOut', 'fadeOutDown', 'fadeOutDownBig', 'fadeOutLeft', 'fadeOutLeftBig', 'fadeOutRight', 'fadeOutRightBig', 'fadeOutUp', 'fadeOutUpBig', 'rotateOutDownLeft', 'rotateOutDownRight', 'rotateOutUpLeft', 'rotateOutUpRight', 'flipOutY', 'rotateOut', 'slideOutDown'];
-const outGoing = ['slideOutLeft'];
+const outGoing = ['bounceOutDown'];
 
 class SectionCarousel extends React.Component {
     state = {};
@@ -64,6 +64,7 @@ class SectionCarousel extends React.Component {
                             }
                         });
                     }
+                    $(window).trigger('resize')
                 })
             });
         })
@@ -95,13 +96,13 @@ class SectionCarousel extends React.Component {
                                             <div className='home_content'>
                                                 <div className='home_text_content'>
                                                     <div className='home_subtitle'>{item.subtitle}</div>
-                                                    <div className='home_title'>{item.title}</div>
+                                                    <div className='home_title' style={{ whiteSpace: 'nowrap' }}>{item.title}</div>
                                                     <div className='home_text'>
                                                         <p>{item.description}</p>
                                                     </div>
                                                 </div>
                                                 <div className='home_buttons d-flex flex-row align-items-center justify-content-start'>
-                                                    <div className='button button_1 trans_200'><a href={item.link}>Xem thêm</a></div>
+                                                    <div className='button button_4 trans_200'><a href={item.link}>Xem thêm</a></div>
                                                     {/* <div className='button button_2 trans_200'><a href='#'>Make an appointment</a></div> */}
                                                 </div>
                                             </div>

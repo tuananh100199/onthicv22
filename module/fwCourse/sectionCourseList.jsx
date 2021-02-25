@@ -18,7 +18,10 @@ class CourseListView extends React.Component {
     }
     
     componentDidMount() {
-        this.props.getCourseInPageByUser(1, T.defaultUserPageSize, () => this.loading = false);
+        this.props.getCourseInPageByUser(1, T.defaultUserPageSize, () => {
+            T.ftcoAnimate()
+            this.loading = false
+        });
     }
     
     ready = () => {
@@ -33,7 +36,10 @@ class CourseListView extends React.Component {
     
     setViewMode = (e, viewMode) => {
         e.preventDefault()
-        this.setState({ viewMode })
+        this.setState({ viewMode }, () => {
+            T.ftcoAnimate()
+            $(window).trigger('resize')
+        })
     }
     
     render() {
@@ -42,21 +48,18 @@ class CourseListView extends React.Component {
             elements_list = [];
         if (userPage) {
             elements_grid = userPage.list.map((item, index) => {
+                let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className="col-lg-6 d-flex ftco-animate" key={index} style={{ opacity: 1, visibility: 'visible'}}> 
-                        <div className="dept d-md-flex">
-                            <Link to={link} className="img" style={{ backgroundImage: 'url(' + item.image + ')'}}></Link>
-                            <div className="text p-4">
-                            <h3 className='h5'><Link to={link} className='text-primary'>{item.title}</Link></h3>
-                                {/* <p><span className="loc">{item.address}</span></p>  */}
-                                <p><span className="doc">25 Bài học</span></p>
-                                <p>{item.abstract} </p>
-                                <ul>
-                                <li><span className="ion-ios-checkmark" />Lý thuyết</li>
-                                <li><span className="ion-ios-checkmark" />Thực hành</li>
-                                <li><span className="ion-ios-checkmark" />Thi thử</li>
-                                </ul>
+                    <div className='col-lg-4 col-md-6 col-12 team_col ftco-animate' key={index}>
+                        <div className='team_item text-center d-flex flex-column aling-items-center justify-content-end'>
+                            <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
+                            <div className='team_content text-center'>
+                                <div className='team_name'><Link to={link}>{title}</Link></div>
+                                {/*<div className='team_title'>Plastic Surgeon</div>*/}
+                                <div className='team_text'>
+                                    <p>{abstract}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -65,22 +68,18 @@ class CourseListView extends React.Component {
             elements_list = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div className='container'>
-                        <div className='col-12' key={index}>
-                            <div className='row'>
-                                <div style={{ width: '150px', padding: '15px' }} className={(index < userPage.list.length - 1 ? 'border-bottom' : '')}>
-                                    <Link to={link}>
-                                        <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid'/>
-                                    </Link>
-                                </div>
-                                <div style={{ width: 'calc(100% - 165px)', marginRight: '15px' }} className={(index < userPage.list.length - 1 ? ' border-bottom' : '')}>
-                                    <div className='text'>
-                                        <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                            <h2 className='heading pb-0 mb-0'>
-                                                <Link to={link} className='text-primary'>{item.title}</Link>
-                                            </h2>
-                                            <p style={{ fontSize: '13px', height: '75px', overflow: 'hidden' }}>{item.abstract}</p>
-                                        </div>
+                    <div key={index} className='row ml-0 ftco-animate'>
+                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < userPage.list.length - 1 ? 'border-bottom' : ''}>
+                            <Link to={link}>
+                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
+                            </Link>
+                        </div>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < userPage.list.length - 1 ? 'border-bottom' : ''}>
+                            <div className='text'>
+                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
+                                    <Link to={link}><div className='contact_content_title mt-0'>{item.title}</div></Link>
+                                    <div className='contact_content_text'>
+                                        <p className='text-justify'>{item.abstract}</p>
                                     </div>
                                 </div>
                             </div>
@@ -91,18 +90,7 @@ class CourseListView extends React.Component {
         }
         
         return (
-            <section>
-                <div className="hero-wrap" style={{backgroundImage: 'url("images/bg_6.jpg")', backgroundAttachment: 'fixed'}}>
-                    <div className="overlay" />
-                    <div className="container-fluid">
-                    <div className="row no-gutters slider-text align-items-center justify-content-center" data-scrollax-parent="true">
-                        <div className="col-md-8 ftco-animate text-center">
-                        <p className="breadcrumbs"><span className="mr-2"><a href="index.html">Trang chủ</a></span> <span>Khóa học</span></p>
-                        <h1 className="mb-3 bread">Khóa Học</h1>
-                        </div>
-                    </div>
-                    </div>
-                </div>
+            <div className='contact' style={{ marginTop: '110px' }}>
                 <div className='mb-15 text-right'>
                     <div className='btn-group'>
                         <button
@@ -115,17 +103,27 @@ class CourseListView extends React.Component {
                         </button>
                     </div>
                 </div>
-                <div className='container'>
-                    <div className='row'>
-                        {(this.state.viewMode == 'list') ? elements_list : elements_grid}
-                        {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
-                            <div style={{width: '100%', textAlign: 'center'}}>
-                                <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
-                            </div>
-                        ) : ''}
+    
+                {(this.state.viewMode == 'list') ? (
+                    <div className='container'>
+                        <div className='mt-2'>
+                            <div>{elements_list}</div>
+                        </div>
                     </div>
-                </div>
-            </section>
+                ) : (
+                    <div className='container'>
+                        <div className='row team_row'>
+                            {elements_grid}
+                        </div>
+                    </div>
+                )}
+                
+                {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
+                    <div style={{width: '100%', textAlign: 'center'}}>
+                        <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
+                    </div>
+                ) : ''}
+            </div>
         );
     }
 }

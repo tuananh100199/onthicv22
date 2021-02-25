@@ -157,7 +157,7 @@ class TestimonyEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/component', () => {
+        T.ready('/user/settings', () => {
             const route = T.routeMatcher('/user/testimony/edit/:testimonyId'),
                 params = route.parse(window.location.pathname);
 
