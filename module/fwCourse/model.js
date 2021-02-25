@@ -8,9 +8,10 @@ module.exports = app => {
         abstract: String,
         content: String,
         active: { type: Boolean, default: false },
+        licenseClass: { type: String, enum: ['B1', 'B2', 'C'], default: 'B1' },
     });
     const model = app.db.model('Course', schema);
-    
+
     app.model.course = {
         create: (data, done) => {
             if (!data.title) data.title = 'Khoá học mới';
@@ -48,11 +49,11 @@ module.exports = app => {
         }),
 
         getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
-        
+
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
-        
+
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
-        
+
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);
