@@ -65,6 +65,9 @@
 	{
 		display: none;
 	}
+	.header_social .hotline {
+		display: none;
+	}
 	.main_nav ul li:not(:last-child)
 	{
 		margin-right: 29px;

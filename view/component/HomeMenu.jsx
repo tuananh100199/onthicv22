@@ -123,11 +123,16 @@ class HomeMenu extends React.Component {
             });
         }
         
-        let { logo, user, facebook, youtube, twitter, instagram } = this.props.system ? this.props.system : { };
+        let { logo, user, facebook, youtube, twitter, instagram, mobile } = this.props.system ? this.props.system : { };
         facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true'/></a></li> : '';
         instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
+    
+        // facebook = facebook ? <li style={{ marginTop: '12px' }}><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
+        // youtube = youtube ? <li style={{ marginTop: '12px' }}><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
+        // twitter = twitter ? <li style={{ marginTop: '12px' }}><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true'/></a></li> : '';
+        // instagram = instagram ? <li style={{ marginTop: '12px' }}><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
         return [
             <header key={0} className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
@@ -137,8 +142,8 @@ class HomeMenu extends React.Component {
                                 $(this.nav.current).classyNav();
                             })
                         }}>
-                            <img src={logo} alt={logo} width='40' height='40'/>
-                            <div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>
+                            <img src={logo} alt={logo} style={{ height: '65px', width: 'auto' }}/>
+                            {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>
                     <nav className='classy-navbar justify-content-between' ref={this.nav}>
@@ -156,11 +161,14 @@ class HomeMenu extends React.Component {
                                 {user && user._id ? <div className='btn-group'>
                                     <div className='button button_2 mr-1'><a href='/user'>USER</a></div>
                                     <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
-                                </div> : <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}><i className='fa fa-user' /></a></div>}
-                                {twitter}
-                                {facebook}
-                                {youtube}
-                                {instagram}
+                                </div> : <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
+                                {/*{twitter}*/}
+                                {/*{facebook}*/}
+                                {/*{youtube}*/}
+                                {/*{instagram}*/}
+                                <div className='hotline' style={{ marginLeft: '5px', fontSize: '15px' }}>
+                                    <i className='fa fa-phone'/> {mobile}
+                                </div>
                             </ul>
                         </div>
                         <div className='hamburger'><i className='fa fa-bars' aria-hidden='true'/></div>
@@ -184,11 +192,9 @@ class HomeMenu extends React.Component {
                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
                     </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
                 </nav>
-                {/*<div className='menu_extra'>*/}
-                {/*    <div className='menu_link'>Mo - Sat: 8:00am - 9:00pm</div>*/}
-                {/*    <div className='menu_link'>+34 586 778 8892</div>*/}
-                {/*    <div className='menu_link'><a href='#'>Make an appointment</a></div>*/}
-                {/*</div>*/}
+                <div className='menu_extra'>
+                    <div className='menu_link'>Hotline liên hệ: {mobile}</div>
+                </div>
                 <div className='social menu_social'>
                     <ul className='d-flex flex-row align-items-center justify-content-start'>
                         {twitter}

@@ -70,8 +70,10 @@ class SectionContact extends React.Component {
                         <div className='row'>
                             <div className='col'>
                                 <div className='home_content ftco-animate'>
-                                    <div className='home_title'>Liên hệ</div>
-                                    <div className='home_text'>Trung tâm dạy nghề lái xe Hiệp Phát</div>
+                                    <div className='home_text_content'>
+                                        <div className='home_title'>Liên hệ</div>
+                                        <div className='home_text'>Trung tâm dạy nghề lái xe Hiệp Phát</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
