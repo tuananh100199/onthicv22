@@ -10,8 +10,8 @@ module.exports = app => {
         licenseIssuedBy: String, // Noi cap GPLX
 
         otherDocumentation: String, // Tai lieu khac
-        licenseClass: String, // Hang bang lai xe 
-        newLicenseClass: String,
+        licenseClass: { type: String, enum: ['b1', 'b2', 'c'], default: 'b1' }, // Hang bang lai xe 
+        newLicenseClass: { type: String, enum: ['b1', 'b2', 'c'], default: 'b1' },
 
         approve: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
 

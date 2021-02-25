@@ -84,101 +84,101 @@ class UserDonDeNghiPage extends React.Component {
                 licenseNumber: $('#licenseNumber').val(),
                 licenseClass: $('#licenseClass').val(),
                 newLicenseClass: $('#newLicenseClass').val(),
-                licenseDated:  $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
+                licenseDated: $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
                 integration: this.state.item.integration,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
-            if (T.sexes.indexOf(sex) != -1) {
-                changesOfUser.sex = sex;
-            }
-            if (!changesOfUser.lastname) {
-                T.notify('Họ và tên lót bị trống', 'danger');
-                $('#userLastname').focus();
+        if (T.sexes.indexOf(sex) != -1) {
+            changesOfUser.sex = sex;
+        }
+        if (!changesOfUser.lastname) {
+            T.notify('Họ và tên lót bị trống', 'danger');
+            $('#userLastname').focus();
+            return;
+        }
+        if (changesOfUser.firstname == '') {
+            T.notify('Tên bị trống', 'danger');
+            $('#userFirstName').focus();
+            return;
+        }
+        if (changesOfUser.birthday == null) {
+            T.notify('Ngày sinh bị trống', 'danger');
+            $('#userBirthday').focus();
+            return;
+        }
+        if (changesOfUser.phoneNumber == '') {
+            T.notify('Số điện thoại bị trống', 'danger');
+            $('#phoneNumber').focus();
+            return;
+        }
+        if (changesOfUser.regularResidence == '') {
+            T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
+            $('#regularResidence').focus();
+            return;
+        }
+        if (changesOfUser.residence == '') {
+            T.notify('Nơi cư trú bị trống', 'danger');
+            $('#residence').focus();
+            return;
+        }
+        if (changesOfUser.identityCard == '') {
+            T.notify('Số chứng minh nhân dân bị trống', 'danger');
+            $('#identityCard').focus();
+            return;
+        }
+        if (changesOfUser.identityDate == null) {
+            T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
+            $('#identityDate').focus();
+            return;
+        }
+        if (changesOfUser.identityIssuedBy == '') {
+            T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
+            $('#identityIssuedBy').focus();
+            return;
+        }
+        if (changesOfForm.newLicenseClass == '') {
+            T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
+            $('#newLicenseClass').focus();
+            return;
+        }
+        if (changesOfForm.licenseNumber != '') {
+            if (changesOfForm.licenseClass == '') {
+                T.notify('Hạng bằng lái xe bị trống', 'danger');
+                $('#licenseClass').focus();
                 return;
             }
-             if (changesOfUser.firstname == '') {
-                T.notify('Tên bị trống', 'danger');
-                $('#userFirstName').focus();
+            if (changesOfForm.licenseIssuedBy == '') {
+                T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
+                $('#licenseIssuedBy').focus();
                 return;
             }
-            if (changesOfUser.birthday == null) {
-                T.notify('Ngày sinh bị trống', 'danger');
-                $('#userBirthday').focus();
+            if (changesOfForm.licenseDated == null) {
+                T.notify('Ngày cấp giấy phép lái xe bị trống', 'danger');
+                $('#licenseDated').focus();
                 return;
             }
-             if (changesOfUser.phoneNumber == '') {
-                T.notify('Số điện thoại bị trống', 'danger');
-                $('#phoneNumber').focus();
-                return;
-            }
-            if (changesOfUser.regularResidence == '') {
-                T.notify('Nơi đăng ký hộ khẩu thường trú bị trống', 'danger');
-                $('#regularResidence').focus();
-                return;
-            }
-            if (changesOfUser.residence == '') {
-                T.notify('Nơi cư trú bị trống', 'danger');
-                $('#residence').focus();
-                return;
-            }
-            if (changesOfUser.identityCard == '') {
-                T.notify('Số chứng minh nhân dân bị trống', 'danger');
-                $('#identityCard').focus();
-                return;
-            }
-            if (changesOfUser.identityDate == null) {
-                T.notify('Ngày cấp chứng minh nhân dân bị trống', 'danger');
-                $('#identityDate').focus();
-                return;
-            }
-            if (changesOfUser.identityIssuedBy == '') {
-                T.notify('Nơi cấp chứng minh nhân dân bị trống', 'danger');
-                $('#identityIssuedBy').focus();
-                return;
-            }
-            if (changesOfForm.newLicenseClass == '') {
-                T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
-                $('#newLicenseClass').focus();
-                return;
-            }
-            if (changesOfForm.licenseNumber != '') {
-                if (changesOfForm.licenseClass == '') {
-                    T.notify('Hạng bằng lái xe bị trống', 'danger');
-                    $('#licenseClass').focus();
-                    return;
+        }
+        if (changesOfForm.licenseNumber == '') {
+            changesOfForm.licenseClass = '';
+            changesOfForm.licenseIssuedBy = '';
+            changesOfForm.licenseDated = null;
+        }
+
+        this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm, changesOfUser, (error) => {
+            if (!error) {
+                if (changesOfForm.licenseNumber == '') {
+                    $('#licenseClass').val('');
+                    $('#licenseIssuedBy').val('');
+                    $('#licenseDated').val(null);
                 }
-                if (changesOfForm.licenseIssuedBy == '') {
-                    T.notify('Nơi cấp giấy phép lái xe bị trống', 'danger');
-                    $('#licenseIssuedBy').focus();
-                    return;
-                }
-                if (changesOfForm.licenseDated == null) {
-                    T.notify('Ngày cấp giấy phép lái xe bị trống', 'danger');
-                    $('#licenseDated').focus();
-                    return;
-                }
+
+                T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
             }
-            if (changesOfForm.licenseNumber == '') {
-                changesOfForm.licenseClass = '';
-                changesOfForm.licenseIssuedBy = '';
-                changesOfForm.licenseDated = null;
-            }
-            
-            this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm,changesOfUser, (error) => {
-                if (!error) {
-                    if (changesOfForm.licenseNumber == '') {
-                        $('#licenseClass').val('');
-                        $('#licenseIssuedBy').val('');
-                        $('#licenseDated').val(null);
-                    }
-    
-                    T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
-                }
-            });
+        });
     };
 
-    exportDonDeNghiHoc = () =>{
+    exportDonDeNghiHoc = () => {
         this.props.exportDonDeNghiHocToWord(this.state.item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Đơn Đề Nghị Học.docx');
         });
@@ -190,7 +190,7 @@ class UserDonDeNghiPage extends React.Component {
     };
     exportBanCamKet = () => {
         this.props.exportBanCamKetToWord(this.state.item._id, (data) => {
-            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]),'Bản Cam Kết.docx');
+            FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Bản Cam Kết.docx');
         });
     };
     render() {
@@ -212,83 +212,91 @@ class UserDonDeNghiPage extends React.Component {
                     <div className='tile-body'>
                         <div className='row'>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{ color: 'red' }}>*</span></label>
                                 <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='userFirstname'>Tên <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='userFirstname'>Tên <span style={{ color: 'red' }}>*</span></label>
                                 <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label'>Quốc tịch <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label'>Quốc tịch <span style={{ color: 'red' }}>*</span></label>
                                 <select className='form-control select2-input' ref={this.quocGia} />
                             </div>
                         </div>
 
                         <div className='row'>
                             <div className='form-group col-md-3' id='birthdaySection'>
-                                <label className='control-label' htmlFor='userBirthday'>Ngày sinh <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='userBirthday'>Ngày sinh <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#birthdaySection' />
                             </div>
                             <div className='form-group col-md-3'>
                                 <div className='form-group' style={{ width: '100%' }}>
-                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính <span style={{color: 'red'}}>*</span></label>
+                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính <span style={{ color: 'red' }}>*</span></label>
                                     <Dropdown ref={this.sex} text='' items={T.sexes} />
                                 </div>
                             </div>
                             <div className='form-group col-md-6'>
-                                <label className='control-label'>Số điện thoại <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label'>Số điện thoại <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber' />
                             </div>
                         </div>
 
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú <span style={{color: 'red'}}>*</span></label>
+                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú <span style={{ color: 'red' }}>*</span></label>
                             <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3' />
                         </div>
 
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='residence'>Nơi cư trú <span style={{color: 'red'}}>*</span></label>
+                            <label className='control-label' htmlFor='residence'>Nơi cư trú <span style={{ color: 'red' }}>*</span></label>
                             <textarea className='form-control' id='residence' placeholder='Nơi cư trú' rows='3' />
                         </div>
 
                         <div className='row'>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu) <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu) <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' id='identityCard'
                                     placeholder='Nhập số CMND' />
                             </div>
                             <div className='form-group col-md-3' id='identityDateSection'>
-                                <label className='control-label' htmlFor='identityDate'>Cấp ngày <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='identityDate'>Cấp ngày <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection' />
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy' />
                             </div>
                         </div>
                         <div className='row'>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số <span style={{color: 'red'}}>*</span></label>
+                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' id='licenseNumber'
                                     placeholder='Số giấy phép lái xe' />
                             </div>
                             <div className='form-group col-md-2' id='licenseClassSection'>
-                                <label className='control-label' htmlFor='licenseClass'>Hạng <span style={{color: 'red'}}>*</span> </label>
-                                <input className='form-control' type='text' placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection' />
+                                <label className='control-label' htmlFor='licenseClass'>Hạng <span style={{ color: 'red' }}>*</span> </label>
+                                <select className="form-control select2-input" placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection'>
+                                    <option value="b1">B1</option>
+                                    <option value="b2">B2</option>
+                                    <option value="c">C</option>
+                                </select>
                             </div>
                             <div className='form-group col-md-5'>
-                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp <span style={{color: 'red'}}>*</span> </label>
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp <span style={{ color: 'red' }}>*</span> </label>
                                 <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy' />
                             </div>
                             <div className='form-group col-md-2'>
-                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày <span style={{color: 'red'}}>*</span> </label>
+                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày <span style={{ color: 'red' }}>*</span> </label>
                                 <input className='form-control' type='text' placeholder='Ngày cấp GPLX' id='licenseDated' />
                             </div>
                         </div>
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng <span style={{color: 'red'}}>*</span> </label>
-                            <input className='form-control' type='text' placeholder='Hạng' id='newLicenseClass' />
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng <span style={{ color: 'red' }}>*</span> </label>
+                            <select className="form-control select2-input" placeholder='Hạng GPLX' id='newLicenseClass' data-date-container='#identityDateSection'>
+                                <option value="b1">B1</option>
+                                <option value="b2">B2</option>
+                                <option value="c">C</option>
+                            </select>
                         </div>
                         <div className='form-group' style={{ display: 'inline-flex' }}>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
@@ -309,19 +317,19 @@ class UserDonDeNghiPage extends React.Component {
                     <i className='fa fa-lg fa-reply' />
                 </Link>
                 <button type='button' className='btn btn-primary btn-circle' title='Lưu'
-                        style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                    <i className='fa fa-lg fa-save'/>
+                    style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                    <i className='fa fa-lg fa-save' />
                 </button>
-                <button type='button' className='btn btn-success btn-circle'  data-toggle='tooltip' title='Xuất đơn đề nghị học'
+                <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
                 </button>
-                <button type='button' className='btn btn-info btn-circle'  data-toggle='tooltip' title='Xuất biên nhận học viên'
+                <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
                     style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
-                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip'  title='Xuất bản cam kết'
-                        style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
+                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
+                    style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
                     <i className="fa fa-file-text-o"></i>
                 </button>
             </main>

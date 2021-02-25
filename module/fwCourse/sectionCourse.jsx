@@ -21,13 +21,8 @@ class SectionCourse extends React.Component {
                 let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
                 const link = item.link ? '/khoa-hoc/' + item.link : '/course/item/' + item._id;
                 return (
-<<<<<<< HEAD
-                    <div className='col-lg-4 team_col' key={index}>
-                        <div className='team_item text-center d-flex flex-column aling-items-center'>
-=======
                     <div className='col-lg-4 col-md-6 col-12 team_col ftco-animate' key={index}>
                         <div className='team_item text-center d-flex flex-column aling-items-center justify-content-end'>
->>>>>>> 752e590ae7ff1695544540ffb24c46b75adc7aaf
                             <div className='team_image'><Link to={link}><img src={image} alt={title} /></Link></div>
                             <div className='team_content text-center'>
                                 <div className='team_name'><Link to={link}>{title}</Link></div>
