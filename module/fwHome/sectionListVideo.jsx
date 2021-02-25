@@ -80,7 +80,7 @@ class SectionListVideo extends React.Component {
         const remainItems = items.slice(1)
         return (
             <div>
-                <div className='section_title_container'>
+                <div className='services'>
                     {/*<div className='section_subtitle'>This is Dr Pro</div>*/}
                     <div className='section_title'><h2>Video clip</h2></div>
                 </div>

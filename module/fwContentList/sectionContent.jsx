@@ -40,13 +40,13 @@ class SectionContent extends React.Component {
             itemList = items.map((item, index) => {
                 const link = '/content/item/' + item._id;
                 return (
-                    <div key={index} className='row ml-0 ftco-animate'>
-                        <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
+                    <div key={index} className='row ml-0 ftco-animate' style={{ marginBottom: '15px' }}>
+                        <div style={{ width: '150px', padding: '15px 15px 30px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <Link to={link}>
                                 <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
                             </Link>
                         </div>
-                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
+                        <div style={{ width: 'calc(100% - 165px)', marginRight: '15px', paddingTop: '15px', paddingBottom: '15px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                     <Link to={link}><div className='contact_content_title mt-0'>{item.title}</div></Link>
