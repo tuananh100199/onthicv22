@@ -21,7 +21,7 @@ class UserDonDeNghiPage extends React.Component {
             $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
-                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
+                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality, email } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -31,6 +31,7 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityCard').val(identityCard);
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
+                $('#email').val(email);
                 this.sex.current.setText(sex ? sex : '');
                 $(this.quocGia.current).select2({
                     data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
@@ -219,9 +220,13 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label' htmlFor='userFirstname'>Tên <span style={{ color: 'red' }}>*</span></label>
                                 <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                             </div>
-                            <div className='form-group col-md-3'>
+                            {/* <div className='form-group col-md-3'>
                                 <label className='control-label'>Quốc tịch <span style={{ color: 'red' }}>*</span></label>
                                 <select className='form-control select2-input' ref={this.quocGia} />
+                            </div> */}
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='userFirstname'>Email </label>
+                                <input type='text' className='form-control' disabled id='email' placeholder='Email' />
                             </div>
                         </div>
 

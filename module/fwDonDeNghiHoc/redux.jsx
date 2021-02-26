@@ -78,7 +78,7 @@ export function getForm(_id, option, done) {
 
 export function createForm(done) {
     return dispatch => {
-        const url = '/api/user-form';
+        const url = '/api/application-form';
         const data = {
             title: 'Form mới '
         };
@@ -182,6 +182,21 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
                 done && done();
             }
         }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
+    }
+}
+export function userCreateDonDeNghiHoc(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/new';
+        T.post(url, data => {
+            if (data.error) {
+                T.notify('Tạo đơn đề nghị học bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: UPDATE, item: data.item });
+                done && done();
+            }
+        }, error => T.notify('Tạo đơn đề nghị học bị lỗi!', 'danger'));
     }
 }
 
