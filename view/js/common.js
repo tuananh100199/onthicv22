@@ -8,6 +8,7 @@ import './sweetalert.min.js';
 const T = {
     PropTypes,
     rootUrl: 'https://hiepphat.bktphcm.net',
+    licenseClass: { B1: 'B1', B2: 'B2', C: 'C' },
     sexes: ['male', 'female'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
@@ -216,7 +217,7 @@ const T = {
     },
 
     tooltip: (timeOut = 250) => {
-        $(function() {
+        $(function () {
             setTimeout(() => {
                 $('[data-toggle="tooltip"]').tooltip();
             }, timeOut);
@@ -224,7 +225,7 @@ const T = {
     },
 };
 
-T.socket = T.debug ? io({ transports:['websocket'] }) : io.connect(T.rootUrl, { transports:['websocket'], secure: true });
+T.socket = T.debug ? io({ transports: ['websocket'] }) : io.connect(T.rootUrl, { transports: ['websocket'], secure: true });
 
 T.language = texts => {
     let lg = T.cookie('language');
@@ -246,7 +247,7 @@ T.language.switch = () => {
 };
 T.language.parse = (text, getAll) => {
     let obj = {};
-    try { obj = JSON.parse(text) } catch {};
+    try { obj = JSON.parse(text) } catch { };
     if (obj.vi == null) obj.vi = text;
     if (obj.en == null) obj.en = text;
     return getAll ? obj : obj[T.language()];
@@ -293,31 +294,31 @@ $(() => {
 T.ftcoAnimate = (timeOut = 250) => {
     setTimeout(() => {
         let i = 0;
-        $('.ftco-animate').waypoint( function( direction ) {
-            if( direction === 'down' && !$(this.element ? this.element : this).hasClass('ftco-animated') ) {
+        $('.ftco-animate').waypoint(function (direction) {
+            if (direction === 'down' && !$(this.element ? this.element : this).hasClass('ftco-animated')) {
                 i++;
                 $(this.element ? this.element : this).addClass('item-animate');
-                setTimeout(function(){
-                    $('body .ftco-animate.item-animate').each(function(k){
+                setTimeout(function () {
+                    $('body .ftco-animate.item-animate').each(function (k) {
                         var el = $(this);
-                        setTimeout( function () {
+                        setTimeout(function () {
                             var effect = el.data('animate-effect');
-                            if ( effect === 'fadeIn') {
+                            if (effect === 'fadeIn') {
                                 el.addClass('fadeIn ftco-animated');
-                            } else if ( effect === 'fadeInLeft') {
+                            } else if (effect === 'fadeInLeft') {
                                 el.addClass('fadeInLeft ftco-animated');
-                            } else if ( effect === 'fadeInRight') {
+                            } else if (effect === 'fadeInRight') {
                                 el.addClass('fadeInRight ftco-animated');
                             } else {
                                 el.addClass('fadeInUp ftco-animated');
                             }
                             el.removeClass('item-animate');
-                        },  k * 50, 'easeInOutExpo' );
+                        }, k * 50, 'easeInOutExpo');
                     });
 
                 }, 100);
             }
-        } , { offset: '95%' } );
+        }, { offset: '95%' });
     }, timeOut)
 };
 
@@ -327,7 +328,7 @@ T.truncate = (str, length) => {
     return tempStr + '...'
 }
 
-T.clone = function() {
+T.clone = function () {
     let result = {};
     for (let i = 0, length = arguments.length; i < length; i++) {
         const obj = JSON.parse(JSON.stringify(arguments[i]));
@@ -341,40 +342,40 @@ export default T;
 
 
 
-String.prototype.getText = function() {
+String.prototype.getText = function () {
     return T.language.parse(this);
 };
 
-String.prototype.viText = function() {
+String.prototype.viText = function () {
     return T.language.parse(this, true).vi;
 };
 
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
 
-String.prototype.upFirstChar = function() {
+String.prototype.upFirstChar = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-String.prototype.lowFirstChar = function() {
+String.prototype.lowFirstChar = function () {
     return this.charAt(0).toLowerCase() + this.slice(1);
 }
 
 //Array prototype -----------------------------------------------------------------------------------------------------
-Array.prototype.contains = function(...pattern) {
+Array.prototype.contains = function (...pattern) {
     return pattern.reduce((result, item) => result && this.includes(item), true);
 };
 
-Date.prototype.getText = function() {
+Date.prototype.getText = function () {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getDateText = function() {
+Date.prototype.getDateText = function () {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear();
 };
-Date.prototype.getTimeText = function() {
+Date.prototype.getTimeText = function () {
     return T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getShortText = function() {
+Date.prototype.getShortText = function () {
     return this.getFullYear() + '/' + T.get2(this.getMonth() + 1) + '/' + T.get2(this.getDate()) + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };

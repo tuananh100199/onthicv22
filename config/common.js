@@ -16,7 +16,7 @@ module.exports = (app, appName) => {
         }
         return result;
     };
-    
+
     // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
     app.createTemplate = function () {
@@ -44,12 +44,12 @@ module.exports = (app, appName) => {
             };
         }
     };
-    
+
     // Parent menu -----------------------------------------------------------------------------------------------------
     app.parentMenu = {
         user: {
             index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user',
-            subMenusRender: false, groups: ['Thông tin cá nhân', 'Biểu mẫu'],
+            subMenusRender: false, groups: ['Thông tin cá nhân', 'Sát hạch'],
         },
         setting: {
             index: 2000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog',
@@ -79,16 +79,16 @@ module.exports = (app, appName) => {
             readyHookContainer[name] = null;
             app.readyHooks.waiting();
         },
-        
+
         waiting: () => {
             if (readyHooksId) clearTimeout(readyHooksId);
             readyHooksId = setTimeout(app.readyHooks.run, 2000);
         },
-        
+
         run: () => {
             let hookKeys = Object.keys(readyHookContainer),
                 ready = true;
-            
+
             // Check all hooks
             for (let i = 0; i < hookKeys.length; i++) {
                 const hook = readyHookContainer[hookKeys[i]];
@@ -98,7 +98,7 @@ module.exports = (app, appName) => {
                     break;
                 }
             }
-            
+
             if (ready) {
                 hookKeys.forEach(hookKey => readyHookContainer[hookKey].run());
                 console.log(` - #${process.pid}: The system is ready!`);
