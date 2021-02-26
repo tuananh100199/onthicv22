@@ -5,7 +5,8 @@ import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
-import FileSaver from 'file-saver'
+import FileSaver from 'file-saver';
+import ImageBox from '../../view/component/ImageBox.jsx';
 const countryList = require('country-list');
 
 class UserDonDeNghiPage extends React.Component {
@@ -21,6 +22,9 @@ class UserDonDeNghiPage extends React.Component {
             $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
+                const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
+                this.setState({ image });
+
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality, email } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
@@ -31,7 +35,7 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityCard').val(identityCard);
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
-                $('#email').val(email);
+                this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
                 this.sex.current.setText(sex ? sex : '');
                 $(this.quocGia.current).select2({
                     data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
@@ -43,7 +47,6 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
@@ -224,9 +227,12 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label'>Quốc tịch <span style={{ color: 'red' }}>*</span></label>
                                 <select className='form-control select2-input' ref={this.quocGia} />
                             </div> */}
+                            <div className='form-group col-md-3'>
+                                <label className='control-label'>Hình đại diện</label>
+                                < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
+                            </div>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='userFirstname'>Email </label>
-                                <input type='text' className='form-control' disabled id='email' placeholder='Email' />
+                                <label className='control-label' htmlFor='userEmail'>Email:&nbsp; <span>{this.props.system.user.email}</span></label>
                             </div>
                         </div>
 
