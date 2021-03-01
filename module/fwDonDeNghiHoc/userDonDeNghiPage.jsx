@@ -13,7 +13,10 @@ class UserDonDeNghiPage extends React.Component {
     state = {};
     sex = React.createRef();
     quocGia = React.createRef();
-
+    constructor(props) {
+        super(props);
+        this.imageBox = React.createRef();
+    }
     componentDidMount() {
         T.ready('/user', () => {
             T.tooltip();
@@ -22,6 +25,7 @@ class UserDonDeNghiPage extends React.Component {
             $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
+                console.log('object')
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
 
@@ -47,6 +51,7 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
+
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
@@ -59,6 +64,7 @@ class UserDonDeNghiPage extends React.Component {
                     this.props.history.push('/user');
                 }
             });
+
         });
     }
 
