@@ -13,13 +13,13 @@ module.exports = app => {
         }
     };
 
-    const menuDonDeNghiHoc = {
-        parentMenu: app.parentMenu.user,
-        menus: {
-            1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
-        }
-    }
-    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu }, { name: 'user:login', menu: menuDonDeNghiHoc });
+    // const menuDonDeNghiHoc = {
+    //     parentMenu: app.parentMenu.user,
+    //     menus: {
+    //         1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
+    //     }
+    // }
+    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
@@ -153,7 +153,6 @@ module.exports = app => {
     app.get('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.get({ user: user._id }, (error, item) => {
-            console.log('object')
             if (error) {
                 res.send({ error })
             } else if (item) {

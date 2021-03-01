@@ -25,7 +25,6 @@ class UserDonDeNghiPage extends React.Component {
             $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
-                console.log('object')
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
 
