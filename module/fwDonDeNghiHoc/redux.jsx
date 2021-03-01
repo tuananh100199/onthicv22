@@ -4,6 +4,7 @@ import T from '../../view/js/common';
 const GET_PAGE = 'form:getApplicationForm';
 const UPDATE = 'form:getApplicationForm';
 const GET = 'applicationForm:getApplicationForm';
+const GET_ALL_FINISH = 'applicationForm:getAllFinishApplicationForm';
 
 export default function applicationFormReducer(state = null, data) {
     switch (data.type) {
@@ -24,6 +25,9 @@ export default function applicationFormReducer(state = null, data) {
         }
         case GET:
             return Object.assign({}, state, { item: data.item });
+
+        case GET_ALL_FINISH:
+            return Object.assign({}, state, { finish: data.finish });
 
         default:
             return state;
@@ -169,7 +173,7 @@ export function getDonDeNghiHocByUser(_id, done) {
     }
 }
 
-export function getAllDonDeNghiHocByUser(done) {
+export function getAllDonDeNghiHocHoanThanhByUser(done) {
     return dispatch => {
         const url = '/api/user-application-form/all';
         T.get(url, data => {
@@ -179,7 +183,7 @@ export function getAllDonDeNghiHocByUser(done) {
             } else {
                 dispatch({ type: GET, item: data.item });
             }
-            done && done(data);
+            done && done(data.list);
         }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
     }
 }

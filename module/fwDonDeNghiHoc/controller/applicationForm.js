@@ -25,7 +25,7 @@ module.exports = app => {
     app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
-    app.get('/user/bieu-mau/don-de-nghi-hoc', app.permission.check(), app.templates.admin);
+    app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
 
     // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailApplicationFormInit', {
@@ -130,7 +130,7 @@ module.exports = app => {
                                 mailHtml = result.rejectDonDeNghiHocHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
                             app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
                                 item.reason = reason;
-                                item.approve = 'reject';
+                                item.status = 'reject';
                                 item.save(error => res.send({ error }))
                             }, (error) => {
                                 res.send({ error })
@@ -165,7 +165,7 @@ module.exports = app => {
     });
     app.get('/api/user-application-form/all', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ user: user._id }, (error, item) => {
+        app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, item) => {
             if (error) {
                 res.send({ error })
             } else if (item) {

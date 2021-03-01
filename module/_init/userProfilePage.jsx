@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStatistic } from './reduxSystem.jsx';
 import { Link } from 'react-router-dom';
-import { getAllDonDeNghiHocByUser } from '../fwDonDeNghiHoc/redux.jsx';
+import { getAllDonDeNghiHocHoanThanhByUser } from '../fwDonDeNghiHoc/redux.jsx';
 class ProfileIcon extends React.Component {
     render() {
         const content = (
@@ -10,6 +10,18 @@ class ProfileIcon extends React.Component {
                 <i className={'icon fa fa-3x ' + this.props.icon} />
                 <div className='info'>
                     <h4>{this.props.title}</h4>
+                    {this.props.status ?
+                        <p>Trạng thái: {(this.props.status == 'waiting' ? 'Mới' :
+                            (this.props.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
+                                (this.props.status == 'reject' ? <span className='text-danger'>Từ chối</span> :
+                                    (this.props.status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
+                                        : <span className='text-warning'>Đã hoàn thành</span>)
+                                )
+                            )
+                        )}</p>
+                        : <p></p>
+                    }
+
                 </div>
             </div>
         );
@@ -20,14 +32,13 @@ class ProfileIcon extends React.Component {
 class UserProfilePage extends React.Component {
     componentDidMount() {
         this.props.getStatistic();
-        this.props.getAllDonDeNghiHocByUser();
+        this.props.getAllDonDeNghiHocHoanThanhByUser();
         T.ready();
     }
 
     render() {
         const { item } = this.props.donDeNghiHoc ?
             this.props.donDeNghiHoc : { item: [] };
-        console.log(item.length)
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -50,13 +61,19 @@ class UserProfilePage extends React.Component {
                     <div className='col-md-6 col-lg-6'>
                         <ProfileIcon type='info' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch mới'} link='/user/bieu-mau/don-de-nghi-hoc/new' />
                     </div>
-                    {item.length ? item.map((item, index) => (
-                        <div className='col-md-6 col-lg-6' key={index}>
-                            <ProfileIcon type='primary' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch hạng ' + item.newLicenseClass} link={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} />
-                        </div>))
-                        : <p>Chưa có đơn đề nghị</p>}
+                    <div className='col-md-6 col-lg-6'>
+                        <h4>Danh sách khóa học đã hoàn thành</h4>
+                        <div className='row'>
+                            {item.length ? item.map((item, index) => (
+                                <div className='col-12' key={index}>
+                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} />
+                                </div>))
+                                : <p>Chưa có đơn đề nghị</p>}
+                        </div>
+                    </div>
+
                     {/* <div className='col-md-6 col-lg-6'>
-                        <ProfileIcon type='primary' icon='fa-book' title='Khóa học' link='/user/course/list' />
+                        <ProfileIcon type='primary' icon='fa-book' title='Khóa học' link='/user/course/item' />
                     </div> */}
                 </div>
             </main>
@@ -65,5 +82,5 @@ class UserProfilePage extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getStatistic, getAllDonDeNghiHocByUser };
+const mapActionsToProps = { getStatistic, getAllDonDeNghiHocHoanThanhByUser };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);

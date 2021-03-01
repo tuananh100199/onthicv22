@@ -294,9 +294,9 @@ class UserDonDeNghiPage extends React.Component {
                             <div className='form-group col-md-2' id='licenseClassSection'>
                                 <label className='control-label' htmlFor='licenseClass'>Hạng <span style={{ color: 'red' }}>*</span> </label>
                                 <select className="form-control select2-input" placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection'>
-                                    <option value="b1">B1</option>
-                                    <option value="b2">B2</option>
-                                    <option value="c">C</option>
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                    <option value="C">C</option>
                                 </select>
                             </div>
                             <div className='form-group col-md-5'>
@@ -311,9 +311,9 @@ class UserDonDeNghiPage extends React.Component {
                         <div className='form-group'>
                             <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng <span style={{ color: 'red' }}>*</span> </label>
                             <select className="form-control select2-input" placeholder='Hạng GPLX' id='newLicenseClass' data-date-container='#identityDateSection'>
-                                <option value="b1">B1</option>
-                                <option value="b2">B2</option>
-                                <option value="c">C</option>
+                                <option value="B1">B1</option>
+                                <option value="B2">B2</option>
+                                <option value="C">C</option>
                             </select>
                         </div>
                         <div className='form-group' style={{ display: 'inline-flex' }}>

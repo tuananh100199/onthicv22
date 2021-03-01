@@ -15,7 +15,7 @@ class ReasonModal extends React.Component {
 
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => {});
+            $(this.modal.current).on('shown.bs.modal', () => { });
         });
     }
 
