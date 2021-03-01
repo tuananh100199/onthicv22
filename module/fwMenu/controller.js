@@ -263,6 +263,14 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
+        } 
+        else if (pageType == 'DangKyTuVan') {
+            app.model.DangKyTuVan.getAll((error, items) => {
+                res.send({
+                    error,
+                    items: items.map(item => ({ _id: item._id, text: item.title }))
+                })
+            });
         } else if (pageType == 'content') {
             app.model.content.getAll((error, items) => {
                 res.send({

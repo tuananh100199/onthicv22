@@ -6,8 +6,8 @@ module.exports = app => {
             enum: [
                 '<empty>',
                 'carousel', 'slogan', 'video', 'statistic', 'staff group', 'testimony', 'all staffs', 'last news',
-                'subscribe', 'contact', 'logo',
-                'content', 'all news', 'event', 'all leagues', 'listVideo', 'all courses', 'last course', 'contentList'
+                'subscribe', 'contact', 'logo','DangKyTuVan',
+                'content', 'all news', 'event', 'all leagues', 'listVideo', 'all courses', 'last course', 'contentList','multimedia'
             ],
         },
         viewId: app.db.Schema.Types.ObjectId,

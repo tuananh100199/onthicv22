@@ -30,7 +30,8 @@ const T = {
         'listVideo',
         'all courses',
         'last course',
-        'contentList'
+        'contentList',
+        'multimedia',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
