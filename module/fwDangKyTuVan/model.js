@@ -4,6 +4,7 @@ module.exports = app => {
         email: String,
         subject: String,
         message: String,
+        phone: String,
         userId: app.db.Schema.Types.ObjectId,
         read: { type: Boolean, default: false },
         createdDate: { type: Date, default: Date.now },
