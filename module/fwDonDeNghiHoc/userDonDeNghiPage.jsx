@@ -45,8 +45,10 @@ class UserDonDeNghiPage extends React.Component {
                     placeholder: 'Chọn quốc gia'
                 }).val(nationality).trigger('change');
             }
-
-            this.props.getDonDeNghiHocByUser(data => {
+            let url = window.location.pathname,
+                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
+            console.log(params.id)
+            this.props.getDonDeNghiHocByUser(params.id, data => {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {

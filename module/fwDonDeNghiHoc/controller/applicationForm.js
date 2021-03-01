@@ -150,15 +150,28 @@ module.exports = app => {
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));
 
     // User ------------------------------------------------------------------------------------------------------------
-    app.get('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/get/:_id', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.get({ user: user._id }, (error, item) => {
+        console.log(req.params._id)
+        app.model.applicationForm.get(req.params._id, (error, item) => {
             if (error) {
                 res.send({ error })
             } else if (item) {
                 res.send({ item })
             } else {
                 app.model.applicationForm.create({ user: user._id }, (error, item) => res.send({ error, item }));
+            }
+        })
+    });
+    app.get('/api/user-application-form/all', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.getAll({ user: user._id }, (error, item) => {
+            if (error) {
+                res.send({ error })
+            } else if (item) {
+                res.send({ item })
+            } else {
+                res.send({ error });
             }
         })
     });

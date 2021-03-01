@@ -10,7 +10,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/bieu-mau/don-de-nghi-hoc',
+            path: '/user/bieu-mau/don-de-nghi-hoc/:id',
             component: Loadable({ loading: Loading, loader: () => import('./userDonDeNghiPage.jsx') })
         },
         {

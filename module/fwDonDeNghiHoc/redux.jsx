@@ -154,9 +154,24 @@ export function denyApplicationForm(_id, reason, done) {
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
-export function getDonDeNghiHocByUser(done) {
+export function getDonDeNghiHocByUser(_id, done) {
     return dispatch => {
-        const url = '/api/user-application-form';
+        const url = '/api/user-application-form/get/' + _id;
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: GET, item: data.item });
+            }
+            done && done(data);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function getAllDonDeNghiHocByUser(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/all';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
