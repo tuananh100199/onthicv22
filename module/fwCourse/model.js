@@ -1,9 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],
         createdDate: { type: Date, default: Date.now },
-        image: String,
         link: String,
         abstract: String,
         content: String,

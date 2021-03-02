@@ -18,6 +18,4 @@
 	6001 - Danh mục (/user/news/category)
 	6002 - Tin tức (/user/news/list)
 	6003 - Chờ duyệt (/user/news/draft)
-7000. Quản lý khóa học (undefined)
-	6001 - Danh mục (/user/course/category)
-	6002 - Khóa học (/user/course/list)
+7000. Khóa học (/user/course/list)

@@ -10,9 +10,9 @@ export default function courseReducer(state = null, data) {
     switch (data.type) {
         case CourseGetCourseInPage:
             return Object.assign({}, state, { page: data.page });
-       
+
         case CourseGetCourse:
-            return Object.assign({}, state, { course: data.item, categories: data.categories});
+            return Object.assign({}, state, { course: data.item });
 
         case CourseGetCourseInPageByUser:
             if (state == null || state.userCondition != data.condition) {
@@ -70,7 +70,7 @@ export function getCourse(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
-                dispatch({ type: CourseGetCourse, item: data.item, categories: data.categories });
+                dispatch({ type: CourseGetCourse, item: data.item });
             }
         }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
     }

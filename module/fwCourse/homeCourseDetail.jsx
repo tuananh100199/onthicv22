@@ -40,11 +40,6 @@ class CourseDetail extends React.Component {
         if (item == null) {
             return <p>...</p>;
         } else {
-            let categories = !item.categories ? [] : item.categories.map((item, index) =>
-                <div key={index} className='bg-black pb-1 px-2 mb-2 text-white d-inline-block rounded mr-1'>
-                    <span><small>{T.language.parse(item.title)}</small></span>
-                </div>
-            );
             return (
                 <section className='row mr-0'>
                     <div className='container'>
@@ -74,7 +69,6 @@ class CourseDetail extends React.Component {
                                             </p> */}
                                             {/* <h4 className='text-black text-left'>Nội dung khóa học</h4> */}
                                             <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                            {/* {categories} */}
                                         </div>
                                     </div>
                                 </div>

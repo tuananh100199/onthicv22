@@ -10,7 +10,7 @@ class CourseEditPage extends React.Component {
     courseLink = React.createRef();
     imageBox = React.createRef();
     editor = React.createRef();
-    
+
     componentDidMount() {
         T.ready('/user/course/list', () => {
             const route = T.routeMatcher('/user/course/edit/:courseId'),
@@ -21,23 +21,19 @@ class CourseEditPage extends React.Component {
                     this.props.history.push('/user/course/list');
                 } else if (data.item) {
                     const item = data.item;
-                    let categories = (data.categories || []).map(item => ({ id: item.id, text: T.language.parse(item.text) }));
-                    $('#courseCategories').select2({ data: categories }).val(item.categories).trigger('change');
-            
                     if (item.link) {
                         $(this.courseLink.current).html(T.rootUrl + '/khoahoc/' + item.link).attr('href', '/khoahoc/' + item.link);
                     } else {
                         $(this.courseLink.current).html('').attr('');
                     }
-            
+
                     this.imageBox.current.setData('course:' + (item._id ? item._id : 'new'), item.image || '/img/avatar.jpg');
                     $('#courseTitle').val(item.title);
                     $('#courseAbstract').val(item.abstract);
                     this.editor.current.html(item.content);
-            
+
                     this.setState(data);
                     $('#courseTitle').focus();
-                    $('#courseCategories').select2();
                 } else {
                     this.props.history.push('/user/course/list');
                 }
@@ -45,18 +41,14 @@ class CourseEditPage extends React.Component {
         });
     }
 
-    getData = () => {
-    
-    }
-
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
-    
+
     checkLink = (item) => {
         this.props.checkLink(item._id, $('#courseLink').val().trim());
     }
-    
+
     courseLinkChange = (e) => {
         if (e.target.value) {
             $(this.courseLink.current).html(T.rootUrl + '/khoa-hoc/' + e.target.value).attr('href', '/khoa-hoc/' + e.target.value);
@@ -67,15 +59,12 @@ class CourseEditPage extends React.Component {
 
     save = () => {
         const changes = {
-            categories: $('#courseCategories').val(),
             title: $('#courseTitle').val().trim(),
             link: $('#courseLink').val().trim(),
             active: this.state.item.active,
             abstract: $('#courseAbstract').val().trim(),
             content: this.editor.current.html(),
         };
-        
-        if (changes.categories.length == 0) changes.categories = 'empty';
         this.props.updateCourse(this.state.item._id, changes, () => {
             $('#courseLink').val(changes.link)
         })
@@ -83,12 +72,12 @@ class CourseEditPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('course:write');
-        
+
         const item = this.state.item ? this.state.item : {
-            categories: [], title: '', content: '', createdDate: new Date(), active: false
+            title: '', content: '', createdDate: new Date(), active: false
         };
         let linkDefaultCourse = T.rootUrl + '/course/item/' + item._id;
-        
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -131,16 +120,10 @@ class CourseEditPage extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Danh mục khóa học</label>
-                                    <select className='form-control' id='courseCategories' multiple={true} defaultValue={[]} disabled={readOnly} >
-                                        <optgroup label='Lựa chọn danh mục' />
-                                    </select>
-                                </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className='col-md-6'>
                         <div className='tile'>
                             <h3 className='tile-title'>Link</h3>
@@ -171,7 +154,7 @@ class CourseEditPage extends React.Component {
                             <div className='tile-body'>
                                 <label className='control-label'>Tóm tắt khóa học</label>
                                 <textarea defaultValue='' className='form-control' id='courseAbstract' placeholder='Tóm tắt khóa học' readOnly={readOnly}
-                                          style={{ minHeight: '100px', marginBottom: '12px' }} />
+                                    style={{ minHeight: '100px', marginBottom: '12px' }} />
                                 <label className='control-label'>Nội dung khóa học</label>
                                 <Editor ref={this.editor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=course' readOnly={readOnly} />
                             </div>
