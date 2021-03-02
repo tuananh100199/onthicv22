@@ -163,13 +163,25 @@ module.exports = app => {
             }
         })
     });
-    app.get('/api/user-application-form/all', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/finished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, item) => {
+        app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
             if (error) {
                 res.send({ error })
-            } else if (item) {
-                res.send({ item })
+            } else if (finish) {
+                res.send({ finish })
+            } else {
+                res.send({ error });
+            }
+        })
+    });
+    app.get('/api/user-application-form/reject', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.getAll({ user: user._id, status: 'reject' }, (error, reject) => {
+            if (error) {
+                res.send({ error })
+            } else if (reject) {
+                res.send({ reject })
             } else {
                 res.send({ error });
             }

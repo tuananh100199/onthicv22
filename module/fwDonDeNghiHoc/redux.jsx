@@ -5,6 +5,7 @@ const GET_PAGE = 'form:getApplicationForm';
 const UPDATE = 'form:getApplicationForm';
 const GET = 'applicationForm:getApplicationForm';
 const GET_ALL_FINISH = 'applicationForm:getAllFinishApplicationForm';
+const GET_ALL_REJECT = 'applicationForm:getAllRejectApplicationForm';
 
 export default function applicationFormReducer(state = null, data) {
     switch (data.type) {
@@ -28,6 +29,9 @@ export default function applicationFormReducer(state = null, data) {
 
         case GET_ALL_FINISH:
             return Object.assign({}, state, { finish: data.finish });
+
+        case GET_ALL_REJECT:
+            return Object.assign({}, state, { reject: data.reject });
 
         default:
             return state;
@@ -175,13 +179,28 @@ export function getDonDeNghiHocByUser(_id, done) {
 
 export function getAllDonDeNghiHocHoanThanhByUser(done) {
     return dispatch => {
-        const url = '/api/user-application-form/all';
+        const url = '/api/user-application-form/finished';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                dispatch({ type: GET, item: data.item });
+                dispatch({ type: GET_ALL_FINISH, finish: data.finish });
+            }
+            done && done(data.list);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function getAllDonDeNghiHocBiTuChoiByUser(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/reject';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: GET_ALL_REJECT, reject: data.reject });
             }
             done && done(data.list);
         }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));

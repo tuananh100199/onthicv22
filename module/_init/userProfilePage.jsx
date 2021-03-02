@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStatistic } from './reduxSystem.jsx';
 import { Link } from 'react-router-dom';
-import { getAllDonDeNghiHocHoanThanhByUser } from '../fwDonDeNghiHoc/redux.jsx';
+import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser } from '../fwDonDeNghiHoc/redux.jsx';
 class ProfileIcon extends React.Component {
     render() {
         const content = (
@@ -33,12 +33,13 @@ class UserProfilePage extends React.Component {
     componentDidMount() {
         this.props.getStatistic();
         this.props.getAllDonDeNghiHocHoanThanhByUser();
+        this.props.getAllDonDeNghiHocBiTuChoiByUser();
         T.ready();
     }
 
     render() {
-        const { item } = this.props.donDeNghiHoc ?
-            this.props.donDeNghiHoc : { item: [] };
+        const reject = this.props.donDeNghiHoc && this.props.donDeNghiHoc.reject ? this.props.donDeNghiHoc.reject : [];
+        const finish = this.props.donDeNghiHoc && this.props.donDeNghiHoc.finish ? this.props.donDeNghiHoc.finish : [];
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -58,17 +59,31 @@ class UserProfilePage extends React.Component {
                     <div className='col-md-6 col-lg-6'>
                         <ProfileIcon type='primary' icon='fa-id-card' title='Hồ sơ cá nhân' link='/user/profile' />
                     </div>
+                    {
+                        !reject.length ?
+                            <div className='col-md-6 col-lg-6'>
+                                <ProfileIcon type='info' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch mới'} link='/user/bieu-mau/don-de-nghi-hoc/new' />
+                            </div>
+                            : <div className='col-md-6 col-lg-6'></div>
+                    }
                     <div className='col-md-6 col-lg-6'>
-                        <ProfileIcon type='info' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch mới'} link='/user/bieu-mau/don-de-nghi-hoc/new' />
+                        <h4>Danh sách khóa học bị từ chối</h4>
+                        <div className='row'>
+                            {reject.length ? reject.map((item, index) => (
+                                <div className='col-12' key={index}>
+                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} />
+                                </div>))
+                                : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
+                        </div>
                     </div>
                     <div className='col-md-6 col-lg-6'>
                         <h4>Danh sách khóa học đã hoàn thành</h4>
                         <div className='row'>
-                            {item.length ? item.map((item, index) => (
+                            {finish.length ? finish.map((item, index) => (
                                 <div className='col-12' key={index}>
                                     <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} />
                                 </div>))
-                                : <p>Chưa có đơn đề nghị</p>}
+                                : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
                         </div>
                     </div>
 
@@ -82,5 +97,5 @@ class UserProfilePage extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getStatistic, getAllDonDeNghiHocHoanThanhByUser };
+const mapActionsToProps = { getStatistic, getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);
