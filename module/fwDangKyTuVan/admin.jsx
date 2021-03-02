@@ -2,7 +2,75 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan } from './redux.jsx';
 import Pagination from '../../view/component/Pagination.jsx';
+import Editor from '../../view/component/CkEditor4.jsx';
 
+
+class AdminPhanHoiDangKyTuVan extends React.Component {
+    constructor(props) {
+        super(props);
+        this.modal = React.createRef();
+        this.viEditor = React.createRef();
+    }
+
+    componentDidMount() {
+        $(document).ready(() => {
+            $(this.modal.current).on('shown.bs.modal', () => {});
+        });
+    }
+
+   
+    show = (item) => {
+        this.setState(item);
+        $(this.modal.current).modal('show');
+    }
+
+
+    save = () => {
+        $("#submit-btn").attr("disabled", true);
+        if (!this.viEditor.current.html()) {
+            $("#submit-btn").removeAttr("disabled");
+            T.notify('Lý do không được để trống', 'danger');
+        } else {
+            let reasonOfForm = {
+                reason: this.editor.current.html(),
+                approve: "eject"
+            }
+            this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm);
+            this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => {
+                $("#submit-btn").removeAttr("disabled");
+                $('#modal').modal('hide');
+            })
+
+        }
+    }
+    render() {
+        return (
+            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref={this.modal}>
+                <div className="modal-dialog modal-lg" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Lý do từ chối đơn đề nghị học, sát hạch</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form>
+                            <div className="modal-body mx-3">
+                                <div className="form-group">
+                                    <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
 
 class AdminDangKyTuVanModal extends React.Component {
     state = {};
@@ -13,6 +81,10 @@ class AdminDangKyTuVanModal extends React.Component {
         $(this.modal.current).modal('show');
     }
 
+    response = (e) => {
+        this.modal.current.show(null);
+        e.preventDefault();
+    }
     render() {
         const { name, subject, email, message, phone } = this.state;
         return (
@@ -33,7 +105,10 @@ class AdminDangKyTuVanModal extends React.Component {
                             <p>{message}</p>
                         </div>
                         <div className='modal-footer'>
+                            <button type='button' className='btn btn-primary' data-dismiss='modal' onClick={this.response}>Phản hồi</button>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+
+                            <AdminPhanHoiDangKyTuVan key={1} ref={this.modal} />
                         </div>
                     </div>
                 </div>
@@ -93,7 +168,7 @@ class DangKyTuVanPage extends React.Component {
                                 <td>
                                     <div className='btn-group'>
                                         <a className='btn btn-primary' href='#' onClick={e => this.showDangKyTuVan(e, item._id)}>
-                                            <i className='fa fa-lg fa-envelope-open-o' />
+                                            <i className='fa fa-paper-plane' />
                                         </a>
                                         <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                             <i className='fa fa-lg fa-trash' />

@@ -82,7 +82,7 @@ class SectionDangKyTuVan extends React.Component {
                                         <input type="tel" className="intro_input" placeholder="Số điện thoại"  ref={this.phone} required="required" />
                                         <input type='text' className='contact_input w-100' ref={this.email} placeholder='Email' required="required" />
                                         <input type='text' className='contact_input w-100' ref={this.subject} placeholder='Chủ đề' />
-                                        <textarea name='message' className='contact_input w-100' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
+                                        <textarea name='message' className='contact_input w-100' ref={this.message} cols='30' rows='10' style={{height: 128}} placeholder='Nội dung' />
                                     </div>
                                     <button className="button button_1 intro_button trans_200">gửi tin nhắn</button>
                                 </form>

@@ -16,7 +16,8 @@ module.exports = app => {
         'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml',
         'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml',
         'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml',
-        'emailContactTitle', 'emailContactText', 'emailContactHtml'
+        'emailContactTitle', 'emailContactText', 'emailContactHtml',
+        'emailDangKyTuVanTitle', 'emailDangKyTuVanText','emailDangKyTuVanHtml',
     ];
 
     app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(...EmailParams, result => res.send(result)));
@@ -38,36 +39,39 @@ module.exports = app => {
     app.readyHooks.add('emailInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,
         run: () => app.model.setting.init({
-            emailRegisterMemberTitle: 'Hiệp Phát: Welcome to new member!',
-            emailRegisterMemberText: 'Dear {name}, Hiệp Phát welcome you as a new member. Before you can login, please click this {url} to active your account. Best regard, Tutorial, Website: ' + app.rootUrl + '',
-            emailRegisterMemberHtml: 'Dear <b>{name}</b>,<br/><br/>' +
-                'Hiệp Phát welcome you as a new member. Before you can login, please click this <a href="{url}">{url}</a> to active your account.<br/><br/>' +
-                'Best regard,<br/>' +
+            emailRegisterMemberTitle: 'Hiệp Phát: Chào mừng thành viên mới!',
+            emailRegisterMemberText: 'Chào {name}, Trung tâm hiệp phát xin hân hạnh chào mừng bạn. Trước khi bạn có thể đăng nhập, Hãy nhấn vào {url} để kích hoạt tài khoản của bạn. Trân trọng, Mọi thông tin tham khảo vui lòng truy cập trang web: ' + app.rootUrl + '',
+            emailRegisterMemberHtml: 'Chào <b>{name}</b>,<br/><br/>' +
+                'Trung tâm hiệp phát xin hân hạnh chào mừng bạn. Trước khi có thể đăng nhập, hãy nhấn vào <a href="{url}">{url}</a> để kích hoạt tài khoản của bạn.<br/><br/>' +
+                'Trân trọng,<br/>' +
                 'Hiệp Phát<br/>' +
                 'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
-            emailCreateMemberByAdminTitle: 'Hiệp Phát: Welcome to new member!',
-            emailCreateMemberByAdminText: 'Dear {name}, Your account has been created. Your login information is: email: {email}. Password: "{password}". Activation link: {url}. Best regard, Hiệp Phát Admin.',
-            emailCreateMemberByAdminHtml: 'Dear {name},<br/><br/>Your account has been created. Your login information is: <br> - Email: {email}.<br> - Password: "{password}".<br/> - Activation link: <a href="{url}">{url}</a>.<br/><br/>Best regard,<br/>Hiệp Phát Admin.',
-            emailNewPasswordTitle: 'Hiệp Phát: New password!',
-            emailNewPasswordText: 'Dear {name}, Your new password is "{password}". Best regard, Hiệp Phát Admin.',
-            emailNewPasswordHtml: 'Dear {name},<br/><br/>Your new password is "<b>{password}</b>".<br/><br/>Best regard,<br/>Hiệp Phát Admin.',
-            emailForgotPasswordTitle: 'Hiệp Phát: Forgot password!',
-            emailForgotPasswordText: 'Dear {name}, you have asked to change your password at ' + app.rootUrl + '. ' +
-                'You use this link below to change the password. ' +
-                'This link only has effect for the next 24 hours' +
-                'Link: {url}' +
-                'Best regard, ' +
+            emailCreateMemberByAdminTitle: 'Hiệp Phát: Chào mừng thành viên mới!',
+            emailCreateMemberByAdminText: 'Chào {name}, Tài khoản của bạn đã được tạo. Thông tin đăng nhập của bạn là: email: {email}. mật khẩu: "{password}". Đường dẫn kích hoạt: {url}. Trân trọng, Hiệp Phát Admin.',
+            emailCreateMemberByAdminHtml: 'Chào {name},<br/><br/>Tài khoản của bạn đã được tạo. Thông tin đăng nhập của bạn là: <br> - Email: {email}.<br> - mật khẩu: "{password}".<br/> - Đường dẫn kích hoạt: <a href="{url}">{url}</a>.<br/><br/>Trân trọng,<br/>Hiệp Phát Admin.',
+            emailNewPasswordTitle: 'Hiệp Phát: Mật khẩu mới!',
+            emailNewPasswordText: 'Chào {name}, Mật khẩu mới của bạn là "{password}". Trân trọng, Hiệp Phát Admin.',
+            emailNewPasswordHtml: 'Chào {name},<br/><br/> Mật khẩu mới của bạn là "<b>{password}</b>".<br/><br/>Trân trọng,<br/>Hiệp Phát Admin.',
+            emailForgotPasswordTitle: 'Hiệp Phát: Quên mật khẩu!',
+            emailForgotPasswordText: 'Chào {name}, bạn đã yêu cầu tay đổi mật khẩu tại ' + app.rootUrl + '. ' +
+                'Bạn sử dụng đường dẫn sau để thay đổi mật khẩu ' +
+                'Đường dẫn chỉ có hiệu lực trong vòng 24 giờ' +
+                'Đường dẫn: {url}' +
+                'Trân trọng, ' +
                 'Hiệp Phát' +
                 'Website: ' + app.rootUrl + '',
-            emailForgotPasswordHtml: '<p><b>Dear {name}, </b><br/><br/>You have asked to change your password at <a href="' + app.rootUrl + '" target="_blank">' + app.rootUrl + '</a>. ' +
-                'You use this link below to change the password. <b>This link only has effect for the next 24 hours</b><br/>' +
-                'Link: <a href="{url}">{url}</a><br/>' +
-                'Best regard, <br/>' +
+            emailForgotPasswordHtml: '<p><b>Chào {name}, </b><br/><br/> bạn đã yêu cầu tay đổi mật khẩu tại <a href="' + app.rootUrl + '" target="_blank">' + app.rootUrl + '</a>. ' +
+                'Bạn sử dụng đường dẫn sau để thay đổi mật khẩu. <b>Đường dẫn chỉ có hiệu lực trong vòng 24 giờ</b><br/>' +
+                'Đường dẫn: <a href="{url}">{url}</a><br/>' +
+                'Trân trọng, <br/>' +
                 'Hiệp Phát<br/>' +
                 'Website: <a href="' + app.rootUrl + '" target="_blank">' + app.rootUrl + '</a></p>',
-            emailContactTitle: 'Hiệp Phát: Contact',
-            emailContactText: 'Dear you, Hiệp Phát have been received your message. Thank you for contacting us. Your subject: "{title}". Your message is: "{message}". Tutorial will reply you soon. Best regard, Tutorial.',
-            emailContactHtml: 'Dear you,<br/><br/>Hiệp Phát have been received your message. Thank you for contacting us.<br/>Your subject: "{title}".<br/>Your message is: "{message}".<br/>Tutorial will reply you soon.<br/><br/>Best regard,<br/>Tutorial.',
+            emailContactTitle: 'Hiệp Phát: Liên hệ',
+            emailContactText: 'Chào bạn, Hiệp Phát đã nhận được thông tin của bạn. Cám ơn bạn vì đã liên hệ chúng tôi. Chủ đề của bạn: "{title}". Tin nhắn của bạn là: "{message}". Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất. Trân trọng, Giảng viên hướng dẫn.',
+            emailContactHtml: 'Chào bạn,<br/><br/>Hiệp Phát đã nhận được thông tin của bạn. Cám ơn bạn vì đã liên hệ chúng tôi.<br/>Chủ đề của bạn: "{title}".<br/>Tin nhắn của bạn là: "{message}".<br/>Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất.<br/><br/>Trân trọng,<br/>Giảng viên hướng dẫn.',
+            emailDangKyTuVanTitle: 'Hiệp Phát: Đăng ký tư vấn',
+            emailDangKyTuVanText: 'Chào bạn, Hiệp Phát đã nhận được thông tin đăng ký tư vấn của bạn.Cám ơn bạn vì đã liên hệ chúng tôi. Chủ đề của bạn: "{title}". Tin nhắn của bạn là: "{message}". Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất. Trân trọng, Giảng viên hướng dẫn.',
+            emailDangKyTuVanHtml: 'Chào you,<br/><br/>Hiệp Phát đã nhận được thông tin đăng ký tư vấn của bạn. Cám ơn bạn vì đã liên hệ chúng tôi<br/>Chủ đề của bạn: "{title}".<br/>Tin nhắn của bạn là: "{message}".<br/>Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất.<br/><br/>Trân trọng,<br/>Giảng viên hướng dẫn.',
         }),
     });
 };
