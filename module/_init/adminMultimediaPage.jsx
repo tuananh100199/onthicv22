@@ -106,6 +106,8 @@ class MultimediaPage extends React.Component {
         this.instagram = React.createRef();
         this.latitude = React.createRef();
         this.longitude = React.createRef();
+        this.title = React.createRef();
+        this.description = React.createRef();
     }
 
     componentDidMount() {
@@ -150,10 +152,27 @@ class MultimediaPage extends React.Component {
             $(this.emailPassword2.current).val('');
         }
     }
+     
+    changeDangKyTuVan = () => {
+        const title = $(this.title.current).val(),
+            description = $(this.description.current).val();
+        if (title == '') {
+            T.notify('Title bị trống!', 'danger');
+            $(this.title.current).focus();
+        } else if (description == '') {
+            T.notify('Mô tả bị trống!', 'danger');
+            $(this.description.current).focus();
+        }else {
+            this.props.saveSystemState({
+                    title: $(this.title.current).val().trim(),
+                    description: $(this.description.current).val().trim(),
+                });
+            }
+        }   
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList, title, description } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '', title: '', description: '' };
 
         try {
             addressList = JSON.parse(addressList);
@@ -211,7 +230,28 @@ class MultimediaPage extends React.Component {
                             </div>
                         </div>
 
-                        <AddressListSection items={addressList} saveAddress={value => this.props.saveSystemState({ addressList: value })} />
+                        <div className='tile'>
+                            <h3 className='tile-title'>Đăng ký tư vấn</h3>
+                            <div className='tile-body'>
+                                <div className='form-group'>
+                                    <label className='control-label'>Chủ đề</label>
+                                    <input className='form-control' type='text' placeholder='Chủ đề' ref={this.title} defaultValue={title} autoComplete='new-dangKyTuVan' />
+                                </div>
+                                <div className='form-group'>
+                                <label className='control-label'>Mô tả</label>
+                                    <input className='form-control mt-1' type='text' placeholder='Mô tả' ref={this.description} defaultValue={description} autoComplete='new-dangKyTuVan' />
+                                </div>
+                            </div>
+                            <div className='tile-footer'>
+                                <div className='row'>
+                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
+                                        <button className='btn btn-primary' type='button' onClick={this.changeDangKyTuVan}>
+                                            <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
 

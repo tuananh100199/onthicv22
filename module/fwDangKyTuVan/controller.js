@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2110: { title: 'Đăng ký tư vấn', link: '/user/dang-ky-tu-van', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            2110: { title: 'Đăng ký tư vấn', link: '/user/dang-ky-tu-van', icon: 'fa fa-quote-right', backgroundColor: '#b2c' },
         },
     };
     app.permission.add(
