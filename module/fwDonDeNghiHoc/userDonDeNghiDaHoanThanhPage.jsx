@@ -127,72 +127,43 @@ class UserDonDeNghiDaHoanThanhPage extends React.Component {
 
                         <div className='row'>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu): &nbsp;<span>{user.identityDate ? T.dateToText(user.identityDate, 'dd/mm/yyyy') : ''}</span></label>
-                                <input className='form-control' type='text' id='identityCard'
-                                    placeholder='Nhập số CMND' />
+                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu): &nbsp;<span>{user.identityCard}</span></label>
                             </div>
                             <div className='form-group col-md-3' id='identityDateSection'>
-                                <label className='control-label' htmlFor='identityDate'>Cấp ngày <span style={{ color: 'red' }}>*</span></label>
-                                <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection' />
+                                <label className='control-label' htmlFor='identityDate'>Cấp ngày : &nbsp;<span>{user.identityDate ? T.dateToText(user.identityDate, 'dd/mm/yyyy') : ''}</span></label>
                             </div>
                             <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp <span style={{ color: 'red' }}>*</span></label>
-                                <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy' />
+                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp: &nbsp;<span>{user.identityIssuedBy}</span></label>
                             </div>
                         </div>
                         <div className='row'>
-                            <div className='form-group col-md-3'>
-                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số <span style={{ color: 'red' }}>*</span></label>
-                                <input className='form-control' type='text' id='licenseNumber'
-                                    placeholder='Số giấy phép lái xe' />
+                            <div className='form-group col-md-4'>
+                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số: &nbsp;<span>{item.licenseNumber}</span></label>
                             </div>
                             <div className='form-group col-md-2' id='licenseClassSection'>
-                                <label className='control-label' htmlFor='licenseClass'>Hạng <span style={{ color: 'red' }}>*</span> </label>
-                                <select className="form-control select2-input" placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection'>
-                                    <option value="B1">B1</option>
-                                    <option value="B2">B2</option>
-                                    <option value="C">C</option>
-                                </select>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng: &nbsp;<span>{T.licenseClass[item.licenseClass]}</span> </label>
                             </div>
                             <div className='form-group col-md-5'>
-                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp <span style={{ color: 'red' }}>*</span> </label>
-                                <input className='form-control' type='text' placeholder='Nơi cấp GPLX' id='licenseIssuedBy' />
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: &nbsp;<span>{item.licenseIssuedBy}</span> </label>
                             </div>
-                            <div className='form-group col-md-2'>
-                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày <span style={{ color: 'red' }}>*</span> </label>
-                                <input className='form-control' type='text' placeholder='Ngày cấp GPLX' id='licenseDated' />
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày : &nbsp;<span>{item.licenseDated ? T.dateToText(item.licenseDated, 'dd/mm/yyyy') : ''}</span></label>
                             </div>
                         </div>
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng <span style={{ color: 'red' }}>*</span> </label>
-                            <select className="form-control select2-input" placeholder='Hạng GPLX' id='newLicenseClass' data-date-container='#identityDateSection'>
-                                <option value="B1">B1</option>
-                                <option value="B2">B2</option>
-                                <option value="C">C</option>
-                            </select>
-                        </div>
-                        <div className='form-group' style={{ display: 'inline-flex' }}>
-                            <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
-                            <div className='toggle'>
-                                <label>
-                                    <input type='checkbox' />
-                                    <span className='button-indecator' />
-                                </label>
-                            </div>
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: &nbsp;<span>{T.licenseClass[item.newLicenseClass]}</span> </label>
                         </div>
                         <div className='form-group'>
-                            <label className='control-label'>Các tài liệu khác có liên quan bao gồm:</label>
-                            <textarea className='form-control' id='otherDocumentation' placeholder='Tài liệu liên quan bao gồm' rows='3' />
+                            <label className='control-label'> Đăng ký tích hợp giấy phép lái xe: &nbsp;<span>{item.integration ? 'Có' : 'Không'}</span></label>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label'>Các tài liệu khác có liên quan bao gồm: &nbsp;<span>{item.otherDocumentation}</span> </label>
                         </div>
                     </div>
                 </div>
                 <Link to='/user' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                <button type='button' className='btn btn-primary btn-circle' title='Lưu'
-                    style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                    <i className='fa fa-lg fa-save' />
-                </button>
                 <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
                     <i className="fa fa-file-word-o"></i>
