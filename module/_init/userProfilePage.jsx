@@ -81,7 +81,7 @@ class UserProfilePage extends React.Component {
                         <div className='row'>
                             {finish.length ? finish.map((item, index) => (
                                 <div className='col-12' key={index}>
-                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} />
+                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/finished/' + item._id} />
                                 </div>))
                                 : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
                         </div>

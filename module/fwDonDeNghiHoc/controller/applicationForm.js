@@ -26,6 +26,7 @@ module.exports = app => {
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
+    app.get('/user/bieu-mau/don-de-nghi-hoc/finished/:id', app.permission.check(), app.templates.admin);
 
     // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailApplicationFormInit', {
