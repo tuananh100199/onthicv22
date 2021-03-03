@@ -9,7 +9,7 @@ import FileSaver from 'file-saver';
 import ImageBox from '../../view/component/ImageBox.jsx';
 const countryList = require('country-list');
 
-class UserDonDeNghiPage extends React.Component {
+class UserDonDeNghiDaHoanThanhPage extends React.Component {
     state = {};
     sex = React.createRef();
     quocGia = React.createRef();
@@ -20,33 +20,13 @@ class UserDonDeNghiPage extends React.Component {
     componentDidMount() {
         T.ready('/user', () => {
             T.tooltip();
-            $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
-
-                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality, email } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
-                $('#userLastname').val(lastname);
-                $('#userFirstname').val(firstname);
-                $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
-                $('#phoneNumber').val(phoneNumber);
-                $('#regularResidence').val(regularResidence);
-                $('#residence').val(residence);
-                $('#identityCard').val(identityCard);
-                $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
-                $('#identityIssuedBy').val(identityIssuedBy);
-                this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
-                this.sex.current.setText(sex ? sex : '');
-                $(this.quocGia.current).select2({
-                    data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
-                    placeholder: 'Chọn quốc gia'
-                }).val(nationality).trigger('change');
             }
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
+                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/finished/:id').parse(url);
             console.log(params.id)
             this.props.getDonDeNghiHocByUser(params.id, data => {
                 if (data.error) {
@@ -88,8 +68,9 @@ class UserDonDeNghiPage extends React.Component {
         const item_integration = this.state.item ? this.state.item : {
             integration: false,
         };
-        const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ? this.props.donDeNghiHoc.item : { user: { nationality: '' } };
+        const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ? this.props.donDeNghiHoc.item : {};
         const user = this.props.system.user;
+        console.log(item)
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -137,18 +118,16 @@ class UserDonDeNghiPage extends React.Component {
                         </div>
 
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú <span>{item.licenseClass}</span></label>
-                            <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='3' />
+                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú: &nbsp;<span>{user.regularResidence}</span></label>
                         </div>
 
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='residence'>Nơi cư trú <span style={{ color: 'red' }}>*</span></label>
-                            <textarea className='form-control' id='residence' placeholder='Nơi cư trú' rows='3' />
+                            <label className='control-label' htmlFor='residence'>Nơi cư trú: &nbsp;<span>{user.residence}</span></label>
                         </div>
 
                         <div className='row'>
                             <div className='form-group col-md-6'>
-                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu) <span style={{ color: 'red' }}>*</span></label>
+                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu): &nbsp;<span>{user.identityDate ? T.dateToText(user.identityDate, 'dd/mm/yyyy') : ''}</span></label>
                                 <input className='form-control' type='text' id='identityCard'
                                     placeholder='Nhập số CMND' />
                             </div>
@@ -196,7 +175,7 @@ class UserDonDeNghiPage extends React.Component {
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe&nbsp; </label>
                             <div className='toggle'>
                                 <label>
-                                    <input type='checkbox' checked={item_integration.integration} />
+                                    <input type='checkbox' />
                                     <span className='button-indecator' />
                                 </label>
                             </div>
@@ -231,6 +210,6 @@ class UserDonDeNghiPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system });
+const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc });
 const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
-export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);
+export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiDaHoanThanhPage,);
