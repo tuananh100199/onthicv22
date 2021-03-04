@@ -12,6 +12,43 @@ module.exports = app => {
 
     app.get('/user/dang-ky-tu-van', app.permission.check('DangKyTuVan:read'), app.templates.admin);
 
+     // Init ------------------------------------------------------------------------------------------------------------
+    app.readyHooks.add('emailPhanHoiDangKyTuVanInit', {
+        ready: () => app.model != null && app.model.setting != null && app.state,
+        run: () => {
+            const enableInit = process.env['enableInit'] == 'true';
+            if (enableInit) {
+                app.model.setting.init({
+                    phanHoiDangKyTuVanTitle: 'Hiệp Phát: Phản hồi đăng ký tư vấn!',
+                    phanHoiDangKyTuVanText: 'Chào {name}, Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn: {content} Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
+                    phanHoiDangKyTuVanHtml: 'Chào <b>{name}</b>,<br/><br/>' +
+                        'Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn:<br/><br/>' +
+                        '<b>{content}</b><br/><br/>' +
+                        'Trân trọng,<br/>' +
+                        'Hiệp Phát<br/>' +
+                        'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
+                })
+            }
+        },
+    });
+    //APIs -------------------------------------------------------------------------------------------------------------
+    const emailParams = ['phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml'];
+    app.get('/api/dang-ky-tu-van/email/all', app.permission.check('DangKyTuVan:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
+
+    app.put('/api/dang-ky-tu-van/email/email', app.permission.check('DangKyTuVan:email'), (req, res) => {
+        const emailType = req.body.type;
+        const title = emailType + 'Title',
+            text = emailType + 'Text',
+            html = emailType + 'Html',
+            changes = {};
+
+        if (emailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
+        if (emailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
+        if (emailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
+
+        app.model.setting.set(changes, error => res.send({ error }));
+    });
+
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/dang-ky-tu-van/page/:pageNumber/:pageSize', app.permission.check('DangKyTuVan:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -48,4 +85,28 @@ module.exports = app => {
         }
         res.send({ error, item });
     }));
+    app.post('/api/dang-ky-tu-van/response', app.permission.check('DangKyTuVan:write'), (req, res) => {
+        const { _id, content } = req.body;
+        app.model.DangKyTuVan.get(_id, (error, item) => {
+            if (error || item == null) {
+                res.send({ error: `System has errors!` })
+            } else {
+                    if (error != null) {
+                        res.send({ error: `Ops! có lỗi xảy ra!` });
+                    } else {
+                        app.model.setting.get('phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml', result => {
+                            const mailTitle = result.phanHoiDangKyTuVanTitle,
+                                mailText = result.phanHoiDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{content}', content),
+                                mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{content}', content);
+                            app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
+                                item.content = content;
+                                item.save(error => res.send({ error }))
+                            }, (error) => {
+                                res.send({ error })
+                            });
+                        });
+                    }
+            }
+        });
+    });
 };

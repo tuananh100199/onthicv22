@@ -199,3 +199,16 @@ export function createDangKyTuVan(DangKyTuVan, done) {
         }, error => T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
     }
 }
+
+export function phanHoiDangKyTuVan(_id, content, done) {
+    return dispatch => {
+        const url = '/api/dang-ky-tu-van/response';
+        T.post(url, { _id, content }, data => {
+            if (data.error) {
+                T.notify('Thao tác phản hồi bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            }
+            done && done(data);
+        }, error => T.notify('Gửi mail phản hồi bị lỗi!', 'danger'));
+    }
+}

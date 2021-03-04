@@ -1,81 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan } from './redux.jsx';
+import { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan, phanHoiDangKyTuVan } from './redux.jsx';
 import Pagination from '../../view/component/Pagination.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
-
-
-class AdminPhanHoiDangKyTuVan extends React.Component {
-    constructor(props) {
-        super(props);
-        this.adminPhanHoiModal = React.createRef();
-        this.editor = React.createRef();
-    }
-
-    componentDidMount() {
-        $(document).ready(() => {
-            $(this.adminPhanHoiModal.current).on('shown.bs.modal', () => {});
-        });
-    }
-    show = () => {
-        console.log('gọi qua show adminPhanhoi');
-
-        $(this.adminPhanHoiModal.current).modal('show')
-    }
-
-
-    // save = () => {
-    //     $("#submit-btn").attr("disabled", true);
-    //     if (!this.editor.current.html()) {
-    //         $("#submit-btn").removeAttr("disabled");
-    //         T.notify('Lý do không được để trống', 'danger');
-    //     } else {
-    //         let reasonOfForm = {
-    //             reason: this.editor.current.html(),
-    //             approve: "eject"
-    //         }
-    //         this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm);
-    //         this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => {
-    //             $("#submit-btn").removeAttr("disabled");
-    //             $('#modal').modal('hide');
-    //         })
-
-    //     }
-    // }
-    render() {
-        console.log('gọi qua render AdminPhanHoi');
-        return (
-            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref={this.adminPhanHoiModal}>
-                <div className="modal-dialog modal-lg" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Phản hồi đăng ký tư vấn</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form>
-                            <div className="modal-body mx-3">
-                                <div className="form-group">
-                                    <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary" id="submit-btn">Gửi</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-}
 
 class AdminDangKyTuVanModal extends React.Component {
     state = {};
     modal = React.createRef();
-    responseModal = React.createRef();
+    editor = React.createRef();
 
 
     show = (item) => {
@@ -83,10 +15,19 @@ class AdminDangKyTuVanModal extends React.Component {
         $(this.modal.current).modal('show');
     }
 
-    response = (e) => {
-        console.log('gọi qua response');
-        this.responseModal.current.show(null);
-        e.preventDefault();
+    save = () => {
+        $('#submit-btn').attr('disabled', true);
+        if (!this.editor.current.html()) {
+            T.notify('Nội dung phản hồi bị trống', 'danger');
+        } else {
+            this.props.phanHoiDangKyTuVan(this.state._id, this.editor.current.html(), (data) => {
+                if (!data.error) {
+                    T.notify('Gửi phản hồi đăng ký tư vấn thành công!', 'success');
+                }
+                $('#submit-btn').removeAttr('disabled');
+                $(this.modal.current).modal('hide');
+            })
+        }
     }
     render() {
         const { name, subject, email, message, phone } = this.state;
@@ -107,12 +48,21 @@ class AdminDangKyTuVanModal extends React.Component {
                             <label>Số điện thoại: <b>{phone}</b></label><br />
                             <p>{message}</p>
                         </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-primary' data-dismiss='modal' onClick={this.response}>Phản hồi</button>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
 
-                            <AdminPhanHoiDangKyTuVan  ref={this.responseModal} />
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Phản hồi đăng ký tư vấn</h5>
                         </div>
+                        <form>
+                            <div className="modal-body mx-3">
+                                <div className="form-group">
+                                    <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -193,12 +143,12 @@ class DangKyTuVanPage extends React.Component {
                 <div className='row tile'>{table}</div>
                 <Pagination name='pageDangKyTuVan' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDangKyTuVanPage} />
-                <AdminDangKyTuVanModal ref={this.modal} />
+                <AdminDangKyTuVanModal ref={this.modal} phanHoiDangKyTuVan={this.props.phanHoiDangKyTuVan} />
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ DangKyTuVan: state.DangKyTuVan });
-const mapActionsToProps = { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan };
+const mapActionsToProps = { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan, phanHoiDangKyTuVan };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanPage);
