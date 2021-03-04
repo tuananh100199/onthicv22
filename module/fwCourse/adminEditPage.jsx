@@ -2,13 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourse, getCourse, checkLink } from './redux.jsx'
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
 class CourseEditPage extends React.Component {
     state = { item: null };
     courseLink = React.createRef();
-    imageBox = React.createRef();
     editor = React.createRef();
 
     componentDidMount() {
@@ -26,8 +24,6 @@ class CourseEditPage extends React.Component {
                     } else {
                         $(this.courseLink.current).html('').attr('');
                     }
-
-                    this.imageBox.current.setData('course:' + (item._id ? item._id : 'new'), item.image || '/img/avatar.jpg');
                     $('#courseTitle').val(item.title);
                     $('#courseAbstract').val(item.abstract);
                     this.editor.current.html(item.content);
@@ -102,12 +98,6 @@ class CourseEditPage extends React.Component {
                                     <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' readOnly={readOnly} />
                                 </div>
                                 <div className='row'>
-                                    <div className='col-md-6'>
-                                        <div className='form-group'>
-                                            <label className='control-label'>Hình ảnh</label>
-                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseImage' readOnly={readOnly} />
-                                        </div>
-                                    </div>
                                     <div className='col-md-6'>
                                         <div className='form-group' style={{ display: 'inline-flex' }}>
                                             <label className='control-label'>Kích hoạt:&nbsp;</label>

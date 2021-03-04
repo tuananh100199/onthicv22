@@ -36,8 +36,7 @@ class CoursePage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tiêu đề</th>
-                            <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                            <th style={{ width: '100%' }}>Tiêu đề</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -47,9 +46,6 @@ class CoursePage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/course/edit/' + item._id}>{item.title}</Link></td>
-                                <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={item.image} alt='avatar' style={{ height: '32px' }} />
-                                </td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} disabled={readOnly} />

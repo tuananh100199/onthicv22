@@ -72,22 +72,4 @@ module.exports = (app) => {
             res.send({ error: error ? 'Lỗi hệ thống' : item == null || item._id == req.body._id ? null : 'Link không hợp lệ' });
         })
     );
-
-    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
-    app.createFolder(app.path.join(app.publicPath, '/img/course'));
-
-    app.uploadHooks.add('uploadCourseCkEditor', (req, fields, files, params, done) => app.permission.has(req,
-        () => app.uploadCkEditorImage('course', fields, files, params, done), done, 'course:write')
-    );
-
-    const uploadCourseAvatar = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('course:') && files.CourseImage && files.CourseImage.length > 0) {
-            console.log('Hook: uploadCourseAvatar => course image upload');
-            app.uploadComponentImage(req, 'course', app.model.course.get, fields.userData[0].substring(7), files.CourseImage[0].path, done);
-        }
-    };
-
-    app.uploadHooks.add('uploadCourseAvatar', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadCourseAvatar(req, fields, files, params, done), done, 'course:write')
-    );
 };
