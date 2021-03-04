@@ -1,16 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourse, getCourse, checkLink } from './redux.jsx'
+import { updateCourse, getCourse } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
+import { ajaxSelectUser } from '../fwUser/redux.jsx';
+import { Select } from '../../view/component/Input.jsx';
+import Dropdown from '../../view/component/Dropdown.jsx';
 
 class CourseEditPage extends React.Component {
     state = { item: null };
-    courseLink = React.createRef();
+    licenseClass = React.createRef();
     editor = React.createRef();
+    adminSelect = React.createRef();
+    supSelect = React.createRef();
 
     componentDidMount() {
+        // this.userSelect.current.val('');
         T.ready('/user/course/list', () => {
+            $('#launchTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#startTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             const route = T.routeMatcher('/user/course/edit/:courseId'),
                 courseId = route.parse(window.location.pathname).courseId;
             this.props.getCourse(courseId, data => {
@@ -19,19 +27,18 @@ class CourseEditPage extends React.Component {
                     this.props.history.push('/user/course/list');
                 } else if (data.item) {
                     const item = data.item;
-                    if (item.link) {
-                        $(this.courseLink.current).html(T.rootUrl + '/khoahoc/' + item.link).attr('href', '/khoahoc/' + item.link);
-                    } else {
-                        $(this.courseLink.current).html('').attr('');
-                    }
                     $('#courseTitle').val(item.title);
                     $('#courseAbstract').val(item.abstract);
+                    const admin = item.adminId;
+                    this.licenseClass.current.val(item.licenseClass ? item.licenseClass : '')
+                    this.adminSelect.current.val({ id: admin._id, text: `${admin.lastname} ${admin.firstname} (${admin.email})` });
                     this.editor.current.html(item.content);
 
                     this.setState(data);
                     $('#courseTitle').focus();
                 } else {
                     this.props.history.push('/user/course/list');
+                    this.adminSelect.current.val('');
                 }
             });
         });
@@ -40,30 +47,14 @@ class CourseEditPage extends React.Component {
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
-
-    checkLink = (item) => {
-        this.props.checkLink(item._id, $('#courseLink').val().trim());
-    }
-
-    courseLinkChange = (e) => {
-        if (e.target.value) {
-            $(this.courseLink.current).html(T.rootUrl + '/khoa-hoc/' + e.target.value).attr('href', '/khoa-hoc/' + e.target.value);
-        } else {
-            $(this.courseLink.current).html('').attr('href', '#');
-        }
-    }
-
     save = () => {
         const changes = {
             title: $('#courseTitle').val().trim(),
-            link: $('#courseLink').val().trim(),
             active: this.state.item.active,
             abstract: $('#courseAbstract').val().trim(),
             content: this.editor.current.html(),
         };
-        this.props.updateCourse(this.state.item._id, changes, () => {
-            $('#courseLink').val(changes.link)
-        })
+        this.props.updateCourse(this.state.item._id, changes)
     };
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
@@ -72,7 +63,6 @@ class CourseEditPage extends React.Component {
         const item = this.state.item ? this.state.item : {
             title: '', content: '', createdDate: new Date(), active: false
         };
-        let linkDefaultCourse = T.rootUrl + '/course/item/' + item._id;
 
         return (
             <main className='app-content'>
@@ -99,8 +89,14 @@ class CourseEditPage extends React.Component {
                                 </div>
                                 <div className='row'>
                                     <div className='col-md-6'>
+                                        <div className='form-group' style={{ width: '100%' }}>
+                                            <label className='control-label'>Loại khóa học</label>
+                                            <Dropdown style={{ marginLeft: '10px' }} ref={this.licenseClass} text='' items={Object.keys(T.licenseClass)} />
+                                        </div>
+                                    </div>
+                                    <div className='col-md-6'>
                                         <div className='form-group' style={{ display: 'inline-flex' }}>
-                                            <label className='control-label'>Kích hoạt:&nbsp;</label>
+                                            <label className='control-label'>Kích hoạt&nbsp;</label>
                                             <div className='toggle'>
                                                 <label>
                                                     <input type='checkbox' checked={item.active} onChange={this.changeActive} disabled={readOnly} />
@@ -110,32 +106,55 @@ class CourseEditPage extends React.Component {
                                         </div>
                                     </div>
                                 </div>
+                                <div className='form-group col-sm-12 col-xl-6' id='launchTimeSection'>
+                                    <label className='control-label' htmlFor='launchTime'>Thời gian khai giảng</label>
+                                    <input type='text' className='form-control' id='launchTime' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#launchTimeSection' />
+                                </div>
+                                {/* <div className='row'>
+                                    <div className='form-group col-sm-12 col-xl-6' id='startTimeSection'>
+                                        <label className='control-label' htmlFor=' startTime'>Thời gian bắt đầu</label>
+                                        <input type='text' className='form-control' id=' startTime' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#startTimeSection' />
+                                    </div>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='title'>Thời gian kết thúc</label>
+                                        <input type='text' className='form-control' id='title' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#birthdaySection' />
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='title'> Thời gian thi kết thúc môn dự kiến</label>
+                                        <input type='text' className='form-control' id='title' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#birthdaySection' />
+                                    </div>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='title'>Thời gian thi kết thúc môn chính thức</label>
+                                        <input type='text' className='form-control' id='title' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#birthdaySection' />
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='title'> Thời gian  thi tốt nghiệp dự kiến</label>
+                                        <input type='text' className='form-control' id='title' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#birthdaySection' />
+                                    </div>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='title'>Thời gian  thi tốt nghiệp chính thức</label>
+                                        <input type='text' className='form-control' id='title' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#birthdaySection' />
+                                    </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
 
                     <div className='col-md-6'>
                         <div className='tile'>
-                            <h3 className='tile-title'>Link</h3>
+                            <h3 className='tile-title'>Thông tin người quản trị</h3>
                             <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Link mặc định</label><br />
-                                    <a href={linkDefaultCourse} style={{ fontWeight: 'bold' }} target='_blank'>{linkDefaultCourse}</a>
+                                <div className='form-group control-label'>
+                                    <Select ref={this.adminSelect} displayLabel={true} adapter={ajaxSelectUser} label='Quản lý chung' />
                                 </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Link truyền thông</label><br />
-                                    <a href='#' ref={this.courseLink} style={{ fontWeight: 'bold' }} target='_blank' />
-                                    <input className='form-control' id='courseLink' type='text' placeholder='Link truyền thông' defaultValue={item.link} readOnly={readOnly}
-                                        onChange={this.courseLinkChange} />
+                                <div className='form-group control-label'>
+                                    <Select ref={this.supSelect} displayLabel={true} adapter={ajaxSelectUser} label='Giám sát viên' />
                                 </div>
                             </div>
-                            {!readOnly &&
-                                <div className='tile-footer'>
-                                    <button className='btn btn-danger' type='button' onClick={() => this.checkLink(item)}>
-                                        <i className='fa fa-fw fa-lg fa-check-circle' />Kiểm tra link
-                                </button>
-                                </div>
-                            }
                         </div>
                     </div>
 
@@ -163,5 +182,5 @@ class CourseEditPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { updateCourse, getCourse, checkLink };
+const mapActionsToProps = { updateCourse, getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(CourseEditPage);
