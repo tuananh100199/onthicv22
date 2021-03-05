@@ -73,13 +73,14 @@ module.exports = app => {
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/dang-ky-tu-van', (req, res) => app.model.dangKyTuVan.create(req.body.dangKyTuVan, (error, item) => {
+        console.log('item',item);
         if (item) {
             app.io.emit('dangKyTuVan-added', item);
 
             app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
-                let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.name).replaceAll('{title}', item.title).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                    mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{title}', item.title).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                    mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{title}', item.title).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
+                let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                    mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                    mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
                 app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
             });
         }

@@ -35,8 +35,8 @@ module.exports = app => {
             if (enableInit) {
                 app.model.setting.init({
                     rejectDonDeNghiHocTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
-                    rejectDonDeNghiHocText: 'Dear {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
-                    rejectDonDeNghiHocHtml: 'Dear <b>{name}</b>,<br/><br/>' +
+                    rejectDonDeNghiHocText: 'Chào {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
+                    rejectDonDeNghiHocHtml: 'Chào <b>{name}</b>,<br/><br/>' +
                         'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
                         '<b>{reason}</b><br/><br/>' +
                         'Best regard,<br/>' +
