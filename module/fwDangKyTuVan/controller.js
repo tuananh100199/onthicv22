@@ -6,11 +6,11 @@ module.exports = app => {
         },
     };
     app.permission.add(
-        { name: 'DangKyTuVan:read', menu },
-        { name: 'DangKyTuVan:write', menu },
+        { name: 'dangKyTuVan:read', menu },
+        { name: 'dangKyTuVan:write', menu },
     );
 
-    app.get('/user/dang-ky-tu-van', app.permission.check('DangKyTuVan:read'), app.templates.admin);
+    app.get('/user/dang-ky-tu-van', app.permission.check('dangKyTuVan:read'), app.templates.admin);
 
      // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailPhanHoiDangKyTuVanInit', {
@@ -33,9 +33,9 @@ module.exports = app => {
     });
     //APIs -------------------------------------------------------------------------------------------------------------
     const emailParams = ['phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml'];
-    app.get('/api/dang-ky-tu-van/email/all', app.permission.check('DangKyTuVan:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
+    app.get('/api/dang-ky-tu-van/email/all', app.permission.check('dangKyTuVan:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
 
-    app.put('/api/dang-ky-tu-van/email/email', app.permission.check('DangKyTuVan:email'), (req, res) => {
+    app.put('/api/dang-ky-tu-van/email/email', app.permission.check('dangKyTuVan:email'), (req, res) => {
         const emailType = req.body.type;
         const title = emailType + 'Title',
             text = emailType + 'Text',
@@ -50,56 +50,92 @@ module.exports = app => {
     });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/dang-ky-tu-van/page/:pageNumber/:pageSize', app.permission.check('DangKyTuVan:read'), (req, res) => {
+    app.get('/api/dang-ky-tu-van/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVan:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.DangKyTuVan.getPage(pageNumber, pageSize, {}, (error, page) => {
+        app.model.dangKyTuVan.getPage(pageNumber, pageSize, {}, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
     });
 
-    app.get('/api/dang-ky-tu-van/all', app.permission.check('DangKyTuVan:read'), (req, res) => app.model.DangKyTuVan.getAll((error, items) => res.send({ error, items })));
+    app.get('/api/dang-ky-tu-van/all', app.permission.check('dangKyTuVan:read'), (req, res) => app.model.dangKyTuVan.getAll((error, items) => res.send({ error, items })));
 
-    app.get('/api/dang-ky-tu-van/unread', app.permission.check('DangKyTuVan:read'), (req, res) => app.model.DangKyTuVan.getUnread((error, items) => res.send({ error, items })));
-
-    app.get('/api/dang-ky-tu-van/item/:_id', app.permission.check('DangKyTuVan:write'), (req, res) => app.model.DangKyTuVan.read(req.params._id, (error, item) => {
-        if (item) app.io.emit('DangKyTuVan-changed', item);
+    app.get('/api/dang-ky-tu-van/item/:_id', app.permission.check('dangKyTuVan:write'), (req, res) => {
+        app.model.dangKyTuVan.update(req.params._id, {read: 'true'}, (error, item) => {
+        if (item) app.io.emit('dangKyTuVan-changed', item);
         res.send({ error, item });
-    }));
+        })
+    });
 
-    app.delete('/api/dang-ky-tu-van', app.permission.check('DangKyTuVan:write'), (req, res) => app.model.DangKyTuVan.delete(req.body._id, error => res.send({ error })));
+    app.delete('/api/dang-ky-tu-van', app.permission.check('dangKyTuVan:write'), (req, res) => app.model.dangKyTuVan.delete(req.body._id, error => res.send({ error })));
 
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
-    app.post('/api/dang-ky-tu-van', (req, res) => app.model.DangKyTuVan.create(req.body.DangKyTuVan, (error, item) => {
+    app.post('/api/dang-ky-tu-van', (req, res) => app.model.dangKyTuVan.create(req.body.dangKyTuVan, (error, item) => {
         if (item) {
-            app.io.emit('DangKyTuVan-added', item);
+            app.io.emit('dangKyTuVan-added', item);
 
             app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
-                let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                    mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                    mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
+                let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.name).replaceAll('{title}', item.title).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                    mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{title}', item.title).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                    mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{title}', item.title).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
                 app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
             });
         }
         res.send({ error, item });
     }));
-    app.post('/api/dang-ky-tu-van/response', app.permission.check('DangKyTuVan:write'), (req, res) => {
+    
+    app.post('/api/dang-ky-tu-van/response', app.permission.check('dangKyTuVan:write'), (req, res) => {
         const { _id, content } = req.body;
-        app.model.DangKyTuVan.get(_id, (error, item) => {
+        app.model.dangKyTuVan.get(_id, (error, item) => {
             if (error || item == null) {
                 res.send({ error: `System has errors!` })
             } else {
                     if (error != null) {
                         res.send({ error: `Ops! có lỗi xảy ra!` });
                     } else {
+                        app.model.user.getAll((error, items) => {
+                            if (!error && items && items.length) {
+                                let newUser = true;
+                                items.forEach(itemEmail =>  {
+                                    if(itemEmail.email == item.email) 
+                                        newUser = false;
+                                })
+
+                                if (newUser){
+                                    const dataPassword = app.randomPassword(8),
+                                    data = {
+                                            email: item.email,
+                                            firstname: item.name,
+                                            lastname: item.name,
+                                            password: dataPassword
+                                        }; 
+                                        app.model.user.create(data, (error, user) => {
+                                            res.send({ error, user });
+                                            if (user) {
+                                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                                    const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
+                                                        mailTitle = result.emailCreateMemberByAdminTitle,
+                                                        mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
+                                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                                });
+                                            }
+                                    });
+                                }
+                            }
+                        });
+
                         app.model.setting.get('phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml', result => {
                             const mailTitle = result.phanHoiDangKyTuVanTitle,
-                                mailText = result.phanHoiDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{content}', content),
-                                mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{content}', content);
+                                mailText = result.phanHoiDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title),
+                                mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title);
                             app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
-                                item.content = content;
                                 item.save(error => res.send({ error }))
                             }, (error) => {
                                 res.send({ error })

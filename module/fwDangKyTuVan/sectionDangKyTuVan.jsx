@@ -4,24 +4,12 @@ import { createDangKyTuVan } from './redux.jsx';
 class SectionDangKyTuVan extends React.Component {
     constructor(props) {
         super(props);
-        this.background = React.createRef();
         this.name = React.createRef();
         this.email = React.createRef();
         this.subject = React.createRef();
         this.message = React.createRef();
         this.phone = React.createRef();
     }
-    componentDidMount() {
-        // // this.props.getAllAddressByUser(() => {
-        //     T.ftcoAnimate();
-        //     $(this.background.current).parallax()
-        // // });
-    }
-
-    componentWillUnmount() {
-        $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy')
-    }
-
     sendMessage = (e) => {
         e.preventDefault();
         if (this.name.current.value == '') {
@@ -57,8 +45,8 @@ class SectionDangKyTuVan extends React.Component {
     }
 
     render() {
-        let { title, description } = this.props.system ?
-        this.props.system : {title: '', description: '' };
+        let { dangKyTuVanTitle, dangKyTuVanDescription } = this.props.system ?
+        this.props.system : {dangKyTuVanTitle: '', dangKyTuVanDescription: '' };
         return [
             <div  key={1} className="intro">
                 <div className="container">
@@ -66,10 +54,10 @@ class SectionDangKyTuVan extends React.Component {
                         <div className="col-lg-6 intro_col">
                             <div className="intro_content" >
                             <div className="section_title_container">
-                                <div className="section_title"><h2>{title}&nbsp;</h2></div>
+                                <div className="section_title"><h2>{dangKyTuVanTitle}&nbsp;</h2></div>
                             </div>
                             <div className="intro_text">
-                                <p>{description}</p>
+                                <p>{dangKyTuVanDescription}</p>
                             </div>
                         </div>
                             </div>
@@ -95,6 +83,6 @@ class SectionDangKyTuVan extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, dangkytuvan: state.dangkytuvan, address: state.address });
-const mapActionsToProps = { createDangKyTuVan};
+const mapStateToProps = state => ({ system: state.system, address: state.address });
+const mapActionsToProps = {createDangKyTuVan};
 export default connect(mapStateToProps, mapActionsToProps)(SectionDangKyTuVan);

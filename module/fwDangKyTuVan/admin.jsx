@@ -47,17 +47,12 @@ class AdminDangKyTuVanModal extends React.Component {
                             <label>Email: <b>{email}</b></label><br />
                             <label>Số điện thoại: <b>{phone}</b></label><br />
                             <p>{message}</p>
-                        </div>
-
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Phản hồi đăng ký tư vấn</h5>
+                            <h6>Phản hồi đăng ký tư vấn</h6>
+                            <div className="form-group">
+                                <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
+                            </div>
                         </div>
                         <form>
-                            <div className="modal-body mx-3">
-                                <div className="form-group">
-                                    <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
-                                </div>
-                            </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
                                 <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
@@ -77,25 +72,25 @@ class DangKyTuVanPage extends React.Component {
         T.ready('/user/settings');
     }
 
-    showDangKyTuVan = (e, DangKyTuVanId) => {
+    showDangKyTuVan = (e, dangKyTuVanId) => {
         e.preventDefault();
-        this.props.getDangKyTuVan(DangKyTuVanId, DangKyTuVan => this.modal.current.show(DangKyTuVan));
+        this.props.getDangKyTuVan(dangKyTuVanId, dangKyTuVan => this.modal.current.show(dangKyTuVan));
     }
 
     changeRead = (item) => this.props.updateDangKyTuVan(item._id, {  read: !item.read });
 
     delete = (e, item) => {
-        T.confirm('Xoá liên hệ', 'Bạn có chắc muốn xoá liên hệ này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
         e.preventDefault();
     }
 
     render() {
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.DangKyTuVan && this.props.DangKyTuVan.page ?
-            this.props.DangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ?
+            this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có thông tin đăng ký tư vấn!';
-        if (this.props.DangKyTuVan && this.props.DangKyTuVan.page && this.props.DangKyTuVan.page.list && this.props.DangKyTuVan.page.list.length > 0) {
+        if (this.props.dangKyTuVan && this.props.dangKyTuVan.page && this.props.dangKyTuVan.page.list && this.props.dangKyTuVan.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -108,7 +103,7 @@ class DangKyTuVanPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.DangKyTuVan.page.list.map((item, index) => (
+                        {this.props.dangKyTuVan.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
@@ -149,6 +144,6 @@ class DangKyTuVanPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ DangKyTuVan: state.DangKyTuVan });
+const mapStateToProps = state => ({ dangKyTuVan: state.dangKyTuVan });
 const mapActionsToProps = { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan, phanHoiDangKyTuVan };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanPage);

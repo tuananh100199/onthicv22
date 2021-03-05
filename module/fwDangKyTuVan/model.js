@@ -12,12 +12,10 @@ module.exports = app => {
     });
     const model = app.db.model('DangKyTuVan', schema);
 
-    app.model.DangKyTuVan = {
+    app.model.dangKyTuVan = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (done) => model.find({}).sort({ _id: -1 }).exec(done),
-
-        getUnread: (done) => model.find({ read: false }).sort({ _id: -1 }).exec(done),
+        getAll: (condition,done) => condition ? model.find({ condition }).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -38,12 +36,8 @@ module.exports = app => {
             }
         }),
 
-        getByActive: (active, done) => model.find({ active }).sort({ _id: -1 }).exec(done),
-
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),
-
-        read: (_id, done) => model.findOneAndUpdate({ _id }, { $set: { read: true } }, { new: true }, done),
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
@@ -56,7 +50,5 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-
-        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

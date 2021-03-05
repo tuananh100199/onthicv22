@@ -2,11 +2,11 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
 import SectionDangKyTuVan from './sectionDangKyTuVan.jsx';
-import DangKyTuVan from './redux.jsx';
+import dangKyTuVan from './redux.jsx';
 
 export default {
     redux: {
-        DangKyTuVan,
+        dangKyTuVan,
     },
     routes: [
         {

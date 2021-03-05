@@ -117,9 +117,9 @@ export function getDangKyTuVanPage(pageNumber, pageSize, done) {
     }
 }
 
-export function getDangKyTuVan(DangKyTuVanId, done) {
+export function getDangKyTuVan(dangKyTuVanId, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van/item/' + DangKyTuVanId;
+        const url = '/api/dang-ky-tu-van/item/' + dangKyTuVanId;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger');
@@ -129,21 +129,6 @@ export function getDangKyTuVan(DangKyTuVanId, done) {
                 dispatch({ type: DangKyTuVanUpdate, item: data.item });
             }
         }, error => T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger'));
-    }
-}
-
-export function getUnreadDangKyTuVans(done) {
-    return dispatch => {
-        const url = '/api/dang-ky-tu-van/unread';
-        T.get(url, data => {
-            if (data.error) {
-                done && done(null, data.error);
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.items);
-                dispatch({ type: DangKyTuVanGetUnread, items: data.items });
-            }
-        }, error => T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
     }
 }
 
@@ -186,10 +171,10 @@ export function changeDangKyTuVan(item) {
     return { type: DangKyTuVanUpdate, item };
 }
 
-export function createDangKyTuVan(DangKyTuVan, done) {
+export function createDangKyTuVan(dangKyTuVan, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van';
-        T.post(url, { DangKyTuVan }, data => {
+        T.post(url, { dangKyTuVan }, data => {
             if (data.error) {
                 T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
@@ -201,6 +186,7 @@ export function createDangKyTuVan(DangKyTuVan, done) {
 }
 
 export function phanHoiDangKyTuVan(_id, content, done) {
+    console.log('content',content);
     return dispatch => {
         const url = '/api/dang-ky-tu-van/response';
         T.post(url, { _id, content }, data => {
