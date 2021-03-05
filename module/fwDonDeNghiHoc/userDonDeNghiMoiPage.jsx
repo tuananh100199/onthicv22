@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js'
-import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux.jsx';
+import { createDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -9,7 +9,7 @@ import FileSaver from 'file-saver';
 import ImageBox from '../../view/component/ImageBox.jsx';
 const countryList = require('country-list');
 
-class UserDonDeNghiPage extends React.Component {
+class UserDonDeNghiMoiPage extends React.Component {
     state = {};
     sex = React.createRef();
     quocGia = React.createRef();
@@ -45,26 +45,7 @@ class UserDonDeNghiPage extends React.Component {
                     placeholder: 'Chọn quốc gia'
                 }).val(nationality).trigger('change');
             }
-            let url = window.location.pathname,
-                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
-            console.log(params.id)
-            this.props.getDonDeNghiHocByUser(params.id, data => {
-                if (data.error) {
-                    this.props.history.push('/user');
-                } else if (data.item) {
-
-                    $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
-                    $('#issuedBy').val(data.item.issuedBy);
-                    $('#licenseNumber').val(data.item.licenseNumber);
-                    $('#otherDocumentation').val(data.item.otherDocumentation);
-                    $('#licenseClass').val(data.item.licenseClass);
-                    $('#newLicenseClass').val(data.item.newLicenseClass);
-                    $('#licenseIssuedBy').val(data.item.licenseIssuedBy);
-                    this.setState(data);
-                } else {
-                    this.props.history.push('/user');
-                }
-            });
+            this.props.createDonDeNghiHocByUser(data => this.props.history.push('/user/bieu-mau/don-de-nghi-hoc/' + data.item._id));
 
         });
     }
@@ -177,7 +158,7 @@ class UserDonDeNghiPage extends React.Component {
         }
 
 
-        this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm, changesOfUser, (error) => {
+        this.props.userUpdateDonDeNghiHoc(this.props.donDeNghiHoc.item._id, changesOfForm, changesOfUser, (error) => {
             if (!error) {
                 if (changesOfForm.licenseNumber == '') {
                     $('#licenseClass').val('');
@@ -189,6 +170,7 @@ class UserDonDeNghiPage extends React.Component {
                     });
                 }
                 T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
+
             }
         });
     };
@@ -360,5 +342,5 @@ class UserDonDeNghiPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm };
-export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);
+const mapActionsToProps = { createDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm };
+export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiMoiPage,);

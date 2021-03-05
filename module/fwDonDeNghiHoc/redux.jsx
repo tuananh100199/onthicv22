@@ -177,6 +177,21 @@ export function getDonDeNghiHocByUser(_id, done) {
     }
 }
 
+export function createDonDeNghiHocByUser(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/create';
+        T.post(url, data => {
+            if (data.error) {
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: GET, item: data.item });
+            }
+            if (done) done(data);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
 export function getAllDonDeNghiHocHoanThanhByUser(done) {
     return dispatch => {
         const url = '/api/user-application-form/finished';

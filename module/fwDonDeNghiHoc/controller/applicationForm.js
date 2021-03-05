@@ -164,6 +164,11 @@ module.exports = app => {
             }
         })
     });
+    app.post('/api/user-application-form/create', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.create({ user: user._id }, (error, item) => res.send({ error, item }));
+    }
+    );
     app.get('/api/user-application-form/finished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
