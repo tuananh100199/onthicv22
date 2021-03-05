@@ -90,58 +90,52 @@ module.exports = app => {
         const { _id, content } = req.body;
         app.model.dangKyTuVan.get(_id, (error, item) => {
             if (error || item == null) {
-                res.send({ error: `System has errors!` })
+                res.send({ error: `Hệ thống lỗi!` })
             } else {
                     if (error != null) {
                         res.send({ error: `Ops! có lỗi xảy ra!` });
                     } else {
-                        app.model.user.getAll((error, items) => {
-                            if (!error && items && items.length) {
-                                let newUser = true;
-                                items.forEach(itemEmail =>  {
-                                    if(itemEmail.email == item.email) 
-                                        newUser = false;
-                                })
-
-                                if (newUser){
-                                    const dataPassword = app.randomPassword(8),
-                                    data = {
-                                            email: item.email,
-                                            firstname: item.name,
-                                            lastname: item.name,
-                                            password: dataPassword
-                                        }; 
-                                        app.model.user.create(data, (error, user) => {
-                                            res.send({ error, user });
-                                            if (user) {
-                                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                                    const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                                                        mailTitle = result.emailCreateMemberByAdminTitle,
-                                                        mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
-                                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                                });
-                                            }
-                                    });
-                                }
+                        app.model.user.get({ email: item.email }, (error, user) => {
+                            if (error != null) {
+                                res.send({ error: `Ops! có lỗi xảy ra!` });
+                            }
+                            if (!user) {
+                                const dataPassword = app.randomPassword(8),
+                                data = {
+                                        email: item.email,
+                                        firstname: item.name,
+                                        lastname: '',
+                                        password: dataPassword
+                                    }; 
+                                    app.model.user.create(data, (error, user) => {
+                                        res.send({ error, user });
+                                        if (user) {
+                                            app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                                const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
+                                                    mailTitle = result.emailCreateMemberByAdminTitle,
+                                                    mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                        .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                                    mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                        .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
+                                                app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                            });
+                                        }
+                                });
                             }
                         });
-
-                        app.model.setting.get('phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml', result => {
-                            const mailTitle = result.phanHoiDangKyTuVanTitle,
-                                mailText = result.phanHoiDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title),
-                                mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title);
-                            app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
-                                item.save(error => res.send({ error }))
-                            }, (error) => {
-                                res.send({ error })
-                            });
-                        });
                     }
+                    app.model.setting.get('phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml', result => {
+                        const mailTitle = result.phanHoiDangKyTuVanTitle,
+                            mailText = result.phanHoiDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title),
+                            mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title);
+                        app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
+                            item.save(error => res.send({ error }))
+                        }, (error) => {
+                            res.send({ error })
+                    });
+                });
             }
         });
     });

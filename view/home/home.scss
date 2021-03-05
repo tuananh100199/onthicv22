@@ -761,3 +761,34 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     border: solid 2px #fd556d;
     color: #fd556d;
 }
+
+
+/*********************************
+6. Intro
+*********************************/
+
+.intro {
+    background: #FFFFFF;
+    padding-top: 67px;
+    padding-bottom: 91px;
+}
+
+.intro_image {
+    width: 100%;
+}
+
+.intro_image img {
+    max-width: 100%;
+}
+
+.intro_text {
+    margin-top: 33px;
+}
+
+.intro_text p {
+    -webkit-column-gap: 30px;
+    -moz-column-gap: 30px;
+    -ms-column-gap: 30px;
+    -o-column-gap: 30px;
+    column-gap: 30px;
+}

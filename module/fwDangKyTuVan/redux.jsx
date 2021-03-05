@@ -186,7 +186,6 @@ export function createDangKyTuVan(dangKyTuVan, done) {
 }
 
 export function phanHoiDangKyTuVan(_id, content, done) {
-    console.log('content',content);
     return dispatch => {
         const url = '/api/dang-ky-tu-van/response';
         T.post(url, { _id, content }, data => {
