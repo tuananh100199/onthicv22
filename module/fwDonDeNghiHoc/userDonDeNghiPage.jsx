@@ -65,6 +65,7 @@ class UserDonDeNghiPage extends React.Component {
 
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
+        console.log(this.state.item.integration)
     }
 
     save = () => {
@@ -91,7 +92,7 @@ class UserDonDeNghiPage extends React.Component {
                 newLicenseClass: $('#newLicenseClass').val(),
                 licenseDated: $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
-                integration: this.state.item.integration ? this.state.intem.integration : false,
+                integration: this.state.item.integration ? this.state.item.integration : false,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
         console.log(this.state.item.integration)
