@@ -63,12 +63,8 @@ class UserDonDeNghiDaHoanThanhPage extends React.Component {
         });
     };
     render() {
-        const item_integration = this.state.item ? this.state.item : {
-            integration: false,
-        };
         const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ? this.props.donDeNghiHoc.item : {};
         const user = this.props.system.user;
-        console.log(item)
         return (
             <main className='app-content'>
                 <div className='app-title'>

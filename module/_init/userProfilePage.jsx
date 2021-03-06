@@ -82,12 +82,12 @@ class UserProfilePage extends React.Component {
                             : (unfinished[0].status == 'progressing' ?
                                 <div className='col-md-6' >
                                     <h4>Sát hạch</h4>
-                                    <ProfileIcon type='info' icon='fa fa-briefcase' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/view/' + unfinished[0]._id} />
+                                    <ProfileIcon type='info' icon='fa-briefcase' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/view/' + unfinished[0]._id} />
                                 </div>
                                 :
                                 <div className='col-md-6 col-lg-6'>
                                     <h4>Sát hạch</h4>
-                                    <ProfileIcon type='info' icon='fa fa-briefcase' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/' + unfinished[0]._id} />
+                                    <ProfileIcon type='info' icon='fa-briefcase' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/' + unfinished[0]._id} />
                                 </div>)
                     }
                     <div className='col-12'>
@@ -95,7 +95,7 @@ class UserProfilePage extends React.Component {
                         <div className='row'>
                             {finish.length ? finish.map((item, index) => (
                                 <div className='col-md-6' key={index}>
-                                    <ProfileIcon type='primary' icon='fa fa-briefcase' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/view/' + item._id} />
+                                    <ProfileIcon type='primary' icon='fa-briefcase' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/view/' + item._id} />
                                 </div>))
                                 : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
                         </div>
