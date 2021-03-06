@@ -65,7 +65,6 @@ class UserDonDeNghiPage extends React.Component {
 
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
-        console.log(this.state.item.integration)
     }
 
     save = () => {
@@ -95,7 +94,6 @@ class UserDonDeNghiPage extends React.Component {
                 integration: this.state.item.integration ? this.state.item.integration : false,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
-        console.log(this.state.item.integration)
         if (T.sexes.indexOf(sex) != -1) {
             changesOfUser.sex = sex;
         }
