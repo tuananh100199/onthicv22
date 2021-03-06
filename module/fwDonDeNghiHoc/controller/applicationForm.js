@@ -149,7 +149,7 @@ module.exports = app => {
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));
 
     // User ------------------------------------------------------------------------------------------------------------
-    app.get('/api/user-application-form/get/:_id', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/:_id', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.get(req.params._id, (error, item) => {
             if (error) {
@@ -175,7 +175,7 @@ module.exports = app => {
         }, (error, item) => res.send({ error, item }));
     }
     );
-    app.get('/api/user-application-form/finished', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/all/finished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
             if (error) {
@@ -187,7 +187,7 @@ module.exports = app => {
             }
         })
     });
-    app.get('/api/user-application-form/unfinished', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/all/unfinished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.getAll({ user: user._id, status: { $in: ['reject', 'approved', 'progressing', 'waiting'] } }, (error, unfinished) => {
             if (error) {

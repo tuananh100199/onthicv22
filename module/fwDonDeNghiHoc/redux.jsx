@@ -164,7 +164,7 @@ export function denyApplicationForm(_id, reason, done) {
 // Actions (user) -----------------------------------------------------------------------------------------------------
 export function getDonDeNghiHocByUser(_id, done) {
     return dispatch => {
-        const url = '/api/user-application-form/get/' + _id;
+        const url = '/api/user-application-form/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
@@ -194,7 +194,7 @@ export function createDonDeNghiHocByUser(done) {
 
 export function getAllDonDeNghiHocHoanThanhByUser(done) {
     return dispatch => {
-        const url = '/api/user-application-form/finished';
+        const url = '/api/user-application-form/all/finished';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
@@ -209,7 +209,7 @@ export function getAllDonDeNghiHocHoanThanhByUser(done) {
 
 export function getAllDonDeNghiHocChuaHoanThanhByUser(done) {
     return dispatch => {
-        const url = '/api/user-application-form/unfinished';
+        const url = '/api/user-application-form/all/unfinished';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
