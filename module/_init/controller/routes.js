@@ -4,9 +4,6 @@ module.exports = (app) => {
     };
     const menuProfile = {
         parentMenu: app.parentMenu.user,
-        // menus: {
-        //     1010: { title: 'Hồ sơ cá nhân', link: '/user/profile', icon: 'fa-id-card', backgroundColor: '#032b91', groupIndex: 0 }
-        // }
     };
     const menuSettings = {
         parentMenu: app.parentMenu.setting,

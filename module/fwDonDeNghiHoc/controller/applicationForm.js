@@ -163,7 +163,7 @@ module.exports = app => {
             }
         })
     });
-    app.post('/api/user-application-form/create', app.permission.check('user:login'), (req, res) => {
+    app.post('/api/user-application-form/new', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.create({
             user: user._id,

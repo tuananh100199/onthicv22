@@ -179,7 +179,7 @@ export function getDonDeNghiHocByUser(_id, done) {
 
 export function createDonDeNghiHocByUser(done) {
     return dispatch => {
-        const url = '/api/user-application-form/create';
+        const url = '/api/user-application-form/new';
         T.post(url, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
