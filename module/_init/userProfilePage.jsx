@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser, createDonDeNghiHocByUser } from '../fwDonDeNghiHoc/redux.jsx';
+import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocChuaHoanThanhByUser, createDonDeNghiHocByUser } from '../fwDonDeNghiHoc/redux.jsx';
 class ProfileIcon extends React.Component {
     render() {
         const content = (
@@ -31,17 +31,17 @@ class ProfileIcon extends React.Component {
 class UserProfilePage extends React.Component {
     componentDidMount() {
         this.props.getAllDonDeNghiHocHoanThanhByUser();
-        this.props.getAllDonDeNghiHocBiTuChoiByUser();
+        this.props.getAllDonDeNghiHocChuaHoanThanhByUser();
         T.ready();
     }
     create = (e) => {
-        console.log(this.props)
         this.props.createDonDeNghiHocByUser(data => this.props.history.push('/user/bieu-mau/don-de-nghi-hoc/' + data.item._id));
         e.preventDefault();
     }
     render() {
-        const reject = this.props.donDeNghiHoc && this.props.donDeNghiHoc.reject ? this.props.donDeNghiHoc.reject : [];
+        const unfinished = this.props.donDeNghiHoc && this.props.donDeNghiHoc.unfinished ? this.props.donDeNghiHoc.unfinished : [];
         const finish = this.props.donDeNghiHoc && this.props.donDeNghiHoc.finish ? this.props.donDeNghiHoc.finish : [];
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -58,23 +58,37 @@ class UserProfilePage extends React.Component {
                 </div>
 
                 <div className='row'>
-                    <div className='col-md-6 col-lg-6'>
-                        <ProfileIcon type='primary' icon='fa-id-card' title='Hồ sơ cá nhân' link='/user/profile' />
+                    <div className='col-12'>
+                        <h4>Thông tin chung</h4>
+                        <div className='row'>
+                            <div className='col-md-6 col-lg-6'>
+                                <ProfileIcon type='primary' icon='fa-id-card' title='Hồ sơ cá nhân' link='/user/profile' />
+                            </div>
+                        </div>
+
                     </div>
                     {
-                        !reject.length ?
+                        !unfinished.length ?
                             (finish.length < 3 ?
                                 <div className='col-md-6 col-lg-6'>
+                                    <h4>Sát hạch</h4>
                                     <ProfileIcon type='info' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch mới'} create={this.create} />
                                 </div>
                                 :
                                 <div className='col-md-6 col-lg-6'>
+                                    <h4>Sát hạch</h4>
                                     <ProfileIcon type='info' icon='fa-id-card-o' title={'Bạn đã đạt số khóa học tối đa'} />
                                 </div>)
-                            :
-                            <div className='col-md-6 col-lg-6'>
-                                <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + reject[0].newLicenseClass} status={reject[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/' + reject[0]._id} />
-                            </div>
+                            : (unfinished[0].status == 'progressing' ?
+                                <div className='col-md-6' >
+                                    <h4>Sát hạch</h4>
+                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/view/' + unfinished[0]._id} />
+                                </div>
+                                :
+                                <div className='col-md-6 col-lg-6'>
+                                    <h4>Sát hạch</h4>
+                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/' + unfinished[0]._id} />
+                                </div>)
                     }
                     {/* <div className='col-md-6 col-lg-6'>
                         <h4>Danh sách khóa học bị từ chối</h4>
@@ -91,7 +105,7 @@ class UserProfilePage extends React.Component {
                         <div className='row'>
                             {finish.length ? finish.map((item, index) => (
                                 <div className='col-md-6' key={index}>
-                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/finished/' + item._id} />
+                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/view/' + item._id} />
                                 </div>))
                                 : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
                         </div>
@@ -107,5 +121,5 @@ class UserProfilePage extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser, createDonDeNghiHocByUser };
+const mapActionsToProps = { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocChuaHoanThanhByUser, createDonDeNghiHocByUser };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);

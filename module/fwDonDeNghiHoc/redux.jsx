@@ -31,7 +31,7 @@ export default function applicationFormReducer(state = null, data) {
             return Object.assign({}, state, { finish: data.finish });
 
         case GET_ALL_REJECT:
-            return Object.assign({}, state, { reject: data.reject });
+            return Object.assign({}, state, { unfinished: data.unfinished });
 
         default:
             return state;
@@ -207,15 +207,15 @@ export function getAllDonDeNghiHocHoanThanhByUser(done) {
     }
 }
 
-export function getAllDonDeNghiHocBiTuChoiByUser(done) {
+export function getAllDonDeNghiHocChuaHoanThanhByUser(done) {
     return dispatch => {
-        const url = '/api/user-application-form/reject';
+        const url = '/api/user-application-form/unfinished';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                dispatch({ type: GET_ALL_REJECT, reject: data.reject });
+                dispatch({ type: GET_ALL_REJECT, unfinished: data.unfinished });
             }
             done && done(data.list);
         }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));

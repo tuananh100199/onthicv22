@@ -25,8 +25,7 @@ class UserDonDeNghiDaHoanThanhPage extends React.Component {
                 this.setState({ image });
             }
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/finished/:id').parse(url);
-            console.log(params.id)
+                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/view/:id').parse(url);
             this.props.getDonDeNghiHocByUser(params.id, data => {
                 if (data.error) {
                     this.props.history.push('/user');

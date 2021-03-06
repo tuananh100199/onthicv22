@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
 import FileSaver from 'file-saver';
 import ImageBox from '../../view/component/ImageBox.jsx';
-const countryList = require('country-list');
 
 class UserDonDeNghiPage extends React.Component {
     state = {};
@@ -43,7 +42,6 @@ class UserDonDeNghiPage extends React.Component {
             }
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
-            console.log(params.id)
             this.props.getDonDeNghiHocByUser(params.id, data => {
                 if (data.error) {
                     this.props.history.push('/user');
@@ -93,9 +91,10 @@ class UserDonDeNghiPage extends React.Component {
                 newLicenseClass: $('#newLicenseClass').val(),
                 licenseDated: $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
-                integration: this.state.item.integration,
+                integration: this.state.item.integration ? this.state.intem.integration : false,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
+        console.log(this.state.item.integration)
         if (T.sexes.indexOf(sex) != -1) {
             changesOfUser.sex = sex;
         }
@@ -148,6 +147,9 @@ class UserDonDeNghiPage extends React.Component {
             T.notify('Hạng giấy phép lái xe mới bị trống bị trống', 'danger');
             $('#newLicenseClass').focus();
             return;
+        }
+        if (changesOfForm.integration == undefined) {
+            changesOfForm.integration = false;
         }
         if (changesOfForm.licenseNumber != '') {
             if (changesOfForm.licenseClass == '') {

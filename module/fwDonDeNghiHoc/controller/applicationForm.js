@@ -26,7 +26,7 @@ module.exports = app => {
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
-    app.get('/user/bieu-mau/don-de-nghi-hoc/finished/:id', app.permission.check(), app.templates.admin);
+    app.get('/user/bieu-mau/don-de-nghi-hoc/view/:id', app.permission.check(), app.templates.admin);
 
     // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailApplicationFormInit', {
@@ -160,18 +160,27 @@ module.exports = app => {
             } else if (item) {
                 res.send({ item })
             } else {
-                app.model.applicationForm.create({ user: user._id }, (error, item) => res.send({ error, item }));
+                app.model.applicationForm.create({
+                    user: user._id,
+                }, (error, item) => res.send({ error, item }));
             }
         })
     });
     app.post('/api/user-application-form/create', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.create({ user: user._id }, (error, item) => res.send({ error, item }));
+        app.model.applicationForm.create({
+            user: user._id,
+            integration: false,
+            licenseDated: null,
+            licenseIssuedBy: '',
+            licenseNumber: '',
+            otherDocumentation: ''
+        }, (error, item) => res.send({ error, item }));
     }
     );
     app.get('/api/user-application-form/finished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ $or: [{ user: user._id, status: 'finish' }, { user: user._id, status: 'progressing' }] }, (error, finish) => {
+        app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
             if (error) {
                 res.send({ error })
             } else if (finish) {
@@ -181,13 +190,13 @@ module.exports = app => {
             }
         })
     });
-    app.get('/api/user-application-form/reject', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/unfinished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ $or: [{ user: user._id, status: 'reject' }, { user: user._id, status: 'waiting' }, { user: user._id, status: 'approved' }] }, (error, reject) => {
+        app.model.applicationForm.getAll({ $or: [{ user: user._id, status: 'reject' }, { user: user._id, status: 'waiting' }, { user: user._id, status: 'approved' }, { user: user._id, status: 'progressing' }] }, (error, unfinished) => {
             if (error) {
                 res.send({ error })
-            } else if (reject) {
-                res.send({ reject })
+            } else if (unfinished) {
+                res.send({ unfinished })
             } else {
                 res.send({ error });
             }
