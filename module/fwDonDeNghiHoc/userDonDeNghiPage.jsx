@@ -26,7 +26,6 @@ class UserDonDeNghiPage extends React.Component {
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
-
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { firstname: '', lastname: '', sex: '', birthday: '', phoneNumber: '', regularResidence: '', residence: '', identityCard: '', identityIssuedBy: '', image: '/img/avatar.png' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
@@ -206,11 +205,12 @@ class UserDonDeNghiPage extends React.Component {
         });
     };
     render() {
-        const item = this.state.item ? this.state.item : {
-            integration: false,
-        };
-
-        return (
+        // const item = this.state.item ? this.state.item : {
+        //     integration: false,
+        // };
+        const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ? this.props.donDeNghiHoc.item : { integration: false, };
+        const user = this.props.system.user;
+        const unfinish_content = (
             <main className='app-content'>
                 <div className='app-title'>
                     <h1><i className='fa fa-id-card-o' /> Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
@@ -353,6 +353,115 @@ class UserDonDeNghiPage extends React.Component {
                 </button>
             </main>
         );
+        const finish_content = (
+            <main className='app-content'>
+                <div className='app-title'>
+                    <h1><i className='fa fa-id-card-o' /> Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
+                    <ul className='app-breadcrumb breadcrumb'>
+                        <Link to='/user'><i className='fa fa-home fa-lg' />&nbsp;</Link>
+                        / &nbsp; Biểu mẫu
+                    </ul>
+                </div>
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin biểu mẫu</h3>
+                    <div className='tile-body'>
+                        <div className='row'>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='userLastname'>Họ và tên lót: &nbsp; <span>{user.lastname}</span></label>
+                            </div>
+                            <div className='form-group col-md-3'>
+                                <label className='control-label' htmlFor='userFirstname'>Tên: &nbsp; <span>{user.firstname}</span></label>
+                            </div>
+                            {/* <div className='form-group col-md-3'>
+                                <label className='control-label'>Quốc tịch <span style={{ color: 'red' }}>*</span></label>
+                                <select className='form-control select2-input' ref={this.quocGia} />
+                            </div> */}
+                            <div className='form-group col-md-3'>
+                                <label className='control-label'>Hình đại diện</label>
+                                < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='userEmail'>Email:&nbsp; <span>{user.email}</span></label>
+                            </div>
+                        </div>
+
+                        <div className='row'>
+                            <div className='form-group col-md-3' id='birthdaySection'>
+                                <label className='control-label' htmlFor='userBirthday'>Ngày sinh: &nbsp;<span>{user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : ''}</span></label>
+                            </div>
+                            <div className='form-group col-md-3'>
+                                <div className='form-group' style={{ width: '100%' }}>
+                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính <span style={{ color: 'red' }}>*</span></label>
+                                    <Dropdown ref={this.sex} text='' items={T.sexes} />
+                                </div>
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label'>Số điện thoại: &nbsp;<span>{user.phoneNumber}</span></label>
+                            </div>
+                        </div>
+
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú: &nbsp;<span>{user.regularResidence}</span></label>
+                        </div>
+
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='residence'>Nơi cư trú: &nbsp;<span>{user.residence}</span></label>
+                        </div>
+
+                        <div className='row'>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu): &nbsp;<span>{user.identityCard}</span></label>
+                            </div>
+                            <div className='form-group col-md-3' id='identityDateSection'>
+                                <label className='control-label' htmlFor='identityDate'>Cấp ngày : &nbsp;<span>{user.identityDate ? T.dateToText(user.identityDate, 'dd/mm/yyyy') : ''}</span></label>
+                            </div>
+                            <div className='form-group col-md-3'>
+                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp: &nbsp;<span>{user.identityIssuedBy}</span></label>
+                            </div>
+                        </div>
+                        <div className='row'>
+                            <div className='form-group col-md-4'>
+                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số: &nbsp;<span>{item.licenseNumber}</span></label>
+                            </div>
+                            <div className='form-group col-md-2' id='licenseClassSection'>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng: &nbsp;<span>{T.licenseClass[item.licenseClass]}</span> </label>
+                            </div>
+                            <div className='form-group col-md-5'>
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: &nbsp;<span>{item.licenseIssuedBy}</span> </label>
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày : &nbsp;<span>{item.licenseDated ? T.dateToText(item.licenseDated, 'dd/mm/yyyy') : ''}</span></label>
+                            </div>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: &nbsp;<span>{T.licenseClass[item.newLicenseClass]}</span> </label>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label'> Đăng ký tích hợp giấy phép lái xe: &nbsp;<span>{item.integration ? 'Có' : 'Không'}</span></label>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label'>Các tài liệu khác có liên quan bao gồm: &nbsp;<span>{item.otherDocumentation}</span> </label>
+                        </div>
+                    </div>
+                </div>
+                <Link to='/user' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
+                <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
+                    style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
+                    <i className="fa fa-file-word-o"></i>
+                </button>
+                <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
+                    style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
+                    <i className="fa fa-file-text-o"></i>
+                </button>
+                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
+                    style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
+                    <i className="fa fa-file-text-o"></i>
+                </button>
+            </main>
+        );
+        return item.status == 'finish' ? finish_content : unfinish_content;
     }
 }
 

@@ -26,8 +26,6 @@ module.exports = app => {
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
-    app.get('/user/bieu-mau/don-de-nghi-hoc/view/:id', app.permission.check(), app.templates.admin);
-
     // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailApplicationFormInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,
@@ -191,7 +189,7 @@ module.exports = app => {
     });
     app.get('/api/user-application-form/unfinished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ $or: [{ user: user._id, status: 'reject' }, { user: user._id, status: 'waiting' }, { user: user._id, status: 'approved' }, { user: user._id, status: 'progressing' }] }, (error, unfinished) => {
+        app.model.applicationForm.getAll({ user: user._id, status: { $in: ['reject', 'approved', 'progressing', 'waiting'] } }, (error, unfinished) => {
             if (error) {
                 res.send({ error })
             } else if (unfinished) {
