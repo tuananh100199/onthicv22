@@ -171,7 +171,7 @@ module.exports = app => {
     );
     app.get('/api/user-application-form/finished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
+        app.model.applicationForm.getAll({ $or: [{ user: user._id, status: 'finish' }, { user: user._id, status: 'progressing' }] }, (error, finish) => {
             if (error) {
                 res.send({ error })
             } else if (finish) {
@@ -183,7 +183,7 @@ module.exports = app => {
     });
     app.get('/api/user-application-form/reject', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.getAll({ user: user._id, status: 'reject' }, (error, reject) => {
+        app.model.applicationForm.getAll({ $or: [{ user: user._id, status: 'reject' }, { user: user._id, status: 'waiting' }, { user: user._id, status: 'approved' }] }, (error, reject) => {
             if (error) {
                 res.send({ error })
             } else if (reject) {

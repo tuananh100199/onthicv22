@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatistic } from './reduxSystem.jsx';
 import { Link } from 'react-router-dom';
-import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser } from '../fwDonDeNghiHoc/redux.jsx';
+import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser, createDonDeNghiHocByUser } from '../fwDonDeNghiHoc/redux.jsx';
 class ProfileIcon extends React.Component {
     render() {
         const content = (
-            <div className={'widget-small coloured-icon ' + this.props.type}>
+            <div onClick={this.props.create} className={'widget-small coloured-icon ' + this.props.type} style={{ cursor: 'pointer' }}>
                 <i className={'icon fa fa-3x ' + this.props.icon} />
                 <div className='info'>
                     <h4>{this.props.title}</h4>
@@ -31,12 +30,15 @@ class ProfileIcon extends React.Component {
 
 class UserProfilePage extends React.Component {
     componentDidMount() {
-        this.props.getStatistic();
         this.props.getAllDonDeNghiHocHoanThanhByUser();
         this.props.getAllDonDeNghiHocBiTuChoiByUser();
         T.ready();
     }
-
+    create = (e) => {
+        console.log(this.props)
+        this.props.createDonDeNghiHocByUser(data => this.props.history.push('/user/bieu-mau/don-de-nghi-hoc/' + data.item._id));
+        e.preventDefault();
+    }
     render() {
         const reject = this.props.donDeNghiHoc && this.props.donDeNghiHoc.reject ? this.props.donDeNghiHoc.reject : [];
         const finish = this.props.donDeNghiHoc && this.props.donDeNghiHoc.finish ? this.props.donDeNghiHoc.finish : [];
@@ -61,12 +63,20 @@ class UserProfilePage extends React.Component {
                     </div>
                     {
                         !reject.length ?
+                            (finish.length < 3 ?
+                                <div className='col-md-6 col-lg-6'>
+                                    <ProfileIcon type='info' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch mới'} create={this.create} />
+                                </div>
+                                :
+                                <div className='col-md-6 col-lg-6'>
+                                    <ProfileIcon type='info' icon='fa-id-card-o' title={'Bạn đã đạt số khóa học tối đa'} />
+                                </div>)
+                            :
                             <div className='col-md-6 col-lg-6'>
-                                <ProfileIcon type='info' icon='fa-id-card-o' title={'Đơn đề nghị học, sát hạch mới'} link='/user/bieu-mau/don-de-nghi-hoc/new' />
+                                <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + reject[0].newLicenseClass} status={reject[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/' + reject[0]._id} />
                             </div>
-                            : <div className='col-md-6 col-lg-6'></div>
                     }
-                    <div className='col-md-6 col-lg-6'>
+                    {/* <div className='col-md-6 col-lg-6'>
                         <h4>Danh sách khóa học bị từ chối</h4>
                         <div className='row'>
                             {reject.length ? reject.map((item, index) => (
@@ -75,12 +85,12 @@ class UserProfilePage extends React.Component {
                                 </div>))
                                 : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
                         </div>
-                    </div>
-                    <div className='col-md-6 col-lg-6'>
+                    </div> */}
+                    <div className='col-12'>
                         <h4>Danh sách khóa học đã hoàn thành</h4>
                         <div className='row'>
                             {finish.length ? finish.map((item, index) => (
-                                <div className='col-12' key={index}>
+                                <div className='col-md-6' key={index}>
                                     <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/finished/' + item._id} />
                                 </div>))
                                 : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
@@ -97,5 +107,5 @@ class UserProfilePage extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getStatistic, getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser };
+const mapActionsToProps = { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocBiTuChoiByUser, createDonDeNghiHocByUser };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);

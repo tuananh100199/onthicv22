@@ -28,7 +28,7 @@ class UserDonDeNghiPage extends React.Component {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
 
-                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality, email } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
+                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { firstname: '', lastname: '', sex: '', birthday: '', phoneNumber: '', regularResidence: '', residence: '', identityCard: '', identityIssuedBy: '', image: '/img/avatar.png' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -40,10 +40,6 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
                 this.sex.current.setText(sex ? sex : '');
-                $(this.quocGia.current).select2({
-                    data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
-                    placeholder: 'Chọn quốc gia'
-                }).val(nationality).trigger('change');
             }
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
@@ -177,7 +173,7 @@ class UserDonDeNghiPage extends React.Component {
         }
 
 
-        this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm, changesOfUser, (error) => {
+        this.props.userUpdateDonDeNghiHoc(this.props.donDeNghiHoc.item._id, changesOfForm, changesOfUser, (error) => {
             if (!error) {
                 if (changesOfForm.licenseNumber == '') {
                     $('#licenseClass').val('');

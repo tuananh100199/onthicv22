@@ -4,10 +4,9 @@ import T from '../../view/js/common.js'
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
-import Dropdown from '../../view/component/Dropdown.jsx';
 import FileSaver from 'file-saver';
 import ImageBox from '../../view/component/ImageBox.jsx';
-const countryList = require('country-list');
+
 
 class UserDonDeNghiDaHoanThanhPage extends React.Component {
     state = {};
