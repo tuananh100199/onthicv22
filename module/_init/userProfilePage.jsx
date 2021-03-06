@@ -77,7 +77,7 @@ class UserProfilePage extends React.Component {
                                 :
                                 <div className='col-md-6 col-lg-6'>
                                     <h4>Sát hạch</h4>
-                                    <ProfileIcon type='info' icon='fa-id-card-o' title={'Bạn đã đạt số khóa học tối đa'} />
+                                    <ProfileIcon type='info' icon='fa-check' title={'Bạn đã đạt số khóa học tối đa'} />
                                 </div>)
                             : (unfinished[0].status == 'progressing' ?
                                 <div className='col-md-6' >
