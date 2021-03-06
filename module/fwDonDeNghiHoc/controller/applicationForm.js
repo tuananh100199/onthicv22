@@ -153,7 +153,6 @@ module.exports = app => {
     // User ------------------------------------------------------------------------------------------------------------
     app.get('/api/user-application-form/get/:_id', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        console.log(req.params._id)
         app.model.applicationForm.get(req.params._id, (error, item) => {
             if (error) {
                 res.send({ error })
