@@ -90,16 +90,6 @@ class UserProfilePage extends React.Component {
                                     <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + unfinished[0].newLicenseClass} status={unfinished[0].status} link={'/user/bieu-mau/don-de-nghi-hoc/' + unfinished[0]._id} />
                                 </div>)
                     }
-                    {/* <div className='col-md-6 col-lg-6'>
-                        <h4>Danh sách khóa học bị từ chối</h4>
-                        <div className='row'>
-                            {reject.length ? reject.map((item, index) => (
-                                <div className='col-12' key={index}>
-                                    <ProfileIcon type='primary' icon='fa-id-card-o' title={'Khóa học hạng ' + item.newLicenseClass} status={item.status} link={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} />
-                                </div>))
-                                : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
-                        </div>
-                    </div> */}
                     <div className='col-12'>
                         <h4>Danh sách khóa học đã hoàn thành</h4>
                         <div className='row'>
@@ -110,10 +100,6 @@ class UserProfilePage extends React.Component {
                                 : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
                         </div>
                     </div>
-
-                    {/* <div className='col-md-6 col-lg-6'>
-                        <ProfileIcon type='primary' icon='fa-book' title='Khóa học' link='/user/course/item' />
-                    </div> */}
                 </div>
             </main>
         );
