@@ -13,7 +13,7 @@ module.exports = app => {
         licenseClass: { type: String, enum: ['B1', 'B2', 'C'], default: 'B1' }, // Hang bang lai xe 
         newLicenseClass: { type: String, enum: ['B1', 'B2', 'B'], default: 'B1' },
 
-        approve: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
+        status: { type: String, enum: ['approved', 'waiting', 'reject', 'finish', 'progressing'], default: 'waiting' },
 
     });
     const model = app.db.model('ApplicationForm', schema);
@@ -49,5 +49,6 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
+        getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
     }
 };

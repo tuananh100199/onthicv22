@@ -1,7 +1,5 @@
 100. Dashboard (/user/dashboard)
 1000. Trang cá nhân (/user)
-	1010 - Hồ sơ cá nhân (/user/profile)
-	1020 - Đơn đề nghị học, sát hạchh (/user/bieu-mau/don-de-nghi-hoc)
 2000. Cấu hình (/user/settings)
 	2010 - Thông tin chung (/user/multimedia)
 	2020 - Email (/user/email)

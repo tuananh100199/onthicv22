@@ -13,20 +13,19 @@ module.exports = app => {
         }
     };
 
-    const menuDonDeNghiHoc = {
-        parentMenu: app.parentMenu.user,
-        menus: {
-            1020: { title: 'Đơn đề nghị học, sát hạchh', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
-        }
-    }
-    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu }, { name: 'user:login', menu: menuDonDeNghiHoc });
+    // const menuDonDeNghiHoc = {
+    //     parentMenu: app.parentMenu.user,
+    //     menus: {
+    //         1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
+    //     }
+    // }
+    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
-    app.get('/user/bieu-mau/don-de-nghi-hoc', app.permission.check(), app.templates.admin);
-
+    app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
     // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailApplicationFormInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,
@@ -130,7 +129,7 @@ module.exports = app => {
                                 mailHtml = result.rejectDonDeNghiHocHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
                             app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
                                 item.reason = reason;
-                                item.approve = 'reject';
+                                item.status = 'reject';
                                 item.save(error => res.send({ error }))
                             }, (error) => {
                                 res.send({ error })
@@ -150,15 +149,53 @@ module.exports = app => {
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));
 
     // User ------------------------------------------------------------------------------------------------------------
-    app.get('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/user-application-form/:_id', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
-        app.model.applicationForm.get({ user: user._id }, (error, item) => {
+        app.model.applicationForm.get(req.params._id, (error, item) => {
             if (error) {
                 res.send({ error })
             } else if (item) {
                 res.send({ item })
             } else {
-                app.model.applicationForm.create({ user: user._id }, (error, item) => res.send({ error, item }));
+                app.model.applicationForm.create({
+                    user: user._id,
+                }, (error, item) => res.send({ error, item }));
+            }
+        })
+    });
+    app.post('/api/user-application-form/new', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.create({
+            user: user._id,
+            integration: false,
+            licenseDated: null,
+            licenseIssuedBy: '',
+            licenseNumber: '',
+            otherDocumentation: ''
+        }, (error, item) => res.send({ error, item }));
+    }
+    );
+    app.get('/api/user-application-form/all/finished', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
+            if (error) {
+                res.send({ error })
+            } else if (finish) {
+                res.send({ finish })
+            } else {
+                res.send({ error });
+            }
+        })
+    });
+    app.get('/api/user-application-form/all/unfinished', app.permission.check('user:login'), (req, res) => {
+        const user = req.session.user;
+        app.model.applicationForm.getAll({ user: user._id, status: { $in: ['reject', 'approved', 'progressing', 'waiting'] } }, (error, unfinished) => {
+            if (error) {
+                res.send({ error })
+            } else if (unfinished) {
+                res.send({ unfinished })
+            } else {
+                res.send({ error });
             }
         })
     });

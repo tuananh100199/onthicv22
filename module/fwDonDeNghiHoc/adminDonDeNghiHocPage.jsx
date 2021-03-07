@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
 import { getUserInPage } from '../fwUser/redux.jsx';
@@ -12,7 +12,7 @@ class AdminDonDeNghiHocPage extends React.Component {
         super(props);
         this.state = { searchText: '', isSearching: true };
     }
-    
+
     componentDidMount() {
         T.ready('/user/don-de-nghi-hoc', () => {
             this.props.getFormInPage(undefined, undefined, {}, () => {
@@ -26,7 +26,7 @@ class AdminDonDeNghiHocPage extends React.Component {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Đơn Đề Nghị Học.docx');
         });
     }
-    
+
     exportBienNhan = (e, item) => {
         this.props.exportBienNhanLanDauToWord(item._id, (data) => {
             FileSaver.saveAs(new Blob([new Uint8Array(data.buf.data)]), 'Biên Nhận Hồ Sơ Học Viên Lần Đầu.docx');
@@ -44,7 +44,7 @@ class AdminDonDeNghiHocPage extends React.Component {
         let condition = {},
             searchText = $('#searchTextBox').val();
         if (searchText) condition.searchText = searchText;
-    
+
         this.setState({ isSearching: true }, () => {
             this.props.getFormInPage(undefined, undefined, condition, () => {
                 this.setState({ searchText, isSearching: false });
@@ -75,9 +75,13 @@ class AdminDonDeNghiHocPage extends React.Component {
                                 <Link to={'/user/don-de-nghi-hoc/edit/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
                             <td>
-                                {(item.approve == 'waiting' ? 'Mới' : (item.approve == 'approved' ?
-                                    <span className='text-success'>Đã duyệt</span> :
-                                    <span className='text-danger'>Từ chối</span>)
+                                {(item.status == 'waiting' ? 'Mới' :
+                                    (item.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
+                                        (item.status == 'reject' ? <span className='text-danger'>Từ chối</span> :
+                                            (item.status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
+                                                : <span className='text-warning'>Đã hoàn thành</span>)
+                                        )
+                                    )
                                 )}
                             </td>
                             <td className='btn-group'>
@@ -91,12 +95,12 @@ class AdminDonDeNghiHocPage extends React.Component {
                                 </Tooltip>
                                 <Tooltip placement='bottom' overlay='Xuất biên nhận học viên'>
                                     <button type='button' className='btn btn-info' onClick={e => this.exportBienNhan(e, item)}>
-                                        <i className='fa fa-file-text-o'/>
+                                        <i className='fa fa-file-text-o' />
                                     </button>
                                 </Tooltip>
                                 <Tooltip placement='bottom' overlay='Xuất bản cam kết'>
                                     <button type='button' className='btn btn-secondary' onClick={e => this.exportBanCamKet(e, item)}>
-                                        <i className='fa fa-file-text-o'/>
+                                        <i className='fa fa-file-text-o' />
                                     </button>
                                 </Tooltip>
                             </td>
@@ -129,7 +133,7 @@ class AdminDonDeNghiHocPage extends React.Component {
                     <i className='fa fa-lg fa-reply' />
                 </Link>
                 <Pagination name='pageForm' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                            getPage={this.props.getFormInPage} style={{ marginLeft: '65px' }}/>
+                    getPage={this.props.getFormInPage} style={{ marginLeft: '65px' }} />
             </main>
         );
     }
