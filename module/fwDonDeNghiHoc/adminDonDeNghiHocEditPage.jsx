@@ -169,19 +169,23 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                 <Link className='btn btn-secondary btn-circle' to='/user/don-de-nghi-hoc/list' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
+                {item.status == 'waiting' ?
+                    <div>
+                        <Tooltip placement='bottom' overlay='Từ chối đơn'>
+                            <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.current.show() }}
+                                style={{ position: 'fixed', right: '70px', bottom: '10px' }}>
+                                <i className='fa fa-user-times' />
+                            </button>
+                        </Tooltip>
 
-                <Tooltip placement='bottom' overlay='Từ chối đơn'>
-                    <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.current.show() }}
-                        style={{ position: 'fixed', right: '70px', bottom: '10px' }}>
-                        <i className='fa fa-user-times' />
-                    </button>
-                </Tooltip>
-
-                <Tooltip placement='bottom' overlay='Chấp nhận đơn'>
-                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '15px', bottom: '10px' }} onClick={() => this.accept(item.user)}>
-                        <i className='fa fa-user-plus' />
-                    </button>
-                </Tooltip>
+                        <Tooltip placement='bottom' overlay='Chấp nhận đơn'>
+                            <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '15px', bottom: '10px' }} onClick={() => this.accept(item.user)}>
+                                <i className='fa fa-user-plus' />
+                            </button>
+                        </Tooltip>
+                    </div>
+                    : <p></p>
+                }
                 <DenyModal ref={this.denyModal} item={item} denyApplicationForm={this.props.denyApplicationForm} />
             </main>
         );
