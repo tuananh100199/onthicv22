@@ -49,6 +49,6 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-        getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
     }
 };
