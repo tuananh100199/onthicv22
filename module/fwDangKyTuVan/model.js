@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        name: String,
+        firstname: String,
+        lastname: String,
         email: String,
         subject: String,
         message: String,

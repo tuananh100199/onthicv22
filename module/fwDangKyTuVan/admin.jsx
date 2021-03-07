@@ -30,7 +30,7 @@ class AdminDangKyTuVanModal extends React.Component {
         }
     }
     render() {
-        const { name, subject, email, message, phone } = this.state;
+        const { lastname, firstname, subject, email, message, phone } = this.state;
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
                 <div className='modal-dialog modal-lg' role='document'>
@@ -42,7 +42,7 @@ class AdminDangKyTuVanModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <label>Tên người dùng: <b>{name}</b></label><br />
+                            <label>Tên người dùng: <b>{lastname} {firstname}</b></label><br />
                             <label>Chủ đề: <b>{subject}</b></label><br />
                             <label>Email: <b>{email}</b></label><br />
                             <label>Số điện thoại: <b>{phone}</b></label><br />

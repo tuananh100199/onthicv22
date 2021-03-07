@@ -20,8 +20,8 @@ module.exports = app => {
             if (enableInit) {
                 app.model.setting.init({
                     phanHoiDangKyTuVanTitle: 'Hiệp Phát: Phản hồi đăng ký tư vấn!',
-                    phanHoiDangKyTuVanText: 'Chào {name}, Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn: {content} Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
-                    phanHoiDangKyTuVanHtml: 'Chào <b>{name}</b>,<br/><br/>' +
+                    phanHoiDangKyTuVanText: 'Chào {lastname}, Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn: {content} Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
+                    phanHoiDangKyTuVanHtml: 'Chào <b>{lastname}</b>,<br/><br/>' +
                         'Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn:<br/><br/>' +
                         '<b>{content}</b><br/><br/>' +
                         'Trân trọng,<br/>' +
@@ -73,14 +73,13 @@ module.exports = app => {
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/dang-ky-tu-van', (req, res) => app.model.dangKyTuVan.create(req.body.dangKyTuVan, (error, item) => {
-        console.log('item',item);
         if (item) {
             app.io.emit('dangKyTuVan-added', item);
 
             app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
-                let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                    mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                    mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
+                let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                    mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                    mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
                 app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
             });
         }
@@ -104,8 +103,8 @@ module.exports = app => {
                                 const dataPassword = app.randomPassword(8),
                                 data = {
                                         email: item.email,
-                                        firstname: item.name,
-                                        lastname: '',
+                                        firstname: item.firstname,
+                                        lastname: item.lastname,
                                         password: dataPassword
                                     }; 
                                     app.model.user.create(data, (error, user) => {
@@ -114,7 +113,7 @@ module.exports = app => {
                                             app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                                                 const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                                                     mailTitle = result.emailCreateMemberByAdminTitle,
-                                                    mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                                    mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
                                                         .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
                                                         .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
                                                     mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
@@ -129,8 +128,8 @@ module.exports = app => {
                     }
                     app.model.setting.get('phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml', result => {
                         const mailTitle = result.phanHoiDangKyTuVanTitle,
-                            mailText = result.phanHoiDangKyTuVanText.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title),
-                            mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{name}', item.name).replaceAll('{content}', content).replaceAll('{title}', item.title);
+                            mailText = result.phanHoiDangKyTuVanText.replaceAll('{lastname}', item.lastname).replaceAll('{content}', content),
+                            mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{lastname}', item.lastname).replaceAll('{content}', content);
                         app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
                             item.save(error => res.send({ error }))
                         }, (error) => {

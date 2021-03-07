@@ -4,7 +4,8 @@ import { createDangKyTuVan } from './redux.jsx';
 class SectionDangKyTuVan extends React.Component {
     constructor(props) {
         super(props);
-        this.name = React.createRef();
+        this.firstname = React.createRef();
+        this.lastname = React.createRef();
         this.email = React.createRef();
         this.subject = React.createRef();
         this.message = React.createRef();
@@ -12,10 +13,13 @@ class SectionDangKyTuVan extends React.Component {
     }
     sendMessage = (e) => {
         e.preventDefault();
-        if (this.name.current.value == '') {
+        if (this.firstname.current.value == '') {
+            T.notify('Họ bị trống!', 'danger');
+            (this.firstname.current).focus();
+        } else if (this.lastname.current.value == '') {
             T.notify('Tên bị trống!', 'danger');
-            (this.name.current).focus();
-        } else if (this.email.current.value == '') {
+            (this.lastname.current).focus();
+        }else if (this.email.current.value == '') {
             T.notify('Email bị trống!', 'danger');
             (this.email.current).focus();
         } else if (!T.validateEmail(this.email.current.value)) {
@@ -32,13 +36,14 @@ class SectionDangKyTuVan extends React.Component {
             (this.phone.current).focus();
         } else {
             this.props.createDangKyTuVan({
-                name: this.name.current.value,
+                firstname: this.firstname.current.value,
+                lastname: this.lastname.current.value,
                 email: this.email.current.value,
                 subject: this.subject.current.value,
                 message: this.message.current.value,
                 phone: this.phone.current.value
             }, () => {
-                this.name.current.value = this.email.current.value = this.subject.current.value = this.message.current.value = this.phone.current.value = '';
+                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.subject.current.value = this.message.current.value = this.phone.current.value = '';
                 T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
             });
         }
@@ -66,8 +71,9 @@ class SectionDangKyTuVan extends React.Component {
                                 <div className="intro_form_title">Đăng ký tư vấn</div>
                                 <form action="#" className="intro_form" id="intro_form" onSubmit={this.sendMessage}>
                                     <div className="d-flex flex-row align-items-start justify-content-between flex-wrap">
-                                        <input type="text" className="intro_input" placeholder="Tên"  ref={this.name} required="required" />
-                                        <input type="tel" className="intro_input" placeholder="Số điện thoại"  ref={this.phone} required="required" />
+                                        <input type="text" className="intro_input" placeholder="Họ"  ref={this.lastname} required="required" />
+                                        <input type="text" className="intro_input" placeholder="Tên"  ref={this.firstname} required="required" />
+                                        <input type="tel" className="contact_input w-100" placeholder="Số điện thoại"  ref={this.phone} required="required" />
                                         <input type='text' className='contact_input w-100' ref={this.email} placeholder='Email' required="required" />
                                         <input type='text' className='contact_input w-100' ref={this.subject} placeholder='Chủ đề' />
                                         <textarea name='message' className='contact_input w-100' ref={this.message} cols='30' rows='10' style={{height: 128}} placeholder='Nội dung' />
