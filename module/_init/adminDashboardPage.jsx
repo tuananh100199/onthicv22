@@ -35,8 +35,8 @@ class DashboardPage extends React.Component {
     }
 
     render() {
-        const { numberOfUser,numberOfNews, numberOfCourse, todayViews, allViews } = this.props.system ?
-            this.props.system : { numberOfUser: 0,  numberOfNews: 0,  numberOfCourse: 0, todayViews: 0, allViews: 0 };
+        const { numberOfUser, numberOfNews, numberOfCourse, todayViews, allViews } = this.props.system ?
+            this.props.system : { numberOfUser: 0, numberOfNews: 0, numberOfCourse: 0, todayViews: 0, allViews: 0 };
         return (
             <main className='app-content'>
                 <div className='app-title'>

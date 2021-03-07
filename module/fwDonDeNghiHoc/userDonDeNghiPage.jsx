@@ -1,18 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js'
-import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux.jsx';
 import { updateProfile } from '../_init/reduxSystem.jsx'
 import { Link } from 'react-router-dom';
 import Dropdown from '../../view/component/Dropdown.jsx';
-import FileSaver from 'file-saver'
-const countryList = require('country-list');
+import FileSaver from 'file-saver';
+import ImageBox from '../../view/component/ImageBox.jsx';
 
 class UserDonDeNghiPage extends React.Component {
     state = {};
     sex = React.createRef();
     quocGia = React.createRef();
-
+    constructor(props) {
+        super(props);
+        this.imageBox = React.createRef();
+    }
     componentDidMount() {
         T.ready('/user', () => {
             T.tooltip();
@@ -21,7 +24,9 @@ class UserDonDeNghiPage extends React.Component {
             $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
 
             if (this.props.system && this.props.system.user) {
-                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
+                const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
+                this.setState({ image });
+                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { firstname: '', lastname: '', sex: '', birthday: '', phoneNumber: '', regularResidence: '', residence: '', identityCard: '', identityIssuedBy: '', image: '/img/avatar.png' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -31,18 +36,16 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityCard').val(identityCard);
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
+                this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
                 this.sex.current.setText(sex ? sex : '');
-                $(this.quocGia.current).select2({
-                    data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
-                    placeholder: 'Chọn quốc gia'
-                }).val(nationality).trigger('change');
             }
-
-            this.props.getDonDeNghiHocByUser(data => {
+            let url = window.location.pathname,
+                params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
+            this.props.getDonDeNghiHocByUser(params.id, data => {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-
+                    data.item.status == 'approved' ? $('#newLicenseClass').prop("disabled", true) : $('#newLicenseClass').prop("disabled", false)
                     $('#licenseDated').val(data.item.licenseDated ? T.dateToText(data.item.licenseDated, 'dd/mm/yyyy') : '');
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
@@ -55,6 +58,7 @@ class UserDonDeNghiPage extends React.Component {
                     this.props.history.push('/user');
                 }
             });
+
         });
     }
 
@@ -86,7 +90,7 @@ class UserDonDeNghiPage extends React.Component {
                 newLicenseClass: $('#newLicenseClass').val(),
                 licenseDated: $('#licenseDated').val() ? T.formatDate($('#licenseDated').val()) : null,
                 licenseIssuedBy: $('#licenseIssuedBy').val(),
-                integration: this.state.item.integration,
+                integration: this.state.item.integration ? this.state.item.integration : false,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
         if (T.sexes.indexOf(sex) != -1) {
@@ -142,6 +146,9 @@ class UserDonDeNghiPage extends React.Component {
             $('#newLicenseClass').focus();
             return;
         }
+        if (changesOfForm.integration == undefined) {
+            changesOfForm.integration = false;
+        }
         if (changesOfForm.licenseNumber != '') {
             if (changesOfForm.licenseClass == '') {
                 T.notify('Hạng bằng lái xe bị trống', 'danger');
@@ -165,14 +172,18 @@ class UserDonDeNghiPage extends React.Component {
             changesOfForm.licenseDated = null;
         }
 
-        this.props.userUpdateDonDeNghiHoc(this.state.item._id, changesOfForm, changesOfUser, (error) => {
+
+        this.props.userUpdateDonDeNghiHoc(this.props.donDeNghiHoc.item._id, changesOfForm, changesOfUser, (error) => {
             if (!error) {
                 if (changesOfForm.licenseNumber == '') {
                     $('#licenseClass').val('');
                     $('#licenseIssuedBy').val('');
                     $('#licenseDated').val(null);
                 }
-
+                if (this.props.donDeNghiHoc.item.status == 'reject') {
+                    this.props.updateForm(this.props.donDeNghiHoc.item._id, { status: 'waiting' }, () => {
+                    });
+                }
                 T.notify('Cập nhật thông tin biểu mẫu thành công!', 'success');
             }
         });
@@ -194,11 +205,12 @@ class UserDonDeNghiPage extends React.Component {
         });
     };
     render() {
-        const item = this.state.item ? this.state.item : {
-            integration: false,
-        };
-
-        return (
+        // const item = this.state.item ? this.state.item : {
+        //     integration: false,
+        // };
+        const item = this.props.donDeNghiHoc && this.props.donDeNghiHoc.item ? this.props.donDeNghiHoc.item : { integration: false, };
+        const user = this.props.system.user;
+        const unfinish_content = (
             <main className='app-content'>
                 <div className='app-title'>
                     <h1><i className='fa fa-id-card-o' /> Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
@@ -219,9 +231,16 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label' htmlFor='userFirstname'>Tên <span style={{ color: 'red' }}>*</span></label>
                                 <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                             </div>
-                            <div className='form-group col-md-3'>
+                            {/* <div className='form-group col-md-3'>
                                 <label className='control-label'>Quốc tịch <span style={{ color: 'red' }}>*</span></label>
                                 <select className='form-control select2-input' ref={this.quocGia} />
+                            </div> */}
+                            <div className='form-group col-md-3'>
+                                <label className='control-label'>Hình đại diện</label>
+                                < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='userEmail'>Email:&nbsp; <span>{this.props.system.user.email}</span></label>
                             </div>
                         </div>
 
@@ -276,9 +295,9 @@ class UserDonDeNghiPage extends React.Component {
                             <div className='form-group col-md-2' id='licenseClassSection'>
                                 <label className='control-label' htmlFor='licenseClass'>Hạng <span style={{ color: 'red' }}>*</span> </label>
                                 <select className="form-control select2-input" placeholder='Hạng GPLX' id='licenseClass' data-date-container='#identityDateSection'>
-                                    <option value="b1">B1</option>
-                                    <option value="b2">B2</option>
-                                    <option value="c">C</option>
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                    <option value="C">C</option>
                                 </select>
                             </div>
                             <div className='form-group col-md-5'>
@@ -293,9 +312,9 @@ class UserDonDeNghiPage extends React.Component {
                         <div className='form-group'>
                             <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng <span style={{ color: 'red' }}>*</span> </label>
                             <select className="form-control select2-input" placeholder='Hạng GPLX' id='newLicenseClass' data-date-container='#identityDateSection'>
-                                <option value="b1">B1</option>
-                                <option value="b2">B2</option>
-                                <option value="c">C</option>
+                                <option value="B1">B1</option>
+                                <option value="B2">B2</option>
+                                <option value="C">C</option>
                             </select>
                         </div>
                         <div className='form-group' style={{ display: 'inline-flex' }}>
@@ -334,9 +353,118 @@ class UserDonDeNghiPage extends React.Component {
                 </button>
             </main>
         );
+        const finish_content = (
+            <main className='app-content'>
+                <div className='app-title'>
+                    <h1><i className='fa fa-id-card-o' /> Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
+                    <ul className='app-breadcrumb breadcrumb'>
+                        <Link to='/user'><i className='fa fa-home fa-lg' />&nbsp;</Link>
+                        / &nbsp; Biểu mẫu
+                    </ul>
+                </div>
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin biểu mẫu</h3>
+                    <div className='tile-body'>
+                        <div className='row'>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='userLastname'>Họ và tên lót: &nbsp; <span>{user.lastname}</span></label>
+                            </div>
+                            <div className='form-group col-md-3'>
+                                <label className='control-label' htmlFor='userFirstname'>Tên: &nbsp; <span>{user.firstname}</span></label>
+                            </div>
+                            {/* <div className='form-group col-md-3'>
+                                <label className='control-label'>Quốc tịch <span style={{ color: 'red' }}>*</span></label>
+                                <select className='form-control select2-input' ref={this.quocGia} />
+                            </div> */}
+                            <div className='form-group col-md-3'>
+                                <label className='control-label'>Hình đại diện</label>
+                                < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='userEmail'>Email:&nbsp; <span>{user.email}</span></label>
+                            </div>
+                        </div>
+
+                        <div className='row'>
+                            <div className='form-group col-md-3' id='birthdaySection'>
+                                <label className='control-label' htmlFor='userBirthday'>Ngày sinh: &nbsp;<span>{user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : ''}</span></label>
+                            </div>
+                            <div className='form-group col-md-3'>
+                                <div className='form-group' style={{ width: '100%' }}>
+                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính <span style={{ color: 'red' }}>*</span></label>
+                                    <Dropdown ref={this.sex} text='' items={T.sexes} />
+                                </div>
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label'>Số điện thoại: &nbsp;<span>{user.phoneNumber}</span></label>
+                            </div>
+                        </div>
+
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú: &nbsp;<span>{user.regularResidence}</span></label>
+                        </div>
+
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='residence'>Nơi cư trú: &nbsp;<span>{user.residence}</span></label>
+                        </div>
+
+                        <div className='row'>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu): &nbsp;<span>{user.identityCard}</span></label>
+                            </div>
+                            <div className='form-group col-md-3' id='identityDateSection'>
+                                <label className='control-label' htmlFor='identityDate'>Cấp ngày : &nbsp;<span>{user.identityDate ? T.dateToText(user.identityDate, 'dd/mm/yyyy') : ''}</span></label>
+                            </div>
+                            <div className='form-group col-md-3'>
+                                <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp: &nbsp;<span>{user.identityIssuedBy}</span></label>
+                            </div>
+                        </div>
+                        <div className='row'>
+                            <div className='form-group col-md-4'>
+                                <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số: &nbsp;<span>{item.licenseNumber}</span></label>
+                            </div>
+                            <div className='form-group col-md-2' id='licenseClassSection'>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng: &nbsp;<span>{T.licenseClass[item.licenseClass]}</span> </label>
+                            </div>
+                            <div className='form-group col-md-5'>
+                                <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: &nbsp;<span>{item.licenseIssuedBy}</span> </label>
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label' htmlFor='licenseDated'>Cấp ngày : &nbsp;<span>{item.licenseDated ? T.dateToText(item.licenseDated, 'dd/mm/yyyy') : ''}</span></label>
+                            </div>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: &nbsp;<span>{T.licenseClass[item.newLicenseClass]}</span> </label>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label'> Đăng ký tích hợp giấy phép lái xe: &nbsp;<span>{item.integration ? 'Có' : 'Không'}</span></label>
+                        </div>
+                        <div className='form-group'>
+                            <label className='control-label'>Các tài liệu khác có liên quan bao gồm: &nbsp;<span>{item.otherDocumentation}</span> </label>
+                        </div>
+                    </div>
+                </div>
+                <Link to='/user' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
+                <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
+                    style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
+                    <i className="fa fa-file-word-o"></i>
+                </button>
+                <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
+                    style={{ position: 'fixed', right: '120px', bottom: '10px' }} onClick={this.exportBienNhan}>
+                    <i className="fa fa-file-text-o"></i>
+                </button>
+                <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
+                    style={{ position: 'fixed', right: '175px', bottom: '10px' }} onClick={this.exportBanCamKet}>
+                    <i className="fa fa-file-text-o"></i>
+                </button>
+            </main>
+        );
+        return item.status == 'finish' ? finish_content : unfinish_content;
     }
 }
 
-const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
+const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc });
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

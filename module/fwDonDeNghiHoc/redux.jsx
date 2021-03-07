@@ -4,6 +4,8 @@ import T from '../../view/js/common';
 const GET_PAGE = 'form:getApplicationForm';
 const UPDATE = 'form:getApplicationForm';
 const GET = 'applicationForm:getApplicationForm';
+const GET_ALL_FINISH = 'applicationForm:getAllFinishApplicationForm';
+const GET_ALL_REJECT = 'applicationForm:getAllRejectApplicationForm';
 
 export default function applicationFormReducer(state = null, data) {
     switch (data.type) {
@@ -24,6 +26,12 @@ export default function applicationFormReducer(state = null, data) {
         }
         case GET:
             return Object.assign({}, state, { item: data.item });
+
+        case GET_ALL_FINISH:
+            return Object.assign({}, state, { finish: data.finish });
+
+        case GET_ALL_REJECT:
+            return Object.assign({}, state, { unfinished: data.unfinished });
 
         default:
             return state;
@@ -154,10 +162,10 @@ export function denyApplicationForm(_id, reason, done) {
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
-export function getDonDeNghiHocByUser(done) {
+export function getDonDeNghiHocByUser(_id, done) {
     return dispatch => {
-        const url = '/api/user-application-form';
-        T.get(url, data => {
+        const url = '/api/user-application-form/' + _id;
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -165,6 +173,51 @@ export function getDonDeNghiHocByUser(done) {
                 dispatch({ type: GET, item: data.item });
             }
             done && done(data);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function createDonDeNghiHocByUser(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/new';
+        T.post(url, data => {
+            if (data.error) {
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: GET, item: data.item });
+            }
+            if (done) done(data);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function getAllDonDeNghiHocHoanThanhByUser(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/all/finished';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: GET_ALL_FINISH, finish: data.finish });
+            }
+            done && done(data.list);
+        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    }
+}
+
+export function getAllDonDeNghiHocChuaHoanThanhByUser(done) {
+    return dispatch => {
+        const url = '/api/user-application-form/all/unfinished';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: GET_ALL_REJECT, unfinished: data.unfinished });
+            }
+            done && done(data.list);
         }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
     }
 }
@@ -229,5 +282,4 @@ export function exportBanCamKetToWord(_id, done) {
         }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
     }
 }
-
 
