@@ -14,10 +14,6 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userDonDeNghiPage.jsx') })
         },
         {
-            path: '/user/bieu-mau/don-de-nghi-hoc/view/:id',
-            component: Loadable({ loading: Loading, loader: () => import('./userDonDeNghiDaHoanThanhPage.jsx') })
-        },
-        {
             path: '/user/user-form',
             component: Loadable({ loading: Loading, loader: () => import('./danhSachBieuMau.jsx') })
         },
