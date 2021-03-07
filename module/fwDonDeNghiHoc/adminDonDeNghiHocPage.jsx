@@ -62,8 +62,9 @@ class AdminDonDeNghiHocPage extends React.Component {
                 <thead>
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Người dùng</th>
-                        <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
+                        <th style={{ width: '85%' }}>Người dùng</th>
+                        <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hạng</th>
+                        <th style={{ width: '15%', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
                         <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                     </tr>
                 </thead>
@@ -74,8 +75,9 @@ class AdminDonDeNghiHocPage extends React.Component {
                             <td>
                                 <Link to={'/user/don-de-nghi-hoc/edit/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
+                            <td>{item.newLicenseClass}</td>
                             <td>
-                                {(item.status == 'waiting' ? 'Mới' :
+                                {(item.status == 'waiting' ? 'Chờ duyệt' :
                                     (item.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
                                         (item.status == 'reject' ? <span className='text-danger'>Từ chối</span> :
                                             (item.status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
