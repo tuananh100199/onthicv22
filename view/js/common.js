@@ -30,7 +30,8 @@ const T = {
         'listVideo',
         'all courses',
         'last course',
-        'contentList'
+        'contentList',
+        'DangKyTuVan',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
