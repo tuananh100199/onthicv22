@@ -2,8 +2,8 @@ module.exports = (app) => {
     const menu = {
         parentMenu: { index: 7000, title: 'Khóa học', link: '/user/course/list', icon: 'fa-book', subMenusRender: false, groups: ['Thông tin chung', 'Thông tin người quản trị'] },
         menus: {
-            7001: { title: 'Thông tin chung', link: '/user/course/edit/:courseId/common', icon: 'fa-book ', backgroundColor: '#032b91', groupIndex: 0 },
-            7002: { title: 'Quản lý chung', link: '/user/profile', icon: 'fa-list', backgroundColor: '#000001', groupIndex: 1 },
+            7001: { title: 'Thông tin chung', link: '/user/course/edit/common/:_id', icon: 'fa-book ', backgroundColor: '#032b91', groupIndex: 0 },
+            7002: { title: 'Quản lý chung', link: '', icon: 'fa-list', backgroundColor: '#000001', groupIndex: 1 },
         }
 
     };
