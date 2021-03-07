@@ -25,8 +25,6 @@ module.exports = app => {
     app.get('/user/testimony/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.buildAppMenus = (menuTree, callback) => {
@@ -222,7 +220,7 @@ module.exports = app => {
     app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
         const pageType = req.params.pageType;
         if (pageType == 'carousel') {
-            app.model.carousel.getByActive(true,(error, items) => {
+            app.model.carousel.getByActive(true, (error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))

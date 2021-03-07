@@ -141,3 +141,11 @@ export function getAllAddressByUser(done) {
         }, error => T.notify('Lấy danh sách địa chỉ bị lỗi', 'danger'));
     }
 }
+export const ajaxSelectAddress = {
+    ajax: true,
+    url: '/api/address/all',
+    data: {},
+    processResults: response => ({
+        results: response && response.items ? response.items.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : []
+    })
+}

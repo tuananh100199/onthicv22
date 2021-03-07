@@ -11,7 +11,7 @@ class CoursePage extends React.Component {
     }
 
     create = (e) => {
-        this.props.createCourse(data => this.props.history.push('/user/course/edit/' + data.item._id));
+        this.props.createCourse(data => this.props.history.push('/user/course/item/' + data.item._id));
         e.preventDefault();
     }
 
@@ -45,7 +45,7 @@ class CoursePage extends React.Component {
                         {this.props.course.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><Link to={'/user/course/edit/' + item._id}>{item.title}</Link></td>
+                                <td><Link to={'/user/course/item/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} disabled={readOnly} />
@@ -54,7 +54,7 @@ class CoursePage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/course/edit/' + item._id} className='btn btn-primary'>
+                                        <Link to={'/user/course/item/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('course:write') ?

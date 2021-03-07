@@ -16,7 +16,7 @@ module.exports = app => {
     const menuDonDeNghiHoc = {
         parentMenu: app.parentMenu.user,
         menus: {
-            1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
+            1020: { title: 'Đơn đề nghị học, sát hạchh', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
         }
     }
     app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu }, { name: 'user:login', menu: menuDonDeNghiHoc });

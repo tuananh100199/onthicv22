@@ -1,10 +1,15 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 7000, title: 'Khóa học', link: '/user/course/list', icon: 'fa-book' },
+        parentMenu: { index: 7000, title: 'Khóa học', link: '/user/course/list', icon: 'fa-book', subMenusRender: false, groups: ['Thông tin chung', 'Thông tin người quản trị'] },
+        menus: {
+            7001: { title: 'Thông tin chung', link: '/user/course/edit/:courseId/common', icon: 'fa-book ', backgroundColor: '#032b91', groupIndex: 0 },
+            7002: { title: 'Quản lý chung', link: '/user/profile', icon: 'fa-list', backgroundColor: '#000001', groupIndex: 1 },
+        }
+
     };
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });
     app.get('/user/course/list', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/edit/:_id', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/item/:_id', app.permission.check('course:read'), app.templates.admin);
 
     app.get('/course/item/:_id', app.templates.home);
     app.get('/khoa-hoc/:link', app.templates.home);

@@ -2,6 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         createdDate: { type: Date, default: Date.now },
+        addressId: { type: app.db.Schema.ObjectId, ref: 'Address' },
         startTime: Date,
         endTime: Date,
         launchTime: Date,
@@ -11,6 +12,8 @@ module.exports = app => {
         graduationTestTimeOfficial: Date,
         adminId: { type: app.db.Schema.ObjectId, ref: 'User' },
         supervisorId: { type: app.db.Schema.ObjectId, ref: 'User' },
+        advisorId: [{ type: app.db.Schema.ObjectId, ref: 'User' }],
+        studentId: [{ type: app.db.Schema.ObjectId, ref: 'User' }],
         abstract: String,
         content: String,
         active: { type: Boolean, default: false },
@@ -55,9 +58,9 @@ module.exports = app => {
         }),
 
         getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('adminId').populate('supervisorId').exec(done) : model.findOne(condition).populate('adminId').populate('supervisorId').exec(done),
+        // get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('addressId').populate('adminId').populate('supervisorId').exec(done) : model.findOne(condition).populate('adminId').populate('supervisorId').exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
-        // get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('adminId', 'supervisorId').exec(done) : model.findOne(condition).populate('adminId', 'supervisorId').exec(done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('adminId').exec(done) : model.findOne(condition).populate('adminId').exec(done),
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
