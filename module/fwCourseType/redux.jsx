@@ -23,13 +23,13 @@ export function getCourseTypeInPage(pageNumber, pageSize, done) {
         const url = '/api/course-type/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
+                T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: CourseTypeGetCourseTypeInPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
     }
 }
 
@@ -38,13 +38,13 @@ export function getCourseType(_id, done) {
         const url = '/api/course-type/edit/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
+                T.notify('Lấy loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
                 dispatch({ type: CourseTypeGetCourseType, item: data.item });
             }
-        }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
     }
 }
 
@@ -53,13 +53,13 @@ export function createCourseType(done) {
         const url = '/api/course-type';
         T.post(url, data => {
             if (data.error) {
-                T.notify('Tạo khóa học bị lỗi!', 'danger');
+                T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getCourseTypeInPage());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
     }
 }
 
@@ -68,15 +68,15 @@ export function updateCourseType(_id, changes, done) {
         const url = '/api/course-type';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin loại khóa học bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin khóa học thành công!', 'info');
+                T.notify('Cập nhật thông tin loại khóa học thành công!', 'info');
                 dispatch(getCourseTypeInPage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật thông tin loại khóa học bị lỗi!', 'danger'));
     }
 }
 

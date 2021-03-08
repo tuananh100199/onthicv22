@@ -15,16 +15,15 @@ class CourseTypePage extends React.Component {
         e.preventDefault();
     }
     delete = (e, item) => {
-        T.confirm('Khóa học', 'Bạn có chắc bạn muốn xóa khóa học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteCourseType(item._id));
+        T.confirm('Khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteCourseType(item._id));
         e.preventDefault();
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('course:write');
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.courseType && this.props.courseType.page ?
             this.props.courseType.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        let table = 'Không có khóa học!';
+        let table = 'Không có loại khóa học!';
         if (this.props.courseType && this.props.courseType.page && this.props.courseType.page.list && this.props.courseType.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
@@ -43,7 +42,7 @@ class CourseTypePage extends React.Component {
                                 <td><Link to={'/user/course-type/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
-                                        {T.numberDisplay(item.price)} &nbsp;VND
+                                        {T.numberDisplay(item.price ? item.price : '')} &nbsp;VND
                                     </label>
                                 </td>
                                 <td>
@@ -66,7 +65,7 @@ class CourseTypePage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Loai khóa học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Loại khóa học: Danh sách</h1>
                 </div>
                 <div className='row tile'>{table}</div>
                 <Pagination name='pageCourseType'
