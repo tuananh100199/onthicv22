@@ -26,7 +26,7 @@ export default {
             component: () => <SubMenusPage menuLink='/user/don-de-nghi-hoc' menuKey={3000} headerIcon='fa-user' />
         },
         {
-            path: '/user/don-de-nghi-hoc/list/:licenseClass',
+            path: '/user/don-de-nghi-hoc/list',
             component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiHocPage.jsx') }),
         },
         {

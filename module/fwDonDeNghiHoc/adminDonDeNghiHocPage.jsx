@@ -14,10 +14,8 @@ class AdminDonDeNghiHocPage extends React.Component {
     }
 
     componentDidMount() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         T.ready('/user/don-de-nghi-hoc', () => {
-            this.props.getFormInPage(undefined, undefined, {}, params.licenseClass, () => {
+            this.props.getFormInPage(undefined, undefined, {}, () => {
                 this.setState({ isSearching: false })
             });
         });
@@ -42,35 +40,31 @@ class AdminDonDeNghiHocPage extends React.Component {
     }
 
     search = (e) => {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
-        console.log(params.licenseClass)
         e.preventDefault();
         let condition = {},
             searchText = $('#searchTextBox').val();
         if (searchText) condition.searchText = searchText;
 
         this.setState({ isSearching: true }, () => {
-            this.props.getFormInPage(undefined, undefined, condition, params.licenseClass, () => {
+            this.props.getFormInPage(undefined, undefined, condition, () => {
                 this.setState({ searchText, isSearching: false });
             });
         })
     }
 
     render() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermission.contains('applicationForm:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
             this.props.donDeNghiHoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        console.log(this.props.donDeNghiHoc ? this.props.donDeNghiHoc : '')
         const table = list && list.length ? (
             <table className='table table-hover table-bordered'>
                 <thead>
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '85%' }}>Người dùng</th>
-                        {/* <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hạng</th> */}
+                        <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hạng</th>
                         <th style={{ width: '15%', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
                         <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                     </tr>
@@ -82,7 +76,7 @@ class AdminDonDeNghiHocPage extends React.Component {
                             <td>
                                 <Link to={'/user/don-de-nghi-hoc/edit/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
-                            {/* <td>{item.newLicenseClass}</td> */}
+                            <td>{item.newLicenseClass}</td>
                             <td>
                                 {(item.status == 'waiting' ? 'Chờ duyệt' :
                                     (item.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
@@ -117,12 +111,12 @@ class AdminDonDeNghiHocPage extends React.Component {
                     ))}
                 </tbody>
             </table>
-        ) : <p>Không có đơn chờ duyệt mới!</p>;
+        ) : <p>Không có biểu mẫu mới!</p>;
 
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file-text-o' /> {'Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe hạng ' + params.licenseClass}</h1>
+                    <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
                             <input className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm người dùng' />
