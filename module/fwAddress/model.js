@@ -8,7 +8,8 @@ module.exports = app => {
         image: String,
         priority: Number,
         mapURL: String,
-        active: Boolean
+        active: Boolean,
+        isOutside: Boolean
     });
     const model = app.db.model('Address', schema);
 

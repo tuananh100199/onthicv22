@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2120: { title: 'Loại khoá học', link: '/user/course-type/list', icon: 'fa-object-group', backgroundColor: '#00897b' },
+            2120: { title: 'Loại khoá học', link: '/user/course-type/list', icon: 'fa fa-file-text-o', backgroundColor: 'rgb(255, 165, 0)' },
         }
     };
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });

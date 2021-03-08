@@ -26,7 +26,7 @@ class AddressModal extends React.Component {
         };
 
         if (newData.title == '') {
-            T.notify('Tên địa chỉ bị trống!', 'danger');
+            T.notify('Tên cơ sở bị trống!', 'danger');
             $('#addressName').focus();
         } else {
             this.props.createAddress(newData, data => {
@@ -45,15 +45,15 @@ class AddressModal extends React.Component {
                 <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Địa chỉ mới</h5>
+                            <h5 className='modal-title'>Cơ sở mới</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='addressName'>Tên địa chỉ</label>
-                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên địa chỉ' />
+                                <label htmlFor='addressName'>Tên cơ sở</label>
+                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -87,7 +87,7 @@ class AddressPage extends React.Component {
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa địa chỉ', 'Bạn có chắc bạn muốn xóa địa chỉ này?', true, isConfirm => isConfirm && this.props.deleteAddress(item._id));
+        T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm && this.props.deleteAddress(item._id));
         e.preventDefault();
     }
 
@@ -101,7 +101,7 @@ class AddressPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên địa chỉ</th>
+                            <th style={{ width: '80%' }}>Tên cơ sở</th>
                             <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }} >Kích hoạt</th>
                             <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
@@ -115,7 +115,7 @@ class AddressPage extends React.Component {
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active}
-                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { active: item.active ? 0 : 1 }, () => T.notify('Kích hoạt địa chỉ thành công!', 'success'))} />
+                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { active: item.active ? 0 : 1 }, () => T.notify('Kích hoạt cơ sở thành công!', 'success'))} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>
@@ -156,7 +156,14 @@ class AddressPage extends React.Component {
                 </button>
             );
         }
-        return result;
+        return (
+            <main className='app-content'>
+                <div className='app-title'>
+                    <h1><i className='fa fa-bar-chart' />Cơ sở: Danh sách</h1>
+                </div>
+                <div className='row tile'>{result}</div>
+            </main>
+        );
     }
 }
 

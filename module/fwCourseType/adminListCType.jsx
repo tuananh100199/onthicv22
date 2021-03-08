@@ -43,7 +43,7 @@ class CourseTypePage extends React.Component {
                                 <td><Link to={'/user/course-type/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
-                                        {item.price}
+                                        {item.price} VND
                                     </label>
                                 </td>
                                 <td>

@@ -2,10 +2,14 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2110: { title: 'Cơ sở', link: '/user/address/all', icon: 'fa-object-group', backgroundColor: '#00897b' }
+            2110: { title: 'Cơ sở', link: '/user/address/all', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
         }
     };
     app.permission.add({ name: 'component:write', menu }, { name: 'component:read', menu });
+
+    app.get('/user/address/all', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/address/edit/:id', app.permission.check('component:read'), app.templates.admin);
+
     app.get('/api/address/all', app.permission.check('component:read'), (req, res) => {
         app.model.address.getAll((error, items) => {
             res.send({ error, items })
