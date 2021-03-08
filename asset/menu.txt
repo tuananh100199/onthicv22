@@ -10,6 +10,7 @@
 	2090 - Menu (/user/menu)
 	2100 - Thành phần giao diện (/user/component)
 	2110 - Đăng ký tư vấn (/user/dang-ky-tu-van)
+	2120 - Loại khoá học (/user/course-type/list)
 3000. Đơn đề nghị học - sát hạch (/user/don-de-nghi-hoc)
 	3020 - Danh sách đơn chờ duyệt hạng B1 (/user/don-de-nghi-hoc/list)
 	3021 - Danh sách đơn chờ duyệt hạng B2 (/user/don-de-nghi-hoc/list)

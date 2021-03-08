@@ -17,7 +17,6 @@ module.exports = app => {
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/address/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/carousel/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/statistic/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/slogan/edit/:_id', app.permission.check('component:read'), app.templates.admin);
@@ -25,7 +24,6 @@ module.exports = app => {
     app.get('/user/testimony/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +220,7 @@ module.exports = app => {
     app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
         const pageType = req.params.pageType;
         if (pageType == 'carousel') {
-            app.model.carousel.getByActive(true,(error, items) => {
+            app.model.carousel.getByActive(true, (error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))
@@ -258,14 +256,6 @@ module.exports = app => {
             });
         } else if (pageType == 'video') {
             app.model.video.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } 
-        else if (pageType == 'DangKyTuVan') {
-            app.model.DangKyTuVan.getAll((error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))

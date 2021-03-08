@@ -1,0 +1,273 @@
+[33mcommit 622eabfea39f2af481da7be90609de91ff8ad658[m[33m ([m[1;36mHEAD -> [m[1;32mntvinh[m[33m)[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Mon Mar 8 13:07:34 2021 +0700
+
+    Revert "fix list don de nghi hoc"
+    
+    This reverts commit 8fe496a9a398fe54edcd9ec923a1f79e12b65f3e.
+
+[33mcommit 272df2cc386fe1a93e1149073673f1bcd60ddeb3[m[33m ([m[1;31morigin/ntvinh[m[33m)[m
+Merge: 8fe496a be6e637
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Mon Mar 8 12:52:37 2021 +0700
+
+    fix list don de nghi hoc
+
+[33mcommit be6e63764256959eb28afd2959d4334ae4d9c47f[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 7660766 d30d21c
+Author: Nguyễn Quang Sang <9a2.nguyenquangsang@gmail.com>
+Date:   Mon Mar 8 04:48:28 2021 +0000
+
+    Merge branch 'tamCourseType' into 'master'
+    
+    Course Type
+    
+    See merge request hithanhtung/hiep-phat!35
+
+[33mcommit d30d21ce7e13229bb6b18b9bd7971b7d67dc3038[m
+Author: vantam10a11 <vantam10a11@gmail.com>
+Date:   Mon Mar 8 11:45:25 2021 +0700
+
+    new br
+
+[33mcommit 8fe496a9a398fe54edcd9ec923a1f79e12b65f3e[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Mon Mar 8 11:06:00 2021 +0700
+
+    fix list don de nghi hoc
+
+[33mcommit f4d153c55a0d7b91d7f588d84d3ec93cb72aece3[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Mon Mar 8 09:44:09 2021 +0700
+
+    fix profile page
+
+[33mcommit 9420d01c56e965e660cefa7aa30c417cd481f5de[m
+Merge: 7e9717a f128558
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sun Mar 7 13:55:42 2021 +0700
+
+    Merge branch 'TA' of https://gitlab.com/hithanhtung/hiep-phat into ntvinh
+
+[33mcommit 7e9717a8f3f8702ff2dfd45e03cedcf62486413a[m
+Merge: 65b060c 7660766
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sun Mar 7 13:44:36 2021 +0700
+
+    Merge branch 'master' of https://gitlab.com/hithanhtung/hiep-phat into ntvinh
+
+[33mcommit 65b060cb38b82bb44222194156a3107dea02f681[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sun Mar 7 10:08:02 2021 +0700
+
+    sort don theo status
+
+[33mcommit f12855894933cf54bb48e747f43615670c0af329[m[33m ([m[1;31morigin/TA[m[33m)[m
+Merge: b7ac545 bd60afb
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Sun Mar 7 10:07:54 2021 +0700
+
+    Merge branch 'TA' of https://gitlab.com/hithanhtung/hiep-phat into TA
+
+[33mcommit b7ac545ab447f590c081814acaff9ceb01a006f8[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Sun Mar 7 10:07:32 2021 +0700
+
+    update fwDangKyTuVan by TA
+
+[33mcommit bde3959a35742704377b2fac77a4d0ddca7f09cf[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sun Mar 7 09:30:11 2021 +0700
+
+    fix list don de nghi hoc
+
+[33mcommit bd60afba89d7c328784668e142bbf1c1367643e2[m
+Author: Nguyễn Quang Sang <9a2.nguyenquangsang@gmail.com>
+Date:   Sun Mar 7 02:00:38 2021 +0000
+
+    Update adminVideoView.jsx
+
+[33mcommit 76607668adf66289c8755a132dff7978227f6115[m
+Merge: a23b36b 997ee9f
+Author: Nguyễn Quang Sang <9a2.nguyenquangsang@gmail.com>
+Date:   Sun Mar 7 01:49:14 2021 +0000
+
+    Merge branch 'ntvinh' into 'master'
+    
+    Ntvinh
+    
+    See merge request hithanhtung/hiep-phat!34
+
+[33mcommit 997ee9f9051e5fa34198b3dc29cfe92e825138a9[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sun Mar 7 08:40:55 2021 +0700
+
+    fix dondenghihoc
+
+[33mcommit a9fae33d7d35319360c076f469edd468309ca93c[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sun Mar 7 08:37:04 2021 +0700
+
+    fix dondenghihoc
+
+[33mcommit 58410a329ae2270f0e0dbf1d7385efd71f60a281[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 15:50:59 2021 +0700
+
+    fix api url
+
+[33mcommit 5fd3563e0189928e8ce545299da4a66728ae95a2[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 15:47:54 2021 +0700
+
+    fix dondenghihoc
+
+[33mcommit 8080c95df51b13465d261b9c3ff9470aee131673[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 15:42:20 2021 +0700
+
+    fix dondenghihoc
+
+[33mcommit 8c35e5cfa1e42ae7b17772ff5bc4b82f5a3685a6[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 14:29:29 2021 +0700
+
+    update menu
+
+[33mcommit 4f1776c117d0f1526141f9a3475e5ecf22c8571a[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 14:26:52 2021 +0700
+
+    remove clg
+
+[33mcommit 374695779d96f180223cb9b6909853fd7cf2db14[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 14:14:33 2021 +0700
+
+    change icocn
+
+[33mcommit 1f38006b12ccc5954789338665e9d9700bdba005[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 14:09:43 2021 +0700
+
+    remove console.log
+
+[33mcommit b6748872c078c13516046fc4fb1e372f9da91bcc[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 14:01:35 2021 +0700
+
+    change icon
+
+[33mcommit cd5fe9c60ae51a6d316adbaec2753f9be90a2aca[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 11:36:33 2021 +0700
+
+    remove
+
+[33mcommit da89653ef78c255245eb6f9d38cc387a9db885fd[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 11:35:22 2021 +0700
+
+    fix integration
+
+[33mcommit f2b9670e34a7bb478002b91402fba71863a45bd4[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 11:28:23 2021 +0700
+
+    remove
+
+[33mcommit 064c98c89bf5d27b04c42c69fabe41d6c5a13ee4[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 11:24:25 2021 +0700
+
+    them trang thai dang theo hoc
+
+[33mcommit 4f692d394750090de2e2c99ad1d5789d7d91d703[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Sat Mar 6 10:02:42 2021 +0700
+
+    fix create don de nghi hoc
+
+[33mcommit 6fbbe821e6c36b66c8cbaef382737524569cd87b[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Fri Mar 5 23:17:22 2021 +0700
+
+    tao don de nghi moi
+
+[33mcommit 49ac4bf7482e590c8fe17d950a33334cf3a1dc2d[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Fri Mar 5 14:34:38 2021 +0700
+
+    update TA
+
+[33mcommit aab595490d7fe966fee21595f283bc322a1b1b93[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Fri Mar 5 14:23:22 2021 +0700
+
+    update TA
+
+[33mcommit c58dd7f21f72b1c7be96ae57e4c6668ee4e92e19[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Fri Mar 5 13:53:45 2021 +0700
+
+    update fwDangKyTuVan
+
+[33mcommit 6737f30f89d116ae80741416d36bb76092afd41b[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Fri Mar 5 13:35:00 2021 +0700
+
+    update fwDangKyTuVan
+
+[33mcommit e2568e362739d98049a9c860dbb4a0cfbc6ceea5[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Thu Mar 4 10:00:47 2021 +0700
+
+    update send email phanHoiDangKyTuVan
+
+[33mcommit a6f24fb60cb71f489564314eb4d9bb722090bb5b[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Wed Mar 3 15:10:06 2021 +0700
+
+    fix don de nghi da hoan thanh
+
+[33mcommit c8a2918a24af9697c20aa2c6a58bda609296a842[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Wed Mar 3 13:57:04 2021 +0700
+
+    fix don de nghi da hoan thanh
+
+[33mcommit a78571e76248a4741246a77b5bd49659d6842236[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Wed Mar 3 10:36:59 2021 +0700
+
+    fix don de nghi da hoan thanh
+
+[33mcommit ee53cf652ada01c6cf23b36f66961487988e0ca2[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Wed Mar 3 10:36:44 2021 +0700
+
+    update TA
+
+[33mcommit 3e1a739407e3a6a22ba3d7b16cbd378f3e205d7c[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Tue Mar 2 13:07:33 2021 +0700
+
+    update temporary
+
+[33mcommit b2375c9f3a1598fc0fd58e20678fe5308dd158b1[m
+Author: Nguyen The Vinh <vinh.nguyen24.la@gmail.com>
+Date:   Tue Mar 2 10:56:15 2021 +0700
+
+    add list donDeNghiHoc bi tu choi
+
+[33mcommit 2bd702f36fc2c9336c990e3144af751c9b95f6c6[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Tue Mar 2 10:46:14 2021 +0700
+
+    update fwDangKyTuVan
+
+[33mcommit fb2a32ed7b0bd2d9865faa213f2d2399c2fed6ec[m
+Author: Trần Anh <trantuananh1001199999@gmail.com>
+Date:   Tue Mar 2 10:28:21 2021 +0700
+
+    update setting
