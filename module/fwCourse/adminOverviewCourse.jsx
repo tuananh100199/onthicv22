@@ -16,7 +16,6 @@ class AdminOverviewCourse extends React.Component {
                     this.props.history.push('/user/course/list');
                 } else if (data.item) {
                     this.setState(data);
-                    console.log("state", this.state)
                 } else {
                     this.props.history.push('/user/course/list');
                 }

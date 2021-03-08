@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddress, createAddress, deleteAddress, swapAddress, updateAddress } from './redux.jsx';
+import { getAllAddress, createAddress, deleteAddress, updateAddress } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class AddressModal extends React.Component {
@@ -76,11 +76,6 @@ class AddressPage extends React.Component {
         this.props.getAllAddress();
     }
 
-    swap = (e, item, isMoveUp) => {
-        this.props.swapAddress(item._id, isMoveUp);
-        e.preventDefault();
-    }
-
     create = (e) => {
         this.modal.current.show();
         e.preventDefault();
@@ -102,7 +97,7 @@ class AddressPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tên cơ sở</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }} >Kích hoạt</th>
+                            <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }} >Cơ sở ngoài</th>
                             <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -114,8 +109,8 @@ class AddressPage extends React.Component {
                                 <td><Link to={'/user/address/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
-                                        <input type='checkbox' checked={item.active}
-                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { active: item.active ? 0 : 1 }, () => T.notify('Kích hoạt cơ sở thành công!', 'success'))} />
+                                        <input type='checkbox' checked={item.isOutside}
+                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { isOutside: item.isOutside ? 0 : 1 }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>
@@ -124,12 +119,6 @@ class AddressPage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, true)}>
-                                            <i className='fa fa-lg fa-arrow-up' />
-                                        </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, false)}>
-                                            <i className='fa fa-lg fa-arrow-down' />
-                                        </a>
                                         <Link to={'/user/address/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
@@ -168,5 +157,5 @@ class AddressPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllAddress, createAddress, deleteAddress, swapAddress, updateAddress };
+const mapActionsToProps = { getAllAddress, createAddress, deleteAddress, updateAddress };
 export default connect(mapStateToProps, mapActionsToProps)(AddressPage);

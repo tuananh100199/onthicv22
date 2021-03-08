@@ -8,6 +8,7 @@ module.exports = (app) => {
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });
     app.get('/user/course-type/list', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course-type/edit/:_id', app.permission.check('course:read'), app.templates.admin);
+    app.get('/course-type/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course-type/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
@@ -40,5 +41,7 @@ module.exports = (app) => {
 
     app.delete('/api/course-type', app.permission.check('course:write'), (req, res) =>
         app.model.courseType.delete(req.body._id, (error) => res.send({ error }))
-    )
+    );
+    //Home
+    app.get('/course-type/all/', (req, res) => app.model.courseType.getAll((error, items) => res.send({ error, items })));
 };

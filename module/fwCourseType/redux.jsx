@@ -94,3 +94,19 @@ export function deleteCourseType(_id) {
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
     }
 }
+//Home
+export function getAllCourseTypeByUser(done) {
+    return dispatch => {
+        const url = '/course-type/all/';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách khóa học bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: CourseTypeGetCourseTypeInPage, page: data.items });
+            }
+            if (done) done(data);
+
+        }, error => T.notify('Lấy danh sách khóa học bị lỗi', 'danger'));
+    }
+}

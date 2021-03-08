@@ -110,21 +110,6 @@ export function deleteAddress(_id) {
         }, error => T.notify('Xóa cơ sở bị lỗi!', 'danger'));
     }
 }
-
-export function swapAddress(_id, isMoveUp) {
-    return dispatch => {
-        const url = '/api/address/swap/';
-        T.put(url, { _id, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Thay đổi thứ tự cơ sở bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                T.notify('Thay đổi thứ tự cơ sở thành công!', 'info');
-                dispatch(getAllAddress());
-            }
-        }, error => T.notify('Thay đổi thứ tự cơ sở bị lỗi!', 'danger'));
-    }
-}
 //Home
 export function getAllAddressByUser(done) {
     return dispatch => {

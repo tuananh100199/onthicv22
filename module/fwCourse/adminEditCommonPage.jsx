@@ -6,6 +6,7 @@ import Editor from '../../view/component/CkEditor4.jsx';
 import { Select } from '../../view/component/Input.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
 import { ajaxSelectAddress } from '../fwAddress/redux.jsx';
+import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
 
 class adminEditCommonPage extends React.Component {
     state = { item: null };

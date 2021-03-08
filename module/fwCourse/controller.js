@@ -5,7 +5,6 @@ module.exports = (app) => {
             7001: { title: 'Thông tin chung', link: '/user/course/edit/common/:_id', icon: 'fa-book ', backgroundColor: '#032b91', groupIndex: 0 },
             7002: { title: 'Quản lý chung', link: '', icon: 'fa-list', backgroundColor: '#000001', groupIndex: 1 },
         }
-
     };
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });
     app.get('/user/course/list', app.permission.check('course:read'), app.templates.admin);

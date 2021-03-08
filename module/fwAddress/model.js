@@ -6,15 +6,15 @@ module.exports = app => {
         mobile: String,
         email: String,
         image: String,
-        priority: Number,
         mapURL: String,
-        active: Boolean,
-        isOutside: Boolean
+        isOutside: Boolean,
+        shortDescription: String,
+        detailDescription: String
     });
     const model = app.db.model('Address', schema);
 
     app.model.address = {
-        create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+        create: (data, done) => model.find({}).sort({ title: -1 }).limit(1).exec((error, items) => {
             data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
             model.create(data, (error, item) => {
                 if (error) {
@@ -34,7 +34,7 @@ module.exports = app => {
             });
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).sort({ title: -1 }).exec(done) : model.find({}).sort({ title: -1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).exec(done) : model.findOne(condition).exec(done),
 
@@ -50,26 +50,5 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-
-        swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
-            if (error || item1 === null) {
-                done('Invalid Address Id!');
-            } else {
-                model.find({ priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority } })
-                    .sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {
-                        if (error) {
-                            done(error);
-                        } else if (list == null || list.length === 0) {
-                            done(null);
-                        } else {
-                            let item2 = list[0],
-                                priority = item1.priority;
-                            item1.priority = item2.priority;
-                            item2.priority = priority;
-                            item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2)));
-                        }
-                    });
-            }
-        })
     };
 }
