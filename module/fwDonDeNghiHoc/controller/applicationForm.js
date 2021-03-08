@@ -9,9 +9,9 @@ module.exports = app => {
     const menu = {
         parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
         menus: {
-            3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-            3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-            3022: { title: 'Danh sách đơn chờ duyệt hạng C', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list/B1', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list/B2', icon: 'fa-list', backgroundColor: '#00897b', groupIndex: 0 },
+            3022: { title: 'Danh sách đơn chờ duyệt hạng C', link: '/user/don-de-nghi-hoc/list/C', icon: 'fa-list', backgroundColor: '#4db6ac', groupIndex: 0 },
         }
     };
 
@@ -24,7 +24,7 @@ module.exports = app => {
     app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
-    app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
+    app.get('/user/don-de-nghi-hoc/list/:licenseClass', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
@@ -69,6 +69,7 @@ module.exports = app => {
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
+            licenseClass = req.query.licenseClass,
             condition = req.query.condition || { searchText: '' },
             pageCondition = {};
         if (condition) {
@@ -80,7 +81,7 @@ module.exports = app => {
         }
 
         if (condition.searchText == '') {
-            app.model.applicationForm.getPage(pageNumber, pageSize, {}, (error, page) => {
+            app.model.applicationForm.getPage(pageNumber, pageSize, { newLicenseClass: licenseClass, status: { $in: ['waiting'] } }, (error, page) => {
                 if (error || page == null) {
                     res.send({ error: 'Danh sách đơn đề nghị sát hạch không sẵn sàng!' });
                 } else {
@@ -93,7 +94,7 @@ module.exports = app => {
                     res.send({ error })
                 } else {
                     const userIds = users.map(user => user._id);
-                    app.model.applicationForm.getPage(pageNumber, pageSize, { user: { $in: userIds } }, (error, page) => {
+                    app.model.applicationForm.getPage(pageNumber, pageSize, { user: { $in: userIds }, newLicenseClass: licenseClass, status: { $in: ['waiting'] } }, (error, page) => {
                         if (error || page == null) {
                             res.send({ error: 'Danh sách đơn đề nghị sát hạch không sẵn sàng!' });
                         } else {
