@@ -96,7 +96,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                             </div>
                             <div className='form-group col-md-3'>
                                 <label className='control-label'>Giới tính: &nbsp;</label>
-                                <label>{item.user.sex == 'male' ? 'Nam' : 'Nữ'}</label>
+                                <label>{item.user.sex}</label>
                             </div>
                             <div className='form-group col-md-3'>
                                 <label className='control-label'>Quốc tịch: &nbsp;</label>

@@ -57,6 +57,7 @@ class AdminDonDeNghiHocPage extends React.Component {
         const readOnly = !currentPermission.contains('applicationForm:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
             this.props.donDeNghiHoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        console.log(this.props.donDeNghiHoc ? this.props.donDeNghiHoc : '')
         const table = list && list.length ? (
             <table className='table table-hover table-bordered'>
                 <thead>

@@ -1,15 +1,17 @@
 module.exports = app => {
-    const emailMenu = {
-        parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
-        menus: {
-            3010: { title: 'Email', link: '/user/don-de-nghi-hoc/email', icon: 'fa-envelope-o', backgroundColor: '#ffcc80', groupIndex: 0 },
-        }
-    };
+    // const emailMenu = {
+    //     parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
+    //     menus: {
+    //         3010: { title: 'Email', link: '/user/don-de-nghi-hoc/email', icon: 'fa-envelope-o', backgroundColor: '#ffcc80', groupIndex: 0 },
+    //     }
+    // };
 
     const menu = {
         parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
         menus: {
-            3020: { title: 'Danh sách', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 }
+            3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            3022: { title: 'Danh sách đơn chờ duyệt hạng C', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
         }
     };
 
@@ -19,7 +21,7 @@ module.exports = app => {
     //         1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
     //     }
     // }
-    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu });
+    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
@@ -225,11 +227,6 @@ module.exports = app => {
             if (!error) {
                 let { licenseNumber, licenseDated, licenseIssuedBy, otherDocumentation, licenseClass, newLicenseClass, integration, user } = formItem;
                 const { getName } = require('country-list');
-                if (user.sex === 'male') {
-                    user.sex = 'Nam';
-                } else {
-                    user.sex = 'Nữ';
-                }
                 const data = {
                     firstname: user.firstname || '',
                     lastname: user.lastname || '',
@@ -267,8 +264,8 @@ module.exports = app => {
                 const data = {
                     firstname: user.firstname || '',
                     lastname: user.lastname || '',
-                    male: user.sex == 'male',
-                    female: user.sex == 'female',
+                    male: user.sex == 'Nam',
+                    female: user.sex == 'Nữ',
                     yearOfBirth: user.birthday != null ? user.birthday.getFullYear() : '',
                     phoneNumber: user.phoneNumber || '',
                     regularResidence: user.regularResidence || '',
@@ -289,7 +286,6 @@ module.exports = app => {
         app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {
                 let { user, licenseNumber, licenseDated, licenseIssuedBy, otherDocumentation, licenseClass, } = formItem;
-                user.sex = user.sex === 'male' ? 'Nam' : 'Nữ';
 
                 const data = {
                     firstname: user.firstname || '',
