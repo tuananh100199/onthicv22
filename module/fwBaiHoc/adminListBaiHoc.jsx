@@ -1,0 +1,81 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux.jsx'
+import { Link } from 'react-router-dom';
+import Pagination from '../../view/component/Pagination.jsx';
+
+class MonHocPage extends React.Component {
+    componentDidMount() {
+        this.props.getBaiHocInPage();
+        T.ready('/user/dao-tao', null);
+    }
+
+    create = (e) => {
+        this.props.createBaiHoc(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
+        e.preventDefault();
+    }
+    delete = (e, item) => {
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteBaiHoc(item._id));
+        e.preventDefault();
+    }
+
+    render() {
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.baihoc && this.props.baihoc.page ?
+            this.props.baihoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        let table = 'Không có bài học mới!';
+        if (this.props.baihoc && this.props.baihoc.page && this.props.baihoc.page.list && this.props.baihoc.page.list.length > 0) {
+            table = (
+                <table className='table table-hover table-bordered'>
+                    <thead>
+                        <tr>
+                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                            <th style={{ width: '80%' }}>Tiêu đề</th>
+                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.props.baihoc.page.list.map((item, index) => (
+                            <tr key={index}>
+                                {console.log('item', item)}
+                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
+                                <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
+                                <td>
+                                    <div className='btn-group'>
+                                        <Link to={'/user/dao-tao/bai-học/edit/' + item._id} className='btn btn-primary'>
+                                            <i className='fa fa-lg fa-edit' />
+                                        </Link>
+                                        {currentPermissions.contains('course:write') ?
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                                <i className='fa fa-lg fa-trash' />
+                                            </a> : null}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
+        }
+        return (
+            <main className='app-content'>
+                <div className='app-title'>
+                    <h1><i className='fa fa-file' /> Bài học: Danh sách</h1>
+                </div>
+                <div className='row tile'>{table}</div>
+                <Pagination name='pageLesson'
+                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                    getPage={this.props.getBaiHocInPage} />
+                {currentPermissions.contains('course:write') ?
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                        onClick={this.create}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button> : ''}
+            </main>
+        );
+    }
+}
+
+const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc });
+const mapActionsToProps = { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc };
+export default connect(mapStateToProps, mapActionsToProps)(MonHocPage);

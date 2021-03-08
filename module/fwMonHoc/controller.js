@@ -3,7 +3,7 @@ module.exports = (app) => {
         parentMenu: { index: 8000, title: 'Đào tạo', link: '/user/dao-tao', icon: 'fa-graduation-cap', subMenusRender: false },
         menus: {
             8020: { title: 'Quản lý môn học', link: '/user/dao-tao/mon-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-            8021: { title: 'Quản lý bài học', link: '/user/dao-tao/bai-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            // 8021: { title: 'Quản lý bài học', link: '/user/dao-tao/bai-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
         }
     };
     app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write', menu });
