@@ -39,9 +39,10 @@ import fwCourse from '../../module/fwCourse/index.jsx';
 import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index.jsx';
 import fwCluster from '../../module/fwCluster/index.jsx';
 import fwCourseType from '../../module/fwCourseType/index.jsx';
+import fwDaoTao from '../../module/fwDaoTao/index.jsx';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwDaoTao
 ]
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

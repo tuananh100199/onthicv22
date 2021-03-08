@@ -1,15 +1,17 @@
 module.exports = app => {
-    const emailMenu = {
-        parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
-        menus: {
-            3010: { title: 'Email', link: '/user/don-de-nghi-hoc/email', icon: 'fa-envelope-o', backgroundColor: '#ffcc80', groupIndex: 0 },
-        }
-    };
+    // const emailMenu = {
+    //     parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
+    //     menus: {
+    //         3010: { title: 'Email', link: '/user/don-de-nghi-hoc/email', icon: 'fa-envelope-o', backgroundColor: '#ffcc80', groupIndex: 0 },
+    //     }
+    // };
 
     const menu = {
         parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
         menus: {
-            3020: { title: 'Danh sách', link: '/user/don-de-nghi-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 }
+            3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list/B1', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+            3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list/B2', icon: 'fa-list', backgroundColor: '#00897b', groupIndex: 0 },
+            3022: { title: 'Danh sách đơn chờ duyệt hạng C', link: '/user/don-de-nghi-hoc/list/C', icon: 'fa-list', backgroundColor: '#4db6ac', groupIndex: 0 },
         }
     };
 
@@ -19,10 +21,10 @@ module.exports = app => {
     //         1020: { title: 'Đơn đề nghị học, sát hạch', link: '/user/bieu-mau/don-de-nghi-hoc', icon: 'fa-id-card-o', backgroundColor: '#4DD0E1', groupIndex: 1 }
     //     }
     // }
-    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu }, { name: 'applicationForm:email', menu: emailMenu });
+    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
-    app.get('/user/don-de-nghi-hoc/list', app.permission.check('applicationForm:read'), app.templates.admin);
+    app.get('/user/don-de-nghi-hoc/list/:licenseClass', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/edit/:_id', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
@@ -34,8 +36,8 @@ module.exports = app => {
             if (enableInit) {
                 app.model.setting.init({
                     rejectDonDeNghiHocTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
-                    rejectDonDeNghiHocText: 'Dear {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
-                    rejectDonDeNghiHocHtml: 'Dear <b>{name}</b>,<br/><br/>' +
+                    rejectDonDeNghiHocText: 'Chào {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
+                    rejectDonDeNghiHocHtml: 'Chào <b>{name}</b>,<br/><br/>' +
                         'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
                         '<b>{reason}</b><br/><br/>' +
                         'Best regard,<br/>' +
@@ -67,6 +69,7 @@ module.exports = app => {
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
+            licenseClass = req.query.licenseClass,
             condition = req.query.condition || { searchText: '' },
             pageCondition = {};
         if (condition) {
@@ -78,7 +81,7 @@ module.exports = app => {
         }
 
         if (condition.searchText == '') {
-            app.model.applicationForm.getPage(pageNumber, pageSize, {}, (error, page) => {
+            app.model.applicationForm.getPage(pageNumber, pageSize, { newLicenseClass: licenseClass, status: { $in: ['waiting'] } }, (error, page) => {
                 if (error || page == null) {
                     res.send({ error: 'Danh sách đơn đề nghị sát hạch không sẵn sàng!' });
                 } else {
@@ -91,7 +94,7 @@ module.exports = app => {
                     res.send({ error })
                 } else {
                     const userIds = users.map(user => user._id);
-                    app.model.applicationForm.getPage(pageNumber, pageSize, { user: { $in: userIds } }, (error, page) => {
+                    app.model.applicationForm.getPage(pageNumber, pageSize, { user: { $in: userIds }, newLicenseClass: licenseClass, status: { $in: ['waiting'] } }, (error, page) => {
                         if (error || page == null) {
                             res.send({ error: 'Danh sách đơn đề nghị sát hạch không sẵn sàng!' });
                         } else {
@@ -225,11 +228,6 @@ module.exports = app => {
             if (!error) {
                 let { licenseNumber, licenseDated, licenseIssuedBy, otherDocumentation, licenseClass, newLicenseClass, integration, user } = formItem;
                 const { getName } = require('country-list');
-                if (user.sex === 'male') {
-                    user.sex = 'Nam';
-                } else {
-                    user.sex = 'Nữ';
-                }
                 const data = {
                     firstname: user.firstname || '',
                     lastname: user.lastname || '',
@@ -267,8 +265,8 @@ module.exports = app => {
                 const data = {
                     firstname: user.firstname || '',
                     lastname: user.lastname || '',
-                    male: user.sex == 'male',
-                    female: user.sex == 'female',
+                    male: user.sex == 'Nam',
+                    female: user.sex == 'Nữ',
                     yearOfBirth: user.birthday != null ? user.birthday.getFullYear() : '',
                     phoneNumber: user.phoneNumber || '',
                     regularResidence: user.regularResidence || '',
@@ -289,7 +287,6 @@ module.exports = app => {
         app.model.applicationForm.get(req.params._id, (error, formItem) => {
             if (!error) {
                 let { user, licenseNumber, licenseDated, licenseIssuedBy, otherDocumentation, licenseClass, } = formItem;
-                user.sex = user.sex === 'male' ? 'Nam' : 'Nữ';
 
                 const data = {
                     firstname: user.firstname || '',
