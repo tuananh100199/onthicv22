@@ -16,23 +16,32 @@ export default function BaiHocReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-T.initCookiePage('pageBaiHoc');
-export function getBaiHocInPage(pageNumber, pageSize, done) {
-    const page = T.updatePage('pageBaiHoc', pageNumber, pageSize);
+const getPageUrl = (pageNumber, pageSize) => `/api/bai-hoc/page/${pageNumber}/${pageSize}`;
+T.initCookiePage('pageBaiHoc', true);
+export function getBaiHocInPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageBaiHoc', pageNumber, pageSize, pageCondition);
+    if (page.pageCondition && typeof page.pageCondition == 'object') {
+        page.pageCondition = JSON.stringify(page.pageCondition);
+    }
     return (dispatch) => {
-        const url = '/api/bai-hoc/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách loại bài học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
-                dispatch({ type: BaiHocGetBaiHocInPage, page: data.page });
-            }
-        }, error => T.notify('Lấy danh sách bài học bị lỗi!', 'danger'));
+        ajaxGetBaiHocInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, page => {
+            done && done(page);
+            dispatch({ type: BaiHocGetBaiHocInPage, page });
+        });
     }
 }
-
+export function ajaxGetBaiHocInPage(pageNumber, pageSize, pageCondition, done) {
+    const url = getPageUrl(pageNumber, pageSize);
+    T.get(url, { condition: pageCondition }, data => {
+        if (data.error) {
+            T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
+            console.error('GET: ' + url + '. ' + data.error);
+        } else {
+            if (pageCondition) data.page.pageCondition = pageCondition;
+            done && done(data.page);
+        }
+    }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
+}
 export function getBaiHoc(_id, done) {
     return dispatch => {
         const url = '/api/bai-hoc/edit/' + _id;
@@ -94,10 +103,10 @@ export function deleteBaiHoc(_id) {
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
     }
 }
-const getAllLesson = `/api/bai-hoc/all/`;
+
 export const ajaxSelectLesson = {
     ajax: true,
-    url: getAllLesson,
+    url: getPageUrl(1, 100),
     data: params => ({ condition: params.term }),
     processResults: response => ({
         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.title}` })) : []

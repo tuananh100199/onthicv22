@@ -17,7 +17,10 @@ class AddLessonModal extends React.Component {
 
     addLesson = () => {
         const lessonId = this.lessonSelect.current.val();
-        this.props.addLesson('6046e92789b9d73fc0bb72b5', lessonId)
+        this.props.addLesson(this.props.monhocId, lessonId, () => {
+            T.notify('Thêm câu hỏi thành công!', 'info');
+            $(this.modal.current).modal('hide');
+        });
     }
 
     render() {
@@ -34,13 +37,13 @@ class AddLessonModal extends React.Component {
 
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label>Chọn người dùng</label>
-                                <Select ref={this.lessonSelect} displayLabel={false} adapter={ajaxSelectLesson} label='Người dùng' />
+                                <label>Chọn bài học</label>
+                                <Select ref={this.lessonSelect} displayLabel={false} adapter={ajaxSelectLesson} label='Bài học' />
                             </div>
                         </div>
 
                         <div className='modal-footer'>
-                            <button type='button' className='btn btn-success' onClick={this.switchUser}>Switch</button>
+                            <button type='button' className='btn btn-success' onClick={this.addLesson}>Thêm</button>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                         </div>
                     </div>
@@ -222,8 +225,8 @@ class AdminEditMonHoc extends React.Component {
                                         <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                                     </div>
                                 </div>
+                                <button type='submit' className='btn btn-primary' onClick={this.save} >Lưu</button>
                             </div>
-                            <button type='submit' className='btn btn-primary' onClick={this.save} >Lưu</button>
                             <div className='tile-footer'>
                                 <label className='control-label'>Danh sách bài học </label>
                                 <div>{table}</div>
@@ -244,7 +247,7 @@ class AdminEditMonHoc extends React.Component {
                     <i className='fa fa-lg fa-plus' />
                 </button>
             </main>,
-            <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} />
+            <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} monhocId={monhocId} />
         ];
     }
 }

@@ -12,17 +12,21 @@ module.exports = (app) => {
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/bai-hoc/page/:pageNumber/:pageSize', app.permission.check('baihoc:read'), (req, res) => {
-        const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.lesson.getPage(pageNumber, pageSize, {}, (error, page) => {
-            const response = {};
-            if (error || page == null) {
-                response.error = 'Danh sách bài học không sẵn sàng!';
-            } else {
-                response.page = page;
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.condition || '',
+            pageCondition = {};
+        try {
+            if (condition) {
+                const value = { $regex: `.*${condition}.*`, $options: 'i' };
+                pageCondition['$or'] = [
+                    { title: value },
+                ];
             }
-            res.send(response);
-        });
+            app.model.lesson.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
     });
 
     app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('baihoc:read'), (req, res) =>
@@ -42,6 +46,4 @@ module.exports = (app) => {
     app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }))
     );
-    app.get('/api/bai-hoc/all', app.permission.check('baihoc:read'), (req, res) =>
-        app.model.lesson.getAll({}, (error, items) => res.send({ error, items })));
 };

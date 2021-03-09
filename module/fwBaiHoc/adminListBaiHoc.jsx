@@ -5,8 +5,12 @@ import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 
 class MonHocPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { searchText: '', isSearching: false };
+    }
     componentDidMount() {
-        this.props.getBaiHocInPage();
+        this.props.getBaiHocInPage(1, 50, {});
         T.ready('/user/dao-tao', null);
     }
 
@@ -17,6 +21,19 @@ class MonHocPage extends React.Component {
     delete = (e, item) => {
         T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteBaiHoc(item._id));
         e.preventDefault();
+    }
+
+    search = (e) => {
+        e.preventDefault();
+        let condition = {},
+            searchText = $('#searchTextBox').val();
+        if (searchText) condition.searchText = searchText;
+
+        this.setState({ isSearching: true }, () => {
+            this.props.getBaiHocInPage(undefined, undefined, condition, () => {
+                this.setState({ searchText, isSearching: false });
+            });
+        })
     }
 
     render() {
@@ -30,7 +47,7 @@ class MonHocPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tiêu đề</th>
+                            <th style={{ width: '100%' }}>Tiêu đề</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -60,6 +77,16 @@ class MonHocPage extends React.Component {
             <main className='app-content'>
                 <div className='app-title'>
                     <h1><i className='fa fa-file' /> Bài học: Danh sách</h1>
+                    <ul className='app-breadcrumb breadcrumb'>
+                        <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
+                            <input className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm bài học' />
+                            <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
+                        </form>
+                        {this.state.isSearching ?
+                            <a href='#' onClick={e => $('#searchTextBox').val('') && this.search(e)} style={{ color: 'red', marginRight: 12, marginTop: 6 }}>
+                                <i className='fa fa-trash' />
+                            </a> : null}
+                    </ul>
                 </div>
                 <div className='row tile'>{table}</div>
                 <Pagination name='pageLesson'

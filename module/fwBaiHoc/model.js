@@ -4,7 +4,6 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
-        subject: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Subject' }], default: [] },
     });
     const model = app.db.model('Lesson', schema);
 
@@ -27,14 +26,14 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition, '-content').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
