@@ -59,7 +59,7 @@ class UserProfilePage extends React.Component {
                                         <div className='info'>
                                             <h4>Đơn đề nghị học, sát hạch mới</h4>
                                             {this.props.status ?
-                                                <p>Trạng thái: {(this.props.status == 'waiting' ? 'Mới' :
+                                                <p>Trạng thái: {(this.props.status == 'waiting' ? 'Chờ duyệt' :
                                                     (this.props.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
                                                         (this.props.status == 'reject' ? <span className='text-danger'>Từ chối</span> :
                                                             (this.props.status == 'progressing' ? <span className='text-primary'>Đang theo học</span>

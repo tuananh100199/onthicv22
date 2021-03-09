@@ -28,7 +28,7 @@ class EmailItem extends React.Component {
             <div className={className} id={this.props.id}>
                 <div className='tile-body'>
                     <div className='form-group'>
-                        <label className='control-label'>Subject</label>
+                        <label className='control-label'>Chủ đề</label>
                         <input className='form-control' type='text' defaultValue='' ref={this.title} placeholder='Subject' />
                     </div>
                     <div className='form-group'>
@@ -50,6 +50,8 @@ export default class EmailPage extends React.Component {
         this.emailNewPassword = React.createRef();
         this.emailForgotPassword = React.createRef();
         this.emailContact = React.createRef();
+        this.emailDangKyTuVan = React.createRef();
+        this.emailTuChoiDonDeNghiHoc = React.createRef();
     }
 
     componentDidMount() {
@@ -60,6 +62,8 @@ export default class EmailPage extends React.Component {
                 this.emailNewPassword.current.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
                 this.emailForgotPassword.current.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
                 this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
+                this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
+                this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
             });
         });
     }
@@ -81,19 +85,25 @@ export default class EmailPage extends React.Component {
                         <div className='tile'>
                             <ul className='nav nav-tabs'>
                                 <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>New user</a>
+                                    <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>Người dùng mới</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Create new user</a>
+                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Tạo Người dùng mới</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>New password</a>
+                                    <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>Mật khẩu mới</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailForgotPassword'>Forgot password</a>
+                                    <a className='nav-link' data-toggle='tab' href='#emailForgotPassword'>Quên mật khẩu</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Contact</a>
+                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Liên hệ</a>
+                                </li>
+                                <li className='nav-item'>
+                                    <a className='nav-link' data-toggle='tab' href='#emailDangKyTuVan'>Đăng ký tư vấn</a>
+                                </li>
+                                <li className='nav-item'>
+                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
@@ -106,6 +116,10 @@ export default class EmailPage extends React.Component {
                                 <EmailItem ref={this.emailForgotPassword} id='emailForgotPassword'
                                     params='{name}, {email}, {url}' />
                                 <EmailItem ref={this.emailContact} id='emailContact'
+                                    params='{name}, {subject}, {message}' />
+                                <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
+                                    params='{name}, {subject}, {message}' />
+                                <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
                                     params='{name}, {subject}, {message}' />
                             </div>
                         </div>

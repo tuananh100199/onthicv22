@@ -90,6 +90,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc-chi-tiet/item/:_id').parse(url);
         this.props.getForm(params._id, () => this.loading = false);
+        console.log(this.props.donDeNghiHoc)
     }
 
     accept = () => {
@@ -127,7 +128,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                         </div>
                         <div className='form-group col-md-3'>
                             <div className='form-group' style={{ width: '100%' }}>
-                                <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: <span>{item.user.sex == 'male' ? 'Nam' : 'Nữ'}</span></label>
+                                <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: <span>{item.user.sex}</span></label>
 
                             </div>
                         </div>

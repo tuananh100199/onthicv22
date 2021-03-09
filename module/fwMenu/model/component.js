@@ -6,7 +6,7 @@ module.exports = app => {
             enum: [
                 '<empty>',
                 'carousel', 'slogan', 'video', 'statistic', 'staff group', 'testimony', 'all staffs', 'last news',
-                'subscribe', 'contact', 'logo',
+                'subscribe', 'contact', 'logo','dangKyTuVan',
                 'content', 'all news', 'event', 'all leagues', 'listVideo', 'all courses', 'last course', 'contentList'
             ],
         },

@@ -3,7 +3,7 @@ module.exports = (app) => {
         roles: [{ type: app.db.Schema.ObjectId, ref: 'Role', default: [] }],
         firstname: String,
         lastname: String,
-        sex: { type: String, enum: ['male', 'female'], default: 'male' },
+        sex: { type: String, enum: ['Nam', 'Nữ'], default: 'Nam' },
         birthday: Date,
         email: String,
         password: String,
@@ -28,7 +28,7 @@ module.exports = (app) => {
     schema.methods.equalPassword = function (password) {
         return app.crypt.compareSync(password, this.password);
     };
-    
+
     const model = app.db.model('User', schema);
     app.model.user = {
         hashPassword: (password) =>
