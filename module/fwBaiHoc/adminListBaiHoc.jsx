@@ -58,7 +58,7 @@ class MonHocPage extends React.Component {
                                 <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/dao-tao/bai-học/edit/' + item._id} className='btn btn-primary'>
+                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('course:write') ?
