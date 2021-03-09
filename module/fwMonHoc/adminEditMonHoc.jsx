@@ -4,7 +4,7 @@ import { updateMonHoc, getMonHoc } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
-class adminEditCType extends React.Component {
+class AdminEditMonHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
 
@@ -102,4 +102,4 @@ class adminEditCType extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc });
 const mapActionsToProps = { updateMonHoc, getMonHoc };
-export default connect(mapStateToProps, mapActionsToProps)(adminEditCType);
+export default connect(mapStateToProps, mapActionsToProps)(AdminEditMonHoc);

@@ -5,9 +5,9 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String
     });
-    const model = app.db.model('Baihoc', schema);
+    const model = app.db.model('Lesson', schema);
 
-    app.model.BaiHoc = {
+    app.model.lesson = {
         create: (data, done) => {
             if (!data.title) data.title = 'Bài học mới';
 

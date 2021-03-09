@@ -9,7 +9,7 @@ export default function MonHocReducer(state = null, data) {
             return Object.assign({}, state, { page: data.page });
 
         case MonHocGetMonHoc:
-            return Object.assign({}, state, { MonHoc: data.item });
+            return Object.assign({}, state, { monhoc: data.item });
         default:
             return state;
     }

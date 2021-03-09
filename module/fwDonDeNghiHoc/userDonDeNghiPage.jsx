@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from '../../view/js/common.js'
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux.jsx';
-import { updateProfile } from '../_init/reduxSystem.jsx'
+import { updateProfile } from '../_init/reduxSystem.jsx';
+import { getCourseTypeInPage } from '../fwCourseType/redux.jsx'
 import { Link } from 'react-router-dom';
-import Dropdown from '../../view/component/Dropdown.jsx';
 import FileSaver from 'file-saver';
 import ImageBox from '../../view/component/ImageBox.jsx';
 import { Select } from '../../view/component/Input.jsx';
@@ -19,6 +19,7 @@ class UserDonDeNghiPage extends React.Component {
         this.imageBox = React.createRef();
     }
     componentDidMount() {
+        this.props.getCourseTypeInPage();
         T.ready('/user', () => {
             T.tooltip();
             $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
@@ -50,8 +51,6 @@ class UserDonDeNghiPage extends React.Component {
                 } else if (data.item) {
                     data.item.status == 'approved' ? $('#newLicenseClass').prop("disabled", true) : $('#newLicenseClass').prop("disabled", false)
                     const user = data.item.user;
-                    $('#userLastname').val(user.lastname);
-                    $('#userFirstname').val(user.firstname);
                     $('#userBirthday').val(user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : '');
                     $('#phoneNumber').val(user.phoneNumber);
                     $('#regularResidence').val(user.regularResidence);
@@ -63,7 +62,7 @@ class UserDonDeNghiPage extends React.Component {
                     $('#issuedBy').val(data.item.issuedBy);
                     $('#licenseNumber').val(data.item.licenseNumber);
                     $('#otherDocumentation').val(data.item.otherDocumentation);
-                    $('#licenseClass').val(data.item.licenseClass);
+                    //$('#licenseClass').val(data.item.licenseClass);
                     $('#newLicenseClass').val(data.item.newLicenseClass);
                     $('#licenseIssuedBy').val(data.item.licenseIssuedBy);
                     this.setState(data);
@@ -303,7 +302,8 @@ class UserDonDeNghiPage extends React.Component {
                                         url: '',
                                         data: {},
                                         processResults: () => ({
-                                            results: [{ id: "B1", text: "B1" }, { id: "B2", text: "B2" }, { id: "C", text: "C" }]
+                                            // results: [{ id: "B1", text: "B1" }, { id: "B2", text: "B2" }, { id: "C", text: "C" }],
+                                            results: this.props.courseType.page.list.map((item, index) => ({ id: item.title, text: item.title }))
                                         })
                                     }
                                 } label='Hạng' />
@@ -325,7 +325,8 @@ class UserDonDeNghiPage extends React.Component {
                                     url: '',
                                     data: {},
                                     processResults: () => ({
-                                        results: [{ id: "B1", text: "B1" }, { id: "B2", text: "B2" }, { id: "C", text: "C" }]
+                                        // results: [{ id: "B1", text: "B1" }, { id: "B2", text: "B2" }, { id: "C", text: "C" }]
+                                        results: this.props.courseType.page.list.map((item, index) => ({ id: item.title, text: item.title }))
                                     })
                                 }
                             } label='Hạng' />
@@ -429,7 +430,7 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label' htmlFor='licenseNumber'>Đã có giấy phép lái xe số: &nbsp;<span>{item.licenseNumber}</span></label>
                             </div>
                             <div className='form-group col-md-2' id='licenseClassSection'>
-                                <label className='control-label' htmlFor='licenseClass'>Hạng: &nbsp;<span>{T.licenseClass[item.licenseClass]}</span> </label>
+                                <label className='control-label' htmlFor='licenseClass'>Hạng: &nbsp;<span>{item.licenseClass}</span> </label>
                             </div>
                             <div className='form-group col-md-5'>
                                 <label className='control-label' htmlFor='licenseIssuedBy'>Nơi Cấp: &nbsp;<span>{item.licenseIssuedBy}</span> </label>
@@ -439,7 +440,7 @@ class UserDonDeNghiPage extends React.Component {
                             </div>
                         </div>
                         <div className='form-group'>
-                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: &nbsp;<span>{T.licenseClass[item.newLicenseClass]}</span> </label>
+                            <label className='control-label' htmlFor='newLicenseClass'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: &nbsp;<span>{item.newLicenseClass}</span> </label>
                         </div>
                         <div className='form-group'>
                             <label className='control-label'> Đăng ký tích hợp giấy phép lái xe: &nbsp;<span>{item.integration ? 'Có' : 'Không'}</span></label>
@@ -470,6 +471,6 @@ class UserDonDeNghiPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm };
+const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc, courseType: state.courseType });
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm, getCourseTypeInPage };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

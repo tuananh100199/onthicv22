@@ -13,7 +13,7 @@ module.exports = (app) => {
     app.get('/api/bai-hoc/page/:pageNumber/:pageSize', app.permission.check('baihoc:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.BaiHoc.getPage(pageNumber, pageSize, {}, (error, page) => {
+        app.model.lesson.getPage(pageNumber, pageSize, {}, (error, page) => {
             const response = {};
             if (error || page == null) {
                 response.error = 'Danh sách bài học không sẵn sàng!';
@@ -25,20 +25,20 @@ module.exports = (app) => {
     });
 
     app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('baihoc:read'), (req, res) =>
-        app.model.BaiHoc.get(req.params.baiHocId, (error, item) => res.send({ error, item })));
+        app.model.lesson.get(req.params.baiHocId, (error, item) => res.send({ error, item })));
 
 
     app.post('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
-        app.model.BaiHoc.create(req.body.data || {}, (error, item) => res.send({ error, item })
+        app.model.lesson.create(req.body.data || {}, (error, item) => res.send({ error, item })
         ));
 
     app.put('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
         const changes = req.body.changes;
         if (changes.categories && changes.categories == 'empty') changes.categories = [];
-        app.model.BaiHoc.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
-        app.model.BaiHoc.delete(req.body._id, (error) => res.send({ error }))
+        app.model.lesson.delete(req.body._id, (error) => res.send({ error }))
     );
 };

@@ -4,7 +4,7 @@ import { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc } from './red
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 
-class MonHocPage extends React.Component {
+class AdminListMonHoc extends React.Component {
     componentDidMount() {
         this.props.getMonHocInPage();
         T.ready('/user/dao-tao', null);
@@ -21,10 +21,10 @@ class MonHocPage extends React.Component {
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.lesson && this.props.lesson.page ?
-            this.props.lesson.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subject && this.props.subject.page ?
+            this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = 'Không có loại Môn học!';
-        if (this.props.lesson && this.props.lesson.page && this.props.lesson.page.list && this.props.lesson.page.list.length > 0) {
+        if (this.props.subject && this.props.subject.page && this.props.subject.page.list && this.props.subject.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -35,7 +35,7 @@ class MonHocPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.lesson.page.list.map((item, index) => (
+                        {this.props.subject.page.list.map((item, index) => (
                             <tr key={index}>
                                 {console.log('item', item)}
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
@@ -63,7 +63,7 @@ class MonHocPage extends React.Component {
                     <h1><i className='fa fa-file' /> Môn học: Danh sách</h1>
                 </div>
                 <div className='row tile'>{table}</div>
-                <Pagination name='pageLesson'
+                <Pagination name='pageSubject'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getMonHocInPage} />
                 {currentPermissions.contains('course:write') ?
@@ -76,6 +76,6 @@ class MonHocPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
+const mapStateToProps = state => ({ system: state.system, subject: state.subject });
 const mapActionsToProps = { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc };
-export default connect(mapStateToProps, mapActionsToProps)(MonHocPage);
+export default connect(mapStateToProps, mapActionsToProps)(AdminListMonHoc);

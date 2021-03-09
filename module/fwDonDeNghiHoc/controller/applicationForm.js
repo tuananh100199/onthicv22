@@ -8,11 +8,11 @@ module.exports = app => {
 
     const menu = {
         parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
-        menus: {
-            3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list/B1', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-            3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list/B2', icon: 'fa-list', backgroundColor: '#00897b', groupIndex: 0 },
-            3022: { title: 'Danh sách đơn chờ duyệt hạng C', link: '/user/don-de-nghi-hoc/list/C', icon: 'fa-list', backgroundColor: '#4db6ac', groupIndex: 0 },
-        }
+        // menus: {
+        //     3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list/B1', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
+        //     3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list/B2', icon: 'fa-list', backgroundColor: '#00897b', groupIndex: 0 },
+        //     3022: { title: 'Danh sách đơn chờ duyệt hạng C', link: '/user/don-de-nghi-hoc/list/C', icon: 'fa-list', backgroundColor: '#4db6ac', groupIndex: 0 },
+        // }
     };
 
     // const menuDonDeNghiHoc = {
@@ -29,41 +29,41 @@ module.exports = app => {
     app.get('/user/don-de-nghi-hoc/email', app.permission.check('applicationForm:email'), app.templates.admin);
     app.get('/user/bieu-mau/don-de-nghi-hoc/:id', app.permission.check(), app.templates.admin);
     // Init ------------------------------------------------------------------------------------------------------------
-    app.readyHooks.add('emailApplicationFormInit', {
-        ready: () => app.model != null && app.model.setting != null && app.state,
-        run: () => {
-            const enableInit = process.env['enableInit'] == 'true';
-            if (enableInit) {
-                app.model.setting.init({
-                    rejectDonDeNghiHocTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
-                    rejectDonDeNghiHocText: 'Chào {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
-                    rejectDonDeNghiHocHtml: 'Chào <b>{name}</b>,<br/><br/>' +
-                        'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
-                        '<b>{reason}</b><br/><br/>' +
-                        'Best regard,<br/>' +
-                        'Hiệp Phát<br/>' +
-                        'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
-                })
-            }
-        },
-    });
+    // app.readyHooks.add('emailApplicationFormInit', {
+    //     ready: () => app.model != null && app.model.setting != null && app.state,
+    //     run: () => {
+    //         const enableInit = process.env['enableInit'] == 'true';
+    //         if (enableInit) {
+    //             app.model.setting.init({
+    //                 rejectDonDeNghiHocTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
+    //                 rejectDonDeNghiHocText: 'Chào {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
+    //                 rejectDonDeNghiHocHtml: 'Chào <b>{name}</b>,<br/><br/>' +
+    //                     'Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do:<br/><br/>' +
+    //                     '<b>{reason}</b><br/><br/>' +
+    //                     'Best regard,<br/>' +
+    //                     'Hiệp Phát<br/>' +
+    //                     'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
+    //             })
+    //         }
+    //     },
+    // });
     //APIs -------------------------------------------------------------------------------------------------------------
-    const emailParams = ['rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml'];
-    app.get('/api/application-form/email/all', app.permission.check('applicationForm:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
+    // const emailParams = ['rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml'];
+    // app.get('/api/application-form/email/all', app.permission.check('applicationForm:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
 
-    app.put('/api/application-form/email', app.permission.check('applicationForm:email'), (req, res) => {
-        const emailType = req.body.type;
-        const title = emailType + 'Title',
-            text = emailType + 'Text',
-            html = emailType + 'Html',
-            changes = {};
+    // app.put('/api/application-form/email', app.permission.check('applicationForm:email'), (req, res) => {
+    //     const emailType = req.body.type;
+    //     const title = emailType + 'Title',
+    //         text = emailType + 'Text',
+    //         html = emailType + 'Html',
+    //         changes = {};
 
-        if (emailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
-        if (emailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
-        if (emailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
+    //     if (emailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
+    //     if (emailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
+    //     if (emailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
 
-        app.model.setting.set(changes, error => res.send({ error }));
-    });
+    //     app.model.setting.set(changes, error => res.send({ error }));
+    // });
 
     // Admin -----------------------------------------------------------------------------------------------------------
     app.get('/api/application-form/page/:pageNumber/:pageSize', app.permission.check('applicationForm:read'), (req, res) => {

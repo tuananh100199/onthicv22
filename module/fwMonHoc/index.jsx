@@ -1,12 +1,12 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
-import lesson from './redux.jsx';
+import subject from './redux.jsx';
 import SubMenusPage from '../../view/component/SubMenusPage.jsx';
 
 export default {
     redux: {
-        lesson
+        subject
     },
     routes: [
         {

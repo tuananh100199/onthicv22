@@ -4,9 +4,9 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String
     });
-    const model = app.db.model('Lesson', schema);
+    const model = app.db.model('Subject', schema);
 
-    app.model.MonHoc = {
+    app.model.subject = {
         create: (data, done) => {
             if (!data.title) data.title = 'Môn học mới';
             model.create(data, done)

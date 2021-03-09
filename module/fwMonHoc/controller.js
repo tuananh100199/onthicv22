@@ -15,7 +15,7 @@ module.exports = (app) => {
     app.get('/api/mon-hoc/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.MonHoc.getPage(pageNumber, pageSize, {}, (error, page) => {
+        app.model.subject.getPage(pageNumber, pageSize, {}, (error, page) => {
             const response = {};
             if (error || page == null) {
                 response.error = 'Danh sách môn học không sẵn sàng!';
@@ -27,20 +27,20 @@ module.exports = (app) => {
     });
 
     app.get('/api/mon-hoc/edit/:monHocId', app.permission.check('lesson:read'), (req, res) =>
-        app.model.MonHoc.get(req.params.monHocId, (error, item) => res.send({ error, item })));
+        app.model.subject.get(req.params.monHocId, (error, item) => res.send({ error, item })));
 
 
     app.post('/api/mon-hoc', app.permission.check('lesson:write'), (req, res) =>
-        app.model.MonHoc.create(req.body.data || {}, (error, item) => res.send({ error, item })
+        app.model.subject.create(req.body.data || {}, (error, item) => res.send({ error, item })
         ));
 
     app.put('/api/mon-hoc', app.permission.check('lesson:write'), (req, res) => {
         const changes = req.body.changes;
         if (changes.categories && changes.categories == 'empty') changes.categories = [];
-        app.model.MonHoc.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/mon-hoc', app.permission.check('lesson:write'), (req, res) =>
-        app.model.MonHoc.delete(req.body._id, (error) => res.send({ error }))
+        app.model.subject.delete(req.body._id, (error) => res.send({ error }))
     );
 };
