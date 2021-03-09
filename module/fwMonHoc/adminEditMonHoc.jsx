@@ -84,7 +84,7 @@ class AdminEditMonHoc extends React.Component {
         const item = this.state.item ? this.state.item : {
             title: ''
         };
-        let table = 'Không có bài học!';
+        let table = 'Chưa có bài học!';
         if (this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
@@ -169,7 +169,7 @@ class AdminEditMonHoc extends React.Component {
                                 <div className='row'>
                                     <div className='form-group col-sm-12'>
                                         <label className='control-label'>Danh sách bài học </label>
-                                        {table}
+                                        <div>{table}</div>
                                     </div>
                                 </div>
                             </div>
