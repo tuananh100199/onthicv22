@@ -32,7 +32,7 @@ class AdminListMonHoc extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tiêu đề</th>
+                            <th style={{ width: '100%' }}>Tiêu đề</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>

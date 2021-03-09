@@ -62,6 +62,9 @@ module.exports = app => {
         pushLesson: (condition, lessonId, done) => {
             model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
         },
+        pullLesson: (condition, lessonId, done) => {
+            model.findOneAndUpdate(condition, { $pull: { lesson: lessonId } }).exec(done);
+        },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

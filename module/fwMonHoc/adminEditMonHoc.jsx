@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson } from './redux.jsx'
+import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
@@ -29,6 +29,14 @@ class AdminEditMonHoc extends React.Component {
                 }
             });
         });
+    }
+    create = (e, item) => {
+        this.props.addLesson('6046e92789b9d73fc0bb72b5', '60473abd01f5871ad4334508')
+        e.preventDefault();
+    }
+    delete = (e, monhocId, lessonId, lessonTitle) => {
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa bài ' + lessonTitle + ' khỏi môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(monhocId, lessonId));
+        e.preventDefault();
     }
     save = () => {
         const changes = {
@@ -113,7 +121,7 @@ class AdminEditMonHoc extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item._id)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, monhocId, item._id, item.title)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -166,11 +174,18 @@ class AdminEditMonHoc extends React.Component {
                                         <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                                     </div>
                                 </div>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Danh sách bài học </label>
-                                        <div>{table}</div>
-                                    </div>
+                            </div>
+                            <button type='submit' className='btn btn-primary' onClick={this.save} >Lưu</button>
+                            {/* {!readOnly &&
+                                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                                    <i className='fa fa-lg fa-save' />
+                                </button>} */}
+                        </div>
+                        <div className='row'>
+                            <div className='col-sm-12'>
+                                <div className='tile'>
+                                    <label className='control-label'>Danh sách bài học </label>
+                                    <div>{table}</div>
                                 </div>
                             </div>
                         </div>
@@ -178,15 +193,15 @@ class AdminEditMonHoc extends React.Component {
                 </div>
 
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                {!readOnly &&
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                        <i className='fa fa-lg fa-save' />
-                    </button>}
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '65px', bottom: '10px' }}
+                    onClick={this.create}>
+                    <i className='fa fa-lg fa-plus' />
+                </button>
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson };
+const mapActionsToProps = { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditMonHoc);

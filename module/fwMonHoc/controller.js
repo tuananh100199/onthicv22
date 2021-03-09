@@ -49,9 +49,15 @@ module.exports = (app) => {
             res.send({ error, item });
         });
     });
-    app.post('/api/baihoc/:subjectId', app.permission.check('lesson:write'), (req, res) => {
+    app.post('/api/baihoc/add/:subjectId', app.permission.check('lesson:write'), (req, res) => {
         const subjectId = req.params.subjectId, lessonId = req.body.lessonId;
         app.model.subject.pushLesson({ _id: subjectId }, lessonId, (error, item) => {
+            res.send({ error, item });
+        });
+    });
+    app.post('/api/baihoc/delete/:subjectId', app.permission.check('lesson:write'), (req, res) => {
+        const subjectId = req.params.subjectId, lessonId = req.body.lessonId;
+        app.model.subject.pullLesson({ _id: subjectId }, lessonId, (error, item) => {
             res.send({ error, item });
         });
     });
@@ -63,4 +69,15 @@ module.exports = (app) => {
             res.send({ error, item });
         });
     });
+    // app.delete('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
+    //     const { data, monhocId, _id } = req.body;
+    //     if (data.questions && data.questions == 'empty') data.questions = [];
+    //     app.model.subject.update(monhocId, data, (error, _) => {
+    //         if (error) {
+    //             res.send({ error });
+    //         } else {
+    //             app.model.lesson.delete(_id, error => res.send({ error }));
+    //         }
+    //     });
+    // });
 };
