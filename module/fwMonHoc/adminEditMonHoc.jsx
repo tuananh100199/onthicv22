@@ -3,11 +3,59 @@ import { connect } from 'react-redux';
 import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
+import { Select } from '../../view/component/Input.jsx';
+import { ajaxSelectLesson } from '../fwBaiHoc/redux.jsx';
 
+class AddLessonModal extends React.Component {
+    modal = React.createRef();
+    lessonSelect = React.createRef();
+
+    show = () => {
+        this.lessonSelect.current.val(null);
+        $(this.modal.current).modal('show');
+    }
+
+    addLesson = () => {
+        const lessonId = this.lessonSelect.current.val();
+        this.props.addLesson('6046e92789b9d73fc0bb72b5', lessonId)
+    }
+
+    render() {
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <div className='modal-dialog' role='document'>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Thêm bài học</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+
+                        <div className='modal-body'>
+                            <div className='form-group'>
+                                <label>Chọn người dùng</label>
+                                <Select ref={this.lessonSelect} displayLabel={false} adapter={ajaxSelectLesson} label='Người dùng' />
+                            </div>
+                        </div>
+
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-success' onClick={this.switchUser}>Switch</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
 class AdminEditMonHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
-
+    constructor(props) {
+        super(props);
+        this.addLessonModal = React.createRef();
+    }
     componentDidMount() {
         T.ready('/user/dao-tao', () => {
             let url = window.location.pathname,
@@ -30,9 +78,9 @@ class AdminEditMonHoc extends React.Component {
             });
         });
     }
-    create = (e, item) => {
-        this.props.addLesson('6046e92789b9d73fc0bb72b5', '60473abd01f5871ad4334508')
+    showAddLessonModal = e => {
         e.preventDefault();
+        this.addLessonModal.current.show();
     }
     delete = (e, monhocId, lessonId, lessonTitle) => {
         T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa bài ' + lessonTitle + ' khỏi môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(monhocId, lessonId));
@@ -132,8 +180,8 @@ class AdminEditMonHoc extends React.Component {
                 </table>
             );
         }
-        return (
-            <main className='app-content'>
+        return [
+            <main className='app-content' key={1}>
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-file' /> Môn học: Chỉnh sửa</h1>
@@ -176,29 +224,28 @@ class AdminEditMonHoc extends React.Component {
                                 </div>
                             </div>
                             <button type='submit' className='btn btn-primary' onClick={this.save} >Lưu</button>
+                            <div className='tile-footer'>
+                                <label className='control-label'>Danh sách bài học </label>
+                                <div>{table}</div>
+                            </div>
+
                             {/* {!readOnly &&
                                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                                     <i className='fa fa-lg fa-save' />
                                 </button>} */}
                         </div>
-                        <div className='row'>
-                            <div className='col-sm-12'>
-                                <div className='tile'>
-                                    <label className='control-label'>Danh sách bài học </label>
-                                    <div>{table}</div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '65px', bottom: '10px' }}
-                    onClick={this.create}>
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                    onClick={this.showAddLessonModal}>
                     <i className='fa fa-lg fa-plus' />
                 </button>
-            </main>
-        );
+            </main>,
+            <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} />
+        ];
     }
 }
 

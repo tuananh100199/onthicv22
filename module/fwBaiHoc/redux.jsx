@@ -94,3 +94,12 @@ export function deleteBaiHoc(_id) {
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
     }
 }
+const getAllLesson = `/api/bai-hoc/all/`;
+export const ajaxSelectLesson = {
+    ajax: true,
+    url: getAllLesson,
+    data: params => ({ condition: params.term }),
+    processResults: response => ({
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.title}` })) : []
+    })
+}

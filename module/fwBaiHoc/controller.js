@@ -42,4 +42,6 @@ module.exports = (app) => {
     app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }))
     );
+    app.get('/api/bai-hoc/all', app.permission.check('baihoc:read'), (req, res) =>
+        app.model.lesson.getAll({}, (error, items) => res.send({ error, items })));
 };
