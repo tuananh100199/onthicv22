@@ -4,7 +4,7 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
-        subject: { type: Array, "default": [] }
+        subject: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Subject' }], default: [] },
     });
     const model = app.db.model('Lesson', schema);
 

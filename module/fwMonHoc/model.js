@@ -36,7 +36,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lessons');
+                if (populate) result.populate('lesson', '_id title');
                 result.exec(done);
             };
 
@@ -60,7 +60,7 @@ module.exports = app => {
             }
         }),
         pushLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lessons').exec(done);
+            model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

@@ -39,7 +39,7 @@ class AdminEditMonHoc extends React.Component {
         this.props.updateMonHoc(this.state.item._id, changes)
     };
     swap = (e, index, monHocId, isMoveUp) => {
-        let lessonList = this.props.subject && this.props.subject.listbaihoc ? this.props.subject.listbaihoc : [];
+        let lessonList = this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson ? this.props.subject.listbaihoc.lesson : [];
         if (lessonList.length == 1) {
             T.notify('Thay đổi thứ tự bài học thành công', 'info');
         } else {
@@ -85,7 +85,7 @@ class AdminEditMonHoc extends React.Component {
             title: ''
         };
         let table = 'Chưa có bài học!';
-        if (this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.length > 0) {
+        if (this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson && this.props.subject.listbaihoc.lesson.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -96,10 +96,10 @@ class AdminEditMonHoc extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.subject.listbaihoc.map((item, index) => (
+                        {this.props.subject.listbaihoc.lesson.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><Link to={'/user/dao-tao/bai-hoc/view/' + item}>{item}</Link></td>
+                                <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
                                         <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, monhocId, true)}>
@@ -109,11 +109,11 @@ class AdminEditMonHoc extends React.Component {
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
-                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item} className='btn btn-primary'>
+                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-                                        {currentPermissions.contains('course:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                        {currentPermissions.contains('lesson:write') ?
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item._id)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
