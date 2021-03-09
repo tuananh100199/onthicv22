@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createDangKyTuVan } from './redux.jsx';
+import { createDangKyTuVanListItem,  } from './redux/reduxDangKyTuVanList.jsx';
+import { getDangKyTuVanByUser } from './redux/reduxDangKyTuVan.jsx';
+
 class SectionDangKyTuVan extends React.Component {
+    state = { item: {} };
     constructor(props) {
         super(props);
         this.firstname = React.createRef();
@@ -10,6 +13,24 @@ class SectionDangKyTuVan extends React.Component {
         this.subject = React.createRef();
         this.message = React.createRef();
         this.phone = React.createRef();
+    }
+    componentDidMount() {
+        $(document).ready(() => {
+            if (this.props.dangKyTuVanId) {
+                this.props.getDangKyTuVanByUser(this.props.dangKyTuVanId, data => {
+
+                    if (data.item) {
+                        this.setState({ item: data.item });
+                        let { _id, title, formTitle, description } = data.item;
+                        $('#title').val(title).focus();
+                        $('#formTitle').val(formTitle);
+                        $('#description').val(description);
+                    } else {
+                        // this.props.history.push('/user/component');
+                    }
+                });
+            }
+        })
     }
     sendMessage = (e) => {
         e.preventDefault();
@@ -35,7 +56,7 @@ class SectionDangKyTuVan extends React.Component {
             T.notify('Số điện thoại bị trống!', 'danger');
             (this.phone.current).focus();
         } else {
-            this.props.createDangKyTuVan({
+            this.props.createDangKyTuVanListItem({
                 firstname: this.firstname.current.value,
                 lastname: this.lastname.current.value,
                 email: this.email.current.value,
@@ -50,8 +71,9 @@ class SectionDangKyTuVan extends React.Component {
     }
 
     render() {
-        let { dangKyTuVanTitle, dangKyTuVanDescription } = this.props.system ?
-        this.props.system : {dangKyTuVanTitle: '', dangKyTuVanDescription: '' };
+        const item = this.state.item ? this.state.item : {
+            title :'', formTitle:'',description:''
+        };
         return [
             <div  key={1} className="intro">
                 <div className="container">
@@ -59,16 +81,16 @@ class SectionDangKyTuVan extends React.Component {
                         <div className="col-lg-6 intro_col">
                             <div className="intro_content" >
                             <div className="section_title_container">
-                                <div className="section_title"><h2>{dangKyTuVanTitle}&nbsp;</h2></div>
+                                <div className="section_title" id='title'><h2>{item.title}&nbsp;</h2></div>
                             </div>
-                            <div className="intro_text">
-                                <p>{dangKyTuVanDescription}</p>
+                            <div className="intro_text" id='description'>
+                                <p dangerouslySetInnerHTML={{ __html: item.description }} />
                             </div>
                         </div>
                             </div>
                         <div className="col-lg-6 intro_col">
                             <div className="intro_form_container">
-                                <div className="intro_form_title">Đăng ký tư vấn</div>
+                                <div className="intro_form_title" id="formTitle">{item.formTitle}</div>
                                 <form action="#" className="intro_form" id="intro_form" onSubmit={this.sendMessage}>
                                     <div className="d-flex flex-row align-items-start justify-content-between flex-wrap">
                                         <input type="text" className="intro_input" placeholder="Họ"  ref={this.lastname} required="required" />
@@ -90,5 +112,5 @@ class SectionDangKyTuVan extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = {createDangKyTuVan};
+const mapActionsToProps = {createDangKyTuVanListItem, getDangKyTuVanByUser};
 export default connect(mapStateToProps, mapActionsToProps)(SectionDangKyTuVan);

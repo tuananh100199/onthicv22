@@ -1,16 +1,13 @@
 module.exports = app => {
     const menu = {
-        parentMenu: app.parentMenu.setting,
-        menus: {
-            2110: { title: 'Đăng ký tư vấn', link: '/user/dang-ky-tu-van', icon: 'fa fa-quote-right', backgroundColor: '#b2c' },
-        },
+        parentMenu: { index: 4000, title: 'Đăng ký tư vấn', icon: 'fa-file-text-o', link: '/user/dang-ky-tu-van' }
     };
     app.permission.add(
-        { name: 'dangKyTuVan:read', menu },
-        { name: 'dangKyTuVan:write', menu },
+        { name: 'dangKyTuVanList:read', menu },
+        { name: 'dangKyTuVanList:write', menu },
     );
 
-    app.get('/user/dang-ky-tu-van', app.permission.check('dangKyTuVan:read'), app.templates.admin);
+    // app.get('/user/dang-ky-tu-van-list', app.permission.check('dangKyTuVanList:read'), app.templates.admin);
 
      // Init ------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailPhanHoiDangKyTuVanInit', {
@@ -33,9 +30,9 @@ module.exports = app => {
     });
     //APIs -------------------------------------------------------------------------------------------------------------
     const emailParams = ['phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml'];
-    app.get('/api/dang-ky-tu-van/email/all', app.permission.check('dangKyTuVan:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
+    app.get('/api/dang-ky-tu-van-list/email/all', app.permission.check('dangKyTuVanList:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
 
-    app.put('/api/dang-ky-tu-van/email/email', app.permission.check('dangKyTuVan:email'), (req, res) => {
+    app.put('/api/dang-ky-tu-van-list/item/email/email', app.permission.check('dangKyTuVanList:email'), (req, res) => {
         const emailType = req.body.type;
         const title = emailType + 'Title',
             text = emailType + 'Text',
@@ -50,31 +47,30 @@ module.exports = app => {
     });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/dang-ky-tu-van/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVan:read'), (req, res) => {
+    app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVanList:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.dangKyTuVan.getPage(pageNumber, pageSize, {}, (error, page) => {
+        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, {}, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
     });
 
-    app.get('/api/dang-ky-tu-van/all', app.permission.check('dangKyTuVan:read'), (req, res) => app.model.dangKyTuVan.getAll((error, items) => res.send({ error, items })));
+    app.get('/api/dang-ky-tu-van-list/all', app.permission.check('dangKyTuVanList:read'), (req, res) => app.model.dangKyTuVanList.getAll((error, items) => res.send({ error, items })));
 
-    app.get('/api/dang-ky-tu-van/item/:_id', app.permission.check('dangKyTuVan:write'), (req, res) => {
-        app.model.dangKyTuVan.update(req.params._id, {read: 'true'}, (error, item) => {
-        if (item) app.io.emit('dangKyTuVan-changed', item);
+    app.get('/api/dang-ky-tu-van-list/item/:_id', app.permission.check('dangKyTuVanList:write'), (req, res) => {
+        app.model.dangKyTuVanList.update(req.params._id, {read: 'true'}, (error, item) => {
+        if (item) app.io.emit('dangKyTuVanList-changed', item);
         res.send({ error, item });
         })
     });
 
-    app.delete('/api/dang-ky-tu-van', app.permission.check('dangKyTuVan:write'), (req, res) => app.model.dangKyTuVan.delete(req.body._id, error => res.send({ error })));
-
+    app.delete('/api/dang-ky-tu-van-list/item', app.permission.check('dangKyTuVanList:write'), (req, res) => app.model.dangKyTuVanList.delete(req.body._id, error => res.send({ error })));
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
-    app.post('/api/dang-ky-tu-van', (req, res) => app.model.dangKyTuVan.create(req.body.dangKyTuVan, (error, item) => {
+    app.post('/api/dang-ky-tu-van-list/item', (req, res) => app.model.dangKyTuVanList.create(req.body.dangKyTuVan, (error, item) => {
         if (item) {
-            app.io.emit('dangKyTuVan-added', item);
+            app.io.emit('dangKyTuVanList-added', item);
 
             app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
                 let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
@@ -86,9 +82,9 @@ module.exports = app => {
         res.send({ error, item });
     }));
     
-    app.post('/api/dang-ky-tu-van/response', app.permission.check('dangKyTuVan:write'), (req, res) => {
+    app.post('/api/dang-ky-tu-van-list/item/response', app.permission.check('dangKyTuVanList:write'), (req, res) => {
         const { _id, content } = req.body;
-        app.model.dangKyTuVan.get(_id, (error, item) => {
+        app.model.dangKyTuVanList.get(_id, (error, item) => {
             if (error || item == null) {
                 res.send({ error: `Hệ thống lỗi!` })
             } else {

@@ -53,6 +53,7 @@ class ComponentPage extends React.Component {
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStaffGroup'>Nhóm nhân viên</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>List Video</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuAddress'>Địa chỉ</a></li>
+
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='menuContent'><ContentPage /></div>
@@ -69,6 +70,7 @@ class ComponentPage extends React.Component {
                 </div>
             </main>
         );
+
     }
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan, phanHoiDangKyTuVan } from './redux.jsx';
+import { getDangKyTuVanListPage, getDangKyTuVanListItem, updateDangKyTuVanListItem, deleteDangKyTuVanListItem, phanHoiDangKyTuVanListItem } from './redux/reduxDangKyTuVanList.jsx';
 import Pagination from '../../view/component/Pagination.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
@@ -20,7 +20,7 @@ class AdminDangKyTuVanModal extends React.Component {
         if (!this.editor.current.html()) {
             T.notify('Nội dung phản hồi bị trống', 'danger');
         } else {
-            this.props.phanHoiDangKyTuVan(this.state._id, this.editor.current.html(), (data) => {
+            this.props.phanHoiDangKyTuVanListItem(this.state._id, this.editor.current.html(), (data) => {
                 if (!data.error) {
                     T.notify('Gửi phản hồi đăng ký tư vấn thành công!', 'success');
                 }
@@ -64,23 +64,24 @@ class AdminDangKyTuVanModal extends React.Component {
         );
     }
 }
-class DangKyTuVanPage extends React.Component {
+class DangKyTuVanListPage extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
-        this.props.getDangKyTuVanPage();
+        this.props.getDangKyTuVanListPage();
         T.ready('/user/settings');
     }
 
     showDangKyTuVan = (e, dangKyTuVanId) => {
         e.preventDefault();
-        this.props.getDangKyTuVan(dangKyTuVanId, dangKyTuVan => this.modal.current.show(dangKyTuVan));
+        this.props.getDangKyTuVanListItem(dangKyTuVanId, dangKyTuVan => this.modal.current.show(dangKyTuVan));
     }
 
-    changeRead = (item) => this.props.updateDangKyTuVan(item._id, {  read: !item.read });
+
+    changeRead = (item) => this.props.updateDangKyTuVanListItem(item._id, {  read: !item.read });
 
     delete = (e, item) => {
-        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVanListItem(item._id));
         e.preventDefault();
     }
 
@@ -133,17 +134,17 @@ class DangKyTuVanPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa fa-envelope-o' /> Đăng ký tư vấn</h1>
+                    <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
                 </div>
                 <div className='row tile'>{table}</div>
                 <Pagination name='pageDangKyTuVan' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getDangKyTuVanPage} />
-                <AdminDangKyTuVanModal ref={this.modal} phanHoiDangKyTuVan={this.props.phanHoiDangKyTuVan} />
+                    getPage={this.props.getDangKyTuVanListPage} />
+                <AdminDangKyTuVanModal ref={this.modal} phanHoiDangKyTuVanListItem={this.props.phanHoiDangKyTuVanListItem} />
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ dangKyTuVan: state.dangKyTuVan });
-const mapActionsToProps = { getDangKyTuVanPage, getDangKyTuVan, updateDangKyTuVan, deleteDangKyTuVan, phanHoiDangKyTuVan };
-export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanPage);
+const mapActionsToProps = { getDangKyTuVanListPage, getDangKyTuVanListItem, updateDangKyTuVanListItem, deleteDangKyTuVanListItem, phanHoiDangKyTuVanListItem  };
+export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanListPage);
