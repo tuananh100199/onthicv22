@@ -4,13 +4,13 @@ import Loading from '../../view/component/Loading.jsx';
 import SectionDangKyTuVan from './sectionDangKyTuVan.jsx';
 import dangKyTuVanList from './redux/reduxDangKyTuVanList.jsx';
 import dangKyTuVan from './redux/reduxDangKyTuVan.jsx';
-import statisticDangKyTuVan from './redux/reduxStatisticDangKyTuVan.jsx';
+// import statisticDangKyTuVan from './redux/reduxStatisticDangKyTuVan.jsx';
 
 
 
 export default {
     redux: {
-        dangKyTuVan,dangKyTuVanList, statisticDangKyTuVan
+        dangKyTuVan,dangKyTuVanList,
     },
     routes: [
         {

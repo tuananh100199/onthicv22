@@ -1,85 +1,121 @@
 import T from '../../../view/js/common';
-T.initCookiePage('pageDangKyTuVan');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DangKyTuVanGetAll = 'DangKyTuVan:GetAll';
 const DangKyTuVanUpdate = 'DangKyTuVan:Update';
-const DangKyTuVanGetDangKyTuVanInPage = 'DangKyTuVan:GetDangKyTuVanInPage';
-const DangKyTuVanGetDangKyTuVan = 'DangKyTuVan:GetDangKyTuVan';
+const DangKyTuVanAddItem = 'DangKyTuVan:AddItem';
+const DangKyTuVanUpdateItem = 'DangKyTuVan:UpdateItem';
+const DangKyTuVanRemoveItem = 'DangKyTuVan:RemoveItem';
+const DangKyTuVanSwapItems = 'DangKyTuVan:SwapItems';
 
-
-export default function DangKyTuVanReducer(state = null, data) {
+export default function dangKyTuVanReducer(state = null, data) {
     switch (data.type) {
         case DangKyTuVanGetAll:
-            return data.items;
+            return Object.assign({}, state, { list: data.items });
 
-        
-        case DangKyTuVanUpdate:
-            state = state.slice();
-            for (let i = 0; i < state.length; i++) {
-                if (state[i]._id == data.item._id) {
-                    state[i] = data.item;
-                    break;
+        case DangKyTuVanAddItem:
+            if (state && state.item) {
+                state = Object.assign({}, state);
+                state.item.statistic.push({
+                    title: data.title,
+                    number: data.number,
+                });
+            }
+            return state;
+
+        case DangKyTuVanUpdateItem:
+            if (state && state.item) {
+                state = Object.assign({}, state);
+                if (0 <= data.index && data.index < state.item.statistic.length) {
+                    state.item.statistic.splice(data.index, 1, {
+                        title: data.title,
+                        number: data.number,
+                    });
                 }
             }
             return state;
-        case DangKyTuVanGetDangKyTuVanInPage:
-            return Object.assign({}, state, { page: data.page });
-        case DangKyTuVanGetDangKyTuVan:
-            return Object.assign({}, state, { DangKyTuVan: data.item});
+
+        case DangKyTuVanRemoveItem:
+            if (state && state.item) {
+                state = Object.assign({}, state);
+                if (0 <= data.index && data.index < state.item.statistic.length) {
+                    state.item.statistic.splice(data.index, 1);
+                }
+            }
+            return state;
+
+        case DangKyTuVanSwapItems:
+            if (state && state.item) {
+                state = Object.assign({}, state);
+                const dangKyTuVan = state.item.statistic[data.index];
+                if (data.isMoveUp && data.index > 0) {
+                    state.item.statistic.splice(data.index, 1);
+                    state.item.statistic.splice(data.index - 1, 0, dangKyTuVan);
+                } else if (!data.isMoveUp && data.index < state.item.statistic.length - 1) {
+                    state.item.statistic.splice(data.index, 1);
+                    state.item.statistic.splice(data.index + 1, 0, dangKyTuVan);
+                }
+            }
+            return state;
+
+        case DangKyTuVanUpdate:
+            return Object.assign({}, state, { item: data.item });
 
         default:
             return state;
     }
 }
 
-// Actions ------------------------------------------------------------------------------------------------------------
-export function getDangKyTuVanInPage(pageNumber, pageSize, done) {
-    const page = T.updatePage('pageDangKyTuVan', pageNumber, pageSize);
-    return (dispatch) => {
-        const url = '/api/dang-ky-tu-van/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
-                dispatch({ type: DangKyTuVanGetDangKyTuVanInPage, page: data.page });
-            }
-        }, error => T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
+// Texts -------------------------------------------------------------------------------------------------------------
+const texts = T.language({
+    vi: {
+        getAllDangKyTuVanError: 'Lấy danh sách thống kê bị lỗi!',
+        getDangKyTuVanError: 'Lấy thống kê bị lỗi!',
+        createDangKyTuVanError: 'Tạo thống kê bị lỗi!',
+        updateDangKyTuVanError: 'Cập nhật thông tin thống kê bị lỗi!',
+        deleteDangKyTuVanError: 'Xóa thống kê bị lỗi!',
+        updateDangKyTuVanSuccess: 'Cập nhật thông tin thống kê thành công!',
+        deleteDangKyTuVanSuccess: 'Xóa thống kê thành công!'
+    },
+    en: {
+        getAllDangKyTuVanError: 'Failed to get list of DangKyTuVans!',
+        getDangKyTuVanError: 'Failed to get DangKyTuVan!',
+        createDangKyTuVanError: 'Failed to create new DangKyTuVan!',
+        updateDangKyTuVanError: 'Failed to update information of DangKyTuVans!',
+        deleteDangKyTuVanError: 'Failed to delete DangKyTuVan!',
+        updateDangKyTuVanSuccess: 'DangKyTuVan is updated!',
+        deleteDangKyTuVanSuccess: 'DangKyTuVan is deleted!'
     }
-}
+});
+
+// Actions ------------------------------------------------------------------------------------------------------------
 export function getAllDangKyTuVan(done) {
     return dispatch => {
-        const url = `/api/dang-ky-tu-van/all`;
+        const url = '/api/dang-ky-tu-van/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger');
+                T.notify(texts.getAllDangKyTuVanError, 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
-                dispatch({ type: DangKyTuVanGetAll, items: data.items ? data.items : [] });
+                dispatch({ type: DangKyTuVanGetAll, items: data.items });
             }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
+        }, error => T.notify(texts.getAllDangKyTuVanError, 'danger'));
     }
 }
 
-
-
-export function createDangKyTuVan(done) {
+export function createDangKyTuVan(title, description, background, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van/default';
-        T.post(url, data => {
+        const url = '/api/dang-ky-tu-van';
+        T.post(url, { title, description, background }, data => {
             if (data.error) {
-                T.notify('Tạo đăng ký tư vấn bị lỗi!', 'danger');
-                console.error('POST: ' + url + '.', data.error);
+                T.notify(texts.createDangKyTuVanError, 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getDangKyTuVanInPage());
+                dispatch(getAllDangKyTuVan());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo đăng ký tư vấn bị lỗi!', 'danger'));
+        }, error => T.notify(texts.createDangKyTuVanError, 'danger'));
     }
 }
 
@@ -88,66 +124,77 @@ export function updateDangKyTuVan(_id, changes, done) {
         const url = '/api/dang-ky-tu-van';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin đăng ký tư vấn bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
+                T.notify(texts.updateDangKyTuVanError, 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin đăng ký tư vấn thành công!', 'info');
-                dispatch(getDangKyTuVanInPage());
+                T.notify(texts.updateDangKyTuVanSuccess, 'info');
+                dispatch(getAllDangKyTuVan());
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin đăng ký tư vấn bị lỗi!', 'danger'));
+        }, error => T.notify(texts.updateDangKyTuVanError, 'danger'));
     }
 }
-
 
 export function deleteDangKyTuVan(_id) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa đăng ký tư vấn bị lỗi!', 'danger');
-                console.error('DELETE: ' + url + '.', data.error);
+                T.notify(texts.deleteDangKyTuVanError, 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('đăng ký tư vấn được xóa thành công!', 'error', false, 800);
-                dispatch(getDangKyTuVanInPage());
+                T.alert(texts.deleteDangKyTuVanSuccess, 'error', false, 800);
+                dispatch(getAllDangKyTuVan());
             }
-        }, error => T.notify('Xóa đăng ký tư vấn bị lỗi!', 'danger'));
-    }
-}
-
-export function getDangKyTuVan(_id, done) {
-    return (dispatch, getState) => {
-        const url = '/dang-ky-tu-van/item/' + _id;
-        const state = getState();
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data);
-                dispatch({ type: DangKyTuVanGetDangKyTuVan, item: data.item});
-            }
-        }, error => done({ error }));
+        }, error => T.notify(texts.deleteDangKyTuVanError, 'danger'));
     }
 }
 
 
-// Actions (user) -----------------------------------------------------------------------------------------------------
 
-export function getDangKyTuVanByUser(id, done) {
+export function getDangKyTuVanItem(_id, done) {
     return dispatch => {
-        const url = '/dang-ky-tu-van/item/' + id;
+        const url = '/api/dang-ky-tu-van/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
+                T.notify(texts.getDangKyTuVanError, 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: DangKyTuVanUpdate, item: data.item });
                 if (done) done({ item: data.item });
+                dispatch({ type: DangKyTuVanUpdate, item: data.item });
             }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
+        }, error => T.notify(texts.getDangKyTuVanError, 'danger'));
+    }
+}
+
+export function addDangKyTuVanIntoGroup(title, number) {
+    return { type: DangKyTuVanAddItem, title, number };
+}
+
+export function updateDangKyTuVanInGroup(index, title, number) {
+    return { type: DangKyTuVanUpdateItem, index, title, number };
+}
+
+export function removeDangKyTuVanFromGroup(index) {
+    return { type: DangKyTuVanRemoveItem, index };
+}
+
+export function swapDangKyTuVanInGroup(index, isMoveUp) {
+    return { type: DangKyTuVanSwapItems, index, isMoveUp };
+}
+
+
+export function getDangKyTuVanByUser(_id, done) {
+    return dispatch => {
+        const url = '/home/dang-ky-tu-van/' + _id;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify(T.getDangKyTuVanError, 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.item);
+            }
+        }, error => T.notify(T.getDangKyTuVanError, 'danger'));
     }
 }

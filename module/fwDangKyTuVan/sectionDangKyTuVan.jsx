@@ -18,10 +18,9 @@ class SectionDangKyTuVan extends React.Component {
         $(document).ready(() => {
             if (this.props.dangKyTuVanId) {
                 this.props.getDangKyTuVanByUser(this.props.dangKyTuVanId, data => {
-
-                    if (data.item) {
-                        this.setState({ item: data.item });
-                        let { _id, title, formTitle, description } = data.item;
+                    if (data) {
+                        this.setState({ item: data });
+                        let { _id, title, formTitle, description, statistic } = data;
                         $('#title').val(title).focus();
                         $('#formTitle').val(formTitle);
                         $('#description').val(description);
@@ -85,6 +84,18 @@ class SectionDangKyTuVan extends React.Component {
                             </div>
                             <div className="intro_text" id='description'>
                                 <p dangerouslySetInnerHTML={{ __html: item.description }} />
+                            </div>
+                            <div className="milestones">
+                                <div className="row milestones_row">
+                                {item.statistic.map((i, index) => (
+                                    <div className="col-md-4 milestone_col" key={index}>
+                                        <div className="milestone">
+                                        <div className="milestone_counter" data-end-value={i.number} data-sign-before="+">0</div>
+                                        <div className="milestone_text">{i.title}</div>
+                                        </div>
+                                    </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                             </div>
