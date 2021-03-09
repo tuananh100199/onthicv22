@@ -10,7 +10,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/list', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/edit/:monHocId', app.templates.admin);
-
+    app.get('/user/dao-tao/mon-hoc/list-bai-hoc/:monHocId', app.templates.admin);
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/mon-hoc/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -43,4 +43,24 @@ module.exports = (app) => {
     app.delete('/api/mon-hoc', app.permission.check('lesson:write'), (req, res) =>
         app.model.subject.delete(req.body._id, (error) => res.send({ error }))
     );
+    app.get('/api/baihoc/:subjectId', (req, res) => {
+        const subjectId = req.params.subjectId;
+        app.model.subject.get(subjectId, { select: '_id lesson', populate: true }, (error, item) => {
+            res.send({ error, item });
+        });
+    });
+    app.post('/api/baihoc/:subjectId', app.permission.check('lesson:write'), (req, res) => {
+        const subjectId = req.params.subjectId, lessonId = req.body.lessonId;
+        app.model.subject.pushLesson({ _id: subjectId }, lessonId, (error, item) => {
+            res.send({ error, item });
+        });
+    });
+    app.put('/api/bai-hoc/swap', app.permission.check('form:write'), (req, res) => {
+        const data = req.body.data, _id = req.body._id;
+        console.log(_id)
+        console.log(data)
+        app.model.subject.update(_id, data, (error, item) => {
+            res.send({ error, item });
+        });
+    });
 };

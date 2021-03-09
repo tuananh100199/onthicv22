@@ -1,12 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc } from './redux.jsx'
+import { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc, getLessonList, addLesson } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 
 class AdminListMonHoc extends React.Component {
     componentDidMount() {
         this.props.getMonHocInPage();
+        //this.props.getLessonList('6046e92789b9d73fc0bb72b5');
+        //this.props.addLesson('6046e92789b9d73fc0bb72b5', '6046faa4640562047cb0fe91')
         T.ready('/user/dao-tao', null);
     }
 
@@ -37,7 +39,6 @@ class AdminListMonHoc extends React.Component {
                     <tbody>
                         {this.props.subject.page.list.map((item, index) => (
                             <tr key={index}>
-                                {console.log('item', item)}
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
                                 <td>
@@ -77,5 +78,5 @@ class AdminListMonHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc };
+const mapActionsToProps = { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc, getLessonList, addLesson };
 export default connect(mapStateToProps, mapActionsToProps)(AdminListMonHoc);

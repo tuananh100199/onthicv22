@@ -2,7 +2,8 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         shortDescription: String,
-        detailDescription: String
+        detailDescription: String,
+        lesson: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
     });
     const model = app.db.model('Subject', schema);
 
@@ -20,7 +21,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition, '-content').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
@@ -28,7 +29,24 @@ module.exports = app => {
         }),
 
         getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
+        get: (condition, option, done) => {
+            const handleGet = (condition, option, done) => {
+                const select = option.select ? option.select : null;
+                const populate = option.populate ? option.populate : false;
+
+                const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
+                if (select) result.select(select);
+                if (populate) result.populate('lessons');
+                result.exec(done);
+            };
+
+            if (done) {
+                handleGet(condition, option, done);
+            } else {
+                handleGet(condition, {}, option);
+            }
+        },
+
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
@@ -41,7 +59,9 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-
+        pushLesson: (condition, lessonId, done) => {
+            model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lessons').exec(done);
+        },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

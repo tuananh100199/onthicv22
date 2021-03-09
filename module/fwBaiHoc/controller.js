@@ -8,6 +8,7 @@ module.exports = (app) => {
     app.permission.add({ name: 'baihoc:read', menu }, { name: 'baihoc:write', menu });
     app.get('/user/dao-tao/bai-hoc/list', app.permission.check('baihoc:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/edit/:baiHocId', app.templates.admin);
+    app.get('/user/dao-tao/bai-hoc/view/:baiHocId', app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/bai-hoc/page/:pageNumber/:pageSize', app.permission.check('baihoc:read'), (req, res) => {

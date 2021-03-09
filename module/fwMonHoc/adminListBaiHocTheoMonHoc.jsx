@@ -1,15 +1,56 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc } from './redux.jsx'
+import { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc, getLessonList, addLesson, swapLesson } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
+import T from '../../view/js/common.js';
 
-class MonHocPage extends React.Component {
+class AdminListMonHoc extends React.Component {
     componentDidMount() {
         this.props.getMonHocInPage();
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/dao-tao/mon-hoc/list-bai-hoc/:monHocId').parse(url);
+        this.props.getLessonList(params.monHocId);
         T.ready('/user/dao-tao', null);
     }
+    swap = (e, index, monHocId, isMoveUp) => {
+        let questionList = this.props.question && this.props.question.questions ? this.props.question.questions : [];
+        let lessonList = this.props.subject && this.props.subject.listbaihoc ? this.props.subject.listbaihoc : [];
+        if (lessonList.length == 1) {
+            T.notify('Thay đổi thứ tự bài học thành công', 'info');
+        } else {
+            if (isMoveUp) {
+                if (index == 0) {
+                    T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                } else {
+                    const temp = lessonList[index - 1], changes = {};
 
+                    lessonList[index - 1] = lessonList[index];
+                    lessonList[index] = temp;
+
+                    changes.lesson = lessonList;
+                    this.props.swapLesson(monHocId, changes, () => {
+                        T.notify('Thay đổi thứ tự môn học thành công', 'info');
+                    });
+                }
+            } else {
+                if (index == lessonList.length - 1) {
+                    T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                } else {
+                    const temp = lessonList[index + 1], changes = {};
+
+                    lessonList[index + 1] = lessonList[index];
+                    lessonList[index] = temp;
+
+                    changes.lesson = lessonList;
+                    this.props.swapLesson(monHocId, changes, () => {
+                        T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                    });
+                }
+            }
+        }
+        e.preventDefault();
+    };
     create = (e) => {
         this.props.createMonHoc(data => this.props.history.push('/user/dao-tao/mon-hoc/edit/' + data.item._id));
         e.preventDefault();
@@ -20,11 +61,14 @@ class MonHocPage extends React.Component {
     }
 
     render() {
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/dao-tao/mon-hoc/list-bai-hoc/:monHocId').parse(url);
+        const monhocId = params.monHocId;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.lesson && this.props.lesson.page ?
-            this.props.lesson.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subject && this.props.subject.page ?
+            this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = 'Không có loại Môn học!';
-        if (this.props.lesson && this.props.lesson.page && this.props.lesson.page.list && this.props.lesson.page.list.length > 0) {
+        if (this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -35,14 +79,20 @@ class MonHocPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.lesson.page.list.map((item, index) => (
+                        {this.props.subject.listbaihoc.map((item, index) => (
                             <tr key={index}>
-                                {console.log('item', item)}
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
+                                <td><Link to={'/user/dao-tao/bai-hoc/view/' + item}>{item}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} className='btn btn-primary'>
+                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, monhocId, true)}>
+                                            <i className='fa fa-lg fa-arrow-up' />
+                                        </a>,
+                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, index, monhocId, false)}>
+                                            <i className='fa fa-lg fa-arrow-down' />
+                                        </a>
+
+                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('course:write') ?
@@ -60,10 +110,10 @@ class MonHocPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Môn học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Môn học: Danh sách bài học</h1>
                 </div>
                 <div className='row tile'>{table}</div>
-                <Pagination name='pageLesson'
+                <Pagination name='pageSubject'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getMonHocInPage} />
                 {currentPermissions.contains('course:write') ?
@@ -76,6 +126,6 @@ class MonHocPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc };
-export default connect(mapStateToProps, mapActionsToProps)(MonHocPage);
+const mapStateToProps = state => ({ system: state.system, subject: state.subject });
+const mapActionsToProps = { getMonHocInPage, createMonHoc, updateMonHoc, deleteMonHoc, getLessonList, addLesson, swapLesson };
+export default connect(mapStateToProps, mapActionsToProps)(AdminListMonHoc);

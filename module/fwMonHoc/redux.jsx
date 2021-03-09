@@ -2,6 +2,7 @@ import T from '../../view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const MonHocGetMonHocInPage = 'MonHoc:GetMonHocInPage';
 const MonHocGetMonHoc = 'MonHoc:GetMonHoc';
+const MonHocGetBaiHocList = 'MonHoc:GetBaiHocList';
 
 export default function MonHocReducer(state = null, data) {
     switch (data.type) {
@@ -10,6 +11,8 @@ export default function MonHocReducer(state = null, data) {
 
         case MonHocGetMonHoc:
             return Object.assign({}, state, { monhoc: data.item });
+        case MonHocGetBaiHocList:
+            return Object.assign({}, state, { listbaihoc: data.baihoc });
         default:
             return state;
     }
@@ -92,5 +95,50 @@ export function deleteMonHoc(_id) {
                 dispatch(getMonHocInPage());
             }
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
+    }
+}
+export function getLessonList(subjectId, done) {
+    return dispatch => {
+        const url = `/api/baihoc/${subjectId}`;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: MonHocGetBaiHocList, baihoc: data.item.lesson });
+                done && done(data.item);
+            }
+        }, error => {
+            console.error('GET: ' + url + '.', error);
+        });
+    }
+}
+export function addLesson(subjectId, lessonId, done) {
+    return dispatch => {
+        const url = `/api/baihoc/${subjectId}`;
+        T.post(url, { lessonId }, data => {
+            if (data.error) {
+                T.notify('Thêm bài học bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                dispatch(getLessonList(subjectId));
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    }
+}
+
+export function swapLesson(_id, data, done) {
+    return dispatch => {
+        const url = `/api/bai-hoc/swap`;
+        T.put(url, { _id, data }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự bài học bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                dispatch(getLessonList(_id));
+                done && done();
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
     }
 }

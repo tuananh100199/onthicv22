@@ -3,7 +3,8 @@ module.exports = app => {
         priority: Number,
         title: String,
         shortDescription: String,
-        detailDescription: String
+        detailDescription: String,
+        subject: { type: Array, "default": [] }
     });
     const model = app.db.model('Lesson', schema);
 

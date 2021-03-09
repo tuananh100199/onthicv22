@@ -37,7 +37,6 @@ class MonHocPage extends React.Component {
                     <tbody>
                         {this.props.baihoc.page.list.map((item, index) => (
                             <tr key={index}>
-                                {console.log('item', item)}
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
                                 <td>

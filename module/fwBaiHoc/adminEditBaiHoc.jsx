@@ -3,12 +3,125 @@ import { connect } from 'react-redux';
 import { updateBaiHoc, getBaiHoc } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
+import ImageBox from '../../view/component/ImageBox.jsx';
+class VideoModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.modal = React.createRef();
+        this.imageBox = React.createRef();
+        this.editor = React.createRef();
+        this.btnSave = React.createRef();
+    }
 
+    componentDidMount() {
+        $(document).ready(() => setTimeout(() => {
+            $(this.modal.current).on('shown.bs.modal', () => $('#videoTitle').focus());
+        }, 250));
+    }
+
+    show = (video) => {
+        let { _id, title, link, image, content } = video ? video : { _id: null, title: '', link: '', image: '', content: '' };
+
+        $(this.btnSave.current).data('id', _id);
+        $('#videoTitle').val(title);
+        $('#videoLink').val(link);
+        this.imageBox.current.setData('video:' + (_id ? _id : 'new'));
+        this.editor.current.html(content);
+        this.setState({ image });
+        $(this.modal.current).modal('show');
+    }
+
+    save = (event) => {
+        const _id = $(this.btnSave.current).data('id'),
+            changes = {
+                title: $('#videoTitle').val().trim(),
+                link: $('#videoLink').val().trim(),
+                content: this.editor.current.html(),
+            };
+        if (changes.title == '') {
+            T.notify('Tiêu đề video bị trống!', 'danger');
+            $('#videoTitle').focus();
+        } else if (changes.link == '') {
+            T.notify('Link video bị trống!', 'danger');
+            $('#videoLink').focus();
+        } else if (changes.content == '') {
+            T.notify('Nội dung video bị trống!', 'danger');
+        } else {
+            if (_id) {
+                this.props.updateVideo(_id, changes, () => {
+                    $(this.modal.current).modal('hide');
+                });
+            } else { // Create
+                this.props.createVideo(changes, () => {
+                    $(this.modal.current).modal('hide');
+                });
+            }
+        }
+        event.preventDefault();
+    }
+
+    render() {
+        const readOnly = this.props.readOnly;
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <form className='modal-dialog modal-lg' role='document' onSubmit={e => this.save(e)}>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Thông tin video</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+                        <div className='modal-body'>
+                            <div className='tab-pane fade show active'>
+                                <div className='form-group'>
+                                    <label htmlFor='videoTitle'>Tiêu đề</label>
+                                    <input className='form-control' id='videoTitle' type='text' placeholder='Tiêu đề video' readOnly={readOnly} />
+                                </div>
+                                <Editor ref={this.editor} placeholder='Nội dung' readOnly={readOnly} />
+                            </div>
+
+                            <div className='row'>
+                                <div className='col-8'>
+                                    <div className='form-group'>
+                                        <label htmlFor='videoLink'>Đường dẫn</label>
+                                        <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
+                                    </div>
+                                </div>
+                                <div className='col-4'>
+                                    <div className='form-group'>
+                                        <label>Hình đại diện</label>
+                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image} readOnly={readOnly} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>Lưu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
 class adminEditBaiHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
+    create = (e) => {
+        this.videoModal.current.show(null);
+        e.preventDefault();
+    }
 
+    edit = (e, item) => {
+        this.props.getVideo(item._id, video => this.videoModal.current.show(video));
+        e.preventDefault();
+    }
     componentDidMount() {
+        this.videoModal = React.createRef();
         T.ready('/user/dao-tao', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
@@ -89,6 +202,10 @@ class adminEditBaiHoc extends React.Component {
                             </div>
                         </div>
                     </div>
+                    <button key={3} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.create}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button>
+                    <VideoModal key={2} createVideo={this.props.createVideo} updateVideo={this.props.updateVideo} ref={this.videoModal} readOnly={readOnly} />
                 </div>
                 <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
                 {!readOnly &&

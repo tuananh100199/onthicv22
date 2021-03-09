@@ -9,7 +9,7 @@ export default function BaiHocReducer(state = null, data) {
             return Object.assign({}, state, { page: data.page });
 
         case BaiHocGetBaiHoc:
-            return Object.assign({}, state, { BaiHoc: data.item });
+            return Object.assign({}, state, { lesson: data.item });
         default:
             return state;
     }

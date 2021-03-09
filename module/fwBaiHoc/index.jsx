@@ -15,6 +15,7 @@ export default {
         },
         { path: '/user/dao-tao/bai-hoc/list', component: Loadable({ loading: Loading, loader: () => import('./adminListBaiHoc.jsx') }) },
         { path: '/user/dao-tao/bai-hoc/edit/:baihocId', component: Loadable({ loading: Loading, loader: () => import('./adminEditBaiHoc.jsx') }) },
+        { path: '/user/dao-tao/bai-hoc/view/:baihocId', component: Loadable({ loading: Loading, loader: () => import('./lessonDetail.jsx') }) },
 
     ],
 };

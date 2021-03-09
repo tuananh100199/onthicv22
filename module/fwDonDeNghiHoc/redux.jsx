@@ -41,7 +41,6 @@ export default function applicationFormReducer(state = null, data) {
 // Actions (admin) ----------------------------------------------------------------------------------------------------
 export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, licenseClass, done) {
     const url = '/api/application-form/page/' + pageNumber + '/' + pageSize;
-    console.log(licenseClass)
     T.get(url, { condition: pageCondition, licenseClass: licenseClass }, data => {
         done(data)
     }, error => T.notify('Lấy danh sách form bị lỗi!', 'danger'))
