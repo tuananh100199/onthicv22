@@ -70,9 +70,6 @@ module.exports = app => {
             emailContactTitle: 'Hiệp Phát: Liên hệ',
             emailContactText: 'Chào bạn, Hiệp Phát đã nhận được thông tin của bạn. Cám ơn bạn vì đã liên hệ chúng tôi. Chủ đề của bạn: "{title}". Tin nhắn của bạn là: "{message}". Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất. Trân trọng, Giảng viên hướng dẫn.',
             emailContactHtml: 'Chào bạn,<br/><br/>Hiệp Phát đã nhận được thông tin của bạn. Cám ơn bạn vì đã liên hệ chúng tôi.<br/>Chủ đề của bạn: "{title}".<br/>Tin nhắn của bạn là: "{message}".<br/>Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất.<br/><br/>Trân trọng,<br/>Giảng viên hướng dẫn.',
-            emailDangKyTuVanTitle: 'Hiệp Phát: Đăng ký tư vấn',
-            emailDangKyTuVanText: 'Chào bạn, Hiệp Phát đã nhận được thông tin đăng ký tư vấn của bạn.Cám ơn bạn vì đã liên hệ chúng tôi. Chủ đề của bạn: "{title}". Tin nhắn của bạn là: "{message}". Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất. Trân trọng, Giảng viên hướng dẫn.',
-            emailDangKyTuVanHtml: 'Chào you,<br/><br/>Hiệp Phát đã nhận được thông tin đăng ký tư vấn của bạn. Cám ơn bạn vì đã liên hệ chúng tôi<br/>Chủ đề của bạn: "{title}".<br/>Tin nhắn của bạn là: "{message}".<br/>Giảng viên hướng dẫn sẽ phản hồi cho bạn sớm nhất.<br/><br/>Trân trọng,<br/>Giảng viên hướng dẫn.',
             emailTuChoiDonDeNghiHocTitle: 'Hiệp Phát: Từ chối đơn đề nghị học!',
             emailTuChoiDonDeNghiHocText: 'Chào {name}, Hiệp Phát đã từ chối đơn đề nghị học của bạn với lý do: {reason} Best regard, Tutorial, Website: ' + app.rootUrl + '',
             emailTuChoiDonDeNghiHocHtml: 'Chào <b>{name}</b>,<br/><br/>' +

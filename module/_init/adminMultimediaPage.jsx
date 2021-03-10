@@ -106,8 +106,6 @@ class MultimediaPage extends React.Component {
         this.instagram = React.createRef();
         this.latitude = React.createRef();
         this.longitude = React.createRef();
-        this.dangKyTuVanTitle = React.createRef();
-        this.dangKyTuVanDescription = React.createRef();
     }
 
     componentDidMount() {
@@ -152,27 +150,10 @@ class MultimediaPage extends React.Component {
             $(this.emailPassword2.current).val('');
         }
     }
-     
-    changeDangKyTuVan = () => {
-        const dangKyTuVanTitle = $(this.dangKyTuVanTitle.current).val(),
-        dangKyTuVanDescription = $(this.dangKyTuVanDescription.current).val();
-        if (dangKyTuVanTitle == '') {
-            T.notify('Chủ đề bị trống!', 'danger');
-            $(this.dangKyTuVanTitle.current).focus();
-        } else if (dangKyTuVanDescription == '') {
-            T.notify('Mô tả bị trống!', 'danger');
-            $(this.dangKyTuVanDescription.current).focus();
-        }else {
-            this.props.saveSystemState({
-                dangKyTuVanTitle: $(this.dangKyTuVanTitle.current).val().trim(),
-                dangKyTuVanDescription: $(this.dangKyTuVanDescription.current).val().trim(),
-                });
-            }
-        }   
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList, dangKyTuVanTitle, dangKyTuVanDescription } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '', dangKyTuVanTitle: '', dangKyTuVanDescription: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
 
         try {
             addressList = JSON.parse(addressList);
@@ -227,29 +208,6 @@ class MultimediaPage extends React.Component {
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
                                     <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
                                 </button>
-                            </div>
-                        </div>
-
-                        <div className='tile'>
-                            <h3 className='tile-title'>Đăng ký tư vấn</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Chủ đề</label>
-                                    <input className='form-control' type='text' placeholder='Chủ đề' ref={this.dangKyTuVanTitle} defaultValue={dangKyTuVanTitle} autoComplete='new-dangKyTuVan' />
-                                </div>
-                                <div className='form-group'>
-                                <label className='control-label'>Mô tả</label>
-                                    <input className='form-control mt-1' type='text' placeholder='Mô tả' ref={this.dangKyTuVanDescription} defaultValue={dangKyTuVanDescription} autoComplete='new-dangKyTuVan' />
-                                </div>
-                            </div>
-                            <div className='tile-footer'>
-                                <div className='row'>
-                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-primary' type='button' onClick={this.changeDangKyTuVan}>
-                                            <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 

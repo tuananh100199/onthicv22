@@ -100,9 +100,6 @@ export default class EmailPage extends React.Component {
                                     <a className='nav-link' data-toggle='tab' href='#emailContact'>Liên hệ</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailDangKyTuVan'>Đăng ký tư vấn</a>
-                                </li>
-                                <li className='nav-item'>
                                     <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
                                 </li>
                             </ul>

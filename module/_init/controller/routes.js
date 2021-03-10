@@ -39,8 +39,6 @@ module.exports = (app) => {
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
             address: 'Block B4 - Ho Chi Minh City University of Technology | 268 Ly Thuong Kiet Street, District 10, Hochiminh City, Vietnam',
-            dangKyTuVanTitle: 'Đăng ký tư vấn',
-            dangKyTuVanDescription: 'Trung tâm chúng tôi sẵn sàng tư vấn, giải đáp những thắc mắc của học viên, người dùng. Hãy để lại thông tin liên hệ, chúng tôi sẽ tư vấn cho bạn.',
         },
 
         refresh: (option, done) => {
@@ -128,12 +126,6 @@ module.exports = (app) => {
             }
             if (req.body.longitude != null || req.body.longitude == '') {
                 changes.longitude = req.body.longitude.trim();
-            }
-            if (req.body.dangKyTuVanTitle != null || req.body.dangKyTuVanTitle == '') {
-                changes.dangKyTuVanTitle = req.body.dangKyTuVanTitle.trim();
-            }
-            if (req.body.dangKyTuVanDescription != null || req.body.dangKyTuVanDescription == '') {
-                changes.dangKyTuVanDescription = req.body.dangKyTuVanDescription.trim();
             }
 
             app.model.setting.set(changes, (error) => {
