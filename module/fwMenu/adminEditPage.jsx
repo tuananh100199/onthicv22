@@ -154,9 +154,6 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'contact') {
                 mainStyle.backgroundColor = '#c8e6f9';
                 component.viewName = '';
-            } else if (component.viewType == 'dangKyTuVan') {
-                mainStyle.backgroundColor = '#c8e6f9';
-                component.viewName = '';
             } else if (component.viewType == 'subscribe') {
                 mainStyle.backgroundColor = '#c8e6c9';
                 component.viewName = '';

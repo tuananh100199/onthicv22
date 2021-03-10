@@ -31,7 +31,6 @@ const T = {
         'all courses',
         'last course',
         'contentList',
-        'DangKyTuVan',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,

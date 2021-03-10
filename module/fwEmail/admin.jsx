@@ -50,7 +50,6 @@ export default class EmailPage extends React.Component {
         this.emailNewPassword = React.createRef();
         this.emailForgotPassword = React.createRef();
         this.emailContact = React.createRef();
-        this.emailDangKyTuVan = React.createRef();
         this.emailTuChoiDonDeNghiHoc = React.createRef();
     }
 
@@ -62,7 +61,6 @@ export default class EmailPage extends React.Component {
                 this.emailNewPassword.current.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
                 this.emailForgotPassword.current.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
                 this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
-                this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
                 this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
             });
         });
@@ -113,8 +111,6 @@ export default class EmailPage extends React.Component {
                                 <EmailItem ref={this.emailForgotPassword} id='emailForgotPassword'
                                     params='{name}, {email}, {url}' />
                                 <EmailItem ref={this.emailContact} id='emailContact'
-                                    params='{name}, {subject}, {message}' />
-                                <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
                                     params='{name}, {subject}, {message}' />
                                 <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
                                     params='{name}, {subject}, {message}' />

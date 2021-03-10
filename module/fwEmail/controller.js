@@ -17,7 +17,6 @@ module.exports = app => {
         'emailNewPasswordTitle', 'emailNewPasswordText', 'emailNewPasswordHtml',
         'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml',
         'emailContactTitle', 'emailContactText', 'emailContactHtml',
-        'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml',
         'emailTuChoiDonDeNghiHocTitle', 'emailTuChoiDonDeNghiHocText', 'emailTuChoiDonDeNghiHocHtml',
     ];
 
