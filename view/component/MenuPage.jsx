@@ -7,6 +7,7 @@ import fwCourse from '../../module/fwCourse/index.jsx'
 import fwContentList from '../../module/fwContentList/index.jsx'
 import fwCourseType from '../../module/fwCourseType/index.jsx'
 
+
 export default class MenuPage extends React.Component {
     state = { component: null };
 

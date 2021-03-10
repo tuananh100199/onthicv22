@@ -39,7 +39,6 @@ module.exports = (app) => {
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
             address: 'Block B4 - Ho Chi Minh City University of Technology | 268 Ly Thuong Kiet Street, District 10, Hochiminh City, Vietnam',
-            addressList: JSON.stringify([]),
         },
 
         refresh: (option, done) => {
@@ -127,9 +126,6 @@ module.exports = (app) => {
             }
             if (req.body.longitude != null || req.body.longitude == '') {
                 changes.longitude = req.body.longitude.trim();
-            }
-            if (req.body.addressList != null || req.body.addressList == '') {
-                changes.addressList = req.body.addressList.trim();
             }
 
             app.model.setting.set(changes, (error) => {
