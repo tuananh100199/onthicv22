@@ -70,7 +70,7 @@ export function swapLessonVideo(lessonId, data, done) {
                 T.notify('Thay đổi thứ tự bài giảng bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonVideoList(formId));
+                dispatch(getLessonVideoList(lessonId));
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
