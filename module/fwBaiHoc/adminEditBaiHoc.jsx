@@ -198,19 +198,28 @@ class adminEditBaiHoc extends React.Component {
                                         <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                                     </div>
                                 </div>
+                                <div className='d-flex justify-content-end' >
+                                    <button type='button' className='btn btn-primary' onClick={this.save}>
+                                        Lưu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='tile'>
+                            <div className='tile-body'>
+                                <label className='control-label'>Danh sách bài giảng video</label>
+                                <div className='d-flex justify-content-end'>
+                                    <button type='button' className='btn btn-primary' onClick={this.create}>
+                                        Thêm bài giảng video mới
+                                </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <button key={3} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '65px', bottom: '10px' }} onClick={this.create}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>
                     <VideoModal key={2} createVideo={this.props.createVideo} updateVideo={this.props.updateVideo} ref={this.videoModal} readOnly={readOnly} />
                 </div>
                 <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                {!readOnly &&
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                        <i className='fa fa-lg fa-save' />
-                    </button>}
+
             </main>
         );
     }
