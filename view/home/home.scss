@@ -1,14 +1,12 @@
 // carousel
 @import "./scss/bootstrap-datepicker";
 @import "./scss/theme_color";
-
 $breakpoint-xl: 'only screen and (min-width:1200px)';
 $breakpoint-lg: 'only screen and (min-width:992px) and (max-width:1199px)';
 $breakpoint-md: 'only screen and (min-width:768px) and (max-width:991px)';
 $breakpoint-sm: 'only screen and (min-width:576px) and (max-width:767px)';
 $breakpoint-xs: 'only screen and (max-width:767px)';
 $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767px)';
-
 .central-box {
     position: absolute;
     top: 50%;
@@ -218,12 +216,12 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 }
 
 // ClassyNav
-@font-face{
+@font-face {
     font-family: classyfonts;
-    src:url(scss/fonts/classy.eot?fftrrv);
-    src:url(scss/fonts/classy.eot?fftrrv#iefix) format("embedded-opentype"),url(scss/fonts/classy.ttf?fftrrv) format("truetype"),url(scss/fonts/classy.woff?fftrrv) format("woff"),url(scss/fonts/classy.svg?fftrrv#classyfonts) format("svg");
-    font-weight:400;
-    font-style:normal
+    src: url(scss/fonts/classy.eot?fftrrv);
+    src: url(scss/fonts/classy.eot?fftrrv#iefix) format("embedded-opentype"), url(scss/fonts/classy.ttf?fftrrv) format("truetype"), url(scss/fonts/classy.woff?fftrrv) format("woff"), url(scss/fonts/classy.svg?fftrrv#classyfonts) format("svg");
+    font-weight: 400;
+    font-style: normal
 }
 
 .classynav ul li {
@@ -291,7 +289,9 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     z-index: 3;
 }
 
+
 /* button css */
+
 .classy-btn {
     position: relative;
     z-index: 1;
@@ -311,7 +311,9 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
+
 /* Dropdown Toggle */
+
 .dd-trigger {
     position: absolute;
     width: 100%;
@@ -385,7 +387,9 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     border-bottom: none;
 }
 
+
 /* Desktop Area CSS */
+
 .breakpoint-off .classynav {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -471,32 +475,27 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 .home-contact {
     width: 100%;
     height: 625px;
-
     .home_overlay {
         z-index: 1;
         img {
             max-width: 100%;
         }
     }
-
     .home_container {
         position: absolute;
         top: 218px;
         left: 0;
         width: 100%;
     }
-
     .home_content {
         max-width: 550px;
     }
-
     .home_title {
         font-size: 60px;
         line-height: 1.2;
         font-weight: 500;
         color: #404040;
     }
-
     .home_text {
         font-size: 14px;
         font-weight: 500;
@@ -505,33 +504,28 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     }
 }
 
-@media only screen and (max-width: 1199px)
-{
+@media only screen and (max-width: 1199px) {
     .home-contact {
         height: 525px;
     }
 }
 
-@media only screen and (max-width: 767px)
-{
+@media only screen and (max-width: 767px) {
     .home-contact {
         height: 444px;
         .home_container {
             top: 200px;
         }
-
         .home_content {
             max-width: 100%;
         }
-
         .home_title {
             font-size: 48px;
         }
     }
 }
 
-@media only screen and (max-width: 575px)
-{
+@media only screen and (max-width: 575px) {
     .home-contact {
         height: 365px;
         .home_container {
@@ -548,7 +542,8 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 
 .ftco-animate {
     opacity: 0;
-    visibility: hidden; }
+    visibility: hidden;
+}
 
 .ftco-animated {
     -webkit-animation-duration: .5s;
@@ -558,14 +553,12 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
 }
 
 //Dots
-.home_slider_custom_dot
-{
+.home_slider_custom_dot {
     width: 15px;
     height: 15px;
 }
 
-.home_slider_custom_dot:not(:last-child)
-{
+.home_slider_custom_dot:not(:last-child) {
     margin-right: 15px;
 }
 
@@ -604,4 +597,198 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
         max-height: 200px;
     }
 }
+
 //className='blog_post_image' style={{ maxHeight: '350px' }}
+
+/*********************************
+6. Intro
+*********************************/
+
+.intro {
+    width: 100%;
+    background: #FFFFFF;
+    padding-top: 89px;
+    padding-bottom: 90px;
+}
+
+.intro_content {
+    padding-top: 30px;
+}
+
+.milestones {
+    margin-top: 85px;
+}
+
+.milestone_counter {
+    font-size: 36px;
+    font-weight: 700;
+    color: #57ccc3;
+    line-height: 0.75;
+}
+
+.milestone_text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #404040;
+    line-height: 1.5;
+    margin-top: 5px;
+}
+
+.intro_form_container {
+    width: 100%;
+    background: #FFFFFF;
+    padding-left: 33px;
+    padding-right: 34px;
+    padding-bottom: 63px;
+    padding-top: 136px;
+    box-shadow: 0px 25px 38px rgba(0, 0, 0, 0.2);
+}
+
+.intro_form_title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 336px;
+    height: 80px;
+    background: #57ccc3;
+    line-height: 80px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.intro_form {
+    width: 100%;
+}
+
+.intro_input {
+    width: calc((100% - 15px) / 2);
+    height: 62px;
+    background: transparent;
+    border: solid 2px #e6ebf1;
+    margin-bottom: 18px;
+    padding-left: 25px;
+    outline: none;
+    font-size: 15px;
+    color: #404040;
+    font-weight: 500;
+    -webkit-transition: all 200ms ease;
+    -moz-transition: all 200ms ease;
+    -ms-transition: all 200ms ease;
+    -o-transition: all 200ms ease;
+    transition: all 200ms ease;
+}
+
+.intro_select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    -webkit-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+    -webkit-user-select: none;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-style: italic;
+    color: #a09f9f !important;
+    cursor: pointer;
+}
+
+.intro_select.selected {
+    font-size: 15px !important;
+    color: #404040 !important;
+    font-weight: 500 !important;
+    font-style: normal !important;
+}
+
+.intro_select option {
+    color: #404040;
+}
+
+.intro_input:focus,
+.intro_input:hover {
+    border: solid 2px #57ccc3;
+}
+
+.intro_input::-webkit-input-placeholder {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-style: italic;
+    color: #a09f9f !important;
+}
+
+.intro_input:-moz-placeholder {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-style: italic;
+    color: #a09f9f !important;
+}
+
+.intro_input::-moz-placeholder {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-style: italic;
+    color: #a09f9f !important;
+}
+
+.intro_input:-ms-input-placeholder {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-style: italic;
+    color: #a09f9f !important;
+}
+
+.intro_input::input-placeholder {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-style: italic;
+    color: #a09f9f !important;
+}
+
+.intro_button {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    border: solid 2px transparent;
+    cursor: pointer;
+}
+
+.intro_button:hover {
+    background: transparent;
+    border: solid 2px #fd556d;
+    color: #fd556d;
+}
+
+
+/*********************************
+6. Intro
+*********************************/
+
+.intro {
+    background: #FFFFFF;
+    padding-top: 67px;
+    padding-bottom: 91px;
+}
+
+.intro_image {
+    width: 100%;
+}
+
+.intro_image img {
+    max-width: 100%;
+}
+
+.intro_text {
+    margin-top: 33px;
+}
+
+.intro_text p {
+    -webkit-column-gap: 30px;
+    -moz-column-gap: 30px;
+    -ms-column-gap: 30px;
+    -o-column-gap: 30px;
+    column-gap: 30px;
+}
