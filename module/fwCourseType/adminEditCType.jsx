@@ -96,6 +96,12 @@ class adminEditCType extends React.Component {
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                         <i className='fa fa-lg fa-save' />
                     </button>}
+                <div className='tile col-md-12'>
+                    <h3 className='tile-title'>Danh sách bài viết</h3>
+                    <div className='tile-body'>
+                        {table}
+                    </div>
+                </div>
             </main>
         );
     }
