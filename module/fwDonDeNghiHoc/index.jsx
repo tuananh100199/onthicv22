@@ -23,10 +23,10 @@ export default {
         },
         {
             path: '/user/don-de-nghi-hoc',
-            component: () => <SubMenusPage menuLink='/user/don-de-nghi-hoc' menuKey={3000} headerIcon='fa-user' />
+            component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiList.jsx') }),
         },
         {
-            path: '/user/don-de-nghi-hoc/list',
+            path: '/user/don-de-nghi-hoc/list/:licenseClass',
             component: Loadable({ loading: Loading, loader: () => import('./adminDonDeNghiHocPage.jsx') }),
         },
         {

@@ -180,6 +180,7 @@ class MenuEditPage extends React.Component {
                 component.viewName = '';
             }
 
+
         }
         let displayText = component.viewType + (component.viewName ? ' - ' + T.language.parse(component.viewName) + ' ' : '');
         if (component.className.trim() != '') displayText += ' (' + component.className.trim() + ')';

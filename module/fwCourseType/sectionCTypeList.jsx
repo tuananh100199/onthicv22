@@ -42,7 +42,6 @@ class SectionCTypeList extends React.Component {
                             </div>
                         </div>
                     </div>
-
                 );
             });
         }
@@ -53,9 +52,7 @@ class SectionCTypeList extends React.Component {
                         marginBottom: '30px'
                     }}>
                         <div className=""><h2>Loại khóa học</h2></div>
-
                     </div>
-
                 </div>
                 <div className='row' >
                     {items}

@@ -15,7 +15,5 @@ export default {
             path: '/user/address/all',
             component: Loadable({ loading: Loading, loader: () => import('./adminAddressView.jsx') })
         }
-    ],
-    Section: {
-    }
+    ]
 };

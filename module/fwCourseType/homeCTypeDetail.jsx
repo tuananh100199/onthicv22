@@ -81,6 +81,5 @@ class SectionCTypeDetail extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-// const mapActionsToProps = { getCourseTypeByUser, getAllCourseTypeByUser };
 const mapActionsToProps = { getAllCourseTypeByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionCTypeDetail);

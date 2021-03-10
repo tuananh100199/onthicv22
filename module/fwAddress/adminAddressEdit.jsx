@@ -8,7 +8,7 @@ import Editor from '../../view/component/CkEditor4.jsx';
 class AddressEditPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { item: null };
+        this.state = { item: {} };
         this.editor = React.createRef();
         this.imageBox = React.createRef();
     }
@@ -100,7 +100,6 @@ class AddressEditPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='row'>
                                     <div className='col-md-8'>
-                                        {/* <div className='form-group col-md-12'> */}
                                         <div>
                                             <label className='control-label' htmlFor='title'>Tên cơ sở</label>
                                             <input type='text' className='form-control' id='title' placeholder='Tên cơ sở' />

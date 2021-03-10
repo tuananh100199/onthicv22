@@ -134,7 +134,7 @@ class AddressPage extends React.Component {
                 </table>
             );
         } else {
-            table = <p key={0}>Không có địa chỉ!</p>;
+            table = <p key={0}>Không có cơ sở !</p>;
         }
 
         const result = [table, <AddressModal key={1} createAddress={this.props.createAddress} ref={this.modal} history={this.props.history} />];
