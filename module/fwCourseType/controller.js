@@ -35,7 +35,7 @@ module.exports = (app) => {
 
     app.put('/api/course-type', app.permission.check('course:write'), (req, res) => {
         const $set = req.body.changes;
-        if ($set && $set.items && $set.items === 'empty') $set.items = [];
+        if ($set && $set.subjectList && $set.subjectList === 'empty') $set.subjectList = [];
         app.model.courseType.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 

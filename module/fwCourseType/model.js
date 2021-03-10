@@ -29,7 +29,7 @@ module.exports = app => {
             }
         }),
 
-        getAll: done => model.find({}).sort({ _title: 1 }).exec(done),
+        getAll: done => model.find({}).populate('subjectList').sort({ _title: 1 }).exec(done),
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('subjectList') : model.findOne(condition, done).populate('subjectList'),
         update: (_id, $set, $unset, done) => done ?
             model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :

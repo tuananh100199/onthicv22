@@ -160,3 +160,11 @@ export function deleteLesson(subjectId, lessonId, done) {
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
+export const ajaxSelectSubject = {
+    ajax: true,
+    url: `/api/mon-hoc/page/:pageNumber/:pageSize`,
+    data: {},
+    processResults: response => ({
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+    })
+}

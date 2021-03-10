@@ -3,43 +3,25 @@ import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
+import { ajaxSelectSubject } from '../fwMonHoc/redux.jsx';
+import { Select } from '../../view/component/Input.jsx';
 
 class SubjectModal extends React.Component {
     state = { item: null };
     modal = React.createRef();
-    subjecSelect = React.createRef();
+    subjectSelect = React.createRef();
 
-    show = (item = null) => {
-        this.setState({ item }, () => {
-            // if (item) {
-            //     this.contentSelect.current.val({ id: item._id, text: item.title });
-            // } else {
-            this.contentSelect.current.val('');
-            // }
-            $(this.modal.current).modal('show');
-        });
-    }
+    show = () =>
+        $(this.modal.current).modal('show');
 
     save = (event) => {
-        const changeItem = this.contentSelect.current.val();
-        const listItem = this.props.item.subjectList;
-        // if (this.state.item && this.state.item._id) {
-        //     // Update
-        //     let index = 0;
-        //     for (; index < listItem.length; index++) {
-        //         if (this.state.item._id == listItem[index]._id) {
-        //             break;
-        //         }
-        //     }
-        //     listItem.splice(index, 1, changeItem);
-        // } else {
-        // Create
-        listItem.push(changeItem);
-        // }
+        const changeItem = this.subjectSelect.current.val();
+        const subjectList = this.props.item.subjectList;
+        subjectList.push(changeItem);
 
         if (this.props.item && this.props.item._id) {
-            this.props.updateCourseType(this.props.item._id, { subjectList: listItem }, () => {
-                T.notify('Cập nhật danh sách môn học thành công', 'success');
+            this.props.updateCourseType(this.props.item._id, { subjectList: subjectList }, () => {
+                T.notify('Thêm môn học thành công', 'success');
                 $(this.modal.current).modal('hide');
             });
         }
@@ -105,21 +87,20 @@ class adminEditCType extends React.Component {
         e.preventDefault();
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                // const item = this.props.contentList.item;
                 let subjectList = this.state.item.subjectList || [];
                 const changes = {};
                 subjectList.splice(index, 1);
                 if (subjectList.length == 0) subjectList = 'empty';
                 changes.subjectList = subjectList;
-                this.props.updateCourseType(item._id, changes, () => {
+                this.props.updateCourseType(this.state.item._id, changes, () => {
                     T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800);
                 });
             }
         })
     };
-    showSelectModal = (e, item) => {
+    showSelectModal = (e) => {
         e.preventDefault();
-        this.modal.current.show(item);
+        this.modal.current.show();
     }
     save = () => {
         const changes = {
@@ -133,44 +114,39 @@ class adminEditCType extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('course:write');
-        const item = this.state.item ? this.state.item : { title: '', subjectList: [] };
-
+        const item = this.props.courseType && this.props.courseType.courseType ? this.props.courseType.courseType : { title: '', subjectList: [] };
         let table = item.subjectList && item.subjectList.length ? (
             <table className='table table-hover table-bordered'>
                 <thead>
                     <tr>
                         <th style={{ width: 'auto' }}>#</th>
                         <th style={{ width: '100%' }}>Tên môn học</th>
-                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
+                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>}
                     </tr>
                 </thead>
                 <tbody>
-                    {item.subjectList.map((item, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                                {/* <a href='#' onClick={e => this.showSelectModal(e, item)}> */}
-                                {item.title}
-                                {/* </a><br /> */}
-                                {/* <Link to={'/user/content/edit/' + item._id}>Xem chi tiết</Link> */}
-                            </td>
-                            <td>
-                                {!readOnly &&
-                                    <div className='btn-group'>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                    ))}
+                    {item.subjectList.sort((a, b) =>
+                        a.title.localeCompare(b.title)).map((item, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                {console.log("index", index)}
+                                <td>
+                                    {item.title ? item.title : 'null'}
+                                </td>
+                                <td>
+                                    {!readOnly &&
+                                        <div className='btn-group'>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
+                                                <i className='fa fa-lg fa-trash' />
+                                            </a>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
         ) : <p>Không có danh sách các môn học!</p>
-        // const item = this.state.item ? this.state.item : {
-        //     title: ''
-        // };
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -230,12 +206,8 @@ class adminEditCType extends React.Component {
                 </div>
                 <SubjectModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
                 <Link to='/user/course-type/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                {/* {!readOnly &&
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={}>
-                        <i className='fa fa-lg fa-save' />
-                    </button>} */}
                 {!readOnly && (
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e, null)}>
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e)}>
                         <i className='fa fa-lg fa-plus' />
                     </button>
                 )}
