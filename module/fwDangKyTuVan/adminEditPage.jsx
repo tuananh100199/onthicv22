@@ -99,7 +99,7 @@ class DangKyTuVanEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready('/user/dang-ky-tu-van', () => {
             const route = T.routeMatcher('/user/dang-ky-tu-van/edit/:dangKyTuVanId'),
                 params = route.parse(window.location.pathname);
 
@@ -112,7 +112,6 @@ class DangKyTuVanEditPage extends React.Component {
                         content = data.item.description;
                     $('#title').val(title).focus();
                     this.editor.current.html(content);
-                    // this.setState({ image: data.item.image ? data.item.image : '' });
                 } else {
                     this.props.history.push('/user/dang-ky-tu-van');
                 }
@@ -249,6 +248,12 @@ class DangKyTuVanEditPage extends React.Component {
                         <div className='tile-body'>
                             <div className='tab-content'>
                                 <div id='statisticViTab' className='tab-pane fade show active'>
+                                     <div className='form-group mt-3'>
+                                        <label htmlFor='userRoles' className='control-label'>Loại khóa học</label><br />
+                                        <select className='form-control col-2' id='courseType' defaultValue={[]}>
+                                            <optgroup label='Lựa chọn loại khóa học' />
+                                        </select>
+                                    </div>
                                     <div className='form-group mt-3'>
                                         <label className='control-label' htmlFor='title'>Tiêu đề</label>
                                         <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />

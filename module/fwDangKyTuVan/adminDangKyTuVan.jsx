@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan.jsx';
 import { Link } from 'react-router-dom';
+import Pagination from '../../view/component/Pagination.jsx';
+
 
 class DangKyTuVanModal extends React.Component {
     constructor(props) {
@@ -92,7 +94,8 @@ class DangKyTuVanPage extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [] ,
+        { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ?    this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = null;
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
@@ -132,16 +135,22 @@ class DangKyTuVanPage extends React.Component {
         } else {
             table = <p key={0}>Không có danh sách các đăng ký tư vấn!</p>;
         }
-
-        const result = [table, <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} ref={this.modal} history={this.props.history}/>];
-        if (currentPermissions.includes('component:write')) {
-            result.push(
-                <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>
-            );
-        }
-        return result;
+        return (
+            <main className='app-content'>
+               <div className='app-title'>
+                   <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
+               </div>
+               <div className='row tile'>{table}</div>
+                 <Pagination name='pageDangKyTuVan'
+                   pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                   getPage={this.props.getDangKyTuVanInPage} />
+                   <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
+                   <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                       onClick={this.create}>
+                       <i className='fa fa-lg fa-plus' />
+                   </button>
+           </main>
+           );
     }
 }
 

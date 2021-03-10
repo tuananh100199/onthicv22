@@ -66,11 +66,30 @@ class AdminDangKyTuVanModal extends React.Component {
 }
 class DangKyTuVanListPage extends React.Component {
     modal = React.createRef();
+    editor = React.createRef();
+
 
     componentDidMount() {
-        this.props.getDangKyTuVanListPage();
-        T.ready('/user/settings');
+        T.ready('/user/dang-ky-tu-van-list', () => {
+            const route = T.routeMatcher('/user/dang-ky-tu-van-list/item/:dangKyTuVanId'),
+                params = route.parse(window.location.pathname);
+
+            this.props.getDangKyTuVanItem(params.dangKyTuVanId, data => {
+                if (data.error) {
+                    T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
+                    this.props.history.push('/user/dang-ky-tu-van-list');
+                } else if (data.item) {
+                    const title = data.item.title,
+                        content = data.item.description;
+                    $('#title').val(title).focus();
+                    this.editor.current.html(content);
+                } else {
+                    this.props.history.push('/user/dang-ky-tu-van-list');
+                }
+            });
+        });
     }
+
 
     showDangKyTuVan = (e, dangKyTuVanId) => {
         e.preventDefault();

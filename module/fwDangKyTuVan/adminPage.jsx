@@ -141,7 +141,7 @@ class DangKyTuVanPage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/dang-ky-tu-van/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                        <Link to={'/user/dang-ky-tu-van/edit/' + item._id} data-id={item._id} className='btn btn-primary' data-toggle='tooltip' title='Chỉnh sửa'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.includes('dangKyTuVan:write') ?
@@ -159,30 +159,15 @@ class DangKyTuVanPage extends React.Component {
             table = <p key={0}>Không có nhóm thống kê!</p>;
         }
 
-        // const result = [table, <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />];
-        // if (currentPermissions.includes('dangKyTuVan:write')) {
-        //     result.push(
-        //         <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-        //             <i className='fa fa-lg fa-plus' />
-        //         </button>
-        //     );
-        // }
-        return (
-         <main className='app-content'>
-            <div className='app-title'>
-                <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
-            </div>
-            <div className='row tile'>{table}</div>
-              <Pagination name='pageDangKyTuVan'
-                pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                getPage={this.props.getDangKyTuVanInPage} />
-                <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                    onClick={this.create}>
+        const result = [table, <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />];
+        if (currentPermissions.includes('dangKyTuVan:write')) {
+            result.push(
+                <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
                     <i className='fa fa-lg fa-plus' />
                 </button>
-        </main>
-        );
+            );
+        }
+        return result;
     }
 }
 

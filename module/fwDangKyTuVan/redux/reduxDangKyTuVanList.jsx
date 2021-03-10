@@ -172,10 +172,10 @@ export function changeDangKyTuVanList(item) {
     return { type: DangKyTuVanListUpdate, item };
 }
 
-export function createDangKyTuVanListItem(dangKyTuVan, done) {
+export function createDangKyTuVanListItem(_id,dangKyTuVan, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item/';
-        T.post(url, { dangKyTuVan}, data => {
+        T.post(url, {_id, dangKyTuVan}, data => {
             if (data.error) {
                 T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);

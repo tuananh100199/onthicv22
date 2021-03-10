@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createDangKyTuVanListItem,  } from './redux/reduxDangKyTuVanList.jsx';
 import { getDangKyTuVanByUser } from './redux/reduxDangKyTuVan.jsx';
+import Dropdown from '../../view/component/Dropdown.jsx';
 
 class SectionDangKyTuVan extends React.Component {
     state = { item: {} };
@@ -114,7 +115,9 @@ class SectionDangKyTuVan extends React.Component {
             T.notify('Số điện thoại bị trống!', 'danger');
             (this.phone.current).focus();
         } else {
-            this.props.createDangKyTuVanListItem({
+            this.props.createDangKyTuVanListItem(
+                this.state.item._id,
+                {
                 firstname: this.firstname.current.value,
                 lastname: this.lastname.current.value,
                 email: this.email.current.value,
@@ -167,8 +170,6 @@ class SectionDangKyTuVan extends React.Component {
                                         <input type="text" className="intro_input" placeholder="Tên"  ref={this.firstname} required="required" />
                                         <input type="tel" className="contact_input w-100" placeholder="Số điện thoại"  ref={this.phone} required="required" />
                                         <input type='text' className='contact_input w-100' ref={this.email} placeholder='Email' required="required" />
-                                        <input type='text' className='contact_input w-100' ref={this.subject} placeholder='Chủ đề' />
-                                        <textarea name='message' className='contact_input w-100' ref={this.message} cols='30' rows='10' style={{height: 128}} placeholder='Nội dung' />
                                     </div>
                                     <button className="button button_1 intro_button trans_200">gửi tin nhắn</button>
                                 </form>
