@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 import { Select } from '../../view/component/Input.jsx';
 import { ajaxSelectLesson } from '../fwBaiHoc/redux.jsx';
+import Tooltip from 'rc-tooltip';
+
 
 class AddLessonModal extends React.Component {
     modal = React.createRef();
@@ -150,7 +152,7 @@ class AdminEditMonHoc extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tiêu đề</th>
+                            <th style={{ width: '80%' }}>Tên bài học</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -225,9 +227,16 @@ class AdminEditMonHoc extends React.Component {
                                         <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                                     </div>
                                 </div>
-                                <button type='submit' className='btn btn-primary' onClick={this.save} >Lưu</button>
+                                <div className='d-flex justify-content-end' >
+                                    <button type='button' className='btn btn-primary' onClick={this.save} >Lưu</button>
+                                </div>
                             </div>
-                            <div className='tile-footer'>
+                            {/* <div className='tile-footer d-flex justify-content-end'>
+                                <button type='button' className='btn btn-primary' onClick={this.save} >Lưu</button>
+                            </div> */}
+                        </div>
+                        <div className='tile'>
+                            <div className='tile-body'>
                                 <label className='control-label'>Danh sách bài học </label>
                                 <div>{table}</div>
                             </div>
@@ -242,10 +251,13 @@ class AdminEditMonHoc extends React.Component {
                 </div>
 
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                    onClick={this.showAddLessonModal}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>
+
+                <Tooltip placement='bottom' overlay='Thêm bài học mới'>
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                        onClick={this.showAddLessonModal}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button>
+                </Tooltip>
             </main>,
             <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} monhocId={monhocId} />
         ];

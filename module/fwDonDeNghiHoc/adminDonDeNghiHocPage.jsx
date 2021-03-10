@@ -44,7 +44,6 @@ class AdminDonDeNghiHocPage extends React.Component {
     search = (e) => {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
-        console.log(params.licenseClass)
         e.preventDefault();
         let condition = {},
             searchText = $('#searchTextBox').val();

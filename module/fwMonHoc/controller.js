@@ -51,8 +51,16 @@ module.exports = (app) => {
     });
     app.post('/api/baihoc/add/:subjectId', app.permission.check('lesson:write'), (req, res) => {
         const subjectId = req.params.subjectId, lessonId = req.body.lessonId;
-        app.model.subject.pushLesson({ _id: subjectId }, lessonId, (error, item) => {
-            res.send({ error, item });
+        app.model.subject.get({ _id: subjectId, lesson: { _id: lessonId } }, (error, item) => {
+            if (error) {
+                res.send({ error, item });
+            } else if (item) {
+                res.send({ check: `Bài học đã tồn tại!` });
+            } else {
+                app.model.subject.pushLesson({ _id: subjectId }, lessonId, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
         });
     });
     app.post('/api/baihoc/delete/:subjectId', app.permission.check('lesson:write'), (req, res) => {
@@ -63,8 +71,6 @@ module.exports = (app) => {
     });
     app.put('/api/bai-hoc/swap', app.permission.check('form:write'), (req, res) => {
         const data = req.body.data, _id = req.body._id;
-        console.log(_id)
-        console.log(data)
         app.model.subject.update(_id, data, (error, item) => {
             res.send({ error, item });
         });

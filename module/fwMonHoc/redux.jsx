@@ -120,6 +120,8 @@ export function addLesson(subjectId, lessonId, done) {
             if (data.error) {
                 T.notify('Thêm bài học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
+            } else if (data.check) {
+                T.notify(data.check, 'danger');
             } else {
                 dispatch(getLessonList(subjectId));
                 done && done(data.item);

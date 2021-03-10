@@ -18,7 +18,6 @@ class LessonDetail extends React.Component {
 
     render() {
         const lesson = this.props.baihoc && this.props.baihoc.lesson ? this.props.baihoc.lesson : {}
-        console.log(lesson)
         return (
             <main className='app-content'>
                 <div className='app-title'>

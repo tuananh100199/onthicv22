@@ -29,7 +29,6 @@ class UserDonDeNghiPage extends React.Component {
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
-                console.log(this.props)
                 let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { firstname: '', lastname: '', sex: '', birthday: '', phoneNumber: '', regularResidence: '', residence: '', identityCard: '', identityIssuedBy: '', image: '/img/avatar.png' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);

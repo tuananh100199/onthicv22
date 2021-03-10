@@ -126,7 +126,6 @@ class adminEditBaiHoc extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
             this.props.getBaiHoc(params.baihocId, data => {
-                console.log(params.baihocId)
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/bai-hoc/list');

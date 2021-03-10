@@ -90,7 +90,6 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc-chi-tiet/item/:_id').parse(url);
         this.props.getForm(params._id, () => this.loading = false);
-        console.log(this.props.donDeNghiHoc)
     }
 
     accept = () => {
