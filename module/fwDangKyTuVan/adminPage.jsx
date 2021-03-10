@@ -99,7 +99,6 @@ class DangKyTuVanPage extends React.Component {
     }
 
     componentDidMount() {
-        console.log('here');
         this.props.getAllDangKyTuVan();
     }
 
@@ -118,7 +117,6 @@ class DangKyTuVanPage extends React.Component {
     }
 
     render() {
-        console.log(this.props.dangKyTuVan);
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [] ,
             { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ?    this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = null;

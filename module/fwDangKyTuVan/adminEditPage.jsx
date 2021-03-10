@@ -169,7 +169,6 @@ class DangKyTuVanEditPage extends React.Component {
                 description: description,
                 statistic: this.props.dangKyTuVan.item.statistic,
             };
-            console.log('this.props.dangKyTuVan',this.props.dangKyTuVan);
             if (changes.statistic && changes.statistic.length == 0) changes.statistic = 'empty';
             this.props.updateDangKyTuVan(this.props.dangKyTuVan.item._id, changes);
         }
@@ -265,12 +264,16 @@ class DangKyTuVanEditPage extends React.Component {
                                 </div>
                              
                             </div>
-                            <div className='control-label'>
-                                <label htmlFor='tepViDescription'>Thống kê</label>
-                            </div>
-                            <div>
-                                {table}
-                            </div>
+                          
+                        </div>
+                      
+                    </div>
+                    <div className='tile col-md-12'>
+                        <div className='control-label'>
+                            <label htmlFor='tepViDescription'>Thống kê</label>
+                        </div>
+                        <div>
+                            {table}
                         </div>
                         {readOnly ? null :
                             <div className='tile-footer'>
