@@ -47,6 +47,7 @@ module.exports = (app) => {
         const subjectId = req.params.subjectId;
         app.model.subject.get(subjectId, { select: '_id lesson', populate: true }, (error, item) => {
             res.send({ error, item });
+            console.log(item)
         });
     });
     app.post('/api/baihoc/add/:subjectId', app.permission.check('lesson:write'), (req, res) => {

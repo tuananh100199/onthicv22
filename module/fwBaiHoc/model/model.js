@@ -30,7 +30,23 @@ module.exports = app => {
         }),
 
         getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
+        get: (condition, option, done) => {
+            const handleGet = (condition, option, done) => {
+                const select = option.select ? option.select : null;
+                const populate = option.populate ? option.populate : false;
+
+                const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
+                if (select) result.select(select);
+                if (populate) result.populate('lessonVideo', 'title link');
+                result.exec(done);
+            };
+
+            if (done) {
+                handleGet(condition, option, done);
+            } else {
+                handleGet(condition, {}, option);
+            }
+        },
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
@@ -43,8 +59,8 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-        pushLessonVideo: (condition, lessonVideoId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lessonVideo: lessonVideoId } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
+        pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

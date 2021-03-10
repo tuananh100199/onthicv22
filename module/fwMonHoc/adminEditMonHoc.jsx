@@ -4,7 +4,7 @@ import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLe
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 import { Select } from '../../view/component/Input.jsx';
-import { ajaxSelectLesson } from '../fwBaiHoc/redux.jsx';
+import { ajaxSelectLesson } from '../fwBaiHoc/redux/redux.jsx';
 import Tooltip from 'rc-tooltip';
 
 

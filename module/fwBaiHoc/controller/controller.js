@@ -47,14 +47,20 @@ module.exports = (app) => {
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }))
     );
     //Lesson Video
+    app.get('/api/lesson-video/:lessonId', (req, res) => {
+        const lessonId = req.params.lessonId;
+        app.model.lesson.get(lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => {
+            res.send({ error, item });
+            console.log(item)
+        });
+    });
     app.post('/api/lesson-video/:_id', app.permission.check('baihoc:write'), (req, res) => {
         const _id = req.params._id, data = req.body.data;
-        console.log(_id)
         app.model.lessonVideo.create(data, (error, lessonVideo) => {
             if (error || !lessonVideo) {
                 res.send({ error });
             } else {
-                app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, (error, item) => {
+                app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, (error, item) => {
                     res.send({ error, item });
                 });
             }

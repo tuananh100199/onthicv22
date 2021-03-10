@@ -1,7 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
-import baihoc from './redux.jsx';
+import baihoc from './redux/redux.jsx';
 import SubMenusPage from '../../view/component/SubMenusPage.jsx';
 
 export default {
