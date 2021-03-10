@@ -16,7 +16,7 @@ export default {
         },
         {
             path: '/user',
-            component: () => <SubMenusPage menuLink='/user' menuKey={1000} headerIcon='fa-user' />
+            component: Loadable({ loading: Loading, loader: () => import('./userProfilePage.jsx') })
         },
         {
             path: '/user/multimedia',

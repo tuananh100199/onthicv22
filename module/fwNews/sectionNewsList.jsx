@@ -35,7 +35,6 @@ class SectionNewsList extends React.Component {
         e.preventDefault()
         this.setState({ viewMode: viewMode })
         T.cookie('viewMode', viewMode)
-        console.log(this.state.viewMode)
     }
 
     render() {

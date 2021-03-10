@@ -70,7 +70,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
 
     accept = (user) => {
         T.confirm('Duyệt đơn đề nghị học', `Bạn có chắc muốn chấp nhận đơn đề nghị học - sát hạch từ ${user.lastname} ${user.firstname}?`, 'info', isConfirm => {
-            isConfirm && this.props.updateForm(this.props.donDeNghiHoc.item._id, { approve: 'approved' }, () => {
+            isConfirm && this.props.updateForm(this.props.donDeNghiHoc.item._id, { status: 'approved' }, () => {
                 T.alert('Đơn đề nghị học đã được duyệt!', 'success', false, 1000);
             });
         })
