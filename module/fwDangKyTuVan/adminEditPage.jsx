@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan.jsx';
+import {getAllCourseType} from '../fwCourseType/redux.jsx';
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
@@ -102,20 +103,35 @@ class DangKyTuVanEditPage extends React.Component {
         T.ready('/user/dang-ky-tu-van', () => {
             const route = T.routeMatcher('/user/dang-ky-tu-van/edit/:dangKyTuVanId'),
                 params = route.parse(window.location.pathname);
-
-            this.props.getDangKyTuVanItem(params.dangKyTuVanId, data => {
-                if (data.error) {
-                    T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
-                    this.props.history.push('/user/dang-ky-tu-van');
-                } else if (data.item) {
-                    const title = data.item.title,
-                        content = data.item.description;
-                    $('#title').val(title).focus();
-                    this.editor.current.html(content);
-                } else {
-                    this.props.history.push('/user/dang-ky-tu-van');
+           
+            this.props.getAllCourseType( data => {
+                if(data){
+                    console.log('data',data);
+                    let courseType = data ? data.map(item => ({id: item._id, text: item.text})) : null;
+                    $('#courseType').select2({ data: courseType}).val(data.courseType).trigger('change');
                 }
+                this.props.getDangKyTuVanItem(params.dangKyTuVanId, data => {
+                    if (data.error) {
+                        T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
+                        this.props.history.push('/user/dang-ky-tu-van');
+                    } else if (data.item) {
+                        console.log(data);
+                        const title = data.item.title,
+                            content = data.item.description,
+                            courseType = data.item.courseType;
+                        $('#title').val(title).focus();
+                        $('#courseType').val(courseType).focus();
+    
+                        this.editor.current.html(content);
+                    } else {
+                        this.props.history.push('/user/dang-ky-tu-van');
+                    }
+                    this.setState(data);
+                });
             });
+            $('#courseType').select2();
+
+          
         });
     }
 
@@ -167,13 +183,17 @@ class DangKyTuVanEditPage extends React.Component {
                 formTitle: formTitle,
                 description: description,
                 statistic: this.props.dangKyTuVan.item.statistic,
+                courseType: $('#courseType').val(),
             };
+            console.log('changes',changes);
             if (changes.statistic && changes.statistic.length == 0) changes.statistic = 'empty';
             this.props.updateDangKyTuVan(this.props.dangKyTuVan.item._id, changes);
         }
     };
 
     render() {
+       
+
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('dangKyTuVan:write');
         let table = null,
@@ -249,8 +269,8 @@ class DangKyTuVanEditPage extends React.Component {
                             <div className='tab-content'>
                                 <div id='statisticViTab' className='tab-pane fade show active'>
                                      <div className='form-group mt-3'>
-                                        <label htmlFor='userRoles' className='control-label'>Loại khóa học</label><br />
-                                        <select className='form-control col-2' id='courseType' defaultValue={[]}>
+                                        <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
+                                        <select className='form-control col-2' id='courseType' multiple={false} >
                                             <optgroup label='Lựa chọn loại khóa học' />
                                         </select>
                                     </div>
@@ -306,6 +326,6 @@ class DangKyTuVanEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, dangKyTuVan: state.dangKyTuVan });
-const mapActionsToProps = { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup };
+const mapStateToProps = state => ({ system: state.system, dangKyTuVan: state.dangKyTuVan});
+const mapActionsToProps = { getAllCourseType, getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanEditPage);

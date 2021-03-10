@@ -20,6 +20,7 @@ module.exports = (app) => {
 
     app.put('/api/dang-ky-tu-van', app.permission.check('dangKyTuVan:write'), (req, res) => {
         const changes = req.body.changes;
+        console.log('changes',changes);
         if (changes.statistic && changes.statistic == 'empty') changes.statistic = [];
         app.model.dangKyTuVan.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
@@ -31,7 +32,7 @@ module.exports = (app) => {
     app.get('/home/dang-ky-tu-van/:_id', (req, res) =>
         app.model.dangKyTuVan.get(req.params._id, (error, item) => res.send({ error, item })));
 
-//     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
+     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/dang-ky-tu-van/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVan:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);

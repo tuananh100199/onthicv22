@@ -100,6 +100,7 @@ class DangKyTuVanPage extends React.Component {
 
     componentDidMount() {
         this.props.getAllDangKyTuVan();
+        $('#neNewsCategories').select2();
     }
 
     create = (e) => {
