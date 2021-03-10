@@ -55,7 +55,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error, item });
             } else if (item) {
-                res.send({ check: `Bài học đã tồn tại!` });
+                res.send({ check: `Môn học đã có bài học này!` });
             } else {
                 app.model.subject.pushLesson({ _id: subjectId }, lessonId, (error, item) => {
                     res.send({ error, item });
