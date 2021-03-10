@@ -4,9 +4,80 @@ import { updateCourseType, getCourseType } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
+class SubjectModal extends React.Component {
+    state = { item: null };
+    modal = React.createRef();
+    subjecSelect = React.createRef();
+
+    show = (item = null) => {
+        this.setState({ item }, () => {
+            // if (item) {
+            //     this.contentSelect.current.val({ id: item._id, text: item.title });
+            // } else {
+            this.contentSelect.current.val('');
+            // }
+            $(this.modal.current).modal('show');
+        });
+    }
+
+    save = (event) => {
+        const changeItem = this.contentSelect.current.val();
+        const listItem = this.props.item.subjectList;
+        // if (this.state.item && this.state.item._id) {
+        //     // Update
+        //     let index = 0;
+        //     for (; index < listItem.length; index++) {
+        //         if (this.state.item._id == listItem[index]._id) {
+        //             break;
+        //         }
+        //     }
+        //     listItem.splice(index, 1, changeItem);
+        // } else {
+        // Create
+        listItem.push(changeItem);
+        // }
+
+        if (this.props.item && this.props.item._id) {
+            this.props.updateCourseType(this.props.item._id, { subjectList: listItem }, () => {
+                T.notify('Cập nhật danh sách môn học thành công', 'success');
+                $(this.modal.current).modal('hide');
+            });
+        }
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <div className='modal-dialog' role='document'>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Môn học</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+
+                        <div className='modal-body'>
+                            <div className='form-group'>
+                                <Select ref={this.subjectSelect} displayLabel={true} adapter={ajaxSelectSubject} label='Môn học' />
+                            </div>
+                        </div>
+
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-success' onClick={this.save}>Lưu</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
 class adminEditCType extends React.Component {
     state = { item: null };
     editor = React.createRef();
+    modal = React.createRef();
 
     componentDidMount() {
         T.ready('/user/settings', () => {
@@ -30,6 +101,26 @@ class adminEditCType extends React.Component {
             });
         });
     }
+    remove = (e, index) => {
+        e.preventDefault();
+        T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
+            if (isConfirm) {
+                // const item = this.props.contentList.item;
+                let subjectList = this.state.item.subjectList || [];
+                const changes = {};
+                subjectList.splice(index, 1);
+                if (subjectList.length == 0) subjectList = 'empty';
+                changes.subjectList = subjectList;
+                this.props.updateCourseType(item._id, changes, () => {
+                    T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800);
+                });
+            }
+        })
+    };
+    showSelectModal = (e, item) => {
+        e.preventDefault();
+        this.modal.current.show(item);
+    }
     save = () => {
         const changes = {
             title: $('#title').val().trim(),
@@ -42,9 +133,44 @@ class adminEditCType extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('course:write');
-        const item = this.state.item ? this.state.item : {
-            title: ''
-        };
+        const item = this.state.item ? this.state.item : { title: '', subjectList: [] };
+
+        let table = item.subjectList && item.subjectList.length ? (
+            <table className='table table-hover table-bordered'>
+                <thead>
+                    <tr>
+                        <th style={{ width: 'auto' }}>#</th>
+                        <th style={{ width: '100%' }}>Tên môn học</th>
+                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
+                    </tr>
+                </thead>
+                <tbody>
+                    {item.subjectList.map((item, index) => (
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                                {/* <a href='#' onClick={e => this.showSelectModal(e, item)}> */}
+                                {item.title}
+                                {/* </a><br /> */}
+                                {/* <Link to={'/user/content/edit/' + item._id}>Xem chi tiết</Link> */}
+                            </td>
+                            <td>
+                                {!readOnly &&
+                                    <div className='btn-group'>
+                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
+                                            <i className='fa fa-lg fa-trash' />
+                                        </a>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        ) : <p>Không có danh sách các môn học!</p>
+        // const item = this.state.item ? this.state.item : {
+        //     title: ''
+        // };
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -87,15 +213,32 @@ class adminEditCType extends React.Component {
                                         <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                                     </div>
                                 </div>
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={this.save}>
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div className='tile col-md-12'>
+                    <h3 className='tile-title'>Danh sách môn học</h3>
+                    <div className='tile-body'>
+                        {table}
+                    </div>
+                </div>
+                <SubjectModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
                 <Link to='/user/course-type/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                {!readOnly &&
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                {/* {!readOnly &&
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={}>
                         <i className='fa fa-lg fa-save' />
-                    </button>}
+                    </button>} */}
+                {!readOnly && (
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e, null)}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button>
+                )}
             </main>
         );
     }
