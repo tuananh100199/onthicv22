@@ -43,5 +43,20 @@ module.exports = (app) => {
         app.model.courseType.delete(req.body._id, (error) => res.send({ error }))
     );
     //Home
-    app.get('/course-type/all/', (req, res) => app.model.courseType.getAll((error, items) => res.send({ error, items })));
+    app.get('/course-type/page/:pageNumber/:pageSize', (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize);
+        app.model.courseType.getPage(pageNumber, pageSize, {}, (error, page) => {
+            const response = {};
+            if (error || page == null) {
+                response.error = 'Danh sách loại khoá học không sẵn sàng!';
+            } else {
+                response.page = page;
+            }
+            res.send(response);
+        })
+    });
+    app.get('/course-type/:courseTypeId', (req, res) =>
+        app.model.courseType.get(req.params.courseTypeId, (error, item) => res.send({ error, item })));
 };
+

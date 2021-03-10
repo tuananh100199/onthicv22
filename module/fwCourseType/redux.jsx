@@ -95,18 +95,33 @@ export function deleteCourseType(_id) {
     }
 }
 //Home
-export function getAllCourseTypeByUser(done) {
-    return dispatch => {
-        const url = '/course-type/all/';
+export function getAllCourseTypeByUser(pageNumber, pageSize, done) {
+    const page = T.updatePage('pageCourseType', pageNumber, pageSize);
+    return (dispatch) => {
+        const url = '/course-type/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách khóa học bị lỗi', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
+                T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
             } else {
-                dispatch({ type: CourseTypeGetCourseTypeInPage, page: data.items });
+                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                dispatch({ type: CourseTypeGetCourseTypeInPage, page: data.page });
             }
-            if (done) done(data);
-
-        }, error => T.notify('Lấy danh sách khóa học bị lỗi', 'danger'));
+        }, error => T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
     }
 }
+export function getCourseTypeByUser(_id, done) {
+    return dispatch => {
+        const url = '/course-type/' + _id;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy loại khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: CourseTypeGetCourseType, item: data.item });
+            }
+        }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+    }
+}
+

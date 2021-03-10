@@ -36,7 +36,6 @@ import fwNews from '../../module/fwNews/index.jsx';
 import fwContentList from '../../module/fwContentList/index.jsx';
 import fwAddress from '../../module/fwAddress/index.jsx';
 import fwCourse from '../../module/fwCourse/index.jsx';
-import fwCourseType from '../../module/fwCourseType/index.jsx';
 import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index.jsx';
 import fwCluster from '../../module/fwCluster/index.jsx';
 import fwCourseType from '../../module/fwCourseType/index.jsx';
