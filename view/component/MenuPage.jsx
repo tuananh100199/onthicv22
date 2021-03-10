@@ -5,6 +5,7 @@ import fwContact from '../../module/fwContact/index.jsx';
 import fwNews from '../../module/fwNews/index.jsx'
 import fwCourse from '../../module/fwCourse/index.jsx'
 import fwContentList from '../../module/fwContentList/index.jsx'
+import fwCourseType from '../../module/fwCourseType/index.jsx'
 
 
 export default class MenuPage extends React.Component {
@@ -63,6 +64,8 @@ export default class MenuPage extends React.Component {
                 itemView = <fwHome.Section.SectionSubscribe />;
             } else if (item.viewType == 'content' && item.view) {
                 itemView = <div style={{ marginTop: '110px' }} dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
+            } else if (item.viewType == 'all courseType') {
+                itemView = <fwCourseType.Section.SectionCTypeList />;
             }
 
             let childComponents = [];

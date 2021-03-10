@@ -31,6 +31,7 @@ const T = {
         'all courses',
         'last course',
         'contentList',
+        'all courseType',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
