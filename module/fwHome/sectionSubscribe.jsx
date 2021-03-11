@@ -18,7 +18,7 @@ class SectionSubscribe extends React.Component {
             done()
         })
     }
-    
+
     componentWillUnmount() {
         $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy')
     }
@@ -27,7 +27,7 @@ class SectionSubscribe extends React.Component {
         let subscribe = this.props && this.props.system && this.props.system.subscribe ? this.props.system.subscribe : '/img/subscribe.jpg';
         return (
             <div className='newsletter'>
-                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8'/>
+                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8' />
                 <div className='container'>
                     <div className='row'>
                         <div className='col text-center'>
@@ -38,8 +38,8 @@ class SectionSubscribe extends React.Component {
                         <div className='col-lg-8 offset-lg-2'>
                             <div className='newsletter_form_container'>
                                 <form action='#' id='newsleter_form' className='newsletter_form'>
-                                    <input type='email' className='newsletter_input' placeholder='Your E-mail' required='required' />
-                                    <button className='newsletter_button'>subscribe</button>
+                                    <input type='email' className='newsletter_input' placeholder='E-mail của bạn' required='required' />
+                                    <button className='newsletter_button'>Đăng ký</button>
                                 </form>
                             </div>
                         </div>
