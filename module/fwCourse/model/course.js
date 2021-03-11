@@ -49,13 +49,14 @@ module.exports = app => {
         }),
 
         getAll: done => model.find({}).sort({ tilte: 1 }).exec(done),
-        // get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('addressId').populate('adminId').populate('supervisorId').exec(done) : model.findOne(condition).populate('adminId').populate('supervisorId').exec(done),
-        // get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
+
         get: (condition, done) => typeof condition == 'string' ?
             model.findById(condition).populate('licenseClass').populate('subjectList').populate('addressId').exec(done)
             : model.findOne(condition).populate('licenseClass').populate('subjectList').populate('addressId').exec(done),
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);

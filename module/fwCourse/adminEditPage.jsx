@@ -20,8 +20,6 @@ class EditPage extends React.Component {
                     this.props.history.push('/user/course/list');
                 } else if (data.item) {
                     this.setState(data);
-                    console.log("staet", this.state)
-                    console.log("error 2")
                 } else {
                     this.props.history.push('/user/course/list');
                 }
