@@ -51,31 +51,24 @@ module.exports = app => {
     });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVanList:read'), (req, res) => {
+    app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize/:DKTVListId', app.permission.check('dangKyTuVanList:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize),
+            DKTVListId = req.params.DKTVListId;
+        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, DKTVListId, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
     });
 
-    app.get('/api/dang-ky-tu-van-list/all/:dangKyTuVanListId', app.permission.check('dangKyTuVanList:read'), (req, res) =>{ 
-        app.model.dangKyTuVanList.getAll(req.params.dangKyTuVanListId, (error, items) => res.send({ error, items }))
-    });
+    app.get('/api/dang-ky-tu-van-list/item/:DKTVListId', app.permission.check('dangKyTuVanList:write'), (req, res) => app.model.dangKyTuVanList.update(req.params.DKTVListId, {read: true}, (error, item) => {
+        if (item) app.io.emit('dangKyTuVan-changed', item);
+        res.send({ error, item });
+    }));
 
-    // app.get('/api/dang-ky-tu-van-list/item/:_id', app.permission.check('dangKyTuVanList:write'), (req, res) => {
-    //     app.model.dangKyTuVanList.update(req.params._id, {read: 'true'}, (error, item) => {
-    //     if (item) app.io.emit('dangKyTuVanList-changed', item);
-    //     res.send({ error, item });
-    //     })
-    // });
-    app.get('/api/dang-ky-tu-van-list/item/:dangKyTuVanListId', app.permission.check('dangKyTuVanList:read'), (req, res) =>
-        app.model.dangKyTuVanList.get(req.params.dangKyTuVanListId, (error, item) => res.send({ error, item })));
 
     app.delete('/api/dang-ky-tu-van-list/item', app.permission.check('dangKyTuVanList:write'), (req, res) => app.model.dangKyTuVanList.delete(req.body._id, error => res.send({ error })));
 
-    // // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/dang-ky-tu-van-list/item/', (req, res) => {
         app.model.dangKyTuVanList.create(req.body.dangKyTuVan, (error, item) => {
                 res.send({ error, item })

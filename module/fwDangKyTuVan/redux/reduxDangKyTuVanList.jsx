@@ -1,24 +1,24 @@
 import T from '../../../view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const DangKyTuVanListGetAll = 'DangKyTuVanList:GetAll';
-const DangKyTuVanListGetPage = 'DangKyTuVanList:GetPage';
-const DangKyTuVanListGetUnread = 'DangKyTuVanList:GetUnread';
-const DangKyTuVanListAdd = 'DangKyTuVanList:Add';
-const DangKyTuVanListUpdate = 'DangKyTuVanList:Update';
+const DKTVListGetAll = 'DKTVList:GetAll';
+const DKTVListGetPage = 'DKTVList:GetPage';
+const DKTVListGetUnread = 'DKTVList:GetUnread';
+const DKTVAdd = 'DKTVList:Add';
+const DKTVUpdate = 'DKTVList:Update';
 
-export default function DangKyTuVanListReducer(state = null, data) {
+export default function DKTVListReducer(state = null, data) {
     switch (data.type) {
-        case DangKyTuVanListGetAll:
+        case DKTVListGetAll:
             return Object.assign({}, state, { items: data.items });
 
-        case DangKyTuVanListGetPage:
+        case DKTVListGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case DangKyTuVanListGetUnread:
+        case DKTVListGetUnread:
             return Object.assign({}, state, { unreads: data.items });
 
-        case DangKyTuVanListAdd:
+        case DKTVAdd:
             if (state) {
                 let addedItems = Object.assign({}, state.items),
                     addedPage = Object.assign({}, state.page),
@@ -39,13 +39,12 @@ export default function DangKyTuVanListReducer(state = null, data) {
                 return state;
             }
 
-        case DangKyTuVanListUpdate: {
+        case DKTVUpdate: {
             if (state) {
                 let updatedItems = Object.assign({}, state.items),
-                    // updatedPage = Object.assign({}, state.page),
+                    updatedPage = Object.assign({}, state.page),
                     updatedUnreads = Object.assign({}, state.unreads),
                     updatedItem = data.item;
-
                 if (updatedItems) {
                     for (let i = 0, n = updatedItems.length; i < n; i++) {
                         if (updatedItems[i]._id == updatedItem._id) {
@@ -54,18 +53,15 @@ export default function DangKyTuVanListReducer(state = null, data) {
                         }
                     }
                 }
-                // if (updatedPage) {
-                //     console.log('hreee');
-
-                //     for (let i = 0, n = updatedPage.list.length; i < n; i++) {
-                //         if (updatedPage.list[i]._id == updatedItem._id) {
-                //             updatedPage.list.splice(i, 1, updatedItem);
-                //             break;
-                //         }
-                //     }
-                // }
+                if (updatedPage) {
+                    for (let i = 0, n = updatedPage.list.length; i < n; i++) {
+                        if (updatedPage.list[i]._id == updatedItem._id) {
+                            updatedPage.list.splice(i, 1, updatedItem);
+                            break;
+                        }
+                    }
+                }
                 if (updatedUnreads) {
-
                     if (updatedItem.read) {
                         for (let i = 0, n = updatedUnreads.length; i < n; i++) {
                             if (updatedUnreads[i]._id == updatedItem._id) {
@@ -74,10 +70,10 @@ export default function DangKyTuVanListReducer(state = null, data) {
                             }
                         }
                     } else {
-                        // updatedPage.list.splice(0, 1, updatedItem);
+                        updatedPage.list.splice(0, 1, updatedItem);
                     }
                 }
-                return Object.assign({}, state, { items: updatedItems, unreads: updatedUnreads });
+                return Object.assign({}, state, { items: updatedItems, page: updatedPage, unreads: updatedUnreads });
             } else {
                 return state;
             }
@@ -89,57 +85,71 @@ export default function DangKyTuVanListReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getDangKyTuVanListAll(dangKyTuVanListId, done) {
+export function getDKTVListAll(done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/all/' + dangKyTuVanListId;;
+        const url = '/api/dang-ky-tu-van-list/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy tất cả đăng ký tư vấn bị lỗi!', 'danger');
+                T.notify('Lấy tất cả đăng ký tư vấn lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
-                dispatch({ type: DangKyTuVanListGetAll, items: data.items });
+                dispatch({ type: DKTVListGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy tất cả đăng ký tư vấn bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy tất cả đăng ký tư vấn lỗi!', 'danger'));
     }
 }
 
-T.initCookiePage('pageDangKyTuVanList');
-export function getDangKyTuVanListPage(pageNumber, pageSize, done) {
-    const page = T.updatePage('pageDangKyTuVanList', pageNumber, pageSize);
+T.initCookiePage('pageDKTVList');
+export function getDKTVListPage(DKTVListId,pageNumber, pageSize, done) {
+    const page = T.updatePage('pageDKTVList', pageNumber, pageSize);
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize;
+        const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize + '/' + DKTVListId;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger');
+                T.notify('Lấy danh sách đăng ký tư vấn!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
-                dispatch({ type: DangKyTuVanListGetPage, page: data.page });
+                dispatch({ type: DKTVListGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách đăng ký tư vấn lỗi!', 'danger'));
     }
 }
 
-export function getDangKyTuVanListItem(dangKyTuVanId, done) {
+export function getDKTVListItem(DKTVListId, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/item/' + dangKyTuVanId;
+        const url = '/api/dang-ky-tu-van-list/item/' + DKTVListId;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger');
+                T.notify('Lấy đăng ký tư vấn lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
-                done && done(data.error);
             } else {
                 if (done) done(data.item);
-                dispatch({ type: DangKyTuVanListUpdate, item: data.item });
+                dispatch({ type: DKTVUpdate, item: data.item });
             }
         }, error => T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger'));
     }
 }
 
-export function updateDangKyTuVanListItem(_id, changes, done) {
+export function getUnreadDKTVList(done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/item/';
+        const url = '/api/dang-ky-tu-van-list/unread';
+        T.get(url, data => {
+            if (data.error) {
+                done && done(null, data.error);
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.items);
+                dispatch({ type: DKTVListGetUnread, items: data.items });
+            }
+        }, error => T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
+    }
+}
+
+export function updateDKTVList(_id, changes, done) {
+    return dispatch => {
+        const url = '/api/dang-ky-tu-van-list';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger');
@@ -147,14 +157,14 @@ export function updateDangKyTuVanListItem(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật đăng ký tư vấn thành công!', 'info');
-                dispatch(getDangKyTuVanListAll());
+                dispatch(getDKTVListPage());
                 done && done();
             }
         }, error => T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger'));
     }
 }
 
-export function deleteDangKyTuVanListItem(_id) {
+export function deleteDKTVListItem(DKTVListId,_id) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item';
         T.delete(url, { _id }, data => {
@@ -163,20 +173,20 @@ export function deleteDangKyTuVanListItem(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xoá đăng ký tư vấn thành công!', 'error', false, 800);
-                dispatch(getDangKyTuVanListPage());
+                dispatch(getDKTVListPage(DKTVListId));
             }
         }, error => T.notify('Xoá đăng ký tư vấn bị lỗi', 'danger'));
     }
 }
 
-export function addDangKyTuVanList(item) {
-    return { type: DangKyTuVanListAdd, item };
+export function addDKTVList(item) {
+    return { type: DKTVAdd, item };
 }
-export function changeDangKyTuVanList(item) {
-    return { type: DangKyTuVanListUpdate, item };
+export function changeDKTVList(item) {
+    return { type: DKTVUpdate, item };
 }
 
-export function createDangKyTuVanListItem(dangKyTuVan, done) {
+export function createDKTVListItem(dangKyTuVan, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item/';
         T.post(url, {dangKyTuVan}, data => {
@@ -190,7 +200,7 @@ export function createDangKyTuVanListItem(dangKyTuVan, done) {
     }
 }
 
-export function phanHoiDangKyTuVanListItem(_id, content, done) {
+export function phanHoiDKTVListItem(_id, content, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item/response';
         T.post(url, { _id, content }, data => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createDangKyTuVanListItem,  } from './redux/reduxDangKyTuVanList.jsx';
+import { createDKTVListItem } from './redux/reduxDangKyTuVanList.jsx';
 import { getDangKyTuVanByUser, getAllDangKyTuVan } from './redux/reduxDangKyTuVan.jsx';
 import { getAllCourseType } from '../fwCourseType/redux.jsx';
 import Dropdown from '../../view/component/Dropdown.jsx';
@@ -119,7 +119,7 @@ class SectionDangKyTuVan extends React.Component {
             T.notify('Vui lòng chọn loại khóa học!', 'danger');
             $('#courseType').focus();
         }else {
-            this.props.createDangKyTuVanListItem(
+            this.props.createDKTVListItem(
                 {
                 parentId: courseType,
                 firstname: this.firstname.current.value,
@@ -189,5 +189,5 @@ class SectionDangKyTuVan extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = {getAllDangKyTuVan, createDangKyTuVanListItem, getDangKyTuVanByUser, getAllCourseType};
+const mapActionsToProps = {getAllDangKyTuVan, createDKTVListItem, getDangKyTuVanByUser, getAllCourseType};
 export default connect(mapStateToProps, mapActionsToProps)(SectionDangKyTuVan);

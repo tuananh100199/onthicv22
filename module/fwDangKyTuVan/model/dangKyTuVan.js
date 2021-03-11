@@ -5,7 +5,7 @@ module.exports = app => {
         description: String,
         formTitle: String,
         read: { type: Boolean, default: false },
-        courseType: [{title: String, type: app.db.Schema.ObjectId, ref: 'CourseType' }],
+        courseType: [{ type: app.db.Schema.ObjectId, ref: 'CourseType' }],
         statistic: [{
             title: String,
             number: Number,
