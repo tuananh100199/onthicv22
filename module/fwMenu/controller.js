@@ -95,7 +95,7 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList','dangKyTuVan'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList', 'dangKyTuVan'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
@@ -263,20 +263,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-<<<<<<< HEAD
-        } 
-        else if (pageType == 'dangKyTuVan') {
-            app.model.dangKyTuVan.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        }
-        else if (pageType == 'content') {
-=======
         } else if (pageType == 'content') {
->>>>>>> 360b36393cd3a21da618321488ec1295d18ee7af
             app.model.content.getAll((error, items) => {
                 res.send({
                     error,
