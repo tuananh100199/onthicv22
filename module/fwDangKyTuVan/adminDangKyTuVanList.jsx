@@ -94,8 +94,6 @@ class DangKyTuVanPage extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [] ,
-        { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ?    this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = null;
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
@@ -121,10 +119,9 @@ class DangKyTuVanPage extends React.Component {
                                         <Link to={'/user/dang-ky-tu-van-list/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-                                        {currentPermissions.includes('component:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
+                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                            <i className='fa fa-lg fa-trash' />
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -141,9 +138,6 @@ class DangKyTuVanPage extends React.Component {
                    <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
                </div>
                <div className='row tile'>{table}</div>
-                 <Pagination name='pageDangKyTuVan'
-                   pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                   getPage={this.props.getDangKyTuVanInPage} />
                    <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
                        onClick={this.create}>

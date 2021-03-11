@@ -3,6 +3,8 @@ module.exports = app => {
     const menu = {
         parentMenu: { index: 4000, title: 'Danh sách đăng ký tư vấn', icon: 'fa-file-text-o', link: '/user/dang-ky-tu-van-list' }
     };
+    
+    app.permission.add({ name: 'dangKyTuVan:read', menu }, { name: 'dangKyTuVan:write', menu },);
 
     app.permission.add(
         { name: 'dangKyTuVanList:read', menu },

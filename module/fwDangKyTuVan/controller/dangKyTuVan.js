@@ -1,10 +1,5 @@
 module.exports = (app) => {
-    const menu = {
-        parentMenu: { index: 2100, title: 'Đăng ký tư vấn', icon: 'fa-file-text-o' }
-    };
   
-    app.permission.add({ name: 'dangKyTuVan:read', menu }, { name: 'dangKyTuVan:write', menu },);
-
     app.get('/user/dang-ky-tu-van', app.permission.check('dangKyTuVan:read'), app.templates.admin);
     
     app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('dangKyTuVan:read'), app.templates.admin);

@@ -103,8 +103,6 @@ class DangKyTuVanEditPage extends React.Component {
         T.ready('/user/dang-ky-tu-van', () => {
             const route = T.routeMatcher('/user/dang-ky-tu-van/edit/:dangKyTuVanId'),
                 params = route.parse(window.location.pathname);
-           
-            
             this.props.getDangKyTuVanItem(params.dangKyTuVanId, data => {
                 if (data.error) {
                     T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
@@ -266,31 +264,28 @@ class DangKyTuVanEditPage extends React.Component {
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
                             <div className='tab-content'>
-                                <div id='statisticViTab' className='tab-pane fade show active'>
-                                     <div className='form-group mt-3'>
+                                <div  className='tab-pane fade show active'>
+                                    <div className='col-6 form-group'>
                                         <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
-                                        <select className='form-control col-2' id='courseType' multiple={false} >
-                                            <optgroup label='Lựa chọn loại khóa học' />
+                                        <select className='form-control col-6' id='courseType' multiple={false} >
+                                            <optgroup className='form-control' label='Lựa chọn loại khóa học' />
                                         </select>
                                     </div>
-                                    <div className='form-group mt-3'>
+                                    <div className='col-6 form-group mt-3'>
                                         <label className='control-label' htmlFor='title'>Tiêu đề</label>
-                                        <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
+                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
                                     </div>
-                                    <div className='form-group mt-3'>
+                                    <div className='col-6 form-group mt-3'>
                                         <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
-                                        <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
+                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
                                     </div>
-                                    <div className='form-group mt-3'>
+                                    <div className='col-12 form-group mt-3'>
                                         <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
                                         <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
                                     </div>
                                 </div>
-                             
                             </div>
-                          
                         </div>
-                      
                     </div>
                     <div className='tile col-md-12'>
                         <div className='control-label'>
