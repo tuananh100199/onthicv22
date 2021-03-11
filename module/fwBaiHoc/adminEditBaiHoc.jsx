@@ -355,7 +355,7 @@ class adminEditBaiHoc extends React.Component {
     };
     addQuestion = (data) => {
         this.props.createQuestion(this.state.item._id, data, () => {
-            T.notify('Thêm câu hỏi thành công!', 'info');
+            T.notify('Thêm câu hỏi thành công!', 'success');
         });
     };
     showQuestionModal = (e, item) => {
@@ -365,23 +365,23 @@ class adminEditBaiHoc extends React.Component {
     swapQ = (e, index, isMoveUp) => {
         let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.lessonQuestion : [];
         if (questionList.length == 1) {
-            T.notify('Thay đổi thứ tự câu hỏi thành công', 'info');
+            T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
         } else {
             if (isMoveUp) {
                 if (index == 0) {
-                    T.notify('Thay đổi thứ tự câu hỏi thành công', 'info');
+                    T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                 } else {
                     const temp = questionList[index - 1], changes = {};
                     questionList[index - 1] = questionList[index];
                     questionList[index] = temp;
                     changes.lessonQuestion = questionList;
                     this.props.swapQuestion(this.state.item._id, changes, () => {
-                        T.notify('Thay đổi thứ tự câu hỏi thành công', 'info');
+                        T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
             } else {
                 if (index == questionList.length - 1) {
-                    T.notify('Thay đổi thứ tự câu hỏi thành công', 'info');
+                    T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                 } else {
                     const temp = questionList[index + 1], changes = {};
 
@@ -390,7 +390,7 @@ class adminEditBaiHoc extends React.Component {
 
                     changes.questions = questionList;
                     this.props.swapQuestion(this.state.item._id, changes, () => {
-                        T.notify('Thay đổi thứ tự câu hỏi thành công', 'info');
+                        T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
             }
@@ -399,7 +399,7 @@ class adminEditBaiHoc extends React.Component {
     };
     updateQuestion = (_id, changes) => {
         this.props.updateQuestion(_id, changes, this.state.item._id, () => {
-            T.notify('Cập nhật câu hỏi thành công!', 'info');
+            T.notify('Cập nhật câu hỏi thành công!', 'success');
         })
     };
     removeQuestion = (e, item, index) => {
