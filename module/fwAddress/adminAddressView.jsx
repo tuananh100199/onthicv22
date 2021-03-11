@@ -89,10 +89,10 @@ class AddressPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
-        let table = null;
+        let table = 'Không có cơ sở!';
         if (this.props.address && this.props.address.list && this.props.address.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -133,8 +133,6 @@ class AddressPage extends React.Component {
                     </tbody>
                 </table>
             );
-        } else {
-            table = <p key={0}>Không có cơ sở !</p>;
         }
 
         const result = [table, <AddressModal key={1} createAddress={this.props.createAddress} ref={this.modal} history={this.props.history} />];
@@ -148,9 +146,9 @@ class AddressPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-bar-chart' />Cơ sở: Danh sách</h1>
+                    <h1><i className='fa fa-bar-chart' />Cơ sở</h1>
                 </div>
-                <div className='row tile'>{result}</div>
+                <div className='tile'>{result}</div>
             </main>
         );
     }

@@ -9,29 +9,29 @@ module.exports = app => {
 
     app.get('/user/address/all', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/address/edit/:id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/address/all', (req, res) => app.model.address.getAll((error, items) => res.send({ error, items })));
 
+    // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/address/all', app.permission.check('component:read'), (req, res) => {
-        app.model.address.getAll((error, items) => {
-            res.send({ error, items })
-        })
+        app.model.address.getAll((error, items) => res.send({ error, items }));
     });
 
     app.get('/api/address/item/:addressId', app.permission.check('component:read'), (req, res) =>
         app.model.address.get(req.params.addressId, (error, item) => res.send({ error, item })));
 
     app.post('/api/address', app.permission.check('component:write'), (req, res) => {
-        app.model.address.create(req.body.newData, (error, item) => res.send({ error, item }))
+        app.model.address.create(req.body.newData, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/address', app.permission.check('component:write'), (req, res) => {
-        app.model.address.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        app.model.address.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
-    app.delete('/api/address', app.permission.check('component:write'), (req, res) => app.model.address.delete(req.body._id, error => res.send({ error })));
 
-    //Home
-    app.get('/address/all', (req, res) => app.model.address.getAll((error, items) => res.send({ error, items })));
-    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    app.delete('/api/address', app.permission.check('component:write'), (req, res) => {
+        app.model.address.delete(req.body._id, error => res.send({ error }));
+    });
 
+    // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/address'));
 
     const uploadAddress = (req, fields, files, params, done) => {
