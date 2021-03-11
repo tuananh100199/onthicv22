@@ -36,12 +36,27 @@ module.exports = (app) => {
         ));
 
     app.put('/api/course-type', app.permission.check('course:write'), (req, res) => {
-        const changes = req.body.changes;
-        if (changes.categories && changes.categories == 'empty') changes.categories = [];
-        app.model.courseType.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        const $set = req.body.changes;
+        if ($set && $set.subjectList && $set.subjectList === 'empty') $set.subjectList = [];
+        app.model.courseType.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/course-type', app.permission.check('course:write'), (req, res) =>
         app.model.courseType.delete(req.body._id, (error) => res.send({ error }))
     );
+    //Home
+    app.get('/course-type/page/:pageNumber/:pageSize', (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize);
+        app.model.courseType.getPage(pageNumber, pageSize, {}, (error, page) => {
+            const response = {};
+            if (error || page == null) {
+                response.error = 'Danh sách loại khoá học không sẵn sàng!';
+            } else {
+                response.page = page;
+            }
+            res.send(response);
+        })
+    });
+
 };

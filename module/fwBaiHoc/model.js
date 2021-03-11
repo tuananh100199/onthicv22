@@ -1,19 +1,23 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        priority: Number,
         title: String,
-        price: Number,
         shortDescription: String,
         detailDescription: String,
-        subjectList: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }]
     });
-    const model = app.db.model('CourseType', schema);
+    const model = app.db.model('Lesson', schema);
 
-    app.model.courseType = {
+    app.model.lesson = {
         create: (data, done) => {
-            if (!data.title) data.title = 'Loại khoá học mới';
+            if (!data.title) data.title = 'Bài học mới';
+
             model.create(data, done)
         },
-
+        create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+            data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+            if (!data.title) data.title = 'Bài học mới';
+            model.create(data, done)
+        }),
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
@@ -22,18 +26,16 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).populate('subjectList').sort({ _tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: done => model.find({}).populate('subjectList').sort({ _title: 1 }).exec(done),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('subjectList') : model.findOne(condition, done).populate('subjectList'),
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),
+        getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
@@ -41,6 +43,7 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
+                app.deleteImage(item.image);
                 item.remove(done);
             }
         }),

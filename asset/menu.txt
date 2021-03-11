@@ -21,3 +21,6 @@
 7000. Quản lý khóa học (undefined)
 	6001 - Danh mục (/user/course/category)
 	6002 - Khóa học (/user/course/list)
+8000. Đào tạo (/user/dao-tao)
+	8020 - Quản lý môn học (/user/dao-tao/mon-hoc/list)
+	8021 - Quản lý bài học (/user/dao-tao/bai-hoc/list)

@@ -39,9 +39,9 @@ export default function applicationFormReducer(state = null, data) {
 }
 
 // Actions (admin) ----------------------------------------------------------------------------------------------------
-export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, done) {
+export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, licenseClass, done) {
     const url = '/api/application-form/page/' + pageNumber + '/' + pageSize;
-    T.get(url, { condition: pageCondition }, data => {
+    T.get(url, { condition: pageCondition, licenseClass: licenseClass }, data => {
         done(data)
     }, error => T.notify('Lấy danh sách form bị lỗi!', 'danger'))
 }
@@ -54,11 +54,11 @@ export function ajaxGetForm(_id, option, done) {
 }
 
 T.initCookiePage('pageForm');
-export function getFormInPage(pageNumber, pageSize, pageCondition, done) {
+export function getFormInPage(pageNumber, pageSize, pageCondition, licenseClass, done) {
     const page = T.updatePage('pageForm', pageNumber, pageSize, pageCondition);
     if (page.pageCondition && typeof page.pageCondition == 'object') page.pageCondition = JSON.stringify(page.pageCondition);
     return dispatch => {
-        ajaxGetFormInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, data => {
+        ajaxGetFormInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, licenseClass, data => {
             if (data.error) {
                 T.notify('Lấy danh sách form bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

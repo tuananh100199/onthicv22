@@ -102,7 +102,7 @@ module.exports = app => {
                         } else if (component.viewId && viewType == 'staff group') {
                             app.model.staffGroup.get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
-                        }else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course'].indexOf(viewType) != -1) {
+                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all courseType'].indexOf(viewType) != -1) {
                             getNextComponent(viewType);
                         } else {
                             getNextComponent('<empty>');
@@ -264,6 +264,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
+<<<<<<< HEAD
         } 
         else if (pageType == 'dangKyTuVan') {
             app.model.dangKyTuVan.getAll((error, items) => {
@@ -274,6 +275,9 @@ module.exports = app => {
             });
         }
         else if (pageType == 'content') {
+=======
+        } else if (pageType == 'content') {
+>>>>>>> 360b36393cd3a21da618321488ec1295d18ee7af
             app.model.content.getAll((error, items) => {
                 res.send({
                     error,

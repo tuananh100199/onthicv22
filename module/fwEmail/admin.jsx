@@ -50,7 +50,7 @@ export default class EmailPage extends React.Component {
         this.emailNewPassword = React.createRef();
         this.emailForgotPassword = React.createRef();
         this.emailContact = React.createRef();
-        this.emailDangKyTuVan = React.createRef();
+        this.emailTuChoiDonDeNghiHoc = React.createRef();
     }
 
     componentDidMount() {
@@ -61,7 +61,7 @@ export default class EmailPage extends React.Component {
                 this.emailNewPassword.current.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
                 this.emailForgotPassword.current.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
                 this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
-                this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
+                this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
             });
         });
     }
@@ -98,7 +98,7 @@ export default class EmailPage extends React.Component {
                                     <a className='nav-link' data-toggle='tab' href='#emailContact'>Liên hệ</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailDangKyTuVan'>Đăng ký tư vấn</a>
+                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
                                 </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
@@ -112,7 +112,7 @@ export default class EmailPage extends React.Component {
                                     params='{name}, {email}, {url}' />
                                 <EmailItem ref={this.emailContact} id='emailContact'
                                     params='{name}, {subject}, {message}' />
-                                <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
+                                <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
                                     params='{name}, {subject}, {message}' />
                             </div>
                         </div>

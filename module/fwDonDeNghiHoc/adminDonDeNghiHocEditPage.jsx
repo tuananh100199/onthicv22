@@ -96,7 +96,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                             </div>
                             <div className='form-group col-md-3'>
                                 <label className='control-label'>Giới tính: &nbsp;</label>
-                                <label>{item.user.sex == 'male' ? 'Nam' : 'Nữ'}</label>
+                                <label>{item.user.sex}</label>
                             </div>
                             <div className='form-group col-md-3'>
                                 <label className='control-label'>Quốc tịch: &nbsp;</label>
@@ -147,7 +147,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                             </div>
                             <div className='form-group col-md-2'>
                                 <label className='control-label'>Hạng: &nbsp;</label>
-                                <label>{T.licenseClass[item.licenseClass]}</label>
+                                <label>{item.licenseClass}</label>
                             </div>
                             <div className='form-group col-md-4'>
                                 <label className='control-label'>Cấp bởi: &nbsp;</label>
@@ -157,7 +157,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
 
                         <div className='form-group'>
                             <label className='control-label'>Đề nghị cho tôi được học, dự sát hạch để cấp giấy phép lái xe hạng: &nbsp;</label>
-                            <label>{T.licenseClass[item.newLicenseClass]}</label>
+                            <label>{item.newLicenseClass}</label>
                         </div>
                         <div className='form-group'>
                             <label className='control-label'>Các tài liệu khác có liên quan bao gồm: &nbsp;</label><br />
@@ -169,19 +169,23 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                 <Link className='btn btn-secondary btn-circle' to='/user/don-de-nghi-hoc/list' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
+                {item.status == 'waiting' ?
+                    <div>
+                        <Tooltip placement='bottom' overlay='Từ chối đơn'>
+                            <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.current.show() }}
+                                style={{ position: 'fixed', right: '70px', bottom: '10px' }}>
+                                <i className='fa fa-user-times' />
+                            </button>
+                        </Tooltip>
 
-                <Tooltip placement='bottom' overlay='Từ chối đơn'>
-                    <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.current.show() }}
-                        style={{ position: 'fixed', right: '70px', bottom: '10px' }}>
-                        <i className='fa fa-user-times' />
-                    </button>
-                </Tooltip>
-
-                <Tooltip placement='bottom' overlay='Chấp nhận đơn'>
-                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '15px', bottom: '10px' }} onClick={() => this.accept(item.user)}>
-                        <i className='fa fa-user-plus' />
-                    </button>
-                </Tooltip>
+                        <Tooltip placement='bottom' overlay='Chấp nhận đơn'>
+                            <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '15px', bottom: '10px' }} onClick={() => this.accept(item.user)}>
+                                <i className='fa fa-user-plus' />
+                            </button>
+                        </Tooltip>
+                    </div>
+                    : <p></p>
+                }
                 <DenyModal ref={this.denyModal} item={item} denyApplicationForm={this.props.denyApplicationForm} />
             </main>
         );

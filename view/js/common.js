@@ -8,7 +8,7 @@ import './sweetalert.min.js';
 const T = {
     PropTypes,
     rootUrl: 'https://hiepphat.bktphcm.net',
-    licenseClass: { B1: 'B1', B2: 'B2', C: 'C' },
+    // licenseClass: { B1: 'B1', B2: 'B2', C: 'C' },
     sexes: ['male', 'female'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
@@ -32,6 +32,7 @@ const T = {
         'last course',
         'contentList',
         'dangKyTuVan',
+        'all courseType',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,

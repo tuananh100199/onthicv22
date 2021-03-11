@@ -11,7 +11,7 @@ module.exports = app => {
 
         otherDocumentation: String, // Tai lieu khac
         licenseClass: { type: String, enum: ['B1', 'B2', 'C'], default: 'B1' }, // Hang bang lai xe 
-        newLicenseClass: { type: String, enum: ['B1', 'B2', 'B'], default: 'B1' },
+        newLicenseClass: { type: String, enum: ['B1', 'B2', 'C'], default: 'B1' },
 
         status: { type: String, enum: ['approved', 'waiting', 'reject', 'finish', 'progressing'], default: 'waiting' },
 
@@ -29,7 +29,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).populate('user', '_id firstname lastname').exec((error, items) => {
+                model.find(condition).sort({ status: -1 }).skip(skipNumber).limit(result.pageSize).populate('user', '_id firstname lastname').exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
