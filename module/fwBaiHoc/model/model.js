@@ -1,18 +1,20 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        priority: Number,
         title: String,
         shortDescription: String,
         detailDescription: String,
-        lesson: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
+        lessonVideo: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
+        lessonQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
     });
-    const model = app.db.model('Subject', schema);
+    const model = app.db.model('Lesson', schema);
 
-    app.model.subject = {
-        create: (data, done) => {
-            if (!data.title) data.title = 'Môn học mới';
+    app.model.lesson = {
+        create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+            data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+            if (!data.title) data.title = 'Bài học mới';
             model.create(data, done)
-        },
-
+        }),
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
@@ -28,7 +30,7 @@ module.exports = app => {
             }
         }),
 
-        getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
         get: (condition, option, done) => {
             const handleGet = (condition, option, done) => {
                 const select = option.select ? option.select : null;
@@ -36,7 +38,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lesson', '_id title');
+                if (populate) result.populate('lessonVideo', 'title link image').populate('lessonQuestion');
                 result.exec(done);
             };
 
@@ -46,7 +48,6 @@ module.exports = app => {
                 handleGet(condition, {}, option);
             }
         },
-
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
@@ -59,11 +60,11 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-        pushLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
+        pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, lessonVideoImage, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink, image: lessonVideoImage } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
         },
-        pullLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $pull: { lesson: lessonId } }).exec(done);
+        pushLessonQuestion: (condition, lessonQuestionId, lessonQuestionTitle, lessonQuestionDefaultAnswer, lessonQuestionContent, lessonQuestionActive, lessonQuestionTypeValue, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessonQuestion: { _id: lessonQuestionId, title: lessonQuestionTitle, defaultAnswer: lessonQuestionDefaultAnswer, content: lessonQuestionContent, active: lessonQuestionActive, typeValue: lessonQuestionTypeValue } } }, { new: true }).select('_id lessonQuestion').populate('lessonQuestion').exec(done);
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

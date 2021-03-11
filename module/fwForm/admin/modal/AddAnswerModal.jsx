@@ -42,7 +42,7 @@ class AddAnswerModal extends React.Component {
         });
     }
 
-    show = () =>  { $(this.modal.current).modal('show'); };
+    show = () => { $(this.modal.current).modal('show'); };
     hide = () => { $(this.modal.current).modal('hide'); };
 
     search = (e, email) => {

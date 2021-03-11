@@ -1,7 +1,8 @@
-import T from '../../view/js/common';
+import T from '../../../view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const BaiHocGetBaiHocInPage = 'BaiHoc:GetBaiHocInPage';
 const BaiHocGetBaiHoc = 'BaiHoc:GetBaiHoc';
+const GET_LESSON_VIDEO_LIST = 'lessonVideo:getLessonVideoList';
 
 export default function BaiHocReducer(state = null, data) {
     switch (data.type) {
@@ -10,6 +11,9 @@ export default function BaiHocReducer(state = null, data) {
 
         case BaiHocGetBaiHoc:
             return Object.assign({}, state, { lesson: data.item });
+
+        case GET_LESSON_VIDEO_LIST:
+            return Object.assign({}, state, { listLessonVideo: data.lessonVideo });
         default:
             return state;
     }
@@ -112,3 +116,4 @@ export const ajaxSelectLesson = {
         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.title}` })) : []
     })
 }
+//

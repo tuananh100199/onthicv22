@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux.jsx'
+import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/redux.jsx'
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 
@@ -11,7 +11,7 @@ class MonHocPage extends React.Component {
     }
     componentDidMount() {
         this.props.getBaiHocInPage(1, 50, {});
-        T.ready('/user/dao-tao', null);
+        T.ready('/user/dao-tao/bai-hoc/list', null);
     }
 
     create = (e) => {
