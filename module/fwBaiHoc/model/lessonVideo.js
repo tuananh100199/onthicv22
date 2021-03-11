@@ -13,7 +13,8 @@ module.exports = app => {
                     if (error) {
                         done(error);
                     } else {
-                        item.image = '/img/leeson-video/' + item._id + '.jpg';
+                        item.image = '/img/lesson-video/' + item._id + '.jpg';
+                        console.log(item.image)
                         const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                             destPath = app.path.join(app.publicPath, item.image);
                         app.fs.copyFile(srcPath, destPath, error => {
