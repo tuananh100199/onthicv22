@@ -11,6 +11,7 @@ import StaffGroupPage from './adminStaffView.jsx';
 import LogoPage from './adminLogoView.jsx';
 import ListVideoPage from './adminListVideoView.jsx';
 import ContentListPage from '../fwContentList/adminContentListView.jsx';
+import DangKyTuVanPage from '../fwDangKyTuVan/adminPage.jsx'
 
 class ComponentPage extends React.Component {
     componentDidMount() {
@@ -46,11 +47,12 @@ class ComponentPage extends React.Component {
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuCarousel'>Tập hình ảnh</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuVideo'>Video</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStatistic'>Thống kê</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuSlogan'>Slogan</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuLogo'>Logo</a></li>
+                    {/* <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuSlogan'>Slogan</a></li> */}
+                    {/* <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuLogo'>Logo</a></li> */}
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuTestimony'>Testimony</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStaffGroup'>Nhóm nhân viên</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>List Video</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuDangKyTuVan'>Đăng ký tư vấn</a></li>
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='menuContent'><ContentPage /></div>
@@ -58,12 +60,12 @@ class ComponentPage extends React.Component {
                     <div className='tab-pane fade' id='menuCarousel'><CarouselPage /></div>
                     <div className='tab-pane fade' id='menuVideo'><VideoPage /></div>
                     <div className='tab-pane fade' id='menuStatistic'><StatisticPage /></div>
-                    <div className='tab-pane fade' id='menuSlogan'><SloganPage /></div>
-                    <div className='tab-pane fade' id='menuLogo'><LogoPage /></div>
+                    {/* <div className='tab-pane fade' id='menuSlogan'><SloganPage /></div> */}
+                    {/* <div className='tab-pane fade' id='menuLogo'><LogoPage /></div> */}
                     <div className='tab-pane fade' id='menuTestimony'><TestimonyPage /></div>
                     <div className='tab-pane fade' id='menuStaffGroup'><StaffGroupPage /></div>
                     <div className='tab-pane fade' id='menuListVideo'><ListVideoPage history={this.props.history} /></div>
-
+                    <div className='tab-pane fade' id='menuDangKyTuVan'><DangKyTuVanPage history={this.props.history} /></div>
                 </div>
             </main>
         );

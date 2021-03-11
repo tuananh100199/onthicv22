@@ -153,7 +153,7 @@ class MultimediaPage extends React.Component {
 
     render() {
         let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: ''};
 
         try {
             addressList = JSON.parse(addressList);
@@ -210,7 +210,10 @@ class MultimediaPage extends React.Component {
                                 </button>
                             </div>
                         </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 360b36393cd3a21da618321488ec1295d18ee7af
                     </div>
 
                     <div className='col-md-6'>

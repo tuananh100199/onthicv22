@@ -142,7 +142,6 @@ class VideoPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
-
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.video && this.props.video.page ?
             this.props.video.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = <p key='table'>Không có video!</p>;
