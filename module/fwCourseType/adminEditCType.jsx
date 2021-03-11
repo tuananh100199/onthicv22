@@ -192,7 +192,7 @@ class adminEditCType extends React.Component {
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                                     <button className='btn btn-primary' type='button' onClick={this.save}>
                                         <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -202,15 +202,14 @@ class adminEditCType extends React.Component {
                     <h3 className='tile-title'>Danh sách môn học</h3>
                     <div className='tile-body'>
                         {table}
+                        {readOnly ||
+                            <button className='btn btn-success' type='button' onClick={this.showSelectModal}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Thêm
+                            </button>}
                     </div>
                 </div>
                 <SubjectModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
                 <Link to='/user/course-type/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                {!readOnly && (
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e)}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>
-                )}
             </main>
         );
     }
