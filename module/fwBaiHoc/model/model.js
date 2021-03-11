@@ -59,8 +59,8 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-        pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, done) => {
-            model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
+        pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, lessonVideoImage, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink, image: lessonVideoImage } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

@@ -234,8 +234,8 @@ class adminEditBaiHoc extends React.Component {
                         {this.props.baihoc.listLessonVideo.lessonVideo.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.title}</Link></td>
-                                <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.link}</Link></td>
+                                <td><Link to={'#'}>{item.title}</Link></td>
+                                <td><Link to={'#'}>{item.link}</Link></td>
                                 <td style={{ textAlign: 'center' }}>
                                     <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
                                 </td>

@@ -14,7 +14,6 @@ module.exports = app => {
                         done(error);
                     } else {
                         item.image = '/img/lesson-video/' + item._id + '.jpg';
-                        console.log(item.image)
                         const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                             destPath = app.path.join(app.publicPath, item.image);
                         app.fs.copyFile(srcPath, destPath, error => {
@@ -27,15 +26,7 @@ module.exports = app => {
                     }
                 });
             }
-
-            if (data.listVideoId) {
-                model.find({ listVideoId: data.listVideoId }).sort({ priority: -1 }).limit(1).exec((error, items) => {
-                    data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-                    finalCreate(data);
-                })
-            } else {
-                finalCreate(data);
-            }
+            finalCreate(data);
         },
 
         getAll: (done) => model.find({}).exec(done),

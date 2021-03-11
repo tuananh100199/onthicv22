@@ -38,9 +38,9 @@ class VideoModal extends React.Component {
             changes = {
                 title: $('#videoTitle').val().trim(),
                 link: $('#videoLink').val().trim(),
-                content:  this.editor.current.html(),
+                content: this.editor.current.html(),
             };
-        if (changes.title== '') {
+        if (changes.title == '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
             $('#videoTitle').focus();
         } else if (changes.link == '') {
