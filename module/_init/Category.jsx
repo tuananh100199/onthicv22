@@ -119,7 +119,7 @@ class Category extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.contains('category:write');
-        let table = null;
+        let table = 'Không có danh mục!';
         if (this.props.category && this.props.category.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
@@ -158,25 +158,23 @@ class Category extends React.Component {
                                         <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
-                                        {currentPermissions.contains('category:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                        {readOnly ? null :
+                                            < a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
+                                            </a>}
                                     </div>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </table >
             );
-        } else {
-            table = <p>Không có danh mục!</p>;
         }
 
         return (
             <div>
-                <div className='row tile'>{table}</div>
-                {currentPermissions.contains('category:write') &&
+                <div className='tile'>{table}</div>
+                {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
                     </button>

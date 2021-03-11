@@ -216,7 +216,7 @@ class TestimonyEditPage extends React.Component {
 
         if (currentTestimony && currentTestimony.items.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: '80%' }}>Họ tên</th>

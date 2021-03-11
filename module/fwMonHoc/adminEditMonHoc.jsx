@@ -185,82 +185,58 @@ class AdminEditMonHoc extends React.Component {
                 </table>
             );
         }
-        return [
-            <main className='app-content' key={1}>
+
+        return (
+            <main className='app-content'>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-file' /> Môn học: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: item.title != '' ? 'Tiêu đề: <b>' + item.title + '</b> ' : '' }} />
-                    </div>
+                    <h1><i className='fa fa-file' /> Môn học: {item.title || ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/dao-tao/mon-hoc/list'>Danh sách môn học</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/dao-tao/mon-hoc/list'>Môn học</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                <div className='row'>
-                    <div className='col-12 col-md-12'>
-                        <div className='tile'>
-                            <div className='tile-body'>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Tên môn học</label>
-                                        <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
-                                    </div>
-                                    {/* <div className='form-group col-sm-12 col-md-8 col-lg-6'>
-                                        <label className='control-label'>Giá loại khóa học</label>
-                                        <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
-                                    </div> */}
-                                </div>
 
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Mô tả ngắn gọn</label>
-                                        <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly}
-                                            rows={2} />
-                                    </div>
-                                </div>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Mô tả chi tiết </label>
-                                        <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                                    </div>
-                                </div>
-                                <div className='d-flex justify-content-end' >
-                                    <button type='button' className='btn btn-primary' onClick={this.save} >Lưu</button>
-                                </div>
-                            </div>
-                            {/* <div className='tile-footer d-flex justify-content-end'>
-                                <button type='button' className='btn btn-primary' onClick={this.save} >Lưu</button>
-                            </div> */}
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin chung</h3>
+                    <div className='tile-body'>
+                        <div className='form-group'>
+                            <label className='control-label'>Tên môn học</label>
+                            <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
                         </div>
-                        <div className='tile'>
-                            <div className='tile-body'>
-                                <label className='control-label'>Danh sách bài học </label>
-                                <div>{table}</div>
-                            </div>
-
-                            {/* {!readOnly &&
-                                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                                    <i className='fa fa-lg fa-save' />
-                                </button>} */}
+                        <div className='form-group'>
+                            <label className='control-label'>Mô tả ngắn gọn</label>
+                            <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={2} />
                         </div>
-
+                        <div className='form-group'>
+                            <label className='control-label'>Mô tả chi tiết </label>
+                            <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                        </div>
                     </div>
+                    {readOnly ? null :
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button type='button' className='btn btn-primary' onClick={this.save}>
+                                <i className='fa fa-lg fa-save' /> Lưu
+                                </button>
+                        </div>}
+                </div>
+
+                <div className='tile'>
+                    <h3 className='tile-title'>Bài học</h3>
+                    <div className='tile-body'>{table}</div>
+                    {readOnly ? null :
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <Tooltip placement='bottom' overlay='Thêm bài học mới'>
+                                <button type='button' className='btn btn-success' onClick={this.showAddLessonModal}>
+                                    <i className='fa fa-lg fa-plus' /> Thêm
+                                </button>
+                            </Tooltip>
+                        </div>
+                    }
                 </div>
 
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-
-                <Tooltip placement='bottom' overlay='Thêm bài học mới'>
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                        onClick={this.showAddLessonModal}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>
-                </Tooltip>
-            </main>,
-            <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} monhocId={monhocId} />
-        ];
+                <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} monhocId={monhocId} />
+            </main>);
     }
 }
 

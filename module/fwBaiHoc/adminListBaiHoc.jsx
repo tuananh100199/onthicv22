@@ -73,6 +73,7 @@ class MonHocPage extends React.Component {
                 </table>
             );
         }
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -88,7 +89,7 @@ class MonHocPage extends React.Component {
                             </a> : null}
                     </ul>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageLesson'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getBaiHocInPage} />

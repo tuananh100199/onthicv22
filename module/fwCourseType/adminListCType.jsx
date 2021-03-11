@@ -62,12 +62,11 @@ class CourseTypePage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Loại khóa học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Loại khóa học</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageCourseType'
-                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getCourseTypeInPage} />
+                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypeInPage} />
                 {currentPermissions.contains('course:write') ?
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />

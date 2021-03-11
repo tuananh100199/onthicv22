@@ -99,38 +99,38 @@ class AddressEditPage extends React.Component {
                         </span>
                     </h3>
                     <div className='tile-body row'>
-                        <div className='col-md-4 order-md-12'>
+                        <div className='col-md-3 order-md-12'>
                             <div className='form-group'>
                                 <label className='control-label'>Hình đại diện</label>
                                 <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='AddressImage' />
                             </div>
                         </div>
 
-                        <div className='col-md-8 order-md-1'>
+                        <div className='col-md-9 order-md-1'>
                             <div className='form-group'>
                                 <label className='control-label' htmlFor='title'>Tên cơ sở</label>
                                 <input type='text' className='form-control' id='title' placeholder='Tên cơ sở' />
                             </div>
                             <div className='form-group'>
-                                <label className='control-label' htmlFor='email'>Email</label>
-                                <input className='form-control' type='email' placeholder='Email' id='email' />
-                            </div>
-                            <div className='row'>
-                                <div className='form-group col-md-6'>
-                                    <label className='control-label' htmlFor='phoneNumber'>Số điện thoại</label>
-                                    <input type='text' className='form-control' id='phoneNumber' placeholder='Số điện thoại' />
-                                </div>
-                                <div className='form-group col-md-6'>
-                                    <label className='control-label' htmlFor='mobile'>Di động</label>
-                                    <input className='form-control' type='text' placeholder='Di động' id='mobile' />
-                                </div>
+                                <label className='control-label' htmlFor='address'>Địa chỉ</label>
+                                <textarea className='form-control' id='address' placeholder='Địa chỉ' rows='2' />
                             </div>
                         </div>
 
                         <div className='col-md-12 order-sm-12'>
-                            <div className='form-group'>
-                                <label className='control-label' htmlFor='address'>Địa chỉ</label>
-                                <textarea className='form-control' id='address' placeholder='Địa chỉ' rows='2' />
+                            <div className='row'>
+                                <div className='form-group col-md-4'>
+                                    <label className='control-label' htmlFor='email'>Email</label>
+                                    <input className='form-control' type='email' placeholder='Email' id='email' />
+                                </div>
+                                <div className='form-group col-md-4'>
+                                    <label className='control-label' htmlFor='phoneNumber'>Số điện thoại</label>
+                                    <input type='text' className='form-control' id='phoneNumber' placeholder='Số điện thoại' />
+                                </div>
+                                <div className='form-group col-md-4'>
+                                    <label className='control-label' htmlFor='mobile'>Di động</label>
+                                    <input className='form-control' type='text' placeholder='Di động' id='mobile' />
+                                </div>
                             </div>
                             <div className='form-group'>
                                 <label className='control-label' htmlFor='mapURL'>Đường dẫn Google Map</label>

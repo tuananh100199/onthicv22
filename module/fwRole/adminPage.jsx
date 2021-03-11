@@ -225,7 +225,7 @@ class RolePage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa-user' /> Vai trò</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='adminRole'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getRolePage} />
 
@@ -234,7 +234,6 @@ class RolePage extends React.Component {
                         <i className='fa fa-lg fa-plus' />
                     </button>
                     : ''}
-
                 <RoleModal ref={this.roleModal} permissionList={permissionList}
                     updateRole={this.props.updateRole} getPage={this.props.getRolePage} createRole={this.props.createRole} />
             </main>

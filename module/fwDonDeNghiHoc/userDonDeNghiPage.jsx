@@ -48,7 +48,7 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-                    data.item.status == 'approved' ? $('#newLicenseClass').prop("disabled", true) : $('#newLicenseClass').prop("disabled", false)
+                    data.item.status == 'approved' ? $('#newLicenseClass').prop('disabled', true) : $('#newLicenseClass').prop('disabled', false)
                     const user = data.item.user;
                     $('#userBirthday').val(user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : '');
                     $('#phoneNumber').val(user.phoneNumber);
@@ -301,7 +301,6 @@ class UserDonDeNghiPage extends React.Component {
                                         url: '',
                                         data: {},
                                         processResults: () => ({
-                                            // results: [{ id: "B1", text: "B1" }, { id: "B2", text: "B2" }, { id: "C", text: "C" }],
                                             results: this.props.courseType.page.list.map((item, index) => ({ id: item.title, text: item.title }))
                                         })
                                     }
@@ -324,7 +323,6 @@ class UserDonDeNghiPage extends React.Component {
                                     url: '',
                                     data: {},
                                     processResults: () => ({
-                                        // results: [{ id: "B1", text: "B1" }, { id: "B2", text: "B2" }, { id: "C", text: "C" }]
                                         results: this.props.courseType.page.list.map((item, index) => ({ id: item.title, text: item.title }))
                                     })
                                 }
@@ -354,15 +352,15 @@ class UserDonDeNghiPage extends React.Component {
                 </button>
                 <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '75px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
-                    <i className="fa fa-file-word-o"></i>
+                    <i className='fa fa-file-word-o'></i>
                 </button>
                 <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
                     style={{ position: 'fixed', right: '130px', bottom: '10px' }} onClick={this.exportBienNhan}>
-                    <i className="fa fa-file-text-o"></i>
+                    <i className='fa fa-file-text-o'></i>
                 </button>
                 <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
                     style={{ position: 'fixed', right: '185px', bottom: '10px' }} onClick={this.exportBanCamKet}>
-                    <i className="fa fa-file-text-o"></i>
+                    <i className='fa fa-file-text-o'></i>
                 </button>
             </main>
         );
@@ -454,15 +452,15 @@ class UserDonDeNghiPage extends React.Component {
                 </Link>
                 <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '75px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
-                    <i className="fa fa-file-word-o"></i>
+                    <i className='fa fa-file-word-o'></i>
                 </button>
                 <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
                     style={{ position: 'fixed', right: '130px', bottom: '10px' }} onClick={this.exportBienNhan}>
-                    <i className="fa fa-file-text-o"></i>
+                    <i className='fa fa-file-text-o'></i>
                 </button>
                 <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
                     style={{ position: 'fixed', right: '185px', bottom: '10px' }} onClick={this.exportBanCamKet}>
-                    <i className="fa fa-file-text-o"></i>
+                    <i className='fa fa-file-text-o'></i>
                 </button>
             </main>
         );

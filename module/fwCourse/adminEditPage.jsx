@@ -6,10 +6,8 @@ import CommonInfoPage from './commonInfoPage.jsx';
 import SubjectPage from './subjectPage.jsx';
 
 class EditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: null };
-    }
+    state = { item: null };
+
     componentDidMount() {
         T.ready('/user/course/list', () => {
             const route = T.routeMatcher('/user/course/edit/:courseId'),
@@ -37,7 +35,6 @@ class EditPage extends React.Component {
     }
 
     render() {
-        // const item = this.state.item ? this.state.item : '';
         return (
             <main className='app-content' id='componentPage' style={{ display: 'none' }}>
                 <div className='app-title'>
@@ -59,8 +56,6 @@ class EditPage extends React.Component {
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='common'><CommonInfoPage history={this.props.history} /></div>
                     <div className='tab-pane fade' id='subject'><SubjectPage history={this.props.history} /></div>
-
-
                 </div>
             </main>
         );
