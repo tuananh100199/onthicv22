@@ -104,30 +104,28 @@ class DangKyTuVanEditPage extends React.Component {
             const route = T.routeMatcher('/user/dang-ky-tu-van/edit/:dangKyTuVanId'),
                 params = route.parse(window.location.pathname);
            
-            this.props.getAllCourseType( data => {
-                if(data){
-                    console.log('data',data);
-                    let courseType = data ? data.map(item => ({id: item._id, text: item.text})) : null;
-                    $('#courseType').select2({ data: courseType}).val(data.courseType).trigger('change');
+            
+            this.props.getDangKyTuVanItem(params.dangKyTuVanId, data => {
+                if (data.error) {
+                    T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
+                    this.props.history.push('/user/dang-ky-tu-van');
+                } else if (data.item) {
+                    const title = data.item.title,
+                        content = data.item.description,
+                        courseType = data.item.courseType;
+                    $('#title').val(title).focus();
+                    $('#courseType').val(courseType).focus();
+                    this.editor.current.html(content);
+                    this.props.getAllCourseType( datacType => {
+                        if(datacType){
+                            let courseType = datacType ? datacType.map(item => ({id: item._id, text: item.title})) : null;
+                            $('#courseType').select2({ data: courseType}).val(data.item.courseType).trigger('change');
+                        }
+                    });
+                } else {
+                    this.props.history.push('/user/dang-ky-tu-van');
                 }
-                this.props.getDangKyTuVanItem(params.dangKyTuVanId, data => {
-                    if (data.error) {
-                        T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
-                        this.props.history.push('/user/dang-ky-tu-van');
-                    } else if (data.item) {
-                        console.log(data);
-                        const title = data.item.title,
-                            content = data.item.description,
-                            courseType = data.item.courseType;
-                        $('#title').val(title).focus();
-                        $('#courseType').val(courseType).focus();
-    
-                        this.editor.current.html(content);
-                    } else {
-                        this.props.history.push('/user/dang-ky-tu-van');
-                    }
-                    this.setState(data);
-                });
+                this.setState(data);
             });
             $('#courseType').select2();
 
@@ -185,7 +183,6 @@ class DangKyTuVanEditPage extends React.Component {
                 statistic: this.props.dangKyTuVan.item.statistic,
                 courseType: $('#courseType').val(),
             };
-            console.log('changes',changes);
             if (changes.statistic && changes.statistic.length == 0) changes.statistic = 'empty';
             this.props.updateDangKyTuVan(this.props.dangKyTuVan.item._id, changes);
         }
