@@ -11,7 +11,7 @@ class MonHocPage extends React.Component {
     }
     componentDidMount() {
         this.props.getBaiHocInPage(1, 50, {});
-        T.ready('/user/dao-tao', null);
+        T.ready('/user/dao-tao/bai-hoc/list', null);
     }
 
     create = (e) => {

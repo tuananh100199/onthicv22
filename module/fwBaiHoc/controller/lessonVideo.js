@@ -26,7 +26,7 @@ module.exports = app => {
         });
     });
 
-    app.delete('/api/lessonVideo', app.permission.check('baihoc:write'), (req, res) => {
+    app.delete('/api/lesson-video', app.permission.check('baihoc:write'), (req, res) => {
         const { data, lessonId, _id } = req.body;
         if (data.lessonVideo && data.lessonVideo == 'empty') data.lessonVideo = [];
         app.model.lesson.update(lessonId, data, (error, _) => {
@@ -37,4 +37,16 @@ module.exports = app => {
             }
         });
     });
+    app.get('/api/lesson-video/item/:_id', (req, res) => app.model.lessonVideo.get(req.params._id, (error, item) => res.send({ error, item })));
+    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'));
+
+    const uploadLessonVideo = (req, fields, files, params, done) => {
+        if (fields.userData && fields.userData[0].startsWith('lesson-video:') && files.LessonVideoImage && files.LessonVideoImage.length > 0) {
+            console.log('Hook: uploadVideo =>lesson video image upload');
+            app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring(13), files.LessonVideoImage[0].path, done);
+        }
+    };
+    app.uploadHooks.add('uploadLessonVideo', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadLessonVideo(req, fields, files, params, done), done, 'component:write'));
 }

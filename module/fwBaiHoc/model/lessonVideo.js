@@ -7,7 +7,35 @@ module.exports = app => {
     const model = app.db.model('LessonVideo', schema);
 
     app.model.lessonVideo = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) => {
+            const finalCreate = (data) => {
+                model.create(data, (error, item) => {
+                    if (error) {
+                        done(error);
+                    } else {
+                        item.image = '/img/leeson-video/' + item._id + '.jpg';
+                        const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                            destPath = app.path.join(app.publicPath, item.image);
+                        app.fs.copyFile(srcPath, destPath, error => {
+                            if (error) {
+                                done(error);
+                            } else {
+                                item.save(done);
+                            }
+                        });
+                    }
+                });
+            }
+
+            if (data.listVideoId) {
+                model.find({ listVideoId: data.listVideoId }).sort({ priority: -1 }).limit(1).exec((error, items) => {
+                    data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+                    finalCreate(data);
+                })
+            } else {
+                finalCreate(data);
+            }
+        },
 
         getAll: (done) => model.find({}).exec(done),
 

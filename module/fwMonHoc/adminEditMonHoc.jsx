@@ -62,7 +62,7 @@ class AdminEditMonHoc extends React.Component {
         this.addLessonModal = React.createRef();
     }
     componentDidMount() {
-        T.ready('/user/dao-tao', () => {
+        T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
             this.props.getLessonList(params.monHocId);

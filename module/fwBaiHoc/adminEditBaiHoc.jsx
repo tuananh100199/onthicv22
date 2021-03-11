@@ -1,16 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateBaiHoc, getBaiHoc } from './redux/redux.jsx'
-import { createLessonVideo, getLessonVideoList, swapLessonVideo } from './redux/reduxLessonVideo.jsx'
+import { createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux/reduxLessonVideo.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
-// import ImageBox from '../../view/component/ImageBox.jsx';
+import ImageBox from '../../view/component/ImageBox.jsx';
 class VideoModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
         this.modal = React.createRef();
-        // this.imageBox = React.createRef();
+        this.imageBox = React.createRef();
         this.btnSave = React.createRef();
     }
 
@@ -21,13 +21,13 @@ class VideoModal extends React.Component {
     }
 
     show = (video) => {
-        let { _id, title, link } = video ? video : { _id: null, title: '', link: '' };
+        let { _id, title, link, image } = video ? video : { _id: null, title: '', link: '', image: '' };
 
         $(this.btnSave.current).data('id', _id);
         $('#videoTitle').val(title);
         $('#videoLink').val(link);
-        // this.imageBox.current.setData('video:' + (_id ? _id : 'new'));
-        // this.setState({ image });
+        this.imageBox.current.setData('lesson-video:' + (_id ? _id : 'new'));
+        this.setState({ image });
         $(this.modal.current).modal('show');
     }
 
@@ -45,12 +45,13 @@ class VideoModal extends React.Component {
             $('#videoLink').focus();
         } else {
             if (_id) {
-                // this.props.updateVideo(_id, changes, () => {
-                //     $(this.modal.current).modal('hide');
-                // });
+                this.props.updateLessonVideo(_id, changes, this.props.baihocId, () => {
+                    T.notify('Cập nhật video bài giảng thành công!', 'success');
+                    $(this.modal.current).modal('hide');
+                });
             } else { // Create
-                this.props.createLessonVideo('6048fc07c9cf4b13bc96301b', changes, () => {
-                    T.notify('Thêm câu hỏi thành công!', 'info');
+                this.props.createLessonVideo(this.props.baihocId, changes, () => {
+                    T.notify('Thêm video bài giảng thành công!', 'success');
                     $(this.modal.current).modal('hide');
                 });
             }
@@ -85,12 +86,12 @@ class VideoModal extends React.Component {
                                         <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
                                     </div>
                                 </div>
-                                {/* <div className='col-4'>
+                                <div className='col-4'>
                                     <div className='form-group'>
                                         <label>Hình đại diện</label>
-                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image} readOnly={readOnly} />
+                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} readOnly={readOnly} />
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
                         </div>
 
@@ -113,22 +114,41 @@ class adminEditBaiHoc extends React.Component {
     }
 
     edit = (e, item) => {
-        this.props.getVideo(item._id, video => this.videoModal.current.show(video));
+        this.props.getLessonVideo(item._id, video => {
+            this.videoModal.current.show(video);
+        });
         e.preventDefault();
     }
+    removeLessonVideo = (e, item, index, baihocId) => {
+        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
+            if (isConfirm) {
+                const changes = {};
+                let lessonVideoList = this.props.baihoc && this.props.baihoc.listLessonVideo ? this.props.baihoc.listLessonVideo.lessonVideo : [];
+                lessonVideoList.splice(index, 1);
+                if (lessonVideoList.length == 0) lessonVideoList = 'empty';
+                changes.lessonVideo = lessonVideoList;
+                this.props.deleteLessonVideo(item._id, changes, baihocId, () => {
+                    T.alert('Xoá video thành công!', 'success', false, 1000);
+                })
+            } else {
+                T.alert('Cancelled!', 'error', false, 500);
+            }
+        });
+        e.preventDefault();
+    };
     componentDidMount() {
         this.videoModal = React.createRef();
         // this.props.createLessonVideo('60477298b01ec13de4752295', { title: 'hello', link: 'hi' }, () => {
         //     T.notify('Thêm câu hỏi thành công!', 'info');
         //     $(this.modal.current).modal('hide');
         // });
-        T.ready('/user/dao-tao', () => {
+        T.ready('/user/dao-tao/bai-hoc/list', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
             this.props.getLessonVideoList(params.baihocId);
             this.props.getBaiHoc(params.baihocId, data => {
                 if (data.error) {
-                    T.notify('Lấy môn học bị lỗi!', 'danger');
+                    T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/bai-hoc/list');
                 } else if (data.item) {
                     const item = data.item;
@@ -154,11 +174,11 @@ class adminEditBaiHoc extends React.Component {
     swap = (e, index, baihocId, isMoveUp) => {
         let lessonVideoList = this.props.baihoc && this.props.baihoc.listLessonVideo && this.props.baihoc.listLessonVideo.lessonVideo ? this.props.baihoc.listLessonVideo.lessonVideo : [];
         if (lessonVideoList.length == 1) {
-            T.notify('Thay đổi thứ tự bài học thành công', 'info');
+            T.notify('Thay đổi thứ tự bài học thành công', 'success');
         } else {
             if (isMoveUp) {
                 if (index == 0) {
-                    T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
                 } else {
                     const temp = lessonVideoList[index - 1], changes = {};
 
@@ -167,12 +187,12 @@ class adminEditBaiHoc extends React.Component {
 
                     changes.lessonVideo = lessonVideoList;
                     this.props.swapLessonVideo(baihocId, changes, () => {
-                        T.notify('Thay đổi thứ tự môn học thành công', 'info');
+                        T.notify('Thay đổi thứ tự môn học thành công', 'success');
                     });
                 }
             } else {
                 if (index == lessonVideoList.length - 1) {
-                    T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
                 } else {
                     const temp = lessonVideoList[index + 1], changes = {};
 
@@ -181,7 +201,7 @@ class adminEditBaiHoc extends React.Component {
 
                     changes.lessonVideo = lessonVideoList;
                     this.props.swapLessonVideo(baihocId, changes, () => {
-                        T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                        T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
             }
@@ -206,6 +226,7 @@ class adminEditBaiHoc extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tên bài học</th>
                             <th style={{ width: 'auto' }}>Link</th>
+                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -215,6 +236,9 @@ class adminEditBaiHoc extends React.Component {
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.title}</Link></td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.link}</Link></td>
+                                <td style={{ textAlign: 'center' }}>
+                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
+                                </td>
                                 <td>
                                     <div className='btn-group'>
                                         <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, baihocId, true)}>
@@ -224,11 +248,11 @@ class adminEditBaiHoc extends React.Component {
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
-                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
+                                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
                                             <i className='fa fa-lg fa-edit' />
-                                        </Link>
+                                        </a>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, baihocId, item._id, item.title)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.removeLessonVideo(e, item, index, baihocId)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -300,7 +324,7 @@ class adminEditBaiHoc extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <VideoModal key={2} createLessonVideo={this.props.createLessonVideo} updateVideo={this.props.updateVideo} ref={this.videoModal} readOnly={readOnly} />
+                    <VideoModal baihocId={baihocId} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} ref={this.videoModal} readOnly={readOnly} />
                 </div>
                 <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
 
@@ -310,5 +334,5 @@ class adminEditBaiHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc });
-const mapActionsToProps = { updateBaiHoc, getBaiHoc, createLessonVideo, getLessonVideoList, swapLessonVideo };
+const mapActionsToProps = { updateBaiHoc, getBaiHoc, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);

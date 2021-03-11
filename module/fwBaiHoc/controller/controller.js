@@ -1,9 +1,9 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 8000, title: 'Đào tạo', link: '/user/dao-tao', icon: 'fa-graduation-cap', subMenusRender: false },
+        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         menus: {
-            8021: { title: 'Quản lý bài học', link: '/user/dao-tao/bai-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-        }
+            8020: { title: 'Quản lý bài học', link: '/user/dao-tao/bai-hoc/list' },
+        },
     };
     app.permission.add({ name: 'baihoc:read', menu }, { name: 'baihoc:write', menu });
     app.get('/user/dao-tao/bai-hoc/list', app.permission.check('baihoc:read'), app.templates.admin);
@@ -51,7 +51,6 @@ module.exports = (app) => {
         const lessonId = req.params.lessonId;
         app.model.lesson.get(lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => {
             res.send({ error, item });
-            console.log(item)
         });
     });
     app.post('/api/lesson-video/:_id', app.permission.check('baihoc:write'), (req, res) => {

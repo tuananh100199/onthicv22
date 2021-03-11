@@ -105,7 +105,6 @@ export function getLessonList(subjectId, done) {
                 T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                console.log(data.item)
                 dispatch({ type: MonHocGetBaiHocList, baihoc: data.item });
                 done && done(data.item);
             }

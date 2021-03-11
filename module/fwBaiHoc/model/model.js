@@ -22,7 +22,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
@@ -37,7 +37,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lessonVideo', 'title link');
+                if (populate) result.populate('lessonVideo', 'title link image');
                 result.exec(done);
             };
 

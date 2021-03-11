@@ -39,7 +39,6 @@ export function createLessonVideo(_id, data, done) {
                 T.notify('Tạo video bài giảng bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                console.log('tạo video ok ')
                 dispatch(getLessonVideoList(_id));
                 done && done(data.item);
             }
@@ -89,5 +88,18 @@ export function deleteLessonVideo(_id, data, lessonId, done) {
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));
+    }
+}
+export function getLessonVideo(_id, done) {
+    return dispatch => {
+        const url = '/api/lesson-video/item/' + _id;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy video bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                done(data.item);
+            }
+        }, error => T.notify('Lấy video bị lỗi!', 'danger'));
     }
 }

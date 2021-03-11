@@ -7,7 +7,7 @@ import Pagination from '../../view/component/Pagination.jsx';
 class AdminListMonHoc extends React.Component {
     componentDidMount() {
         this.props.getMonHocInPage();
-        T.ready('/user/dao-tao', null);
+        T.ready('/user/dao-tao/mon-hoc/list', null);
     }
 
     create = (e) => {
