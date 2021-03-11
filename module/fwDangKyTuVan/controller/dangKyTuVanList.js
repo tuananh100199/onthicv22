@@ -3,7 +3,7 @@ module.exports = app => {
     const menu = {
         parentMenu: { index: 4000, title: 'Danh sách đăng ký tư vấn', icon: 'fa-file-text-o', link: '/user/dang-ky-tu-van-list' }
     };
-    
+
     app.permission.add({ name: 'dangKyTuVan:read', menu }, { name: 'dangKyTuVan:write', menu },);
 
     app.permission.add(
@@ -61,7 +61,6 @@ module.exports = app => {
     });
 
     app.get('/api/dang-ky-tu-van-list/all/:dangKyTuVanListId', app.permission.check('dangKyTuVanList:read'), (req, res) =>{ 
-        console.log(req.params.dangKyTuVanListId);
         app.model.dangKyTuVanList.getAll(req.params.dangKyTuVanListId, (error, items) => res.send({ error, items }))
     });
 

@@ -41,12 +41,10 @@ export default function DangKyTuVanListReducer(state = null, data) {
 
         case DangKyTuVanListUpdate: {
             if (state) {
-                console.log('state',state);
                 let updatedItems = Object.assign({}, state.items),
                     // updatedPage = Object.assign({}, state.page),
                     updatedUnreads = Object.assign({}, state.unreads),
                     updatedItem = data.item;
-                    console.log('data.item',data.item);
 
                 if (updatedItems) {
                     for (let i = 0, n = updatedItems.length; i < n; i++) {
@@ -55,7 +53,6 @@ export default function DangKyTuVanListReducer(state = null, data) {
                             break;
                         }
                     }
-                    console.log('hree');
                 }
                 // if (updatedPage) {
                 //     console.log('hreee');
@@ -68,7 +65,6 @@ export default function DangKyTuVanListReducer(state = null, data) {
                 //     }
                 // }
                 if (updatedUnreads) {
-                    console.log('hreee');
 
                     if (updatedItem.read) {
                         for (let i = 0, n = updatedUnreads.length; i < n; i++) {

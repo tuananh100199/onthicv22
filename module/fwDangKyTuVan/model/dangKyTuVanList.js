@@ -19,7 +19,6 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition,done) => {
-            console.log('condition', condition);
             condition ? model.find({"parentId" : condition}).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done)
         },
 
