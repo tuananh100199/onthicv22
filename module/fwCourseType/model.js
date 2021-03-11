@@ -3,7 +3,8 @@ module.exports = app => {
         title: String,
         price: Number,
         shortDescription: String,
-        detailDescription: String
+        detailDescription: String,
+        subjectList: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }]
     });
     const model = app.db.model('CourseType', schema);
 
@@ -21,16 +22,18 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ _tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).populate('subjectList').sort({ _tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: done => model.find({}).sort({ _title: 1 }).exec(done),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        getAll: done => model.find({}).populate('subjectList').sort({ _title: 1 }).exec(done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('subjectList') : model.findOne(condition, done).populate('subjectList'),
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
@@ -38,7 +41,6 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.deleteImage(item.image);
                 item.remove(done);
             }
         }),

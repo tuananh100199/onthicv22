@@ -20,7 +20,7 @@ class AddLessonModal extends React.Component {
     addLesson = () => {
         const lessonId = this.lessonSelect.current.val();
         this.props.addLesson(this.props.monhocId, lessonId, () => {
-            T.notify('Thêm câu hỏi thành công!', 'info');
+            T.notify('Thêm bài học thành công!', 'info');
             $(this.modal.current).modal('hide');
         });
     }

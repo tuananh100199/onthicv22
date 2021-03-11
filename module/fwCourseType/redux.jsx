@@ -73,6 +73,7 @@ export function updateCourseType(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin loại khóa học thành công!', 'info');
+                dispatch({ type: CourseTypeGetCourseType, item: data.item });
                 dispatch(getCourseTypeInPage());
                 done && done();
             }
