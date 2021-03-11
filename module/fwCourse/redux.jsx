@@ -76,10 +76,10 @@ export function getCourse(_id, done) {
     }
 }
 
-export function createCourse(done) {
+export function createCourse(newData, done) {
     return dispatch => {
         const url = '/api/course';
-        T.post(url, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
@@ -172,19 +172,5 @@ export function getCourseFeed(done) {
                 dispatch({ type: CourseGetCourseFeed, list: data.page.list });
             }
         }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
-    }
-}
-
-export function checkLink(_id, link) {
-    return dispatch => {
-        const url = '/course/item/check-link';
-        T.put(url, { _id, link }, data => {
-            if (data.error) {
-                T.notify('Link không hợp lệ!', 'danger');
-                console.error('PUT: ' + url + '.', error);
-            } else {
-                T.notify('Link hợp lệ!', 'success');
-            }
-        }, error => T.notify('Kiểm tra Link bị lỗi!', 'danger'));
     }
 }

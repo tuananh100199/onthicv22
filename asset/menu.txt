@@ -17,8 +17,6 @@
 	6002 - Tin tức (/user/news/list)
 	6003 - Chờ duyệt (/user/news/draft)
 7000. Khóa học (/user/course/list)
-	7001 - Thông tin chung (/user/course/edit/common/:_id)
-	7002 - Quản lý chung ()
 8000. Đào tạo (/user/dao-tao)
 	8020 - Quản lý môn học (/user/dao-tao/mon-hoc/list)
 	8021 - Quản lý bài học (/user/dao-tao/bai-hoc/list)

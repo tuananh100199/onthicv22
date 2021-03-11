@@ -3,37 +3,44 @@ import { connect } from 'react-redux';
 import { getCourseInPage, createCourse, updateCourse, deleteCourse } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
+import { Select } from '../../view/component/Input.jsx';
+import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
 
-class AddressModal extends React.Component {
+class CourseModal extends React.Component {
     constructor(props) {
         super(props);
         this.modal = React.createRef();
+        this.licenseClass = React.createRef();
     }
 
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#addressName').focus());
+            $(this.modal.current).on('shown.bs.modal', () => $('#title').focus());
         });
     }
 
     show = () => {
-        $('#addressName').val('');
+        $('#title').val('');
         $(this.modal.current).modal('show');
     }
 
     save = (event) => {
         const newData = {
-            title: $('#addressName').val(),
+            title: $('#title').val(),
+            licenseClass: this.licenseClass.current.val()
         };
 
         if (newData.title == '') {
-            T.notify('Tên cơ sở bị trống!', 'danger');
-            $('#addressName').focus();
+            T.notify('Tên khóa học bị trống!', 'danger');
+            $('#title').focus();
+        } if (newData.licenseClass == '') {
+            T.notify('Loại khóa học bị trống!', 'danger');
+            this.licenseClass.current.focus();
         } else {
-            this.props.createAddress(newData, data => {
+            this.props.createCourse(newData, data => {
                 if (data.item) {
                     $(this.modal.current).modal('hide');
-                    this.props.history.push('/user/address/edit/' + data.item._id);
+                    this.props.history.push('/user/course/edit/' + data.item._id);
                 }
             });
         }
@@ -46,15 +53,18 @@ class AddressModal extends React.Component {
                 <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Cơ sở mới</h5>
+                            <h5 className='modal-title'>Khóa học mới</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='addressName'>Tên cơ sở</label>
-                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' />
+                                <label htmlFor='title'>Tên khóa học</label>
+                                <input className='form-control' id='title' type='text' placeholder='Nhập tên khóa học' />
+                            </div>
+                            <div className='form-group'>
+                                <Select ref={this.licenseClass} displayLabel={true} adapter={ajaxSelectCourseType} label='Loại khóa học' />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -69,15 +79,20 @@ class AddressModal extends React.Component {
 }
 
 class CoursePage extends React.Component {
-    componentDidMount() {
-        this.props.getCourseInPage();
-        T.ready();
+    constructor(props) {
+        super(props);
+        this.modal = React.createRef();
     }
 
+    componentDidMount() {
+        this.props.getCourseInPage();
+        T.ready('/user/course/list');
+    }
     create = (e) => {
-        this.props.createCourse(data => this.props.history.push('/user/course/item/' + data.item._id));
+        this.modal.current.show();
         e.preventDefault();
     }
+
 
     changeActive = (item) => {
         this.props.updateCourse(item._id, { active: !item.active });
@@ -109,7 +124,7 @@ class CoursePage extends React.Component {
                         {this.props.course.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><Link to={'/user/course/item/' + item._id}>{item.title}</Link></td>
+                                <td><Link to={'/user/course/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} disabled={readOnly} />
@@ -118,7 +133,7 @@ class CoursePage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/course/item/' + item._id} className='btn btn-primary'>
+                                        <Link to={'/user/course/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('course:write') ?
@@ -139,6 +154,7 @@ class CoursePage extends React.Component {
                     <h1><i className='fa fa-file' /> Khóa học: Danh sách</h1>
                 </div>
                 <div className='row tile'>{table}</div>
+                <CourseModal createCourse={this.props.createCourse} ref={this.modal} history={this.props.history} />
                 <Pagination name='pageCourse'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getCourseInPage} />

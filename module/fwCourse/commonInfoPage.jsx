@@ -4,25 +4,29 @@ import { updateCourse, getCourse } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 import { Select } from '../../view/component/Input.jsx';
-import Dropdown from '../../view/component/Dropdown.jsx';
 import { ajaxSelectAddress } from '../fwAddress/redux.jsx';
 import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
 
-class adminEditCommonPage extends React.Component {
-    state = { item: null };
-    licenseClass = React.createRef();
-    editor = React.createRef();
-    addressSelect = React.createRef();
 
+class CommonInfoPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { item: null };
+        this.licenseClass = React.createRef();
+        this.editor = React.createRef();
+        this.addressSelect = React.createRef();
+
+    }
     componentDidMount() {
         T.ready('/user/course/list', () => {
-            $('#launchTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#startTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#endTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#endSubTimeExpect').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#endSubTimeOfficial').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#graduationTestTimeExpect').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            $('#graduationTestTimeOfficial').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            $('#launchTime, #startTime,#endTime,#endSubTimeExpect,#endSubTimeOfficial,#graduationTestTimeExpect,#graduationTestTimeOfficial')
+                .datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#startTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#endTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#endSubTimeExpect').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#endSubTimeOfficial').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#graduationTestTimeExpect').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+            // $('#graduationTestTimeOfficial').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             const route = T.routeMatcher('/user/course/edit/:courseId'),
                 courseId = route.parse(window.location.pathname).courseId;
             this.props.getCourse(courseId, data => {
@@ -32,11 +36,14 @@ class adminEditCommonPage extends React.Component {
                 } else if (data.item) {
                     const item = data.item;
                     $('#courseTitle').val(item.title);
-                    $('#courseAbstract').val(item.abstract);
+                    $('#courseAbstract').val(item.licenseClass.shortDescription);
+                    // $('#courseAbstract').val(item.licenseClass ? item.licenseClass.shortDescription : '');
+                    $('#launchTime').datepicker('update', item.launchTime ? T.dateToText(item.launchTime, 'dd/mm/yyyy') : '');
+                    // $('#launchTime').datepicker('update', item && item.launchTime ? T.dateToText(item.launchTime, 'dd/mm/yyyy') : '');
                     const address = item.addressId;
-                    this.licenseClass.current.val(item.licenseClass ? item.licenseClass : '');
-                    this.addressSelect.current.val({ id: address._id, text: address.title });
-                    this.editor.current.html(item.content);
+                    this.licenseClass.current.val({ id: item.licenseClass._id, text: item.licenseClass.title });
+                    this.addressSelect.current.val({ id: address ? address._id : '', text: address ? address.title : '' });
+                    this.editor.current.html(item.licenseClass.detailDescription);
 
                     this.setState(data);
                     $('#courseTitle').focus();
@@ -45,8 +52,8 @@ class adminEditCommonPage extends React.Component {
                 }
             });
         });
-    }
 
+    }
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
@@ -56,9 +63,12 @@ class adminEditCommonPage extends React.Component {
             active: this.state.item.active,
             abstract: $('#courseAbstract').val().trim(),
             content: this.editor.current.html(),
+            launchTime: $('#launchTime').val() ? T.formatDate($('#launchTime').val()) : null,
+            licenseClass: this.licenseClass.current.val()
         };
         this.props.updateCourse(this.state.item._id, changes)
     };
+
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('course:write');
@@ -66,23 +76,10 @@ class adminEditCommonPage extends React.Component {
             title: '', content: '', createdDate: new Date(), active: false
         };
         return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-file' /> Khóa học: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: item.title != '' ? 'Tiêu đề: <b>' + item.title + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
-                    </div>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/course/list'>Danh sách khóa học</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
-                    </ul>
-                </div>
+            <>
                 <div className='row'>
                     <div className='col-12 col-md-12'>
                         <div className='tile'>
-                            <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
                                 <div className='row'>
                                     <div className='form-group col-sm-12 col-md-8 col-lg-6'>
@@ -92,9 +89,8 @@ class adminEditCommonPage extends React.Component {
                                     <div className='form-group col-md-12 col-lg-3 control-label'>
                                         <Select ref={this.addressSelect} displayLabel={true} adapter={ajaxSelectAddress} label='Cơ sở ' />
                                     </div>
-                                    <div className='form-group col-sm-12 col-md-4 col-lg-3'>
-                                        <label className='control-label'>Loại khóa học</label>
-                                        <Dropdown style={{ marginLeft: '10px' }} ref={this.licenseClass} text='' items={Object.keys(T.licenseClass)} />
+                                    <div className='form-group col-sm-12 col-md-4 col-lg-3 control-label'>
+                                        <Select ref={this.licenseClass} displayLabel={true} adapter={ajaxSelectCourseType} label='Loại khóa học ' />
                                     </div>
                                 </div>
 
@@ -155,11 +151,12 @@ class adminEditCommonPage extends React.Component {
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                         <i className='fa fa-lg fa-save' />
                     </button>}
-            </main>
-        );
+            </>
+        )
+
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
 const mapActionsToProps = { updateCourse, getCourse };
-export default connect(mapStateToProps, mapActionsToProps)(adminEditCommonPage);
+export default connect(mapStateToProps, mapActionsToProps)(CommonInfoPage);

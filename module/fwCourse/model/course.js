@@ -22,10 +22,7 @@ module.exports = app => {
     const model = app.db.model('Course', schema);
 
     app.model.course = {
-        create: (data, done) => {
-            if (!data.title) data.title = 'Khoá học mới';
-            model.create(data, done);
-        },
+        create: (data, done) => model.create(data, done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -45,7 +42,7 @@ module.exports = app => {
         getAll: done => model.find({}).sort({ tilte: 1 }).exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('addressId').populate('adminId').populate('supervisorId').exec(done) : model.findOne(condition).populate('adminId').populate('supervisorId').exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('adminId').exec(done) : model.findOne(condition).populate('adminId').exec(done),
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('licenseClass').populate('subjectList').exec(done) : model.findOne(condition).populate('licenseClass').populate('subjectList').exec(done),
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
@@ -54,7 +51,6 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.deleteImage(item.image);
                 item.remove(done);
             }
         }),
