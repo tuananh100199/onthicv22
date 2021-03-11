@@ -21,12 +21,7 @@ class CommonInfoPage extends React.Component {
         T.ready('/user/course/list', () => {
             $('#launchTime, #startTime,#endTime,#endSubTimeExpect,#endSubTimeOfficial,#graduationTestTimeExpect,#graduationTestTimeOfficial')
                 .datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            // $('#startTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            // $('#endTime').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            // $('#endSubTimeExpect').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            // $('#endSubTimeOfficial').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            // $('#graduationTestTimeExpect').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            // $('#graduationTestTimeOfficial').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
+
             const route = T.routeMatcher('/user/course/edit/:courseId'),
                 courseId = route.parse(window.location.pathname).courseId;
             this.props.getCourse(courseId, data => {
@@ -36,14 +31,19 @@ class CommonInfoPage extends React.Component {
                 } else if (data.item) {
                     const item = data.item;
                     $('#courseTitle').val(item.title);
-                    $('#courseAbstract').val(item.licenseClass.shortDescription);
-                    // $('#courseAbstract').val(item.licenseClass ? item.licenseClass.shortDescription : '');
+                    $('#courseAbstract').val(item.abstract);
                     $('#launchTime').datepicker('update', item.launchTime ? T.dateToText(item.launchTime, 'dd/mm/yyyy') : '');
-                    // $('#launchTime').datepicker('update', item && item.launchTime ? T.dateToText(item.launchTime, 'dd/mm/yyyy') : '');
+                    $('#startTime').datepicker('update', item.startTime ? T.dateToText(item.startTime, 'dd/mm/yyyy') : '');
+                    $('#endTime').datepicker('update', item.endTime ? T.dateToText(item.endTime, 'dd/mm/yyyy') : '');
+                    $('#endSubTimeExpect').datepicker('update', item.endSubTimeExpect ? T.dateToText(item.endSubTimeExpect, 'dd/mm/yyyy') : '');
+                    $('#endSubTimeOfficial').datepicker('update', item.endSubTimeOfficial ? T.dateToText(item.endSubTimeOfficial, 'dd/mm/yyyy') : '');
+                    $('#graduationTestTimeExpect').datepicker('update', item.graduationTestTimeExpect ? T.dateToText(item.graduationTestTimeExpect, 'dd/mm/yyyy') : '');
+                    $('#graduationTestTimeOfficial').datepicker('update', item.graduationTestTimeOfficial ? T.dateToText(item.graduationTestTimeOfficial, 'dd/mm/yyyy') : '');
+
                     const address = item.addressId;
                     this.licenseClass.current.val({ id: item.licenseClass._id, text: item.licenseClass.title });
                     this.addressSelect.current.val({ id: address ? address._id : '', text: address ? address.title : '' });
-                    this.editor.current.html(item.licenseClass.detailDescription);
+                    this.editor.current.html(item.content);
 
                     this.setState(data);
                     $('#courseTitle').focus();
@@ -54,17 +54,24 @@ class CommonInfoPage extends React.Component {
         });
 
     }
-    changeActive = (event) => {
-        this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
-    }
+    // changeActive = (event) => {
+    //     this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
+    // }
     save = () => {
         const changes = {
             title: $('#courseTitle').val().trim(),
-            active: this.state.item.active,
+            // active: this.state.item.active,
             abstract: $('#courseAbstract').val().trim(),
             content: this.editor.current.html(),
             launchTime: $('#launchTime').val() ? T.formatDate($('#launchTime').val()) : null,
-            licenseClass: this.licenseClass.current.val()
+            startTime: $('#startTime').val() ? T.formatDate($('#startTime').val()) : null,
+            endTime: $('#endTime').val() ? T.formatDate($('#endTime').val()) : null,
+            endSubTimeExpect: $('#endSubTimeExpect').val() ? T.formatDate($('#endSubTimeExpect').val()) : null,
+            endSubTimeOfficial: $('#endSubTimeOfficial').val() ? T.formatDate($('#endSubTimeOfficial').val()) : null,
+            graduationTestTimeExpect: $('#graduationTestTimeExpect').val() ? T.formatDate($('#graduationTestTimeExpect').val()) : null,
+            graduationTestTimeOfficial: $('#graduationTestTimeOfficial').val() ? T.formatDate($('#graduationTestTimeOfficial').val()) : null,
+            licenseClass: this.licenseClass.current.val(),
+            addressId: this.addressSelect.current.val(),
         };
         this.props.updateCourse(this.state.item._id, changes)
     };

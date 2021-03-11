@@ -129,7 +129,6 @@ class adminEditCType extends React.Component {
                         a.title.localeCompare(b.title)).map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
-                                {console.log("index", index)}
                                 <td>
                                     {item.title ? item.title : 'null'}
                                 </td>

@@ -18,11 +18,20 @@ module.exports = app => {
         content: String,
         active: { type: Boolean, default: false },
         licenseClass: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
+        subjectList: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }]
     });
     const model = app.db.model('Course', schema);
 
     app.model.course = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) => {
+            app.model.courseType.get(data.licenseClass, (_, item) =>
+                model.create({
+                    ...data,
+                    abstract: item.shortDescription,
+                    content: item.detailDescription,
+                    subjectList: item.subjectList
+                }, done))
+        },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -42,7 +51,9 @@ module.exports = app => {
         getAll: done => model.find({}).sort({ tilte: 1 }).exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('addressId').populate('adminId').populate('supervisorId').exec(done) : model.findOne(condition).populate('adminId').populate('supervisorId').exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('licenseClass').populate('subjectList').exec(done) : model.findOne(condition).populate('licenseClass').populate('subjectList').exec(done),
+        get: (condition, done) => typeof condition == 'string' ?
+            model.findById(condition).populate('licenseClass').populate('subjectList').populate('addressId').exec(done)
+            : model.findOne(condition).populate('licenseClass').populate('subjectList').populate('addressId').exec(done),
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

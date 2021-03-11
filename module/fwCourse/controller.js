@@ -39,10 +39,15 @@ module.exports = (app) => {
         app.model.course.create(req.body.newData || {}, (error, item) => res.send({ error, item })
         ));
 
+    // app.put('/api/course', app.permission.check('course:write'), (req, res) => {
+    //     // const changes = req.body.changes;
+    //     // if (changes.categories && changes.categories == 'empty') changes.categories = [];
+    //     app.model.course.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+    // });
     app.put('/api/course', app.permission.check('course:write'), (req, res) => {
-        // const changes = req.body.changes;
-        // if (changes.categories && changes.categories == 'empty') changes.categories = [];
-        app.model.course.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        const $set = req.body.changes;
+        if ($set && $set.subjectList && $set.subjectList === 'empty') $set.subjectList = [];
+        app.model.course.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/course', app.permission.check('course:write'), (req, res) =>

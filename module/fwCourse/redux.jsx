@@ -101,6 +101,7 @@ export function updateCourse(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin khóa học thành công!', 'info');
+                dispatch({ type: CourseGetCourse, item: data.item });
                 dispatch(getCourseInPage());
                 done && done();
             }

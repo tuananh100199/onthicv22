@@ -27,7 +27,7 @@ class CourseModal extends React.Component {
     save = (event) => {
         const newData = {
             title: $('#title').val(),
-            licenseClass: this.licenseClass.current.val()
+            licenseClass: this.licenseClass.current.val(),
         };
 
         if (newData.title == '') {
