@@ -24,6 +24,8 @@ module.exports = (app) => {
             res.send(response);
         });
     });
+    app.get('/api/course-type/all', app.permission.check('course:read'), (req, res) =>
+    app.model.courseType.getAll((error, items) => res.send({ error, items })));
 
     app.get('/api/course-type/edit/:courseTypeId', app.permission.check('course:read'), (req, res) =>
         app.model.courseType.get(req.params.courseTypeId, (error, item) => res.send({ error, item })));

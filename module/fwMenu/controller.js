@@ -24,6 +24,9 @@ module.exports = app => {
     app.get('/user/testimony/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+
 
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
@@ -93,7 +96,7 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList','dangKyTuVan'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
@@ -261,7 +264,20 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
+<<<<<<< HEAD
+        } 
+        else if (pageType == 'dangKyTuVan') {
+            app.model.dangKyTuVan.getAll((error, items) => {
+                res.send({
+                    error,
+                    items: items.map(item => ({ _id: item._id, text: item.title }))
+                })
+            });
+        }
+        else if (pageType == 'content') {
+=======
         } else if (pageType == 'content') {
+>>>>>>> 360b36393cd3a21da618321488ec1295d18ee7af
             app.model.content.getAll((error, items) => {
                 res.send({
                     error,
