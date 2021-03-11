@@ -128,4 +128,27 @@ export function getAllCourseTypeByUser(pageNumber, pageSize, done) {
         }, error => T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
     }
 }
+export function getCourseTypeByUser(_id, done) {
+    return dispatch => {
+        const url = '/course-type/' + _id;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy loại khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: CourseTypeGetCourseType, item: data.item });
+            }
+        }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+    }
+}
+export const ajaxSelectCourseType = {
+    ajax: true,
+    url: '/api/course-type/page/:pageNumber/:pageSize',
+    data: {},
+    processResults: response => ({
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+    })
+}
+
 

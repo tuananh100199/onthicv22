@@ -3,17 +3,96 @@ import { connect } from 'react-redux';
 import { getCourseInPage, createCourse, updateCourse, deleteCourse } from './redux.jsx'
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
+import { Select } from '../../view/component/Input.jsx';
+import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
+
+class CourseModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.modal = React.createRef();
+        this.licenseClass = React.createRef();
+    }
+
+    componentDidMount() {
+        $(document).ready(() => {
+            $(this.modal.current).on('shown.bs.modal', () => $('#title').focus());
+        });
+    }
+
+    show = () => {
+        $('#title').val('');
+        $(this.modal.current).modal('show');
+    }
+
+    save = (event) => {
+        const newData = {
+            title: $('#title').val(),
+            licenseClass: this.licenseClass.current.val(),
+        };
+
+        if (newData.title == '') {
+            T.notify('Tên khóa học bị trống!', 'danger');
+            $('#title').focus();
+        } if (newData.licenseClass == '') {
+            T.notify('Loại khóa học bị trống!', 'danger');
+            this.licenseClass.current.focus();
+        } else {
+            this.props.createCourse(newData, data => {
+                if (data.item) {
+                    $(this.modal.current).modal('hide');
+                    this.props.history.push('/user/course/edit/' + data.item._id);
+                }
+            });
+        }
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <form className='modal-dialog' role='document' onSubmit={this.save}>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Khóa học mới</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+                        <div className='modal-body'>
+                            <div className='form-group'>
+                                <label htmlFor='title'>Tên khóa học</label>
+                                <input className='form-control' id='title' type='text' placeholder='Nhập tên khóa học' />
+                            </div>
+                            <div className='form-group'>
+                                <Select ref={this.licenseClass} displayLabel={true} adapter={ajaxSelectCourseType} label='Loại khóa học' />
+                            </div>
+                        </div>
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='submit' className='btn btn-primary'>Lưu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
 
 class CoursePage extends React.Component {
-    componentDidMount() {
-        this.props.getCourseInPage();
-        T.ready();
+    constructor(props) {
+        super(props);
+        this.modal = React.createRef();
     }
 
+    componentDidMount() {
+        this.props.getCourseInPage();
+        T.ready('/user/course/list');
+    }
     create = (e) => {
-        this.props.createCourse(data => this.props.history.push('/user/course/edit/' + data.item._id));
+        this.modal.current.show();
         e.preventDefault();
     }
+
 
     changeActive = (item) => {
         this.props.updateCourse(item._id, { active: !item.active });
@@ -36,8 +115,7 @@ class CoursePage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tiêu đề</th>
-                            <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                            <th style={{ width: '100%' }}>Tiêu đề</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -47,9 +125,6 @@ class CoursePage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/course/edit/' + item._id}>{item.title}</Link></td>
-                                <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={item.image} alt='avatar' style={{ height: '32px' }} />
-                                </td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} disabled={readOnly} />
@@ -79,6 +154,7 @@ class CoursePage extends React.Component {
                     <h1><i className='fa fa-file' /> Khóa học: Danh sách</h1>
                 </div>
                 <div className='row tile'>{table}</div>
+                <CourseModal createCourse={this.props.createCourse} ref={this.modal} history={this.props.history} />
                 <Pagination name='pageCourse'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getCourseInPage} />
