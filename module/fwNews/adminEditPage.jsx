@@ -32,6 +32,7 @@ class NewsEditPage extends React.Component {
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 this.props.history.push('/user/news/list');
             } else if (data.item) {
+                console.log('data.categories',data.item);
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
                 $('#neNewsCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const neNewsStartPost = $('#neNewsStartPost').datetimepicker(T.dateFormat);

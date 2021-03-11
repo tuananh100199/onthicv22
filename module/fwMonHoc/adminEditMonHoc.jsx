@@ -20,7 +20,7 @@ class AddLessonModal extends React.Component {
     addLesson = () => {
         const lessonId = this.lessonSelect.current.val();
         this.props.addLesson(this.props.monhocId, lessonId, () => {
-            T.notify('Thêm câu hỏi thành công!', 'info');
+            T.notify('Thêm bài học thành công!', 'info');
             $(this.modal.current).modal('hide');
         });
     }
@@ -170,7 +170,7 @@ class AdminEditMonHoc extends React.Component {
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
-                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
+                                        <Link to={'/user/dao-tao/bai-hoc/view/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('lesson:write') ?
