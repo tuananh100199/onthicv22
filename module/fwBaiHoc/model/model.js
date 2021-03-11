@@ -5,6 +5,7 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         lessonVideo: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
+        lessonQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
     });
     const model = app.db.model('Lesson', schema);
 
@@ -37,7 +38,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lessonVideo', 'title link image');
+                if (populate) result.populate('lessonVideo', 'title link image').populate('lessonQuestion');
                 result.exec(done);
             };
 
@@ -61,6 +62,9 @@ module.exports = app => {
         }),
         pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, lessonVideoImage, done) => {
             model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink, image: lessonVideoImage } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
+        },
+        pushLessonQuestion: (condition, lessonQuestionId, lessonQuestionTitle, lessonQuestionDefaultAnswer, lessonQuestionContent, lessonQuestionActive, lessonQuestionTypeValue, lessonQuestionTypeName, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessonQuestion: { _id: lessonQuestionId, title: lessonQuestionTitle, defaultAnswer: lessonQuestionDefaultAnswer, content: lessonQuestionContent, active: lessonQuestionActive, typeValue: lessonQuestionTypeValue, typeName: lessonQuestionTypeName } } }, { new: true }).select('_id lessonQuestion').populate('lessonQuestion').exec(done);
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

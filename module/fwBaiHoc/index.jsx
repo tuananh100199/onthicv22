@@ -2,11 +2,12 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from '../../view/component/Loading.jsx';
 import baihoc from './redux/redux.jsx';
+import question from './redux/reduxQuestion.jsx'
 import SubMenusPage from '../../view/component/SubMenusPage.jsx';
 
 export default {
     redux: {
-        baihoc
+        baihoc, question
     },
     routes: [
         {

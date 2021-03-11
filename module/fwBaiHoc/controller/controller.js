@@ -65,4 +65,51 @@ module.exports = (app) => {
     //         }
     //     });
     // });
+    //Question ---------------------------------------------------------------------------------------------------------
+    app.get('/api/lesson-question/:lessonId', (req, res) => {
+        const lessonId = req.params.lessonId;
+        app.model.lesson.get(lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => {
+            res.send({ error, item });
+        });
+    });
+
+    app.post('/api/lesson-question/:_id', app.permission.check('baihoc:write'), (req, res) => {
+        const _id = req.params._id, data = req.body.data;
+        app.model.lessonQuestion.create(data, (error, question) => {
+            if (error || !question) {
+                res.send({ error });
+            } else {
+                app.model.lesson.pushLessonQuestion({ _id }, question._id, question.title, question.defaultAnswer, question.content, question.active, question.typeValue, question.typeName, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
+        });
+    });
+
+    app.put('/api/lesson-question', app.permission.check('baihoc:write'), (req, res) => {
+        const _id = req.body._id, data = req.body.data;
+        app.model.lessonQuestion.update(_id, data, (error, question) => {
+            res.send({ error, question });
+        });
+    });
+
+    app.put('/api/lesson-question/swap', app.permission.check('baihoc:write'), (req, res) => {
+        const data = req.body.data, lessonId = req.body.lessonId;
+        app.model.lesson.update(lessonId, data, (error, item) => {
+            res.send({ error, item });
+        });
+    });
+
+    app.delete('/api/lesson-question', app.permission.check('baihoc:write'), (req, res) => {
+        const { data, lessonId, _id } = req.body;
+        if (data.questions && data.questions == 'empty') data.questions = [];
+        app.model.lesson.update(lessonId, data, (error, _) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.lessonQuestion.delete(_id, error => res.send({ error }));
+            }
+        });
+    });
+    //End question -----------------------------------------------------------------------------------------------------
 };
