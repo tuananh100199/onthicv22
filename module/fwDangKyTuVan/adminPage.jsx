@@ -11,32 +11,31 @@ class DangKyTuVanModal extends React.Component {
 
         this.modal = React.createRef();
         this.btnSave = React.createRef();
-        this.editor = { vi: React.createRef(), en: React.createRef() };
+        this.editor = React.createRef();
     }
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
             $(this.modal.current).on('hidden.bs.modal', () => $('#dangKyTuVanTabs li:first-child a').tab('show'))
-                .on('shown.bs.modal', () => $('#statisticViName').focus());
+                .on('shown.bs.modal', () => $('#dangKyTuVanName').focus());
         }, 250));
     }
 
     show = () => {
-        $('#statisticViName').val('');
-        $('#statisticEnName').val('');
+        $('#dangKyTuVanName').val('');
         this.editor.current.html('');
         $(this.modal.current).modal('show');
     }
 
     save = (event) => {
-        const statisticName =  $('#statisticViName').val().trim();
+        const dangKyTuVanName =  $('#dangKyTuVanName').val().trim();
         const description =  this.editor.current.html();
     
-        if (statisticName === '') {
-            T.notify('Tên nhóm đăng ký tư vấn bị trống!', 'danger');
-            $('#statisticViName').focus();
+        if (dangKyTuVanName === '') {
+            T.notify('Tên đăng ký tư vấn bị trống!', 'danger');
+            $('#dangKyTuVanName').focus();
         } else {
-            this.props.createDangKyTuVan(statisticName,description, '', data => {
+            this.props.createDangKyTuVan(dangKyTuVanName,description,'', data => {
                 if (data.error === undefined || data.error == null) {
                     $(this.modal.current).modal('hide');
                     if (data.item) {
@@ -54,29 +53,21 @@ class DangKyTuVanModal extends React.Component {
                 <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Thống kê</h5>
+                            <h5 className='modal-title'>Đăng ký tư vấn</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <ul id='dangKyTuVanTabs' className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#statisticViTab'>Việt Nam</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#statisticEnTab'>English</a>
-                                </li>
-                            </ul>
                             <div className='tab-content'>
                                 <div id='statisticViTab' className='tab-pane fade show active mt-3'>
                                     <div className='form-group'>
-                                        <label htmlFor='statisticViName'>Tên nhóm thống kê</label>
-                                        <input className='form-control' id='statisticViName' type='text' placeholder='Tên nhóm thống kê' />
+                                        <label htmlFor='dangKyTuVanName'>Tên đăng ký tư vấn</label>
+                                        <input className='form-control' id='dangKyTuVanName' type='text' placeholder='Tên đăng ký tư vấn' />
                                     </div>
                                     <div className='form-group'>
-                                        <label htmlFor='statisticViDescription'>Mô tả</label>
-                                        <Editor ref={this.editor} id='statisticViDescription' /><br />
+                                        <label htmlFor='dangKyTuVanDescription'>Mô tả</label>
+                                        <Editor ref={this.editor} id='dangKyTuVanDescription' /><br />
                                     </div>
                                 </div>
                             </div>

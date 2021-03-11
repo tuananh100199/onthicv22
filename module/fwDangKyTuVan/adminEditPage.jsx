@@ -165,16 +165,18 @@ class DangKyTuVanEditPage extends React.Component {
 
     save = () => {
         const title =  $('#title').val().trim(),
-            formTitle =  $('#formTitle').val().trim();
-
+            formTitle =  $('#formTitle').val().trim(),
+            courseType = $('#courseType').val();
         const description = this.editor.current.html();
-
         if (title === '') {
             T.notify('Tiêu đề đăng ký tư vấn trống!', 'danger');
             $('#title').focus();
         }else if(formTitle === '') {
             T.notify('Tiều đề form đăng ký tư vấn trống!', 'danger');
             $('#formTitle').focus();
+        }else if(courseType === null) {
+            T.notify('Vui lòng chọn loại khóa học!', 'danger');
+            $('#courseType').focus();
         } else {
             const changes = {
                 title: title,
@@ -256,7 +258,7 @@ class DangKyTuVanEditPage extends React.Component {
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         &nbsp;/&nbsp;
-                        <Link to='/user/dang-ky-tu-van'>Danh sách đăng ký tư vấn</Link>
+                        <Link to='/user/component'>Danh sách đăng ký tư vấn</Link>
                         &nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>

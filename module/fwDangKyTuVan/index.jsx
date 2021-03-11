@@ -16,10 +16,13 @@ export default {
         //     component: Loadable({ loading: Loading, loader: () => import('./adminPage.jsx') })
         // },
         { 
-            path: '/user/dang-ky-tu-van-list', component: Loadable({ loading: Loading, loader: () => import('./adminDangKyTuVan.jsx') }) 
+            path: '/user/dang-ky-tu-van-list', component: Loadable({ loading: Loading, loader: () => import('./adminDangKyTuVanList.jsx') }) 
         },  
         { 
             path: '/user/dang-ky-tu-van/edit/:dangKyTuVanId', component: Loadable({ loading: Loading, loader: () => import('./adminEditPage.jsx') }) 
+        },
+        { 
+            path: '/user/dang-ky-tu-van-list/edit/:dangKyTuVanListId', component: Loadable({ loading: Loading, loader: () => import('./adminDangKyTuVanListDetail.jsx') }) 
         },
           
     ],

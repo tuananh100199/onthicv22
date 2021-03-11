@@ -11,8 +11,6 @@ class SectionDangKyTuVan extends React.Component {
         this.firstname = React.createRef();
         this.lastname = React.createRef();
         this.email = React.createRef();
-        this.subject = React.createRef();
-        this.message = React.createRef();
         this.phone = React.createRef();
     }
     componentDidMount() {
@@ -105,27 +103,19 @@ class SectionDangKyTuVan extends React.Component {
         } else if (!T.validateEmail(this.email.current.value)) {
             T.notify('Email không hợp lệ!', 'danger');
             (this.email.current).focus();
-        } else if (this.subject.current.value == '') {
-            T.notify('Chủ đề bị trống!', 'danger');
-            (this.subject.current).focus();
-        } else if (this.message.current.value == '') {
-            T.notify('Nội dung bị trống!', 'danger');
-            (this.message.current).focus();
         } else if (this.phone.current.value == '') {
             T.notify('Số điện thoại bị trống!', 'danger');
             (this.phone.current).focus();
         } else {
             this.props.createDangKyTuVanListItem(
-                this.state.item._id,
                 {
+                parentId: this.state.item._id,
                 firstname: this.firstname.current.value,
                 lastname: this.lastname.current.value,
                 email: this.email.current.value,
-                subject: this.subject.current.value,
-                message: this.message.current.value,
                 phone: this.phone.current.value
             }, () => {
-                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.subject.current.value = this.message.current.value = this.phone.current.value = '';
+                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = '';
                 T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
             });
         }

@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        parentId: app.db.Schema.Types.ObjectId,
+        parentId:[{type: app.db.Schema.Types.ObjectId, ref: 'DangKyTuVan'}],
+
         firstname: String,
         lastname: String,
         email: String,
@@ -17,7 +18,10 @@ module.exports = app => {
     app.model.dangKyTuVanList = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition,done) => condition ? model.find({ condition }).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: (condition,done) => {
+            console.log('condition', condition);
+            condition ? model.find({"parentId" : condition}).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done)
+        },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {

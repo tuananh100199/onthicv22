@@ -66,27 +66,6 @@ export default function dangKyTuVanReducer(state = null, data) {
     }
 }
 
-// Texts -------------------------------------------------------------------------------------------------------------
-const texts = T.language({
-    vi: {
-        getAllDangKyTuVanError: 'Lấy danh sách thống kê bị lỗi!',
-        getDangKyTuVanError: 'Lấy thống kê bị lỗi!',
-        createDangKyTuVanError: 'Tạo thống kê bị lỗi!',
-        updateDangKyTuVanError: 'Cập nhật thông tin thống kê bị lỗi!',
-        deleteDangKyTuVanError: 'Xóa thống kê bị lỗi!',
-        updateDangKyTuVanSuccess: 'Cập nhật thông tin thống kê thành công!',
-        deleteDangKyTuVanSuccess: 'Xóa thống kê thành công!'
-    },
-    en: {
-        getAllDangKyTuVanError: 'Failed to get list of DangKyTuVans!',
-        getDangKyTuVanError: 'Failed to get DangKyTuVan!',
-        createDangKyTuVanError: 'Failed to create new DangKyTuVan!',
-        updateDangKyTuVanError: 'Failed to update information of DangKyTuVans!',
-        deleteDangKyTuVanError: 'Failed to delete DangKyTuVan!',
-        updateDangKyTuVanSuccess: 'DangKyTuVan is updated!',
-        deleteDangKyTuVanSuccess: 'DangKyTuVan is deleted!'
-    }
-});
 
 // Actions ------------------------------------------------------------------------------------------------------------
 export function getAllDangKyTuVan(done) {
@@ -94,13 +73,13 @@ export function getAllDangKyTuVan(done) {
         const url = '/api/dang-ky-tu-van/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getAllDangKyTuVanError, 'danger');
+                T.notify('Lấy tất cả đăng ký tư vấn bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: DangKyTuVanGetAll, items: data.items });
             }
-        }, error => T.notify(texts.getAllDangKyTuVanError, 'danger'));
+        }, error => T.notify('Lấy tất cả đăng ký tư vấn bị lỗi', 'danger'));
     }
 }
 
@@ -109,13 +88,13 @@ export function createDangKyTuVan(title, description, background, done) {
         const url = '/api/dang-ky-tu-van';
         T.post(url, { title, description, background }, data => {
             if (data.error) {
-                T.notify(texts.createDangKyTuVanError, 'danger');
+                T.notify('Tạo đăng ký tư vấn bị lỗi', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllDangKyTuVan());
                 if (done) done(data);
             }
-        }, error => T.notify(texts.createDangKyTuVanError, 'danger'));
+        }, error => T.notify('Tạo đăng ký tư vấn bị lỗi', 'danger'));
     }
 }
 
@@ -124,15 +103,15 @@ export function updateDangKyTuVan(_id, changes, done) {
         const url = '/api/dang-ky-tu-van';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify(texts.updateDangKyTuVanError, 'danger');
+                T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify(texts.updateDangKyTuVanSuccess, 'info');
+                T.notify('Cập nhật đăng ký tư vấn thành công', 'info');
                 dispatch(getAllDangKyTuVan());
                 done && done();
             }
-        }, error => T.notify(texts.updateDangKyTuVanError, 'danger'));
+        }, error => T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger'));
     }
 }
 
@@ -141,13 +120,13 @@ export function deleteDangKyTuVan(_id) {
         const url = '/api/dang-ky-tu-van';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify(texts.deleteDangKyTuVanError, 'danger');
+                T.notify('Xóa đăng ký tư vấn lỗi', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert(texts.deleteDangKyTuVanSuccess, 'error', false, 800);
+                T.alert('Xóa đăng ký tư vấn thành công', 'error', false, 800);
                 dispatch(getAllDangKyTuVan());
             }
-        }, error => T.notify(texts.deleteDangKyTuVanError, 'danger'));
+        }, error => T.notify('Xóa đăng ký tư vấn lỗi', 'danger'));
     }
 }
 
@@ -158,13 +137,13 @@ export function getDangKyTuVanItem(_id, done) {
         const url = '/api/dang-ky-tu-van/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getDangKyTuVanError, 'danger');
+                T.notify('Lấy đăng ký tư vấn lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done({ item: data.item });
                 dispatch({ type: DangKyTuVanUpdate, item: data.item });
             }
-        }, error => T.notify(texts.getDangKyTuVanError, 'danger'));
+        }, error => T.notify('Lấy đăng ký tư vấn lỗi', 'danger'));
     }
 }
 
@@ -190,11 +169,11 @@ export function getDangKyTuVanByUser(_id, done) {
         const url = '/home/dang-ky-tu-van/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify(T.getDangKyTuVanError, 'danger');
+                T.notify('Lấy đăng ký tư vấn lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify(T.getDangKyTuVanError, 'danger'));
+        }, error => T.notify('Lấy đăng ký tư vấn lỗi', 'danger'));
     }
 }

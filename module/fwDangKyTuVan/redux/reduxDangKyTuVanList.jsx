@@ -41,10 +41,12 @@ export default function DangKyTuVanListReducer(state = null, data) {
 
         case DangKyTuVanListUpdate: {
             if (state) {
+                console.log('state',state);
                 let updatedItems = Object.assign({}, state.items),
-                    updatedPage = Object.assign({}, state.page),
+                    // updatedPage = Object.assign({}, state.page),
                     updatedUnreads = Object.assign({}, state.unreads),
                     updatedItem = data.item;
+                    console.log('data.item',data.item);
 
                 if (updatedItems) {
                     for (let i = 0, n = updatedItems.length; i < n; i++) {
@@ -53,16 +55,21 @@ export default function DangKyTuVanListReducer(state = null, data) {
                             break;
                         }
                     }
+                    console.log('hree');
                 }
-                if (updatedPage) {
-                    for (let i = 0, n = updatedPage.list.length; i < n; i++) {
-                        if (updatedPage.list[i]._id == updatedItem._id) {
-                            updatedPage.list.splice(i, 1, updatedItem);
-                            break;
-                        }
-                    }
-                }
+                // if (updatedPage) {
+                //     console.log('hreee');
+
+                //     for (let i = 0, n = updatedPage.list.length; i < n; i++) {
+                //         if (updatedPage.list[i]._id == updatedItem._id) {
+                //             updatedPage.list.splice(i, 1, updatedItem);
+                //             break;
+                //         }
+                //     }
+                // }
                 if (updatedUnreads) {
+                    console.log('hreee');
+
                     if (updatedItem.read) {
                         for (let i = 0, n = updatedUnreads.length; i < n; i++) {
                             if (updatedUnreads[i]._id == updatedItem._id) {
@@ -71,10 +78,10 @@ export default function DangKyTuVanListReducer(state = null, data) {
                             }
                         }
                     } else {
-                        updatedPage.list.splice(0, 1, updatedItem);
+                        // updatedPage.list.splice(0, 1, updatedItem);
                     }
                 }
-                return Object.assign({}, state, { items: updatedItems, page: updatedPage, unreads: updatedUnreads });
+                return Object.assign({}, state, { items: updatedItems, unreads: updatedUnreads });
             } else {
                 return state;
             }
@@ -86,9 +93,9 @@ export default function DangKyTuVanListReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getDangKyTuVanListAll(done) {
+export function getDangKyTuVanListAll(dangKyTuVanListId, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/all';
+        const url = '/api/dang-ky-tu-van-list/all/' + dangKyTuVanListId;;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy tất cả đăng ký tư vấn bị lỗi!', 'danger');
@@ -125,6 +132,7 @@ export function getDangKyTuVanListItem(dangKyTuVanId, done) {
             if (data.error) {
                 T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
+                done && done(data.error);
             } else {
                 if (done) done(data.item);
                 dispatch({ type: DangKyTuVanListUpdate, item: data.item });
@@ -143,7 +151,7 @@ export function updateDangKyTuVanListItem(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật đăng ký tư vấn thành công!', 'info');
-                dispatch(getDangKyTuVanListPage());
+                dispatch(getDangKyTuVanListAll());
                 done && done();
             }
         }, error => T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger'));
@@ -172,10 +180,10 @@ export function changeDangKyTuVanList(item) {
     return { type: DangKyTuVanListUpdate, item };
 }
 
-export function createDangKyTuVanListItem(_id,dangKyTuVan, done) {
+export function createDangKyTuVanListItem(dangKyTuVan, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item/';
-        T.post(url, {_id, dangKyTuVan}, data => {
+        T.post(url, {dangKyTuVan}, data => {
             if (data.error) {
                 T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
