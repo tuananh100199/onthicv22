@@ -210,10 +210,6 @@ class MultimediaPage extends React.Component {
                                 </button>
                             </div>
                         </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> 360b36393cd3a21da618321488ec1295d18ee7af
                     </div>
 
                     <div className='col-md-6'>
