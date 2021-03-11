@@ -4,6 +4,70 @@ import { getCourseInPage, createCourse, updateCourse, deleteCourse } from './red
 import { Link } from 'react-router-dom';
 import Pagination from '../../view/component/Pagination.jsx';
 
+class AddressModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.modal = React.createRef();
+    }
+
+    componentDidMount() {
+        $(document).ready(() => {
+            $(this.modal.current).on('shown.bs.modal', () => $('#addressName').focus());
+        });
+    }
+
+    show = () => {
+        $('#addressName').val('');
+        $(this.modal.current).modal('show');
+    }
+
+    save = (event) => {
+        const newData = {
+            title: $('#addressName').val(),
+        };
+
+        if (newData.title == '') {
+            T.notify('Tên cơ sở bị trống!', 'danger');
+            $('#addressName').focus();
+        } else {
+            this.props.createAddress(newData, data => {
+                if (data.item) {
+                    $(this.modal.current).modal('hide');
+                    this.props.history.push('/user/address/edit/' + data.item._id);
+                }
+            });
+        }
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <form className='modal-dialog' role='document' onSubmit={this.save}>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Cơ sở mới</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+                        <div className='modal-body'>
+                            <div className='form-group'>
+                                <label htmlFor='addressName'>Tên cơ sở</label>
+                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' />
+                            </div>
+                        </div>
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='submit' className='btn btn-primary'>Lưu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
 class CoursePage extends React.Component {
     componentDidMount() {
         this.props.getCourseInPage();

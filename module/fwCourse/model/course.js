@@ -17,29 +17,14 @@ module.exports = app => {
         abstract: String,
         content: String,
         active: { type: Boolean, default: false },
-        licenseClass: { type: String, enum: ['B1', 'B2', 'C'], default: 'B1' },
+        licenseClass: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
     });
     const model = app.db.model('Course', schema);
 
     app.model.course = {
         create: (data, done) => {
             if (!data.title) data.title = 'Khoá học mới';
-            model.create(data, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    item.image = '/img/course/' + item._id + '.jpg';
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => {
-                        if (error) {
-                            done(error);
-                        } else {
-                            item.save(done);
-                        }
-                    });
-                }
-            })
+            model.create(data, done);
         },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -50,14 +35,14 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition, '-content').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: done => model.find({}).sort({ tilte: 1 }).exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('addressId').populate('adminId').populate('supervisorId').exec(done) : model.findOne(condition).populate('adminId').populate('supervisorId').exec(done),
         // get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('adminId').exec(done) : model.findOne(condition).populate('adminId').exec(done),
