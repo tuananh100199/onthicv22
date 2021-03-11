@@ -28,7 +28,6 @@ module.exports = app => {
     app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
 
-
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.buildAppMenus = (menuTree, callback) => {
         const menus = {},

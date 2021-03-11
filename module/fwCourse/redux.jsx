@@ -10,9 +10,9 @@ export default function courseReducer(state = null, data) {
     switch (data.type) {
         case CourseGetCourseInPage:
             return Object.assign({}, state, { page: data.page });
-       
+
         case CourseGetCourse:
-            return Object.assign({}, state, { course: data.item, categories: data.categories});
+            return Object.assign({}, state, { course: data.item });
 
         case CourseGetCourseInPageByUser:
             if (state == null || state.userCondition != data.condition) {
@@ -70,16 +70,16 @@ export function getCourse(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
-                dispatch({ type: CourseGetCourse, item: data.item, categories: data.categories });
+                dispatch({ type: CourseGetCourse, item: data.item });
             }
         }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
     }
 }
 
-export function createCourse(done) {
+export function createCourse(newData, done) {
     return dispatch => {
         const url = '/api/course';
-        T.post(url, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
@@ -101,6 +101,7 @@ export function updateCourse(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin khóa học thành công!', 'info');
+                dispatch({ type: CourseGetCourse, item: data.item });
                 dispatch(getCourseInPage());
                 done && done();
             }
@@ -172,19 +173,5 @@ export function getCourseFeed(done) {
                 dispatch({ type: CourseGetCourseFeed, list: data.page.list });
             }
         }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
-    }
-}
-
-export function checkLink(_id, link) {
-    return dispatch => {
-        const url = '/course/item/check-link';
-        T.put(url, { _id, link }, data => {
-            if (data.error) {
-                T.notify('Link không hợp lệ!', 'danger');
-                console.error('PUT: ' + url + '.', error);
-            } else {
-                T.notify('Link hợp lệ!', 'success');
-            }
-        }, error => T.notify('Kiểm tra Link bị lỗi!', 'danger'));
     }
 }

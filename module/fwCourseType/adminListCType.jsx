@@ -38,7 +38,6 @@ class CourseTypePage extends React.Component {
                     <tbody>
                         {list.map((item, index) => (
                             <tr key={index}>
-                                {console.log('item', item)}
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/course-type/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }}>

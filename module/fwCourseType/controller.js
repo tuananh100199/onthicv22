@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.get('/course-type/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/course-type/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course-type/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.courseType.getPage(pageNumber, pageSize, {}, (error, page) => {
@@ -25,7 +25,7 @@ module.exports = (app) => {
         });
     });
     app.get('/api/course-type/all', app.permission.check('course:read'), (req, res) =>
-    app.model.courseType.getAll((error, items) => res.send({ error, items })));
+        app.model.courseType.getAll((error, items) => res.send({ error, items })));
 
     app.get('/api/course-type/edit/:courseTypeId', app.permission.check('course:read'), (req, res) =>
         app.model.courseType.get(req.params.courseTypeId, (error, item) => res.send({ error, item })));
@@ -58,5 +58,5 @@ module.exports = (app) => {
             res.send(response);
         })
     });
-
 };
+
