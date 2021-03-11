@@ -4,7 +4,7 @@ import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLe
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 import { Select } from '../../view/component/Input.jsx';
-import { ajaxSelectLesson } from '../fwBaiHoc/redux.jsx';
+import { ajaxSelectLesson } from '../fwBaiHoc/redux/redux.jsx';
 import Tooltip from 'rc-tooltip';
 
 
@@ -62,7 +62,7 @@ class AdminEditMonHoc extends React.Component {
         this.addLessonModal = React.createRef();
     }
     componentDidMount() {
-        T.ready('/user/dao-tao', () => {
+        T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
             this.props.getLessonList(params.monHocId);
@@ -170,7 +170,7 @@ class AdminEditMonHoc extends React.Component {
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
-                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
+                                        <Link to={'/user/dao-tao/bai-hoc/view/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('lesson:write') ?
