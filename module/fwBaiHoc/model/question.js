@@ -4,7 +4,6 @@ module.exports = app => {
         title: String,
         defaultAnswer: String,
         content: String,
-        typeName: String,
         typeValue: { type: [String], default: [] }
     });
     const model = app.db.model('LessonQuestion', schema);

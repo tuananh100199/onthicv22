@@ -63,8 +63,8 @@ module.exports = app => {
         pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, lessonVideoImage, done) => {
             model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink, image: lessonVideoImage } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
         },
-        pushLessonQuestion: (condition, lessonQuestionId, lessonQuestionTitle, lessonQuestionDefaultAnswer, lessonQuestionContent, lessonQuestionActive, lessonQuestionTypeValue, lessonQuestionTypeName, done) => {
-            model.findOneAndUpdate(condition, { $push: { lessonQuestion: { _id: lessonQuestionId, title: lessonQuestionTitle, defaultAnswer: lessonQuestionDefaultAnswer, content: lessonQuestionContent, active: lessonQuestionActive, typeValue: lessonQuestionTypeValue, typeName: lessonQuestionTypeName } } }, { new: true }).select('_id lessonQuestion').populate('lessonQuestion').exec(done);
+        pushLessonQuestion: (condition, lessonQuestionId, lessonQuestionTitle, lessonQuestionDefaultAnswer, lessonQuestionContent, lessonQuestionActive, lessonQuestionTypeValue, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessonQuestion: { _id: lessonQuestionId, title: lessonQuestionTitle, defaultAnswer: lessonQuestionDefaultAnswer, content: lessonQuestionContent, active: lessonQuestionActive, typeValue: lessonQuestionTypeValue } } }, { new: true }).select('_id lessonQuestion').populate('lessonQuestion').exec(done);
         },
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

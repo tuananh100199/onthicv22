@@ -112,9 +112,7 @@ class VideoModal extends React.Component {
 class QuestionModal extends React.Component {
     constructor(props) {
         super(props);
-        let types = Object.keys(T.questionTypes).map(key => ({ value: key, label: T.questionTypes[key] }));
         this.state = {
-            questionTypes: types,
             itemID: null,
             value: [],
             active: false,
@@ -134,17 +132,12 @@ class QuestionModal extends React.Component {
 
 
     show = (item) => {
-        let { title, defaultAnswer, content, typeName, typeValue, active } = item ?
-            item : { title: '', defaultAnswer: '', content: '', typeName: '', typeValue: [], active: false, };
+        let { title, defaultAnswer, content, typeValue, active } = item ?
+            item : { title: '', defaultAnswer: '', content: '', typeValue: [], active: false, };
         $(this.btnSave.current).data('isNewMember', item == null);
         $('#questionTitle').val(title);
         $('#questionDefault').val(defaultAnswer);
         $('#questionAnswer').val(typeValue.join('\n'));
-        this.setState({
-            selectedItem: { value: typeName, label: T.questionTypes[typeName] },
-            itemId: item ? item._id : null,
-            active: active,
-        });
         this.editor.current.html(content ? content : '');
         $(this.modal.current).modal('show');
     };
@@ -174,15 +167,12 @@ class QuestionModal extends React.Component {
             defaultAnswer: $('#questionDefault').val() ? $('#questionDefault').val().trim() : '',
             content: this.editor.current.html(),
             active: this.state.active,
-            typeName: this.state.selectedItem ? this.state.selectedItem.value : null,
             typeValue: ret,
         };
 
         if (changes.title == '') {
             T.notify('Tên câu hỏi bị trống', 'danger');
             $('#questionTitle').focus();
-        } else if (changes.typeName == '' || !changes.typeName) {
-            T.notify('Loại câu hỏi bị trống!', 'danger');
         } else {
             if (isNewMember) {
                 this.props.add(changes);
@@ -199,8 +189,6 @@ class QuestionModal extends React.Component {
     };
 
     render() {
-        const select = this.state.selectedItem;
-        let isShow = (select && select.value && (select.value == 'choice' || select.value == 'multiChoice')) ? 'block' : 'none';
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
                 <form className='modal-dialog modal-lg' role='document'
@@ -228,10 +216,6 @@ class QuestionModal extends React.Component {
                                         </label>
                                     </div>
                                 </div>
-                                <div className='col-8'>
-                                    <label htmlFor=''>Loại câu hỏi</label>
-                                    <Select options={this.state.questionTypes} onChange={this.onSelectType} value={this.state.selectedItem} />
-                                </div>
                             </div>
                             <div className='form-group row'>
                                 <div className='col-12'>
@@ -240,7 +224,7 @@ class QuestionModal extends React.Component {
                                 </div>
                             </div>
 
-                            <div className='form-group row' style={{ display: isShow }}>
+                            <div className='form-group row'>
                                 <div key={0} className='col-12'>
                                     <label>Danh sách câu trả lời</label>
                                     <textarea defaultValue='' className='form-control' id='questionAnswer' style={{ width: '100%', minHeight: '100px', padding: '0 3px' }} />
@@ -248,7 +232,7 @@ class QuestionModal extends React.Component {
                             </div>
                             <div className='form-group row'>
                                 <div className='col-12'>
-                                    <label htmlFor='questionDefault'>Câu trả lời mặc định</label>
+                                    <label htmlFor='questionDefault'>Đáp án</label>
                                     <input type='text' className='form-control' id='questionDefault' />
                                 </div>
                             </div>

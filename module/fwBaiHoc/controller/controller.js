@@ -79,7 +79,7 @@ module.exports = (app) => {
             if (error || !question) {
                 res.send({ error });
             } else {
-                app.model.lesson.pushLessonQuestion({ _id }, question._id, question.title, question.defaultAnswer, question.content, question.active, question.typeValue, question.typeName, (error, item) => {
+                app.model.lesson.pushLessonQuestion({ _id }, question._id, question.title, question.defaultAnswer, question.content, question.active, question.typeValue, (error, item) => {
                     res.send({ error, item });
                 });
             }
