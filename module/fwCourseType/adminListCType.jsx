@@ -7,7 +7,6 @@ import Pagination from '../../view/component/Pagination.jsx';
 class CourseTypePage extends React.Component {
     componentDidMount() {
         this.props.getCourseTypeInPage();
-        T.ready('/user/settings', null);
     }
 
     create = (e) => {

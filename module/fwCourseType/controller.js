@@ -1,8 +1,8 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.setting,
+        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         menus: {
-            2120: { title: 'Loại khoá học', link: '/user/course-type/list', icon: 'fa fa-file-text-o', backgroundColor: 'rgb(255, 165, 0)' },
+            8010: { title: 'Loại khoá học', link: '/user/course-type/list' },
         }
     };
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });

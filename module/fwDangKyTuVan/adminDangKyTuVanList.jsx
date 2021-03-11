@@ -26,7 +26,7 @@ class DangKyTuVanModal extends React.Component {
         const newData = {
             title: $('#dangKyTuVanName').val().trim()
         };
-        
+
         if (newData.title == '') {
             T.notify('Tên danh sách đăng ký tư vấn bị trống!', 'danger');
             $('#dangKyTuVanName').focus();
@@ -87,7 +87,7 @@ class DangKyTuVanPage extends React.Component {
         this.modal.current.show();
         e.preventDefault();
     }
-    
+
     delete = (e, item) => {
         T.confirm('Xóa danh sách đăng ký tư vấn', 'Bạn có chắc bạn muốn xóa danh sách đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
         e.preventDefault();
@@ -134,17 +134,17 @@ class DangKyTuVanPage extends React.Component {
         }
         return (
             <main className='app-content'>
-               <div className='app-title'>
-                   <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
-               </div>
-               <div className='row tile'>{table}</div>
-                   <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
-                   <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                       onClick={this.create}>
-                       <i className='fa fa-lg fa-plus' />
-                   </button>
-           </main>
-           );
+                <div className='app-title'>
+                    <h1><i className='fa fa-file' /> Đăng ký tư vấn</h1>
+                </div>
+                <div className='row tile'>{table}</div>
+                <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                    onClick={this.create}>
+                    <i className='fa fa-lg fa-plus' />
+                </button>
+            </main>
+        );
     }
 }
 

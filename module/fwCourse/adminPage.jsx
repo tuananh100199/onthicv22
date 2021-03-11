@@ -7,14 +7,11 @@ import { Select } from '../../view/component/Input.jsx';
 import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
 
 class CourseModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-        this.licenseClass = React.createRef();
-    }
+    modal = React.createRef();
+    licenseClass = React.createRef();
 
     componentDidMount() {
-        $(document).ready(() => {
+        T.ready(() => {
             $(this.modal.current).on('shown.bs.modal', () => $('#title').focus());
         });
     }

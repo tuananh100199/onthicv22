@@ -86,7 +86,7 @@ export default class EmailPage extends React.Component {
                                     <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>Người dùng mới</a>
                                 </li>
                                 <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Tạo Người dùng mới</a>
+                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Tạo người dùng mới</a>
                                 </li>
                                 <li className='nav-item'>
                                     <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>Mật khẩu mới</a>

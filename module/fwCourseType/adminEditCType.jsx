@@ -62,7 +62,7 @@ class adminEditCType extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready('/user/course-type/list', () => {
             const route = T.routeMatcher('/user/course-type/edit/:courseTypeId'),
                 courseTypeId = route.parse(window.location.pathname).courseTypeId;
             this.props.getCourseType(courseTypeId, data => {
