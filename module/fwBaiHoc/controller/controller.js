@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         menus: {
-            8020: { title: 'Quản lý bài học', link: '/user/dao-tao/bai-hoc/list' },
+            8020: { title: 'Bài học', link: '/user/dao-tao/bai-hoc/list' },
         },
     };
     app.permission.add({ name: 'baihoc:read', menu }, { name: 'baihoc:write', menu });
