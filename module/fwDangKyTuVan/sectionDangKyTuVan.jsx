@@ -88,7 +88,7 @@ class SectionDangKyTuVan extends React.Component {
                         if(datacType){
                             this.props.getAllDangKyTuVan(dataDKTV => {
                                 let courseType = dataDKTV ? dataDKTV.map(item => ({id: item._id, text: item.title})) : null;
-                                $('#courseType').select2({ data: courseType}).val(courseType.title).trigger('change');
+                                $('#courseType').select2({placeholder: 'Loại khóa học', data: courseType}).val(courseType.title).trigger('change');
                             }); 
                         }
                     });
@@ -171,8 +171,8 @@ class SectionDangKyTuVan extends React.Component {
                                         
                                         <input type="text" className="intro_input" placeholder="Họ"  ref={this.lastname} required="required" />
                                         <input type="text" className="intro_input" placeholder="Tên"  ref={this.firstname} required="required" />
-                                        <select className='form-control col-6 contact_input' id='courseType' defaultValue={null} multiple={false} >
-                                            {/* <optgroup className='form-control' label='Lựa chọn loại khóa học' /> */}
+                                        <select className='col-6 contact_input w-100' id='courseType' defaultValue={null} multiple={false} >
+                                            <optgroup className='contact_input' label='Lựa chọn loại khóa học' />
                                         </select>
                                         <input type="tel" className="contact_input" placeholder="Số điện thoại"  ref={this.phone} required="required" />
                                         <input type='text' className='contact_input w-100' ref={this.email} placeholder='Email' required="required" />

@@ -14,24 +14,7 @@ module.exports = app => {
     app.get('/user/dang-ky-tu-van-list', app.permission.check('dangKyTuVanList:read'), app.templates.admin);
 
      // Init ------------------------------------------------------------------------------------------------------------
-    app.readyHooks.add('emailPhanHoiDangKyTuVanInit', {
-        ready: () => app.model != null && app.model.setting != null && app.state,
-        run: () => {
-            const enableInit = process.env['enableInit'] == 'true';
-            if (enableInit) {
-                app.model.setting.init({
-                    phanHoiDangKyTuVanTitle: 'Hiệp Phát: Phản hồi đăng ký tư vấn!',
-                    phanHoiDangKyTuVanText: 'Chào {lastname}, Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn: {content} Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
-                    phanHoiDangKyTuVanHtml: 'Chào <b>{lastname}</b>,<br/><br/>' +
-                        'Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn:<br/><br/>' +
-                        '<b>{content}</b><br/><br/>' +
-                        'Trân trọng,<br/>' +
-                        'Hiệp Phát<br/>' +
-                        'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
-                })
-            }
-        },
-    });
+  
     //APIs -------------------------------------------------------------------------------------------------------------
     const emailParams = ['phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml'];
     app.get('/api/dang-ky-tu-van-list/email/all', app.permission.check('dangKyTuVanList:email'), (req, res) => app.model.setting.get(...emailParams, result => res.send(result)));
@@ -76,6 +59,7 @@ module.exports = app => {
                 app.io.emit('dangKyTuVanList-added', item);
                 
                 app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
+                    console.log('result', result);
                     let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                         mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                         mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
@@ -127,10 +111,10 @@ module.exports = app => {
                             }
                         });
                     }
-                    app.model.setting.get('phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml', result => {
-                        const mailTitle = result.phanHoiDangKyTuVanTitle,
-                            mailText = result.phanHoiDangKyTuVanText.replaceAll('{lastname}', item.lastname).replaceAll('{content}', content),
-                            mailHtml = result.phanHoiDangKyTuVanHtml.replaceAll('{lastname}', item.lastname).replaceAll('{content}', content);
+                    app.model.setting.get('emailPhanHoiDangKyTuVanTitle', 'emailPhanHoiDangKyTuVanText', 'emailPhanHoiDangKyTuVanHtml', result => {
+                        const mailTitle = result.emailPhanHoiDangKyTuVanTitle,
+                            mailText = result.emailPhanHoiDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{content}', content),
+                            mailHtml = result.emailPhanHoiDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{content}', content);
                         app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
                             item.save(error => res.send({ error }))
                         }, (error) => {
