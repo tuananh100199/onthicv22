@@ -11,7 +11,7 @@ import StaffGroupPage from './adminStaffView';
 import LogoPage from './adminLogoView';
 import ListVideoPage from './adminListVideoView';
 import ContentListPage from '../fwContentList/adminContentListView';
-import DangKyTuVanPage from '../fwDangKyTuVan/adminPage';
+import DangKyTuVanPage from 'modules/mdDaoTao/fwDangKyTuVan/adminPage';
 
 class ComponentPage extends React.Component {
     componentDidMount() {

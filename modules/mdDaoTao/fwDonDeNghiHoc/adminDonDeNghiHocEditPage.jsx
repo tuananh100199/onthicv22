@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getForm, updateForm, denyApplicationForm } from './redux';
-import { updateProfile } from '../_init/reduxSystem';
+import { updateProfile } from 'modules/_default/_init/reduxSystem';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 import countryList from 'country-list';

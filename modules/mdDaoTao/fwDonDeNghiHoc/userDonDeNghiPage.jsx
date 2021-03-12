@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'view/js/common';
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux';
-import { updateProfile } from '../_init/reduxSystem';
+import { updateProfile } from 'modules/_default/_init/reduxSystem';
 import { getCourseTypeInPage } from '../fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import FileSaver from 'file-saver';

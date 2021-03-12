@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux';
-import { getUserInPage } from '../fwUser/redux';
+import { getUserInPage } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
 import Pagination, { OverlayLoading } from 'view/component/Pagination';
 import FileSaver from 'file-saver'

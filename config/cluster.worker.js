@@ -27,7 +27,7 @@ module.exports = (cluster, isDebug) => {
     app.assetPath = app.path.join(__dirname, '..', package.path.asset);
     app.bundlePath = app.path.join(app.assetPath, 'bundle');
     app.viewPath = app.path.join(__dirname, '..', package.path.view);
-    app.modulePath = app.path.join(__dirname, '..', package.path.module);
+    app.modulesPath = app.path.join(__dirname, '..', package.path.modules);
     app.publicPath = app.path.join(__dirname, '..', package.path.public);
     app.imagePath = app.path.join(package.path.public, 'img');
     app.uploadPath = app.path.join(__dirname, '..', package.path.upload);
@@ -54,7 +54,7 @@ module.exports = (cluster, isDebug) => {
             }
         },
     });
-    
+
     app.get('/user', app.permission.check(), app.templates.admin);
     app.get('*', (req, res, next) => {
         if (app.isDebug && req.session.user) app.updateSessionUser(req, req.session.user);
@@ -67,7 +67,7 @@ module.exports = (cluster, isDebug) => {
     // Worker ---------------------------------------------------------------------------------------------------------
     app.worker = {
         refreshState: (option) => process.send({ type: 'refreshState', workerId: process.pid, option }),
-        
+
         create: () => process.send({ type: 'createWorker' }),
         reset: (workerId) => process.send({ type: 'resetWorker', workerId }),
         shutdown: (workerId) => process.send({ type: 'shutdownWorker', workerId }),

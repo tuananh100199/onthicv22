@@ -1,12 +1,12 @@
 import React from 'react';
 
-import fwHome from '../../module/fwHome/index';
-import fwContact from '../../module/fwContact/index';
-import fwNews from '../../module/fwNews/index';
-import fwCourse from '../../module/fwCourse/index';
-import fwContentList from '../../module/fwContentList/index';
-import fwCourseType from '../../module/fwCourseType/index';
-import fwDangKyTuVan from '../../module/fwDangKyTuVan/index';
+import fwHome from 'modules/_default/fwHome/index';
+import fwContentList from 'modules/_default/fwContentList/index';
+import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwNews from 'modules/mdTruyenThong/fwNews/index';
+import fwCourse from 'modules/mdDaoTao/fwCourse/index';
+import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
+import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 
 export default class MenuPage extends React.Component {
     state = { component: null };
