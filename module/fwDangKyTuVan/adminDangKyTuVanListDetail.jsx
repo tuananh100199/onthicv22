@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDangKyTuVanListAll, getDangKyTuVanListItem, updateDangKyTuVanListItem, deleteDangKyTuVanListItem, phanHoiDangKyTuVanListItem } from './redux/reduxDangKyTuVanList.jsx';
+import { getDKTVListPage,getDKTVListItem, updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem} from './redux/reduxDangKyTuVanList.jsx';
 import Pagination from '../../view/component/Pagination.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
 
@@ -20,7 +20,7 @@ class AdminDangKyTuVanModal extends React.Component {
         if (!this.editor.current.html()) {
             T.notify('Nội dung phản hồi bị trống', 'danger');
         } else {
-            this.props.phanHoiDangKyTuVanListItem(this.state._id, this.editor.current.html(), (data) => {
+            this.props.phanHoiDKTVListItem(this.state._id, this.editor.current.html(), (data) => {
                 if (!data.error) {
                     T.notify('Gửi phản hồi đăng ký tư vấn thành công!', 'success');
                 }
@@ -65,39 +65,41 @@ class AdminDangKyTuVanModal extends React.Component {
 class DangKyTuVanListPage extends React.Component {
     modal = React.createRef();
     editor = React.createRef();
+    state = {};
+
 
 
     componentDidMount() {
         T.ready('/user/dang-ky-tu-van-list', () => {
-            const route = T.routeMatcher('/user/dang-ky-tu-van-list/edit/:dangKyTuVanListId'),
+            const route = T.routeMatcher('/user/dang-ky-tu-van-list/edit/:DKTVListId'),
                 params = route.parse(window.location.pathname);
-            this.props.getDangKyTuVanListAll(params.dangKyTuVanListId, data => {
-                this.setState({ items: data });
-            })
-
+            this.props.getDKTVListPage(params.DKTVListId);
+            this.setState({DKTVListId: params.DKTVListId});
+            
         });
     }
 
 
-    showDangKyTuVan = (e, dangKyTuVanListId) => {
+    showDKTVListItem = (e, DKTVListId) => {
         e.preventDefault();
-        this.props.getDangKyTuVanListItem(dangKyTuVanListId, dangKyTuVanList => this.modal.current.show(dangKyTuVanList));
+        this.props.getDKTVListItem(DKTVListId, DKTVList => this.modal.current.show(DKTVList));
     }
 
-
-    changeRead = (item) => this.props.updateDangKyTuVanListItem(item._id, { read: !item.read });
-
-    delete = (e, item) => {
-        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVanListItem(item._id));
+    delete = (e, DKTVListId, item) => {
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(DKTVListId,item._id));
         e.preventDefault();
     }
+
+    changeRead = (item) => this.props.updateDKTVList(item._id, { read: !item.read });
 
     render() {
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVanList && this.props.dangKyTuVanList.page ?
+            this.props.dangKyTuVanList.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
 
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có danh sách đăng ký tư vấn!';
-        if (this.state && this.state.items && this.state.items.length) {
+        if (this.props.dangKyTuVanList && this.props.dangKyTuVanList.page && this.props.dangKyTuVanList.page.list && this.props.dangKyTuVanList.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -110,11 +112,11 @@ class DangKyTuVanListPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.items.map((item, index) => (
+                        {this.props.dangKyTuVanList.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <a href='#' onClick={e => this.showDangKyTuVan(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
+                                    <a href='#' onClick={e => this.showDKTVListItem(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
                                     <br />
                                     {new Date(item.createdDate).getText()}
                                 </td>
@@ -122,10 +124,10 @@ class DangKyTuVanListPage extends React.Component {
                                 <td>{item.email}</td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.showDangKyTuVan(e, item._id)}>
+                                        <a className='btn btn-primary' href='#' onClick={e => this.showDKTVListItem(e, item._id)}>
                                             <i className='fa fa-paper-plane' />
                                         </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e,this.state.DKTVListId,item)}>
                                             <i className='fa fa-lg fa-trash' />
                                         </a>
                                     </div>
@@ -142,15 +144,15 @@ class DangKyTuVanListPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
                 </div>
-                <div className='tile'>{table}</div>
-                {/* <Pagination name='pageDangKyTuVan' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getDangKyTuVanListPage} /> */}
-                <AdminDangKyTuVanModal ref={this.modal} phanHoiDangKyTuVanListItem={this.props.phanHoiDangKyTuVanListItem} />
+                <div className='row tile'>{table}</div>
+                <Pagination name='pageDangKyTuVan' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                    getPage={this.props.getDKTVListPage} />
+                <AdminDangKyTuVanModal ref={this.modal} phanHoiDKTVListItem={this.props.phanHoiDKTVListItem}/>
             </main>
         );
     }
 }
 
-const mapStateToProps = state => ({ dangKyTuVanListId: state.dangKyTuVanListId });
-const mapActionsToProps = { getDangKyTuVanListAll, getDangKyTuVanListItem, updateDangKyTuVanListItem, deleteDangKyTuVanListItem, phanHoiDangKyTuVanListItem };
+const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
+const mapActionsToProps = { getDKTVListPage, getDKTVListItem,updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanListPage);
