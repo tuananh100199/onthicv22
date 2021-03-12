@@ -74,14 +74,14 @@ class SectionDangKyTuVan extends React.Component {
                     } else {
                         // this.props.history.push('/user/component');
                     }
-                    this.props.getAllCourseType(datacType => {
-                        if (datacType) {
+                    // this.props.getAllCourseType(datacType => {
+                    //     if (datacType) {
                             this.props.getAllDangKyTuVan(dataDKTV => {
                                 let courseType = dataDKTV ? dataDKTV.map(item => ({ id: item._id, text: item.title })) : null;
                                 $('#courseType').select2({ placeholder: 'Loại khóa học', data: courseType }).val(courseType.title).trigger('change');
                             });
-                        }
-                    });
+                    //     }
+                    // });
                 });
             }
             $('#courseType').select2();
@@ -158,7 +158,6 @@ class SectionDangKyTuVan extends React.Component {
                                 <div className="intro_form_title" id="formTitle">{item.formTitle}</div>
                                 <form action="#" className="intro_form" id="intro_form" onSubmit={this.sendMessage}>
                                     <div className="d-flex flex-row align-items-start justify-content-between flex-wrap">
-
                                         <input type="text" className="intro_input" placeholder="Họ" ref={this.lastname} required="required" />
                                         <input type="text" className="intro_input" placeholder="Tên" ref={this.firstname} required="required" />
                                         <select className='col-6 contact_input w-100' id='courseType' defaultValue={null} multiple={false} >

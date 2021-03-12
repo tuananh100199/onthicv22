@@ -1,7 +1,10 @@
 module.exports = app => {
 
     const menu = {
-        parentMenu: { index: 4000, title: 'Đăng ký tư vấn', icon: 'fa-file-text-o', link: '/user/dang-ky-tu-van-list' }
+        parentMenu: { index: 9000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
+        menus: {
+            9010: { title: 'Đăng ký tư vấn', link: '/user/dang-ky-tu-van-list', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+        },
     };
 
     app.permission.add({ name: 'dangKyTuVan:read', menu }, { name: 'dangKyTuVan:write', menu },);
