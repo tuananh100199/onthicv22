@@ -6,9 +6,14 @@ package-lock.json
 yarn.lock
 
 asset/ssl
+asset/bundle
+asset/db
 asset/upload/
 asset/upload/*
 asset/download/*
+asset/host.json
+asset/menu.txt
+asset/hpo.edu.vn.conf
 
 public/img/*
 !public/img/flag

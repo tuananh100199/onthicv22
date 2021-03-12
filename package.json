@@ -1,6 +1,6 @@
 {
   "name": "hiep-phat",
-  "version": "1.0.1",
+  "version": "1.0.9",
   "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
@@ -33,7 +33,7 @@
   },
   "path": {
     "view": "view",
-    "module": "module",
+    "modules": "modules",
     "asset": "asset",
     "temp": "asset/temp",
     "upload": "asset/upload",
@@ -91,6 +91,7 @@
     "connect-redis": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "country-list": "^2.2.0",
+    "decompress-zip": "^0.3.3",
     "docxtemplater": "^3.19.6",
     "docxtemplater-image-module-free": "^1.1.1",
     "dotenv": "^8.2.0",
