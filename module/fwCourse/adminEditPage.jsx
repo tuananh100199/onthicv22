@@ -51,12 +51,16 @@ class EditPage extends React.Component {
                     <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#common'>Thông tin chung</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#subject'>Môn học</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#advisor'>Cố vấn học tập</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuVideo'>Học viên</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#student'>Học viên</a></li>
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='common'><CommonInfoPage history={this.props.history} /></div>
                     <div className='tab-pane fade' id='subject'><SubjectPage history={this.props.history} /></div>
-                    {/* <div className='tab-pane fade' id='advisor'><AdvisorPage history={this.props.history} /></div> */}
+                    <div className='tab-pane fade' id='advisor'>
+                        Không có danh sách cố vấn học tập
+                    </div>
+                    <div className='tab-pane fade' id='student' />
+
 
                 </div>
             </main>
