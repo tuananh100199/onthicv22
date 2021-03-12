@@ -794,18 +794,6 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 }
 
 .select2-container .select2-selection--single {
-    // -webkit-box-sizing: border-box;
-    // box-sizing: border-box;
-    // cursor: pointer;
-    // display: block;
-    // height: 40px;
-    // -moz-user-select: none;
-    // -ms-user-select: none;
-    // user-select: none;
-    // -webkit-user-select: none;
-    // -webkit-transition: all 0.15s ease-in-out;
-    // -o-transition: all 0.15s ease-in-out;
-    // transition: all 0.15s ease-in-out;
     width: calc((100% - 15px) / 2);
     height: 62px;
     background: transparent;
@@ -816,6 +804,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     font-size: 15px;
     color: #404040;
     font-weight: 500;
+    border-radius: 0px !important;
 }
 
 .select2-container .select2-selection--single .select2-selection__rendered {
@@ -831,9 +820,12 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 .select2-container--default .select2-selection--single {
     width: 100%;
     background-color: #fff;
-    border-radius: 4px;
     height: 62px !important;
     border: solid 2px #e6ebf1 !important;
+}
+
+.select2-container--default .select2-selection--single:hover {
+    border: solid 2px #57ccc3 !important;
 }
 
 .select2-container--default .select2-search--dropdown .select2-search__field {
@@ -851,4 +843,14 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 
 .select2-container .select2-selection--single .select2-selection__rendered {
     padding-left: 0px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    font-style: italic;
+    color: #999;
+    font-weight: lighter;
+}
+
+.select2-container {
+    width: calc((100% - 15px) / 2) !important;
 }
