@@ -10,7 +10,7 @@ export default class NewsCategoryPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Tin tức: Danh mục</h1>
+                    <h1><i className='fa fa-file' /> Danh mục tin tức</h1>
                 </div>
                 <Category type='news' uploadType='newsCategoryImage' />
             </main>

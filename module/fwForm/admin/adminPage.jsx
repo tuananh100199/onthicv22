@@ -41,52 +41,52 @@ class FormPage extends React.Component {
         const table = list && list.length ? (
             <table className='table table-hover table-bordered'>
                 <thead>
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '80%' }}>Tiêu đề</th>
-                    <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Khóa form</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
-                </tr>
+                    <tr>
+                        <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                        <th style={{ width: '80%' }}>Tiêu đề</th>
+                        <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                        <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                        <th style={{ width: 'auto' }} nowrap='true'>Khóa form</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {list.map((item, index) => (
-                    <tr key={index}>
-                        <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
-                        <td>
-                            <Link to={'/user/form/edit/' + item._id}>{item.title.viText()}</Link>
-                        </td>
-                        <td style={{ width: '20%', textAlign: 'center' }}>
-                            <img src={item.image ? item.image : '/img/avatar.jpg' } alt='avatar' style={{ height: '32px' }} />
-                        </td>
-                        <td className='toggle' style={{ textAlign: 'center' }} >
-                            <label>
-                                <input type='checkbox' checked={item.active} onChange={() => this.changeActive(item)} disabled={readOnly} />
-                                <span className='button-indecator' />
-                            </label>
-                        </td>
-                        <td className='toggle' style={{ textAlign: 'center' }} >
-                            <label>
-                                <input type='checkbox' checked={item.lock} onChange={() => this.changeLock(item)} disabled={readOnly} />
-                                <span className='button-indecator' />
-                            </label>
-                        </td>
-                        <td className='btn-group'>
-                            <Link to={'/user/form/registration/' + item._id} data-id={item._id} className='btn btn-warning'>
-                                <i className='fa fa-lg fa-list-alt' />
-                            </Link>
-                            <Link to={'/user/form/edit/' + item._id} className='btn btn-primary'>
-                                <i className='fa fa-lg fa-edit' />
-                            </Link>
-                            {!readOnly ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null
-                            }
-                        </td>
-                    </tr>
-                ))}
+                    {list.map((item, index) => (
+                        <tr key={index}>
+                            <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
+                            <td>
+                                <Link to={'/user/form/edit/' + item._id}>{item.title.viText()}</Link>
+                            </td>
+                            <td style={{ width: '20%', textAlign: 'center' }}>
+                                <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
+                            </td>
+                            <td className='toggle' style={{ textAlign: 'center' }} >
+                                <label>
+                                    <input type='checkbox' checked={item.active} onChange={() => this.changeActive(item)} disabled={readOnly} />
+                                    <span className='button-indecator' />
+                                </label>
+                            </td>
+                            <td className='toggle' style={{ textAlign: 'center' }} >
+                                <label>
+                                    <input type='checkbox' checked={item.lock} onChange={() => this.changeLock(item)} disabled={readOnly} />
+                                    <span className='button-indecator' />
+                                </label>
+                            </td>
+                            <td className='btn-group'>
+                                <Link to={'/user/form/registration/' + item._id} data-id={item._id} className='btn btn-warning'>
+                                    <i className='fa fa-lg fa-list-alt' />
+                                </Link>
+                                <Link to={'/user/form/edit/' + item._id} className='btn btn-primary'>
+                                    <i className='fa fa-lg fa-edit' />
+                                </Link>
+                                {!readOnly ?
+                                    <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                        <i className='fa fa-lg fa-trash' />
+                                    </a> : null
+                                }
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         ) : <p>Không có form!</p>;
@@ -94,18 +94,14 @@ class FormPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file-text-o' /> Form: Danh sách</h1>
+                    <h1><i className='fa fa-file-text-o' /> Form</h1>
                 </div>
-
-                <div className='row tile'>
-                    {table}
-                </div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageForm' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getFormInPage} />
                 {!readOnly ?
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
-                    </button> : null
-                }
+                    </button> : null}
             </main>
         );
     }

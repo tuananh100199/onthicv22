@@ -266,7 +266,7 @@ class FormEditPage extends React.Component {
                     questionList[index] = temp;
 
                     changes.questions = questionList;
-                    this.props.swapQuestion(this.state.item._id, changes, () => {
+                    this.props.swapLesson(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'info');
                     });
                 }

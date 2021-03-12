@@ -24,43 +24,42 @@ class ReasonModal extends React.Component {
     }
 
     save = () => {
-        $("#submit-btn").attr("disabled", true);
+        $('#submit-btn').attr('disabled', true);
         if (!this.viEditor.current.html()) {
-            $("#submit-btn").removeAttr("disabled");
+            $('#submit-btn').removeAttr('disabled');
             T.notify('Lý do không được để trống', 'danger');
         } else {
             let reasonOfForm = {
                 reason: this.editor.current.html(),
-                approve: "eject"
+                approve: 'eject'
             }
             this.props.updateForm(this.props.donDeNghiHoc.item._id, reasonOfForm);
             this.props.sendEmailTuChoiDonDeNghiHoc(this.props.donDeNghiHoc.item._id, () => {
-                $("#submit-btn").removeAttr("disabled");
+                $('#submit-btn').removeAttr('disabled');
                 $('#modal').modal('hide');
-            })
-
+            });
         }
     }
     render() {
         return (
-            <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" ref={this.modal}>
-                <div className="modal-dialog modal-lg" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Lý do từ chối đơn đề nghị học, sát hạch</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+            <div className='modal fade' id='modal' tabIndex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true' ref={this.modal}>
+                <div className='modal-dialog modal-lg' role='document'>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title' id='exampleModalLabel'>Lý do từ chối đơn đề nghị học, sát hạch</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <form>
-                            <div className="modal-body mx-3">
-                                <div className="form-group">
+                            <div className='modal-body mx-3'>
+                                <div className='form-group'>
                                     <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
+                            <div className='modal-footer'>
+                                <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                                <button type='button' className='btn btn-primary' id='submit-btn' onClick={this.save}>Gửi</button>
                             </div>
                         </form>
                     </div>
@@ -94,7 +93,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
 
     accept = () => {
         const changesOfForm = {
-            approve: "approved",
+            approve: 'approved',
         }
         this.props.updateForm(this.props.donDeNghiHoc.item._id, changesOfForm, () => {
             T.notify('Đã chấp nhận đơn đề nghị học!', 'success');
@@ -127,7 +126,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                         </div>
                         <div className='form-group col-md-3'>
                             <div className='form-group' style={{ width: '100%' }}>
-                                <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: <span>{item.user.sex == 'male' ? 'Nam' : 'Nữ'}</span></label>
+                                <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính: <span>{item.user.sex}</span></label>
 
                             </div>
                         </div>
@@ -175,6 +174,7 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                 </div>
             </div>
         ) : <p>Không có biểu mẫu mới!</p>;
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -185,12 +185,12 @@ class AdminDonDeNghiHocChiTiet extends React.Component {
                     </ul>
                 </div>
                 {table}
-                <button type='button' className='btn btn-success btn-circle' data-toggle="tooltip" data-placement="top" title="Duyệt đơn đề nghị học"
+                <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' data-placement='top' title='Duyệt đơn đề nghị học'
                     style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.accept}>
                     <i className='fa fa-check-square' />
                 </button>
                 <button type='button' className='btn btn-danger btn-circle'
-                    data-toggle="tooltip" data-placement="top" title="Từ chối đơn đề nghị học"
+                    data-toggle='tooltip' data-placement='top' title='Từ chối đơn đề nghị học'
                     style={{ position: 'fixed', right: '70px', bottom: '10px' }} onClick={this.deny}>
                     <i className='fa fa-ban' />
                 </button>

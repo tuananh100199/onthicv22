@@ -14,8 +14,8 @@ class SectionContact extends React.Component {
     }
     componentDidMount() {
         // this.props.getAllAddressByUser(() => {
-            T.ftcoAnimate();
-            $(this.background.current).parallax()
+        T.ftcoAnimate();
+        $(this.background.current).parallax()
         // });
     }
 
@@ -132,7 +132,7 @@ class SectionContact extends React.Component {
                         </div>
                     </div>
                     {/*{this.props.address && this.props.address.list && this.props.address.list.length > 0 ?*/}
-                    {/*    <div className="row google_map_row" >*/}
+                    {/*    <div className='row google_map_row' >*/}
                     {/*        <div id='carouselContact' className='carousel slide col'*/}
                     {/*            data-ride='carousel'*/}
                     {/*            data-interval='2000'*/}
@@ -154,7 +154,7 @@ class SectionContact extends React.Component {
                     {/*                                cursor: 'pointer',*/}
                     {/*                            }}*/}
                     {/*                            onClick={() => window.open(item.mapURL, '_blank')}>*/}
-                    
+
                     {/*                            <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: 'red', fontWeight: 'bold' }}>{item.title + ':' + item.address}</span>*/}
                     {/*                        </div>))}*/}
                     {/*            </div>*/}

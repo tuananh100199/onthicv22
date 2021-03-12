@@ -17,7 +17,6 @@ module.exports = app => {
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-content/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/address/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/carousel/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/statistic/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/slogan/edit/:_id', app.permission.check('component:read'), app.templates.admin);
@@ -26,6 +25,7 @@ module.exports = app => {
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
@@ -95,13 +95,13 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList', 'dangKyTuVan'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
                             app.model.staffGroup.get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
-                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course'].indexOf(viewType) != -1) {
+                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all courseType'].indexOf(viewType) != -1) {
                             getNextComponent(viewType);
                         } else {
                             getNextComponent('<empty>');
@@ -222,7 +222,7 @@ module.exports = app => {
     app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
         const pageType = req.params.pageType;
         if (pageType == 'carousel') {
-            app.model.carousel.getByActive(true,(error, items) => {
+            app.model.carousel.getByActive(true, (error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))

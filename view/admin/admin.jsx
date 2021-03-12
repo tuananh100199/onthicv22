@@ -38,11 +38,14 @@ import fwAddress from '../../module/fwAddress/index.jsx';
 import fwCourse from '../../module/fwCourse/index.jsx';
 import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index.jsx';
 import fwCluster from '../../module/fwCluster/index.jsx';
+import fwDangKyTuVan from '../../module/fwDangKyTuVan/index.jsx';
+import fwCourseType from '../../module/fwCourseType/index.jsx';
+import fwMonHoc from '../../module/fwMonHoc/index.jsx';
+import fwBaiHoc from '../../module/fwBaiHoc/index.jsx';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
 ]
-
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 

@@ -14,8 +14,10 @@ class AdminDonDeNghiHocPage extends React.Component {
     }
 
     componentDidMount() {
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         T.ready('/user/don-de-nghi-hoc', () => {
-            this.props.getFormInPage(undefined, undefined, {}, () => {
+            this.props.getFormInPage(undefined, undefined, {}, params.licenseClass, () => {
                 this.setState({ isSearching: false })
             });
         });
@@ -40,19 +42,23 @@ class AdminDonDeNghiHocPage extends React.Component {
     }
 
     search = (e) => {
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         e.preventDefault();
         let condition = {},
             searchText = $('#searchTextBox').val();
         if (searchText) condition.searchText = searchText;
 
         this.setState({ isSearching: true }, () => {
-            this.props.getFormInPage(undefined, undefined, condition, () => {
+            this.props.getFormInPage(undefined, undefined, condition, params.licenseClass, () => {
                 this.setState({ searchText, isSearching: false });
             });
         })
     }
 
     render() {
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermission.contains('applicationForm:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
@@ -62,8 +68,9 @@ class AdminDonDeNghiHocPage extends React.Component {
                 <thead>
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Người dùng</th>
-                        <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
+                        <th style={{ width: '85%' }}>Người dùng</th>
+                        {/* <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hạng</th> */}
+                        <th style={{ width: '15%', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
                         <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                     </tr>
                 </thead>
@@ -74,8 +81,9 @@ class AdminDonDeNghiHocPage extends React.Component {
                             <td>
                                 <Link to={'/user/don-de-nghi-hoc/edit/' + item._id}>{item.user.lastname + ' ' + item.user.firstname}</Link>
                             </td>
+                            {/* <td>{item.newLicenseClass}</td> */}
                             <td>
-                                {(item.status == 'waiting' ? 'Mới' :
+                                {(item.status == 'waiting' ? 'Chờ duyệt' :
                                     (item.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
                                         (item.status == 'reject' ? <span className='text-danger'>Từ chối</span> :
                                             (item.status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
@@ -108,12 +116,12 @@ class AdminDonDeNghiHocPage extends React.Component {
                     ))}
                 </tbody>
             </table>
-        ) : <p>Không có biểu mẫu mới!</p>;
+        ) : <p>Không có đơn chờ duyệt!</p>;
 
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file-text-o' /> Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe</h1>
+                    <h1><i className='fa fa-file-text-o' /> {'Danh sách Đơn đề nghị học, sát hạch để cấp giấy phép lái xe hạng ' + params.licenseClass}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
                             <input className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm người dùng' />
@@ -126,9 +134,7 @@ class AdminDonDeNghiHocPage extends React.Component {
                     </ul>
                 </div>
 
-                <div className='row tile'>
-                    {!this.state.isSearching ? table : <OverlayLoading text='Đang tải..' />}
-                </div>
+                <div className='tile'>{!this.state.isSearching ? table : <OverlayLoading text='Đang tải..' />}</div>
                 <Link className='btn btn-secondary btn-circle' to='/user/don-de-nghi-hoc' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>

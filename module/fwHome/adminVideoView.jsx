@@ -38,9 +38,9 @@ class VideoModal extends React.Component {
             changes = {
                 title: $('#videoTitle').val().trim(),
                 link: $('#videoLink').val().trim(),
-                content:  this.editor.current.html(),
+                content: this.editor.current.html(),
             };
-        if (changes.title== '') {
+        if (changes.title == '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
             $('#videoTitle').focus();
         } else if (changes.link == '') {
@@ -147,7 +147,7 @@ class VideoPage extends React.Component {
         let table = <p key='table'>Không có video!</p>;
         if (this.props.video && this.props.video.page && this.props.video.page.list && this.props.video.page.list.length > 0) {
             table = (
-                <table key='table' className='table table-hover table-bordered' ref={this.table}>
+                <table key='table' className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

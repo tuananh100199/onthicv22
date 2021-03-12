@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddress, createAddress, deleteAddress, swapAddress, updateAddress } from './redux.jsx';
+import { getAllAddress, createAddress, deleteAddress, updateAddress } from './redux.jsx';
 import { Link } from 'react-router-dom';
 
 class AddressModal extends React.Component {
@@ -26,7 +26,7 @@ class AddressModal extends React.Component {
         };
 
         if (newData.title == '') {
-            T.notify('Tên địa chỉ bị trống!', 'danger');
+            T.notify('Tên cơ sở bị trống!', 'danger');
             $('#addressName').focus();
         } else {
             this.props.createAddress(newData, data => {
@@ -45,15 +45,15 @@ class AddressModal extends React.Component {
                 <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
-                            <h5 className='modal-title'>Địa chỉ mới</h5>
+                            <h5 className='modal-title'>Cơ sở mới</h5>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='addressName'>Tên địa chỉ</label>
-                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên địa chỉ' />
+                                <label htmlFor='addressName'>Tên cơ sở</label>
+                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -76,33 +76,28 @@ class AddressPage extends React.Component {
         this.props.getAllAddress();
     }
 
-    swap = (e, item, isMoveUp) => {
-        this.props.swapAddress(item._id, isMoveUp);
-        e.preventDefault();
-    }
-
     create = (e) => {
         this.modal.current.show();
         e.preventDefault();
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa địa chỉ', 'Bạn có chắc bạn muốn xóa địa chỉ này?', true, isConfirm => isConfirm && this.props.deleteAddress(item._id));
+        T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm && this.props.deleteAddress(item._id));
         e.preventDefault();
     }
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
-        let table = null;
+        let table = 'Không có cơ sở!';
         if (this.props.address && this.props.address.list && this.props.address.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên địa chỉ</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }} >Kích hoạt</th>
+                            <th style={{ width: '80%' }}>Tên cơ sở</th>
+                            <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }} >Cơ sở ngoài</th>
                             <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -114,8 +109,8 @@ class AddressPage extends React.Component {
                                 <td><Link to={'/user/address/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
-                                        <input type='checkbox' checked={item.active}
-                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { active: item.active ? 0 : 1 }, () => T.notify('Kích hoạt địa chỉ thành công!', 'success'))} />
+                                        <input type='checkbox' checked={item.isOutside}
+                                            onChange={() => !readOnly && this.props.updateAddress(item._id, { isOutside: item.isOutside ? 0 : 1 }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>
@@ -124,12 +119,6 @@ class AddressPage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, true)}>
-                                            <i className='fa fa-lg fa-arrow-up' />
-                                        </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, false)}>
-                                            <i className='fa fa-lg fa-arrow-down' />
-                                        </a>
                                         <Link to={'/user/address/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
@@ -144,8 +133,6 @@ class AddressPage extends React.Component {
                     </tbody>
                 </table>
             );
-        } else {
-            table = <p key={0}>Không có địa chỉ!</p>;
         }
 
         const result = [table, <AddressModal key={1} createAddress={this.props.createAddress} ref={this.modal} history={this.props.history} />];
@@ -156,10 +143,17 @@ class AddressPage extends React.Component {
                 </button>
             );
         }
-        return result;
+        return (
+            <main className='app-content'>
+                <div className='app-title'>
+                    <h1><i className='fa fa-bar-chart' />Cơ sở</h1>
+                </div>
+                <div className='tile'>{result}</div>
+            </main>
+        );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllAddress, createAddress, deleteAddress, swapAddress, updateAddress };
+const mapActionsToProps = { getAllAddress, createAddress, deleteAddress, updateAddress };
 export default connect(mapStateToProps, mapActionsToProps)(AddressPage);

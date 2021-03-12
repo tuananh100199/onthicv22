@@ -213,7 +213,7 @@ class StatisticEditPage extends React.Component {
             currentStatistic = this.props.statistic ? this.props.statistic.item : null;
         if (currentStatistic && currentStatistic.items.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>

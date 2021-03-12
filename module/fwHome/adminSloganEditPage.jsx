@@ -187,7 +187,7 @@ class SloganEditPage extends React.Component {
             currentSlogan = this.props.slogan ? this.props.slogan.item : null;
         if (currentSlogan && currentSlogan.items.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: '70%' }}>Tiêu đề</th>

@@ -133,7 +133,7 @@ class LogoPage extends React.Component {
         let table = null;
         if (this.props.logo && this.props.logo.list && this.props.logo.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered' ref={this.table}>
+                <table key={0} className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

@@ -42,7 +42,7 @@ module.exports = app => {
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/video/item/:_id', (req, res) => app.model.video.get(req.params._id, (error, item) => res.send({ error, item })));
-    
+
     app.get('/home/video/all', (req, res) => {
         const condition = req.query.condition || {};
         app.model.video.getAll(condition, (error, items) => res.send({ error, items }))

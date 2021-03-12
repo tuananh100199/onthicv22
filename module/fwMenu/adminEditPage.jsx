@@ -154,7 +154,11 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'contact') {
                 mainStyle.backgroundColor = '#c8e6f9';
                 component.viewName = '';
-            } else if (component.viewType == 'subscribe') {
+            }
+             else if (component.viewType == 'dangKyTuVan') {
+                mainStyle.backgroundColor = '#c8e6f9';
+            }
+             else if (component.viewType == 'subscribe') {
                 mainStyle.backgroundColor = '#c8e6c9';
                 component.viewName = '';
             } else if (component.viewType == 'staff group') {
@@ -175,7 +179,11 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'contentList') {
                 mainStyle.backgroundColor = '#fb6094';
                 component.viewName = '';
+            } else if (component.viewType == 'all courseType') {
+                mainStyle.backgroundColor = '#fb3553';
+                component.viewName = '';
             }
+
 
         }
         let displayText = component.viewType + (component.viewName ? ' - ' + T.language.parse(component.viewName) + ' ' : '');

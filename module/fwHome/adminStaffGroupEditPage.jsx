@@ -159,7 +159,7 @@ class StaffGroupEditPage extends React.Component {
             currentStaffGroup = this.props.staffGroup && this.props.staffGroup.item ? this.props.staffGroup.item : null;
         if (currentStaffGroup && currentStaffGroup.staff.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

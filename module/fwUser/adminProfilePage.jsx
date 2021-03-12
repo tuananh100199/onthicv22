@@ -28,7 +28,7 @@ class ProfilePage extends React.Component {
         T.ready('/user', () => {
             $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
             $('#identityDate').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
-            
+
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
@@ -45,10 +45,10 @@ class ProfilePage extends React.Component {
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.sex.current.setText(sex ? sex : '');
                 this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
-                $(this.quocGia.current).select2({
-                    data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
-                    placeholder: 'Chọn quốc gia'
-                }).val(nationality).trigger('change');
+                // $(this.quocGia.current).select2({
+                //     data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
+                //     placeholder: 'Chọn quốc gia'
+                // }).val(nationality).trigger('change');
             }
         });
     }
@@ -56,34 +56,34 @@ class ProfilePage extends React.Component {
 
     saveCommon = (e) => {
         const
-            sex = this.sex.current.getSelectedItem().toLowerCase(),
+            sex = this.sex.current.getSelectedItem(),
             changesOfUser = {
                 firstname: $('#userFirstname').val(),
                 lastname: $('#userLastname').val(),
                 birthday: $('#birthday').val() ? T.formatDate($('#birthday').val()) : null,
-                residence: $('#residence').val(),
+                // residence: $('#residence').val(),
                 phoneNumber: $('#phoneNumber').val(),
-                regularResidence: $('#regularResidence').val(),
+                // regularResidence: $('#regularResidence').val(),
 
                 //identity
-                identityCard: $('#identityCard').val(),
-                identityDate: $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
-                identityIssuedBy: $('#identityIssuedBy').val(),
-                nationality: $(this.quocGia.current).val()
+                // identityCard: $('#identityCard').val(),
+                // identityDate: $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
+                // identityIssuedBy: $('#identityIssuedBy').val(),
+                // nationality: $(this.quocGia.current).val()
             };
-            if (T.sexes.indexOf(sex) != -1) {
-                changesOfUser.sex = sex;
-            }
-            if (!changesOfUser.lastname) {
-                T.notify('Họ và tên lót bị trống', 'danger');
-                $('#userLastname').focus();
-            } else if (changesOfUser.firstname == '') {
-                T.notify('Tên bị trống', 'danger');
-                $('#userFirstName').focus();
-            } else {
-                    this.props.updateProfile(changesOfUser);
-                    T.notify('Cập nhật thông tin cá nhân thành công','info');
-                };
+        if (T.sexes.indexOf(sex) != -1) {
+            changesOfUser.sex = sex;
+        }
+        if (!changesOfUser.lastname) {
+            T.notify('Họ và tên lót bị trống', 'danger');
+            $('#userLastname').focus();
+        } else if (changesOfUser.firstname == '') {
+            T.notify('Tên bị trống', 'danger');
+            $('#userFirstName').focus();
+        } else {
+            this.props.updateProfile(changesOfUser);
+            T.notify('Cập nhật thông tin cá nhân thành công', 'info');
+        };
         e.preventDefault();
     }
 
@@ -101,7 +101,7 @@ class ProfilePage extends React.Component {
             $(this.password1.current).focus();
         } else {
             this.props.updateProfile({ password: password1 });
-            T.notify('Cập nhật mật khẩu thành công','info');
+            T.notify('Cập nhật mật khẩu thành công', 'info');
         }
     }
 
@@ -121,71 +121,62 @@ class ProfilePage extends React.Component {
                             <div className='tile-body'>
                                 <div className='row'>
                                     <div className='form-group col-sm-12 col-md-8 col-lg-6'>
-                                        <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{color: 'red'}}>*</span></label>
+                                        <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{ color: 'red' }}>*</span></label>
                                         <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
+                                        <label style={{ display: 'block' }} className='control-label pt-4' htmlFor='userEmail'>Email:&nbsp; <span>{this.props.system.user.email}</span></label>
+                                        <label className='control-label pt-4'>Số điện thoại</label>
+                                        <input className='form-control col-6' type='text' placeholder='Số điện thoại' id='phoneNumber' />
                                     </div>
                                     <div className='form-group col-sm-12 col-md-4 col-lg-3'>
-                                        <label className='control-label' htmlFor='userFirstname'>Tên <span style={{color: 'red'}}>*</span></label>
+                                        <label className='control-label' htmlFor='userFirstname'>Tên <span style={{ color: 'red' }}>*</span></label>
                                         <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                                     </div>
-                                    <div className='form-group col-md-12 col-lg-3'>
-                                        <label className='control-label'>Quốc tịch <span style={{color: 'red'}}>*</span></label>
-                                        <select className='form-control select2-input' ref={this.quocGia}/>
-                                    </div>
-                                </div>
-                                
-                                <div className='row'>
-                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
-                                        <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
-                                        <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection'/>
-                                    </div>
-                                    
-                                    <div className='form-group col-sm-6 col-xl-3'>
-                                        <label className='control-label'>Giới tính </label>
-                                        <Dropdown  ref={this.sex} style={{ marginLeft: '10px' }} text='' items={T.sexes} />
-                                    </div>
-                                    
-                                    <div className='form-group col-md-6 col-xl-3'>
-                                        <label className='control-label'>Số điện thoại</label>
-                                        <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber'/>
-                                    </div>
-                                </div>
-                                
-                                <div className='row'>
-                                    <div className='col-md-12 col-lg-6 col-xl-8'>
-                                        <div className='form-group'>
-                                            <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú</label>
-                                            <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='5'/>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className='col-md-12 col-lg-6 col-xl-4'>
+                                    <div className='col-sm-12 col-md-4 col-lg-3'>
                                         <div className='form-group'>
                                             <label className='control-label'>Hình đại diện</label>
                                             < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
                                         </div>
                                     </div>
+                                    {/* <div className='form-group col-md-12 col-lg-3'>
+                                        <label className='control-label'>Quốc tịch <span style={{color: 'red'}}>*</span></label>
+                                        <select className='form-control select2-input' ref={this.quocGia}/>
+                                    </div> */}
                                 </div>
-                                
+
+                                <div className='row'>
+                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
+                                        <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
+                                        <input className='form-control col-8' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection' />
+                                    </div>
+
+                                    <div className='form-group col-sm-6 col-xl-3'>
+                                        <label className='control-label'>Giới tính </label>
+                                        <Dropdown ref={this.sex} style={{ marginLeft: '10px' }} text='' items={T.sexes} />
+                                    </div>
+                                </div>
+                                {/* <div className='form-group'>
+                                    <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú</label>
+                                    <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='5' />
+                                </div>
                                 <div className='form-group'>
                                     <label className='control-label' htmlFor='residence'>Nơi cư trú</label>
-                                    <textarea className='form-control' id='residence' placeholder='Nơi cư trú' rows='3'/>
+                                    <textarea className='form-control' id='residence' placeholder='Nơi cư trú' rows='3' />
                                 </div>
-            
-                                <div className='row'>   
+
+                                <div className='row'>
                                     <div className='form-group col-md-12 col-lg-12 col-xl-5'>
                                         <label className='control-label' htmlFor='identityCard'>Số CMND hoặc thẻ CCCD (hoặc hộ chiếu)</label>
-                                        <input className='form-control' type='text' id='identityCard' placeholder='Nhập số CMND'/>
+                                        <input className='form-control' type='text' id='identityCard' placeholder='Nhập số CMND' />
                                     </div>
                                     <div className='form-group col-md-12 col-lg-6 col-xl-4' id='identityDateSection'>
                                         <label className='control-label' htmlFor='identityDate'>Cấp ngày</label>
-                                        <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection'/>
+                                        <input className='form-control' type='text' placeholder='Ngày cấp CMND' id='identityDate' data-date-container='#identityDateSection' />
                                     </div>
                                     <div className='form-group col-md-12 col-lg-6 col-xl-3'>
                                         <label className='control-label' htmlFor='identityIssuedBy'>Nơi cấp</label>
-                                        <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy'/>
+                                        <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy' />
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommon}>Lưu</button>
@@ -194,7 +185,7 @@ class ProfilePage extends React.Component {
                     </div>
                 </div>
                 <div className='row'>
-                     <div className='col-12 col-md-12'>
+                    <div className='col-12 col-md-12'>
                         <div className='tile'>
                             <h3 className='tile-title'>Mật khẩu</h3>
                             <div className='tile-body'>
@@ -211,7 +202,7 @@ class ProfilePage extends React.Component {
                                 <button className='btn btn-primary' type='button' onClick={this.savePassword}>Lưu</button>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </main>
         );
