@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { getCourse } from './redux.jsx';
 import CommonInfoPage from './commonInfoPage.jsx';
 import SubjectPage from './subjectPage.jsx';
-
+import AdvisorPage from './advisorPage.jsx';
 class EditPage extends React.Component {
     constructor(props) {
         super(props);
@@ -53,13 +53,13 @@ class EditPage extends React.Component {
                 <ul className='nav nav-tabs'>
                     <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#common'>Thông tin chung</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#subject'>Môn học</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuCarousel'>Cố vấn học tập</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#advisor'>Cố vấn học tập</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuVideo'>Học viên</a></li>
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='common'><CommonInfoPage history={this.props.history} /></div>
                     <div className='tab-pane fade' id='subject'><SubjectPage history={this.props.history} /></div>
-
+                    {/* <div className='tab-pane fade' id='advisor'><AdvisorPage history={this.props.history} /></div> */}
 
                 </div>
             </main>
