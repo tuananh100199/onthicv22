@@ -56,10 +56,7 @@ class App extends React.Component {
     componentDidMount() {
         const done = () => {
             if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
-                const handlePaddingFooter = () => {
-                    const footerHeight = $('footer').height();
-                    $('#paddingFooterSection').css('padding-bottom', footerHeight + 'px');
-                }
+                const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
                 handlePaddingFooter()
                 setTimeout(handlePaddingFooter, 250)
                 $(window).on('resize', handlePaddingFooter);
