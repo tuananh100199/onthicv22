@@ -1,7 +1,7 @@
 import Loadable from 'react-loadable';
-import Loading from '../../view/component/Loading.jsx';
-import contentList from './redux.jsx';
-import SectionContent from './sectionContent.jsx';
+import Loading from 'view/component/Loading';
+import contentList from './redux';
+import SectionContent from './sectionContent';
 
 export default {
     redux: {
@@ -10,7 +10,7 @@ export default {
     routes: [
         {
             path: '/user/list-content/edit/:listContentId',
-            component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminContentListEditPage') })
         },
     ],
     Section: {

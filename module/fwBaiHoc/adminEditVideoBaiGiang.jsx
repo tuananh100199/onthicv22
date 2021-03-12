@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux.jsx'
-import { createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux/reduxLessonVideo.jsx'
+import { updateBaiHoc, getBaiHoc } from './redux/redux';
+import { createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux/reduxLessonVideo';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import ImageBox from 'view/component/ImageBox';
 
 
 class VideoModal extends React.Component {

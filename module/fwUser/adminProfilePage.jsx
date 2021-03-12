@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateProfile } from '../_init/reduxSystem.jsx';
-import Dropdown from '../../view/component/Dropdown.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
-import T from '../../view/js/common.js';
+import { updateProfile } from '../_init/reduxSystem';
+import Dropdown from 'view/component/Dropdown';
+import ImageBox from 'view/component/ImageBox';
+import T from 'view/js/common';
 const countryList = require('country-list');
 
 class ProfilePage extends React.Component {

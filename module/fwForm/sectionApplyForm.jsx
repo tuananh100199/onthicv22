@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Select from 'react-select';
-import { ajaxGetFormInPage, ajaxGetForm, updateForm } from './redux.jsx';
+import { ajaxGetFormInPage, ajaxGetForm, updateForm } from './redux';
 import { Link } from 'react-router-dom';
 
 class SectionApplyForm extends React.Component {

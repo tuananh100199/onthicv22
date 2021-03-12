@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { saveSystemState } from './reduxSystem.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import { saveSystemState } from './reduxSystem';
+import ImageBox from 'view/component/ImageBox';
 
 class AddressListSection extends React.Component {
     state = { items: [] };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSloganByUser } from './redux/reduxSlogan.jsx';
+import { getSloganByUser } from './redux/reduxSlogan';
 
 class SectionSlogan extends React.Component {
     state = {};

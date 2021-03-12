@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getMonHoc } from './redux.jsx'
+import { getMonHoc } from './redux';
 import { Link } from 'react-router-dom';
-import AdminEditInfo from './adminEditInfo.jsx';
-import AdminEditBaiHoc from './adminEditBaiHoc.jsx';
+import AdminEditInfo from './adminEditInfo';
+import AdminEditBaiHoc from './adminEditBaiHoc';
 
 
 class EditPage extends React.Component {
@@ -39,10 +39,7 @@ class EditPage extends React.Component {
         return (
             <main className='app-content' id='componentPage' style={{ display: 'none' }}>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-file' />Môn học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
-                        {/* <p>{this.state.item && this.state.item.licenseClass && this.state.item.licenseClass.title ? this.state.item.licenseClass.title : ''}</p> */}
-                    </div>
+                    <h1><i className='fa fa-file' /> Môn học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         &nbsp;/&nbsp;Môn học học &nbsp;/&nbsp; Chỉnh Sửa

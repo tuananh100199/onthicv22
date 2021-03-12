@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getNewsFeed } from '../../module/fwNews/redux.jsx';
+import { getNewsFeed } from 'module/fwNews/redux';
 import { Link } from 'react-router-dom';
 
 class NewsFeed extends React.Component {
@@ -9,7 +9,7 @@ class NewsFeed extends React.Component {
             T.ftcoAnimate()
         });
     }
-    
+
     render() {
         const newsFeed = this.props.news && this.props.news.newsFeed ? this.props.news.newsFeed : [];
         let news = null;

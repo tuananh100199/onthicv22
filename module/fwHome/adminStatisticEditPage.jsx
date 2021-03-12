@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatisticItem, updateStatistic, addStatisticIntoGroup, updateStatisticInGroup, removeStatisticFromGroup, swapStatisticInGroup } from './redux/reduxStatistic.jsx';
+import { getStatisticItem, updateStatistic, addStatisticIntoGroup, updateStatisticInGroup, removeStatisticFromGroup, swapStatisticInGroup } from './redux/reduxStatistic';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import Editor from 'view/component/CkEditor4';
+import ImageBox from 'view/component/ImageBox';
 
 const texts = {
     vi: {

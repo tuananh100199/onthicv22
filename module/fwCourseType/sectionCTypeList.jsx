@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllCourseTypeByUser } from './redux.jsx';
+import { getAllCourseTypeByUser } from './redux';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
 

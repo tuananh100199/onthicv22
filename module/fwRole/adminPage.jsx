@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllRoles, updateRole, deleteRole, getRolePage, createRole } from './redux.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
+import { getAllRoles, updateRole, deleteRole, getRolePage, createRole } from './redux';
+import Pagination from 'view/component/Pagination';
 
 class RoleModal extends React.Component {
     constructor(props) {

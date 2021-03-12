@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseFeed } from './redux.jsx';
+import { getCourseFeed } from './redux';
 import { Link } from 'react-router-dom';
 
 class SectionCourse extends React.Component {

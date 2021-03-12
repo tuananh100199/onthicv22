@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux.jsx'
-import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux/reduxQuestion.jsx';
+import { updateBaiHoc, getBaiHoc } from './redux/redux'
+import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux/reduxQuestion';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 class QuestionModal extends React.Component {
     constructor(props) {

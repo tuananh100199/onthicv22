@@ -1,4 +1,4 @@
-import T from '../../../view/js/common';
+import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DKTVListGetAll = 'DKTVList:GetAll';
@@ -101,7 +101,7 @@ export function getDKTVListAll(done) {
 }
 
 T.initCookiePage('pageDKTVList');
-export function getDKTVListPage(DKTVListId,pageNumber, pageSize, done) {
+export function getDKTVListPage(DKTVListId, pageNumber, pageSize, done) {
     const page = T.updatePage('pageDKTVList', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize + '/' + DKTVListId;
@@ -164,7 +164,7 @@ export function updateDKTVList(_id, changes, done) {
     }
 }
 
-export function deleteDKTVListItem(DKTVListId,_id) {
+export function deleteDKTVListItem(DKTVListId, _id) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item';
         T.delete(url, { _id }, data => {
@@ -189,7 +189,7 @@ export function changeDKTVList(item) {
 export function createDKTVListItem(dangKyTuVan, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item/';
-        T.post(url, {dangKyTuVan}, data => {
+        T.post(url, { dangKyTuVan }, data => {
             if (data.error) {
                 T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);

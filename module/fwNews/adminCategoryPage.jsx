@@ -1,5 +1,5 @@
 import React from 'react';
-import Category from '../_init/Category.jsx';
+import Category from '../_init/Category';
 
 export default class NewsCategoryPage extends React.Component {
     componentDidMount() {

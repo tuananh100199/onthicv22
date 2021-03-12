@@ -1,16 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateMonHoc, getMonHoc } from './redux.jsx'
+import { updateMonHoc, getMonHoc } from './redux';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 class AdminEditMonHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
-    constructor(props) {
-        super(props);
-        this.addLessonModal = React.createRef();
-    }
+
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
@@ -32,6 +29,7 @@ class AdminEditMonHoc extends React.Component {
             });
         });
     }
+
     save = () => {
         const changes = {
             title: $('#title').val().trim(),
@@ -40,9 +38,10 @@ class AdminEditMonHoc extends React.Component {
         };
         this.props.updateMonHoc(this.state.item._id, changes)
     };
+
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermissions.includes('lesson:write');
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            readOnly = !currentPermissions.includes('lesson:write');
         return (
             <div>
                 <div className='tile-body'>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux.jsx';
-import { getUserInPage } from '../fwUser/redux.jsx';
+import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux';
+import { getUserInPage } from '../fwUser/redux';
 import { Link } from 'react-router-dom';
-import Pagination, { OverlayLoading } from '../../view/component/Pagination.jsx';
+import Pagination, { OverlayLoading } from 'view/component/Pagination';
 import FileSaver from 'file-saver'
 import Tooltip from 'rc-tooltip';
 

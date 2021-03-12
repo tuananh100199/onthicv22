@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateForm, getForm } from './redux.jsx';
+import { updateForm, getForm } from './redux';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 const countryList = require('country-list');
 
 class FormEditPage extends React.Component {

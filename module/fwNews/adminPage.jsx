@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getNewsInPage, createNews, updateNews, swapNews, deleteNews } from './redux.jsx'
+import { getNewsInPage, createNews, updateNews, swapNews, deleteNews } from './redux';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
+import Pagination from 'view/component/Pagination';
 
 class NewsPage extends React.Component {
     componentDidMount() {

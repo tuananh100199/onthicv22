@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContents, createContent, updateContent, deleteContent } from './redux/reduxContent.jsx';
+import { getAllContents, createContent, updateContent, deleteContent } from './redux/reduxContent';
 import { Link } from 'react-router-dom';
 
 class ContentPage extends React.Component {

@@ -1,9 +1,8 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseTypeGetCourseTypeInPage = 'CourseType:GetCourseTypeInPage';
 const CourseTypeGetCourseType = 'CourseType:GetCourseType';
 const CourseTypeGetAllCourseType = 'CourseType:GetAllCourseType';
-
 
 export default function courseTypeReducer(state = null, data) {
     switch (data.type) {

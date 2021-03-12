@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateMenu, getMenu, createComponent, updateComponent, swapComponent, deleteComponent, getComponentViews } from './redux.jsx';
+import { updateMenu, getMenu, createComponent, updateComponent, swapComponent, deleteComponent, getComponentViews } from './redux';
 import { Link } from 'react-router-dom';
-import ComponentModal from './componentModal.jsx';
+import ComponentModal from './componentModal';
 
 class MenuEditPage extends React.Component {
     constructor(props) {

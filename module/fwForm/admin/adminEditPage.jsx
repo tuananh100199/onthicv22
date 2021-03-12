@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateForm, getForm } from '../redux.jsx';
-import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from '../reduxQuestion.jsx';
-import { countAnswer } from '../reduxAnswer.jsx';
-import ImageBox from '../../../view/component/ImageBox.jsx';
-import Editor from '../../../view/component/CkEditor4.jsx';
+import { updateForm, getForm } from '../redux';
+import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from '../reduxQuestion';
+import { countAnswer } from '../reduxAnswer';
+import ImageBox from 'view/component/ImageBox';
+import Editor from 'view/component/CkEditor4';
 import Select from 'react-select';
 
 class QuestionModal extends React.Component {

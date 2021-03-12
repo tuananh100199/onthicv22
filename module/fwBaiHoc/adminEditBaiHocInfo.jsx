@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux.jsx'
+import { updateBaiHoc, getBaiHoc } from './redux/redux';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 class adminEditBaiHoc extends React.Component {
     state = { item: null };

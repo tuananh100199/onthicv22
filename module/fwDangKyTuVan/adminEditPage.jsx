@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan.jsx';
-import { getAllCourseType } from '../fwCourseType/redux.jsx';
+import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan';
+import { getAllCourseType } from '../fwCourseType/redux';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 
 class DangKyTuVanModal extends React.Component {

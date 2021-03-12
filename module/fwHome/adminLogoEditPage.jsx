@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLogoItem, updateLogo, addLogoIntoGroup, updateLogoInGroup, removeLogoFromGroup, swapLogoInGroup } from './redux/reduxLogo.jsx';
+import { getLogoItem, updateLogo, addLogoIntoGroup, updateLogoInGroup, removeLogoFromGroup, swapLogoInGroup } from './redux/reduxLogo';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import ImageBox from 'view/component/ImageBox';
 
 const texts = {
     vi: {

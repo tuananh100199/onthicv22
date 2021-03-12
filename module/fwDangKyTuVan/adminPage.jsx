@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan.jsx';
+import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
+import Editor from 'view/component/CkEditor4';
+import Pagination from 'view/component/Pagination';
 
 class DangKyTuVanModal extends React.Component {
     constructor(props) {

@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson } from './redux.jsx'
+import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
-import { Select } from '../../view/component/Input.jsx';
-import { ajaxSelectLesson } from '../fwBaiHoc/redux/redux.jsx';
+import { Select } from 'view/component/Input';
+import { ajaxSelectLesson } from '../fwBaiHoc/redux/redux';
 import Tooltip from 'rc-tooltip';
-
 
 class AddLessonModal extends React.Component {
     modal = React.createRef();
@@ -53,6 +52,7 @@ class AddLessonModal extends React.Component {
         );
     }
 }
+
 class AdminEditListBaiHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
@@ -130,12 +130,13 @@ class AdminEditListBaiHoc extends React.Component {
         }
         e.preventDefault();
     };
+
     render() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
         const monhocId = params.monHocId;
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermissions.includes('lesson:write');
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            readOnly = !currentPermissions.includes('lesson:write');
         let table = 'Chưa có bài học!';
         if (this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson && this.props.subject.listbaihoc.lesson.length > 0) {
             table = (

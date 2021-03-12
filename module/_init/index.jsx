@@ -1,9 +1,9 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import Loading from '../../view/component/Loading.jsx';
-import system from './reduxSystem.jsx';
-import category from './reduxCategory.jsx';
-import SubMenusPage from '../../view/component/SubMenusPage.jsx';
+import Loading from 'view/component/Loading';
+import system from './reduxSystem';
+import category from './reduxCategory';
+import SubMenusPage from 'view/component/SubMenusPage';
 
 export default {
     redux: {
@@ -12,15 +12,15 @@ export default {
     routes: [
         {
             path: '/user/dashboard',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDashboardPage.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminDashboardPage') })
         },
         {
             path: '/user',
-            component: Loadable({ loading: Loading, loader: () => import('./userProfilePage.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./userProfilePage') })
         },
         {
             path: '/user/multimedia',
-            component: Loadable({ loading: Loading, loader: () => import('./adminMultimediaPage.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminMultimediaPage') })
         },
         {
             path: '/user/settings',

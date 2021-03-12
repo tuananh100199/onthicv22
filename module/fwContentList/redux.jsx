@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ContentListGet = 'ContentList:Get';
@@ -122,7 +122,7 @@ export function getContentListByUser(_id, done) {
                 dispatch({ type: ContentListGet, item: data.item });
             }
             if (done) done(data);
-            
+
         }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
     }
 }

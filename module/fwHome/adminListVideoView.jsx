@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllListVideo, createListVideo, deleteListVideo } from './redux/reduxListVideo.jsx';
+import { getAllListVideo, createListVideo, deleteListVideo } from './redux/reduxListVideo';
 import { Link } from 'react-router-dom';
 
 class ListVideoModal extends React.Component {

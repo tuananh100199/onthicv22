@@ -2,7 +2,7 @@ import './theme/icheck-material-custom.min.css';
 import './theme/icheck-material.min.css';
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAnswerByUser, addAnswerByUser, updateAnswerByUser } from '../reduxAnswer.jsx';
+import { getAnswerByUser, addAnswerByUser, updateAnswerByUser } from '../reduxAnswer';
 
 class RegisterElement extends React.Component {
     constructor(props) {
@@ -61,24 +61,24 @@ class RegisterElement extends React.Component {
             return $(this.value.current).val();
         }
     }
-    
+
     setData(answerMapper) {
         const item = this.props.element ? this.props.element : { _id: '', content: '', active: false, typeName: '', typeValue: [] };
         const value = answerMapper[item._id];
-        
+
         if (item.active) {
             switch (item.typeName) {
                 case 'textArea': {
                     $(this.value.current).val(value);
                     break;
                 }
-                
+
                 case 'choice': {
                     this.setState({ selectedValue: value });
                     break;
                 }
-                
-                case 'multiChoice' : {
+
+                case 'multiChoice': {
                     const valueList = value ? value.split(';') : [];
                     $('input[name=checkbox' + this.props.index + item._id + ']').each((index, val) => {
                         $(val).prop('checked', false);
@@ -89,17 +89,17 @@ class RegisterElement extends React.Component {
                     });
                     break;
                 }
-                
+
                 case 'date': {
                     $(this.dateInput.current).val(value);
                     break;
                 }
-                
+
                 default: {
                     $(this.value.current).val(value);
                     break;
                 }
-                
+
             }
         }
     }
@@ -214,7 +214,7 @@ class HomeRegistrationSection extends React.Component {
 
         this.state = { answerId: null };
     }
-    
+
     componentDidMount() {
         $(document).ready(() => {
             const handleSetData = (timer = 0) => {
@@ -224,7 +224,7 @@ class HomeRegistrationSection extends React.Component {
                         (answer && answer.record && answer.record.length ? answer.record : []).forEach(record => {
                             answerMapper[record.questionId] = record.answer;
                         });
-        
+
                         setTimeout(() => {
                             for (let i = 0; i < 20; i++) {
                                 if (this.valueList[i] && this.valueList[i].current) {
@@ -244,7 +244,7 @@ class HomeRegistrationSection extends React.Component {
             handleSetData()
         })
     }
-    
+
     submit = (e, done) => {
         const { formId, questions, system } = this.props;
         const language = T.language(texts);
@@ -282,7 +282,7 @@ class HomeRegistrationSection extends React.Component {
         }
         e.preventDefault();
     };
-    
+
     getAnswer = (e, done) => {
         const { questions = [] } = this.props;
         let record = [];
@@ -337,7 +337,7 @@ class HomeRegistrationSection extends React.Component {
                 }
                 return form;
             } else {
-                return <p/>;
+                return <p />;
             }
         };
 

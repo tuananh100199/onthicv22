@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContentList, createContentList, deleteContentList } from './redux.jsx';
+import { getAllContentList, createContentList, deleteContentList } from './redux';
 import { Link } from 'react-router-dom';
 
 class ContentListModal extends React.Component {

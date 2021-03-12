@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentListByUser } from './redux.jsx';
+import { getContentListByUser } from './redux';
 import { Link } from 'react-router-dom';
 
 class SectionContent extends React.Component {
@@ -26,15 +26,15 @@ class SectionContent extends React.Component {
             }
         });
     }
-    
+
     componentWillUnmount() {
         $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
     }
-    
+
     render() {
         const item = this.state.item;
         const items = item.items || [], image = item.image || '/img/avatar.jpg';
-        
+
         let itemList = null;
         if (items && items.length) {
             itemList = items.map((item, index) => {
@@ -60,10 +60,10 @@ class SectionContent extends React.Component {
                 )
             })
         }
-        
+
         return [
             <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
-                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={image} data-speed='0.8'/>
+                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={image} data-speed='0.8' />
                 <div className='home_overlay'><img src='/img/home_overlay.png' alt='' /></div>
                 <div className='home_container'>
                     <div className='container'>

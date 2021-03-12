@@ -1,6 +1,6 @@
 import Loadable from 'react-loadable';
-import Loading from '../../view/component/Loading.jsx';
-import menu from './redux.jsx';
+import Loading from 'view/component/Loading';
+import menu from './redux';
 
 export default {
     redux: {
@@ -9,11 +9,11 @@ export default {
     routes: [
         {
             path: '/user/menu/edit/:menuId',
-            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },
         {
             path: '/user/menu',
-            component: Loadable({ loading: Loading, loader: () => import('./adminPage.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         }
     ],
 };

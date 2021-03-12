@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddress, createAddress, deleteAddress, updateAddress } from './redux.jsx';
+import { getAllAddress, createAddress, deleteAddress, updateAddress } from './redux';
 import { Link } from 'react-router-dom';
 
 class AddressModal extends React.Component {

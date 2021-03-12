@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux.jsx'
+import { updateBaiHoc, getBaiHoc } from './redux/redux';
 import { Link } from 'react-router-dom';
-import AdminEditBaiHocInfo from './adminEditBaiHocInfo.jsx';
-import AdminEditCauHoi from './adminEditCauHoi.jsx';
-import AdminEditVideoBaiGiang from './adminEditVideoBaiGiang.jsx';
-
+import AdminEditBaiHocInfo from './adminEditBaiHocInfo';
+import AdminEditCauHoi from './adminEditCauHoi';
+import AdminEditVideoBaiGiang from './adminEditVideoBaiGiang';
 
 class adminEditBaiHoc extends React.Component {
     state = { item: null };

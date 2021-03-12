@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { logout } from '../../module/_init/reduxSystem.jsx';
+import { logout } from '../../module/_init/reduxSystem';
 import { Link } from 'react-router-dom';
 
 class HomeMenu extends React.Component {
@@ -23,35 +23,35 @@ class HomeMenu extends React.Component {
         $(document).ready(() => {
             let header = $('.header');
             function setHeader() {
-                if($(window).scrollTop() > 91) {
+                if ($(window).scrollTop() > 91) {
                     header.addClass('scrolled');
                 } else {
                     header.removeClass('scrolled');
                 }
             }
-    
+
             function initMenu() {
                 let hamb = $('.hamburger');
                 let menu = $('.menu');
                 let menuOverlay = $('.menu_overlay');
                 let menuClose = $('.menu_close_container');
-        
+
                 hamb.on('click', () => {
                     menu.toggleClass('active');
                     menuOverlay.toggleClass('active');
                 });
-        
+
                 menuOverlay.on('click', () => {
                     menuOverlay.toggleClass('active');
                     menu.toggleClass('active');
                 });
-        
+
                 menuClose.on('click', () => {
                     menuOverlay.toggleClass('active');
                     menu.toggleClass('active');
                 });
             }
-            
+
             setHeader();
             initMenu();
             $(window).on('resize', () => {
@@ -60,15 +60,15 @@ class HomeMenu extends React.Component {
                     $(window).trigger('resize.px.parallax');
                 }, 375);
             });
-            
+
             $(document).on('scroll', () => {
                 setHeader();
             });
-            
+
             done()
         });
     }
-    
+
     onMenuClick = (link) => {
         this.setState({ link }, () => {
             $(this.nav.current).classyNav();
@@ -95,26 +95,26 @@ class HomeMenu extends React.Component {
                         isExternalLink = link.startsWith('http://') || link.startsWith('https://');
                     link = item.link ? item.link : '#';
                     const title = T.language.parse(item.title);
-            
+
                     return (item.submenus && item.submenus.length > 0) ? (
-                            <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                                {isExternalLink ? <a href={link} target='_blank'>{title}</a> : (item.link ?
-                                    <Link to={link} onClick={() => this.onMenuClick(link)}>{title}</Link> :
-                                    <a href='#' onClick={e => e.preventDefault()}>{title}</a>)}
-                                <ul className='dropdown'>{
-                                    item.submenus.map((subMenu, subIndex) => {
-                                        const link = subMenu.link ? subMenu.link.toLowerCase().trim() : '/';
-                                        if (subMenu.title == '-') {
-                                            return <li key={subIndex}>---</li>;
-                                        } else {
-                                            return isExternalLink ?
-                                                <li key={subIndex}><a href={link}>{T.language.parse(subMenu.title)}</a></li> :
-                                                <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
-                                        }
-                                    })}
-                                </ul>
-                            </li>
-                        ) :
+                        <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
+                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> : (item.link ?
+                                <Link to={link} onClick={() => this.onMenuClick(link)}>{title}</Link> :
+                                <a href='#' onClick={e => e.preventDefault()}>{title}</a>)}
+                            <ul className='dropdown'>{
+                                item.submenus.map((subMenu, subIndex) => {
+                                    const link = subMenu.link ? subMenu.link.toLowerCase().trim() : '/';
+                                    if (subMenu.title == '-') {
+                                        return <li key={subIndex}>---</li>;
+                                    } else {
+                                        return isExternalLink ?
+                                            <li key={subIndex}><a href={link}>{T.language.parse(subMenu.title)}</a></li> :
+                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
+                                    }
+                                })}
+                            </ul>
+                        </li>
+                    ) :
                         <li key={index} className={currentLink == link ? 'active' : ''}>
                             {isExternalLink ? <a href={link} target='_blank'>{title}</a> :
                                 (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{title}  </Link>)}
@@ -122,13 +122,13 @@ class HomeMenu extends React.Component {
                 }
             });
         }
-        
-        let { logo, user, facebook, youtube, twitter, instagram, mobile } = this.props.system ? this.props.system : { };
-        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true'/></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
-    
+
+        let { logo, user, facebook, youtube, twitter, instagram, mobile } = this.props.system ? this.props.system : {};
+        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+
         // facebook = facebook ? <li style={{ marginTop: '12px' }}><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
         // youtube = youtube ? <li style={{ marginTop: '12px' }}><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
         // twitter = twitter ? <li style={{ marginTop: '12px' }}><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true'/></a></li> : '';
@@ -142,7 +142,7 @@ class HomeMenu extends React.Component {
                                 $(this.nav.current).classyNav();
                             })
                         }}>
-                            <img src={logo} alt={logo} style={{ height: '65px', width: 'auto' }}/>
+                            <img src={logo} alt={logo} style={{ height: '65px', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>
@@ -167,20 +167,20 @@ class HomeMenu extends React.Component {
                                 {/*{youtube}*/}
                                 {/*{instagram}*/}
                                 <div className='hotline' style={{ marginLeft: '5px', fontSize: '15px' }}>
-                                    <i className='fa fa-phone'/> {mobile}
+                                    <i className='fa fa-phone' /> {mobile}
                                 </div>
                             </ul>
                         </div>
-                        <div className='hamburger'><i className='fa fa-bars' aria-hidden='true'/></div>
+                        <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
                     </div>
                 </div>
             </header>,
-            <div key={1} className='menu_overlay trans_400'/>,
+            <div key={1} className='menu_overlay trans_400' />,
             <div key={2} className='menu trans_400'>
                 <div className='menu_close_container'>
                     <div className='menu_close'>
-                        <div/>
-                        <div/>
+                        <div />
+                        <div />
                     </div>
                 </div>
                 <nav className='menu_nav'>
