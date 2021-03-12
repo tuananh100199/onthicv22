@@ -59,9 +59,9 @@ module.exports = app => {
 
                 app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
                     console.log('result', result);
-                    let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                        mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                        mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
+                    let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                        mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                        mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
                     app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
                 });
             }
@@ -112,8 +112,8 @@ module.exports = app => {
                     }
                     app.model.setting.get('emailPhanHoiDangKyTuVanTitle', 'emailPhanHoiDangKyTuVanText', 'emailPhanHoiDangKyTuVanHtml', result => {
                         const mailTitle = result.emailPhanHoiDangKyTuVanTitle,
-                            mailText = result.emailPhanHoiDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{content}', content),
-                            mailHtml = result.emailPhanHoiDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{content}', content);
+                            mailText = result.emailPhanHoiDangKyTuVanText.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{content}', content),
+                            mailHtml = result.emailPhanHoiDangKyTuVanHtml.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{content}', content);
                         app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
                             item.save(error => res.send({ error }))
                         }, (error) => {

@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDKTVListPage,getDKTVListItem, updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem} from './redux/reduxDangKyTuVanList.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
 import Editor from '../../view/component/CkEditor4.jsx';
+import { Link } from 'react-router-dom';
+
 
 class AdminDangKyTuVanModal extends React.Component {
     state = {};
     modal = React.createRef();
     editor = React.createRef();
-
 
     show = (item) => {
         this.setState(item);
@@ -93,9 +93,6 @@ class DangKyTuVanListPage extends React.Component {
     changeRead = (item) => this.props.updateDKTVList(item._id, { read: !item.read });
 
     render() {
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVanList && this.props.dangKyTuVanList.page ?
-            this.props.dangKyTuVanList.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có danh sách đăng ký tư vấn!';
@@ -145,9 +142,10 @@ class DangKyTuVanListPage extends React.Component {
                     <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
                 </div>
                 <div className='row tile'>{table}</div>
-                <Pagination name='pageDangKyTuVan' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getDKTVListPage} />
                 <AdminDangKyTuVanModal ref={this.modal} phanHoiDKTVListItem={this.props.phanHoiDKTVListItem}/>
+                <Link to='/user/dang-ky-tu-van-list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
             </main>
         );
     }
