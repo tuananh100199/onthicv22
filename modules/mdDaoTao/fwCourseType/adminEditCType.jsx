@@ -107,12 +107,16 @@ class adminEditCType extends React.Component {
         e.preventDefault();
         this.modal.current.show();
     }
+    changeActive = (event) => {
+        this.setState({ item: { ...this.state.item, isPriceDisplayed: event.target.checked } })
+    }
     save = () => {
         const changes = {
             title: $('#title').val().trim(),
             price: $('#price').val().trim(),
             shortDescription: $('#shortDescription').val().trim(),
             detailDescription: this.editor.current.html(),
+            isPriceDisplayed: this.state.item.isPriceDisplayed
         };
         this.props.updateCourseType(this.state.item._id, changes)
     };
@@ -172,12 +176,19 @@ class adminEditCType extends React.Component {
                                     <label className='control-label'>Tên loại khóa học</label>
                                     <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
                                 </div>
-                                <div className='form-group col-md-6'>
+                                <div className='form-group col-md-3'>
                                     <label className='control-label'>Giá loại khóa học</label>
                                     <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
                                 </div>
+                                <div className='form-group col-md-3'>
+                                    <label className='control-label'>Hiển thị giá</label>
+                                    <div className='toggle' style={{ paddingLeft: '10px' }}>
+                                        <label>
+                                            <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-
                             <div className='form-group'>
                                 <label className='control-label'>Mô tả ngắn gọn</label>
                                 <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={5} />
