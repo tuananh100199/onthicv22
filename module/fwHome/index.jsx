@@ -21,7 +21,6 @@ import SectionTestimony from './sectionTestimony';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
 import SectionSubscribe from './sectionSubscribe';
-s
 export default {
     redux: {
         carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList

@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { createDKTVListItem } from './redux/reduxDangKyTuVanList';
 import { getDangKyTuVanByUser, getAllDangKyTuVan } from './redux/reduxDangKyTuVan';
 import { getAllCourseType } from '../fwCourseType/redux';
-import Dropdown from 'view/component/Dropdown';
-
 class SectionDangKyTuVan extends React.Component {
     state = { item: {} };
     constructor(props) {
