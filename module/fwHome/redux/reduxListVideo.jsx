@@ -1,4 +1,4 @@
-import T from '../../../view/js/common';
+import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ListVideoGetAll = 'ListVideo:GetAll';
@@ -18,7 +18,7 @@ export default function listVideoReducer(state = null, data) {
                 state.item.items.push({
                     title: data.title,
                     link: data.link,
-                    image : data.image,
+                    image: data.image,
                 });
             }
             return state;
@@ -30,7 +30,7 @@ export default function listVideoReducer(state = null, data) {
                     state.item.items.splice(data.index, 1, {
                         title: data.title,
                         link: data.link,
-                        image : data.image,
+                        image: data.image,
                     });
                 }
             }
@@ -147,8 +147,8 @@ export function addVideoIntoList(title, link, image) {
     return { type: ListVideoAddItem, title, link, image };
 }
 
-export function updateVideoInList(index, title, link,image) {
-    return { type:  ListVideoUpdateItem, index, title, link,image };
+export function updateVideoInList(index, title, link, image) {
+    return { type: ListVideoUpdateItem, index, title, link, image };
 }
 
 export function removeVideoFromList(index) {
@@ -233,4 +233,4 @@ export function deleteListVideoItem(_id) {
 
 export function changeListVideoItem(item) {
     return { type: ListVideoUpdate, item };
-} 
+}

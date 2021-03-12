@@ -74,8 +74,8 @@ class DangKyTuVanListPage extends React.Component {
             const route = T.routeMatcher('/user/dang-ky-tu-van-list/edit/:DKTVListId'),
                 params = route.parse(window.location.pathname);
             this.props.getDKTVListPage(params.DKTVListId);
-            this.setState({DKTVListId: params.DKTVListId});
-            
+            this.setState({ DKTVListId: params.DKTVListId });
+
         });
     }
 
@@ -86,7 +86,7 @@ class DangKyTuVanListPage extends React.Component {
     }
 
     delete = (e, DKTVListId, item) => {
-        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(DKTVListId,item._id));
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(DKTVListId, item._id));
         e.preventDefault();
     }
 
@@ -124,7 +124,7 @@ class DangKyTuVanListPage extends React.Component {
                                         <a className='btn btn-primary' href='#' onClick={e => this.showDKTVListItem(e, item._id)}>
                                             <i className='fa fa-paper-plane' />
                                         </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e,this.state.DKTVListId,item)}>
+                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, this.state.DKTVListId, item)}>
                                             <i className='fa fa-lg fa-trash' />
                                         </a>
                                     </div>
@@ -152,5 +152,5 @@ class DangKyTuVanListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
-const mapActionsToProps = { getDKTVListPage, getDKTVListItem,updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem };
+const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanListPage);

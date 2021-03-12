@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStaffGroupItemByUser } from './redux/reduxStaffGroup.jsx';
+import { getStaffGroupItemByUser } from './redux/reduxStaffGroup';
 
 class SectionStaffGroup extends React.Component {
     componentDidMount() {

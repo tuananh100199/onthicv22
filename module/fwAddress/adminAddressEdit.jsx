@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAddressItem, updateAddress } from './redux.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import { getAddressItem, updateAddress } from './redux';
+import ImageBox from 'view/component/ImageBox';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 class AddressEditPage extends React.Component {
     constructor(props) {

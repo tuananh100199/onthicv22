@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourse, getCourse } from './redux.jsx'
+import { updateCourse, getCourse } from './redux';
 import { Link } from 'react-router-dom';
-import { Select } from '../../view/component/Input.jsx';
-import { ajaxSelectSubject } from '../fwMonHoc/redux.jsx';
+import { Select } from 'view/component/Input';
+import { ajaxSelectSubject } from '../fwMonHoc/redux';
 
 class SubjectModal extends React.Component {
     state = { item: null };

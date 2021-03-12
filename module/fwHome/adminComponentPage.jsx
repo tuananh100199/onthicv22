@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import ContentPage from './adminContentView.jsx';
-import CarouselPage from './adminCarouselView.jsx';
-import VideoPage from './adminVideoView.jsx';
-import StatisticPage from './adminStatisticView.jsx';
-import SloganPage from './adminSloganView.jsx';
-import TestimonyPage from './adminTestimonyView.jsx';
-import StaffGroupPage from './adminStaffView.jsx';
-import LogoPage from './adminLogoView.jsx';
-import ListVideoPage from './adminListVideoView.jsx';
-import ContentListPage from '../fwContentList/adminContentListView.jsx';
-import DangKyTuVanPage from '../fwDangKyTuVan/adminPage.jsx'
+import ContentPage from './adminContentView';
+import CarouselPage from './adminCarouselView';
+import VideoPage from './adminVideoView';
+import StatisticPage from './adminStatisticView';
+import SloganPage from './adminSloganView';
+import TestimonyPage from './adminTestimonyView';
+import StaffGroupPage from './adminStaffView';
+import LogoPage from './adminLogoView';
+import ListVideoPage from './adminListVideoView';
+import ContentListPage from '../fwContentList/adminContentListView';
+import DangKyTuVanPage from '../fwDangKyTuVan/adminPage';
 
 class ComponentPage extends React.Component {
     componentDidMount() {

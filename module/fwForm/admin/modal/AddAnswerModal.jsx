@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { addAnswer, searchUserFromSystem } from '../../reduxAnswer.jsx';
-import { createUser, updateUser } from '../../../fwUser/redux.jsx';
-import AdminRegisterElement from './AdminRegisterElement.jsx';
+import { addAnswer, searchUserFromSystem } from '../../reduxAnswer';
+import { createUser, updateUser } from '../../../fwUser/redux';
+import AdminRegisterElement from './AdminRegisterElement';
 
 class AddAnswerModal extends React.Component {
     constructor(props) {
@@ -201,7 +201,7 @@ class AddAnswerModal extends React.Component {
                                         &nbsp;&nbsp;&nbsp;
                                         {this.state.user && this.state.user._id && !readOnly ? (
                                             <button type='button' className='btn btn-primary' onClick={this.save}>
-                                                <i className='fa fa-fw fa-lg fa-floppy-o' />Lưu
+                                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                             </button>
                                         ) : null}
                                     </div>

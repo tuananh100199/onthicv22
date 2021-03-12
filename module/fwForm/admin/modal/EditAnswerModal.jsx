@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateAnswer } from '../../reduxAnswer.jsx';
-import AdminRegisterElement from './AdminRegisterElement.jsx';
+import { updateAnswer } from '../../reduxAnswer';
+import AdminRegisterElement from './AdminRegisterElement';
 
 class EditAnswerModal extends React.Component {
     constructor(props) {

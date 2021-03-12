@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getNewsInPageByUser } from './redux.jsx';
+import { getNewsInPageByUser } from './redux';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
 

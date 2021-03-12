@@ -12,36 +12,36 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-import { changeCarouselItem } from '../../module/fwHome/redux/reduxCarousel.jsx';
-import { changeVideo } from '../../module/fwHome/redux/reduxVideo.jsx';
-import { changeCategory } from '../../module/_init/reduxCategory.jsx';
-import { getSystemState, updateSystemState } from '../../module/_init/reduxSystem.jsx';
-import { changeUser } from '../../module/fwUser/redux.jsx';
-import { addContact, changeContact } from '../../module/fwContact/redux.jsx';
+import { changeCarouselItem } from '../../module/fwHome/redux/reduxCarousel';
+import { changeVideo } from '../../module/fwHome/redux/reduxVideo';
+import { changeCategory } from '../../module/_init/reduxCategory';
+import { getSystemState, updateSystemState } from '../../module/_init/reduxSystem';
+import { changeUser } from '../../module/fwUser/redux';
+import { addContact, changeContact } from '../../module/fwContact/redux';
 import Loadable from 'react-loadable';
-import Loading from '../component/Loading.jsx';
-import AdminHeader from '../component/AdminHeader.jsx';
-import AdminMenu from '../component/AdminMenu.jsx';
+import Loading from '../component/Loading';
+import AdminHeader from '../component/AdminHeader';
+import AdminMenu from '../component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
-import _init from '../../module/_init/index.jsx';
-import fwHome from '../../module/fwHome/index.jsx';
-import fwUser from '../../module/fwUser/index.jsx';
-import fwRole from '../../module/fwRole/index.jsx';
-import fwMenu from '../../module/fwMenu/index.jsx';
-import fwContact from '../../module/fwContact/index.jsx';
-import fwEmail from '../../module/fwEmail/index.jsx';
-import fwForm from '../../module/fwForm/index.jsx';
-import fwNews from '../../module/fwNews/index.jsx';
-import fwContentList from '../../module/fwContentList/index.jsx';
-import fwAddress from '../../module/fwAddress/index.jsx';
-import fwCourse from '../../module/fwCourse/index.jsx';
-import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index.jsx';
-import fwCluster from '../../module/fwCluster/index.jsx';
-import fwDangKyTuVan from '../../module/fwDangKyTuVan/index.jsx';
-import fwCourseType from '../../module/fwCourseType/index.jsx';
-import fwMonHoc from '../../module/fwMonHoc/index.jsx';
-import fwBaiHoc from '../../module/fwBaiHoc/index.jsx';
+import _init from '../../module/_init/index';
+import fwHome from '../../module/fwHome/index';
+import fwUser from '../../module/fwUser/index';
+import fwRole from '../../module/fwRole/index';
+import fwMenu from '../../module/fwMenu/index';
+import fwContact from '../../module/fwContact/index';
+import fwEmail from '../../module/fwEmail/index';
+import fwForm from '../../module/fwForm/index';
+import fwNews from '../../module/fwNews/index';
+import fwContentList from '../../module/fwContentList/index';
+import fwAddress from '../../module/fwAddress/index';
+import fwCourse from '../../module/fwCourse/index';
+import fwDonDeNghiHoc from '../../module/fwDonDeNghiHoc/index';
+import fwCluster from '../../module/fwCluster/index';
+import fwDangKyTuVan from '../../module/fwDangKyTuVan/index';
+import fwCourseType from '../../module/fwCourseType/index';
+import fwMonHoc from '../../module/fwMonHoc/index';
+import fwBaiHoc from '../../module/fwBaiHoc/index';
 
 const modules = [
     _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
@@ -101,7 +101,7 @@ class App extends React.Component {
                     <div className='site-content'>
                         <Switch>
                             {this.routes}
-                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('../component/MessagePage.jsx') })} />
+                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('../component/MessagePage') })} />
                         </Switch>
                     </div>
                 </React.Fragment>

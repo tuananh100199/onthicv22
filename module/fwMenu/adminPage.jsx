@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu, buildMenu } from './redux.jsx';
+import { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu, buildMenu } from './redux';
 
 class MenuPage extends React.Component {
     componentDidMount() {

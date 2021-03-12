@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/redux.jsx'
+import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/redux';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
+import Pagination from 'view/component/Pagination';
 
 class MonHocPage extends React.Component {
     constructor(props) {

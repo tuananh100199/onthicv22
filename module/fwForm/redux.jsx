@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 
 // Reducer -------------------------------------------------------------------------------------------------------------
 const GET_PAGE = 'form:getPage';

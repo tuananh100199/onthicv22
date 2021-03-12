@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getVideo } from './redux/reduxVideo.jsx';
+import { getVideo } from './redux/reduxVideo';
 
 class SectionVideo extends React.Component {
     state = {};
@@ -30,12 +30,12 @@ class SectionVideo extends React.Component {
             });
         }
     }
-    
+
     render() {
         let videoTitle = this.state.title ? this.state.title : '',
             videoUrl = this.state.link ? this.state.link : '',
             sectionStyle = Object.assign({ padding: '8em 0', marginBottom: '6em', position: 'relative' }, this.props.style, this.state.image ? { backgroundImage: 'url(' + T.baseUrl + this.state.image + ')' } : '');
-        
+
         return (
             <section className='img' style={sectionStyle}>
                 <div className='overlay' />

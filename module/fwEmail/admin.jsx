@@ -1,6 +1,6 @@
 import React from 'react';
-import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
+import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem';
+import Editor from 'view/component/CkEditor4';
 
 class EmailItem extends React.Component {
     constructor(props) {

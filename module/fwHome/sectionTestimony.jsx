@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTestimonyByUser } from './redux/reduxTestimony.jsx';
+import { getTestimonyByUser } from './redux/reduxTestimony';
 
 class SectionTestimony extends React.Component {
     state = {};

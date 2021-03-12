@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourseTypeInPage } from '../fwCourseType/redux.jsx'
+import { getCourseTypeInPage } from '../fwCourseType/redux'
 
 class AdminDonDeNghiList extends React.Component {
     componentDidMount() {

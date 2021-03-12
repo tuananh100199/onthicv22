@@ -1,6 +1,6 @@
 import React from 'react';
-import { getApplicationFormEmail, saveApplicationFormEmail } from './redux.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
+import { getApplicationFormEmail, saveApplicationFormEmail } from './redux';
+import Editor from 'view/component/CkEditor4';
 import { Link } from 'react-router-dom';
 
 class EmailItem extends React.Component {

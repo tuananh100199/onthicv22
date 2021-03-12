@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInPage, createUser, updateUser, deleteUser } from './redux.jsx';
-import { getAllRoles } from '../fwRole/redux.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
-import { UserPasswordModal, RolesModal, UserModal } from './adminModal.jsx';
+import { getUserInPage, createUser, updateUser, deleteUser } from './redux';
+import { getAllRoles } from '../fwRole/redux';
+import Pagination from 'view/component/Pagination';
+import { UserPasswordModal, RolesModal, UserModal } from './adminModal';
 
 class UserPage extends React.Component {
     constructor(props) {

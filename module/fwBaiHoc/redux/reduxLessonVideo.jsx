@@ -1,4 +1,4 @@
-import T from '../../../view/js/common';
+import T from 'view/js/common';
 
 // Reducer -------------------------------------------------------------------------------------------------------------
 const GET_LESSON_VIDEO_LIST = 'lessonVideo:getLessonVideoList';

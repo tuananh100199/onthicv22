@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './reduxCategory.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './reduxCategory';
+import ImageBox from 'view/component/ImageBox';
 
 class CategoryModal extends React.Component {
     constructor(props) {

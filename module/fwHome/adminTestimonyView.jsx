@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllTestimonys, createTestimony, deleteTestimony } from './redux/reduxTestimony.jsx';
+import { getAllTestimonys, createTestimony, deleteTestimony } from './redux/reduxTestimony';
 import { Link } from 'react-router-dom';
 
 class TestimonyModal extends React.Component {

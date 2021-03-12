@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatistic } from './reduxSystem.jsx';
-import CountUp from '../../view/js/countUp';
+import { getStatistic } from './reduxSystem';
+import CountUp from 'view/js/countUp';
 import { Link } from 'react-router-dom';
 
 class DashboardIcon extends React.Component {

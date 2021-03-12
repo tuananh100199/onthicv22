@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllVideosByUser } from './redux/reduxVideo.jsx';
-import { getListVideoByUser } from './redux/reduxListVideo.jsx';
+import { getAllVideosByUser } from './redux/reduxVideo';
+import { getListVideoByUser } from './redux/reduxListVideo';
 
 class SectionListVideo extends React.Component {
     state = { item: {}, items: [], mobileView: false };
@@ -19,20 +19,20 @@ class SectionListVideo extends React.Component {
                     fixedContentPos: false,
                     closeOnBgClick: false
                 });
-            },  50)
+            }, 50)
         };
-        
+
         if (windowWidth < 768 && mobileView == false) {
             this.setState({ mobileView: true }, done)
         } else if (windowWidth >= 768 && mobileView == true) {
             this.setState({ mobileView: false }, done)
         }
     }
-    
+
     componentDidMount() {
         $(document).ready(() => {
             window.addEventListener('resize', this.handleResize);
-    
+
             if (this.props.listVideoId) {
                 this.props.getListVideoByUser(this.props.listVideoId, data => {
                     if (data.error) {
@@ -55,7 +55,7 @@ class SectionListVideo extends React.Component {
                                                     fixedContentPos: false,
                                                     closeOnBgClick: false
                                                 });
-                                            },  50)
+                                            }, 50)
                                         } else {
                                             setTimeout(done, 100);
                                         }
@@ -69,14 +69,14 @@ class SectionListVideo extends React.Component {
             }
         })
     }
-    
+
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize);
     }
-    
+
     render() {
         let { item, items, mobileView } = this.state;
-        const firstItem = items && items.length ? items.slice(0 ,1)[0] : null;
+        const firstItem = items && items.length ? items.slice(0, 1)[0] : null;
         const remainItems = items.slice(1)
         return (
             <div>
@@ -88,12 +88,12 @@ class SectionListVideo extends React.Component {
                     <div className='row'>
                         <div className={items.length ? 'col-md-12 col-lg-7 col-xl-8 m-0' : 'col-md-12 m-0'} style={{ height: item.height + 'px', padding: '2px' }}>
                             <a href={firstItem.link} className='button popup-youtube d-flex justify-content-center align-items-center'
-                               style={{
-                                   height: '100%', backgroundImage: `url('${firstItem.image}')`,
-                                   backgroundRepeat: 'no-repeat',
-                                   backgroundPosition: 'center',
-                                   backgroundSize: 'contain'
-                               }}
+                                style={{
+                                    height: '100%', backgroundImage: `url('${firstItem.image}')`,
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: 'center',
+                                    backgroundSize: 'contain'
+                                }}
                             />
                         </div>
                         {mobileView ? (
@@ -101,12 +101,12 @@ class SectionListVideo extends React.Component {
                                 remainItems.map((_item, index) => (
                                     <div key={index} className='col-md-12 col-lg-5 col-xl-4 m-0' style={{ height: item.height + 'px', padding: '2px' }}>
                                         <a href={_item.link} className='button popup-youtube d-flex justify-content-center align-items-center'
-                                           style={{
-                                               height: '100%', backgroundImage: `url('${_item.image}')`,
-                                               backgroundRepeat: 'no-repeat',
-                                               backgroundPosition: 'center',
-                                               backgroundSize: 'contain'
-                                           }}
+                                            style={{
+                                                height: '100%', backgroundImage: `url('${_item.image}')`,
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundPosition: 'center',
+                                                backgroundSize: 'contain'
+                                            }}
                                         />
                                     </div>
                                 ))
@@ -116,14 +116,14 @@ class SectionListVideo extends React.Component {
                                 <div className='col-md-12 col-lg-5 col-xl-4 m-0' style={{ height: item.height + 'px' }}>
                                     <div className='custom-scroll' style={{ height: item.height + 'px', color: 'white', overflowY: 'auto' }}>
                                         {remainItems.map((item, index) => (
-                                            <div key={index} style={{ height: '85px', padding: '2px',  }}>
+                                            <div key={index} style={{ height: '85px', padding: '2px', }}>
                                                 <a href={item.link} className='button popup-youtube d-flex justify-content-center align-items-center'
-                                                   style={{
-                                                       height: '100%', backgroundImage: `url('${item.image}')`,
-                                                       backgroundRepeat: 'no-repeat',
-                                                       backgroundPosition: 'center',
-                                                       backgroundSize: 'contain'
-                                                   }}
+                                                    style={{
+                                                        height: '100%', backgroundImage: `url('${item.image}')`,
+                                                        backgroundRepeat: 'no-repeat',
+                                                        backgroundPosition: 'center',
+                                                        backgroundSize: 'contain'
+                                                    }}
                                                 />
                                             </div>
                                         ))}
@@ -138,6 +138,6 @@ class SectionListVideo extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ });
+const mapStateToProps = state => ({});
 const mapActionsToProps = { getAllVideosByUser, getListVideoByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionListVideo);

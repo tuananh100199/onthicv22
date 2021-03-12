@@ -29,6 +29,7 @@ module.exports = app => {
         }),
 
         getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
+
         get: (condition, option, done) => {
             const handleGet = (condition, option, done) => {
                 const select = option.select ? option.select : null;
@@ -59,12 +60,16 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-        pushLesson: (condition, lessonId, done) => {
+
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
+
+
+        addLesson: (condition, lessonId, done) => {
             model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
         },
-        pullLesson: (condition, lessonId, done) => {
+
+        deleteLesson: (condition, lessonId, done) => {
             model.findOneAndUpdate(condition, { $pull: { lesson: lessonId } }).exec(done);
         },
-        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

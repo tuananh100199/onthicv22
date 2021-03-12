@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatisticItem, updateStatistic, addStatisticIntoGroup, updateStatisticInGroup, removeStatisticFromGroup, swapStatisticInGroup } from './redux/reduxStatistic.jsx';
+import { getStatisticItem, updateStatistic, addStatisticIntoGroup, updateStatisticInGroup, removeStatisticFromGroup, swapStatisticInGroup } from './redux/reduxStatistic';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import Editor from 'view/component/CkEditor4';
+import ImageBox from 'view/component/ImageBox';
 
 const texts = {
     vi: {
@@ -320,24 +320,21 @@ class StatisticEditPage extends React.Component {
                                     <ImageBox ref={this.image} image={this.state.image} id='tepBacground' postUrl='/user/upload' uploadType='StatisticImage' userData='statistic' success={this.imageChanged} readOnly={readOnly} />
                                 </div>
                             </div>
-                            <div className='form-group'>
-                                {table}
-                            </div>
+                            <div className='form-group'>{table}</div>
                         </div>
                         {readOnly ? null :
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-info' type='button' onClick={this.showAddStatisticModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
+                                            <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                     </button>&nbsp;
                                     <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
+                                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                     </button>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            </div>}
                     </div>
                 </div>
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>

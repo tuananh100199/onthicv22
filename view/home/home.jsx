@@ -9,28 +9,28 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import Loadable from 'react-loadable';
-import Loading from '../component/Loading.jsx';
-import Loader from '../component/Loader.jsx';
-import HomeMenu from '../component/HomeMenu.jsx';
-import HomeFooter from '../component/HomeFooter.jsx';
-import LoginModal from '../component/LoginModal.jsx';
-import LanguageSwitch from '../component/LanguageSwitch.jsx';
+import Loading from '../component/Loading';
+import Loader from '../component/Loader';
+import HomeMenu from '../component/HomeMenu';
+import HomeFooter from '../component/HomeFooter';
+import LoginModal from '../component/LoginModal';
+import LanguageSwitch from '../component/LanguageSwitch';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
-import _init from '../../module/_init/index.jsx';
-import fwContact from '../../module/fwContact/index.jsx';
-import fwHome from '../../module/fwHome/index.jsx';
-import fwMenu from '../../module/fwMenu/index.jsx';
-import fwUser from '../../module/fwUser/index.jsx';
-import fwForm from '../../module/fwForm/index.jsx';
-import fwNews from '../../module/fwNews/index.jsx';
-import fwCourse from '../../module/fwCourse/index.jsx';
-import fwContentList from '../../module/fwContentList/index.jsx';
-import fwAddress from '../../module/fwAddress/index.jsx';
-import fwCourseType from '../../module/fwCourseType/index.jsx';
+import _init from '../../module/_init/index';
+import fwContact from '../../module/fwContact/index';
+import fwHome from '../../module/fwHome/index';
+import fwMenu from '../../module/fwMenu/index';
+import fwUser from '../../module/fwUser/index';
+import fwForm from '../../module/fwForm/index';
+import fwNews from '../../module/fwNews/index';
+import fwCourse from '../../module/fwCourse/index';
+import fwContentList from '../../module/fwContentList/index';
+import fwAddress from '../../module/fwAddress/index';
+import fwCourseType from '../../module/fwCourseType/index';
 
 const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwForm, fwNews, fwCourse, fwContentList, fwAddress, fwCourseType];
-import { getSystemState, register, login, forgotPassword, logout } from '../../module/_init/reduxSystem.jsx';
+import { getSystemState, register, login, forgotPassword, logout } from '../../module/_init/reduxSystem';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {},
@@ -56,10 +56,7 @@ class App extends React.Component {
     componentDidMount() {
         const done = () => {
             if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
-                const handlePaddingFooter = () => {
-                    const footerHeight = $('footer').height();
-                    $('#paddingFooterSection').css('padding-bottom', footerHeight + 'px');
-                }
+                const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
                 handlePaddingFooter()
                 setTimeout(handlePaddingFooter, 250)
                 $(window).on('resize', handlePaddingFooter);
@@ -71,7 +68,7 @@ class App extends React.Component {
                     if (!link.startsWith('http://') && !link.startsWith('https://') && routeMapper[link] == undefined) {
                         addRoute({
                             path: link,
-                            component: Loadable({ loading: Loading, loader: () => import('../component/MenuPage.jsx') })
+                            component: Loadable({ loading: Loading, loader: () => import('../component/MenuPage') })
                         });
                     }
                     if (currentMenu.submenus && currentMenu.submenus.length) {
@@ -110,7 +107,7 @@ class App extends React.Component {
                             {this.state.routes}
                             <Route path='**' component={Loadable({
                                 loading: Loading,
-                                loader: () => import('../component/MessagePage.jsx')
+                                loader: () => import('../component/MessagePage')
                             })} />
                         </Switch>
                         <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
@@ -126,7 +123,7 @@ class App extends React.Component {
                             <Switch>
                                 <Route path='**' component={Loadable({
                                     loading: Loading,
-                                    loader: () => import('../component/MessagePage.jsx')
+                                    loader: () => import('../component/MessagePage')
                                 })} />
                             </Switch>
                         </div>

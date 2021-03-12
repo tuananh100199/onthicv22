@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const MonHocGetMonHocInPage = 'MonHoc:GetMonHocInPage';
 const MonHocGetMonHoc = 'MonHoc:GetMonHoc';
@@ -115,7 +115,7 @@ export function getLessonList(subjectId, done) {
 }
 export function addLesson(subjectId, lessonId, done) {
     return dispatch => {
-        const url = `/api/baihoc/add/${subjectId}`;
+        const url = `/api/mon-hoc/bai-hoc/add/${subjectId}`;
         T.post(url, { lessonId }, data => {
             if (data.error) {
                 T.notify('Thêm bài học bị lỗi!', 'danger');
@@ -132,7 +132,7 @@ export function addLesson(subjectId, lessonId, done) {
 
 export function swapLesson(_id, data, done) {
     return dispatch => {
-        const url = `/api/bai-hoc/swap`;
+        const url = `/api/mon-hoc/bai-hoc/swap`;
         T.put(url, { _id, data }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự bài học bị lỗi!', 'danger');
@@ -147,11 +147,11 @@ export function swapLesson(_id, data, done) {
 
 export function deleteLesson(subjectId, lessonId, done) {
     return dispatch => {
-        const url = `/api/baihoc/delete/${subjectId}`;
-        T.post(url, { lessonId }, data => {
+        const url = `/api/mon-hoc/bai-hoc/${subjectId}`;
+        T.delete(url, { lessonId }, data => {
             if (data.error) {
                 T.notify('Xóa bài học bị lỗi!', 'danger');
-                console.error('POST: ' + url + '.', data.error);
+                console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.notify('Xóa bài học thành công!', 'success');
                 dispatch(getLessonList(subjectId));
@@ -160,6 +160,7 @@ export function deleteLesson(subjectId, lessonId, done) {
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
+
 export const ajaxSelectSubject = {
     ajax: true,
     url: `/api/mon-hoc/page/:pageNumber/:pageSize`,

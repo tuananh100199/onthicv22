@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourse } from './redux.jsx';
-import CommonInfoPage from './commonInfoPage.jsx';
-import SubjectPage from './subjectPage.jsx';
+import { getCourse } from './redux';
+import CommonInfoPage from './commonInfoPage';
+import SubjectPage from './subjectPage';
 
 class EditPage extends React.Component {
     state = { item: null };

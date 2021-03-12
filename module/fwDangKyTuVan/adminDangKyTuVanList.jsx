@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan.jsx';
+import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan';
 import { Link } from 'react-router-dom';
 class DangKyTuVanPage extends React.Component {
     constructor(props) {
@@ -62,12 +62,12 @@ class DangKyTuVanPage extends React.Component {
 
         return (
             <main className='app-content'>
-               <div className='app-title'>
-                   <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
-               </div>
-               <div className='row tile'>{table}</div>
-           </main>
-           );
+                <div className='app-title'>
+                    <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
+                </div>
+                <div className='row tile'>{table}</div>
+            </main>
+        );
     }
 }
 

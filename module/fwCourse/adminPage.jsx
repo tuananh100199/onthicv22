@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseInPage, createCourse, updateCourse, deleteCourse } from './redux.jsx'
+import { getCourseInPage, createCourse, updateCourse, deleteCourse } from './redux';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
-import { Select } from '../../view/component/Input.jsx';
-import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
+import Pagination from 'view/component/Pagination';
+import { Select } from 'view/component/Input';
+import { ajaxSelectCourseType } from '../fwCourseType/redux';
 
 class CourseModal extends React.Component {
     modal = React.createRef();

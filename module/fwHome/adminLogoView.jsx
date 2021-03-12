@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllLogos, createLogo, deleteLogo } from './redux/reduxLogo.jsx';
+import { getAllLogos, createLogo, deleteLogo } from './redux/reduxLogo';
 import { Link } from 'react-router-dom';
 
 class LogoModal extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatisticByUser } from './redux/reduxStatistic.jsx';
+import { getStatisticByUser } from './redux/reduxStatistic';
 
 class SectionStatistic extends React.Component {
     state = {};

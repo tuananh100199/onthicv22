@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 
 const MenuGetAll = 'Menu:GetAll';
 export default function menuReducer(state = null, data) {

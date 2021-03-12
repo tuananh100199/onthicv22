@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from '../../view/js/common.js';
-import { getNewsByUser } from './redux.jsx';
-import NewsFeed from '../../view/component/NewsFeed.jsx';
+import T from 'view/js/common';
+import { getNewsByUser } from './redux';
+import NewsFeed from 'view/component/NewsFeed';
 
 class NewsDetail extends React.Component {
     constructor(props) {
@@ -19,11 +19,11 @@ class NewsDetail extends React.Component {
             $(this.background.current).parallax();
         });
     }
-    
+
     componentWillUnmount() {
         $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
     }
-    
+
     componentDidUpdate(prevProps) {
         setTimeout(() => {
             T.ftcoAnimate();
@@ -82,7 +82,7 @@ class NewsDetail extends React.Component {
                                     <div className='contact_content_title ftco-animate'>{item.title}</div>
                                     <div className='section_subtitle ftco-animate' style={{ lineHeight: 1.4 }}>{item.abstract}</div>
                                     <div className='contact_info ftco-animate'>
-                                        <p dangerouslySetInnerHTML={{ __html: item.content }}/>
+                                        <p dangerouslySetInnerHTML={{ __html: item.content }} />
                                     </div>
                                 </div>
                             </div>

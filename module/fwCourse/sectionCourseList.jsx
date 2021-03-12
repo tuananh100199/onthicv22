@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseInPageByUser } from './redux.jsx';
+import { getCourseInPageByUser } from './redux';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
 
@@ -9,21 +9,21 @@ const linkFormat = '/khoahoc/', idFormat = '/course/item/';
 class CourseListView extends React.Component {
     state = {};
     loading = false;
-    
+
     constructor(props) {
         super(props);
         this.state = {
-            viewMode: 'list' 
+            viewMode: 'list'
         }
     }
-    
+
     componentDidMount() {
         this.props.getCourseInPageByUser(1, T.defaultUserPageSize, () => {
             T.ftcoAnimate()
             this.loading = false
         });
     }
-    
+
     ready = () => {
         inView('.listViewLoading').on('enter', () => {
             let userPage = this.props.course.userPage;
@@ -33,7 +33,7 @@ class CourseListView extends React.Component {
             }
         });
     }
-    
+
     setViewMode = (e, viewMode) => {
         e.preventDefault()
         this.setState({ viewMode }, () => {
@@ -41,7 +41,7 @@ class CourseListView extends React.Component {
             $(window).trigger('resize')
         })
     }
-    
+
     render() {
         let userPage = this.props.course ? this.props.course.userPage : null,
             elements_grid = [],
@@ -68,7 +68,7 @@ class CourseListView extends React.Component {
             elements_list = userPage.list.map((item, index) => {
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
-                    <div key={index} className='row ml-0 ftco-animate' style={{ marginBottom: '15px'  }}>
+                    <div key={index} className='row ml-0 ftco-animate' style={{ marginBottom: '15px' }}>
                         <div style={{ width: '150px', padding: '15px 15px 30px 0px' }} className={index < userPage.list.length - 1 ? 'border-bottom' : ''}>
                             <Link to={link}>
                                 <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
@@ -88,22 +88,22 @@ class CourseListView extends React.Component {
                 )
             })
         }
-        
+
         return (
             <div className='contact' style={{ marginTop: '110px' }}>
                 <div className='mb-15 text-right'>
                     <div className='btn-group'>
                         <button
                             className={'btn btn-sm ' + (this.state.viewMode == 'list' ? ' btn-primary' : 'btn-secondary')}
-                            onClick={(e) => this.setViewMode(e, 'list')}><i className='fa fa-bars' aria-hidden='true'/>
+                            onClick={(e) => this.setViewMode(e, 'list')}><i className='fa fa-bars' aria-hidden='true' />
                         </button>
                         <button
                             className={'btn btn-sm ' + (this.state.viewMode == 'grid' ? 'btn-primary' : 'btn-secondary')}
-                            onClick={(e) => this.setViewMode(e, 'grid')}><i className='fa fa-th' aria-hidden='true'/>
+                            onClick={(e) => this.setViewMode(e, 'grid')}><i className='fa fa-th' aria-hidden='true' />
                         </button>
                     </div>
                 </div>
-    
+
                 {(this.state.viewMode == 'list') ? (
                     <div className='container'>
                         <div className='mt-2'>
@@ -117,10 +117,10 @@ class CourseListView extends React.Component {
                         </div>
                     </div>
                 )}
-                
+
                 {(userPage && userPage.pageNumber < userPage.pageTotal) ? (
-                    <div style={{width: '100%', textAlign: 'center'}}>
-                        <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{width: '48px', height: 'auto'}} onLoad={this.ready}/>
+                    <div style={{ width: '100%', textAlign: 'center' }}>
+                        <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{ width: '48px', height: 'auto' }} onLoad={this.ready} />
                     </div>
                 ) : ''}
             </div>

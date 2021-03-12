@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLogoItem, updateLogo, addLogoIntoGroup, updateLogoInGroup, removeLogoFromGroup, swapLogoInGroup } from './redux/reduxLogo.jsx';
+import { getLogoItem, updateLogo, addLogoIntoGroup, updateLogoInGroup, removeLogoFromGroup, swapLogoInGroup } from './redux/reduxLogo';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import ImageBox from 'view/component/ImageBox';
 
 const texts = {
     vi: {
@@ -291,7 +291,6 @@ class LogoEditPage extends React.Component {
                                         <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='logosViTitle' defaultValue={title.vi} /><br />
                                     </div>
                                 </div>
-
                                 <div id='logoEnTab' className='tab-pane fade'>
                                     <div className='form-group mt-3'>
                                         <label className='control-label' htmlFor='logosEnTitle'>Title</label>
@@ -307,10 +306,10 @@ class LogoEditPage extends React.Component {
                             <div className='row'>
                                 <div className='col-md-12' style={{ textAlign: 'right' }}>
                                     <button className='btn btn-info' type='button' onClick={this.showAddLogoModal}>
-                                        <i className='fa fa-fw fa-lg fa-plus' />Thêm logo
+                                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                     </button>&nbsp;
                                     <button className='btn btn-primary' type='button' onClick={this.save}>
-                                        <i className='fa fa-fw fa-lg fa-save' />Lưu
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                     </button>
                                 </div>
                             </div>

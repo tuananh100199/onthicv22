@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTestimonyItem, updateTestimony, addTestimonyIntoGroup, updateTestimonyInGroup, removeTestimonyFromGroup, swapTestimonyInGroup } from './redux/reduxTestimony.jsx';
+import { getTestimonyItem, updateTestimony, addTestimonyIntoGroup, updateTestimonyInGroup, removeTestimonyFromGroup, swapTestimonyInGroup } from './redux/reduxTestimony';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import Editor from 'view/component/CkEditor4';
+import ImageBox from 'view/component/ImageBox';
 
 class TestimonyModal extends React.Component {
     constructor(props) {

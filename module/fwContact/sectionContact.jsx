@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createContact } from './redux.jsx';
-import { getAllAddressByUser } from '../fwAddress/redux.jsx'
+import { createContact } from './redux';
+import { getAllAddressByUser } from '../fwAddress/redux';
 
 class SectionContact extends React.Component {
     constructor(props) {

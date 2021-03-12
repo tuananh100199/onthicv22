@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllStatistics, createStatistic, deleteStatistic } from './redux/reduxStatistic.jsx';
+import { getAllStatistics, createStatistic, deleteStatistic } from './redux/reduxStatistic';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 class StatisticModal extends React.Component {
     constructor(props) {

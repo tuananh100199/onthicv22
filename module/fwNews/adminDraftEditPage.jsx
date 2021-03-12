@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDraftNews, checkLink, createDraftNews, updateDraftNews } from './redux.jsx'
+import { getDraftNews, checkLink, createDraftNews, updateDraftNews } from './redux';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
+import ImageBox from 'view/component/ImageBox';
+import Editor from 'view/component/CkEditor4';
 
 class DraftNewsEditPage extends React.Component {
     constructor(props) {

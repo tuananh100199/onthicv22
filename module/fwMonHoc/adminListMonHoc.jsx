@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getMonHocInPage, createMonHoc, deleteMonHoc } from './redux.jsx'
+import { getMonHocInPage, createMonHoc, deleteMonHoc } from './redux';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
+import Pagination from 'view/component/Pagination';
 
 class AdminListMonHoc extends React.Component {
     componentDidMount() {
@@ -20,7 +20,8 @@ class AdminListMonHoc extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            readOnly = !currentPermissions.contains('course:write');
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subject && this.props.subject.page ?
             this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = 'Không có loại Môn học!';
@@ -44,10 +45,10 @@ class AdminListMonHoc extends React.Component {
                                         <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-                                        {currentPermissions.contains('course:write') ?
+                                        {readOnly ? null :
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
+                                            </a>}
                                     </div>
                                 </td>
                             </tr>
@@ -62,14 +63,13 @@ class AdminListMonHoc extends React.Component {
                     <h1><i className='fa fa-file' /> Môn học</h1>
                 </div>
                 <div className='tile'>{table}</div>
-                <Pagination name='pageSubject'
-                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                <Pagination name='pageSubject' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getMonHocInPage} />
-                {currentPermissions.contains('course:write') ?
+                {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
                         onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
-                    </button> : ''}
+                    </button>}
             </main>
         );
     }

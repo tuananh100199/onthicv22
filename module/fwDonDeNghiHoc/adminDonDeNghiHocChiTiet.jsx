@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getForm, updateForm, sendEmailTuChoiDonDeNghiHoc } from './redux.jsx';
-import { updateProfile } from '../_init/reduxSystem.jsx'
+import { getForm, updateForm, sendEmailTuChoiDonDeNghiHoc } from './redux';
+import { updateProfile } from '../_init/reduxSystem'
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 const countryList = require('country-list');
 
 class ReasonModal extends React.Component {

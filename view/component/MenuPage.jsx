@@ -1,12 +1,12 @@
 import React from 'react';
 
-import fwHome from '../../module/fwHome/index.jsx';
-import fwContact from '../../module/fwContact/index.jsx';
-import fwNews from '../../module/fwNews/index.jsx'
-import fwCourse from '../../module/fwCourse/index.jsx'
-import fwContentList from '../../module/fwContentList/index.jsx'
-import fwCourseType from '../../module/fwCourseType/index.jsx'
-import fwDangKyTuVan from '../../module/fwDangKyTuVan/index.jsx'
+import fwHome from '../../module/fwHome/index';
+import fwContact from '../../module/fwContact/index';
+import fwNews from '../../module/fwNews/index';
+import fwCourse from '../../module/fwCourse/index';
+import fwContentList from '../../module/fwContentList/index';
+import fwCourseType from '../../module/fwCourseType/index';
+import fwDangKyTuVan from '../../module/fwDangKyTuVan/index';
 
 export default class MenuPage extends React.Component {
     state = { component: null };
@@ -38,11 +38,11 @@ export default class MenuPage extends React.Component {
                 itemView = <fwHome.Section.SectionSlogan sloganId={item.viewId} />;
             } else if (item.viewType == 'video') {
                 itemView = <fwHome.Section.SectionVideo videoId={item.viewId} />;
-            } 
+            }
             else if (item.viewType == 'dangKyTuVan') {
                 itemView = <fwDangKyTuVan.Section.SectionDangKyTuVan dangKyTuVanId={item.viewId} />;
             }
-             else if (item.viewType == 'listVideo') {
+            else if (item.viewType == 'listVideo') {
                 itemView = <fwHome.Section.SectionListVideo listVideoId={item.viewId} />;
             } else if (item.viewType == 'contentList') {
                 itemView = <fwContentList.Section.SectionContent listContentId={item.viewId} />;

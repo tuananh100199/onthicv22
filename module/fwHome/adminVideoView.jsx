@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getVideoInPage, createVideo, updateVideo, deleteVideo, getVideo } from './redux/reduxVideo.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
+import { getVideoInPage, createVideo, updateVideo, deleteVideo, getVideo } from './redux/reduxVideo';
+import ImageBox from 'view/component/ImageBox';
+import Pagination from 'view/component/Pagination';
+import Editor from 'view/component/CkEditor4';
 
 class VideoModal extends React.Component {
     constructor(props) {

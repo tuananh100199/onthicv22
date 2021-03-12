@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from '../../view/js/common.js'
-import { getAllCourseTypeByUser } from './redux.jsx';
+import T from 'view/js/common';
+import { getAllCourseTypeByUser } from './redux';
 import { Link } from 'react-router-dom';
 
 class SectionCTypeDetail extends React.Component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarouselInPage, createCarousel, updateCarousel, deleteCarousel } from './redux/reduxCarousel.jsx';
+import { getCarouselInPage, createCarousel, updateCarousel, deleteCarousel } from './redux/reduxCarousel';
 import { Link } from 'react-router-dom';
 
 class CarouselModal extends React.Component {

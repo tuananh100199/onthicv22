@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContactPage, getContact, updateContact, deleteContact } from './redux.jsx';
-import AdminContactModal from '../../view/component/AdminContactModal.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
+import { getContactPage, getContact, updateContact, deleteContact } from './redux';
+import AdminContactModal from 'view/component/AdminContactModal';
+import Pagination from 'view/component/Pagination';
 
 class ContactPage extends React.Component {
     modal = React.createRef();

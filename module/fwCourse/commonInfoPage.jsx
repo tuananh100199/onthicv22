@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourse, getCourse } from './redux.jsx'
+import { updateCourse, getCourse } from './redux';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import { Select } from '../../view/component/Input.jsx';
-import { ajaxSelectAddress } from '../fwAddress/redux.jsx';
-import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
+import Editor from 'view/component/CkEditor4';
+import { Select } from 'view/component/Input';
+import { ajaxSelectAddress } from '../fwAddress/redux';
+import { ajaxSelectCourseType } from '../fwCourseType/redux';
 
 
 class CommonInfoPage extends React.Component {
