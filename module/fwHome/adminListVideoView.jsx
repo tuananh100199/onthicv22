@@ -24,7 +24,7 @@ class ListVideoModal extends React.Component {
         const newData = {
             title: $('#listVideoName').val().trim()
         };
-        
+
         if (newData.title == '') {
             T.notify('Tên danh sách video bị trống!', 'danger');
             $('#listVideoName').focus();
@@ -85,7 +85,7 @@ class ListVideoPage extends React.Component {
         this.modal.current.show();
         e.preventDefault();
     }
-    
+
     delete = (e, item) => {
         T.confirm('Xóa danh sách video', 'Bạn có chắc bạn muốn xóa danh sách video này?', true, isConfirm => isConfirm && this.props.deleteListVideo(item._id));
         e.preventDefault();
@@ -96,7 +96,7 @@ class ListVideoPage extends React.Component {
         let table = null;
         if (this.props.listVideo && this.props.listVideo.list && this.props.listVideo.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered' ref={this.table}>
+                <table key={0} className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -133,7 +133,7 @@ class ListVideoPage extends React.Component {
             table = <p key={0}>Không có danh sách các video!</p>;
         }
 
-        const result = [table, <ListVideoModal key={1} createListVideo={this.props.createListVideo} ref={this.modal} history={this.props.history}/>];
+        const result = [table, <ListVideoModal key={1} createListVideo={this.props.createListVideo} ref={this.modal} history={this.props.history} />];
         if (currentPermissions.includes('component:write')) {
             result.push(
                 <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>

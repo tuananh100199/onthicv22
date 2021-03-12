@@ -93,7 +93,7 @@ export default class LogoCarousel extends React.Component {
                         {firstImage}
                     </div>
                 </div>
-            </div >
+            </div>
         );
     }
 }

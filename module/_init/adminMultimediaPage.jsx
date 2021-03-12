@@ -153,7 +153,7 @@ class MultimediaPage extends React.Component {
 
     render() {
         let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: ''};
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
 
         try {
             addressList = JSON.parse(addressList);

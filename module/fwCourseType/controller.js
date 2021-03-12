@@ -1,8 +1,8 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: app.parentMenu.setting,
+        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         menus: {
-            2120: { title: 'Loại khoá học', link: '/user/course-type/list', icon: 'fa fa-file-text-o', backgroundColor: 'rgb(255, 165, 0)' },
+            8010: { title: 'Loại khoá học', link: '/user/course-type/list' },
         }
     };
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });
@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.get('/course-type/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/course-type/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course-type/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.courseType.getPage(pageNumber, pageSize, {}, (error, page) => {
@@ -25,7 +25,7 @@ module.exports = (app) => {
         });
     });
     app.get('/api/course-type/all', app.permission.check('course:read'), (req, res) =>
-    app.model.courseType.getAll((error, items) => res.send({ error, items })));
+        app.model.courseType.getAll((error, items) => res.send({ error, items })));
 
     app.get('/api/course-type/edit/:courseTypeId', app.permission.check('course:read'), (req, res) =>
         app.model.courseType.get(req.params.courseTypeId, (error, item) => res.send({ error, item })));
@@ -58,5 +58,5 @@ module.exports = (app) => {
             res.send(response);
         })
     });
-
 };
+

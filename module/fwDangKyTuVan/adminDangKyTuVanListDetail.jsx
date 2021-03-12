@@ -45,15 +45,15 @@ class AdminDangKyTuVanModal extends React.Component {
                             <label>Tên người dùng: <b>{lastname} {firstname}</b></label><br />
                             <label>Email: <b>{email}</b></label><br />
                             <label>Số điện thoại: <b>{phone}</b></label><br />
-                            <h6 style={{marginTop: 20}}>Phản hồi đăng ký tư vấn</h6>
-                            <div className="form-group">
+                            <h6 style={{ marginTop: 20 }}>Phản hồi đăng ký tư vấn</h6>
+                            <div className='form-group'>
                                 <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
                             </div>
                         </div>
                         <form>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
+                            <div className='modal-footer'>
+                                <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                                <button type='button' className='btn btn-primary' id='submit-btn' onClick={this.save}>Gửi</button>
                             </div>
                         </form>
                     </div>
@@ -114,7 +114,7 @@ class DangKyTuVanListPage extends React.Component {
                     <tbody>
                         {this.props.dangKyTuVanList.page.list.map((item, index) => (
                             <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index+1}</td>
+                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     <a href='#' onClick={e => this.showDKTVListItem(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
                                     <br />

@@ -7,7 +7,6 @@ import Pagination from '../../view/component/Pagination.jsx';
 class CourseTypePage extends React.Component {
     componentDidMount() {
         this.props.getCourseTypeInPage();
-        T.ready('/user/settings', null);
     }
 
     create = (e) => {
@@ -21,10 +20,10 @@ class CourseTypePage extends React.Component {
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.courseType && this.props.courseType.page ?
-            this.props.courseType.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.courseType && this.props.courseType.page ?
+            this.props.courseType.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         let table = 'Không có loại khóa học!';
-        if (this.props.courseType && this.props.courseType.page && this.props.courseType.page.list && this.props.courseType.page.list.length > 0) {
+        if (list && list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -36,15 +35,12 @@ class CourseTypePage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.courseType.page.list.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
-                                {console.log('item', item)}
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/course-type/edit/' + item._id}>{item.title}</Link></td>
-                                <td className='toggle' style={{ textAlign: 'center' }} >
-                                    <label>
-                                        {T.numberDisplay(item.price ? item.price : '')} &nbsp;VND
-                                    </label>
+                                <td className='toggle' style={{ textAlign: 'center' }}>
+                                    {T.numberDisplay(item.price ? item.price + ' VND' : '')}
                                 </td>
                                 <td>
                                     <div className='btn-group'>
@@ -66,15 +62,13 @@ class CourseTypePage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Loại khóa học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Loại khóa học</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageCourseType'
-                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getCourseTypeInPage} />
+                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypeInPage} />
                 {currentPermissions.contains('course:write') ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                        onClick={this.create}>
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
                     </button> : ''}
             </main>

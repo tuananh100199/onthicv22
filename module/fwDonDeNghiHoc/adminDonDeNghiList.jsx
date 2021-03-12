@@ -14,8 +14,7 @@ class AdminDonDeNghiList extends React.Component {
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
-                        <h1><i className='fa fa-user' /> Danh sách đơn chờ duyệt</h1>
-                        <p>Trung tâm đào tạo lái xe Hiệp Phát</p>
+                        <h1><i className='fa fa-file-text-o' /> Danh sách đơn chờ duyệt</h1>
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <li className='breadcrumb-item'>

@@ -1,10 +1,9 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 8000, title: 'Đào tạo', link: '/user/dao-tao', icon: 'fa-graduation-cap', subMenusRender: false },
+        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         menus: {
-            8020: { title: 'Quản lý môn học', link: '/user/dao-tao/mon-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-            // 8021: { title: 'Quản lý bài học', link: '/user/dao-tao/bai-hoc/list', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
-        }
+            8020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc/list' },
+        },
     };
     app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write', menu });
     app.get('/user/dao-tao', app.permission.check('lesson:read'), app.templates.admin);

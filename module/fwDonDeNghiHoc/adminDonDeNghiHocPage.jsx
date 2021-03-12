@@ -116,7 +116,7 @@ class AdminDonDeNghiHocPage extends React.Component {
                     ))}
                 </tbody>
             </table>
-        ) : <p>Không có đơn chờ duyệt mới!</p>;
+        ) : <p>Không có đơn chờ duyệt!</p>;
 
         return (
             <main className='app-content'>
@@ -134,9 +134,7 @@ class AdminDonDeNghiHocPage extends React.Component {
                     </ul>
                 </div>
 
-                <div className='row tile'>
-                    {!this.state.isSearching ? table : <OverlayLoading text='Đang tải..' />}
-                </div>
+                <div className='tile'>{!this.state.isSearching ? table : <OverlayLoading text='Đang tải..' />}</div>
                 <Link className='btn btn-secondary btn-circle' to='/user/don-de-nghi-hoc' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>

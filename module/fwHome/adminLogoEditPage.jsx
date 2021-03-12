@@ -210,7 +210,7 @@ class LogoEditPage extends React.Component {
             currentLogo = this.props.logo ? this.props.logo.item : null;
         if (currentLogo && currentLogo.items.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: '40%' }}>Tên</th>

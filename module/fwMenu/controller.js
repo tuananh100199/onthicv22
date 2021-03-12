@@ -28,7 +28,6 @@ module.exports = app => {
     app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
 
-
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.buildAppMenus = (menuTree, callback) => {
         const menus = {},
@@ -96,7 +95,7 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList','dangKyTuVan'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList', 'dangKyTuVan'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {

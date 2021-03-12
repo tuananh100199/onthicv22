@@ -22,14 +22,14 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).populate('subjectList').sort({ _tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).populate('subjectList').sort({ tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: done => model.find({}).populate('subjectList').sort({ _title: 1 }).exec(done),
+        getAll: done => model.find({}).populate('subjectList').sort({ title: 1 }).exec(done),
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('subjectList') : model.findOne(condition, done).populate('subjectList'),
         update: (_id, $set, $unset, done) => done ?
             model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :

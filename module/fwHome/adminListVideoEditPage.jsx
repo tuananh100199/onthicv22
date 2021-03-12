@@ -211,7 +211,7 @@ class ListVideoEditPage extends React.Component {
         let table = null, currentVideo = this.state.item || {};
         if (this.state.items && this.state.items.length) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
@@ -283,13 +283,13 @@ class ListVideoEditPage extends React.Component {
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
                             <div className='row'>
-                                <div className="col-md-6">
+                                <div className='col-md-6'>
                                     <div className='form-group mt-3'>
                                         <label className='control-label' htmlFor='listVideoTitle'>Tiêu đề</label>
                                         <input className='form-control' type='text' placeholder='Tiêu đề' id='listVideoTitle' defaultValue={title} readOnly={readOnly} />
                                     </div>
                                 </div>
-                                <div className="col-md-6">
+                                <div className='col-md-6'>
                                     <div className='form-group mt-3'>
                                         <label className='control-label' htmlFor='videoHeight'>Chiều cao (px)</label>
                                         <input className='form-control' type='number' placeholder='Chiều cao' id='videoHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />

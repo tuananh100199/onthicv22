@@ -9,10 +9,6 @@ export default {
         subject
     },
     routes: [
-        {
-            path: '/user/dao-tao',
-            component: () => <SubMenusPage menuLink='/user/dao-tao' menuKey={8000} headerIcon='fa-user' />
-        },
         { path: '/user/dao-tao/mon-hoc/list', component: Loadable({ loading: Loading, loader: () => import('./adminListMonHoc.jsx') }) },
         { path: '/user/dao-tao/mon-hoc/edit/:monHocId', component: Loadable({ loading: Loading, loader: () => import('./adminEditMonHoc.jsx') }) },
 

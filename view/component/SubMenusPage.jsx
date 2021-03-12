@@ -144,7 +144,10 @@ class SubMenusPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className={'fa ' + this.props.headerIcon} /> {parentMenu ? parentMenu.title : ''}</h1>
+                    <div>
+                        <h1><i className={'fa ' + this.props.headerIcon} /> {this.props.customTitle ? this.props.customTitle : parentMenu ? parentMenu.title : ""}</h1>
+                        <p dangerouslySetInnerHTML={{ __html: this.props.customBelowTitle ? `Hạng : ${this.props.customBelowTitle}` : '' }} />
+                    </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <div style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onClick={this.clearSearch}>
                             <input ref={this.searchBox} className='app-search__input' style={{ width: '30vw', outline: 'none' }} type='search' placeholder='Tìm kiếm' onChange={e => this.search(e, e.target.value)} />
