@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from '../../view/js/common.js'
-import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux.jsx';
-import { updateProfile } from '../_init/reduxSystem.jsx';
-import { getCourseTypeInPage } from '../fwCourseType/redux.jsx'
+import T from 'view/js/common';
+import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux';
+import { updateProfile } from '../_init/reduxSystem';
+import { getCourseTypeInPage } from '../fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import FileSaver from 'file-saver';
-import ImageBox from '../../view/component/ImageBox.jsx';
-import { Select } from '../../view/component/Input.jsx';
+import ImageBox from 'view/component/ImageBox';
+import { Select } from 'view/component/Input';
+
 class UserDonDeNghiPage extends React.Component {
     state = {};
     sex = React.createRef();

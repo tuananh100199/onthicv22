@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentListItem, updateContentList } from './redux.jsx';
-import { ajaxSelectContent } from '../fwHome/redux/reduxContent.jsx';
+import { getContentListItem, updateContentList } from './redux';
+import { ajaxSelectContent } from '../fwHome/redux/reduxContent';
 import { Link } from 'react-router-dom';
-import { Select } from '../../view/component/Input.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import { Select } from 'view/component/Input';
+import ImageBox from 'view/component/ImageBox';
 
 class ContentModal extends React.Component {
     state = { item: null };
@@ -21,14 +21,14 @@ class ContentModal extends React.Component {
             $(this.modal.current).modal('show');
         });
     }
-    
+
     save = (event) => {
         const changeItem = this.contentSelect.current.val();
         const listItem = this.props.item.items;
         if (this.state.item && this.state.item._id) {
             // Update
             let index = 0;
-            for (;index < listItem.length; index++) {
+            for (; index < listItem.length; index++) {
                 if (this.state.item._id == listItem[index]._id) {
                     break;
                 }
@@ -38,7 +38,7 @@ class ContentModal extends React.Component {
             // Create
             listItem.push(changeItem);
         }
-        
+
         if (this.props.item && this.props.item._id) {
             this.props.updateContentList(this.props.item._id, { items: listItem }, () => {
                 T.notify('Cập nhật danh sách bài viết thành công', 'success');
@@ -84,13 +84,13 @@ class ListContentEditPage extends React.Component {
         this.modal = React.createRef();
         this.imageBox = React.createRef();
     }
-    
+
     componentDidMount() {
         T.ready('/user/settings', () => {
             const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
             this.props.getContentListItem(params.listContentId, data => {
                 if (data.item) {
-                    const { _id = 'new', title = '', image =  '/img/avatar.jpg' } = data.item || {};
+                    const { _id = 'new', title = '', image = '/img/avatar.jpg' } = data.item || {};
                     $('#listContentTitle').val(data.item.title).focus();
                     $('#listContentAbstract').val(data.item.abstract);
                     this.imageBox.current.setData('contentList:' + _id, image);
@@ -101,7 +101,7 @@ class ListContentEditPage extends React.Component {
             });
         });
     }
-    
+
     remove = (e, index) => {
         e.preventDefault();
         T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm => {
@@ -118,7 +118,7 @@ class ListContentEditPage extends React.Component {
             }
         })
     };
-    
+
     swap = (e, index, isMoveUp) => {
         const item = this.props.contentList.item;
         let items = item.items || [];
@@ -130,10 +130,10 @@ class ListContentEditPage extends React.Component {
                     T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
                 } else {
                     const temp = items[index - 1], changes = {};
-    
+
                     items[index - 1] = items[index];
                     items[index] = temp;
-                    
+
                     changes.items = items;
                     this.props.updateContentList(item._id, changes, () => {
                         T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
@@ -144,10 +144,10 @@ class ListContentEditPage extends React.Component {
                     T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
                 } else {
                     const temp = items[index + 1], changes = {};
-    
+
                     items[index + 1] = items[index];
                     items[index] = temp;
-                    
+
                     changes.items = items;
                     this.props.updateContentList(item._id, changes, () => {
                         T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
@@ -157,12 +157,12 @@ class ListContentEditPage extends React.Component {
         }
         e.preventDefault();
     };
-    
+
     showSelectModal = (e, item) => {
         e.preventDefault();
         this.modal.current.show(item);
     }
-    
+
     save = () => {
         const changes = {
             title: $('#listContentTitle').val(),
@@ -195,39 +195,39 @@ class ListContentEditPage extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                {item.items.map((item, index) => (
-                    <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>
-                            <a href='#' onClick={e => this.showSelectModal(e, item)}>
-                                {item.title}
-                            </a><br/>
-                            <Link to={'/user/content/edit/' + item._id}>Xem chi tiết</Link>
-                        </td>
-                        <td>
-                            {!readOnly &&
-                                <div className='btn-group'>
-                                    <a href='#' className='btn btn-primary' onClick={e => this.showSelectModal(e, item)}>
-                                        <i className='fa fa-lg fa-edit' />
-                                    </a>
-                                    <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
-                                        <i className='fa fa-lg fa-arrow-up' />
-                                    </a>
-                                    <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
-                                        <i className='fa fa-lg fa-arrow-down' />
-                                    </a>
-                                    <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
-                                        <i className='fa fa-lg fa-trash' />
-                                    </a>
-                                </div>
-                            }
-                        </td>
-                    </tr>
-                ))}
+                    {item.items.map((item, index) => (
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                                <a href='#' onClick={e => this.showSelectModal(e, item)}>
+                                    {item.title}
+                                </a><br />
+                                <Link to={'/user/content/edit/' + item._id}>Xem chi tiết</Link>
+                            </td>
+                            <td>
+                                {!readOnly &&
+                                    <div className='btn-group'>
+                                        <a href='#' className='btn btn-primary' onClick={e => this.showSelectModal(e, item)}>
+                                            <i className='fa fa-lg fa-edit' />
+                                        </a>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
+                                            <i className='fa fa-lg fa-arrow-up' />
+                                        </a>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
+                                            <i className='fa fa-lg fa-arrow-down' />
+                                        </a>
+                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
+                                            <i className='fa fa-lg fa-trash' />
+                                        </a>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         ) : <p>Không có danh sách các bài viết!</p>
-        
+
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -271,9 +271,9 @@ class ListContentEditPage extends React.Component {
                         </div>
                     </div>
                 </div>
-                
-                <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} history={this.props.history} item={item}/>
-                
+
+                <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} history={this.props.history} item={item} />
+
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>

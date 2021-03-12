@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { forgotPassword, login, register } from '../_init/reduxSystem.jsx';
+import { forgotPassword, login, register } from '../_init/reduxSystem';
 
 const texts = {
     vi: {
@@ -27,11 +27,11 @@ class HomeRequestLoginPage extends React.Component {
         $(document).ready(() => {
             const url = new URL(window.location.href);
             if (url.searchParams.get('formId')) {
-                this.setState({ query: { formId: url.searchParams.get('formId') }});
+                this.setState({ query: { formId: url.searchParams.get('formId') } });
             } else if (url.searchParams.get('eventId')) {
-                this.setState({ query: { eventId: url.searchParams.get('eventId') }});
+                this.setState({ query: { eventId: url.searchParams.get('eventId') } });
             } else if (url.searchParams.get('eventLink')) {
-                this.setState({ query: { eventLink: url.searchParams.get('eventLink') }});
+                this.setState({ query: { eventLink: url.searchParams.get('eventLink') } });
             }
         });
     }
@@ -48,7 +48,7 @@ class HomeRequestLoginPage extends React.Component {
             return '/user';
         }
     };
-    
+
     onForgotPasswordClick = (event) => {
         event.preventDefault();
         const email = $('#loginEmail').val().trim();
@@ -153,7 +153,7 @@ class HomeRequestLoginPage extends React.Component {
                                                             <label htmlFor='loginEmail' className='text-black'>
                                                                 Email <span className='text-danger'>*</span>
                                                             </label>
-                                                            <input type='email' className='form-control' id='loginEmail'/>
+                                                            <input type='email' className='form-control' id='loginEmail' />
                                                         </div>
                                                     </div>
                                                     <div className='form-group row'>
@@ -161,7 +161,7 @@ class HomeRequestLoginPage extends React.Component {
                                                             <label htmlFor='loginPassword' className='text-black'>
                                                                 Password <span className='text-danger'>*</span>
                                                             </label>
-                                                            <input type='password' className='form-control' id='loginPassword'/>
+                                                            <input type='password' className='form-control' id='loginPassword' />
                                                         </div>
                                                     </div>
                                                     <div className='form-group row'>
@@ -185,7 +185,7 @@ class HomeRequestLoginPage extends React.Component {
                                                             <label htmlFor='submitFirstName' className='text-black'>
                                                                 First Name <span className='text-danger'>*</span>
                                                             </label>
-                                                            <input type='text' className='form-control' id='submitFirstName'/>
+                                                            <input type='text' className='form-control' id='submitFirstName' />
                                                         </div>
                                                     </div>
                                                     <div className='form-group row'>
@@ -193,7 +193,7 @@ class HomeRequestLoginPage extends React.Component {
                                                             <label htmlFor='submitLastName' className='text-black'>
                                                                 Last Name <span className='text-danger'>*</span>
                                                             </label>
-                                                            <input type='text' className='form-control' id='submitLastName'/>
+                                                            <input type='text' className='form-control' id='submitLastName' />
                                                         </div>
                                                     </div>
                                                     <div className='form-group row'>
@@ -201,7 +201,7 @@ class HomeRequestLoginPage extends React.Component {
                                                             <label htmlFor='submitEmail' className='text-black'>
                                                                 Email <span className='text-danger'>*</span>
                                                             </label>
-                                                            <input type='email' className='form-control' id='submitEmail'/>
+                                                            <input type='email' className='form-control' id='submitEmail' />
                                                         </div>
                                                     </div>
                                                     <div className='form-group row'>
@@ -209,7 +209,7 @@ class HomeRequestLoginPage extends React.Component {
                                                             <label htmlFor='submitPassword' className='text-black'>
                                                                 Password <span className='text-danger'>*</span>
                                                             </label>
-                                                            <input type='password' className='form-control' id='submitPassword'/>
+                                                            <input type='password' className='form-control' id='submitPassword' />
                                                         </div>
                                                     </div>
                                                     <div className='form-group row'>

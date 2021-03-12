@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocChuaHoanThanhByUser, createDonDeNghiHocByUser } from '../fwDonDeNghiHoc/redux.jsx';
+import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocChuaHoanThanhByUser, createDonDeNghiHocByUser } from '../fwDonDeNghiHoc/redux';
 
 class UserProfilePage extends React.Component {
     componentDidMount() {

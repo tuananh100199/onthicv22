@@ -1,6 +1,6 @@
 import React from 'react';
-import ImageBox from '../../view/component/ImageBox.jsx';
-import Dropdown from '../../view/component/Dropdown.jsx';
+import ImageBox from 'view/component/ImageBox';
+import Dropdown from 'view/component/Dropdown';
 
 export class UserPasswordModal extends React.Component {
     modal = React.createRef();
@@ -142,7 +142,7 @@ export class RolesModal extends React.Component {
 export class UserModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { };
+        this.state = {};
 
         this.modal = React.createRef();
         this.sex = React.createRef();
@@ -157,7 +157,7 @@ export class UserModal extends React.Component {
             $(this.modal.current).on('shown.bs.modal', () => $('#userLastname').focus())
         }, 250));
     }
-    
+
     show = (_item) => {
         const item = _item ?
             _item : { _id: null, roles: [] };
@@ -266,7 +266,7 @@ export class UserModal extends React.Component {
                                         <div className='col-12 col-sm-6'>
                                             <label htmlFor='userPhoneNumber'>Số điện thoại</label>
                                             <input className='form-control' id='userPhoneNumber' type='text'
-                                                placeholder='Số điện thoại' readOnly={!hasUpdate}/>
+                                                placeholder='Số điện thoại' readOnly={!hasUpdate} />
                                         </div>
                                     </div>
                                 </div>
@@ -306,11 +306,11 @@ export class UserModal extends React.Component {
                                         <div className='form-group' style={{ display: 'inline-flex', width: '100%' }}>
                                             <label htmlFor='userActive'>Kích hoạt: </label>&nbsp;&nbsp;
                                                 <div className='toggle'>
-                                                    <label>
-                                                        <input type='checkbox' id='userActive' disabled={!hasUpdate} onChange={() => {
-                                                        }} /><span className='button-indecator' />
-                                                    </label>
-                                                </div>
+                                                <label>
+                                                    <input type='checkbox' id='userActive' disabled={!hasUpdate} onChange={() => {
+                                                    }} /><span className='button-indecator' />
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

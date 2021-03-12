@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem } from './redux/reduxCarousel.jsx';
+import { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem } from './redux/reduxCarousel';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import ImageBox from 'view/component/ImageBox';
 
 class CarouselItemModal extends React.Component {
     constructor(props) {
@@ -40,7 +40,7 @@ class CarouselItemModal extends React.Component {
                 subtitle: $('#carouselSubTitle').val().trim(),
                 description: $('#carouselDescription').val().trim()
             };
-        
+
         if (changes.title == '') {
             T.notify('Tên hình ảnh bị trống!', 'danger');
             $('#carouselName').focus();
@@ -80,8 +80,8 @@ class CarouselItemModal extends React.Component {
                             </div>
                             <div className='form-group'>
                                 <label htmlFor='carouselName'>Mô tả</label>
-                                <textarea defaultValue='' className='form-control' id='carouselDescription' placeholder='Mô tả' 
-                                          style={{ minHeight: '100px', marginBottom: '12px' }} />
+                                <textarea defaultValue='' className='form-control' id='carouselDescription' placeholder='Mô tả'
+                                    style={{ minHeight: '100px', marginBottom: '12px' }} />
                             </div>
                             <div className='form-group'>
                                 <label htmlFor='carouselLink'>Link liên kết</label>
@@ -89,7 +89,7 @@ class CarouselItemModal extends React.Component {
                             </div>
                             <div className='form-group'>
                                 <label>Hình ảnh nền</label>
-                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CarouselItemImage'/>
+                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CarouselItemImage' />
                             </div>
                         </div>
                         <div className='modal-footer'>

@@ -2,7 +2,7 @@ import './theme/icheck-material-custom.min.css';
 import './theme/icheck-material.min.css';
 import React from 'react';
 import { connect } from 'react-redux';
-import { addAnswerByUser } from '../reduxAnswer.jsx';
+import { addAnswerByUser } from '../reduxAnswer';
 import { Link } from 'react-router-dom';
 
 class RegisterElement extends React.Component {

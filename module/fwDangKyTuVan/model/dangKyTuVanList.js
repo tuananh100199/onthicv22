@@ -19,8 +19,7 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition,done) => {
-            console.log('condition', condition);
-            condition ? model.find({"parentId" : condition}).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done)
+            condition ? model.find(condition).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done)
         },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -35,7 +34,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find({'parentId' : condition}).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });

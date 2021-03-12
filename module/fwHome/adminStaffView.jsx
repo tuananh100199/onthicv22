@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllStaffGroups, createStaffGroup, deleteStaffGroup } from './redux/reduxStaffGroup.jsx';
+import { getAllStaffGroups, createStaffGroup, deleteStaffGroup } from './redux/reduxStaffGroup';
 import { Link } from 'react-router-dom';
 
 class StaffGroupModal extends React.Component {

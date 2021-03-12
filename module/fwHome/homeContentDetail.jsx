@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentByUser } from './redux/reduxContent.jsx';
-import NewsFeed from '../../view/component/NewsFeed.jsx';
+import { getContentByUser } from './redux/reduxContent';
+import NewsFeed from 'view/component/NewsFeed';
 
 class ContentDetail extends React.Component {
     state = { _id: null, title: '', active: false, content: '' };
@@ -45,7 +45,7 @@ class ContentDetail extends React.Component {
                         <div className='contact_content'>
                             <div className='contact_content_title ftco-animate'>{item.title}</div>
                             <div className='contact_info ftco-animate'>
-                                <p dangerouslySetInnerHTML={{ __html: item.content }}/>
+                                <p dangerouslySetInnerHTML={{ __html: item.content }} />
                             </div>
                         </div>
                     </div>

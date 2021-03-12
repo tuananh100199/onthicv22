@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createDraftNewsDefault, draftToNews, deleteDraftNews, getDraftNewsInPage } from './redux.jsx'
+import { createDraftNewsDefault, draftToNews, deleteDraftNews, getDraftNewsInPage } from './redux';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
+import Pagination from 'view/component/Pagination';
 
 class NewsWaitApprovalPage extends React.Component {
     constructor(props) {

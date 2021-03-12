@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseTypeInPage, createCourseType, updateCourseType, deleteCourseType } from './redux.jsx'
+import { getCourseTypeInPage, createCourseType, updateCourseType, deleteCourseType } from './redux';
 import { Link } from 'react-router-dom';
-import Pagination from '../../view/component/Pagination.jsx';
+import Pagination from 'view/component/Pagination';
 
 class CourseTypePage extends React.Component {
     componentDidMount() {

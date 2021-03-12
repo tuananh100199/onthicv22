@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContent, updateContent } from './redux/reduxContent.jsx';
+import { getContent, updateContent } from './redux/reduxContent';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import ImageBox from '../../view/component/ImageBox.jsx';
+import Editor from 'view/component/CkEditor4';
+import ImageBox from 'view/component/ImageBox';
 
 class ContentEditPage extends React.Component {
     constructor(props) {
@@ -93,10 +93,10 @@ class ContentEditPage extends React.Component {
                                 </div>
                             </div>
                         </div>
-            
+
                         <div className='tab-content'>
                             <div id='contentTab' className='tab-pane fade show active'>
-                                
+
                                 <div className='form-group'>
                                     <label className='control-label'>Nội dung</label>
                                     <Editor ref={this.editor} placeholder='Nội dung bài biết' height='400px' uploadUrl='/user/upload?category=content' readOnly={readOnly} />

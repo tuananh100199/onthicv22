@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan.jsx';
-import { getAllCourseType } from '../fwCourseType/redux.jsx';
+import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan';
+import { getAllCourseType } from '../fwCourseType/redux';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
+import Editor from 'view/component/CkEditor4';
 
 
-class DangKyTuVanModal extends React.Component {
+class DangKyTuVanStaticModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -56,7 +56,7 @@ class DangKyTuVanModal extends React.Component {
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <div className='container-fluid row'>
-                                <h5 className='modal-title col-6'>Thống kê</h5>
+                                <h5 className='modal-title col-6'>Thêm thống kê đăng ký tư vấn</h5>
                             </div>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
@@ -64,14 +64,14 @@ class DangKyTuVanModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='container-fluid row'>
-                                <div className='col-12'>
-                                    <div className='form-group col-12'>
+                                <div className='col-6'>
+                                    <div className='form-group'>
                                         <label htmlFor='sttViTitle'>Tên</label><br />
                                         <input className='form-control' id='sttViTitle' type='text' placeholder='Tên' />
                                     </div>
                                 </div>
-                                <div className='col-12'>
-                                    <div className='form-group col-12'>
+                                <div className='col-6'>
+                                    <div className='form-group'>
                                         <label htmlFor='sttNumber'>Số lượng</label><br />
                                         <input className='form-control' id='sttNumber' type='number' placeholder='Số lượng' />
                                     </div>
@@ -112,7 +112,7 @@ class DangKyTuVanEditPage extends React.Component {
                         content = data.item.description,
                         courseType = data.item.courseType;
                     $('#title').val(title).focus();
-                    $('#courseType').val(courseType).focus();
+                    $('#courseType').val(courseType);
                     this.editor.current.html(content);
                     this.props.getAllCourseType(datacType => {
                         if (datacType) {
@@ -126,8 +126,6 @@ class DangKyTuVanEditPage extends React.Component {
                 this.setState(data);
             });
             $('#courseType').select2();
-
-
         });
     }
 
@@ -258,61 +256,60 @@ class DangKyTuVanEditPage extends React.Component {
                         &nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                <div className='row'>
                     <div className='tile col-md-12'>
-                        <div className='tile-body'>
-                            <div className='tab-content'>
-                                <div className='tab-pane fade show active'>
-                                    <div className='col-6 form-group'>
-                                        <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
-                                        <select className='form-control col-6' id='courseType' multiple={false} >
-                                            <optgroup className='form-control' label='Lựa chọn loại khóa học' />
-                                        </select>
-                                    </div>
-                                    <div className='col-6 form-group mt-3'>
-                                        <label className='control-label' htmlFor='title'>Tiêu đề</label>
-                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
-                                    </div>
-                                    <div className='col-6 form-group mt-3'>
-                                        <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
-                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
-                                    </div>
-                                    <div className='col-12 form-group mt-3'>
-                                        <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
-                                        <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
-                                    </div>
+                        <div className='row'>
+                            <div className='col-4'>
+                                <div className='form-group'>
+                                    <label className='control-label' htmlFor='title'>Tiêu đề</label>
+                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
                                 </div>
                             </div>
+                            <div className='col-4'>
+                                <div className='form-group'>
+                                    <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
+                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
+                                </div>
+                            </div>
+                            <div className='col-4'>
+                                <div className='form-group'>
+                                    <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
+                                    <select className='form-control col-6' id='courseType' multiple={false} >
+                                        <optgroup className='form-control' label='Lựa chọn loại khóa học' />
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className='form-group mt-3'>
+                            <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
+                            <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
                         </div>
                     </div>
                     <div className='tile col-md-12'>
                         <div className='control-label'>
                             <label htmlFor='tepViDescription'>Thống kê</label>
                         </div>
-                        <div>
-                            {table}
-                        </div>
+                        {table}
                         {readOnly ? null :
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-info' type='button' onClick={this.showAddDKTVModal}>
                                             <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
-                                    </button>&nbsp;
-                                    <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
-                                    </button>
+                                        </button>&nbsp;
                                     </div>
                                 </div>
                             </div>
                         }
                     </div>
-                </div>
-                <Link to='/user/dang-ky-tu-van' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
+                <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-
-                <DangKyTuVanModal ref={this.modal} addDKTV={this.add} updateDKTV={this.update} />
+                {!readOnly &&
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
+                        <i className='fa fa-lg fa-save' />
+                    </button>}
+                <DangKyTuVanStaticModal ref={this.modal} addDKTV={this.add} updateDKTV={this.update} />
             </main>
         );
     }

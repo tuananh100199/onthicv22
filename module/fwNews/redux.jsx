@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 T.initCookiePage('pageNews');
 T.initCookiePage('pageDraftNews');
 

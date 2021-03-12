@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLogoByUser } from './redux/reduxLogo.jsx';
+import { getLogoByUser } from './redux/reduxLogo';
 
 class SectionLogo extends React.Component {
     state = {};

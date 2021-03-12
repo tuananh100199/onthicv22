@@ -47,6 +47,7 @@ module.exports = (app) => {
     app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }))
     );
+
     //Lesson Video
     app.get('/api/lesson-video/:lessonId', (req, res) => {
         const lessonId = req.params.lessonId;
@@ -66,6 +67,7 @@ module.exports = (app) => {
     //         }
     //     });
     // });
+
     //Question ---------------------------------------------------------------------------------------------------------
     app.get('/api/lesson-question/:lessonId', (req, res) => {
         const lessonId = req.params.lessonId;

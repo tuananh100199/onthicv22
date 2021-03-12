@@ -1,5 +1,5 @@
 import React from 'react';
-import Dropdown from '../../view/component/Dropdown.jsx';
+import Dropdown from 'view/component/Dropdown';
 
 export default class ComponentModal extends React.Component {
     constructor(props) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllSlogans, createSlogan, deleteSlogan } from './redux/reduxSlogan.jsx';
+import { getAllSlogans, createSlogan, deleteSlogan } from './redux/reduxSlogan';
 import { Link } from 'react-router-dom';
 
 class SloganModal extends React.Component {

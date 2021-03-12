@@ -1,6 +1,6 @@
 import Loadable from 'react-loadable';
-import Loading from '../../view/component/Loading.jsx';
-import cluster from './redux.jsx';
+import Loading from 'view/component/Loading';
+import cluster from './redux';
 
 export default {
     redux: {
@@ -9,7 +9,7 @@ export default {
     routes: [
         {
             path: '/user/cluster',
-            component: Loadable({ loading: Loading, loader: () => import('./adminPage.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
     ],
 };

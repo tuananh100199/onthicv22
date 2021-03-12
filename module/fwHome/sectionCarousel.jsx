@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { homeGetCarousel } from './redux/reduxCarousel.jsx';
+import { homeGetCarousel } from './redux/reduxCarousel';
 
 // const inComing = ['bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'fadeIn', 'fadeInDownBig', 'fadeInLeft', 'fadeInUp', 'fadeInUpBig', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRightIn', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig'];
 const inComing = ['fadeIn'];
@@ -112,8 +112,8 @@ class SectionCarousel extends React.Component {
                             </div>
                         </div>
                         :
-                        <div key={index} 
-                            style={{ width: '100%', height: '600px'}}>
+                        <div key={index}
+                            style={{ width: '100%', height: '600px' }}>
                             <div style={{
                                 overflow: 'hidden',
                                 position: 'absolute',

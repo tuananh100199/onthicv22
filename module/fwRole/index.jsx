@@ -1,6 +1,6 @@
 import Loadable from 'react-loadable';
-import Loading from '../../view/component/Loading.jsx';
-import role from './redux.jsx';
+import Loading from 'view/component/Loading';
+import role from './redux';
 
 export default {
     redux: {
@@ -9,7 +9,7 @@ export default {
     routes: [
         {
             path: '/user/role',
-            component: Loadable({ loading: Loading, loader: () => import('./adminPage.jsx') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         }
     ],
 };

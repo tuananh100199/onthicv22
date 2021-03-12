@@ -1,4 +1,4 @@
-import T from '../../../view/js/common';
+import T from 'view/js/common';
 const texts = {
     vi: {
         getAllSlogansError: 'Lấy danh sách slogan bị lỗi!',

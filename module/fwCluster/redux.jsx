@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 
 const ClusterGetAll = 'Cluster:GetAll';
 const SystemImageGetAll = 'SystemImage:GetAll';

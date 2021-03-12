@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateNews, getNews, getDraftNews, checkLink, createDraftNews, updateDraftNews } from './redux.jsx'
+import { updateNews, getNews, getDraftNews, checkLink, createDraftNews, updateDraftNews } from './redux';
 import { Link } from 'react-router-dom';
-import ImageBox from '../../view/component/ImageBox.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
+import ImageBox from 'view/component/ImageBox';
+import Editor from 'view/component/CkEditor4';
 
 class NewsEditPage extends React.Component {
     constructor(props) {
@@ -13,7 +13,7 @@ class NewsEditPage extends React.Component {
         this.imageBox = React.createRef();
         this.viEditor = React.createRef();
     }
-    
+
     componentDidMount() {
         T.ready('/user/news/list', () => {
             this.getData();
@@ -32,7 +32,7 @@ class NewsEditPage extends React.Component {
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 this.props.history.push('/user/news/list');
             } else if (data.item) {
-                console.log('data.categories',data.item);
+                console.log('data.categories', data.item);
                 let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
                 $('#neNewsCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const neNewsStartPost = $('#neNewsStartPost').datetimepicker(T.dateFormat);
@@ -61,11 +61,11 @@ class NewsEditPage extends React.Component {
     changeActive = (event) => {
         this.setState({ item: Object.assign({}, this.state.item, { active: event.target.checked }) });
     }
-    
+
     checkLink = (item) => {
         this.props.checkLink(item._id, $('#neNewsLink').val().trim());
     }
-    
+
     newsLinkChange = (e) => {
         if (e.target.value) {
             $(this.newsLink.current).html(T.rootUrl + '/tintuc/' + e.target.value).attr('href', '/tintuc/' + e.target.value);
@@ -226,8 +226,8 @@ class NewsEditPage extends React.Component {
                             <div className='tile-body'>
                                 <label className='control-label'>Tóm tắt bài viết</label>
                                 <textarea defaultValue='' className='form-control' id='neNewsViAbstract' placeholder='Tóm tắt bài viết' readOnly={readOnly}
-                                          style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                          
+                                    style={{ minHeight: '100px', marginBottom: '12px' }} />
+
                                 <label className='control-label'>Nội dung bài viết</label>
                                 <Editor ref={this.viEditor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=news' readOnly={readOnly} />
                             </div>

@@ -1,88 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan.jsx';
+import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan';
 import { Link } from 'react-router-dom';
-import Editor from '../../view/component/CkEditor4.jsx';
-import Pagination from '../../view/component/Pagination.jsx';
-
-class DangKyTuVanModal extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.modal = React.createRef();
-        this.btnSave = React.createRef();
-        this.editor = React.createRef();
-    }
-
-    componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('hidden.bs.modal', () => $('#dangKyTuVanTabs li:first-child a').tab('show'))
-                .on('shown.bs.modal', () => $('#dangKyTuVanName').focus());
-        }, 250));
-    }
-
-    show = () => {
-        $('#dangKyTuVanName').val('');
-        this.editor.current.html('');
-        $(this.modal.current).modal('show');
-    }
-
-    save = (event) => {
-        const dangKyTuVanName = $('#dangKyTuVanName').val().trim();
-        const description = this.editor.current.html();
-
-        if (dangKyTuVanName === '') {
-            T.notify('Tên đăng ký tư vấn bị trống!', 'danger');
-            $('#dangKyTuVanName').focus();
-        } else {
-            this.props.createDangKyTuVan(dangKyTuVanName, description, '', data => {
-                if (data.error === undefined || data.error == null) {
-                    $(this.modal.current).modal('hide');
-                    if (data.item) {
-                        this.props.showDangKyTuVan(data.item);
-                    }
-                }
-            });
-        }
-        event.preventDefault();
-    }
-
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Đăng ký tư vấn</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='tab-content'>
-                                <div id='statisticViTab' className='tab-pane fade show active mt-3'>
-                                    <div className='form-group'>
-                                        <label htmlFor='dangKyTuVanName'>Tên đăng ký tư vấn</label>
-                                        <input className='form-control' id='dangKyTuVanName' type='text' placeholder='Tên đăng ký tư vấn' />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label htmlFor='dangKyTuVanDescription'>Mô tả</label>
-                                        <Editor ref={this.editor} id='dangKyTuVanDescription' /><br />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>Lưu</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        );
-    }
-}
-
 class DangKyTuVanPage extends React.Component {
     constructor(props) {
         super(props);
@@ -93,9 +12,11 @@ class DangKyTuVanPage extends React.Component {
         this.props.getAllDangKyTuVan();
         $('#neNewsCategories').select2();
     }
-
     create = (e) => {
-        this.modal.current.show();
+        this.props.createDangKyTuVan(data => {
+            console.log('data',data);
+            this.props.history.push('/user/dang-ky-tu-van/edit/' + data.item._id)
+        });
         e.preventDefault();
     }
 
@@ -151,7 +72,7 @@ class DangKyTuVanPage extends React.Component {
             table = <p key={0}>Không có nhóm thống kê!</p>;
         }
 
-        const result = [table, <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />];
+        const result = [table];
         if (currentPermissions.includes('dangKyTuVan:write')) {
             result.push(
                 <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>

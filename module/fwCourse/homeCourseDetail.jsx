@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from '../../view/js/common.js';
-import { getCourseByUser } from './redux.jsx';
-import SectionCourse from './sectionCourse.jsx';
+import T from 'view/js/common';
+import { getCourseByUser } from './redux';
 
 class CourseDetail extends React.Component {
     constructor(props) {

@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateForm, getForm } from '../redux.jsx';
-import { getQuestionsList } from '../reduxQuestion.jsx';
-import { getAnswerInPage, getAnswer, updateAnswer, deleteAnswer, exportRegisters } from '../reduxAnswer.jsx';
-import Pagination from '../../../view/component/Pagination.jsx';
+import { updateForm, getForm } from '../redux';
+import { getQuestionsList } from '../reduxQuestion';
+import { getAnswerInPage, getAnswer, updateAnswer, deleteAnswer, exportRegisters } from '../reduxAnswer';
+import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
 
-import EditAnswerModal from './modal/EditAnswerModal.jsx';
-import AddAnswerModal from './modal/AddAnswerModal.jsx';
-import ImportStudentModal from './modal/ImportStudentModal.jsx';
+import EditAnswerModal from './modal/EditAnswerModal';
+import AddAnswerModal from './modal/AddAnswerModal';
+import ImportStudentModal from './modal/ImportStudentModal';
 
 class adminRegistrationPage extends React.Component {
     constructor(props) {
@@ -79,9 +79,9 @@ class adminRegistrationPage extends React.Component {
                     <td style={{ whiteSpace: 'nowrap' }}>{(Math.max(pageNumber, 1) - 1) * pageSize + index + 1}</td>
                     <td style={{ whileSpace: 'nowrap' }}>
                         {!readOnly ? (
-                                <a href='#' onClick={e => this.showEdit(e, item._id)} >
-                                    {item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname)}
-                                </a>
+                            <a href='#' onClick={e => this.showEdit(e, item._id)} >
+                                {item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname)}
+                            </a>
                         ) : (item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname))}
                     </td>
                     <td className='toggle' style={{ textAlign: 'center' }}>
@@ -93,7 +93,7 @@ class adminRegistrationPage extends React.Component {
                     {!readOnly ? (
                         <td key='action' className='btn-group' >
                             <button type='button' className='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Chỉnh sửa câu trả lời'
-                                    onClick={e => this.showEdit(e, item._id)}>
+                                onClick={e => this.showEdit(e, item._id)}>
                                 <i className='fa fa-lg fa-edit' />
                             </button>
                             <button type='button' className='btn btn-danger' onClick={e => this.remove(e, item._id)}>
@@ -113,10 +113,10 @@ class adminRegistrationPage extends React.Component {
         const title = T.language.parse(item.title, true);
         const questions = this.props.question && this.props.question.questions ? this.props.question.questions : [];
         const { totalItem, pageSize, pageTotal, pageNumber, list } = this.props.answer && this.props.answer.page ?
-                this.props.answer.page : { totalItem: 0, pageSize: 50, pageTotal: 0, pageNumber: 1, list: [] };
+            this.props.answer.page : { totalItem: 0, pageSize: 50, pageTotal: 0, pageNumber: 1, list: [] };
         const table = list && list.length > 0 ? (
-                <table className='table table-hover table-bordered'>
-                    <thead>
+            <table className='table table-hover table-bordered'>
+                <thead>
                     <tr>
                         <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>STT</th>
                         <th style={{ width: '100%', whileSpace: 'nowrap' }}>Họ và tên</th>
@@ -125,11 +125,11 @@ class adminRegistrationPage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         ) : null}
                     </tr>
-                    </thead>
-                    <tbody>
-                        {this.createRow(list, pageNumber, pageSize, readOnly)}
-                    </tbody>
-                </table>
+                </thead>
+                <tbody>
+                    {this.createRow(list, pageNumber, pageSize, readOnly)}
+                </tbody>
+            </table>
         ) : <p>Không có đăng ký nào</p>;
 
         return (
@@ -163,22 +163,22 @@ class adminRegistrationPage extends React.Component {
 
                 {readOnly ? '' :
                     <button type='button' className='btn btn-info btn-circle'
-                            onClick={() => this.importModal.current.show()}
-                            style={{ position: 'fixed', right: '130px', bottom: '10px' }}
-                            data-toggle='tooltip' data-placement='top' title='Import danh sách tham gia'>
+                        onClick={() => this.importModal.current.show()}
+                        style={{ position: 'fixed', right: '130px', bottom: '10px' }}
+                        data-toggle='tooltip' data-placement='top' title='Import danh sách tham gia'>
                         <i className='fa fa-lg fa-cloud-upload' />
                     </button>
                 }
                 {!readOnly ? (
-                        <button type='button' className='btn btn-success btn-circle'
-                                onClick={(e) => this.export(e, 'Danh sách tham gia')} style={{ position: 'fixed', right: '70px', bottom: '10px' }}
-                                data-toggle='tooltip' data-placement='top' title='Xuất danh sách tham gia'>
-                            <i className='fa fa-lg fa-file-excel-o' />
-                        </button>
+                    <button type='button' className='btn btn-success btn-circle'
+                        onClick={(e) => this.export(e, 'Danh sách tham gia')} style={{ position: 'fixed', right: '70px', bottom: '10px' }}
+                        data-toggle='tooltip' data-placement='top' title='Xuất danh sách tham gia'>
+                        <i className='fa fa-lg fa-file-excel-o' />
+                    </button>
                 ) : null}
                 {readOnly ? '' :
                     <button type='button' data-toggle='tooltip' data-placement='top' title='Thêm người tham gia'
-                            className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addNew}>
+                        className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addNew}>
                         <i className='fa fa-lg fa-plus' />
                     </button>
                 }

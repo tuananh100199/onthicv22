@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from '../../view/js/common.js';
-import { getBaiHoc } from './redux/redux.jsx'
+import T from 'view/js/common';
+import { getBaiHoc } from './redux/redux'
 
 class LessonDetail extends React.Component {
     constructor(props) {

@@ -1,4 +1,4 @@
-import T from '../../view/js/common';
+import T from 'view/js/common';
 
 const CategoryGetAll = 'Category:GetAll';
 const CategoryCreate = 'Category:Create';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem.jsx';
-import Editor from '../../view/component/CkEditor4.jsx';
+import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem';
+import Editor from 'view/component/CkEditor4';
 
 class EmailItem extends React.Component {
     constructor(props) {
@@ -51,6 +51,9 @@ export default class EmailPage extends React.Component {
         this.emailForgotPassword = React.createRef();
         this.emailContact = React.createRef();
         this.emailTuChoiDonDeNghiHoc = React.createRef();
+        this.emailDangKyTuVan = React.createRef();
+        this.emailPhanHoiDangKyTuVan = React.createRef();
+
     }
 
     componentDidMount() {
@@ -62,6 +65,10 @@ export default class EmailPage extends React.Component {
                 this.emailForgotPassword.current.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
                 this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
                 this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
+                this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
+                this.emailPhanHoiDangKyTuVan.current.set(data.emailPhanHoiDangKyTuVanTitle, data.emailPhanHoiDangKyTuVanText, data.emailPhanHoiDangKyTuVanHtml);
+
+
             });
         });
     }
@@ -100,6 +107,12 @@ export default class EmailPage extends React.Component {
                                 <li className='nav-item'>
                                     <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
                                 </li>
+                                <li className='nav-item'>
+                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Đăng ký tư vấn</a>
+                                </li>
+                                <li className='nav-item'>
+                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Phản hồi đăng ký tư vấn</a>
+                                </li>
                             </ul>
                             <div className='tab-content' style={{ marginTop: '12px' }}>
                                 <EmailItem ref={this.emailRegisterMember} id='emailRegisterMember' active={true}
@@ -114,6 +127,10 @@ export default class EmailPage extends React.Component {
                                     params='{name}, {subject}, {message}' />
                                 <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
                                     params='{name}, {subject}, {message}' />
+                                <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
+                                    params='{name}' />
+                                <EmailItem ref={this.emailPhanHoiDangKyTuVan} id='emailPhanHoiDangKyTuVan'
+                                    params='{name}' />
                             </div>
                         </div>
                     </div>

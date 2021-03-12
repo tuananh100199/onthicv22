@@ -11,7 +11,7 @@ module.exports = (app) => {
         app.model.dangKyTuVan.get(req.params.dangKyTuVanId, (error, item) => res.send({ error, item })));
 
     app.post('/api/dang-ky-tu-van', app.permission.check('dangKyTuVan:write'), (req, res) =>
-        app.model.dangKyTuVan.create({ title: req.body.title,formTitle: req.body.formTile, description: req.body.description, statistic: [] }, (error, item) => res.send({ error, item })));
+        app.model.dangKyTuVan.create({ title: req.body.title, formTitle: req.body.formTile, description: req.body.description, statistic: [] }, (error, item) => res.send({ error, item })));
 
     app.put('/api/dang-ky-tu-van', app.permission.check('dangKyTuVan:write'), (req, res) => {
         const changes = req.body.changes;
