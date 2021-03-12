@@ -14,8 +14,7 @@ module.exports = app => {
     const model = app.db.model('Address', schema);
 
     app.model.address = {
-        create: (data, done) => model.find({}).sort({ title: -1 }).limit(1).exec((error, items) => {
-            data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+        create: (data, done) => model.find({}).sort({ title: 1 }).limit(1).exec(() => {
             model.create(data, (error, item) => {
                 if (error) {
                     done(error);

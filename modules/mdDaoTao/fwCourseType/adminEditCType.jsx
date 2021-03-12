@@ -18,13 +18,10 @@ class SubjectModal extends React.Component {
         const changeItem = this.subjectSelect.current.val();
         const subjectList = this.props.item.subjectList;
         subjectList.push(changeItem);
-
-        if (this.props.item && this.props.item._id) {
-            this.props.updateCourseType(this.props.item._id, { subjectList: subjectList }, () => {
-                T.notify('Thêm môn học thành công', 'success');
-                $(this.modal.current).modal('hide');
-            });
-        }
+        this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
+            T.notify('Thêm môn học thành công', 'success');
+            $(this.modal.current).modal('hide');
+        });
         event.preventDefault();
     }
 
@@ -97,12 +94,10 @@ class adminEditCType extends React.Component {
         e.preventDefault();
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                let subjectList = this.state.item.subjectList || [];
-                const changes = {};
+                let subjectList = this.props.courseType.courseType.subjectList || [];
                 subjectList.splice(index, 1);
                 if (subjectList.length == 0) subjectList = 'empty';
-                changes.subjectList = subjectList;
-                this.props.updateCourseType(this.state.item._id, changes, () => {
+                this.props.updateCourseType(this.state.item._id, { subjectList }, () => {
                     T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800);
                 });
             }
@@ -139,9 +134,7 @@ class adminEditCType extends React.Component {
                         a.title.localeCompare(b.title)).map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>
-                                    {item.title ? item.title : 'null'}
-                                </td>
+                                <td>{item.title}</td>
                                 <td>
                                     {!readOnly &&
                                         <div className='btn-group'>
