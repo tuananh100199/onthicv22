@@ -80,10 +80,10 @@ class AddressListSection extends React.Component {
                 </div>
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button className='btn btn-success' type='button' onClick={this.addAddress}>
-                        <i className='fa fa-fw fa-lg fa-plus-circle' />Thêm
+                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                     </button>&nbsp;
                     <button className='btn btn-primary' type='button' onClick={this.saveAddress}>
-                        <i className='fa fa-fw fa-lg fa-check-circle' />Lưu
+                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
                     </button>
                 </div>
             </div>
@@ -206,7 +206,7 @@ class MultimediaPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                 </button>
                             </div>
                         </div>
@@ -278,7 +278,7 @@ class MultimediaPage extends React.Component {
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveMapInfo}>
-                                    <i className='fa fa-fw fa-lg fa-check-circle' /> Lưu
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                 </button>
                             </div>
                         </div>

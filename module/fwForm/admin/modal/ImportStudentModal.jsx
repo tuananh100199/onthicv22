@@ -64,7 +64,7 @@ class ImportStudentModal extends React.Component {
                         <div className='modal-footer'>
                             <button className='btn btn-success' type='button' ref={this.confirmUpload}
                                 style={{ display: 'none' }} onClick={this.uploadExcel}>
-                                <i className='fa fa-fw fa-lg fa-check-circle' />Lưu
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
                             <a href={'/download/TemplateUploadFile.xlsx?t=' + new Date().getTime()} className='btn btn-primary'
                                 data-toggle='tooltip' data-placement='top' title='Tải xuống file mẫu'>

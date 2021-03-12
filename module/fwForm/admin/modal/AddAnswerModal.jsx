@@ -201,7 +201,7 @@ class AddAnswerModal extends React.Component {
                                         &nbsp;&nbsp;&nbsp;
                                         {this.state.user && this.state.user._id && !readOnly ? (
                                             <button type='button' className='btn btn-primary' onClick={this.save}>
-                                                <i className='fa fa-fw fa-lg fa-floppy-o' />Lưu
+                                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                             </button>
                                         ) : null}
                                     </div>

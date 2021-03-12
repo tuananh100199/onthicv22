@@ -289,19 +289,17 @@ class DangKyTuVanEditPage extends React.Component {
                         <div className='control-label'>
                             <label htmlFor='tepViDescription'>Thống kê</label>
                         </div>
-                        <div>
-                            {table}
-                        </div>
+                        {table}
                         {readOnly ? null :
                             <div className='tile-footer'>
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-info' type='button' onClick={this.showAddDKTVModal}>
                                             <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
-                                    </button>&nbsp;
-                                    <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
-                                    </button>
+                                        </button>&nbsp;
+                                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                        </button>
                                     </div>
                                 </div>
                             </div>

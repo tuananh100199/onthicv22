@@ -266,10 +266,10 @@ class SloganEditPage extends React.Component {
                                 <div className='row'>
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-info' type='button' onClick={this.showAddSloganModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus'></i>Thêm slogan
+                                            <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                     </button>&nbsp;
                                     <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save'></i>Lưu
+                                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                     </button>
                                     </div>
                                 </div>

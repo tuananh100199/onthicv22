@@ -114,47 +114,48 @@ class ProfilePage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa-user' /> Thông tin cá nhân</h1>
                 </div>
-                <div className='row'>
-                    <div className='col-12 col-md-12'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Thông tin cá nhân</h3>
-                            <div className='tile-body'>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12 col-md-8 col-lg-6'>
-                                        <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{ color: 'red' }}>*</span></label>
-                                        <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
-                                        <label style={{ display: 'block' }} className='control-label pt-4' htmlFor='userEmail'>Email:&nbsp; <span>{this.props.system.user.email}</span></label>
-                                        <label className='control-label pt-4'>Số điện thoại</label>
-                                        <input className='form-control col-6' type='text' placeholder='Số điện thoại' id='phoneNumber' />
-                                    </div>
-                                    <div className='form-group col-sm-12 col-md-4 col-lg-3'>
-                                        <label className='control-label' htmlFor='userFirstname'>Tên <span style={{ color: 'red' }}>*</span></label>
-                                        <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
-                                    </div>
-                                    <div className='col-sm-12 col-md-4 col-lg-3'>
-                                        <div className='form-group'>
-                                            <label className='control-label'>Hình đại diện</label>
-                                            < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
-                                        </div>
-                                    </div>
-                                    {/* <div className='form-group col-md-12 col-lg-3'>
-                                        <label className='control-label'>Quốc tịch <span style={{color: 'red'}}>*</span></label>
-                                        <select className='form-control select2-input' ref={this.quocGia}/>
-                                    </div> */}
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin cá nhân</h3>
+                    <div className='tile-body row'>
+                        <div className='col-md-8'>
+                            <div className='row'>
+                                <div className='form-group col-md-6'>
+                                    <label className='control-label' htmlFor='userLastname'>Họ và tên lót <span style={{ color: 'red' }}>*</span></label>
+                                    <input type='text' className='form-control' id='userLastname' placeholder='Họ và tên lót' />
+                                </div>
+                                <div className='form-group col-md-6'>
+                                    <label className='control-label' htmlFor='userFirstname'>Tên <span style={{ color: 'red' }}>*</span></label>
+                                    <input type='text' className='form-control' id='userFirstname' placeholder='Tên' />
                                 </div>
 
-                                <div className='row'>
-                                    <div className='form-group col-sm-12 col-xl-6' id='birthdaySection'>
-                                        <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
-                                        <input className='form-control col-8' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection' />
-                                    </div>
-
-                                    <div className='form-group col-sm-6 col-xl-3'>
-                                        <label className='control-label'>Giới tính </label>
-                                        <Dropdown ref={this.sex} style={{ marginLeft: '10px' }} text='' items={T.sexes} />
-                                    </div>
+                                <div className='form-group col-md-6'>
+                                    <label className='control-label' htmlFor='userEmail'>
+                                        Email:&nbsp; <span>{this.props.system.user.email}</span>
+                                    </label>
                                 </div>
-                                {/* <div className='form-group'>
+                                <div className='form-group col-md-6' style={{ display: 'flex' }}>
+                                    <label className='control-label'>Giới tính:</label>
+                                    <Dropdown ref={this.sex} style={{ marginLeft: '10px' }} text='' items={T.sexes} />
+                                </div>
+
+                                <div className='form-group col-md-6'>
+                                    <label className='control-label'>Số điện thoại</label>
+                                    <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber' />
+                                </div>
+
+                                <div className='form-group col-md-6' id='birthdaySection'>
+                                    <label className='control-label' htmlFor='birthday'>Ngày sinh</label>
+                                    <input className='form-control' type='text' placeholder='Ngày sinh' id='birthday' autoComplete='off' data-date-container='#birthdaySection' />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='form-group col-md-4'>
+                            <label className='control-label'>Hình đại diện</label>
+                            < ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ProfileImage' userData='profile' image={this.state.image} />
+                        </div>
+
+                        {/* <div className='form-group'>
                                     <label className='control-label' htmlFor='regularResidence'>Nơi đăng ký hộ khẩu thường trú</label>
                                     <textarea className='form-control' id='regularResidence' placeholder='Nơi đăng ký hộ khẩu thường trú' rows='5' />
                                 </div>
@@ -177,31 +178,30 @@ class ProfilePage extends React.Component {
                                         <input className='form-control' type='text' placeholder='Nơi cấp CMND' id='identityIssuedBy' />
                                     </div>
                                 </div> */}
-                            </div>
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.saveCommon}>Lưu</button>
-                            </div>
-                        </div>
+                    </div>
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-primary' type='button' onClick={this.saveCommon}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                        </button>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className='col-12 col-md-12'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Mật khẩu</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Mật khẩu mới</label>
-                                    <input className='form-control' type='password' placeholder='Mật khẩu mới' ref={this.password1} defaultValue='' />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Nhập lại mật khẩu</label>
-                                    <input className='form-control' type='password' placeholder='Nhập lại mật khẩu' ref={this.password2} defaultValue='' />
-                                </div>
-                            </div>
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.savePassword}>Lưu</button>
-                            </div>
+
+                <div className='tile'>
+                    <h3 className='tile-title'>Mật khẩu</h3>
+                    <div className='tile-body row'>
+                        <div className='form-group col-md-6'>
+                            <label className='control-label'>Mật khẩu mới</label>
+                            <input className='form-control' type='password' placeholder='Mật khẩu mới' ref={this.password1} defaultValue='' />
                         </div>
+                        <div className='form-group col-md-6'>
+                            <label className='control-label'>Nhập lại mật khẩu</label>
+                            <input className='form-control' type='password' placeholder='Nhập lại mật khẩu' ref={this.password2} defaultValue='' />
+                        </div>
+                    </div>
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-primary' type='button' onClick={this.savePassword}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                        </button>
                     </div>
                 </div>
             </main>

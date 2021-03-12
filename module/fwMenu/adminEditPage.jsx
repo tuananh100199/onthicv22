@@ -155,10 +155,10 @@ class MenuEditPage extends React.Component {
                 mainStyle.backgroundColor = '#c8e6f9';
                 component.viewName = '';
             }
-             else if (component.viewType == 'dangKyTuVan') {
+            else if (component.viewType == 'dangKyTuVan') {
                 mainStyle.backgroundColor = '#c8e6f9';
             }
-             else if (component.viewType == 'subscribe') {
+            else if (component.viewType == 'subscribe') {
                 mainStyle.backgroundColor = '#c8e6c9';
                 component.viewName = '';
             } else if (component.viewType == 'staff group') {
@@ -201,66 +201,56 @@ class MenuEditPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             hasUpdate = currentPermissions.includes('menu:write');
-        const title = this.state.title;
+        const { title, createdDate } = this.state;
         return (
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
-                        <h1><i className='fa fa-edit' /> Menu: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title != '' ? 'Tiêu đề: <b>' + title + '</b> - ' + T.dateToText(this.state.createdDate) : '' }} />
+                        <h1><i className='fa fa-edit' /> Menu: {title || ''}{createdDate ? ' (' + T.dateToText(createdDate) + ')' : ''}</h1>
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/menu'>Menu</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/menu'>Menu</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                <div className='row'>
-                    <div className='col-md-6'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Thông tin chung</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Menu</label>
-                                    <input className='form-control' type='text' placeholder='Menu' id='menuTitle' defaultValue={title} autoFocus={true} readOnly={!hasUpdate} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Link</label><br />
-                                    <a href='#' ref={this.menuLink} style={{ fontWeight: 'bold' }} target='_blank' />
-                                    <input className='form-control' id='menuLink' type='text' placeholder='Link' defaultValue={this.state.link} onChange={this.menuLinkChange} readOnly={!hasUpdate} />
-                                </div>
-                                <div className='form-group' style={{ display: 'flex' }}>
-                                    <label className='control-label'>Kích hoạt: &nbsp;</label>
-                                    <div className='toggle'>
-                                        <label>
-                                            <input type='checkbox' checked={this.state.active} onChange={(e) => hasUpdate && this.changeActive(e)} /><span className='button-indecator' />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            {hasUpdate ?
-                                <div className='tile-footer'>
-                                    <div className='row'>
-                                        <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                            <button className='btn btn-primary' type='button' onClick={this.save}>
-                                                <i className='fa fa-fw fa-lg fa-check-circle'></i>Lưu
-                                        </button>
-                                        </div>
-                                    </div>
-                                </div> : null}
-                        </div>
-                    </div>
-                    <div className='col-md-12'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Cấu trúc trang web</h3>
-                            <div className='tile-body'>
-                                {this.state.component ? this.renderComponents(hasUpdate, 0, [this.state.component]) : null}
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin chung
+                    <div style={{ display: 'flex', position: 'absolute', top: '20px', right: '20px' }}>
+                            <label className='control-label' style={{ marginTop: '6px' }}>Kích hoạt: &nbsp;</label>
+                            <div className='toggle'>
+                                <label>
+                                    <input type='checkbox' checked={this.state.active} onChange={(e) => hasUpdate && this.changeActive(e)} /><span className='button-indecator' />
+                                </label>
                             </div>
                         </div>
+                    </h3>
+                    <div className='tile-body'>
+                        <div className='row'>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label'>Menu</label>
+                                <input className='form-control' type='text' placeholder='Menu' id='menuTitle' defaultValue={title} autoFocus={true} readOnly={!hasUpdate} />
+                            </div>
+                            <div className='form-group col-md-6'>
+                                <label className='control-label'>Link:&nbsp;</label>
+                                <a href='#' ref={this.menuLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                <input className='form-control' id='menuLink' type='text' placeholder='Link' defaultValue={this.state.link} onChange={this.menuLinkChange} readOnly={!hasUpdate} />
+                            </div>
+                        </div>
+                        {hasUpdate ?
+                            <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                <button className='btn btn-primary' type='button' onClick={this.save}>
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    </button>
+                            </div> : null}
                     </div>
                 </div>
 
+                <div className='tile'>
+                    <h3 className='tile-title'>Cấu trúc trang web</h3>
+                    <div className='tile-body'>
+                        {this.state.component ? this.renderComponents(hasUpdate, 0, [this.state.component]) : null}
+                    </div>
+                </div>
                 <Link to='/user/menu' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
