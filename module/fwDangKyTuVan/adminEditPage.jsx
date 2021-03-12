@@ -126,8 +126,6 @@ class DangKyTuVanEditPage extends React.Component {
                 this.setState(data);
             });
             $('#courseType').select2();
-
-
         });
     }
 
