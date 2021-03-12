@@ -518,77 +518,54 @@ class adminEditBaiHoc extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-file' /> Bài học: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: item.title != '' ? 'Tiêu đề: <b>' + item.title + '</b> ' : '' }} />
-                    </div>
+                    <h1><i className='fa fa-file' /> Bài học: {item.title || ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/dao-tao/bai-hoc/list'>Danh sách tất cả bài học</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/dao-tao/bai-hoc/list'>Bài học</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
                 <div className='row'>
                     <div className='col-12 col-md-12'>
                         <div className='tile'>
+                            <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Tên bài học</label>
-                                        <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
-                                    </div>
-                                    {/* <div className='form-group col-sm-12 col-md-8 col-lg-6'>
-                                        <label className='control-label'>Giá loại khóa học</label>
-                                        <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
-                                    </div> */}
+                                <div className='form-group'>
+                                    <label className='control-label'>Tên bài học</label>
+                                    <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
                                 </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Mô tả ngắn gọn</label>
+                                    <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={2} />
+                                </div>
+                                <div className='form-group'>
+                                    <label className='control-label'>Mô tả chi tiết </label>
+                                    <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                                </div>
+                            </div>
+                            <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                <button type='button' className='btn btn-primary' onClick={this.save}>
+                                    <i className='fa fa-lg fa-save' /> Lưu
+                                </button>
+                            </div>
+                        </div>
 
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Mô tả ngắn gọn</label>
-                                        <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly}
-                                            rows={2} />
-                                    </div>
-                                </div>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12'>
-                                        <label className='control-label'>Mô tả chi tiết </label>
-                                        <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                                    </div>
-                                </div>
-                                <div className='d-flex justify-content-end' >
-                                    <button type='button' className='btn btn-primary' onClick={this.save}>
-                                        Lưu
+                        <div className='tile'>
+                            <h3 className='tile-title'>Bài giảng video</h3>
+                            <div className='tile-body'>{table}</div>
+                            <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                <button type='button' className='btn btn-success' onClick={this.create}>
+                                    <i className='fa fa-lg fa-plus' /> Thêm
                                     </button>
-                                </div>
                             </div>
                         </div>
-                        <div className='tile'>
-                            <div className='tile-body'>
-                                <label className='control-label'>Danh sách bài giảng video</label>
-                                <div>
-                                    {table}
-                                </div>
 
-                                <div className='d-flex justify-content-end'>
-                                    <button type='button' className='btn btn-primary' onClick={this.create}>
-                                        Thêm bài giảng video mới
-                                </button>
-                                </div>
-                            </div>
-                        </div>
                         <div className='tile'>
-                            <div className='tile-body'>
-                                <label className='control-label'>Danh sách câu hỏi</label>
-                                <div>
-                                    {table_question}
-                                </div>
-                                <div className='d-flex justify-content-end'>
-                                    <button type='button' className='btn btn-primary' onClick={e => this.showQuestionModal(e, null)}>
-                                        Thêm câu hỏi
-                                </button>
-                                </div>
+                            <h3 className='tile-title'>Câu hỏi</h3>
+                            <div className='tile-body'>{table_question}</div>
+                            <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
+                                    <i className='fa fa-lg fa-plus' /> Thêm
+                                    </button>
                             </div>
                         </div>
                     </div>

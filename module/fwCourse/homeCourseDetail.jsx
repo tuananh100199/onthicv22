@@ -63,9 +63,9 @@ class CourseDetail extends React.Component {
                                 <div className='course--content' data-aos='fade-up'>
                                     <div className='clever-description p-2'>
                                         <div className='about-course mb-30'>
-                                            <span className="meta">{new Date(item.createdDate).getText()}</span>
-                                            {/* <p className="text-center">
-                                                <img src={item.image} alt="Image" className="img-fluid" style={{ width: '30%', height: 'auto' }} />
+                                            <span className='meta'>{new Date(item.createdDate).getText()}</span>
+                                            {/* <p className='text-center'>
+                                                <img src={item.image} alt='Image' className='img-fluid' style={{ width: '30%', height: 'auto' }} />
                                             </p> */}
                                             {/* <h4 className='text-black text-left'>Nội dung khóa học</h4> */}
                                             <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />

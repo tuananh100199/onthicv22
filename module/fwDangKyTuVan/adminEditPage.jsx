@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan.jsx';
-import {getAllCourseType} from '../fwCourseType/redux.jsx';
+import { getAllCourseType } from '../fwCourseType/redux.jsx';
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
@@ -39,12 +39,12 @@ class DangKyTuVanModal extends React.Component {
         const btnSave = $(this.btnSave.current),
             isNewMember = btnSave.data('isNewMember'),
             index = btnSave.data('index'),
-            title =  $('#sttViTitle').val(),
+            title = $('#sttViTitle').val(),
             number = $('#sttNumber').val();
         if (isNewMember) {
             this.props.addDKTV(title, number);
         } else {
-            this.props.updateDKTV(index,title, number);
+            this.props.updateDKTV(index, title, number);
         }
         event.preventDefault();
     }
@@ -114,10 +114,10 @@ class DangKyTuVanEditPage extends React.Component {
                     $('#title').val(title).focus();
                     $('#courseType').val(courseType).focus();
                     this.editor.current.html(content);
-                    this.props.getAllCourseType( datacType => {
-                        if(datacType){
-                            let courseType = datacType ? datacType.map(item => ({id: item._id, text: item.title})) : null;
-                            $('#courseType').select2({ data: courseType}).val(data.item.courseType).trigger('change');
+                    this.props.getAllCourseType(datacType => {
+                        if (datacType) {
+                            let courseType = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
+                            $('#courseType').select2({ data: courseType }).val(data.item.courseType).trigger('change');
                         }
                     });
                 } else {
@@ -127,7 +127,7 @@ class DangKyTuVanEditPage extends React.Component {
             });
             $('#courseType').select2();
 
-          
+
         });
     }
 
@@ -162,17 +162,17 @@ class DangKyTuVanEditPage extends React.Component {
     }
 
     save = () => {
-        const title =  $('#title').val().trim(),
-            formTitle =  $('#formTitle').val().trim(),
+        const title = $('#title').val().trim(),
+            formTitle = $('#formTitle').val().trim(),
             courseType = $('#courseType').val();
         const description = this.editor.current.html();
         if (title === '') {
             T.notify('Tiêu đề đăng ký tư vấn trống!', 'danger');
             $('#title').focus();
-        }else if(formTitle === '') {
+        } else if (formTitle === '') {
             T.notify('Tiều đề form đăng ký tư vấn trống!', 'danger');
             $('#formTitle').focus();
-        }else if(courseType === null) {
+        } else if (courseType === null) {
             T.notify('Vui lòng chọn loại khóa học!', 'danger');
             $('#courseType').focus();
         } else {
@@ -189,15 +189,13 @@ class DangKyTuVanEditPage extends React.Component {
     };
 
     render() {
-       
-
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('dangKyTuVan:write');
         let table = null,
             currentDangKyTuVan = this.props.dangKyTuVan ? this.props.dangKyTuVan.item : null;
         if (currentDangKyTuVan && currentDangKyTuVan.statistic.length > 0) {
             table = (
-                <table className='table table-hover table-bordered' ref={this.table}>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
@@ -214,7 +212,7 @@ class DangKyTuVanEditPage extends React.Component {
                                     <td style={{ textAlign: 'center' }}>
                                         {readOnly ? title : <a href='#' onClick={e => this.showEditDKTVModal(e, item, index)}>{item.title}</a>}
                                     </td>
-                                 
+
                                     <td style={{ textAlign: 'center' }}>{T.numberDisplay(item.number)}</td>
                                     {readOnly ? null :
                                         <td>
@@ -245,7 +243,7 @@ class DangKyTuVanEditPage extends React.Component {
             table = <p>Không có thống kê!</p>;
         }
 
-        const {title, formTitle} = currentDangKyTuVan ? currentDangKyTuVan: {title: '', formTitle:''};
+        const { title, formTitle } = currentDangKyTuVan ? currentDangKyTuVan : { title: '', formTitle: '' };
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -264,7 +262,7 @@ class DangKyTuVanEditPage extends React.Component {
                     <div className='tile col-md-12'>
                         <div className='tile-body'>
                             <div className='tab-content'>
-                                <div  className='tab-pane fade show active'>
+                                <div className='tab-pane fade show active'>
                                     <div className='col-6 form-group'>
                                         <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
                                         <select className='form-control col-6' id='courseType' multiple={false} >
@@ -320,6 +318,6 @@ class DangKyTuVanEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, dangKyTuVan: state.dangKyTuVan});
+const mapStateToProps = state => ({ system: state.system, dangKyTuVan: state.dangKyTuVan });
 const mapActionsToProps = { getAllCourseType, getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanEditPage);

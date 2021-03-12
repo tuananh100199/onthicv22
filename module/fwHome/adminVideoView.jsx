@@ -147,7 +147,7 @@ class VideoPage extends React.Component {
         let table = <p key='table'>Không có video!</p>;
         if (this.props.video && this.props.video.page && this.props.video.page.list && this.props.video.page.list.length > 0) {
             table = (
-                <table key='table' className='table table-hover table-bordered' ref={this.table}>
+                <table key='table' className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

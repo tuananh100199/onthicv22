@@ -7,14 +7,11 @@ import { Select } from '../../view/component/Input.jsx';
 import { ajaxSelectCourseType } from '../fwCourseType/redux.jsx';
 
 class CourseModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-        this.licenseClass = React.createRef();
-    }
+    modal = React.createRef();
+    licenseClass = React.createRef();
 
     componentDidMount() {
-        $(document).ready(() => {
+        T.ready(() => {
             $(this.modal.current).on('shown.bs.modal', () => $('#title').focus());
         });
     }
@@ -105,7 +102,7 @@ class CoursePage extends React.Component {
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('course:write');
+            readOnly = !currentPermissions.contains('course:write');
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = 'Không có khóa học!';
@@ -136,10 +133,10 @@ class CoursePage extends React.Component {
                                         <Link to={'/user/course/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-                                        {currentPermissions.contains('course:write') ?
+                                        {readOnly ? null :
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
+                                            </a>}
                                     </div>
                                 </td>
                             </tr>
@@ -151,18 +148,18 @@ class CoursePage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Khóa học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Khóa học</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <CourseModal createCourse={this.props.createCourse} ref={this.modal} history={this.props.history} />
                 <Pagination name='pageCourse'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getCourseInPage} />
-                {currentPermissions.contains('course:write') ?
+                {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
                         onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
-                    </button> : ''}
+                    </button>}
             </main>
         );
     }

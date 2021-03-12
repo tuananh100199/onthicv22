@@ -9,11 +9,11 @@ export default {
     routes: [
         {
             path: '/user/address/edit/:addressId',
-            component: Loadable({ loading: Loading, loader: () => import('./adminAddressEdit.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminAddressEdit.jsx') }),
         },
         {
             path: '/user/address/all',
-            component: Loadable({ loading: Loading, loader: () => import('./adminAddressView.jsx') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminAddressView.jsx') }),
         }
     ]
 };

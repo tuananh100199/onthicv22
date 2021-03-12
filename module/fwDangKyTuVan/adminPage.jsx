@@ -28,14 +28,14 @@ class DangKyTuVanModal extends React.Component {
     }
 
     save = (event) => {
-        const dangKyTuVanName =  $('#dangKyTuVanName').val().trim();
-        const description =  this.editor.current.html();
-    
+        const dangKyTuVanName = $('#dangKyTuVanName').val().trim();
+        const description = this.editor.current.html();
+
         if (dangKyTuVanName === '') {
             T.notify('Tên đăng ký tư vấn bị trống!', 'danger');
             $('#dangKyTuVanName').focus();
         } else {
-            this.props.createDangKyTuVan(dangKyTuVanName,description,'', data => {
+            this.props.createDangKyTuVan(dangKyTuVanName, description, '', data => {
                 if (data.error === undefined || data.error == null) {
                     $(this.modal.current).modal('hide');
                     if (data.item) {
@@ -109,12 +109,12 @@ class DangKyTuVanPage extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [] ,
-            { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ?    this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ? this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         let table = null;
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered' ref={this.table}>
+                <table key={0} className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

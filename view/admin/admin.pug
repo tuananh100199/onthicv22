@@ -18,9 +18,9 @@ html(lang='en')
         script(type='text/javascript' src='/js/plugins/bootstrap-notify.min.js')
         script(type='text/javascript' src='/js/plugins/select2.min.js')
         script(type='text/javascript' src='/js/plugins/chart.js')
-        script(type='text/javascript' src='/js/plugins/ckeditor/ckeditor.js')
-        script(type='text/javascript' src='/js/plugins/jsBarcode.all.min.js')
-        script(type='text/javascript' src='/js/plugins/qrcode.min.js')
+        script(type='text/javascript' src='/ckeditor/ckeditor.js')
+        //- script(type='text/javascript' src='/js/plugins/jsBarcode.all.min.js')
+        //- script(type='text/javascript' src='/js/plugins/qrcode.min.js')
         //script(type='text/javascript' src='https://cdn.ckeditor.com/4.10.1/full/ckeditor.js')
         each item in htmlWebpackPlugin.files.js
             if item.search(/\/js\/admin-?.*.js/) == 0

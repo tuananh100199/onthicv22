@@ -73,10 +73,11 @@ class MonHocPage extends React.Component {
                 </table>
             );
         }
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Bài học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Bài học</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
                             <input className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm bài học' />
@@ -88,7 +89,7 @@ class MonHocPage extends React.Component {
                             </a> : null}
                     </ul>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageLesson'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getBaiHocInPage} />

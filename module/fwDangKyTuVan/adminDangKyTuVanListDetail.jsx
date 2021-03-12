@@ -45,15 +45,15 @@ class AdminDangKyTuVanModal extends React.Component {
                             <label>Tên người dùng: <b>{lastname} {firstname}</b></label><br />
                             <label>Email: <b>{email}</b></label><br />
                             <label>Số điện thoại: <b>{phone}</b></label><br />
-                            <h6 style={{marginTop: 20}}>Phản hồi đăng ký tư vấn</h6>
-                            <div className="form-group">
+                            <h6 style={{ marginTop: 20 }}>Phản hồi đăng ký tư vấn</h6>
+                            <div className='form-group'>
                                 <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
                             </div>
                         </div>
                         <form>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                <button type="button" className="btn btn-primary" id="submit-btn" onClick={this.save}>Gửi</button>
+                            <div className='modal-footer'>
+                                <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                                <button type='button' className='btn btn-primary' id='submit-btn' onClick={this.save}>Gửi</button>
                             </div>
                         </form>
                     </div>
@@ -74,7 +74,7 @@ class DangKyTuVanListPage extends React.Component {
             this.props.getDangKyTuVanListAll(params.dangKyTuVanListId, data => {
                 this.setState({ items: data });
             })
-            
+
         });
     }
 
@@ -85,7 +85,7 @@ class DangKyTuVanListPage extends React.Component {
     }
 
 
-    changeRead = (item) => this.props.updateDangKyTuVanListItem(item._id, {  read: !item.read });
+    changeRead = (item) => this.props.updateDangKyTuVanListItem(item._id, { read: !item.read });
 
     delete = (e, item) => {
         T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVanListItem(item._id));
@@ -112,7 +112,7 @@ class DangKyTuVanListPage extends React.Component {
                     <tbody>
                         {this.state.items.map((item, index) => (
                             <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index+1}</td>
+                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     <a href='#' onClick={e => this.showDangKyTuVan(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
                                     <br />
@@ -142,7 +142,7 @@ class DangKyTuVanListPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 {/* <Pagination name='pageDangKyTuVan' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDangKyTuVanListPage} /> */}
                 <AdminDangKyTuVanModal ref={this.modal} phanHoiDangKyTuVanListItem={this.props.phanHoiDangKyTuVanListItem} />
@@ -152,5 +152,5 @@ class DangKyTuVanListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ dangKyTuVanListId: state.dangKyTuVanListId });
-const mapActionsToProps = { getDangKyTuVanListAll, getDangKyTuVanListItem, updateDangKyTuVanListItem, deleteDangKyTuVanListItem, phanHoiDangKyTuVanListItem  };
+const mapActionsToProps = { getDangKyTuVanListAll, getDangKyTuVanListItem, updateDangKyTuVanListItem, deleteDangKyTuVanListItem, phanHoiDangKyTuVanListItem };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanListPage);

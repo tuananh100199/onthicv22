@@ -34,10 +34,10 @@ class SectionCTypeList extends React.Component {
         if (items) {
             items = items.map((item, index) => {
                 return (
-                    <div className="col-xl-4 col-md-6 service_col" key={index}  >
-                        <div className="text-center">
-                            <div className="service_title"><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
-                            <div className="service_text">
+                    <div className='col-xl-4 col-md-6 service_col' key={index}  >
+                        <div className='text-center'>
+                            <div className='service_title'><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
+                            <div className='service_text'>
                                 <p>{item.shortDescription}</p>
                             </div>
                         </div>
@@ -48,15 +48,11 @@ class SectionCTypeList extends React.Component {
         return (
             <>
                 <div>
-                    <div className="service_col text-center" style={{
-                        marginBottom: '30px'
-                    }}>
-                        <div className=""><h2>Loại khóa học</h2></div>
+                    <div className='service_col text-center' style={{ marginBottom: '30px' }}>
+                        <div><h2>Loại khóa học</h2></div>
                     </div>
                 </div>
-                <div className='row' >
-                    {items}
-                </div>
+                <div className='row'>{items}</div>
             </>
         );
     }

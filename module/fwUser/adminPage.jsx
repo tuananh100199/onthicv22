@@ -134,7 +134,7 @@ class UserPage extends React.Component {
                     </ul>
                 </div>
 
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition}
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getUserInPage} />

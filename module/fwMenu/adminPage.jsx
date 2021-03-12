@@ -96,7 +96,7 @@ class MenuPage extends React.Component {
                     <h1><i className='fa fa-user' /> Menu chính</h1>
                 </div>
 
-                <div className='row tile'>
+                <div className='tile'>
                     <ul id='menuMain' className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                         {(this.props.menu ? this.props.menu : []).map(menu => this.renderMenu(menu, 0, hasCreate, hasUpdate, hasDelete))}
                     </ul>

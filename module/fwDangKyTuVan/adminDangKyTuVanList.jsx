@@ -26,7 +26,7 @@ class DangKyTuVanModal extends React.Component {
         const newData = {
             title: $('#dangKyTuVanName').val().trim()
         };
-        
+
         if (newData.title == '') {
             T.notify('Tên danh sách đăng ký tư vấn bị trống!', 'danger');
             $('#dangKyTuVanName').focus();
@@ -87,17 +87,17 @@ class DangKyTuVanPage extends React.Component {
         this.modal.current.show();
         e.preventDefault();
     }
-    
+
     delete = (e, item) => {
         T.confirm('Xóa danh sách đăng ký tư vấn', 'Bạn có chắc bạn muốn xóa danh sách đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
         e.preventDefault();
     }
 
     render() {
-        let table = null;
+        let table = 'Không có danh sách các đăng ký tư vấn!';
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered' ref={this.table}>
+                <table key={0} className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -129,22 +129,21 @@ class DangKyTuVanPage extends React.Component {
                     </tbody>
                 </table>
             );
-        } else {
-            table = <p key={0}>Không có danh sách các đăng ký tư vấn!</p>;
         }
+
         return (
             <main className='app-content'>
-               <div className='app-title'>
-                   <h1><i className='fa fa-file' /> Đăng ký tư vấn: Danh sách</h1>
-               </div>
-               <div className='row tile'>{table}</div>
-                   <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
-                   <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                       onClick={this.create}>
-                       <i className='fa fa-lg fa-plus' />
-                   </button>
-           </main>
-           );
+                <div className='app-title'>
+                    <h1><i className='fa fa-file' /> Đăng ký tư vấn</h1>
+                </div>
+                <div className='tile'>{table}</div>
+                <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                    onClick={this.create}>
+                    <i className='fa fa-lg fa-plus' />
+                </button>
+            </main>
+        );
     }
 }
 

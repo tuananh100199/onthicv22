@@ -59,7 +59,6 @@ export function getAddressItem(_id, done) {
                 dispatch({ type: AddressGet, item: data.item });
             }
             if (done) done(data);
-
         }, error => T.notify('Lấy cơ sở bị lỗi', 'danger'));
     }
 }
@@ -110,6 +109,7 @@ export function deleteAddress(_id) {
         }, error => T.notify('Xóa cơ sở bị lỗi!', 'danger'));
     }
 }
+
 //Home
 export function getAllAddressByUser(done) {
     return dispatch => {
@@ -126,6 +126,7 @@ export function getAllAddressByUser(done) {
         }, error => T.notify('Lấy danh sách cơ sở bị lỗi', 'danger'));
     }
 }
+
 export const ajaxSelectAddress = {
     ajax: true,
     url: '/api/address/all',

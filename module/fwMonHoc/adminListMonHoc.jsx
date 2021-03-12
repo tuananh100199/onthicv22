@@ -59,9 +59,9 @@ class AdminListMonHoc extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Môn học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Môn học</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageSubject'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getMonHocInPage} />

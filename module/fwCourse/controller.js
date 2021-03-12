@@ -1,16 +1,13 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: {
-            index: 7000, title: 'Khóa học', link: '/user/course/list', icon: 'fa-book'
-            // , subMenusRender: false
-            // , groups: ['Thông tin chung', 'Thông tin người quản trị' ]
+        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
+        menus: {
+            8040: { title: 'Khoá học', link: '/user/course/list' },
         },
-        // menus: {
-        //     7001: { title: 'Thông tin chung', link: '/user/course/edit/common/:_id', icon: 'fa-book ', backgroundColor: '#032b91', groupIndex: 0 },
-        //     7002: { title: 'Quản lý chung', link: '', icon: 'fa-list', backgroundColor: '#000001', groupIndex: 1 },
-        // }
     };
+
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write', menu });
+
     app.get('/user/course/list', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/edit/:_id', app.permission.check('course:read'), app.templates.admin);
 

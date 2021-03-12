@@ -36,7 +36,7 @@ class ContactPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '60%' }}>Subject</th>
+                            <th style={{ width: '60%' }}>Chủ đề</th>
                             <th style={{ width: '40%' }}>Tên & Email</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -73,7 +73,7 @@ class ContactPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa fa-envelope-o' /> Liên hệ</h1>
                 </div>
-                <div className='row tile'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getContactPage} />
                 <AdminContactModal ref={this.modal} />
