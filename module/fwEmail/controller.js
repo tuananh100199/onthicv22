@@ -18,6 +18,8 @@ module.exports = app => {
         'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml',
         'emailContactTitle', 'emailContactText', 'emailContactHtml',
         'emailTuChoiDonDeNghiHocTitle', 'emailTuChoiDonDeNghiHocText', 'emailTuChoiDonDeNghiHocHtml',
+        'emailDangKyTuVanTitle','emailDangKyTuVanText','emailDangKyTuVanHtml',
+        'emailPhanHoiDangKyTuVanTitle','emailPhanHoiDangKyTuVanText','emailPhanHoiDangKyTuVanHtml'
     ];
 
     app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(...EmailParams, result => res.send(result)));
@@ -76,7 +78,23 @@ module.exports = app => {
                 '<b>{reason}</b><br/><br/>' +
                 'Best regard,<br/>' +
                 'Hiệp Phát<br/>' +
-                'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
+                'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
+            emailPhanHoiDangKyTuVanTitle: 'Hiệp Phát: Phản hồi đăng ký tư vấn!',
+            emailPhanHoiDangKyTuVanText: 'Chào {name}, Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn: {content} Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
+            emailPhanHoiDangKyTuVanHtml: 'Chào <b>{name}</b>,<br/><br/>' +
+                'Hiệp Phát đã gửi phản hồi đăng ký tư vấn cho bạn:<br/><br/>' +
+                '<b>{content}</b><br/><br/>' +
+                'Trân trọng,<br/>' +
+                'Hiệp Phát<br/>' +
+                'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>',
+
+            emailDangKyTuVanTitle: 'Hiệp Phát: Đăng ký tư vấn!',
+            emailDangKyTuVanText: 'Chào {name}, Cám ơn bạn đã gửi đăng ký tư vấn cho chúng tôi, chúng tôi sẽ liên hệ cho bạn sớm nhất. Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
+            emailDangKyTuVanHtml: 'Chào <b>{name}</b>,<br/><br/>' +
+                    'Cám ơn bạn đã gửi đăng ký tư vấn cho chúng tôi, chúng tôi sẽ liên hệ cho bạn sớm nhất:<br/><br/>' +
+                    'Trân trọng,<br/>' +
+                    'Hiệp Phát<br/>' +
+                    'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
         }),
     });
 };
