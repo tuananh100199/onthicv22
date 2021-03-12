@@ -148,7 +148,7 @@ class CoursePage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Khóa học: Danh sách</h1>
+                    <h1><i className='fa fa-file' /> Khóa học</h1>
                 </div>
                 <div className='tile'>{table}</div>
                 <CourseModal createCourse={this.props.createCourse} ref={this.modal} history={this.props.history} />

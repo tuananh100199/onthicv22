@@ -57,7 +57,7 @@ class CarouselModal extends React.Component {
                         </div>
                     </div>
                 </form>
-            </div >
+            </div>
         );
     }
 }

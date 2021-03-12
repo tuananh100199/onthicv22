@@ -170,7 +170,7 @@ class SectionContact extends React.Component {
                     {/*    </div> : <p>Chưa cập nhật địa chỉ</p>*/}
                     {/*}*/}
                 </div>
-            </div >
+            </div>
         ];
     }
 }
