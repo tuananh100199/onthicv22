@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getEventFeed } from '../../module/fwEvent/redux.jsx';
+import { getEventFeed } from '../../module/fwEvent/redux';
 import { Link } from 'react-router-dom';
 
 const texts = {
@@ -16,7 +16,7 @@ class SectionSideBar extends React.Component {
     componentDidMount() {
         this.props.getEventFeed();
     }
-    
+
     render() {
         const language = T.language(texts);
         let recentEvents = (this.props.event && this.props.event.newsFeed ? this.props.event.newsFeed : []).map((item, index) => {
@@ -33,7 +33,7 @@ class SectionSideBar extends React.Component {
                     </div>
                 </div>)
         });
-        
+
         return (
             <div className='course-sidebar'>
                 <div className='sidebar-widget'>

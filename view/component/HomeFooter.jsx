@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { getAllAddressByUser } from '../../module/fwAddress/redux.jsx'
+import { getAllAddressByUser } from 'modules/mdTruyenThong/fwAddress/redux';
 
 class Footer extends React.Component {
     componentDidMount() {
         this.props.getAllAddressByUser();
     }
+
     render() {
         let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, footer } =
             this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, footer: '/img/footer.jpg' };
@@ -18,7 +18,7 @@ class Footer extends React.Component {
         return (
             <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>
-                    <div className='container'>
+                    <div className='container-fluid'>
                         <div className='row'>
                             <div className='col-lg-5 footer_col'>
                                 <div className='footer_about'>
@@ -64,29 +64,28 @@ class Footer extends React.Component {
                                     <div className='google_map_row'>
                                         <div id='carouselFooter' className='carousel slide col' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
                                             <div className='carousel-inner'>
-                                                {
-                                                    this.props.address.list.map((item, index) => (
-                                                        <div className={'carousel-item' + (index == 0 ? ' active' : '')}
-                                                            key={index}
-                                                            style={{
-                                                                height: '200px',
-                                                                backgroundImage: `url('${T.url(item.image)}')`,
-                                                                backgroundRepeat: 'no-repeat',
-                                                                backgroundPosition: 'center center',
-                                                                border: '1px solid gray',
-                                                                backgroundSize: 'cover',
-                                                                cursor: 'pointer',
-                                                            }}
-                                                            onClick={() => window.open(item.mapURL, '_blank')}>
-                                                            <span className='carousel-footer-title' style={{ position: 'fixed', bottom: '10px', left: '10px', color: '#4CA758', fontWeight: 'bold' }}>{item.title + ': ' + item.address}</span>
-                                                        </div>))}
+                                                {this.props.address.list.map((item, index) => (
+                                                    <div className={'carousel-item' + (index == 0 ? ' active' : '')}
+                                                        key={index}
+                                                        style={{
+                                                            height: '200px',
+                                                            backgroundImage: `url('${T.url(item.image)}')`,
+                                                            backgroundRepeat: 'no-repeat',
+                                                            backgroundPosition: 'center center',
+                                                            border: '1px solid gray',
+                                                            backgroundSize: 'cover',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                        onClick={() => window.open(item.mapURL, '_blank')}>
+                                                        <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: '#4CA758', fontWeight: 'bold' }}>{item.title + ': ' + item.address}</span>
+                                                    </div>))}
                                             </div>
                                             <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
-                                                <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}/>
+                                                <span className='carousel-control-prev-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
                                                 <span className='sr-only'>Previous</span>
                                             </a>
                                             <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
-                                                <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }}/>
+                                                <span className='carousel-control-next-icon' style={{ backgroundColor: '#4ca758', backgroundSize: '70% 70%' }} />
                                                 <span className='sr-only'>Next</span>
                                             </a>
                                         </div>
