@@ -14,16 +14,14 @@ class SubjectModal extends React.Component {
         $(this.modal.current).modal('show');
 
     save = (event) => {
+        event.preventDefault();
         const changeItem = this.subjectSelect.current.val();
         const subjectList = this.props.item.subjectList;
         subjectList.push(changeItem);
-
-        if (this.props.item && this.props.item._id) {
-            this.props.updateCourse(this.props.item._id, { subjectList: subjectList }, () => {
-                T.notify('Thêm môn học thành công', 'success');
-                $(this.modal.current).modal('hide');
-            });
-        }
+        this.props.updateCourse(this.props.item._id, { subjectList }, () => {
+            T.notify('Thêm môn học thành công', 'success');
+            $(this.modal.current).modal('hide');
+        });
         event.preventDefault();
     }
 
@@ -81,12 +79,10 @@ class SubjectPage extends React.Component {
         e.preventDefault();
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                let subjectList = this.state.item.subjectList || [];
-                const changes = {};
+                let subjectList = this.props.course.course.subjectList || [];
                 subjectList.splice(index, 1);
                 if (subjectList.length == 0) subjectList = 'empty';
-                changes.subjectList = subjectList;
-                this.props.updateCourse(this.state.item._id, changes, () => {
+                this.props.updateCourse(this.state.item._id, { subjectList }, () => {
                     T.alert('Xoá môn học khỏi khóa học thành công!', 'error', false, 800);
                 });
             }
