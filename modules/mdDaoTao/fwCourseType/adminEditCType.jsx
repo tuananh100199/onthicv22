@@ -3,16 +3,19 @@ import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
-import { ajaxSelectSubject } from '../fwMonHoc/redux';
 import { Select } from 'view/component/Input';
+import { ajaxSelectSubject } from '../fwMonHoc/redux';
 
 class SubjectModal extends React.Component {
     state = { item: null };
     modal = React.createRef();
     subjectSelect = React.createRef();
 
-    show = () =>
+    show = () => {
+        this.subjectSelect.current.val('');
         $(this.modal.current).modal('show');
+    }
+
 
     save = (event) => {
         const changeItem = this.subjectSelect.current.val();
@@ -39,7 +42,11 @@ class SubjectModal extends React.Component {
 
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <Select ref={this.subjectSelect} displayLabel={true} adapter={ajaxSelectSubject} label='Môn học' />
+                                <Select ref={this.subjectSelect} displayLabel={true}
+                                    adapter={{
+                                        ...ajaxSelectSubject, processResults: response =>
+                                            ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+                                    }} label='Môn học' />
                             </div>
                         </div>
 

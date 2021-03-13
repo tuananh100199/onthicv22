@@ -10,8 +10,10 @@ class SubjectModal extends React.Component {
     modal = React.createRef();
     subjectSelect = React.createRef();
 
-    show = () =>
+    show = () => {
+        this.subjectSelect.current.val('');
         $(this.modal.current).modal('show');
+    }
 
     save = (event) => {
         event.preventDefault();
@@ -39,7 +41,11 @@ class SubjectModal extends React.Component {
 
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <Select ref={this.subjectSelect} displayLabel={true} adapter={ajaxSelectSubject} label='Môn học' />
+                                <Select ref={this.subjectSelect} displayLabel={true}
+                                    adapter={{
+                                        ...ajaxSelectSubject, processResults: response =>
+                                            ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+                                    }} label='Môn học' />
                             </div>
                         </div>
 
