@@ -83,10 +83,10 @@ export function getAllDangKyTuVan(done) {
     }
 }
 
-export function createDangKyTuVan(title, description, background, done) {
+export function createDangKyTuVan(done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van';
-        T.post(url, { title, description, background }, data => {
+        T.post(url, data => {
             if (data.error) {
                 T.notify('Tạo đăng ký tư vấn bị lỗi', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);

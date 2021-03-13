@@ -1,9 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { createSubscribe } from './redux/reduxSubscribe';
+
+
 
 class SectionSubscribe extends React.Component {
-    background = React.createRef();
-    state = {};
+    constructor(props) {
+        super(props);
+        this.background = React.createRef();
+        this.email = React.createRef();
+        this.state = {};
+    }
+
 
     componentDidMount() {
         $(document).ready(() => {
@@ -23,6 +31,24 @@ class SectionSubscribe extends React.Component {
         $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy')
     }
 
+    sendMessage = (e) => {
+        e.preventDefault();
+        if (this.email.current.value == '') {
+            T.notify('Email bị trống!', 'danger');
+            (this.email.current).focus();
+        } else if (!T.validateEmail(this.email.current.value)) {
+            T.notify('Email không hợp lệ!', 'danger');
+            (this.email.current).focus();
+        } else {
+            this.props.createSubscribe({
+                email: this.email.current.value,
+            }, () => {
+                this.email.current.value = '';
+                T.notify('Đăng ký nhận tin của bạn đã được gửi!', 'success', true, 3000);
+            });
+        }
+    }
+
     render() {
         let subscribe = this.props && this.props.system && this.props.system.subscribe ? this.props.system.subscribe : '/img/subscribe.jpg';
         return (
@@ -37,8 +63,8 @@ class SectionSubscribe extends React.Component {
                     <div className='row newsletter_row'>
                         <div className='col-lg-8 offset-lg-2'>
                             <div className='newsletter_form_container'>
-                                <form action='#' id='newsleter_form' className='newsletter_form'>
-                                    <input type='email' className='newsletter_input' placeholder='E-mail của bạn' required='required' />
+                                <form action='#' id='newsleter_form' className='newsletter_form' onSubmit={this.sendMessage}>
+                                    <input type='email' className='newsletter_input' ref={this.email} placeholder='Email của bạn' />
                                     <button className='newsletter_button'>Đăng ký</button>
                                 </form>
                             </div>
@@ -51,5 +77,5 @@ class SectionSubscribe extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = {};
+const mapActionsToProps = {createSubscribe};
 export default connect(mapStateToProps, mapActionsToProps)(SectionSubscribe);

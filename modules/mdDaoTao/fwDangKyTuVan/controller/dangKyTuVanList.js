@@ -1,7 +1,10 @@
 module.exports = app => {
 
     const menu = {
-        parentMenu: { index: 4000, title: 'Đăng ký tư vấn', icon: 'fa-file-text-o', link: '/user/dang-ky-tu-van-list' }
+        parentMenu: { index: 9000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
+        menus: {
+            9010: { title: 'Đăng ký tư vấn', link: '/user/dang-ky-tu-van-list', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+        },
     };
 
     app.permission.add({ name: 'dangKyTuVan:read', menu }, { name: 'dangKyTuVan:write', menu },);
@@ -33,11 +36,10 @@ module.exports = app => {
     });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize/:DKTVListId', app.permission.check('dangKyTuVanList:read'), (req, res) => {
+    app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVanList:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize),
-            DKTVListId = req.params.DKTVListId;
-        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, DKTVListId, (error, page) => {
+            pageSize = parseInt(req.params.pageSize);
+        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, {}, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
@@ -54,14 +56,13 @@ module.exports = app => {
     app.post('/api/dang-ky-tu-van-list/item/', (req, res) => {
         app.model.dangKyTuVanList.create(req.body.dangKyTuVan, (error, item) => {
             res.send({ error, item })
-            if (item) {
+            if (item.email) {
                 app.io.emit('dangKyTuVanList-added', item);
 
                 app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
-                    console.log('result', result);
-                    let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                        mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
-                        mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
+                    let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                        mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
+                        mailHtml = result.emailDangKyTuVanHtml.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
                     app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
                 });
             }
@@ -93,7 +94,7 @@ module.exports = app => {
                                     }; 
                                     app.model.user.create(data, (error, user) => {
                                         res.send({ error, user });
-                                        if (user) {
+                                        if (user.email) {
                                             app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                                                 const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                                                     mailTitle = result.emailCreateMemberByAdminTitle,
@@ -112,8 +113,8 @@ module.exports = app => {
                     }
                     app.model.setting.get('emailPhanHoiDangKyTuVanTitle', 'emailPhanHoiDangKyTuVanText', 'emailPhanHoiDangKyTuVanHtml', result => {
                         const mailTitle = result.emailPhanHoiDangKyTuVanTitle,
-                            mailText = result.emailPhanHoiDangKyTuVanText.replaceAll('{name}', item.lastname).replaceAll('{content}', content),
-                            mailHtml = result.emailPhanHoiDangKyTuVanHtml.replaceAll('{name}', item.lastname).replaceAll('{content}', content);
+                            mailText = result.emailPhanHoiDangKyTuVanText.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{content}', content),
+                            mailHtml = result.emailPhanHoiDangKyTuVanHtml.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{content}', content);
                         app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
                             item.save(error => res.send({ error }))
                         }, (error) => {

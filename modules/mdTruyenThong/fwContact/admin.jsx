@@ -4,6 +4,7 @@ import { getContactPage, getContact, updateContact, deleteContact } from './redu
 import AdminContactModal from 'view/component/AdminContactModal';
 import Pagination from 'view/component/Pagination';
 
+
 class ContactPage extends React.Component {
     modal = React.createRef();
 
