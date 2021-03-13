@@ -9,28 +9,28 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import Loadable from 'react-loadable';
-import Loading from '../component/Loading';
-import Loader from '../component/Loader';
-import HomeMenu from '../component/HomeMenu';
-import HomeFooter from '../component/HomeFooter';
-import LoginModal from '../component/LoginModal';
-import LanguageSwitch from '../component/LanguageSwitch';
+import Loading from 'view/component/Loading';
+import Loader from 'view/component/Loader';
+import HomeMenu from 'view/component/HomeMenu';
+import HomeFooter from 'view/component/HomeFooter';
+import LoginModal from 'view/component/LoginModal';
+import LanguageSwitch from 'view/component/LanguageSwitch';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
-import _init from '../../module/_init/index';
-import fwContact from '../../module/fwContact/index';
-import fwHome from '../../module/fwHome/index';
-import fwMenu from '../../module/fwMenu/index';
-import fwUser from '../../module/fwUser/index';
-import fwForm from '../../module/fwForm/index';
-import fwNews from '../../module/fwNews/index';
-import fwCourse from '../../module/fwCourse/index';
-import fwContentList from '../../module/fwContentList/index';
-import fwAddress from '../../module/fwAddress/index';
-import fwCourseType from '../../module/fwCourseType/index';
+import _init from 'modules/_default/_init/index';
+import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwHome from 'modules/_default/fwHome/index';
+import fwMenu from 'modules/_default/fwMenu/index';
+import fwUser from 'modules/_default/fwUser/index';
+import fwForm from 'modules/_default/fwForm/index';
+import fwNews from 'modules/mdTruyenThong/fwNews/index';
+import fwCourse from 'modules/mdDaoTao/fwCourse/index';
+import fwContentList from 'modules/_default/fwContentList/index';
+import fwAddress from 'modules/mdTruyenThong/fwAddress/index';
+import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 
 const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwForm, fwNews, fwCourse, fwContentList, fwAddress, fwCourseType];
-import { getSystemState, register, login, forgotPassword, logout } from '../../module/_init/reduxSystem';
+import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {},
@@ -68,7 +68,7 @@ class App extends React.Component {
                     if (!link.startsWith('http://') && !link.startsWith('https://') && routeMapper[link] == undefined) {
                         addRoute({
                             path: link,
-                            component: Loadable({ loading: Loading, loader: () => import('../component/MenuPage') })
+                            component: Loadable({ loading: Loading, loader: () => import('view/component/MenuPage') })
                         });
                     }
                     if (currentMenu.submenus && currentMenu.submenus.length) {
@@ -107,7 +107,7 @@ class App extends React.Component {
                             {this.state.routes}
                             <Route path='**' component={Loadable({
                                 loading: Loading,
-                                loader: () => import('../component/MessagePage')
+                                loader: () => import('view/component/MessagePage')
                             })} />
                         </Switch>
                         <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
@@ -123,7 +123,7 @@ class App extends React.Component {
                             <Switch>
                                 <Route path='**' component={Loadable({
                                     loading: Loading,
-                                    loader: () => import('../component/MessagePage')
+                                    loader: () => import('view/component/MessagePage')
                                 })} />
                             </Switch>
                         </div>

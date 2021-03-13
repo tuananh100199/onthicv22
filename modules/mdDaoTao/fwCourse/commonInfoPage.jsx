@@ -4,9 +4,8 @@ import { updateCourse, getCourse } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 import { Select } from 'view/component/Input';
-import { ajaxSelectAddress } from '../fwAddress/redux';
-import { ajaxSelectCourseType } from '../fwCourseType/redux';
-
+import { ajaxSelectAddress } from 'modules/mdTruyenThong/fwAddress/redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 
 class CommonInfoPage extends React.Component {
     constructor(props) {

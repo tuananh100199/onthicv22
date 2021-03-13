@@ -2,12 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ContactModal from './AdminContactModal';
-import { getUnreadContacts, getContact } from '../../module/fwContact/redux';
-import { changeRole } from '../../module/fwRole/redux';
-import { switchUser } from '../../module/fwUser/redux';
-import { updateSystemState, logout } from '../../module/_init/reduxSystem';
+import { getUnreadContacts, getContact } from 'modules/mdTruyenThong/fwContact/redux';
+import { changeRole } from 'modules/_default/fwRole/redux';
+import { switchUser } from 'modules/_default/fwUser/redux';
+import { updateSystemState, logout } from 'modules/_default/_init/reduxSystem';
 import { Select } from './Input';
-import { ajaxSelectUser } from '../../module/fwUser/redux';
+import { ajaxSelectUser } from 'modules/_default/fwUser/redux';
 
 class DebugModal extends React.Component {
     modal = React.createRef();

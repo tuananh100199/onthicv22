@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddressByUser } from '../../module/fwAddress/redux';
+import { getAllAddressByUser } from 'modules/mdTruyenThong/fwAddress/redux';
 
 class Footer extends React.Component {
     componentDidMount() {

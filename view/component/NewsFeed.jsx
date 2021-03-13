@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getNewsFeed } from 'module/fwNews/redux';
+import { getNewsFeed } from 'modules/mdTruyenThong/fwNews/redux';
 import { Link } from 'react-router-dom';
 
 class NewsFeed extends React.Component {

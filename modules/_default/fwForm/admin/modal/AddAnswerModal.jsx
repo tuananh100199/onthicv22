@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { addAnswer, searchUserFromSystem } from '../../reduxAnswer';
-import { createUser, updateUser } from '../../../fwUser/redux';
+import { createUser, updateUser } from 'modules/_default/fwUser/redux';
 import AdminRegisterElement from './AdminRegisterElement';
 
 class AddAnswerModal extends React.Component {

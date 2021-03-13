@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateSystemState } from '../../module/_init/reduxSystem';
+import { updateSystemState } from 'modules/_default/_init/reduxSystem';
 
 class LanguageSwitch extends React.Component {
     render() {

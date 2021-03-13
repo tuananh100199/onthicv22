@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem } from './redux/reduxDangKyTuVanList';
-import Editor from '../../view/component/CkEditor4.jsx';
-import Pagination from 'view/component/Pagination';
+import { getDKTVListPage,getDKTVListItem, updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem} from './redux/reduxDangKyTuVanList.jsx';
+import Editor from 'view/component/CkEditor4.jsx';
+import { Link } from 'react-router-dom';
+
 
 class AdminDangKyTuVanModal extends React.Component {
     state = {};
@@ -29,7 +30,7 @@ class AdminDangKyTuVanModal extends React.Component {
         }
     }
     render() {
-        const { lastname, firstname, email, phone, courseType} = this.state;
+        const { lastname, firstname, email, phone } = this.state;
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
                 <div className='modal-dialog modal-lg' role='document'>
@@ -42,9 +43,8 @@ class AdminDangKyTuVanModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <label>Tên người dùng: <b>{lastname} {firstname}</b></label><br />
+                            <label>Email: <b>{email}</b></label><br />
                             <label>Số điện thoại: <b>{phone}</b></label><br />
-                            <label>Loại khóa học: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label><br />
-                            <label>Email: <b>{email ? email : 'Chưa đăng ký'}</b></label><br />
                             <h6 style={{ marginTop: 20 }}>Phản hồi đăng ký tư vấn</h6>
                             <div className='form-group'>
                                 <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
@@ -62,50 +62,56 @@ class AdminDangKyTuVanModal extends React.Component {
         );
     }
 }
-
-class DKTVListPage extends React.Component {
+class DangKyTuVanListPage extends React.Component {
     modal = React.createRef();
+    editor = React.createRef();
+    state = {};
+
+
 
     componentDidMount() {
-        this.props.getDKTVListPage();
-        T.ready('/user/dang-ky-tu-van-list');
+        T.ready('/user/dang-ky-tu-van-list', () => {
+            const route = T.routeMatcher('/user/dang-ky-tu-van-list/edit/:DKTVListId'),
+                params = route.parse(window.location.pathname);
+            this.props.getDKTVListPage(params.DKTVListId);
+            this.setState({ DKTVListId: params.DKTVListId });
+
+        });
     }
 
-    showDKTVListItem = (e, DKTVListItemId) => {
+
+    showDKTVListItem = (e, DKTVListId) => {
         e.preventDefault();
-        this.props.getDKTVListItem(DKTVListItemId, DKTVListItem => this.modal.current.show(DKTVListItem));
+        this.props.getDKTVListItem(DKTVListId, DKTVList => this.modal.current.show(DKTVList));
+    }
+
+    delete = (e, DKTVListId, item) => {
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(DKTVListId, item._id));
+        e.preventDefault();
     }
 
     changeRead = (item) => this.props.updateDKTVList(item._id, { read: !item.read });
 
-    delete = (e, item) => {
-        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(item._id));
-        e.preventDefault();
-    }
-
     render() {
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVanList && this.props.dangKyTuVanList.page ?
-            this.props.dangKyTuVanList.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
-        let table = 'Không có đăng ký tư vấn!';
+        let table = 'Không có danh sách đăng ký tư vấn!';
         if (this.props.dangKyTuVanList && this.props.dangKyTuVanList.page && this.props.dangKyTuVanList.page.list && this.props.dangKyTuVanList.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '20%' }}>Họ & Tên</th>
+                            <th style={{ width: '40%' }}>Tên</th>
                             <th style={{ width: '20%' }}>Số điện thoại</th>
-                            <th style={{ width: '30%' }}>Email</th>
-                            <th style={{ width: '30%' }}>Loại khóa học</th>
+                            <th style={{ width: '40%' }}>Email</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         {this.props.dangKyTuVanList.page.list.map((item, index) => (
                             <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
+                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     <a href='#' onClick={e => this.showDKTVListItem(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
                                     <br />
@@ -113,13 +119,12 @@ class DKTVListPage extends React.Component {
                                 </td>
                                 <td>{item.phone}</td>
                                 <td>{item.email}</td>
-                                <td>{item.courseType? item.courseType.title : 'Chưa đăng ký'}</td>
                                 <td>
                                     <div className='btn-group'>
                                         <a className='btn btn-primary' href='#' onClick={e => this.showDKTVListItem(e, item._id)}>
-                                            <i className='fa fa-lg fa-envelope-open-o' />
+                                            <i className='fa fa-paper-plane' />
                                         </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, this.state.DKTVListId, item)}>
                                             <i className='fa fa-lg fa-trash' />
                                         </a>
                                     </div>
@@ -136,15 +141,16 @@ class DKTVListPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
                 </div>
-                <div className='tile'>{table}</div>
-                <Pagination name='pageDKTVList' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getDKTVListPage} />
-                <AdminDangKyTuVanModal ref={this.modal} />
+                <div className='row tile'>{table}</div>
+                <AdminDangKyTuVanModal ref={this.modal} phanHoiDKTVListItem={this.props.phanHoiDKTVListItem}/>
+                <Link to='/user/dang-ky-tu-van-list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
-const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem };
-export default connect(mapStateToProps, mapActionsToProps)(DKTVListPage);
+const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, phanHoiDKTVListItem };
+export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanListPage);

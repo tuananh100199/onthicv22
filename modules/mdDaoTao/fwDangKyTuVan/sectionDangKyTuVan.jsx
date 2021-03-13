@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createDKTVListItem } from '../redux/reduxDangKyTuVanList';
+import { createDKTVListItem } from './redux/reduxDangKyTuVanList';
 import { getDangKyTuVanByUser } from './redux/reduxDangKyTuVan';
 import { getAllCourseType } from '../fwCourseType/redux';
 class SectionDangKyTuVan extends React.Component {

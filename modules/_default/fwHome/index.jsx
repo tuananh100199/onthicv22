@@ -22,6 +22,10 @@ import SectionTestimony from './sectionTestimony';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
 import SectionSubscribe from './sectionSubscribe';
+<<<<<<< HEAD:module/fwHome/index.jsx
+=======
+
+>>>>>>> 331359271971f1361fa87078a762fee7cc9f0c94:modules/_default/fwHome/index.jsx
 export default {
     redux: {
         carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList, subscribe
