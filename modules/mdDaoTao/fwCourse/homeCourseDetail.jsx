@@ -1,13 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from 'view/js/common';
 import { getCourseByUser } from './redux';
 
 class CourseDetail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { language: '' };
-    }
+    state = { language: '' };
 
     componentDidMount() {
         let url = window.location.pathname,

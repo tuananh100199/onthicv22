@@ -1,15 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from 'view/js/common';
 import { getNewsByUser } from './redux';
 import NewsFeed from 'view/component/NewsFeed';
 
 class NewsDetail extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { language: '' };
-        this.background = React.createRef();
-    }
+    state = {};
+    background = React.createRef();
 
     componentDidMount() {
         let url = window.location.pathname,

@@ -166,8 +166,6 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'last news') {
                 mainStyle.backgroundColor = '#d7ccc8';
                 component.viewName = '';
-            } else if (component.viewType == 'event') {
-                mainStyle.backgroundColor = '#ef9a9a';
             } else if (component.viewType == 'list video') {
                 mainStyle.backgroundColor = '#ef9a9b';
             } else if (component.viewType == 'all courses') {
@@ -179,7 +177,7 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'contentList') {
                 mainStyle.backgroundColor = '#fb6094';
                 component.viewName = '';
-            } else if (component.viewType == 'all courseType') {
+            } else if (component.viewType == 'all course types') {
                 mainStyle.backgroundColor = '#fb3553';
                 component.viewName = '';
             }

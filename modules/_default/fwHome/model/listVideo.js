@@ -3,7 +3,6 @@ module.exports = app => {
         title: String,
         height: { type: Number, default: 255 }
     });
-
     const model = app.db.model('ListVideo', schema);
 
     app.model.listVideo = {
@@ -31,12 +30,11 @@ module.exports = app => {
             } else {
                 app.model.video.getAll({ listVideoId: videoList._id }, (error, items) => {
                     if (!error && items && items.length) {
-                        items.forEach(item => app.model.video.delete(item._id, () => {}))
+                        items.forEach(item => app.model.video.delete(item._id, () => { }))
                     }
-                })
+                });
                 videoList.remove(done);
             }
         }),
-
     };
 };

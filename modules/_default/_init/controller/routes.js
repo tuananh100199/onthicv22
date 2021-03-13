@@ -226,7 +226,7 @@ module.exports = (app) => {
 
                                 if (component.viewType && component.viewId) {
                                     const viewType = component.viewType;
-                                    if (component.viewId && (viewType == 'carousel' || viewType == 'content' || viewType == 'event')) {
+                                    if (component.viewId && (viewType == 'carousel' || viewType == 'content')) {
                                         app.model[viewType].get(component.viewId, (error, item) => getNextComponent(item));
                                     } else {
                                         getNextComponent();

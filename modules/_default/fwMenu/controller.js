@@ -95,13 +95,13 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'event', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'listVideo', 'contentList', 'dangKyTuVan'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list videos', 'contentList', 'dangKyTuVan'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
                             app.model.staffGroup.get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
-                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all courseType'].indexOf(viewType) != -1) {
+                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all course types'].indexOf(viewType) != -1) {
                             getNextComponent(viewType);
                         } else {
                             getNextComponent('<empty>');
@@ -263,7 +263,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-        } 
+        }
         else if (pageType == 'dangKyTuVan') {
             app.model.dangKyTuVan.getAll((error, items) => {
                 res.send({
@@ -279,13 +279,6 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-        } else if (pageType == 'event') {
-            app.model.event.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
         } else if (pageType == 'statistic') {
             app.model.statistic.getAll((error, items) => {
                 res.send({
@@ -293,7 +286,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-        } else if (pageType == 'listVideo') {
+        } else if (pageType == 'list videos') {
             app.model.listVideo.getAll((error, items) => {
                 res.send({
                     error,

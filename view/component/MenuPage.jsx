@@ -42,7 +42,7 @@ export default class MenuPage extends React.Component {
             else if (item.viewType == 'dangKyTuVan') {
                 itemView = <fwDangKyTuVan.Section.SectionDangKyTuVan dangKyTuVanId={item.viewId} />;
             }
-            else if (item.viewType == 'listVideo') {
+            else if (item.viewType == 'list videos') {
                 itemView = <fwHome.Section.SectionListVideo listVideoId={item.viewId} />;
             } else if (item.viewType == 'contentList') {
                 itemView = <fwContentList.Section.SectionContent listContentId={item.viewId} />;
@@ -68,8 +68,8 @@ export default class MenuPage extends React.Component {
                 itemView = <fwHome.Section.SectionSubscribe />;
             } else if (item.viewType == 'content' && item.view) {
                 itemView = <div style={{ marginTop: '110px' }} dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
-            } else if (item.viewType == 'all courseType') {
-                itemView = <fwCourseType.Section.SectionCTypeList />;
+            } else if (item.viewType == 'all course types') {
+                itemView = <fwCourseType.Section.SectionCourseTypeList />;
             }
 
             let childComponents = [];
