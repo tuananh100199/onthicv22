@@ -5,7 +5,7 @@ module.exports = app => {
             9030: { title: 'Đăng ký nhận tin', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:write' }, { name: 'subscribe:delete' });
+    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:delete' });
 
     app.get('/user/subscribe', app.permission.check('subscribe:read'), app.templates.admin);
 
@@ -23,7 +23,7 @@ module.exports = app => {
 
     app.get('/api/subscribe/unread', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.getUnread((error, items) => res.send({ error, items })));
 
-    app.get('/api/subscribe/item/:_id', app.permission.check('subscribe:write'), (req, res) => app.model.subscribe.read(req.params._id, (error, item) => {
+    app.get('/api/subscribe/item/:_id', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.read(req.params._id, (error, item) => {
         if (item) app.io.emit('subscribe-changed', item);
         res.send({ error, item });
     }));

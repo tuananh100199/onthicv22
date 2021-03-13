@@ -37,6 +37,7 @@ class AdminSubscribeModal extends React.Component {
         );
     }
 }
+
 class SubscribePage extends React.Component {
     modal = React.createRef();
 
@@ -58,6 +59,9 @@ class SubscribePage extends React.Component {
     }
 
     render() {
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            permissionRead = currentPermissions.contains('subscribe:read'),
+            permissionDelete = currentPermissions.contains('subscribe:delete');
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subscribe && this.props.subscribe.page ?
             this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
@@ -71,7 +75,7 @@ class SubscribePage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '70%' }}>Email</th>
                             <th style={{ width: '30%' }}>Ngày đăng ký</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            {permissionRead || permissionDelete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
                     <tbody>
@@ -79,19 +83,22 @@ class SubscribePage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <a href='#' onClick={e => this.showSubscribe(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.email}</a>
+                                    <a href='#' onClick={e => permissionRead && this.showSubscribe(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.email}</a>
                                 </td>
-                                <td>{new Date(item.createdDate).getText()}</td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.showSubscribe(e, item._id)}>
-                                            <i className='fa fa-lg fa-envelope-open-o' />
-                                        </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
-                                    </div>
-                                </td>
+                                <td nowrap='true'>{new Date(item.createdDate).getText()}</td>
+                                {permissionRead || permissionDelete ?
+                                    <td>
+                                        <div className='btn-group'>
+                                            {permissionRead ?
+                                                <a className='btn btn-primary' href='#' onClick={e => this.showSubscribe(e, item._id)}>
+                                                    <i className='fa fa-lg fa-envelope-open-o' />
+                                                </a> : null}
+                                            {permissionDelete ?
+                                                <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                                    <i className='fa fa-lg fa-trash' />
+                                                </a> : null}
+                                        </div>
+                                    </td> : null}
                             </tr>
                         ))}
                     </tbody>
