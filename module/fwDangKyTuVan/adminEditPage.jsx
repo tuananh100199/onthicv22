@@ -5,7 +5,6 @@ import { getAllCourseType } from '../fwCourseType/redux.jsx';
 import { Link } from 'react-router-dom';
 import Editor from '../../view/component/CkEditor4.jsx';
 
-
 class DangKyTuVanModal extends React.Component {
     constructor(props) {
         super(props);
@@ -298,9 +297,6 @@ class DangKyTuVanEditPage extends React.Component {
                                     <div className='col-md-12' style={{ textAlign: 'right' }}>
                                         <button className='btn btn-info' type='button' onClick={this.showAddDKTVModal}>
                                             <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
-                                    </button>&nbsp;
-                                    <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-save' />Lưu
                                     </button>
                                     </div>
                                 </div>
@@ -308,9 +304,13 @@ class DangKyTuVanEditPage extends React.Component {
                         }
                     </div>
                 </div>
-                <Link to='/user/dang-ky-tu-van' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
+                <Link to='/user/dang-ky-tu-van' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
+                
+                <button className='btn btn-circle btn-primary' type='button' onClick={this.save} style={{ position: 'fixed', bottom: '10px', right: '10px' }}>
+                    <i className='fa fa-lg fa-save' />
+                </button>
 
                 <DangKyTuVanModal ref={this.modal} addDKTV={this.add} updateDKTV={this.update} />
             </main>

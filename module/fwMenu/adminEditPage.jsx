@@ -154,11 +154,9 @@ class MenuEditPage extends React.Component {
             } else if (component.viewType == 'contact') {
                 mainStyle.backgroundColor = '#c8e6f9';
                 component.viewName = '';
-            }
-             else if (component.viewType == 'dangKyTuVan') {
+            } else if (component.viewType == 'dangKyTuVan') {
                 mainStyle.backgroundColor = '#c8e6f9';
-            }
-             else if (component.viewType == 'subscribe') {
+            } else if (component.viewType == 'subscribe') {
                 mainStyle.backgroundColor = '#c8e6c9';
                 component.viewName = '';
             } else if (component.viewType == 'staff group') {
@@ -244,7 +242,7 @@ class MenuEditPage extends React.Component {
                                     <div className='row'>
                                         <div className='col-md-12' style={{ textAlign: 'right' }}>
                                             <button className='btn btn-primary' type='button' onClick={this.save}>
-                                                <i className='fa fa-fw fa-lg fa-check-circle'></i>Lưu
+                                                <i className='fa fa-fw fa-lg fa-check-circle'/>Lưu
                                         </button>
                                         </div>
                                     </div>

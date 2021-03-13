@@ -78,7 +78,7 @@ class Footer extends React.Component {
                                                                 cursor: 'pointer',
                                                             }}
                                                             onClick={() => window.open(item.mapURL, '_blank')}>
-                                                            <span style={{ position: 'fixed', bottom: '10px', left: '10px', color: '#4CA758', fontWeight: 'bold' }}>{item.title + ': ' + item.address}</span>
+                                                            <span className='carousel-footer-title' style={{ position: 'fixed', bottom: '10px', left: '10px', color: '#4CA758', fontWeight: 'bold' }}>{item.title + ': ' + item.address}</span>
                                                         </div>))}
                                             </div>
                                             <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>

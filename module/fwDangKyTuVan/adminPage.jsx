@@ -91,7 +91,6 @@ class DangKyTuVanPage extends React.Component {
 
     componentDidMount() {
         this.props.getAllDangKyTuVan();
-        $('#neNewsCategories').select2();
     }
 
     create = (e) => {
@@ -104,13 +103,12 @@ class DangKyTuVanPage extends React.Component {
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa nhóm thống kê', 'Bạn có chắc bạn muốn xóa nhóm thống kê này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
+        T.confirm('Xóa đăng ký tư vấn', 'Bạn có chắc bạn muốn xóa đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
         e.preventDefault();
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ? this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = null;
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
@@ -148,7 +146,7 @@ class DangKyTuVanPage extends React.Component {
                 </table>
             );
         } else {
-            table = <p key={0}>Không có nhóm thống kê!</p>;
+            table = <p key={0}>Không có đăng ký tư vấn nào!</p>;
         }
 
         const result = [table, <DangKyTuVanModal key={1} createDangKyTuVan={this.props.createDangKyTuVan} showDangKyTuVan={this.show} ref={this.modal} />];

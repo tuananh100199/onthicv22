@@ -305,6 +305,13 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
+        } else if (pageType == 'dangKyTuVan') {
+            app.model.dangKyTuVan.getAll((error, items) => {
+                res.send({
+                    error,
+                    items: items.map(item => ({ _id: item._id, text: item.title }))
+                })
+            });
         } else {
             res.send({ error: 'Lỗi!' });
         }
