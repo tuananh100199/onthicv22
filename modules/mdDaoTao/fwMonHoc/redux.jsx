@@ -75,7 +75,7 @@ export function updateMonHoc(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin môn học thành công!', 'info');
+                T.notify('Cập nhật thông tin môn học thành công!', 'success');
                 dispatch(getMonHocInPage());
                 done && done();
             }

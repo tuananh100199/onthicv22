@@ -4,6 +4,7 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         lesson: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
+        feedbackQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'FeedbackQuestion' }], default: [] },
     });
     const model = app.db.model('Subject', schema);
 
@@ -37,7 +38,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lesson', '_id title');
+                if (populate) result.populate('lesson', '_id title').populate('feedbackQuestion');
                 result.exec(done);
             };
 
@@ -66,6 +67,10 @@ module.exports = app => {
 
         addLesson: (condition, lessonId, done) => {
             model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
+        },
+
+        pushFeedbackQuestion: (condition, feedbackQuestionId, feedbackQuestionTitle, feedbackQuestionContent, feedbackQuestionActive, done) => {
+            model.findOneAndUpdate(condition, { $push: { feedbackQuestion: { _id: feedbackQuestionId, title: feedbackQuestionTitle, content: feedbackQuestionContent, active: feedbackQuestionActive } } }, { new: true }).select('_id feedbackQuestion').populate('feedbackQuestion').exec(done);
         },
 
         deleteLesson: (condition, lessonId, done) => {

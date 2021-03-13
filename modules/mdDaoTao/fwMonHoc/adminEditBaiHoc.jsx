@@ -18,7 +18,7 @@ class AddLessonModal extends React.Component {
     addLesson = () => {
         const lessonId = this.lessonSelect.current.val();
         this.props.addLesson(this.props.monhocId, lessonId, () => {
-            T.notify('Thêm bài học thành công!', 'info');
+            T.notify('Thêm bài học thành công!', 'success');
             $(this.modal.current).modal('hide');
         });
     }
@@ -96,11 +96,11 @@ class AdminEditListBaiHoc extends React.Component {
     swap = (e, index, monHocId, isMoveUp) => {
         let lessonList = this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson ? this.props.subject.listbaihoc.lesson : [];
         if (lessonList.length == 1) {
-            T.notify('Thay đổi thứ tự bài học thành công', 'info');
+            T.notify('Thay đổi thứ tự bài học thành công', 'success');
         } else {
             if (isMoveUp) {
                 if (index == 0) {
-                    T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
                 } else {
                     const temp = lessonList[index - 1], changes = {};
 
@@ -109,12 +109,12 @@ class AdminEditListBaiHoc extends React.Component {
 
                     changes.lesson = lessonList;
                     this.props.swapLesson(monHocId, changes, () => {
-                        T.notify('Thay đổi thứ tự môn học thành công', 'info');
+                        T.notify('Thay đổi thứ tự môn học thành công', 'success');
                     });
                 }
             } else {
                 if (index == lessonList.length - 1) {
-                    T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
                 } else {
                     const temp = lessonList[index + 1], changes = {};
 
@@ -123,7 +123,7 @@ class AdminEditListBaiHoc extends React.Component {
 
                     changes.lesson = lessonList;
                     this.props.swapLesson(monHocId, changes, () => {
-                        T.notify('Thay đổi thứ tự bài học thành công', 'info');
+                        T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
             }

@@ -4,6 +4,7 @@ import { getMonHoc } from './redux';
 import { Link } from 'react-router-dom';
 import AdminEditInfo from './adminEditInfo';
 import AdminEditBaiHoc from './adminEditBaiHoc';
+import AdminEditCauHoi from './adminEditCauHoi';
 
 
 class EditPage extends React.Component {
@@ -48,10 +49,12 @@ class EditPage extends React.Component {
                 <ul className='nav nav-tabs'>
                     <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#common'>Thông tin chung</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#lesson'>Bài học</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#question'>Câu hỏi</a></li>
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='common'><AdminEditInfo history={this.props.history} /></div>
                     <div className='tab-pane fade' id='lesson'><AdminEditBaiHoc history={this.props.history} /></div>
+                    <div className='tab-pane fade' id='question'><AdminEditCauHoi history={this.props.history} /></div>
                 </div>
             </main>
         );
