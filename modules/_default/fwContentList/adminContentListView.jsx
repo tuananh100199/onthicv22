@@ -4,10 +4,7 @@ import { getAllContentList, createContentList, deleteContentList } from './redux
 import { Link } from 'react-router-dom';
 
 class ContentListModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
@@ -68,10 +65,7 @@ class ContentListModal extends React.Component {
     }
 }
 class ContentListPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         this.props.getAllContentList();
