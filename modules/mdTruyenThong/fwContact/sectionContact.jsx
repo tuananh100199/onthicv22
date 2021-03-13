@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux';
-import { getAllAddressByUser } from '../fwAddress/redux';
+import { getAllAddressByUser } from '../../mdDaoTao/fwAddress/redux';
 
 class SectionContact extends React.Component {
     constructor(props) {
@@ -13,10 +13,8 @@ class SectionContact extends React.Component {
         this.message = React.createRef();
     }
     componentDidMount() {
-        // this.props.getAllAddressByUser(() => {
         T.ftcoAnimate();
         $(this.background.current).parallax()
-        // });
     }
 
     componentWillUnmount() {

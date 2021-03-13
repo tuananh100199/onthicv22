@@ -27,7 +27,7 @@ import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwContentList from 'modules/_default/fwContentList/index';
-import fwAddress from 'modules/mdTruyenThong/fwAddress/index';
+import fwAddress from 'modules/mdDaoTao/fwAddress/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 
 const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwForm, fwNews, fwCourse, fwContentList, fwAddress, fwCourseType];

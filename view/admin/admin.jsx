@@ -35,7 +35,7 @@ import fwEmail from 'modules/_default/fwEmail/index';
 import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwContentList from 'modules/_default/fwContentList/index';
-import fwAddress from 'modules/mdTruyenThong/fwAddress/index';
+import fwAddress from 'modules/mdDaoTao/fwAddress/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwCluster from 'modules/_default/fwCluster/index';
