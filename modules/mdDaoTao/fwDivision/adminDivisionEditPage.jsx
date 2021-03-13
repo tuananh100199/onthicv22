@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAddressItem, updateAddress } from './redux';
+import { getDivisionItem, updateDivision } from './redux';
 import ImageBox from 'view/component/ImageBox';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
-class AddressEditPage extends React.Component {
+class DivisionEditPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = { item: {} };
@@ -13,9 +13,9 @@ class AddressEditPage extends React.Component {
         this.imageBox = React.createRef();
     }
     componentDidMount() {
-        T.ready('/user/settings', () => {
-            const route = T.routeMatcher('/user/address/edit/:addressId'), params = route.parse(window.location.pathname);
-            this.props.getAddressItem(params.addressId, data => {
+        T.ready(() => {
+            const route = T.routeMatcher('/user/division/edit/:_id'), params = route.parse(window.location.pathname);
+            this.props.getDivisionItem(params._id, data => {
                 if (data.item) {
                     this.setState({ item: data.item });
                     let { _id, title, address, mobile, phoneNumber, email, image, mapURL, shortDescription, detailDescription } = data.item;
@@ -27,9 +27,9 @@ class AddressEditPage extends React.Component {
                     $('#mapURL').val(mapURL);
                     $('#shortDescription').val(shortDescription);
                     this.editor.current.html(detailDescription);
-                    this.imageBox.current.setData('address:' + (_id || 'new'), image ? image : '/img/avatar.png');
+                    this.imageBox.current.setData('division:' + (_id || 'new'), image ? image : '/img/avatar.png');
                 } else {
-                    this.props.history.push('/user/address/all');
+                    this.props.history.push('/user/division');
                 }
             });
         });
@@ -71,7 +71,7 @@ class AddressEditPage extends React.Component {
             T.notify('Địa chỉ bị trống!', 'danger');
             $('#address').focus();
         } else {
-            this.props.updateAddress(this.state.item._id, changes, () => T.notify('Cập nhật cơ sở thành công!', 'success'))
+            this.props.updateDivision(this.state.item._id, changes, () => T.notify('Cập nhật cơ sở thành công!', 'success'))
         }
     }
 
@@ -79,18 +79,16 @@ class AddressEditPage extends React.Component {
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-bar-chart' /> Cơ sở: Chỉnh sửa</h1>
-                    </div>
+                    <h1><i className='fa fa-university' /> Cơ sở: Chỉnh sửa</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
-                        <Link to='/user/address/all'>Cơ sở</Link>&nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user/division'>Cơ sở</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung
-                        <span className=' control-label toggle' style={{ float: 'right', marginRight: '10px' }}>
-                            <h5>Cơ sở ngoài&nbsp;&nbsp;
+                        <span className='control-label toggle' style={{ float: 'right', marginRight: '10px' }}>
+                            <h5>Cơ sở ngoài:&nbsp;&nbsp;
                                 <label>
                                     <input type='checkbox' checked={this.state.item ? this.state.item.isOutside : 0} onChange={(e) => this.changeActive(e)} />
                                     <span className='button-indecator' />
@@ -102,7 +100,7 @@ class AddressEditPage extends React.Component {
                         <div className='col-md-3 order-md-12'>
                             <div className='form-group'>
                                 <label className='control-label'>Hình đại diện</label>
-                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='AddressImage' />
+                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='DivisionImage' />
                             </div>
                         </div>
 
@@ -154,7 +152,7 @@ class AddressEditPage extends React.Component {
                     </div>
                 </div>
 
-                <Link to='/user/address/all' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+                <Link to='/user/division' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
@@ -164,6 +162,6 @@ class AddressEditPage extends React.Component {
         );
     }
 }
-const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { updateAddress, getAddressItem };
-export default connect(mapStateToProps, mapActionsToProps)(AddressEditPage);
+const mapStateToProps = state => ({ system: state.system, division: state.division });
+const mapActionsToProps = { updateDivision, getDivisionItem };
+export default connect(mapStateToProps, mapActionsToProps)(DivisionEditPage);

@@ -123,7 +123,7 @@ class StatisticEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             const route = T.routeMatcher('/user/statistic/edit/:statisticId'),
                 params = route.parse(window.location.pathname);
 

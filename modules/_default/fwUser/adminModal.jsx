@@ -247,38 +247,32 @@ export class UserModal extends React.Component {
                                     <div className='form-group row'>
                                         <div className='col-12 col-sm-8'>
                                             <label htmlFor='userLastname'>Họ người dùng</label>
-                                            <input className='form-control' id='userLastname' type='text'
-                                                placeholder='Họ người dùng' readOnly={!hasUpdate} />
+                                            <input className='form-control' id='userLastname' type='text' placeholder='Họ người dùng' readOnly={!hasUpdate} />
                                         </div>
                                         <div className='col-12 col-sm-4'>
                                             <label htmlFor='userFirstname'>Tên người dùng</label>
-                                            <input className='form-control' id='userFirstname' type='text'
-                                                placeholder='Tên người dùng' readOnly={!hasUpdate} />
+                                            <input className='form-control' id='userFirstname' type='text' placeholder='Tên người dùng' readOnly={!hasUpdate} />
                                         </div>
                                     </div>
                                     <div className='form-group'>
                                         <label htmlFor='userEmail'>Email người dùng</label>
-                                        <input className='form-control' id='userEmail' type='email'
-                                            placeholder='Email người dùng' readOnly={!hasUpdate} />
+                                        <input className='form-control' id='userEmail' type='email' placeholder='Email người dùng' readOnly={!hasUpdate} />
                                     </div>
                                     <div className='form-group row'>
                                         <div className='col-12 col-sm-6'>
                                             <label htmlFor='userBirthday'>Ngày sinh</label>
-                                            <input className='form-control' id='userBirthday' type='text'
-                                                placeholder='Ngày sinh' readOnly={!hasUpdate} />
+                                            <input className='form-control' id='userBirthday' type='text' placeholder='Ngày sinh' readOnly={!hasUpdate} />
                                         </div>
                                         <div className='col-12 col-sm-6'>
                                             <label htmlFor='userPhoneNumber'>Số điện thoại</label>
-                                            <input className='form-control' id='userPhoneNumber' type='text'
-                                                placeholder='Số điện thoại' readOnly={!hasUpdate} />
+                                            <input className='form-control' id='userPhoneNumber' type='text' placeholder='Số điện thoại' readOnly={!hasUpdate} />
                                         </div>
                                     </div>
                                 </div>
                                 <div className='col-md-4 col-12'>
                                     <div className='form-group'>
                                         <label>Hình đại diện</label>
-                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='UserImage'
-                                            userData='user' readOnly={!hasUpdate} image={this.state.image} />
+                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='UserImage' userData='user' readOnly={!hasUpdate} image={this.state.image} />
                                     </div>
                                     <div className='form-group' style={{ display: 'inline-flex', width: '100%' }}>
                                         <label>Giới tính: </label>&nbsp;&nbsp;
@@ -288,8 +282,7 @@ export class UserModal extends React.Component {
                                 <div className='col-12 row'>
                                     <div className='col-12 col-md-8 form-group'>
                                         <label htmlFor='userRoles' className='control-label'>Vai trò</label><br />
-                                        <select className='form-control' id='userRoles' multiple={true} disabled={!hasUpdate}
-                                            defaultValue={[]}>
+                                        <select className='form-control' id='userRoles' multiple={true} disabled={!hasUpdate} defaultValue={[]}>
                                             <optgroup label='Lựa chọn Vai trò' />
                                         </select>
                                     </div>
@@ -298,8 +291,7 @@ export class UserModal extends React.Component {
                                             <label htmlFor='isLecture' className='control-label'> Giáo Viên: </label>&nbsp;&nbsp;
                                             <div className='toggle'>
                                                 <label>
-                                                    <input type='checkbox' id='isLecture' disabled={!hasUpdate} onChange={() => {
-                                                    }} /><span className='button-indecator' />
+                                                    <input type='checkbox' id='isLecture' disabled={!hasUpdate} onChange={() => { }} /><span className='button-indecator' />
                                                 </label>
                                             </div>
                                         </div>
@@ -311,8 +303,7 @@ export class UserModal extends React.Component {
                                             <label htmlFor='userActive'>Kích hoạt: </label>&nbsp;&nbsp;
                                                 <div className='toggle'>
                                                 <label>
-                                                    <input type='checkbox' id='userActive' disabled={!hasUpdate} onChange={() => {
-                                                    }} /><span className='button-indecator' />
+                                                    <input type='checkbox' id='userActive' disabled={!hasUpdate} onChange={() => { }} /><span className='button-indecator' />
                                                 </label>
                                             </div>
                                         </div>

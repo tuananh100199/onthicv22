@@ -103,14 +103,11 @@ class VideoModal extends React.Component {
 }
 
 class ListVideoEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: {}, items: [] };
-        this.modal = React.createRef();
-    }
+    state = { item: {}, items: [] };
+    modal = React.createRef();
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             const route = T.routeMatcher('/user/list-video/edit/:listVideoId'), params = route.parse(window.location.pathname);
             this.props.getListVideoItem(params.listVideoId, data => {
                 if (data.error) {

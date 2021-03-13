@@ -11,15 +11,15 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String
     });
-    const model = app.db.model('Address', schema);
+    const model = app.db.model('Division', schema);
 
-    app.model.address = {
+    app.model.division = {
         create: (data, done) => model.find({}).sort({ title: 1 }).limit(1).exec(() => {
             model.create(data, (error, item) => {
                 if (error) {
                     done(error);
                 } else {
-                    item.image = '/img/address/' + item._id + '.jpg';
+                    item.image = `/img/division/${item._id}.jpg`;
                     const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                         destPath = app.path.join(app.publicPath, item.image);
                     app.fs.copyFile(srcPath, destPath, error => {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddressByUser } from 'modules/mdDaoTao/fwAddress/redux';
+import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 
 class Footer extends React.Component {
     componentDidMount() {
-        this.props.getAllAddressByUser();
+        this.props.getAllDivisionByUser();
     }
 
     render() {
@@ -122,5 +122,5 @@ class Footer extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllAddressByUser };
+const mapActionsToProps = { getAllDivisionByUser };
 export default connect(mapStateToProps, mapActionsToProps)(Footer);

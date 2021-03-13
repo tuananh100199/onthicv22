@@ -29,7 +29,7 @@ class NewsFeed extends React.Component {
                                     <h6 className='heading pb-0 mb-0'>
                                         <Link to={link} style={{ color: '#4CA758' }}>{item.title}</Link>
                                     </h6>
-                                    <div className="contact_content_text">
+                                    <div className='contact_content_text'>
                                         <p className='text-justify' >{item.abstract}</p>
                                     </div>
                                 </div>

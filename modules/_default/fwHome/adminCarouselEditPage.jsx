@@ -113,7 +113,7 @@ class CarouselEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             $('#crsTitle').focus();
 
             const route = T.routeMatcher('/user/carousel/edit/:carouselId'),

@@ -87,10 +87,7 @@ class RoleModal extends React.Component {
 }
 
 class Select2 extends React.Component {
-    constructor(props) {
-        super(props);
-        this.select = React.createRef();
-    }
+    select = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
@@ -121,14 +118,11 @@ class Select2 extends React.Component {
 }
 
 class RolePage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.roleModal = React.createRef();
-    }
+    roleModal = React.createRef();
 
     componentDidMount() {
         this.props.getRolePage();
-        T.ready('/user/settings');
+        T.ready();
     }
 
     createRole = (e) => {

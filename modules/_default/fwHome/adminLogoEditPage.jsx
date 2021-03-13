@@ -138,13 +138,10 @@ class LogoModal extends React.Component {
 }
 
 class LogoEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             const route = T.routeMatcher('/user/logo/edit/:logoId'),
                 params = route.parse(window.location.pathname);
 

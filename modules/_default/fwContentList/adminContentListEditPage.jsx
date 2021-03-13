@@ -88,7 +88,7 @@ class ListContentEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
             this.props.getContentListItem(params.listContentId, data => {
                 if (data.item) {

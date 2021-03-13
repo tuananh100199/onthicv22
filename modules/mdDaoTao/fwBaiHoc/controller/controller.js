@@ -1,8 +1,8 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
+        parentMenu: app.parentMenu.trainning,
         menus: {
-            8030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc/list' },
+            4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc/list' },
         },
     };
     app.permission.add({ name: 'baihoc:read', menu }, { name: 'baihoc:write', menu });

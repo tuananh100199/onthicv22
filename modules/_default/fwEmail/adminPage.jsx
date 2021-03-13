@@ -3,11 +3,8 @@ import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem';
 import Editor from 'view/component/CkEditor4';
 
 class EmailItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.title = React.createRef();
-        this.editor = React.createRef();
-    }
+    title = React.createRef();
+    editor = React.createRef();
 
     set(title, text, html) {
         this.title.current.value = title;
@@ -53,11 +50,10 @@ export default class EmailPage extends React.Component {
         this.emailTuChoiDonDeNghiHoc = React.createRef();
         this.emailDangKyTuVan = React.createRef();
         this.emailPhanHoiDangKyTuVan = React.createRef();
-
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             getSystemEmails(data => {
                 this.emailRegisterMember.current.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
                 this.emailCreateMemberByAdmin.current.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);
@@ -67,8 +63,6 @@ export default class EmailPage extends React.Component {
                 this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
                 this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
                 this.emailPhanHoiDangKyTuVan.current.set(data.emailPhanHoiDangKyTuVanTitle, data.emailPhanHoiDangKyTuVanText, data.emailPhanHoiDangKyTuVanHtml);
-
-
             });
         });
     }

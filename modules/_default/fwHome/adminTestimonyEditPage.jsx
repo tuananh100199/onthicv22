@@ -153,13 +153,10 @@ class TestimonyModal extends React.Component {
 }
 
 class TestimonyEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             const route = T.routeMatcher('/user/testimony/edit/:testimonyId'),
                 params = route.parse(window.location.pathname);
 

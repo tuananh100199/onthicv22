@@ -1,19 +1,19 @@
 module.exports = (app) => {
     const menu = {
-        parentMenu: { index: 8000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
+        parentMenu: app.parentMenu.trainning,
         menus: {
-            8010: { title: 'Loại khoá học', link: '/user/course-type/list' },
+            4010: { title: 'Loại khoá học', link: '/user/course-type/list' },
         }
     };
 
     app.permission.add(
         { name: 'course-type:read', menu },
-        { name: 'course-type:write', menu },
-        { name: 'course-type:delete', menu },
+        { name: 'course-type:write' },
+        { name: 'course-type:delete' },
     );
 
     app.get('/user/course-type/list', app.permission.check('course-type:read'), app.templates.admin);
-    app.get('/user/course-type/edit/:_id', app.permission.check('course-type:read'), app.templates.admin);
+    app.get('/user/course-type/edit/:_id', app.permission.check('course-type:write'), app.templates.admin);
     app.get('/course-type/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------

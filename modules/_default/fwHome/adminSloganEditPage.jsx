@@ -125,13 +125,10 @@ class SloganModal extends React.Component {
 }
 
 class SloganEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             const route = T.routeMatcher('/user/slogan/edit/:sloganId'),
                 params = route.parse(window.location.pathname);
 

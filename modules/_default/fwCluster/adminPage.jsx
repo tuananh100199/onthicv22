@@ -7,8 +7,9 @@ class AdminPage extends React.Component {
         this.props.getSystemImageAll();
         this.props.getClusterAll();
         T.socket.on('workers-changed', () => this.props.getClusterAll());
-        T.ready('/user/settings');
+        T.ready();
     }
+
     componentWillUnmount() {
         T.socket.off('workers-changed');
     }

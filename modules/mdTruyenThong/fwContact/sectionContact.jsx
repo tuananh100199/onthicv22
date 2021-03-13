@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createContact } from './redux';
-import { getAllAddressByUser } from '../../mdDaoTao/fwAddress/redux';
+import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 
 class SectionContact extends React.Component {
     constructor(props) {
@@ -174,5 +174,5 @@ class SectionContact extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, contact: state.contact, address: state.address });
-const mapActionsToProps = { createContact, getAllAddressByUser };
+const mapActionsToProps = { createContact, getAllDivisionByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContact);

@@ -6,7 +6,7 @@ import { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu, build
 class MenuPage extends React.Component {
     componentDidMount() {
         this.props.getAll();
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             $('.menuList').sortable({ update: () => this.updateMenuPriorities() });
             $('.menuList').disableSelection();
         });

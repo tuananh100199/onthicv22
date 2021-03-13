@@ -35,7 +35,7 @@ import fwEmail from 'modules/_default/fwEmail/index';
 import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwContentList from 'modules/_default/fwContentList/index';
-import fwAddress from 'modules/mdDaoTao/fwAddress/index';
+import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwCluster from 'modules/_default/fwCluster/index';
@@ -45,7 +45,7 @@ import fwMonHoc from 'modules/mdDaoTao/fwMonHoc/index';
 import fwBaiHoc from 'modules/mdDaoTao/fwBaiHoc/index';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwSubscribe, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwSubscribe, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwDivision, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
 ]
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;

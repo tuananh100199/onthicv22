@@ -1,8 +1,8 @@
 module.exports = app => {
     const menu = {
-        parentMenu: { index: 9000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
+        parentMenu: app.parentMenu.communication,
         menus: {
-            9030: { title: 'Đăng ký nhận tin', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            3003: { title: 'Đăng ký nhận tin', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:delete' });
