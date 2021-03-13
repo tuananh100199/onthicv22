@@ -3,28 +3,28 @@ import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
-import { ajaxSelectSubject } from '../fwMonHoc/redux';
 import { Select } from 'view/component/Input';
+import { ajaxSelectSubject } from '../fwMonHoc/redux';
 
 class SubjectModal extends React.Component {
     state = { item: null };
     modal = React.createRef();
     subjectSelect = React.createRef();
 
-    show = () =>
+    show = () => {
+        this.subjectSelect.current.val('');
         $(this.modal.current).modal('show');
+    }
+
 
     save = (event) => {
         const changeItem = this.subjectSelect.current.val();
         const subjectList = this.props.item.subjectList;
         subjectList.push(changeItem);
-
-        if (this.props.item && this.props.item._id) {
-            this.props.updateCourseType(this.props.item._id, { subjectList: subjectList }, () => {
-                T.notify('Thêm môn học thành công', 'success');
-                $(this.modal.current).modal('hide');
-            });
-        }
+        this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
+            T.notify('Thêm môn học thành công', 'success');
+            $(this.modal.current).modal('hide');
+        });
         event.preventDefault();
     }
 
@@ -42,7 +42,11 @@ class SubjectModal extends React.Component {
 
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <Select ref={this.subjectSelect} displayLabel={true} adapter={ajaxSelectSubject} label='Môn học' />
+                                <Select ref={this.subjectSelect} displayLabel={true}
+                                    adapter={{
+                                        ...ajaxSelectSubject, processResults: response =>
+                                            ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+                                    }} label='Môn học' />
                             </div>
                         </div>
 
@@ -81,18 +85,26 @@ class adminEditCType extends React.Component {
                     this.props.history.push('/user/course-type/list');
                 }
             });
+            let tabIndex = parseInt(T.cookie('componentPageTab')),
+                navTabs = $('#componentPage ul.nav.nav-tabs');
+            if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
+            navTabs.find('li:nth-child(' + (tabIndex + 1) + ') a').tab('show');
+            $('#componentPage').fadeIn();
+
+            $(`a[data-toggle='tab']`).on('shown.bs.tab', e => {
+                T.cookie('componentPageTab', $(e.target).parent().index());
+            });
         });
+
     }
     remove = (e, index) => {
         e.preventDefault();
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                let subjectList = this.state.item.subjectList || [];
-                const changes = {};
+                let subjectList = this.props.courseType.courseType.subjectList || [];
                 subjectList.splice(index, 1);
                 if (subjectList.length == 0) subjectList = 'empty';
-                changes.subjectList = subjectList;
-                this.props.updateCourseType(this.state.item._id, changes, () => {
+                this.props.updateCourseType(this.state.item._id, { subjectList }, () => {
                     T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800);
                 });
             }
@@ -102,12 +114,16 @@ class adminEditCType extends React.Component {
         e.preventDefault();
         this.modal.current.show();
     }
+    changeActive = (event) => {
+        this.setState({ item: { ...this.state.item, isPriceDisplayed: event.target.checked } })
+    }
     save = () => {
         const changes = {
             title: $('#title').val().trim(),
             price: $('#price').val().trim(),
             shortDescription: $('#shortDescription').val().trim(),
             detailDescription: this.editor.current.html(),
+            isPriceDisplayed: this.state.item.isPriceDisplayed
         };
         this.props.updateCourseType(this.state.item._id, changes)
     };
@@ -129,9 +145,7 @@ class adminEditCType extends React.Component {
                         a.title.localeCompare(b.title)).map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>
-                                    {item.title ? item.title : 'null'}
-                                </td>
+                                <td>{item.title}</td>
                                 <td>
                                     {!readOnly &&
                                         <div className='btn-group'>
@@ -147,61 +161,74 @@ class adminEditCType extends React.Component {
             </table>
         ) : <p>Không có danh sách các môn học!</p>
         return (
-            <main className='app-content'>
+            <main className='app-content' id='componentPage' style={{ display: 'none' }}>
                 <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Loại khóa học: {item.title || ''}</h1>
+                    <div>
+                        <h1><i className='fa fa-file' />  Loại khóa học: {item.title || ''}</h1>
+                    </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
                         <Link to='/user/course/list'>Loại khóa học</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-
-                <div className='tile'>
-                    <h3 className='tile-title'>Thông tin chung</h3>
-                    <div className='tile-body'>
-                        <div className='row'>
-                            <div className='form-group col-md-6'>
-                                <label className='control-label'>Tên loại khóa học</label>
-                                <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
+                <ul className='nav nav-tabs'>
+                    <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#common'>Thông tin chung</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#subject'>Môn học</a></li>
+                </ul>
+                <div className='tab-content tile'>
+                    <div className='tab-pane fade active show' id='common'>
+                        <>
+                            <div className='row'>
+                                <div className='form-group col-md-6'>
+                                    <label className='control-label'>Tên loại khóa học</label>
+                                    <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
+                                </div>
+                                <div className='form-group col-md-3'>
+                                    <label className='control-label'>Giá loại khóa học</label>
+                                    <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
+                                </div>
+                                <div className='form-group col-md-3'>
+                                    <label className='control-label'>Hiển thị giá</label>
+                                    <div className='toggle' style={{ paddingLeft: '10px' }}>
+                                        <label>
+                                            <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div className='form-group col-md-6'>
-                                <label className='control-label'>Giá loại khóa học</label>
-                                <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
+                            <div className='form-group'>
+                                <label className='control-label'>Mô tả ngắn gọn</label>
+                                <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={5} />
                             </div>
-                        </div>
-
-                        <div className='form-group'>
-                            <label className='control-label'>Mô tả ngắn gọn</label>
-                            <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={5} />
-                        </div>
-                        <div className='form-group'>
-                            <label className='control-label'>Mô tả chi tiết </label>
-                            <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                        </div>
-                    </div>
-
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
-                        <button className='btn btn-primary' type='button' onClick={this.save}>
-                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            <div className='form-group'>
+                                <label className='control-label'>Mô tả chi tiết </label>
+                                <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                            </div>
+                            <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                <button className='btn btn-primary' type='button' onClick={this.save}>
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
                         </button>
+                            </div>
+                        </>
                     </div>
-                </div>
+                    <div className='tab-pane fade' id='subject'>
+                        <>
+                            {table}
 
-                <div className='tile'>
-                    <h3 className='tile-title'>Môn học</h3>
-                    <div className='tile-body'>
-                        {table}
-                    </div>
-                    {readOnly ? null :
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button className='btn btn-success' type='button' onClick={this.showSelectModal}>
-                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+                            {readOnly ? null :
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-success' type='button' onClick={this.showSelectModal}>
+                                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
-                        </div>}
+                                </div>}
+                            <SubjectModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
+                        </>
+                    </div>
+
                 </div>
-                <SubjectModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
                 <Link to='/user/course-type/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </main>
+
         );
     }
 }

@@ -37,6 +37,7 @@ class SectionCTypeList extends React.Component {
                     <div className='col-xl-4 col-md-6 service_col' key={index}  >
                         <div className='text-center'>
                             <div className='service_title'><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
+                            {item.isPriceDisplayed && <h3 className='service_title'>{T.numberDisplay(item.price ? `Giá : ${item.price} VND` : '')}</h3>}
                             <div className='service_text'>
                                 <p>{item.shortDescription}</p>
                             </div>

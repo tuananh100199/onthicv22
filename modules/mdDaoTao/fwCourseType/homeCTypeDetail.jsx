@@ -60,7 +60,8 @@ class SectionCTypeDetail extends React.Component {
                         <div className='row'>
                             <div key={1} className='col-xl-8 col-lg-6 col-12'>
                                 <div className='contact_content'>
-                                    <div className='contact_content_title ftco-animate text-center'>{item.title}</div>
+                                    <div className='contact_content_title ftco-animate text-center text-primary'>{item.title}</div>
+                                    {item.isPriceDisplayed && <h3 className='service_title text-center'>{T.numberDisplay(item.price ? `Giá : ${item.price} VND` : '')}</h3>}
                                     <div className='contact_info ftco-animate'>
                                         <p dangerouslySetInnerHTML={{ __html: item.detailDescription }} />
                                     </div>
