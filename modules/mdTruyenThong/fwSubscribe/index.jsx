@@ -10,8 +10,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/subscribe',
-            component: Loadable({ loading: Loading, loader: () => import('./adminSubscribe') })
+            path: '/user/subscribe', component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
     ],
     Section: {

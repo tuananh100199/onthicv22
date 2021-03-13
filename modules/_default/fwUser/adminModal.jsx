@@ -67,7 +67,9 @@ export class UserPasswordModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary' onClick={this.save}>Lưu</button>
+                            <button type='submit' className='btn btn-primary' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>Ư
                 </form>
@@ -129,7 +131,9 @@ export class RolesModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>Lưu</button>
+                            <button type='submit' className='btn btn-primary'>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -318,7 +322,9 @@ export class UserModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            {hasUpdate ? <button type='submit' className='btn btn-primary'>Lưu</button> : ''}
+                            {hasUpdate ? <button type='submit' className='btn btn-primary'>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button> : ''}
                         </div>
                     </div>
                 </form>

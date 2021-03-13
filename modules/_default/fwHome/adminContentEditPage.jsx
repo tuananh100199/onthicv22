@@ -55,15 +55,10 @@ class ContentEditPage extends React.Component {
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-image' /> Bài viết: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title }} />
-                    </div>
+                    <h1><i className='fa fa-image' /> Bài viết: {title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/component'>Thành phần giao diện</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/component'>Thành phần giao diện</Link>&nbsp;/&nbsp;Bài viết
                     </ul>
                 </div>
                 <div className='tile'>

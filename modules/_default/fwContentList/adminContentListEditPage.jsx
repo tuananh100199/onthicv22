@@ -67,8 +67,10 @@ class ContentModal extends React.Component {
                         </div>
 
                         <div className='modal-footer'>
-                            <button type='button' className='btn btn-success' onClick={this.save}>Lưu</button>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='button' className='btn btn-primary' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -191,37 +193,31 @@ class ListContentEditPage extends React.Component {
                     <tr>
                         <th style={{ width: 'auto' }}>#</th>
                         <th style={{ width: '100%' }}>Tên </th>
-                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
+                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                     </tr>
                 </thead>
                 <tbody>
-                    {item.items.map((item, index) => (
+                    {(item && (item.items || [])).map((item, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>
-                            <td>
-                                <a href='#' onClick={e => this.showSelectModal(e, item)}>
-                                    {item.title}
-                                </a><br />
-                                <Link to={'/user/content/edit/' + item._id}>Xem chi tiết</Link>
-                            </td>
-                            <td>
-                                {!readOnly &&
+                            <td><Link to={`/user/content/edit/${item._id}`}>{item.title}</Link></td>
+                            {readOnly ? null :
+                                <td>
                                     <div className='btn-group'>
-                                        <a href='#' className='btn btn-primary' onClick={e => this.showSelectModal(e, item)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
                                         <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
                                         <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
+                                        <a href='#' className='btn btn-primary' onClick={e => this.showSelectModal(e, item)}>
+                                            <i className='fa fa-lg fa-edit' />
+                                        </a>
                                         <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item._id)}>
                                             <i className='fa fa-lg fa-trash' />
                                         </a>
                                     </div>
-                                }
-                            </td>
+                                </td>}
                         </tr>
                     ))}
                 </tbody>
@@ -231,19 +227,16 @@ class ListContentEditPage extends React.Component {
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-bar-chart' /> Danh Sách Bài Viết: Chỉnh sửa</h1>
-                    </div>
+                    <h1><i className='fa fa-bar-chart' /> Danh sách bài viết</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/component'>Thành phần giao diện</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/component'>Thành phần giao diện</Link>&nbsp;/&nbsp;Danh sách bài viết
                     </ul>
                 </div>
-                <div className='row'>
-                    <div className='tile col-md-6'>
-                        <div className='tile-body'>
+
+                <div className='tile'>
+                    <div className='tile-body row'>
+                        <div className='col-md-9'>
                             <div className='form-group'>
                                 <label className='control-label' htmlFor='listContentTitle'>Tiêu đề</label>
                                 <input className='form-control' type='text' placeholder='Tiêu đề' id='listContentTitle' readOnly={readOnly} />
@@ -252,36 +245,37 @@ class ListContentEditPage extends React.Component {
                                 <label className='control-label' htmlFor='listContentAbstract'>Mô tả ngắn</label>
                                 <input className='form-control' type='text' placeholder='Mô tả ngắn' id='listContentAbstract' readOnly={readOnly} />
                             </div>
+                        </div>
+                        <div className='col-md-3'>
                             <div className='form-group'>
                                 <label className='control-label'>Hình ảnh nền</label>
                                 <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ContentListImage' readOnly={!currentPermissions.includes('component:write')} />
                             </div>
                         </div>
+                    </div>
+                    {readOnly ? null :
                         <div className='tile-footer' style={{ textAlign: 'right' }}>
                             <button className='btn btn-primary' type='button' onClick={this.save}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
-                        </div>
-                    </div>
+                        </div>}
+                </div>
 
-                    <div className='tile col-md-12'>
-                        <h3 className='tile-title'>Danh sách bài viết</h3>
-                        <div className='tile-body'>
-                            {table}
-                        </div>
-                    </div>
+                <div className='tile'>
+                    <h3 className='tile-title'>Danh sách bài viết</h3>
+                    <div className='tile-body'>{table}</div>
+                    {readOnly ? null :
+                        <div style={{ textAlign: 'right' }}>
+                            <button className='btn btn-success' type='button' onClick={this.showSelectModal}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+                            </button>
+                        </div>}
                 </div>
 
                 <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} history={this.props.history} item={item} />
-
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                {!readOnly && (
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={e => this.showSelectModal(e, null)}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>
-                )}
             </main>
         );
     }

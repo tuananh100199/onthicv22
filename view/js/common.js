@@ -28,7 +28,7 @@ const T = {
         'list videos',
         'all courses',
         'last course',
-        'contentList',
+        'list contents',
         'dangKyTuVan',
         'all course types',
     ],

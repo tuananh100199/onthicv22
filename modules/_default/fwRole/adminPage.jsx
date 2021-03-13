@@ -75,7 +75,9 @@ class RoleModal extends React.Component {
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                             {this.state.name != 'admin' || this.state.isAdmin ?
-                                <button type='submit' className='btn btn-primary' ref={this.btnSave}>Lưu</button> : ''}
+                                <button type='submit' className='btn btn-primary' ref={this.btnSave}>
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                </button> : ''}
                         </div>
                     </div>
                 </form>

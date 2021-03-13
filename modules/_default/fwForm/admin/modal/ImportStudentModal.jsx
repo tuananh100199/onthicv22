@@ -62,12 +62,10 @@ class ImportStudentModal extends React.Component {
                             <p className='text-center' style={{ color: 'red' }} id='uploadWarning' />
                         </div>
                         <div className='modal-footer'>
-                            <button className='btn btn-success' type='button' ref={this.confirmUpload}
-                                style={{ display: 'none' }} onClick={this.uploadExcel}>
+                            <button className='btn btn-primary' type='button' ref={this.confirmUpload} style={{ display: 'none' }} onClick={this.uploadExcel}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
-                            <a href={'/download/TemplateUploadFile.xlsx?t=' + new Date().getTime()} className='btn btn-primary'
-                                data-toggle='tooltip' data-placement='top' title='Tải xuống file mẫu'>
+                            <a href={'/download/TemplateUploadFile.xlsx?t=' + new Date().getTime()} className='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Tải xuống file mẫu'>
                                 <i className='fa fa-fw fa-lg fa-arrow-circle-down' />File mẫu
                             </a>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>

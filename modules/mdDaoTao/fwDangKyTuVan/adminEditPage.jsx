@@ -81,7 +81,9 @@ class DangKyTuVanStaticModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
+                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -256,52 +258,52 @@ class DangKyTuVanEditPage extends React.Component {
                         &nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                    <div className='tile col-md-12'>
-                        <div className='row'>
-                            <div className='col-4'>
-                                <div className='form-group'>
-                                    <label className='control-label' htmlFor='title'>Tiêu đề</label>
-                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
-                                </div>
-                            </div>
-                            <div className='col-4'>
-                                <div className='form-group'>
-                                    <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
-                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
-                                </div>
-                            </div>
-                            <div className='col-4'>
-                                <div className='form-group'>
-                                    <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
-                                    <select className='form-control col-6' id='courseType' multiple={false} >
-                                        <optgroup className='form-control' label='Lựa chọn loại khóa học' />
-                                    </select>
-                                </div>
+                <div className='tile col-md-12'>
+                    <div className='row'>
+                        <div className='col-4'>
+                            <div className='form-group'>
+                                <label className='control-label' htmlFor='title'>Tiêu đề</label>
+                                <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
                             </div>
                         </div>
-                        
-                        <div className='form-group mt-3'>
-                            <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
-                            <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
+                        <div className='col-4'>
+                            <div className='form-group'>
+                                <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
+                                <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
+                            </div>
+                        </div>
+                        <div className='col-4'>
+                            <div className='form-group'>
+                                <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
+                                <select className='form-control col-6' id='courseType' multiple={false} >
+                                    <optgroup className='form-control' label='Lựa chọn loại khóa học' />
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div className='tile col-md-12'>
-                        <div className='control-label'>
-                            <label htmlFor='tepViDescription'>Thống kê</label>
-                        </div>
-                        {table}
-                        {readOnly ? null :
-                            <div className='tile-footer'>
-                                <div className='row'>
-                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-info' type='button' onClick={this.showAddDKTVModal}>
-                                            <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
+
+                    <div className='form-group mt-3'>
+                        <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
+                        <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
+                    </div>
+                </div>
+                <div className='tile col-md-12'>
+                    <div className='control-label'>
+                        <label htmlFor='tepViDescription'>Thống kê</label>
+                    </div>
+                    {table}
+                    {readOnly ? null :
+                        <div className='tile-footer'>
+                            <div className='row'>
+                                <div className='col-md-12' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-info' type='button' onClick={this.showAddDKTVModal}>
+                                        <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
                                         </button>&nbsp;
                                     </div>
-                                </div>
                             </div>
-                        }
-                    </div>
+                        </div>
+                    }
+                </div>
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>

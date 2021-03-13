@@ -10,7 +10,7 @@ class ContactPage extends React.Component {
 
     componentDidMount() {
         this.props.getContactPage();
-        T.ready('/user/settings');
+        T.ready();
     }
 
     showContact = (e, contactId) => {

@@ -58,7 +58,9 @@ class AddressModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>Lưu</button>
+                            <button type='submit' className='btn btn-primary'>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>

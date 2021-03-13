@@ -95,7 +95,7 @@ module.exports = app => {
                     };
                     if (component.viewType && component.viewId) {
                         const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list videos', 'contentList', 'dangKyTuVan'].indexOf(viewType) != -1)) {
+                        if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list videos', 'list contents', 'dangKyTuVan'].indexOf(viewType) != -1)) {
                             app.model[viewType].get(component.viewId, (error, item) =>
                                 getNextComponent(item ? item.title : '<empty>'));
                         } else if (component.viewId && viewType == 'staff group') {
@@ -293,7 +293,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-        } else if (pageType == 'contentList') {
+        } else if (pageType == 'list contents') {
             app.model.contentList.getAll((error, items) => {
                 res.send({
                     error,

@@ -58,7 +58,7 @@ class adminEditBaiHoc extends React.Component {
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-primary' onClick={this.save}>
                         <i className='fa fa-lg fa-save' /> Lưu
-                                </button>
+                    </button>
                 </div>
                 <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
 
