@@ -118,9 +118,15 @@ class SectionDangKyTuVan extends React.Component {
                 email: this.email.current.value,
                 phone: this.phone.current.value
             }, () => {
-                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = this.courseType.current.value  = '';
-                document.getElementById("courseType").options.length=0;
+                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = '';
+                document.getElementById('courseType').innerText = null;
                 T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
+                this.props.getAllCourseType(datacType => {
+                    if (datacType) {
+                        let courseType = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
+                        $('#courseType').select2({ placeholder: 'Loại khóa học', data: courseType }).val(courseType.title).trigger('change');
+                    }
+                });
             });
     }
 
