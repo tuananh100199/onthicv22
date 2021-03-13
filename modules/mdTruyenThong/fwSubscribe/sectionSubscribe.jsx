@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createSubscribe } from './redux/reduxSubscribe';
-
-
+import { createSubscribe } from './redux';
 
 class SectionSubscribe extends React.Component {
     constructor(props) {
@@ -11,7 +9,6 @@ class SectionSubscribe extends React.Component {
         this.email = React.createRef();
         this.state = {};
     }
-
 
     componentDidMount() {
         $(document).ready(() => {
@@ -77,5 +74,5 @@ class SectionSubscribe extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = {createSubscribe};
+const mapActionsToProps = { createSubscribe };
 export default connect(mapStateToProps, mapActionsToProps)(SectionSubscribe);

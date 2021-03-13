@@ -3,6 +3,7 @@ import React from 'react';
 import fwHome from 'modules/_default/fwHome/index';
 import fwContentList from 'modules/_default/fwContentList/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
@@ -65,7 +66,7 @@ export default class MenuPage extends React.Component {
             } else if (item.viewType == 'last course') {
                 itemView = <fwCourse.Section.SectionCourse />;
             } else if (item.viewType == 'subscribe') {
-                itemView = <fwHome.Section.SectionSubscribe />;
+                itemView = <fwSubscribe.Section.SectionSubscribe />;
             } else if (item.viewType == 'content' && item.view) {
                 itemView = <div style={{ marginTop: '110px' }} dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
             } else if (item.viewType == 'all course types') {

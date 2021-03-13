@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe } from './redux/reduxSubscribe';
+import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe } from './redux';
 import Pagination from 'view/component/Pagination';
 
 class AdminSubscribeModal extends React.Component {
@@ -13,7 +13,7 @@ class AdminSubscribeModal extends React.Component {
     }
 
     render() {
-        const {email,createdDate} = this.state;
+        const { email, createdDate } = this.state;
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
                 <div className='modal-dialog modal-lg' role='document'>
@@ -42,7 +42,7 @@ class SubscribePage extends React.Component {
 
     componentDidMount() {
         this.props.getSubscribePage();
-        T.ready('/user/settings');
+        T.ready();
     }
 
     showSubscribe = (e, SubscribeId) => {
@@ -80,11 +80,8 @@ class SubscribePage extends React.Component {
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
                                     <a href='#' onClick={e => this.showSubscribe(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.email}</a>
-
                                 </td>
-                                <td>
-                                    {new Date(item.createdDate).getText()}
-                                </td>
+                                <td>{new Date(item.createdDate).getText()}</td>
                                 <td>
                                     <div className='btn-group'>
                                         <a className='btn btn-primary' href='#' onClick={e => this.showSubscribe(e, item._id)}>

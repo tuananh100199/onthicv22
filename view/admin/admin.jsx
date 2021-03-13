@@ -30,6 +30,7 @@ import fwUser from 'modules/_default/fwUser/index';
 import fwRole from 'modules/_default/fwRole/index';
 import fwMenu from 'modules/_default/fwMenu/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
@@ -44,7 +45,7 @@ import fwMonHoc from 'modules/mdDaoTao/fwMonHoc/index';
 import fwBaiHoc from 'modules/mdDaoTao/fwBaiHoc/index';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwSubscribe, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
 ]
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;

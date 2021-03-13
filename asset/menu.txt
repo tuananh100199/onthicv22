@@ -22,4 +22,4 @@
 9000. Truyền thông (undefined)
 	9010 - Đăng ký tư vấn (/user/dang-ky-tu-van-list)
 	9020 - Liên hệ (/user/contact)
-	9030 - Subscribe (/user/subscribe)
+	9030 - Đăng ký nhận tin (/user/subscribe)

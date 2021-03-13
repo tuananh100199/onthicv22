@@ -2,15 +2,11 @@ module.exports = app => {
     const menu = {
         parentMenu: { index: 9000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
         menus: {
-            9030: { title: 'Subscribe', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            9030: { title: 'Đăng ký nhận tin', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add(
-        { name: 'subscribe:read', menu },
-        { name: 'subscribe:write', menu },
-    );
+    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:write' }, { name: 'subscribe:delete' });
 
-    app.get('/subscribe(.htm(l)?)?', app.templates.home);
     app.get('/user/subscribe', app.permission.check('subscribe:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
@@ -32,7 +28,7 @@ module.exports = app => {
         res.send({ error, item });
     }));
 
-    app.delete('/api/subscribe', app.permission.check('subscribe:write'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
+    app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
 
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------

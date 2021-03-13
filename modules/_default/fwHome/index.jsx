@@ -11,7 +11,6 @@ import testimony from './redux/reduxTestimony';
 import video from './redux/reduxVideo';
 import listVideo from './redux/reduxListVideo';
 import contentList from '../fwContentList/redux';
-import subscribe from './redux/reduxSubscribe';
 
 import SectionCarousel from './sectionCarousel';
 import SectionLogo from './sectionLogo';
@@ -21,11 +20,10 @@ import SectionStatistic from './sectionStatistic';
 import SectionTestimony from './sectionTestimony';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
-import SectionSubscribe from './sectionSubscribe';
 
 export default {
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList, subscribe
+        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList
     },
     routes: [
         {
@@ -76,12 +74,8 @@ export default {
             path: '/request-login',
             component: Loadable({ loading: Loading, loader: () => import('./homeRequestLoginPage') })
         },
-        {
-            path: '/user/subscribe',
-            component: Loadable({ loading: Loading, loader: () => import('./adminSubscribe') })
-        },
     ],
     Section: {
-        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo, SectionSubscribe
+        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
     }
 };

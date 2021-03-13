@@ -1,6 +1,5 @@
 import T from 'view/js/common';
 
-
 // Reducer ------------------------------------------------------------------------------------------------------------
 const SubscribeGetAll = 'Subscribe:GetAll';
 const SubscribeGetPage = 'Subscribe:GetPage';
