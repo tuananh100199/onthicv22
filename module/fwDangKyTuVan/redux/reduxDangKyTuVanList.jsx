@@ -101,10 +101,10 @@ export function getDKTVListAll(done) {
 }
 
 T.initCookiePage('pageDKTVList');
-export function getDKTVListPage(DKTVListId, pageNumber, pageSize, done) {
+export function getDKTVListPage( pageNumber, pageSize, done) {
     const page = T.updatePage('pageDKTVList', pageNumber, pageSize);
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize + '/' + DKTVListId;
+        const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách đăng ký tư vấn!', 'danger');
@@ -164,7 +164,7 @@ export function updateDKTVList(_id, changes, done) {
     }
 }
 
-export function deleteDKTVListItem(DKTVListId, _id) {
+export function deleteDKTVListItem(_id) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/item';
         T.delete(url, { _id }, data => {
@@ -173,7 +173,7 @@ export function deleteDKTVListItem(DKTVListId, _id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xoá đăng ký tư vấn thành công!', 'error', false, 800);
-                dispatch(getDKTVListPage(DKTVListId));
+                dispatch(getDKTVListPage());
             }
         }, error => T.notify('Xoá đăng ký tư vấn bị lỗi', 'danger'));
     }

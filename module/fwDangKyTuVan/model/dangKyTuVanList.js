@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        parentId:[{type: app.db.Schema.Types.ObjectId, ref: 'DangKyTuVan'}],
+        parentId:{type: app.db.Schema.Types.ObjectId, ref: 'DangKyTuVan'},
+        courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
 
         firstname: String,
         lastname: String,
@@ -16,7 +17,12 @@ module.exports = app => {
     const model = app.db.model('DangKyTuVanList', schema);
 
     app.model.dangKyTuVanList = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) =>{
+            if(data.courseType == ''){
+                data.courseType = null
+            }
+             model.create(data, done)
+            },
 
         getAll: (condition,done) => {
             condition ? model.find(condition).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done)
@@ -34,17 +40,18 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find({'parentId' : condition}).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
             }
         }),
 
+
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done).populate('courseType', 'title'),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

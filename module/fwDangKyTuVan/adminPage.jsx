@@ -14,7 +14,6 @@ class DangKyTuVanPage extends React.Component {
     }
     create = (e) => {
         this.props.createDangKyTuVan(data => {
-            console.log('data',data);
             this.props.history.push('/user/dang-ky-tu-van/edit/' + data.item._id)
         });
         e.preventDefault();
