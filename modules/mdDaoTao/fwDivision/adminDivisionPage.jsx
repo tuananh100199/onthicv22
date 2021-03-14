@@ -2,24 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisions, createDivision, deleteDivision, updateDivision } from './redux';
 import { Link } from 'react-router-dom';
-import AdminPage from 'view/component/AdminPage';
-// import { getUserPermission, renderListPage } from 'view/component/AdminCommon';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
-class DivisionModal extends React.Component {
-    modal = React.createRef();
-
+class DivisionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#addressName').focus());
+            this.onShown(() => $('#addressName').focus());
         });
     }
 
-    show = () => {
-        $('#addressName').val('');
-        $(this.modal.current).modal('show');
-    }
+    onShow = () => $('#addressName').val('');
 
-    save = (event) => {
+    onSubmit = () => {
         const newData = { title: $('#addressName').val() };
         if (newData.title == '') {
             T.notify('Tên cơ sở bị trống!', 'danger');
@@ -27,42 +21,21 @@ class DivisionModal extends React.Component {
         } else {
             this.props.createDivision(newData, data => {
                 if (data.item) {
-                    $(this.modal.current).modal('hide');
+                    this.hide();
                     this.props.history.push('/user/division/edit/' + data.item._id);
                 }
             });
         }
-        event.preventDefault();
     }
 
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Cơ sở mới</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label htmlFor='addressName'>Tên cơ sở</label>
-                                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
+    render = () => this.renderModal({
+        title: 'Cơ sở mới',
+        body:
+            <div className='form-group'>
+                <label htmlFor='addressName'>Tên cơ sở</label>
+                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' autoFocus={true} />
             </div>
-        );
-    }
+    });
 }
 
 class DivisionPage extends AdminPage {
@@ -72,9 +45,6 @@ class DivisionPage extends AdminPage {
         T.ready();
         this.props.getAllDivisions();
         T.onSearch = (searchText) => this.props.getAllDivisions(searchText);
-    }
-    componentWillUnmount() {
-        T.onSearch = null;
     }
 
     create = (e) => {

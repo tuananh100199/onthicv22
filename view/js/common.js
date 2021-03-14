@@ -43,6 +43,8 @@ const T = {
     debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
 
     ready: (pathname, done) => $(document).ready(() => setTimeout(() => {
+        T.clearSearchBox && T.clearSearchBox();
+
         if (pathname == undefined) {
             done = null;
             pathname = window.location.pathname;
