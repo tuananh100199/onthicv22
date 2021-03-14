@@ -36,8 +36,6 @@ module.exports = app => {
             }
         }),
 
-        getByActive: (active, done) => model.find({ active }).sort({ _id: -1 }).exec(done),
-
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),
 

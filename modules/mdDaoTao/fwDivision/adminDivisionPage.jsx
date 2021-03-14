@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisions, createDivision, deleteDivision, updateDivision } from './redux';
 import { Link } from 'react-router-dom';
-// import AdminPage from 'view/component/AdminPage';
-import { getUserPermission, renderListPage } from 'view/component/AdminCommon';
+import AdminPage from 'view/component/AdminPage';
+// import { getUserPermission, renderListPage } from 'view/component/AdminCommon';
 
 class DivisionModal extends React.Component {
     modal = React.createRef();
@@ -65,12 +65,16 @@ class DivisionModal extends React.Component {
     }
 }
 
-class DivisionPage extends React.Component {
+class DivisionPage extends AdminPage {
     modal = React.createRef();
 
     componentDidMount() {
         T.ready();
         this.props.getAllDivisions();
+        T.onSearch = (searchText) => this.props.getAllDivisions(searchText);
+    }
+    componentWillUnmount() {
+        T.onSearch = null;
     }
 
     create = (e) => {
@@ -84,7 +88,7 @@ class DivisionPage extends React.Component {
     }
 
     render() {
-        const permission = getUserPermission(this.props.system, 'division');
+        const permission = this.getUserPermission('division');
         let table = 'Không có cơ sở!';
         if (this.props.division && this.props.division.list && this.props.division.list.length > 0) {
             table = (
@@ -140,7 +144,7 @@ class DivisionPage extends React.Component {
             </>,
         };
         if (permission.write) renderData.onCreate = this.create;
-        return renderListPage(renderData);
+        return this.renderListPage(renderData);
     }
 }
 

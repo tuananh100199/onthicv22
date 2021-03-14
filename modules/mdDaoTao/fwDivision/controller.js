@@ -16,7 +16,11 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/division/all', app.permission.check('division:read'), (req, res) => {
-        app.model.division.getAll((error, items) => res.send({ error, items }));
+        const condition = {}, searchText = req.query.searchText;
+        if (searchText) {
+            condition.title = new RegExp(searchText, 'i');
+        }
+        app.model.division.getAll(condition, (error, items) => res.send({ error, items }));
     });
 
     app.get('/api/division/item/:_id', app.permission.check('division:read'), (req, res) =>

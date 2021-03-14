@@ -33,10 +33,10 @@ export default function addressReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllDivisions(done) {
+export function getAllDivisions(searchText, done) {
     return dispatch => {
         const url = '/api/division/all';
-        T.get(url, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

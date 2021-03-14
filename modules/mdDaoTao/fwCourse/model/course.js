@@ -2,7 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         createdDate: { type: Date, default: Date.now },
-        addressId: { type: app.db.Schema.ObjectId, ref: 'Address' },
+        addressId: { type: app.db.Schema.ObjectId, ref: 'Division' },
         startTime: Date,
         endTime: Date,
         launchTime: Date,

@@ -7,7 +7,7 @@ module.exports = app => {
     };
     app.permission.add(
         { name: 'contact:read', menu },
-        { name: 'contact:write', menu },
+        { name: 'contact:write' },
     );
 
     app.get('/contact(.htm(l)?)?', app.templates.home);
@@ -23,16 +23,24 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/contact/all', app.permission.check('contact:read'), (req, res) => app.model.contact.getAll((error, items) => res.send({ error, items })));
+    app.get('/api/contact/all', app.permission.check('contact:read'), (req, res) => {
+        app.model.contact.getAll((error, items) => res.send({ error, items }));
+    });
 
-    app.get('/api/contact/unread', app.permission.check('contact:read'), (req, res) => app.model.contact.getUnread((error, items) => res.send({ error, items })));
+    app.get('/api/contact/unread', app.permission.check('contact:read'), (req, res) => {
+        app.model.contact.getUnread((error, items) => res.send({ error, items }));
+    });
 
-    app.get('/api/contact/item/:_id', app.permission.check('contact:write'), (req, res) => app.model.contact.read(req.params._id, (error, item) => {
-        if (item) app.io.emit('contact-changed', item);
-        res.send({ error, item });
-    }));
+    app.get('/api/contact/item/:_id', app.permission.check('contact:write'), (req, res) => {
+        app.model.contact.read(req.params._id, (error, item) => {
+            if (item) app.io.emit('contact-changed', item);
+            res.send({ error, item });
+        });
+    });
 
-    app.delete('/api/contact', app.permission.check('contact:write'), (req, res) => app.model.contact.delete(req.body._id, error => res.send({ error })));
+    app.delete('/api/contact', app.permission.check('contact:write'), (req, res) => {
+        app.model.contact.delete(req.body._id, error => res.send({ error }));
+    });
 
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------

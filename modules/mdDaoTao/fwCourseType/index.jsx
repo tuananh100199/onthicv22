@@ -8,9 +8,18 @@ export default {
         courseType,
     },
     routes: [
-        { path: '/user/course-type/list', component: Loadable({ loading: Loading, loader: () => import('./adminCourseTypePage') }) },
-        { path: '/user/course-type/edit/:_id', component: Loadable({ loading: Loading, loader: () => import('./adminCourseTypeEditPage') }) },
-        { path: '/course-type/:_id', component: Loadable({ loading: Loading, loader: () => import('./homeCourseTypeDetailPage') }) },
+        {
+            path: '/user/course-type/list',
+            component: Loadable({ loading: Loading, loader: () => import('./adminCourseTypePage') })
+        },
+        {
+            path: '/user/course-type/edit/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminCourseTypeEditPage') })
+        },
+        {
+            path: '/course-type/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./homeCourseTypeDetailPage') })
+        },
     ],
     Section: {
         SectionCourseTypeList

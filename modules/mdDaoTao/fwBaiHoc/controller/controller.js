@@ -30,30 +30,28 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('baihoc:read'), (req, res) =>
-        app.model.lesson.get(req.params.baiHocId, (error, item) => res.send({ error, item })));
+    app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('baihoc:read'), (req, res) => {
+        app.model.lesson.get(req.params.baiHocId, (error, item) => res.send({ error, item }));
+    });
 
 
-    app.post('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
-        app.model.lesson.create(req.body.data || {}, (error, item) => res.send({ error, item })
-        ));
+    app.post('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
+        app.model.lesson.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+    });
 
     app.put('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
         const changes = req.body.changes;
         if (changes.categories && changes.categories == 'empty') changes.categories = [];
-        app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) =>
-        app.model.lesson.delete(req.body._id, (error) => res.send({ error }))
-    );
+    app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
+        app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
+    });
 
     //Lesson Video
     app.get('/api/lesson-video/:lessonId', (req, res) => {
-        const lessonId = req.params.lessonId;
-        app.model.lesson.get(lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => {
-            res.send({ error, item });
-        });
+        app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
     });
     // app.post('/api/lesson-video/:_id', app.permission.check('baihoc:write'), (req, res) => {
     //     const _id = req.params._id, data = req.body.data;
@@ -70,10 +68,7 @@ module.exports = (app) => {
 
     //Question ---------------------------------------------------------------------------------------------------------
     app.get('/api/lesson-question/:lessonId', (req, res) => {
-        const lessonId = req.params.lessonId;
-        app.model.lesson.get(lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => {
-            res.send({ error, item });
-        });
+        app.model.lesson.get(req.params.lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/lesson-question/:_id', app.permission.check('baihoc:write'), (req, res) => {
@@ -90,17 +85,11 @@ module.exports = (app) => {
     });
 
     app.put('/api/lesson-question', app.permission.check('baihoc:write'), (req, res) => {
-        const _id = req.body._id, data = req.body.data;
-        app.model.lessonQuestion.update(_id, data, (error, question) => {
-            res.send({ error, question });
-        });
+        app.model.lessonQuestion.update(req.body._id, req.body._id, (error, question) => res.send({ error, question }));
     });
 
     app.put('/api/lesson-question/swap', app.permission.check('baihoc:write'), (req, res) => {
-        const data = req.body.data, lessonId = req.body.lessonId;
-        app.model.lesson.update(lessonId, data, (error, item) => {
-            res.send({ error, item });
-        });
+        app.model.lesson.update(req.body.lessonId, req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/lesson-question', app.permission.check('baihoc:write'), (req, res) => {
@@ -114,5 +103,4 @@ module.exports = (app) => {
             }
         });
     });
-    //End question -----------------------------------------------------------------------------------------------------
 };

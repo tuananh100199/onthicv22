@@ -15,7 +15,8 @@ class AdminCourseTypePage extends React.Component {
     }
 
     delete = (e, item) => {
-        T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteCourseType(item._id));
+        T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', 'warning', true,
+            isConfirm => isConfirm && this.props.deleteCourseType(item._id));
         e.preventDefault();
     }
 

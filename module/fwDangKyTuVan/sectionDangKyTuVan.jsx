@@ -93,11 +93,11 @@ class SectionDangKyTuVan extends React.Component {
             (this.firstname.current).focus();
             return
         }
-         if (this.lastname.current.value == '') {
+        if (this.lastname.current.value == '') {
             T.notify('Tên bị trống!', 'danger');
             (this.lastname.current).focus();
             return
-        }  
+        }
         if (this.phone.current.value == '') {
             T.notify('Số điện thoại bị trống!', 'danger');
             (this.phone.current).focus();
@@ -109,7 +109,7 @@ class SectionDangKyTuVan extends React.Component {
                 (this.email.current).focus();
                 return
             }
-        } 
+        }
         this.props.createDKTVListItem(
             {
                 courseType: this.courseType.current.value,
@@ -118,8 +118,8 @@ class SectionDangKyTuVan extends React.Component {
                 email: this.email.current.value,
                 phone: this.phone.current.value
             }, () => {
-                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = this.courseType.current.value  = '';
-                document.getElementById("courseType").options.length=0;
+                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = this.courseType.current.value = '';
+                document.getElementById("courseType").options.length = 0;
                 T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
             });
     }
@@ -165,7 +165,7 @@ class SectionDangKyTuVan extends React.Component {
                                             <optgroup className='contact_input' label='Lựa chọn loại khóa học' />
                                         </select>
                                         <input type="tel" className="intro_input" placeholder="Số điện thoại" ref={this.phone} required="required" />
-                                        <input type='text' className='intro_input w-100' ref={this.email} placeholder='Email'/>
+                                        <input type='text' className='intro_input w-100' ref={this.email} placeholder='Email' />
                                     </div>
                                     <button className="button button_1 intro_button trans_200">gửi tin nhắn</button>
                                 </form>
@@ -178,6 +178,6 @@ class SectionDangKyTuVan extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, address: state.address });
+const mapStateToProps = state => ({ system: state.system, division: state.division });
 const mapActionsToProps = { createDKTVListItem, getDangKyTuVanByUser, getAllCourseType };
 export default connect(mapStateToProps, mapActionsToProps)(SectionDangKyTuVan);
