@@ -12,13 +12,14 @@ class SectionCourseTypeList extends React.Component {
         const items = this.props.courseType && this.props.courseType ? this.props.courseType.items : null;
         return (
             <div>
-                <div className='service_col text-center' style={{ marginBottom: '30px' }}>
+                <div className='service_col text-center' style={{ marginTop: '30px' }}>
                     <div><h2>Loại khóa học</h2></div>
                 </div>
                 <div className='row'>
                     {items ? items.map((item, index) => (
                         <div className='col-xl-4 col-md-6 service_col' key={index}  >
                             <div className='text-center'>
+                                <img src={item.image} height={100} width={100} alt="" />
                                 <div className='service_title'><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
                                 {item.isPriceDisplayed && <h3 className='service_title'>{T.numberDisplay(item.price ? `Giá : ${item.price} VND` : '')}</h3>}
                                 <div className='service_text'>

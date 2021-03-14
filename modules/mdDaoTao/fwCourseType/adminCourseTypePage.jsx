@@ -35,9 +35,10 @@ class AdminCourseTypePage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tiêu đề</th>
+                            <th style={{ width: '80%' }}>Tiêu đề</th>
                             <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hiển thị giá</th>
                             <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá</th>
+                            <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                             {permissionWrite || permissionDelete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
@@ -53,6 +54,9 @@ class AdminCourseTypePage extends React.Component {
                                     </label>
                                 </td>
                                 <td className='toggle' style={{ textAlign: 'right' }} nowrap='true'>{T.numberDisplay(item.price ? item.price + ' VND' : '')}</td>
+                                <td style={{ width: '20%', textAlign: 'center' }}>
+                                    <img src={item.image} alt='avatarCourseType' style={{ height: '32px' }} />
+                                </td>
                                 {permissionWrite || permissionDelete ? <td>
                                     <div className='btn-group'>
                                         {permissionWrite ?
