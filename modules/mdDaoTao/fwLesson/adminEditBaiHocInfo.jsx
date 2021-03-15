@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux';
+import { updateBaiHoc, getBaiHoc } from './redux/reduxLesson';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
 class adminEditBaiHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
+
     componentDidMount() {
-        T.ready('/user/dao-tao/bai-hoc/list', () => {
+        T.ready(() => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
             this.props.getBaiHoc(params.baihocId, data => {
@@ -28,6 +29,7 @@ class adminEditBaiHoc extends React.Component {
             });
         });
     }
+
     save = () => {
         const changes = {
             title: $('#title').val().trim(),
@@ -35,7 +37,8 @@ class adminEditBaiHoc extends React.Component {
             detailDescription: this.editor.current.html(),
         };
         this.props.updateBaiHoc(this.state.item._id, changes)
-    };
+    }
+
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('lesson:write');
@@ -60,13 +63,14 @@ class adminEditBaiHoc extends React.Component {
                         <i className='fa fa-lg fa-save' /> Lưu
                     </button>
                 </div>
-                <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-
+                <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc, question: state.question });
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
 const mapActionsToProps = { updateBaiHoc, getBaiHoc };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);

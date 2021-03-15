@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectLesson } from '../fwBaiHoc/redux/redux';
+import { ajaxSelectLesson } from '../fwLesson/redux/reduxLesson';
 import Tooltip from 'rc-tooltip';
 
 class AddLessonModal extends React.Component {

@@ -5,14 +5,14 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc/list' },
         },
     };
-    app.permission.add({ name: 'baihoc:read', menu }, { name: 'baihoc:write', menu });
+    app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write', menu });
 
-    app.get('/user/dao-tao/bai-hoc/list', app.permission.check('baihoc:read'), app.templates.admin);
+    app.get('/user/dao-tao/bai-hoc/list', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/edit/:baiHocId', app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/view/:baiHocId', app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/bai-hoc/page/:pageNumber/:pageSize', app.permission.check('baihoc:read'), (req, res) => {
+    app.get('/api/bai-hoc/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || '',
@@ -30,22 +30,22 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('baihoc:read'), (req, res) => {
+    app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('lesson:read'), (req, res) => {
         app.model.lesson.get(req.params.baiHocId, (error, item) => res.send({ error, item }));
     });
 
 
-    app.post('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
+    app.post('/api/bai-hoc', app.permission.check('lesson:write'), (req, res) => {
         app.model.lesson.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
+    app.put('/api/bai-hoc', app.permission.check('lesson:write'), (req, res) => {
         const changes = req.body.changes;
         if (changes.categories && changes.categories == 'empty') changes.categories = [];
         app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/bai-hoc', app.permission.check('baihoc:write'), (req, res) => {
+    app.delete('/api/bai-hoc', app.permission.check('lesson:write'), (req, res) => {
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
     });
 
@@ -53,7 +53,7 @@ module.exports = (app) => {
     app.get('/api/lesson-video/:lessonId', (req, res) => {
         app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
     });
-    // app.post('/api/lesson-video/:_id', app.permission.check('baihoc:write'), (req, res) => {
+    // app.post('/api/lesson-video/:_id', app.permission.check('lesson:write'), (req, res) => {
     //     const _id = req.params._id, data = req.body.data;
     //     app.model.lessonVideo.create(data, (error, lessonVideo) => {
     //         if (error || !lessonVideo) {
@@ -71,7 +71,7 @@ module.exports = (app) => {
         app.model.lesson.get(req.params.lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/lesson-question/:_id', app.permission.check('baihoc:write'), (req, res) => {
+    app.post('/api/lesson-question/:_id', app.permission.check('lesson:write'), (req, res) => {
         const _id = req.params._id, data = req.body.data;
         app.model.lessonQuestion.create(data, (error, question) => {
             if (error || !question) {
@@ -84,15 +84,15 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/lesson-question', app.permission.check('baihoc:write'), (req, res) => {
+    app.put('/api/lesson-question', app.permission.check('lesson:write'), (req, res) => {
         app.model.lessonQuestion.update(req.body._id, req.body._id, (error, question) => res.send({ error, question }));
     });
 
-    app.put('/api/lesson-question/swap', app.permission.check('baihoc:write'), (req, res) => {
+    app.put('/api/lesson-question/swap', app.permission.check('lesson:write'), (req, res) => {
         app.model.lesson.update(req.body.lessonId, req.body.data, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/lesson-question', app.permission.check('baihoc:write'), (req, res) => {
+    app.delete('/api/lesson-question', app.permission.check('lesson:write'), (req, res) => {
         const { data, lessonId, _id } = req.body;
         if (data.questions && data.questions == 'empty') data.questions = [];
         app.model.lesson.update(lessonId, data, (error, _) => {

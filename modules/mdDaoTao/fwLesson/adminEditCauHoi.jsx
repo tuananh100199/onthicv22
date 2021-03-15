@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux'
+import { updateBaiHoc, getBaiHoc } from './redux/reduxLesson'
 import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux/reduxQuestion';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
@@ -97,11 +97,9 @@ class QuestionModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <div className='form-group row'>
-                                <div className='col-12'>
-                                    <label htmlFor='questionTitle'>Tên câu hỏi</label>
-                                    <input type='text' className='form-control' id='questionTitle' />
-                                </div>
+                            <div className='form-group'>
+                                <label htmlFor='questionTitle'>Tên câu hỏi</label>
+                                <input type='text' className='form-control' id='questionTitle' />
                             </div>
                             <div className='form-group row'>
                                 <div className='col-4'>
@@ -113,24 +111,18 @@ class QuestionModal extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className='form-group row'>
-                                <div className='col-12'>
-                                    <label htmlFor=''>Nội dung câu hỏi</label>
-                                    <Editor ref={this.editor} />
-                                </div>
+                            <div className='form-group'>
+                                <label htmlFor=''>Nội dung câu hỏi</label>
+                                <Editor ref={this.editor} />
                             </div>
 
-                            <div className='form-group row'>
-                                <div key={0} className='col-12'>
-                                    <label>Danh sách câu trả lời</label>
-                                    <textarea defaultValue='' className='form-control' id='questionAnswer' style={{ width: '100%', minHeight: '100px', padding: '0 3px' }} />
-                                </div>
+                            <div className='form-group'>
+                                <label>Danh sách câu trả lời</label>
+                                <textarea defaultValue='' className='form-control' id='questionAnswer' style={{ width: '100%', minHeight: '100px', padding: '0 3px' }} />
                             </div>
-                            <div className='form-group row'>
-                                <div className='col-12'>
-                                    <label htmlFor='questionDefault'>Đáp án</label>
-                                    <input type='text' className='form-control' id='questionDefault' />
-                                </div>
+                            <div className='form-group'>
+                                <label htmlFor='questionDefault'>Đáp án</label>
+                                <input type='text' className='form-control' id='questionDefault' />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -149,6 +141,7 @@ class QuestionModal extends React.Component {
 class adminEditBaiHoc extends React.Component {
     state = { item: null };
     editor = React.createRef();
+
     componentDidMount() {
         this.questionModal = React.createRef();
         T.ready('/user/dao-tao/bai-hoc/list', () => {
@@ -167,15 +160,18 @@ class adminEditBaiHoc extends React.Component {
             });
         });
     }
+
     addQuestion = (data) => {
         this.props.createQuestion(this.state.item._id, data, () => {
             T.notify('Thêm câu hỏi thành công!', 'success');
         });
-    };
+    }
+
     showQuestionModal = (e, item) => {
         this.questionModal.current.show(item);
         e.preventDefault();
-    };
+    }
+
     swapQ = (e, index, isMoveUp) => {
         let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.lessonQuestion : [];
         if (questionList.length == 1) {
@@ -210,12 +206,14 @@ class adminEditBaiHoc extends React.Component {
             }
         }
         e.preventDefault();
-    };
+    }
+
     updateQuestion = (_id, changes) => {
         this.props.updateQuestion(_id, changes, this.state.item._id, () => {
             T.notify('Cập nhật câu hỏi thành công!', 'success');
-        })
-    };
+        });
+    }
+
     removeQuestion = (e, item, index) => {
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
             if (isConfirm) {
@@ -240,9 +238,7 @@ class adminEditBaiHoc extends React.Component {
         const baihocId = params.baihocId;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('lesson:write');
-        const item = this.state.item ? this.state.item : {
-            title: ''
-        };
+        const item = this.state.item ? this.state.item : { title: '' };
         let table_question = 'Chưa có câu hỏi!';
         if (this.props.question && this.props.question.questions && this.props.question.questions.lessonQuestion && this.props.question.questions.lessonQuestion.length > 0) {
             table_question = (
@@ -250,7 +246,7 @@ class adminEditBaiHoc extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên câu hỏi</th>
+                            <th style={{ width: '100%' }}>Tên câu hỏi</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -289,7 +285,7 @@ class adminEditBaiHoc extends React.Component {
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
-                                    </button>
+                    </button>
                 </div>
                 <QuestionModal key={1} add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
                 <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
@@ -298,6 +294,6 @@ class adminEditBaiHoc extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc, question: state.question });
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
 const mapActionsToProps = { updateBaiHoc, getBaiHoc, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);

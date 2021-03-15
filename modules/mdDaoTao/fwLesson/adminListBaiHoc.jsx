@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/redux';
+import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/reduxLesson';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 
@@ -38,10 +38,10 @@ class MonHocPage extends React.Component {
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.baihoc && this.props.baihoc.page ?
-            this.props.baihoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.lesson && this.props.lesson.page ?
+            this.props.lesson.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         let table = 'Không có bài học mới!';
-        if (this.props.baihoc && this.props.baihoc.page && this.props.baihoc.page.list && this.props.baihoc.page.list.length > 0) {
+        if (list && list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -52,7 +52,7 @@ class MonHocPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.baihoc.page.list.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
@@ -67,8 +67,7 @@ class MonHocPage extends React.Component {
                                             </a> : null}
                                     </div>
                                 </td>
-                            </tr>
-                        ))}
+                            </tr>))}
                     </tbody>
                 </table>
             );
@@ -103,6 +102,6 @@ class MonHocPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc });
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc };
 export default connect(mapStateToProps, mapActionsToProps)(MonHocPage);

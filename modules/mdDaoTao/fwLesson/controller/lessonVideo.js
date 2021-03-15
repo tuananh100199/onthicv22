@@ -1,5 +1,5 @@
 module.exports = app => {
-    app.post('/api/lesson-video/:_id', app.permission.check('baihoc:write'), (req, res) => {
+    app.post('/api/lesson-video/:_id', app.permission.check('lesson:write'), (req, res) => {
         const _id = req.params._id, data = req.body.data;
         app.model.lessonVideo.create(data, (error, lessonVideo) => {
             if (error || !lessonVideo) {
@@ -19,16 +19,16 @@ module.exports = app => {
         });
     });
 
-    app.put('/api/lesson-video', app.permission.check('baihoc:write'), (req, res) => {
+    app.put('/api/lesson-video', app.permission.check('lesson:write'), (req, res) => {
         app.model.lessonVideo.update(req.body._id, req.body.data, (error, lessonVideo) => res.send({ error, lessonVideo }));
     });
 
-    app.put('/api/lesson-video/swap', app.permission.check('baihoc:write'), (req, res) => {
+    app.put('/api/lesson-video/swap', app.permission.check('lesson:write'), (req, res) => {
         const data = req.body.data, lessonId = req.body.lessonId;
         app.model.lesson.update(lessonId, data, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/lesson-video', app.permission.check('baihoc:write'), (req, res) => {
+    app.delete('/api/lesson-video', app.permission.check('lesson:write'), (req, res) => {
         const { data, lessonId, _id } = req.body;
         if (data.lessonVideo && data.lessonVideo == 'empty') data.lessonVideo = [];
         app.model.lesson.update(lessonId, data, (error, _) => {

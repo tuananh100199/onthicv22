@@ -1,15 +1,15 @@
 import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
-const BaiHocGetBaiHocInPage = 'BaiHoc:GetBaiHocInPage';
-const BaiHocGetBaiHoc = 'BaiHoc:GetBaiHoc';
+const LessonGetPage = 'LessonGetPage';
+const LessonGetItem = 'LessonGetItem';
 const GET_LESSON_VIDEO_LIST = 'lessonVideo:getLessonVideoList';
 
 export default function BaiHocReducer(state = null, data) {
     switch (data.type) {
-        case BaiHocGetBaiHocInPage:
+        case LessonGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case BaiHocGetBaiHoc:
+        case LessonGetItem:
             return Object.assign({}, state, { lesson: data.item });
 
         case GET_LESSON_VIDEO_LIST:
@@ -30,7 +30,7 @@ export function getBaiHocInPage(pageNumber, pageSize, pageCondition, done) {
     return (dispatch) => {
         ajaxGetBaiHocInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, page => {
             done && done(page);
-            dispatch({ type: BaiHocGetBaiHocInPage, page });
+            dispatch({ type: LessonGetPage, page });
         });
     }
 }
@@ -55,7 +55,7 @@ export function getBaiHoc(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
-                dispatch({ type: BaiHocGetBaiHoc, item: data.item });
+                dispatch({ type: LessonGetItem, item: data.item });
             }
         }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
     }

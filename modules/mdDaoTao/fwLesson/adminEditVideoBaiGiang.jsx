@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/redux';
+import { updateBaiHoc, getBaiHoc } from './redux/reduxLesson';
 import { createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux/reduxLessonVideo';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
@@ -127,7 +127,7 @@ class adminEditBaiHoc extends React.Component {
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
-                let lessonVideoList = this.props.baihoc && this.props.baihoc.listLessonVideo ? this.props.baihoc.listLessonVideo.lessonVideo : [];
+                let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
                 lessonVideoList.splice(index, 1);
                 if (lessonVideoList.length == 0) lessonVideoList = 'empty';
                 changes.lessonVideo = lessonVideoList;
@@ -160,7 +160,7 @@ class adminEditBaiHoc extends React.Component {
         });
     }
     swap = (e, index, baihocId, isMoveUp) => {
-        let lessonVideoList = this.props.baihoc && this.props.baihoc.listLessonVideo && this.props.baihoc.listLessonVideo.lessonVideo ? this.props.baihoc.listLessonVideo.lessonVideo : [];
+        let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
         if (lessonVideoList.length == 1) {
             T.notify('Thay đổi thứ tự bài học thành công', 'success');
         } else {
@@ -207,7 +207,7 @@ class adminEditBaiHoc extends React.Component {
             title: ''
         };
         let table = 'Chưa có bài học!';
-        if (this.props.baihoc && this.props.baihoc.listLessonVideo && this.props.baihoc.listLessonVideo.lessonVideo && this.props.baihoc.listLessonVideo.lessonVideo.length > 0) {
+        if (this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo && this.props.lesson.listLessonVideo.lessonVideo.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -220,7 +220,7 @@ class adminEditBaiHoc extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.baihoc.listLessonVideo.lessonVideo.map((item, index) => (
+                        {this.props.lesson.listLessonVideo.lessonVideo.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'#'}>{item.title}</Link></td>
@@ -268,6 +268,6 @@ class adminEditBaiHoc extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc, question: state.question });
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
 const mapActionsToProps = { updateBaiHoc, getBaiHoc, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);
