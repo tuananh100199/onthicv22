@@ -4,16 +4,31 @@ module.exports = app => {
         price: Number,
         shortDescription: String,
         detailDescription: String,
+        image: String,
         subjectList: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
         isPriceDisplayed: { type: Boolean, default: false }
     });
     const model = app.db.model('CourseType', schema);
 
     app.model.courseType = {
-        create: (data, done) => {
-            if (!data.title) data.title = 'Loại khoá học mới';
-            model.create(data, done)
-        },
+        create: (data, done) => model.find({}).sort({ title: 1 }).limit(1).exec(() => {
+            model.create({ ...data, title: !data.title && 'Loại khoá học mới' }, (error, item) => {
+                if (error) {
+                    done(error);
+                } else {
+                    item.image = `/img/course-type/${item._id}.jpg`;
+                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                        destPath = app.path.join(app.publicPath, item.image);
+                    app.fs.copyFile(srcPath, destPath, error => {
+                        if (error) {
+                            done(error);
+                        } else {
+                            item.save(done);
+                        }
+                    });
+                }
+            });
+        }),
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
@@ -40,6 +55,7 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
+                app.deleteImage(item.image);
                 item.remove(done);
             }
         }),

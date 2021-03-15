@@ -101,7 +101,7 @@ export function getDKTVListAll(done) {
 }
 
 T.initCookiePage('pageDKTVList');
-export function getDKTVListPage( pageNumber, pageSize, done) {
+export function getDKTVListPage(pageNumber, pageSize, done) {
     const page = T.updatePage('pageDKTVList', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize;
@@ -188,7 +188,7 @@ export function changeDKTVList(item) {
 
 export function createDKTVListItem(dangKyTuVan, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/item/';
+        const url = '/home/dang-ky-tu-van-list/item/';
         T.post(url, { dangKyTuVan }, data => {
             if (data.error) {
                 T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');

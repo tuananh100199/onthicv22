@@ -190,7 +190,7 @@ class DangKyTuVanEditPage extends React.Component {
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('dangKyTuVan:write');
+            readOnly = !currentPermissions.includes('component:write');
         let table = null,
             currentDangKyTuVan = this.props.dangKyTuVan ? this.props.dangKyTuVan.item : null;
         if (currentDangKyTuVan && currentDangKyTuVan.statistic.length > 0) {
@@ -247,60 +247,53 @@ class DangKyTuVanEditPage extends React.Component {
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-bar-chart' /> Đăng ký tư vấn: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title }} />
-                    </div>
+                    <h1><i className='fa fa-bar-chart' /> Đăng ký tư vấn: {title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/component'>Danh sách đăng ký tư vấn</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/component'>Danh sách đăng ký tư vấn</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                <div className='tile col-md-12'>
-                    <div className='row'>
-                        <div className='col-4'>
-                            <div className='form-group'>
-                                <label className='control-label' htmlFor='title'>Tiêu đề</label>
-                                <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin chung</h3>
+                    <div className='tile-body'>
+                        <div className='row'>
+                            <div className='col-4'>
+                                <div className='form-group'>
+                                    <label className='control-label' htmlFor='title'>Tiêu đề</label>
+                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='title' defaultValue={title} readOnly={readOnly} />
+                                </div>
+                            </div>
+                            <div className='col-4'>
+                                <div className='form-group'>
+                                    <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
+                                    <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
+                                </div>
+                            </div>
+                            <div className='col-4'>
+                                <div className='form-group'>
+                                    <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
+                                    <select className='form-control col-6' id='courseType' multiple={false} >
+                                        <optgroup className='form-control' label='Lựa chọn loại khóa học' />
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div className='col-4'>
-                            <div className='form-group'>
-                                <label className='control-label' htmlFor='formTitle'>Tiêu đề form</label>
-                                <input className='form-control' type='text' placeholder='Tiêu đề' id='formTitle' defaultValue={formTitle} readOnly={readOnly} />
-                            </div>
-                        </div>
-                        <div className='col-4'>
-                            <div className='form-group'>
-                                <label htmlFor='courseType' className='control-label'>Loại khóa học</label><br />
-                                <select className='form-control col-6' id='courseType' multiple={false} >
-                                    <optgroup className='form-control' label='Lựa chọn loại khóa học' />
-                                </select>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className='form-group mt-3'>
-                        <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
-                        <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
+                        <div className='form-group'>
+                            <label className='control-label' htmlFor='tepViDescription'>Mô tả</label>
+                            <Editor ref={this.editor} placeholder='Nội dung' id='tepViDescription' readOnly={readOnly} /><br />
+                        </div>
                     </div>
                 </div>
-                <div className='tile col-md-12'>
-                    <div className='control-label'>
-                        <label htmlFor='tepViDescription'>Thống kê</label>
-                    </div>
-                    {table}
+
+                <div className='tile'>
+                    <h3 className='tile-title'>Thống kê</h3>
+                    <div className='tile-body'>{table}</div>
                     {readOnly ? null :
-                        <div className='tile-footer'>
-                            <div className='row'>
-                                <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-info' type='button' onClick={this.showAddDKTVModal}>
-                                        <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
-                                        </button>&nbsp;
-                                    </div>
-                            </div>
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-success' type='button' onClick={this.showAddDKTVModal}>
+                                <i className='fa fa-fw fa-lg fa-plus' />Thêm thống kê
+                            </button>
                         </div>
                     }
                 </div>

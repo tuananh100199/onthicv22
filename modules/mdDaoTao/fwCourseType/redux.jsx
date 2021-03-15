@@ -4,6 +4,7 @@ import T from 'view/js/common';
 const CourseTypeGetPage = 'CourseTypeGetPage';
 const CourseTypeGetOne = 'CourseTypeGetOne';
 const CourseTypeGetAll = 'CourseTypeGetAll';
+const CourseTypeUpdate = 'CourseTypeUpdate';
 
 export default function courseTypeReducer(state = null, data) {
     switch (data.type) {
@@ -13,6 +14,8 @@ export default function courseTypeReducer(state = null, data) {
             return Object.assign({}, state, { page: data.page });
 
         case CourseTypeGetOne:
+            return Object.assign({}, state, { courseType: data.item });
+        case CourseTypeUpdate:
             return Object.assign({}, state, { courseType: data.item });
         default:
             return state;
@@ -92,6 +95,7 @@ export function updateCourseType(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin loại khóa học thành công!', 'info');
+                dispatch({ type: CourseTypeUpdate, item: data.item });
                 dispatch(getCourseTypeInPage());
                 done && done();
             }

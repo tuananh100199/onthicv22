@@ -13,7 +13,7 @@ class DivisionEditPage extends React.Component {
         this.imageBox = React.createRef();
     }
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/division', () => {
             const route = T.routeMatcher('/user/division/edit/:_id'), params = route.parse(window.location.pathname);
             this.props.getDivisionItem(params._id, data => {
                 if (data.item) {
