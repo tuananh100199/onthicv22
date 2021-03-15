@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 import { Select } from 'view/component/Input';
 import { ajaxSelectSubject } from '../fwMonHoc/redux';
+import ImageBox from 'view/component/ImageBox';
 
 class CourseTypeModal extends React.Component {
     state = { item: null };
@@ -64,6 +65,7 @@ class AdminCourseTypeEditPage extends React.Component {
     state = { item: null };
     editor = React.createRef();
     modal = React.createRef();
+    imageBox = React.createRef();
 
     componentDidMount() {
         T.ready('/user/course-type/list', () => {
@@ -79,6 +81,7 @@ class AdminCourseTypeEditPage extends React.Component {
                     $('#price').val(item.price);
                     $('#shortDescription').val(item.shortDescription);
                     this.editor.current.html(item.detailDescription);
+                    this.imageBox.current.setData('course-type:' + (item._id || 'new'), item.image ? item.image : '/img/avatar.png');
                     this.setState(data);
                     $('#title').focus();
                 } else {
@@ -178,20 +181,28 @@ class AdminCourseTypeEditPage extends React.Component {
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='courseTypeCommon'>
                         <div className='row'>
-                            <div className='form-group col-md-6'>
-                                <label className='control-label'>Tên</label>
-                                <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
+                            <div className='form-group col-md-3 order-md-12'>
+                                <label className='control-label'>Hình đại diện</label>
+                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseTypeImage' />
                             </div>
-                            <div className='form-group col-md-3'>
-                                <label className='control-label'>Giá</label>
-                                <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
-                            </div>
-                            <div className='form-group col-md-3' style={{ display: 'flex' }}>
-                                <label className='control-label'>Hiển thị giá:</label>
-                                <div className='toggle' style={{ paddingLeft: '10px' }}>
-                                    <label>
-                                        <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
-                                    </label>
+                            <div className='col-md-9 order-md-1'>
+                                <div className='form-group'>
+                                    <label className='control-label'>Tên</label>
+                                    <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
+                                </div>
+                                <div className='row'>
+                                    <div className='form-group col-md-6 order-md-1'>
+                                        <label className='control-label'>Giá</label>
+                                        <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
+                                    </div>
+                                    <div className='form-group col-md-3 order-md-12' style={{ display: 'flex' }}>
+                                        <label className='control-label'>Hiển thị giá:</label>
+                                        <div className='toggle' style={{ paddingLeft: '10px' }}>
+                                            <label>
+                                                <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
