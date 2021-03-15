@@ -101,7 +101,7 @@ export function getSubscribeAll(done) {
 }
 
 T.initCookiePage('pageSubscribe');
-export function getSubscribePage(pageNumber, pageSize, done) {
+export function getSubscribePage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('pageSubscribe', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/subscribe/page/' + page.pageNumber + '/' + page.pageSize;

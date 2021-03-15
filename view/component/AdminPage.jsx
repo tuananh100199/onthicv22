@@ -44,6 +44,7 @@ export class AdminModal extends React.Component {
 
     render = () => null;
 }
+
 export class AdminPage extends React.Component {
     componentWillUnmount() {
         T.onSearch = null;
@@ -60,7 +61,7 @@ export class AdminPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className={icon} />{title}</h1>
+                    <h1><i className={icon} /> {title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>{breadcrumb}&nbsp;/&nbsp;{title}
                     </ul>

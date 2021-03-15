@@ -29,7 +29,9 @@ module.exports = app => {
             finalCreate(data);
         },
 
-        getAll: (done) => model.find({}).exec(done),
+        getAll: (done) => {
+            model.find({}).exec(done);
+        },
 
         get: (condition, option, done) => {
             const handleGet = (condition, option, done) => {

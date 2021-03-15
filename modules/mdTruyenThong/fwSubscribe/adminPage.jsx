@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe } from './redux';
 import Pagination from 'view/component/Pagination';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
 class AdminSubscribeModal extends React.Component {
     state = {};
@@ -38,17 +39,18 @@ class AdminSubscribeModal extends React.Component {
     }
 }
 
-class SubscribePage extends React.Component {
+class SubscribePage extends AdminPage {
     modal = React.createRef();
 
     componentDidMount() {
-        this.props.getSubscribePage();
         T.ready();
+        this.props.getSubscribePage();
+        T.onSearch = (searchText) => this.props.getSubscribePage(searchText);
     }
 
-    showSubscribe = (e, SubscribeId) => {
+    showSubscribe = (e, _id) => {
         e.preventDefault();
-        this.props.getSubscribe(SubscribeId, subscribe => this.modal.current.show(subscribe));
+        this.props.getSubscribe(_id, subscribe => this.modal.current.show(subscribe));
     }
 
     changeRead = (item) => this.props.updateSubscribe(item._id, { read: !item.read });
@@ -59,15 +61,13 @@ class SubscribePage extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            permissionRead = currentPermissions.contains('subscribe:read'),
-            permissionDelete = currentPermissions.contains('subscribe:delete');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subscribe && this.props.subscribe.page ?
-            this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const permission = this.getUserPermission('subscribe');
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.subscribe && this.props.subscribe.page ?
+            this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có đăng ký nhận tin!';
-        if (this.props.subscribe && this.props.subscribe.page && this.props.subscribe.page.list && this.props.subscribe.page.list.length > 0) {
+        if (list && list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -75,25 +75,25 @@ class SubscribePage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '70%' }}>Email</th>
                             <th style={{ width: '30%' }}>Ngày đăng ký</th>
-                            {permissionRead || permissionDelete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
+                            {permission.read || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.subscribe.page.list.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <a href='#' onClick={e => permissionRead && this.showSubscribe(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.email}</a>
+                                    <a href='#' onClick={e => permission.read && this.showSubscribe(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.email}</a>
                                 </td>
                                 <td nowrap='true'>{new Date(item.createdDate).getText()}</td>
-                                {permissionRead || permissionDelete ?
+                                {permission.read || permission.delete ?
                                     <td>
                                         <div className='btn-group'>
-                                            {permissionRead ?
+                                            {permission.read ?
                                                 <a className='btn btn-primary' href='#' onClick={e => this.showSubscribe(e, item._id)}>
                                                     <i className='fa fa-lg fa-envelope-open-o' />
                                                 </a> : null}
-                                            {permissionDelete ?
+                                            {permission.delete ?
                                                 <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                     <i className='fa fa-lg fa-trash' />
                                                 </a> : null}
@@ -106,17 +106,18 @@ class SubscribePage extends React.Component {
             );
         }
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa fa-envelope-o' /> Đăng ký nhận tin</h1>
-                </div>
+        const renderData = {
+            icon: 'fa fa-envelope-o',
+            title: 'Đăng ký nhận tin',
+            breadcrumb: [],
+            content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getSubscribePage} />
                 <AdminSubscribeModal ref={this.modal} />
-            </main>
-        );
+            </>,
+        };
+        return this.renderListPage(renderData);
     }
 }
 
