@@ -95,7 +95,7 @@ class QuestionModal extends React.Component {
                             <div className='form-group row'>
                                 <div className='col-4'>
                                     <label>Kích hoạt</label>
-                                    <div className='col-12 col-sm-12 toggle'>
+                                    <div className=' toggle'>
                                         <label>
                                             <input type='checkbox' checked={this.state.active} onChange={this.changeActive} /><span className='button-indecator' />
                                         </label>
