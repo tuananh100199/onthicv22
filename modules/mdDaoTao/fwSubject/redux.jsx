@@ -210,7 +210,6 @@ export function createQuestion(_id, data, done) {
 export function updateQuestion(_id, data, subjectId, done) {
     return dispatch => {
         const url = '/api/feedback-question';
-        console.log(data)
         T.put(url, { _id, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
@@ -226,7 +225,6 @@ export function updateQuestion(_id, data, subjectId, done) {
 export function swapQuestion(subjectId, data, done) {
     return dispatch => {
         const url = `/api/feedback-question/swap`;
-        console.log(data)
         T.put(url, { subjectId, data }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
