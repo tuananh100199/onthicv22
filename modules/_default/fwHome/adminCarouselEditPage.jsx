@@ -94,7 +94,9 @@ class CarouselItemModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
+                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -111,7 +113,7 @@ class CarouselEditPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             $('#crsTitle').focus();
 
             const route = T.routeMatcher('/user/carousel/edit/:carouselId'),
@@ -162,13 +164,14 @@ class CarouselEditPage extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
         let items = this.props.carousel && this.props.carousel.selectedItem && this.props.carousel.selectedItem.items ? this.props.carousel.selectedItem.items : [],
-            table = null;
+            table = 'Không có hình ảnh!';
 
         if (items.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
+                            <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '80%' }}>Tiêu đề</th>
                             <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
@@ -178,6 +181,7 @@ class CarouselEditPage extends React.Component {
                     <tbody>
                         {items.map((item, index) => (
                             <tr key={index}>
+                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     {readOnly ? item.title : <a href='#' onClick={e => this.editItem(e, item, index)}>
                                         {item.title}
@@ -213,85 +217,70 @@ class CarouselEditPage extends React.Component {
                     </tbody>
                 </table>
             );
-        } else {
-            table = <p>Không có hình ảnh!</p>;
         }
 
         const { title, height } = this.props.carousel && this.props.carousel.selectedItem ? this.props.carousel.selectedItem : { title: '', height: 0 };
-        const carouselTitle = title != '' ? 'Tên: <b>' + title + '</b>' : '';
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-image' /> Tập hình ảnh: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: carouselTitle }} />
-                    </div>
+                    <h1><i className='fa fa-image' /> Tập hình ảnh: {title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/component'>Thành phần giao diện</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/component'>Thành phần giao diện</Link>&nbsp;/&nbsp;Tập hình ảnh
                     </ul>
                 </div>
-                <div className='row'>
-                    <div className='col-md-6'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Thông tin chung</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Tiêu đề tập hình ảnh</label>
-                                    <input className='form-control' type='text' placeholder='Tiêu đề tập hình ảnh' id='crsTitle' defaultValue={title} readOnly={readOnly} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Chiều cao</label>
-                                    <input className='form-control' type='number' placeholder='Chiều cao' id='crsHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />
-                                </div>
-                                <div className='form-group row'>
-                                    <label className='control-label col-3 col-sm-3'>Đơn ảnh</label>
-                                    <div className='col-8 col-sm-8 toggle'>
-                                        <label>
-                                            <input type='checkbox' checked={this.state.single} onChange={e => !readOnly && this.setState({ single: e.target.checked })} /><span className='button-indecator' />
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className='form-group row'>
-                                    <label className='control-label col-3 col-sm-3'>Kích hoạt</label>
-                                    <div className='col-8 col-sm-8 toggle'>
-                                        <label>
-                                            <input type='checkbox' checked={this.state.active} onChange={e => !readOnly && this.setState({ active: e.target.checked })} /><span className='button-indecator' />
-                                        </label>
-                                    </div>
-                                </div>
+                <div className='tile'>
+                    <h3 className='tile-title'>Thông tin chung</h3>
+                    <div className='tile-body row'>
+                        <div className='form-group col-md-6'>
+                            <label className='control-label'>Tiêu đề tập hình ảnh</label>
+                            <input className='form-control' type='text' placeholder='Tiêu đề tập hình ảnh' id='crsTitle' defaultValue={title} readOnly={readOnly} />
+                        </div>
+                        <div className='form-group col-md-6'>
+                            <label className='control-label'>Chiều cao</label>
+                            <input className='form-control' type='number' placeholder='Chiều cao' id='crsHeight' defaultValue={height} style={{ textAlign: 'right' }} readOnly={readOnly} />
+                        </div>
+                        <div className='form-group col-md-6' style={{ display: 'flex' }}>
+                            <label className='control-label'>Đơn ảnh:</label>&nbsp;
+                            <div className='toggle'>
+                                <label>
+                                    <input type='checkbox' checked={this.state.single} onChange={e => !readOnly && this.setState({ single: e.target.checked })} /><span className='button-indecator' />
+                                </label>
                             </div>
-                            {!readOnly ? <div className='tile-footer'>
-                                <div className='row'>
-                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-primary' type='button' onClick={this.save}>
-                                            <i className='fa fa-fw fa-lg fa-check-circle'></i>Lưu
-                                        </button>
-                                    </div>
-                                </div>
-                            </div> : null}
+                        </div>
+                        <div className='form-group col-md-6' style={{ display: 'flex' }}>
+                            <label className='control-label'>Kích hoạt:</label>&nbsp;
+                            <div className='toggle'>
+                                <label>
+                                    <input type='checkbox' checked={this.state.active} onChange={e => !readOnly && this.setState({ active: e.target.checked })} /><span className='button-indecator' />
+                                </label>
+                            </div>
                         </div>
                     </div>
+                    {readOnly ? null :
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-primary' type='button' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                        </div>}
+                </div>
 
-                    <div className='col-md-12'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Danh sách hình ảnh</h3>
-                            <div className='tile-body'>
-                                {table}
-                            </div>
-                        </div>
+                <div className='tile'>
+                    <h3 className='tile-title'>Danh sách hình ảnh</h3>
+                    <div className='tile-body'>
+                        {table}
+                        {readOnly ? null :
+                            <div style={{ textAlign: 'right' }}>
+                                <button className='btn btn-success' type='button' onClick={this.createItem}>
+                                    <i className='fa fa-fw fa-lg fa-plus'></i> Thêm
+                                </button>
+                            </div>}
                     </div>
                 </div>
+
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                {!readOnly ? <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                    onClick={this.createItem}>
-                    <i className='fa fa-lg fa-plus' />
-                </button> : null}
-
                 <CarouselItemModal ref={this.modal} createCarouselItem={this.props.createCarouselItem} updateCarouselItem={this.props.updateCarouselItem} />
             </main>
         );

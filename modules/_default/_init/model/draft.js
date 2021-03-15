@@ -97,69 +97,6 @@ module.exports = app => {
             }
         }),
 
-        toEvent: (_id, done) => model.findById({ _id: _id }).exec((error, result) => {
-            if (error) {
-                done(error);
-            } else {
-                const event = {
-                    title: result.title,
-                    isInternal: result.isInternal,
-                    name: JSON.parse(result.documentJson).name,
-                    categories: JSON.parse(result.documentJson).categories,
-                    location: JSON.parse(result.documentJson).location,
-                    link: JSON.parse(result.documentJson).link,
-                    maxRegisterUsers: JSON.parse(result.documentJson).maxRegisterUsers,
-                    abstract: JSON.parse(result.documentJson).abstract,
-                    content: JSON.parse(result.documentJson).content,
-                    trainingPoint: JSON.parse(result.documentJson).trainingPoint,
-                    socialWorkDay: JSON.parse(result.documentJson).socialWorkDay,
-                    createdDate: JSON.parse(result.documentJson).createdDate,
-                    startPost: JSON.parse(result.documentJson).startPost,
-                    stopPost: JSON.parse(result.documentJson).stopPost,
-                    startRegister: JSON.parse(result.documentJson).startRegister,
-                    stopRegister: JSON.parse(result.documentJson).stopRegister,
-                    startEvent: JSON.parse(result.documentJson).startEvent,
-                    stopEvent: JSON.parse(result.documentJson).stopEvent,
-                };
-                app.model.event.get(result.documentId, (error, value) => {
-                    if (error) { done(error) } else {
-                        const srcPath = app.path.join(app.publicPath, (result.image.indexOf('?t=') != -1) ? result.image.substring(0, result.image.indexOf('?t=')) : result.image);
-                        if (value) {
-                            const destPath = app.path.join(app.publicPath, (value.image.indexOf('?t=') != -1) ? value.image.substring(0, value.image.indexOf('?t=')) : value.image);
-                            event.image = '/img/event/' + result.documentId + app.path.extname(destPath) + '?t=' + (new Date().getTime()).toString().slice(-8);
-                            app.model.event.update(result.documentId, event, (error, item) => {
-                                app.fs.copyFile(srcPath, destPath, error => {
-                                    if (error) {
-                                        done(error);
-                                    } else {
-                                        app.model.draft.delete(result._id, error => {
-                                            done && done(error, item);
-                                        });
-                                    }
-                                });
-                            })
-                        } else {
-                            app.model.event.create(event, (error, item) => {
-                                const destPath = app.path.join(app.publicPath, item.image);
-                                event.link = JSON.parse(result.documentJson).link;
-                                event.createdDate = JSON.parse(result.documentJson).createdDate,
-                                    app.fs.copyFile(srcPath, destPath, error => {
-                                        if (error) {
-                                            done(error);
-                                        } else {
-                                            app.model.draft.delete(result._id, error => {
-                                                done && done(error, item);
-                                            });
-                                        }
-                                    });
-                            });
-                        }
-                    }
-                });
-
-            }
-        }),
-
         userGet: (documentType, editorId, done) => model.find({ editorId, documentType }, 'documentId').exec(done),
 
         getAll: (condition, done) => {

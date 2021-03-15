@@ -1,11 +1,11 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const ContactGetAll = 'Contact:GetAll';
-const ContactGetPage = 'Contact:GetPage';
-const ContactGetUnread = 'Contact:GetUnread';
-const ContactAdd = 'Contact:Add';
-const ContactUpdate = 'Contact:Update';
+const ContactGetAll = 'ContactGetAll';
+const ContactGetPage = 'ContactGetPage';
+const ContactGetUnread = 'ContactGetUnread';
+const ContactAdd = 'ContactAdd';
+const ContactUpdate = 'ContactUpdate';
 
 export default function contactReducer(state = null, data) {
     switch (data.type) {

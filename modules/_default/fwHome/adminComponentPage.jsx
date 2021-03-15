@@ -15,7 +15,7 @@ import DangKyTuVanPage from 'modules/mdDaoTao/fwDangKyTuVan/adminPage';
 
 class ComponentPage extends React.Component {
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             let tabIndex = parseInt(T.cookie('componentPageTab')),
                 navTabs = $('#componentPage ul.nav.nav-tabs');
             if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;

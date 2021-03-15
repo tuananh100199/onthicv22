@@ -20,16 +20,7 @@ class UserProfilePage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-user' /> Trang cá nhân</h1>
-                        <p>Trung tâm đào tạo lái xe Hiệp Phát</p>
-                    </div>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <li className='breadcrumb-item'>
-                            <i className='fa fa-home fa-lg' />
-                        </li>
-                        <li className='breadcrumb-item'>Trang cá nhân</li>
-                    </ul>
+                    <h1><i className='fa fa-user' /> Trang cá nhân</h1>
                 </div>
 
                 <div className='row'>
@@ -47,7 +38,6 @@ class UserProfilePage extends React.Component {
                                 </Link>
                             </div>
                         </div>
-
                     </div>
                     {
                         !unfinished.length ?

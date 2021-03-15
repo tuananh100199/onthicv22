@@ -14,11 +14,6 @@ export const OverlayLoading = (props) =>
     </React.Fragment>;
 
 export default class Pagination extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
-
     pageNumberChanged = (e, pageNumber, pageCondition) => {
         if (this.props.done) {
             if (pageCondition) {
@@ -33,7 +28,6 @@ export default class Pagination extends React.Component {
                 this.props.getPage(pageNumber, null);
             }
         }
-        // this.props.getPage(pageNumber, null);
         e.preventDefault();
     }
     pageSizeChanged = (pageSize, pageCondition) => {
@@ -50,7 +44,6 @@ export default class Pagination extends React.Component {
                 this.props.getPage(null, pageSize);
             }
         }
-        // this.props.getPage(null, pageSize);
     }
 
     render() {

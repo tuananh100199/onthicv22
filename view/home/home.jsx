@@ -19,6 +19,7 @@ import LanguageSwitch from 'view/component/LanguageSwitch';
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import _init from 'modules/_default/_init/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwHome from 'modules/_default/fwHome/index';
 import fwMenu from 'modules/_default/fwMenu/index';
 import fwUser from 'modules/_default/fwUser/index';
@@ -26,10 +27,10 @@ import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwContentList from 'modules/_default/fwContentList/index';
-import fwAddress from 'modules/mdTruyenThong/fwAddress/index';
+import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 
-const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwForm, fwNews, fwCourse, fwContentList, fwAddress, fwCourseType];
+const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwForm, fwNews, fwCourse, fwContentList, fwDivision, fwCourseType];
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

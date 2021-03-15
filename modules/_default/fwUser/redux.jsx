@@ -1,30 +1,30 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const GET_USERS = 'User:GetUsers';
-const GET_USER = 'User:Get';
-const GET_USER_BY_EMAIL = 'User:GetByMail';
+const UserGetAll = 'USER_GET_ALL';
+const UserGetOne = 'UserGetOne';
+const UserGetOneByEmail = 'UserGetOneByEmail';
+const UserGetPage = 'UserGetPage';
+const UserUpdate = 'UserUpdate';
 const GET_STAFFS = 'User:GetStaffs';
-const GET_USER_IN_PAGE = 'User:GetPage';
 const GET_STAFF_IN_PAGE = 'User:GetStaffPage';
-const UPDATE_USER = 'User:Update';
 
 export default function userReducer(state = null, data) {
     switch (data.type) {
-        case GET_USERS:
+        case UserGetAll:
             return Object.assign({}, state, { items: data.items });
-        case GET_USER:
+        case UserGetOne:
             return Object.assign({}, state, { item: data.item });
-        case GET_USER_BY_EMAIL:
+        case UserGetOneByEmail:
             return Object.assign({}, state, { user: data.user });
         case GET_STAFFS:
             return Object.assign({}, state, { staffs: data.items });
-        case GET_USER_IN_PAGE:
+        case UserGetPage:
             return Object.assign({}, state, { page: data.page });
         case GET_STAFF_IN_PAGE:
             return Object.assign({}, state, { staffPage: data.page });
 
-        case UPDATE_USER:
+        case UserUpdate:
             if (state) {
                 let updatedItems = Object.assign({}, state.items),
                     updatedStaffs = Object.assign({}, state.staffs),
@@ -83,7 +83,7 @@ export function getAllUsers(done) {
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
-                dispatch({ type: GET_USERS, items: data.items });
+                dispatch({ type: UserGetAll, items: data.items });
             }
         }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
     }
@@ -111,7 +111,7 @@ export function getUserInPage(pageNumber, pageSize, pageCondition, done) {
     return dispatch => {
         ajaxGetUserInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, page => {
             done && done(page);
-            dispatch({ type: GET_USER_IN_PAGE, page });
+            dispatch({ type: UserGetPage, page });
         });
     }
 }
@@ -142,7 +142,7 @@ export function getUser(userId, done) {
     return dispatch => {
         ajaxGetUser(userId, data => {
             done && done(data);
-            dispatch({ type: GET_USER, item: data.user });
+            dispatch({ type: UserGetOne, item: data.user });
         });
     }
 }
@@ -184,7 +184,7 @@ export function userGetByEmail(email, done) {
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 done && done(data.user);
-                dispatch({ type: GET_USER_BY_EMAIL, item: data.user });
+                dispatch({ type: UserGetOneByEmail, item: data.user });
             }
         }, error => {
             console.error('GET: ' + url + '. ' + error);
@@ -241,7 +241,7 @@ export function deleteUser(_id, done) {
 }
 
 export function changeUser(user) {
-    return { type: UPDATE_USER, item: user };
+    return { type: UserUpdate, item: user };
 }
 
 

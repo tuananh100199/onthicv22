@@ -47,14 +47,12 @@ module.exports = (app, appName) => {
 
     // Parent menu -----------------------------------------------------------------------------------------------------
     app.parentMenu = {
-        user: {
-            index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user',
-
-        },
+        user: { index: 1000, title: 'Trang cá nhân', link: '/user', icon: 'fa-user' },
         setting: {
-            index: 2000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog',
-            subMenusRender: false,
+            index: 2000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog', // subMenusRender: false,
         },
+        communication: { index: 3000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
+        trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------

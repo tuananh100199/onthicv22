@@ -96,7 +96,10 @@ class EditAnswerModal extends React.Component {
                             </div>
                             <div className='modal-footer'>
                                 <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                                {!readOnly ? <button type='button' className='btn btn-primary' onClick={e => this.save(e, item)}>Lưu</button> : ''}
+                                {readOnly ? null :
+                                    <button type='button' className='btn btn-primary' onClick={e => this.save(e, item)}>
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    </button>}
                             </div>
                         </div>
                     </form>

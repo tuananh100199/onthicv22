@@ -7,7 +7,7 @@ module.exports = app => {
     // };
 
     const menu = {
-        parentMenu: { index: 3000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
+        parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
         // menus: {
         //     3020: { title: 'Danh sách đơn chờ duyệt hạng B1', link: '/user/don-de-nghi-hoc/list/B1', icon: 'fa-list', backgroundColor: '#032b91', groupIndex: 0 },
         //     3021: { title: 'Danh sách đơn chờ duyệt hạng B2', link: '/user/don-de-nghi-hoc/list/B2', icon: 'fa-list', backgroundColor: '#00897b', groupIndex: 0 },

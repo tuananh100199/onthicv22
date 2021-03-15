@@ -1,10 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createDKTVListItem } from './redux/reduxDangKyTuVanList';
-import { getDangKyTuVanByUser, getAllDangKyTuVan } from './redux/reduxDangKyTuVan';
+import { getDangKyTuVanByUser } from './redux/reduxDangKyTuVan';
 import { getAllCourseType } from '../fwCourseType/redux';
-import Dropdown from 'view/component/Dropdown';
-
 class SectionDangKyTuVan extends React.Component {
     state = { item: {} };
     constructor(props) {
@@ -12,6 +10,7 @@ class SectionDangKyTuVan extends React.Component {
         this.firstname = React.createRef();
         this.lastname = React.createRef();
         this.email = React.createRef();
+        this.courseType = React.createRef();
         this.phone = React.createRef();
     }
     componentDidMount() {
@@ -69,7 +68,7 @@ class SectionDangKyTuVan extends React.Component {
                                 });
                             }
                         }
-                        let { _id, title, formTitle, description, statistic, courseType } = data;
+                        let { title, formTitle, description } = data;
                         $('#title').val(title).focus();
                         $('#formTitle').val(formTitle);
                         $('#description').val(description);
@@ -78,10 +77,8 @@ class SectionDangKyTuVan extends React.Component {
                     }
                     this.props.getAllCourseType(datacType => {
                         if (datacType) {
-                            this.props.getAllDangKyTuVan(dataDKTV => {
-                                let courseType = dataDKTV ? dataDKTV.map(item => ({ id: item._id, text: item.title })) : null;
-                                $('#courseType').select2({ placeholder: 'Loại khóa học', data: courseType }).val(courseType.title).trigger('change');
-                            });
+                            let courseType = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
+                            $('#courseType').select2({ placeholder: 'Loại khóa học', data: courseType }).val(courseType.title).trigger('change');
                         }
                     });
                 });
@@ -91,38 +88,46 @@ class SectionDangKyTuVan extends React.Component {
     }
     sendMessage = (e) => {
         e.preventDefault();
-        const courseType = $('#courseType').val();
         if (this.firstname.current.value == '') {
             T.notify('Họ bị trống!', 'danger');
             (this.firstname.current).focus();
-        } else if (this.lastname.current.value == '') {
+            return
+        }
+        if (this.lastname.current.value == '') {
             T.notify('Tên bị trống!', 'danger');
             (this.lastname.current).focus();
-        } else if (this.email.current.value == '') {
-            T.notify('Email bị trống!', 'danger');
-            (this.email.current).focus();
-        } else if (!T.validateEmail(this.email.current.value)) {
-            T.notify('Email không hợp lệ!', 'danger');
-            (this.email.current).focus();
-        } else if (this.phone.current.value == '') {
+            return
+        }
+        if (this.phone.current.value == '') {
             T.notify('Số điện thoại bị trống!', 'danger');
             (this.phone.current).focus();
-        } else if (courseType === null) {
-            T.notify('Vui lòng chọn loại khóa học!', 'danger');
-            $('#courseType').focus();
-        } else {
-            this.props.createDKTVListItem(
-                {
-                    parentId: courseType,
-                    firstname: this.firstname.current.value,
-                    lastname: this.lastname.current.value,
-                    email: this.email.current.value,
-                    phone: this.phone.current.value
-                }, () => {
-                    this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = '';
-                    T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
-                });
+            return
         }
+        if (this.email.current.value != '') {
+            if (!T.validateEmail(this.email.current.value)) {
+                T.notify('Email không hợp lệ!', 'danger');
+                (this.email.current).focus();
+                return
+            }
+        }
+        this.props.createDKTVListItem(
+            {
+                courseType: this.courseType.current.value,
+                firstname: this.firstname.current.value,
+                lastname: this.lastname.current.value,
+                email: this.email.current.value,
+                phone: this.phone.current.value
+            }, () => {
+                this.firstname.current.value = this.lastname.current.value = this.email.current.value = this.phone.current.value = '';
+                document.getElementById('courseType').innerText = null;
+                T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
+                this.props.getAllCourseType(datacType => {
+                    if (datacType) {
+                        let courseType = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
+                        $('#courseType').select2({ placeholder: 'Loại khóa học', data: courseType }).val(courseType.title).trigger('change');
+                    }
+                });
+            });
     }
 
     render() {
@@ -160,14 +165,13 @@ class SectionDangKyTuVan extends React.Component {
                                 <div className="intro_form_title" id="formTitle">{item.formTitle}</div>
                                 <form action="#" className="intro_form" id="intro_form" onSubmit={this.sendMessage}>
                                     <div className="d-flex flex-row align-items-start justify-content-between flex-wrap">
-
                                         <input type="text" className="intro_input" placeholder="Họ" ref={this.lastname} required="required" />
                                         <input type="text" className="intro_input" placeholder="Tên" ref={this.firstname} required="required" />
-                                        <select className='col-6 contact_input w-100' id='courseType' defaultValue={null} multiple={false} >
+                                        <select className='col-6 contact_input w-100' id='courseType' ref={this.courseType} defaultValue={null} >
                                             <optgroup className='contact_input' label='Lựa chọn loại khóa học' />
                                         </select>
-                                        <input type="tel" className="contact_input" placeholder="Số điện thoại" ref={this.phone} required="required" />
-                                        <input type='text' className='contact_input w-100' ref={this.email} placeholder='Email' required="required" />
+                                        <input type="tel" className="intro_input" placeholder="Số điện thoại" ref={this.phone} required="required" />
+                                        <input type='text' className='intro_input w-100' ref={this.email} placeholder='Email' />
                                     </div>
                                     <button className="button button_1 intro_button trans_200">gửi tin nhắn</button>
                                 </form>
@@ -180,6 +184,6 @@ class SectionDangKyTuVan extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllDangKyTuVan, createDKTVListItem, getDangKyTuVanByUser, getAllCourseType };
+const mapStateToProps = state => ({ system: state.system, division: state.division });
+const mapActionsToProps = { createDKTVListItem, getDangKyTuVanByUser, getAllCourseType };
 export default connect(mapStateToProps, mapActionsToProps)(SectionDangKyTuVan);

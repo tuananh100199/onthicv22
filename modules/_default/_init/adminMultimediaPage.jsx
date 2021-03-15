@@ -109,7 +109,7 @@ class MultimediaPage extends React.Component {
     }
 
     componentDidMount() {
-        T.ready('/user/settings');
+        T.ready();
     }
 
     saveCommonInfo = () => {

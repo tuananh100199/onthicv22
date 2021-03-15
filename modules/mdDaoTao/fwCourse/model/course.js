@@ -2,7 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         createdDate: { type: Date, default: Date.now },
-        addressId: { type: app.db.Schema.ObjectId, ref: 'Address' },
+        addressId: { type: app.db.Schema.ObjectId, ref: 'Division' },
         startTime: Date,
         endTime: Date,
         launchTime: Date,
@@ -41,7 +41,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                model.find(condition).sort({ tilte: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                     result.list = error ? [] : items;
                     done(error, result);
                 });

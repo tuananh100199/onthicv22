@@ -45,10 +45,7 @@ class DashboardPage extends React.Component {
                         <p>Trung tâm đào tạo lái xe Hiệp Phát</p>
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <li className='breadcrumb-item'>
-                            <i className='fa fa-home fa-lg' />
-                        </li>
-                        <li className='breadcrumb-item'>Dashboard</li>
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                     </ul>
                 </div>
 

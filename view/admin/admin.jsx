@@ -30,21 +30,22 @@ import fwUser from 'modules/_default/fwUser/index';
 import fwRole from 'modules/_default/fwRole/index';
 import fwMenu from 'modules/_default/fwMenu/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwContentList from 'modules/_default/fwContentList/index';
-import fwAddress from 'modules/mdTruyenThong/fwAddress/index';
+import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwCluster from 'modules/_default/fwCluster/index';
 import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwMonHoc from 'modules/mdDaoTao/fwMonHoc/index';
-import fwBaiHoc from 'modules/mdDaoTao/fwBaiHoc/index';
+import fwBaiHoc from 'modules/mdDaoTao/fwLesson/index';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwAddress, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
+    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwSubscribe, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwDivision, fwCourseType, fwMonHoc, fwBaiHoc, fwDangKyTuVan
 ]
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
