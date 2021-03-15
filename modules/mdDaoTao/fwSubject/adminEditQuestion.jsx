@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getMonHoc } from './redux'
-import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './reduxQuestion';
+import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
@@ -89,7 +88,7 @@ class QuestionModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <div className='form-group row'>
+                            <div className='form-group'>
                                 <label htmlFor='questionTitle'>Tên câu hỏi</label>
                                 <input type='text' className='form-control' id='questionTitle' />
                             </div>
@@ -103,7 +102,7 @@ class QuestionModal extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className='form-group row'>
+                            <div className='form-group'>
                                 <label htmlFor=''>Nội dung câu hỏi</label>
                                 <Editor ref={this.editor} />
                             </div>
@@ -119,7 +118,7 @@ class QuestionModal extends React.Component {
     }
 }
 
-class adminEditMonHoc extends React.Component {
+class AdminEditQuestion extends React.Component {
     state = { item: null };
     editor = React.createRef();
     componentDidMount() {
@@ -128,7 +127,7 @@ class adminEditMonHoc extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getQuestionsList(params._id);
-            this.props.getMonHoc(params._id, data => {
+            this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');
@@ -150,7 +149,7 @@ class adminEditMonHoc extends React.Component {
         e.preventDefault();
     };
     swap = (e, index, isMoveUp) => {
-        let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.feedbackQuestion : [];
+        let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.feedbackQuestion : [];
         if (questionList.length == 1) {
             T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
         } else {
@@ -175,7 +174,7 @@ class adminEditMonHoc extends React.Component {
                     questionList[index + 1] = questionList[index];
                     questionList[index] = temp;
 
-                    changes.questions = questionList;
+                    changes.feedbackQuestion = questionList;
                     this.props.swapQuestion(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
@@ -193,7 +192,7 @@ class adminEditMonHoc extends React.Component {
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
-                let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.feedbackQuestion : [];
+                let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.feedbackQuestion : [];
                 questionList.splice(index, 1);
                 if (questionList.length == 0) questionList = 'empty';
                 changes.questions = questionList;
@@ -212,9 +211,9 @@ class adminEditMonHoc extends React.Component {
             params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
         const _id = params._id;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        let table_question = 'Chưa có câu hỏi!';
-        if (this.props.question && this.props.question.questions && this.props.question.questions.feedbackQuestion && this.props.question.questions.feedbackQuestion.length > 0) {
-            table_question = (
+        let table = 'Chưa có câu hỏi!';
+        if (this.props.subject && this.props.subject.questions && this.props.subject.questions.feedbackQuestion && this.props.subject.questions.feedbackQuestion.length > 0) {
+            table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
@@ -224,23 +223,23 @@ class adminEditMonHoc extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.question.questions.feedbackQuestion.map((item, index) => (
+                        {this.props.subject.questions.feedbackQuestion.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'#'}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
-                                        </a>,
-                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
+                                        </a>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
                                         <a className='btn btn-primary' href='#' onClick={e => this.showQuestionModal(e, item)}>
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
-                                        {currentPermissions.contains('lesson:write') ?
+                                        {currentPermissions.contains('subject:write') ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, _id)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
@@ -254,19 +253,19 @@ class adminEditMonHoc extends React.Component {
         }
         return (
             <div>
-                <div className='tile-body'>{table_question}</div>
+                <div className='tile-body'>{table}</div>
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                                     </button>
                 </div>
-                <QuestionModal key={1} add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
+                <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, baihoc: state.baihoc, question: state.question });
-const mapActionsToProps = { getMonHoc, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
-export default connect(mapStateToProps, mapActionsToProps)(adminEditMonHoc);
+const mapStateToProps = state => ({ system: state.system, subject: state.subject });
+const mapActionsToProps = { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
+export default connect(mapStateToProps, mapActionsToProps)(AdminEditQuestion);

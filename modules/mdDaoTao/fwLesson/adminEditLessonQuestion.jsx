@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateLesson, getLesson } from './redux/reduxLesson'
-import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux/reduxQuestion';
+import { getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux/reduxLesson'
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
@@ -9,8 +8,7 @@ class QuestionModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            itemID: null,
-            value: [],
+            itemId: null,
             active: false,
         };
 
@@ -142,7 +140,7 @@ class QuestionModal extends React.Component {
     }
 }
 
-class adminEditBaiHoc extends React.Component {
+class AdminEditLessonQuestion extends React.Component {
     state = { item: null };
     editor = React.createRef();
 
@@ -150,9 +148,9 @@ class adminEditBaiHoc extends React.Component {
         this.questionModal = React.createRef();
         T.ready('/user/dao-tao/bai-hoc/list', () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
-            this.props.getQuestionsList(params.baihocId);
-            this.props.getLesson(params.baihocId, data => {
+                params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
+            this.props.getQuestionsList(params._id);
+            this.props.getLesson(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/bai-hoc/list');
@@ -177,7 +175,7 @@ class adminEditBaiHoc extends React.Component {
     }
 
     swap = (e, index, isMoveUp) => {
-        let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.lessonQuestion : [];
+        let questionList = this.props.lesson && this.props.lesson.questions ? this.props.lesson.questions.lessonQuestion : [];
         if (questionList.length == 1) {
             T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
         } else {
@@ -198,11 +196,9 @@ class adminEditBaiHoc extends React.Component {
                     T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                 } else {
                     const temp = questionList[index + 1], changes = {};
-
                     questionList[index + 1] = questionList[index];
                     questionList[index] = temp;
-
-                    changes.questions = questionList;
+                    changes.lessonQuestion = questionList;
                     this.props.swapQuestion(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
@@ -222,7 +218,7 @@ class adminEditBaiHoc extends React.Component {
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
-                let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.lessonQuestion : [];
+                let questionList = this.props.lesson && this.props.lesson.questions ? this.props.lesson.questions.lessonQuestion : [];
                 questionList.splice(index, 1);
                 if (questionList.length == 0) questionList = 'empty';
                 changes.questions = questionList;
@@ -238,14 +234,12 @@ class adminEditBaiHoc extends React.Component {
 
     render() {
         let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
-        const baihocId = params.baihocId;
+            params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
+        const _id = params._id;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermissions.includes('lesson:write');
-        const item = this.state.item ? this.state.item : { title: '' };
-        let table_question = 'Chưa có câu hỏi!';
-        if (this.props.question && this.props.question.questions && this.props.question.questions.lessonQuestion && this.props.question.questions.lessonQuestion.length > 0) {
-            table_question = (
+        let table = 'Chưa có câu hỏi!';
+        if (this.props.lesson && this.props.lesson.questions && this.props.lesson.questions.lessonQuestion && this.props.lesson.questions.lessonQuestion.length > 0) {
+            table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
@@ -255,16 +249,16 @@ class adminEditBaiHoc extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.question.questions.lessonQuestion.map((item, index) => (
+                        {this.props.lesson.questions.lessonQuestion.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'#'}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swapQ(e, index, baihocId, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
-                                        </a>,
-                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swapQ(e, index, baihocId, false)}>
+                                        </a>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
@@ -272,7 +266,7 @@ class adminEditBaiHoc extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, baihocId)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, _id)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -285,19 +279,19 @@ class adminEditBaiHoc extends React.Component {
         }
         return (
             <div>
-                <div className='tile-body'>{table_question}</div>
+                <div className='tile-body'>{table}</div>
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
-                <QuestionModal key={1} add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
+                <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
                 <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
-const mapActionsToProps = { updateLesson, getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
-export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
+const mapActionsToProps = { getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
+export default connect(mapStateToProps, mapActionsToProps)(AdminEditLessonQuestion);

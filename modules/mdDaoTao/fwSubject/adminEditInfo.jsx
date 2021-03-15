@@ -1,18 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateMonHoc, getMonHoc } from './redux';
+import { updateSubject, getSubject } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
-class AdminEditMonHoc extends React.Component {
+class AdminEditInfo extends React.Component {
     state = { item: null };
     editor = React.createRef();
 
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
-            this.props.getMonHoc(params.monHocId, data => {
+                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+            this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');
@@ -36,12 +36,12 @@ class AdminEditMonHoc extends React.Component {
             shortDescription: $('#shortDescription').val().trim(),
             detailDescription: this.editor.current.html(),
         };
-        this.props.updateMonHoc(this.state.item._id, changes)
+        this.props.updateSubject(this.state.item._id, changes)
     };
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('lesson:write');
+            readOnly = !currentPermissions.includes('subject:write');
         return (
             <div>
                 <div className='tile-body'>
@@ -70,5 +70,5 @@ class AdminEditMonHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { updateMonHoc, getMonHoc };
-export default connect(mapStateToProps, mapActionsToProps)(AdminEditMonHoc);
+const mapActionsToProps = { updateSubject, getSubject };
+export default connect(mapStateToProps, mapActionsToProps)(AdminEditInfo);

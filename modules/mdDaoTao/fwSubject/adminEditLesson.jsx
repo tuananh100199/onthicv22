@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
+import { updateSubject, getSubject, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
 import { ajaxSelectLesson } from '../fwLesson/redux/reduxLesson';
@@ -53,7 +53,7 @@ class AddLessonModal extends React.Component {
     }
 }
 
-class AdminEditListBaiHoc extends React.Component {
+class AdminEditLesson extends React.Component {
     state = { item: null };
     editor = React.createRef();
     constructor(props) {
@@ -65,7 +65,7 @@ class AdminEditListBaiHoc extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getLessonList(params._id);
-            this.props.getMonHoc(params._id, data => {
+            this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');
@@ -91,10 +91,10 @@ class AdminEditListBaiHoc extends React.Component {
             shortDescription: $('#shortDescription').val().trim(),
             detailDescription: this.editor.current.html(),
         };
-        this.props.updateMonHoc(this.state.item._id, changes)
+        this.props.updateSubject(this.state.item._id, changes)
     };
     swap = (e, index, _id, isMoveUp) => {
-        let lessonList = this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson ? this.props.subject.listbaihoc.lesson : [];
+        let lessonList = this.props.subject && this.props.subject.listLesson && this.props.subject.listLesson.lesson ? this.props.subject.listLesson.lesson : [];
         if (lessonList.length == 1) {
             T.notify('Thay đổi thứ tự bài học thành công', 'success');
         } else {
@@ -138,7 +138,7 @@ class AdminEditListBaiHoc extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('lesson:write');
         let table = 'Chưa có bài học!';
-        if (this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson && this.props.subject.listbaihoc.lesson.length > 0) {
+        if (this.props.subject && this.props.subject.listLesson && this.props.subject.listLesson.lesson && this.props.subject.listLesson.lesson.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -149,7 +149,7 @@ class AdminEditListBaiHoc extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.subject.listbaihoc.lesson.map((item, index) => (
+                        {this.props.subject.listLesson.lesson.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.title}</Link></td>
@@ -191,11 +191,11 @@ class AdminEditListBaiHoc extends React.Component {
                     </div>
                 }
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} _id={_id} />
+                <AddLessonModal ref={this.addLessonModal} addLesson={this.props.addLesson} _id={_id} />
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { updateMonHoc, getMonHoc, getLessonList, addLesson, swapLesson, deleteLesson };
-export default connect(mapStateToProps, mapActionsToProps)(AdminEditListBaiHoc);
+const mapActionsToProps = { updateSubject, getSubject, getLessonList, addLesson, swapLesson, deleteLesson };
+export default connect(mapStateToProps, mapActionsToProps)(AdminEditLesson);

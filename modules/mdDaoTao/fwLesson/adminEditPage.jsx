@@ -2,11 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateLesson, getLesson } from './redux/reduxLesson';
 import { Link } from 'react-router-dom';
-import AdminEditBaiHocInfo from './adminEditBaiHocInfo';
-import AdminEditCauHoi from './adminEditCauHoi';
-import AdminEditVideoBaiGiang from './adminEditVideoBaiGiang';
+import AdminEditInfo from './adminEditInfo';
+import AdminEditLessonQuestion from './adminEditLessonQuestion';
+import AdminEditLessonVideo from './adminEditLessonVideo';
 
-class adminEditBaiHoc extends React.Component {
+class adminEditPage extends React.Component {
     state = { item: null };
     editor = React.createRef();
 
@@ -41,7 +41,7 @@ class adminEditBaiHoc extends React.Component {
             <main className='app-content' id='componentPage' style={{ display: 'none' }}>
                 <div className='app-title'>
                     <div>
-                        <h1><i className='fa fa-file' />Bài học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
+                        <h1><i className='fa fa-book' />Bài học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
@@ -54,9 +54,9 @@ class adminEditBaiHoc extends React.Component {
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#lessonQuestion'>Câu hỏi</a></li>
                 </ul>
                 <div className='tab-content tile'>
-                    <div className='tab-pane fade active show' id='common'><AdminEditBaiHocInfo history={this.props.history} /></div>
-                    <div className='tab-pane fade' id='lessonVideo'><AdminEditVideoBaiGiang history={this.props.history} /></div>
-                    <div className='tab-pane fade' id='lessonQuestion'><AdminEditCauHoi history={this.props.history} /></div>
+                    <div className='tab-pane fade active show' id='common'><AdminEditInfo history={this.props.history} /></div>
+                    <div className='tab-pane fade' id='lessonVideo'><AdminEditLessonVideo history={this.props.history} /></div>
+                    <div className='tab-pane fade' id='lessonQuestion'><AdminEditLessonQuestion history={this.props.history} /></div>
                 </div>
             </main>
         );
@@ -65,4 +65,4 @@ class adminEditBaiHoc extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
 const mapActionsToProps = { updateLesson, getLesson };
-export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);
+export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

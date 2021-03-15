@@ -5,8 +5,8 @@ import { getLesson } from './redux/reduxLesson'
 class LessonDetail extends React.Component {
     componentDidMount() {
         let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/bai-hoc/view/:baihocId').parse(url);
-        this.props.getLesson(params.baihocId)
+            params = T.routeMatcher('/user/dao-tao/bai-hoc/view/:_id').parse(url);
+        this.props.getLesson(params._id)
     }
 
     render() {
