@@ -5,16 +5,19 @@ module.exports = app => {
             if (error || !lessonVideo) {
                 res.send({ error });
             } else {
-                if (lessonVideo && req.session.videoImage) {
-                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session.videoImage, response => {
-                        res.send({ error: response.error, lessonVideo });
+                if (lessonVideo && req.session['lesson-videoImage']) {
+                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session['lesson-videoImage'], response => {
+                        if (response.error) {
+                            res.send({ error: response.error, lessonVideo });
+                        } else {
+                            app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
+                                res.send({ error, item });
+                            });
+                        }
                     });
                 } else {
                     res.send({ error, lessonVideo });
                 }
-                app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
-                    res.send({ error, item });
-                });
             }
         });
     });
