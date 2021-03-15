@@ -4,7 +4,7 @@ import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 import { Select } from 'view/component/Input';
-import { ajaxSelectSubject } from '../fwMonHoc/redux';
+import { ajaxSelectSubject } from '../fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
 
 class CourseTypeModal extends React.Component {
