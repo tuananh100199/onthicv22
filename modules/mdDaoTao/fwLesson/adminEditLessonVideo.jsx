@@ -230,10 +230,10 @@ class adminEditLessonVideo extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
-                                        </a>,
-                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
+                                        </a>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
