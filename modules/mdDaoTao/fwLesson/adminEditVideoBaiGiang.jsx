@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/reduxLesson';
+import { updateLesson, getLesson } from './redux/reduxLesson';
 import { createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux/reduxLessonVideo';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
@@ -146,7 +146,7 @@ class adminEditBaiHoc extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
             this.props.getLessonVideoList(params.baihocId);
-            this.props.getBaiHoc(params.baihocId, data => {
+            this.props.getLesson(params.baihocId, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/bai-hoc/list');
@@ -203,9 +203,6 @@ class adminEditBaiHoc extends React.Component {
         const baihocId = params.baihocId;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('lesson:write');
-        const item = this.state.item ? this.state.item : {
-            title: ''
-        };
         let table = 'Chưa có bài học!';
         if (this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo && this.props.lesson.listLessonVideo.lessonVideo.length > 0) {
             table = (
@@ -269,5 +266,5 @@ class adminEditBaiHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
-const mapActionsToProps = { updateBaiHoc, getBaiHoc, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
+const mapActionsToProps = { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);

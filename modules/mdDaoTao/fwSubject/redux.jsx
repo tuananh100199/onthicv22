@@ -2,7 +2,7 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const MonHocGetMonHocInPage = 'MonHoc:GetMonHocInPage';
 const MonHocGetMonHoc = 'MonHoc:GetMonHoc';
-const MonHocGetBaiHocList = 'MonHoc:GetBaiHocList';
+const MonHocgetLessonList = 'MonHoc:getLessonList';
 
 export default function MonHocReducer(state = null, data) {
     switch (data.type) {
@@ -11,7 +11,7 @@ export default function MonHocReducer(state = null, data) {
 
         case MonHocGetMonHoc:
             return Object.assign({}, state, { monhoc: data.item });
-        case MonHocGetBaiHocList:
+        case MonHocgetLessonList:
             return Object.assign({}, state, { listbaihoc: data.baihoc });
         default:
             return state;
@@ -105,7 +105,7 @@ export function getLessonList(subjectId, done) {
                 T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                dispatch({ type: MonHocGetBaiHocList, baihoc: data.item });
+                dispatch({ type: MonHocgetLessonList, baihoc: data.item });
                 done && done(data.item);
             }
         }, error => {

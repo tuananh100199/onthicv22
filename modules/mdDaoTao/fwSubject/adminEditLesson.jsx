@@ -17,7 +17,7 @@ class AddLessonModal extends React.Component {
 
     addLesson = () => {
         const lessonId = this.lessonSelect.current.val();
-        this.props.addLesson(this.props.monhocId, lessonId, () => {
+        this.props.addLesson(this.props._id, lessonId, () => {
             T.notify('Thêm bài học thành công!', 'success');
             $(this.modal.current).modal('hide');
         });
@@ -63,9 +63,9 @@ class AdminEditListBaiHoc extends React.Component {
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
-            this.props.getLessonList(params.monHocId);
-            this.props.getMonHoc(params.monHocId, data => {
+                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+            this.props.getLessonList(params._id);
+            this.props.getMonHoc(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');
@@ -81,8 +81,8 @@ class AdminEditListBaiHoc extends React.Component {
         e.preventDefault();
         this.addLessonModal.current.show();
     }
-    delete = (e, monhocId, lessonId, lessonTitle) => {
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa bài ' + lessonTitle + ' khỏi môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(monhocId, lessonId));
+    delete = (e, _id, lessonId, lessonTitle) => {
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa bài ' + lessonTitle + ' khỏi môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(_id, lessonId));
         e.preventDefault();
     }
     save = () => {
@@ -93,7 +93,7 @@ class AdminEditListBaiHoc extends React.Component {
         };
         this.props.updateMonHoc(this.state.item._id, changes)
     };
-    swap = (e, index, monHocId, isMoveUp) => {
+    swap = (e, index, _id, isMoveUp) => {
         let lessonList = this.props.subject && this.props.subject.listbaihoc && this.props.subject.listbaihoc.lesson ? this.props.subject.listbaihoc.lesson : [];
         if (lessonList.length == 1) {
             T.notify('Thay đổi thứ tự bài học thành công', 'success');
@@ -108,7 +108,7 @@ class AdminEditListBaiHoc extends React.Component {
                     lessonList[index] = temp;
 
                     changes.lesson = lessonList;
-                    this.props.swapLesson(monHocId, changes, () => {
+                    this.props.swapLesson(_id, changes, () => {
                         T.notify('Thay đổi thứ tự môn học thành công', 'success');
                     });
                 }
@@ -122,7 +122,7 @@ class AdminEditListBaiHoc extends React.Component {
                     lessonList[index] = temp;
 
                     changes.lesson = lessonList;
-                    this.props.swapLesson(monHocId, changes, () => {
+                    this.props.swapLesson(_id, changes, () => {
                         T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
@@ -133,8 +133,8 @@ class AdminEditListBaiHoc extends React.Component {
 
     render() {
         let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
-        const monhocId = params.monHocId;
+            params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+        const _id = params._id;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('lesson:write');
         let table = 'Chưa có bài học!';
@@ -144,7 +144,7 @@ class AdminEditListBaiHoc extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên bài học</th>
+                            <th style={{ width: '100%' }}>Tên bài học</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -155,10 +155,10 @@ class AdminEditListBaiHoc extends React.Component {
                                 <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, monhocId, true)}>
+                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>,
-                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, index, monhocId, false)}>
+                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
@@ -166,7 +166,7 @@ class AdminEditListBaiHoc extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, monhocId, item._id, item.title)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, _id, item._id, item.title)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -191,7 +191,7 @@ class AdminEditListBaiHoc extends React.Component {
                     </div>
                 }
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} monhocId={monhocId} />
+                <AddLessonModal key={2} ref={this.addLessonModal} addLesson={this.props.addLesson} _id={_id} />
             </div>);
     }
 }

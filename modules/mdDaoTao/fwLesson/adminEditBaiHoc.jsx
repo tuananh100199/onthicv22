@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/reduxLesson';
+import { updateLesson, getLesson } from './redux/reduxLesson';
 import { Link } from 'react-router-dom';
 import AdminEditBaiHocInfo from './adminEditBaiHocInfo';
 import AdminEditCauHoi from './adminEditCauHoi';
@@ -14,7 +14,7 @@ class adminEditBaiHoc extends React.Component {
         T.ready(() => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
-            this.props.getBaiHoc(params._id, data => {
+            this.props.getLesson(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/bai-hoc/list');
@@ -64,5 +64,5 @@ class adminEditBaiHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
-const mapActionsToProps = { updateBaiHoc, getBaiHoc };
+const mapActionsToProps = { updateLesson, getLesson };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);

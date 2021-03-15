@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/reduxLesson';
+import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux/reduxLesson';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 
@@ -10,16 +10,16 @@ class MonHocPage extends React.Component {
         this.state = { searchText: '', isSearching: false };
     }
     componentDidMount() {
-        this.props.getBaiHocInPage(1, 50, {});
+        this.props.getLessonInPage(1, 50, {});
         T.ready('/user/dao-tao/bai-hoc/list', null);
     }
 
     create = (e) => {
-        this.props.createBaiHoc(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
+        this.props.createLesson(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
         e.preventDefault();
     }
     delete = (e, item) => {
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteBaiHoc(item._id));
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
         e.preventDefault();
     }
 
@@ -30,7 +30,7 @@ class MonHocPage extends React.Component {
         if (searchText) condition.searchText = searchText;
 
         this.setState({ isSearching: true }, () => {
-            this.props.getBaiHocInPage(undefined, undefined, condition, () => {
+            this.props.getLessonInPage(undefined, undefined, condition, () => {
                 this.setState({ searchText, isSearching: false });
             });
         })
@@ -91,7 +91,7 @@ class MonHocPage extends React.Component {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageLesson'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getBaiHocInPage} />
+                    getPage={this.props.getLessonInPage} />
                 {currentPermissions.contains('course:write') ?
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
                         onClick={this.create}>
@@ -103,5 +103,5 @@ class MonHocPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc };
+const mapActionsToProps = { getLessonInPage, createLesson, updateLesson, deleteLesson };
 export default connect(mapStateToProps, mapActionsToProps)(MonHocPage);

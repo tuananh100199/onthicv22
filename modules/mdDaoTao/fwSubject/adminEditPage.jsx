@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { getMonHoc } from './redux';
 import { Link } from 'react-router-dom';
 import AdminEditInfo from './adminEditInfo';
-import AdminEditBaiHoc from './adminEditBaiHoc';
-import AdminEditCauHoi from './adminEditCauHoi';
+import AdminEditBaiHoc from './adminEditLesson';
+import AdminEditCauHoi from './adminEditQuestion';
 
 
 class EditPage extends React.Component {
@@ -13,8 +13,8 @@ class EditPage extends React.Component {
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
-            this.props.getMonHoc(params.monHocId, data => {
+                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+            this.props.getMonHoc(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');

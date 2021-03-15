@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateBaiHoc, getBaiHoc } from './redux/reduxLesson'
+import { updateLesson, getLesson } from './redux/reduxLesson'
 import { getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux/reduxQuestion';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
@@ -152,7 +152,7 @@ class adminEditBaiHoc extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:baihocId').parse(url);
             this.props.getQuestionsList(params.baihocId);
-            this.props.getBaiHoc(params.baihocId, data => {
+            this.props.getLesson(params.baihocId, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/bai-hoc/list');
@@ -176,7 +176,7 @@ class adminEditBaiHoc extends React.Component {
         e.preventDefault();
     }
 
-    swapQ = (e, index, isMoveUp) => {
+    swap = (e, index, isMoveUp) => {
         let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.lessonQuestion : [];
         if (questionList.length == 1) {
             T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
@@ -299,5 +299,5 @@ class adminEditBaiHoc extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
-const mapActionsToProps = { updateBaiHoc, getBaiHoc, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
+const mapActionsToProps = { updateLesson, getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditBaiHoc);

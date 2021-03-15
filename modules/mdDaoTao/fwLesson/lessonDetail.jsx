@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getBaiHoc } from './redux/reduxLesson'
+import { getLesson } from './redux/reduxLesson'
 
 class LessonDetail extends React.Component {
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/bai-hoc/view/:baihocId').parse(url);
-        this.props.getBaiHoc(params.baihocId)
+        this.props.getLesson(params.baihocId)
     }
 
     render() {
@@ -22,5 +22,5 @@ class LessonDetail extends React.Component {
 }
 
 const mapStateToProps = state => ({ lesson: state.lesson });
-const mapActionsToProps = { getBaiHoc };
+const mapActionsToProps = { getLesson };
 export default connect(mapStateToProps, mapActionsToProps)(LessonDetail);

@@ -12,7 +12,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao/bai-hoc/view/:baiHocId', app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/bai-hoc/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
+    app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || '',
@@ -30,22 +30,22 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/bai-hoc/edit/:baiHocId', app.permission.check('lesson:read'), (req, res) => {
+    app.get('/api/lesson/edit/:baiHocId', app.permission.check('lesson:read'), (req, res) => {
         app.model.lesson.get(req.params.baiHocId, (error, item) => res.send({ error, item }));
     });
 
 
-    app.post('/api/bai-hoc', app.permission.check('lesson:write'), (req, res) => {
+    app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         app.model.lesson.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/bai-hoc', app.permission.check('lesson:write'), (req, res) => {
+    app.put('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         const changes = req.body.changes;
         if (changes.categories && changes.categories == 'empty') changes.categories = [];
         app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/bai-hoc', app.permission.check('lesson:write'), (req, res) => {
+    app.delete('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
     });
 

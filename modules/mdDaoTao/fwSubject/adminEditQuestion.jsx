@@ -90,10 +90,8 @@ class QuestionModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='form-group row'>
-                                <div className='col-12'>
-                                    <label htmlFor='questionTitle'>Tên câu hỏi</label>
-                                    <input type='text' className='form-control' id='questionTitle' />
-                                </div>
+                                <label htmlFor='questionTitle'>Tên câu hỏi</label>
+                                <input type='text' className='form-control' id='questionTitle' />
                             </div>
                             <div className='form-group row'>
                                 <div className='col-4'>
@@ -106,10 +104,8 @@ class QuestionModal extends React.Component {
                                 </div>
                             </div>
                             <div className='form-group row'>
-                                <div className='col-12'>
-                                    <label htmlFor=''>Nội dung câu hỏi</label>
-                                    <Editor ref={this.editor} />
-                                </div>
+                                <label htmlFor=''>Nội dung câu hỏi</label>
+                                <Editor ref={this.editor} />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -130,9 +126,9 @@ class adminEditMonHoc extends React.Component {
         this.questionModal = React.createRef();
         T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monhocId').parse(url);
-            this.props.getQuestionsList(params.monhocId);
-            this.props.getMonHoc(params.monhocId, data => {
+                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+            this.props.getQuestionsList(params._id);
+            this.props.getMonHoc(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');
@@ -153,7 +149,7 @@ class adminEditMonHoc extends React.Component {
         this.questionModal.current.show(item);
         e.preventDefault();
     };
-    swapQ = (e, index, isMoveUp) => {
+    swap = (e, index, isMoveUp) => {
         let questionList = this.props.question && this.props.question.questions ? this.props.question.questions.feedbackQuestion : [];
         if (questionList.length == 1) {
             T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
@@ -213,13 +209,9 @@ class adminEditMonHoc extends React.Component {
 
     render() {
         let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monhocId').parse(url);
-        const monhocId = params.monhocId;
+            params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+        const _id = params._id;
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermissions.includes('lesson:write');
-        const item = this.state.item ? this.state.item : {
-            title: ''
-        };
         let table_question = 'Chưa có câu hỏi!';
         if (this.props.question && this.props.question.questions && this.props.question.questions.feedbackQuestion && this.props.question.questions.feedbackQuestion.length > 0) {
             table_question = (
@@ -227,7 +219,7 @@ class adminEditMonHoc extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên câu hỏi</th>
+                            <th style={{ width: '100%' }}>Tên câu hỏi</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
                     </thead>
@@ -238,10 +230,10 @@ class adminEditMonHoc extends React.Component {
                                 <td><Link to={'#'}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swapQ(e, index, monhocId, true)}>
+                                        <a key={0} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>,
-                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swapQ(e, index, monhocId, false)}>
+                                            <a key={1} className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
@@ -249,7 +241,7 @@ class adminEditMonHoc extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, monhocId)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, _id)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
