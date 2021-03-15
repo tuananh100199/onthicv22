@@ -1,6 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        parentId:{type: app.db.Schema.Types.ObjectId, ref: 'DangKyTuVan'},
+        parentId: { type: app.db.Schema.Types.ObjectId, ref: 'DangKyTuVan' },
         courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
 
         firstname: String,
@@ -9,7 +9,7 @@ module.exports = app => {
         subject: String,
         message: String,
         phone: String,
-       
+
         userId: app.db.Schema.Types.ObjectId,
         read: { type: Boolean, default: false },
         createdDate: { type: Date, default: Date.now },
@@ -17,14 +17,14 @@ module.exports = app => {
     const model = app.db.model('DangKyTuVanList', schema);
 
     app.model.dangKyTuVanList = {
-        create: (data, done) =>{
-            if(data.courseType == ''){
+        create: (data, done) => {
+            if (data.courseType == '') {
                 data.courseType = null
             }
-             model.create(data, done)
-            },
+            model.create(data, done)
+        },
 
-        getAll: (condition,done) => {
+        getAll: (condition, done) => {
             condition ? model.find(condition).sort({ _id: -1 }).exec(done) : model.find({}).sort({ _id: -1 }).exec(done)
         },
 

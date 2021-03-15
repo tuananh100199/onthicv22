@@ -2,9 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createDKTVListItem } from './redux/reduxDangKyTuVanList';
 import { getDangKyTuVanByUser } from './redux/reduxDangKyTuVan';
-import { getAllCourseType } from '../fwCourseType/redux';
+import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+
 class SectionDangKyTuVan extends React.Component {
-    state = { item: {} };
+    state = {};
+
     constructor(props) {
         super(props);
         this.firstname = React.createRef();
@@ -13,15 +15,15 @@ class SectionDangKyTuVan extends React.Component {
         this.courseType = React.createRef();
         this.phone = React.createRef();
     }
+
     componentDidMount() {
         $(document).ready(() => {
             if (this.props.dangKyTuVanId) {
                 this.props.getDangKyTuVanByUser(this.props.dangKyTuVanId, data => {
                     if (data) {
-                        this.setState({ item: data });
+                        this.setState(data);
                         var ctrl = new ScrollMagic.Controller();
 
-                        "use strict";
                         initMilestones();
 
                         function initMilestones() {
@@ -35,8 +37,8 @@ class SectionDangKyTuVan extends React.Component {
 
                                     /* Use data-sign-before and data-sign-after to add signs
                                     infront or behind the counter number */
-                                    var signBefore = "";
-                                    var signAfter = "";
+                                    var signBefore = '';
+                                    var signAfter = '';
 
                                     if (ele.attr('data-sign-before')) {
                                         signBefore = ele.attr('data-sign-before');
@@ -44,7 +46,6 @@ class SectionDangKyTuVan extends React.Component {
 
                                     if (ele.attr('data-sign-after')) {
                                         signAfter = ele.attr('data-sign-after');
-
                                     }
 
                                     var milestoneScene = new ScrollMagic.Scene({
@@ -57,7 +58,7 @@ class SectionDangKyTuVan extends React.Component {
                                             var counterTween = TweenMax.to(counter, 4,
                                                 {
                                                     value: endValue,
-                                                    roundProps: "value",
+                                                    roundProps: 'value',
                                                     ease: Circ.easeOut,
                                                     onUpdate: function () {
                                                         document.getElementsByClassName('milestone_counter')[i].innerHTML = signBefore + counter.value + signAfter;
@@ -72,9 +73,8 @@ class SectionDangKyTuVan extends React.Component {
                         $('#title').val(title).focus();
                         $('#formTitle').val(formTitle);
                         $('#description').val(description);
-                    } else {
-                        // this.props.history.push('/user/component');
                     }
+
                     this.props.getAllCourseType(datacType => {
                         if (datacType) {
                             let courseType = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
@@ -86,6 +86,7 @@ class SectionDangKyTuVan extends React.Component {
             $('#courseType').select2();
         })
     }
+
     sendMessage = (e) => {
         e.preventDefault();
         if (this.firstname.current.value == '') {
@@ -131,28 +132,26 @@ class SectionDangKyTuVan extends React.Component {
     }
 
     render() {
-        const item = this.state.item ? this.state.item : {
-            title: '', formTitle: '', description: ''
-        };
+        const { title = '', formTitle = '', description = '', statistic = [] } = this.state;
         return (
-            <div key={1} className="intro">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-6 intro_col">
-                            <div className="intro_content" >
-                                <div className="section_title_container">
-                                    <div className="section_title" id='title'><h2>{item.title}&nbsp;</h2></div>
+            <div className='intro'>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col-lg-6 intro_col'>
+                            <div className='intro_content' >
+                                <div className='section_title_container'>
+                                    <div className='section_title' id='title'><h2>{title}&nbsp;</h2></div>
                                 </div>
-                                <div className="intro_text" id='description'>
-                                    <p dangerouslySetInnerHTML={{ __html: item.description }} />
+                                <div className='intro_text' id='description'>
+                                    <p dangerouslySetInnerHTML={{ __html: description }} />
                                 </div>
-                                <div className="milestones">
-                                    <div className="row milestones_row">
-                                        {item.statistic ? this.state.item.statistic.map((i, index) => (
-                                            <div className="col-md-4 milestone_col" key={index}>
-                                                <div className="milestone">
-                                                    <div className="milestone_counter" data-end-value={i.number} data-sign-before="+">0</div>
-                                                    <div className="milestone_text">{i.title}</div>
+                                <div className='milestones'>
+                                    <div className='row milestones_row'>
+                                        {statistic ? statistic.map((i, index) => (
+                                            <div className='col-md-4 milestone_col' key={index}>
+                                                <div className='milestone'>
+                                                    <div className='milestone_counter' data-end-value={i.number} data-sign-before='+'>0</div>
+                                                    <div className='milestone_text'>{i.title}</div>
                                                 </div>
                                             </div>
                                         )) : null};
@@ -160,20 +159,20 @@ class SectionDangKyTuVan extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-6 intro_col">
-                            <div className="intro_form_container">
-                                <div className="intro_form_title" id="formTitle">{item.formTitle}</div>
-                                <form action="#" className="intro_form" id="intro_form" onSubmit={this.sendMessage}>
-                                    <div className="d-flex flex-row align-items-start justify-content-between flex-wrap">
-                                        <input type="text" className="intro_input" placeholder="Họ" ref={this.lastname} required="required" />
-                                        <input type="text" className="intro_input" placeholder="Tên" ref={this.firstname} required="required" />
+                        <div className='col-lg-6 intro_col'>
+                            <div className='intro_form_container'>
+                                <div className='intro_form_title' id='formTitle'>{formTitle}</div>
+                                <form action='#' className='intro_form' id='intro_form' onSubmit={this.sendMessage}>
+                                    <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
+                                        <input type='text' className='intro_input' placeholder='Họ' ref={this.lastname} required='required' />
+                                        <input type='text' className='intro_input' placeholder='Tên' ref={this.firstname} required='required' />
                                         <select className='col-6 contact_input w-100' id='courseType' ref={this.courseType} defaultValue={null} >
                                             <optgroup className='contact_input' label='Lựa chọn loại khóa học' />
                                         </select>
-                                        <input type="tel" className="intro_input" placeholder="Số điện thoại" ref={this.phone} required="required" />
+                                        <input type='tel' className='intro_input' placeholder='Số điện thoại' ref={this.phone} required='required' />
                                         <input type='text' className='intro_input w-100' ref={this.email} placeholder='Email' />
                                     </div>
-                                    <button className="button button_1 intro_button trans_200">gửi tin nhắn</button>
+                                    <button className='button button_1 intro_button trans_200'>gửi tin nhắn</button>
                                 </form>
                             </div>
                         </div>

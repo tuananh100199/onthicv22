@@ -51,7 +51,7 @@ class ComponentPage extends React.Component {
                     {/* <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuLogo'>Logo</a></li> */}
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuTestimony'>Testimony</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStaffGroup'>Nhóm nhân viên</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>List Video</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>Danh sách Video</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuDangKyTuVan'>Đăng ký tư vấn</a></li>
                 </ul>
                 <div className='tab-content tile'>

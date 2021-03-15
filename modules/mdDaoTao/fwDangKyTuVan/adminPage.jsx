@@ -2,20 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDangKyTuVan, createDangKyTuVan, deleteDangKyTuVan } from './redux/reduxDangKyTuVan';
 import { Link } from 'react-router-dom';
+
 class DangKyTuVanPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         this.props.getAllDangKyTuVan();
         $('#neNewsCategories').select2();
     }
+
     create = (e) => {
-        this.props.createDangKyTuVan(data => {
-            this.props.history.push('/user/dang-ky-tu-van/edit/' + data.item._id)
-        });
+        this.props.createDangKyTuVan(data => this.props.history.push('/user/dang-ky-tu-van/edit/' + data.item._id));
         e.preventDefault();
     }
 
@@ -30,11 +27,11 @@ class DangKyTuVanPage extends React.Component {
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVan && this.props.dangKyTuVan.page ? this.props.dangKyTuVan.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        let table = null;
+            permissionWrite = currentPermissions.includes('component:write');
+        let table = 'Không có nhóm thống kê!';
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered'>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -56,7 +53,7 @@ class DangKyTuVanPage extends React.Component {
                                         <Link to={'/user/dang-ky-tu-van/edit/' + item._id} data-id={item._id} className='btn btn-primary' data-toggle='tooltip' title='Chỉnh sửa'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
-                                        {currentPermissions.includes('dangKyTuVan:write') ?
+                                        {currentPermissions.includes('component:write') ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
@@ -67,19 +64,16 @@ class DangKyTuVanPage extends React.Component {
                     </tbody>
                 </table>
             );
-        } else {
-            table = <p key={0}>Không có nhóm thống kê!</p>;
         }
 
-        const result = [table];
-        if (currentPermissions.includes('dangKyTuVan:write')) {
-            result.push(
-                <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>
-            );
-        }
-        return result;
+        return (
+            <>
+                {table}
+                {permissionWrite ?
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button> : null}
+            </>);
     }
 }
 
