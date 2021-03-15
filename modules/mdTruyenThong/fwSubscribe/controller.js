@@ -30,6 +30,37 @@ module.exports = app => {
 
     app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
 
+    app.get('/api/subscribe/export', app.permission.check('subscribe:write'), (req, res) => {
+        app.model.subscribe.getAll( (error, items) => {
+            console.log('abc');
+            if (error) {
+                res.send({ error })
+            } else {
+                console.log('items', items);
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
+                let cells = [
+                    { cell: 'A1', value: 'STT', bold: true },
+                    { cell: 'E1', value: 'Email', bold: true, border: '1234' },
+                    { cell: 'F1', value: 'Ngày đăng ký', bold: true, border: '1234' },
+                ];
+
+                worksheet.columns = [
+                    { header: 'STT', key: 'id', width: 15},
+                    { header: 'Email', key: 'email', width: 40 },
+                    { header: 'Ngày đăng ký', key: 'createdDate', width: 30 }
+                ];
+                items.forEach((item, index) => {
+                    worksheet.addRow({
+                        id: index + 1,
+                        email: item.email,
+                        createdDate: item.createdDate
+                    });
+                })
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, `result.xlsx`);
+            }
+        })
+    });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/subscribe', (req, res) => app.model.subscribe.create(req.body.subscribe, (error, item) => {

@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe } from './redux';
+import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { cssNumber } from 'jquery';
 
 class AdminSubscribeModal extends React.Component {
     state = {};
@@ -59,6 +60,9 @@ class SubscribePage extends AdminPage {
         T.confirm('Xoá đăng ký nhận tin', 'Bạn có chắc muốn xoá đăng ký nhận tin này?', true, isConfirm => isConfirm && this.props.deleteSubscribe(item._id));
         e.preventDefault();
     }
+    exportSubscribe = (e) => {
+        this.props.exportSubscribeToExcel();
+    }
 
     render() {
         const permission = this.getUserPermission('subscribe');
@@ -114,6 +118,9 @@ class SubscribePage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getSubscribePage} />
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel' onClick={e => this.exportSubscribe(e)}>
+                    <i className='fa fa-file-excel-o' />
+                </button>
                 <AdminSubscribeModal ref={this.modal} />
             </>,
         };
@@ -122,5 +129,5 @@ class SubscribePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ subscribe: state.subscribe });
-const mapActionsToProps = { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe };
+const mapActionsToProps = { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(SubscribePage);

@@ -149,7 +149,7 @@ export function getUnreadDKTVList(done) {
 
 export function updateDKTVList(_id, changes, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list';
+        const url = '/api/dang-ky-tu-van-list/item/';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger');
@@ -200,15 +200,8 @@ export function createDKTVListItem(dangKyTuVan, done) {
     }
 }
 
-export function phanHoiDKTVListItem(_id, content, done) {
+export function exportDangKyTuVanToExcel(done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/item/response';
-        T.post(url, { _id, content }, data => {
-            if (data.error) {
-                T.notify('Thao tác phản hồi bị lỗi!', 'danger');
-                console.error('POST: ' + url + '. ' + data.error);
-            }
-            done && done(data);
-        }, error => T.notify('Gửi mail phản hồi bị lỗi!', 'danger'));
+        T.download(T.url(`/api/dang-ky-tu-van-list/export`));
     }
 }
