@@ -46,6 +46,9 @@ module.exports = app => {
         app.model.lessonVideo.get(req.params._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/lesson-video/:lessonId', (req, res) => {
+        app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
+    });
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'));
 

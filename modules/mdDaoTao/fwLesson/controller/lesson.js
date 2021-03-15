@@ -49,11 +49,6 @@ module.exports = (app) => {
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    //Lesson Video
-    app.get('/api/lesson-video/:lessonId', (req, res) => {
-        app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
-    });
-
     //Question ---------------------------------------------------------------------------------------------------------
     app.get('/api/lesson-question/:lessonId', (req, res) => {
         app.model.lesson.get(req.params.lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
