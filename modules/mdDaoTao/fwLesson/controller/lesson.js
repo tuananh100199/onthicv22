@@ -68,7 +68,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/lesson-question', app.permission.check('lesson:write'), (req, res) => {
-        app.model.lessonQuestion.update(req.body._id, req.body._id, (error, question) => res.send({ error, question }));
+        app.model.lessonQuestion.update(req.body._id, req.body.data, (error, question) => res.send({ error, question }));
     });
 
     app.put('/api/lesson-question/swap', app.permission.check('lesson:write'), (req, res) => {
