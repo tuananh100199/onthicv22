@@ -109,7 +109,7 @@ class AdminEditLesson extends React.Component {
 
                     changes.lesson = lessonList;
                     this.props.swapLesson(_id, changes, () => {
-                        T.notify('Thay đổi thứ tự môn học thành công', 'success');
+                        T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
             } else {

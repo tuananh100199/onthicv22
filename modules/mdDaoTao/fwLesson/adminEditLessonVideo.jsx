@@ -178,7 +178,7 @@ class adminEditLessonVideo extends React.Component {
 
                     changes.lessonVideo = lessonVideoList;
                     this.props.swapLessonVideo(_id, changes, () => {
-                        T.notify('Thay đổi thứ tự môn học thành công', 'success');
+                        T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
             } else {

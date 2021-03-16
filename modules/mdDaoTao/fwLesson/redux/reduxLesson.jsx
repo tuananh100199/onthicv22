@@ -85,15 +85,15 @@ export function updateLesson(_id, changes, done) {
         const url = '/api/lesson';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin môn học bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin bài học bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin môn học thành công!', 'success');
+                T.notify('Cập nhật thông tin bài học thành công!', 'success');
                 dispatch(getLessonInPage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin môn học bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật thông tin bài học bị lỗi!', 'danger'));
     }
 }
 
