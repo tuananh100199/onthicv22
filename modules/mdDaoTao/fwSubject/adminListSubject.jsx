@@ -22,10 +22,10 @@ class AdminListSubject extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('subject');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subject && this.props.subject.page ?
-            this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.subject && this.props.subject.page ?
+            this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         let table = 'Không có loại Môn học!';
-        if (this.props.subject && this.props.subject.page && this.props.subject.page.list && this.props.subject.page.list.length > 0) {
+        if (list && list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -36,7 +36,7 @@ class AdminListSubject extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.subject.page.list.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
