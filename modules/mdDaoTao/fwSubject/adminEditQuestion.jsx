@@ -210,9 +210,11 @@ class AdminEditQuestion extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
         const _id = params._id;
+        const feedbackQuestion = this.props.subject && this.props.subject.questions && this.props.subject.questions.feedbackQuestion ?
+            this.props.subject.questions.feedbackQuestion : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = 'Chưa có câu hỏi!';
-        if (this.props.subject && this.props.subject.questions && this.props.subject.questions.feedbackQuestion && this.props.subject.questions.feedbackQuestion.length > 0) {
+        if (feedbackQuestion && feedbackQuestion.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -223,7 +225,7 @@ class AdminEditQuestion extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.subject.questions.feedbackQuestion.map((item, index) => (
+                        {feedbackQuestion.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'#'}>{item.title}</Link></td>

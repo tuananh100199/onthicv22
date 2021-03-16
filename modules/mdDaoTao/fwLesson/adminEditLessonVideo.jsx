@@ -204,10 +204,12 @@ class adminEditLessonVideo extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
         const _id = params._id;
+        const lessonVideo = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ?
+            this.props.lesson.listLessonVideo.lessonVideo : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermissions.includes('lesson:write');
         let table = 'Chưa có bài học!';
-        if (this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo && this.props.lesson.listLessonVideo.lessonVideo.length > 0) {
+        if (lessonVideo && lessonVideo.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -220,7 +222,7 @@ class adminEditLessonVideo extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.lesson.listLessonVideo.lessonVideo.map((item, index) => (
+                        {lessonVideo.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'#'}>{item.title}</Link></td>

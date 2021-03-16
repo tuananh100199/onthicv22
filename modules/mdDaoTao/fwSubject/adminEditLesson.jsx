@@ -135,10 +135,12 @@ class AdminEditLesson extends React.Component {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
         const _id = params._id;
+        const lesson = this.props.subject && this.props.subject.listLesson && this.props.subject.listLesson.lesson ?
+            this.props.subject.listLesson.lesson : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('lesson:write');
         let table = 'Chưa có bài học!';
-        if (this.props.subject && this.props.subject.listLesson && this.props.subject.listLesson.lesson && this.props.subject.listLesson.lesson.length > 0) {
+        if (lesson && lesson.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -149,7 +151,7 @@ class AdminEditLesson extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.subject.listLesson.lesson.map((item, index) => (
+                        {lesson.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
