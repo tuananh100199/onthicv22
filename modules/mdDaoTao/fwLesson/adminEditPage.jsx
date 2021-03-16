@@ -63,6 +63,6 @@ class adminEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = { updateLesson, getLesson };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

@@ -152,7 +152,7 @@ class AdminEditLesson extends React.Component {
                         {this.props.subject.listLesson.lesson.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><Link to={'/user/dao-tao/bai-hoc/view/' + item._id}>{item.title}</Link></td>
+                                <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
                                         <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
@@ -162,7 +162,7 @@ class AdminEditLesson extends React.Component {
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
-                                        <Link to={'/user/dao-tao/bai-hoc/view/' + item._id} className='btn btn-primary'>
+                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('lesson:write') ?

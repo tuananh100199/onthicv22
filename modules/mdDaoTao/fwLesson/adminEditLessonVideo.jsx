@@ -268,6 +268,6 @@ class adminEditLessonVideo extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson, question: state.question });
+const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditLessonVideo);
