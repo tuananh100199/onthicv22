@@ -4,13 +4,16 @@ import { getUserPage, createUser, updateUser, deleteUser } from './redux';
 import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
 import ImageBox from 'view/component/ImageBox';
-import Dropdown from 'view/component/Dropdown';
-import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { Select } from 'view/component/Input';
+import { AdminPage, AdminModal, Checkbox } from 'view/component/AdminPage';
 
 class UserModal extends AdminModal {
     state = {};
     sex = React.createRef();
     imageBox = React.createRef();
+    isCourseAdmin = React.createRef();
+    isLecturer = React.createRef();
+    isStaff = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
@@ -28,10 +31,12 @@ class UserModal extends AdminModal {
         $('#userEmail').val(item.email);
         $('#userPhoneNumber').val(item.phoneNumber);
         $('#userActive').prop('checked', item.active);
-        $('#isCourseAdmin').prop('checked', item.isCourseAdmin);
         $('#isLecturer').prop('checked', item.isLecturer);
         $('#isStaff').prop('checked', item.isStaff);
-        this.sex && this.sex.current && this.sex.current.setText(item.sex ? item.sex : '');
+        this.sex.current.val({ id: item.sex, text: item.sex === 'male' ? 'Nam' : 'Nữ' });
+        this.isCourseAdmin.current.val(item.isCourseAdmin);
+        this.isLecturer.current.val(item.isLecturer);
+        this.isStaff.current.val(item.isStaff);
 
         let userRoles = item.roles.map(item => item._id),
             allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
@@ -43,24 +48,20 @@ class UserModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const sex = this.sex.current.getSelectedItem(),
-            birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
+        const birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
         let changes = {
+            sex: this.sex.current.val(),
             firstname: $('#userFirstname').val().trim(),
             lastname: $('#userLastname').val().trim(),
             email: $('#userEmail').val().trim(),
             phoneNumber: $('#userPhoneNumber').val().trim(),
             active: $('#userActive').prop('checked'),
-            isCourseAdmin: $('#isCourseAdmin').prop('checked'),
-            isLecturer: $('#isLecturer').prop('checked'),
-            isStaff: $('#isStaff').prop('checked'),
+            isCourseAdmin: this.isCourseAdmin.current.val(),
+            isLecturer: this.isLecturer.current.val(),
+            isStaff: this.isStaff.current.val(),
             roles: $('#userRoles').val(),
             birthday
         };
-
-        if (T.sexes.indexOf(sex) != -1) {
-            changes.sex = sex;
-        }
         if (changes.firstname == '') {
             T.notify('Tên người dùng bị trống!', 'danger');
             $('#userFirstname').focus();
@@ -118,35 +119,20 @@ class UserModal extends AdminModal {
                         <label htmlFor='userBirthday'>Ngày sinh</label>
                         <input className='form-control' id='userBirthday' type='text' placeholder='Ngày sinh' readOnly={!permissionWrite} />
                     </div>
-                    <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
-                        <label>Giới tính: </label>&nbsp;&nbsp;
-                        {permissionWrite ? <Dropdown ref={this.sex} text='' items={T.sexes} /> : (this.state.sex ? this.state.sex : '')}
+                    <div className='col-md-3 form-group' style={{ display: 'inline-flex' }}>
+                        <label style={{ whiteSpace: 'nowrap' }}>Giới tính: </label>&nbsp;&nbsp;
+                        {permissionWrite ? <Select ref={this.sex} displayLabel={false}
+                            adapter={{
+                                ajax: true,
+                                processResults: () => ({
+                                    results: [{ id: "female", text: "Nữ" }, { id: "male", text: "Nam" }]
+                                })
+                            }} label='Giới tính' /> : (this.state.sex ? this.state.sex : '')}
                     </div>
 
-                    <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
-                        <label htmlFor='isCourseAdmin'>Quản trị viên khoá học:&nbsp;</label>
-                        <div className='toggle'>
-                            <label>
-                                <input type='checkbox' id='isCourseAdmin' disabled={!permissionWrite} onChange={() => { }} /><span className='button-indecator' />
-                            </label>
-                        </div>
-                    </div>
-                    <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
-                        <label htmlFor='isStaff'>Nhân viên:&nbsp;</label>
-                        <div className='toggle'>
-                            <label>
-                                <input type='checkbox' id='isStaff' disabled={!permissionWrite} onChange={() => { }} /><span className='button-indecator' />
-                            </label>
-                        </div>
-                    </div>
-                    <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
-                        <label htmlFor='isLecturer'>Giáo viên:&nbsp;</label>
-                        <div className='toggle'>
-                            <label>
-                                <input type='checkbox' id='isLecturer' disabled={!permissionWrite} onChange={() => { }} /><span className='button-indecator' />
-                            </label>
-                        </div>
-                    </div>
+                    <Checkbox ref={this.isCourseAdmin} className='col-md-4 form-group' label='Quản trị viên khoá học' permissionWrite={permissionWrite} />
+                    <Checkbox ref={this.isStaff} className='col-md-4 form-group' label='Nhân viên' permissionWrite={permissionWrite} />
+                    <Checkbox ref={this.isLecturer} className='col-md-4 form-group' label='Giáo viên' permissionWrite={permissionWrite} />
 
                     <div className='col-md-12 form-group' style={{ display: this.state._id ? 'block' : 'none' }}>
                         <label htmlFor='userRoles'>Vai trò</label><br />
@@ -154,14 +140,7 @@ class UserModal extends AdminModal {
                             <optgroup label='Lựa chọn Vai trò' />
                         </select>
                     </div>
-                    <div className='col-md-12 form-group' style={{ display: 'inline-flex' }}>
-                        <label htmlFor='userActive'>Kích hoạt:&nbsp;</label>
-                        <div className='toggle'>
-                            <label>
-                                <input type='checkbox' id='userActive' disabled={!permissionWrite} onChange={() => { }} /><span className='button-indecator' />
-                            </label>
-                        </div>
-                    </div>
+                    <Checkbox id='userActive' className='col-md-12 form-group' label='Kích hoạt' permissionWrite={permissionWrite} />
                 </div>),
         });
     }

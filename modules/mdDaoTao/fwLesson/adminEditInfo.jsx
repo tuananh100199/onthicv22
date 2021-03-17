@@ -15,7 +15,7 @@ class AdminEditInfo extends React.Component {
             this.props.getLesson(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/bai-hoc/list');
+                    this.props.history.push('/user/dao-tao/bai-hoc');
                 } else if (data.item) {
                     const item = data.item;
                     $('#title').val(item.title);
@@ -24,7 +24,7 @@ class AdminEditInfo extends React.Component {
                     this.setState(data);
                     $('#title').focus();
                 } else {
-                    this.props.history.push('/user/dao-tao/bai-hoc/list');
+                    this.props.history.push('/user/dao-tao/bai-hoc');
                 }
             });
         });
@@ -63,7 +63,7 @@ class AdminEditInfo extends React.Component {
                         <i className='fa fa-lg fa-save' /> Lưu
                     </button>
                 </div>
-                <Link to='/user/dao-tao/bai-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+                <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
             </div>

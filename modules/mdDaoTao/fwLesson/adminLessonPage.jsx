@@ -3,38 +3,54 @@ import { connect } from 'react-redux';
 import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
+
+class LessonModal extends AdminModal {
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => $('#lessonName').focus()));
+    }
+
+    onShow = () => $('#lessonName').val('');
+
+    onSubmit = () => {
+        const newData = { title: $('#lessonName').val() };
+        if (newData.title == '') {
+            T.notify('Tên bài học bị trống!', 'danger');
+            $('#lessonName').focus();
+        } else {
+            this.props.createLesson(newData, data => {
+                data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id);
+            });
+        }
+    }
+
+    render = () => this.renderModal({
+        title: 'Bài học mới',
+        body:
+            <div className='form-group'>
+                <label htmlFor='lessonName'>Tên bài học</label>
+                <input className='form-control' id='lessonName' type='text' placeholder='Nhập tên bài học' autoFocus={true} />
+            </div>
+    });
+}
 
 class ListLessonPage extends AdminPage {
-    state = { searchText: '', isSearching: false };
+    modal = React.createRef();
 
     componentDidMount() {
         this.props.getLessonInPage();
-        T.ready('/user/dao-tao/bai-hoc/list', null);
+        T.ready('/user/dao-tao/bai-hoc', null);
         T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
     }
 
     create = (e) => {
+        this.modal.current.show();
         e.preventDefault();
-        this.props.createLesson(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
     }
 
     delete = (e, item) => {
         e.preventDefault();
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
-    }
-
-    search = (e) => {
-        e.preventDefault();
-        let condition = {},
-            searchText = $('#searchTextBox').val();
-        if (searchText) condition.searchText = searchText;
-
-        this.setState({ isSearching: true }, () => {
-            this.props.getLessonInPage(undefined, undefined, condition, () => {
-                this.setState({ searchText, isSearching: false });
-            });
-        })
+        T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
     }
 
     render() {
@@ -88,6 +104,7 @@ class ListLessonPage extends AdminPage {
                         <i className='fa fa-lg fa-plus' />
                     </button> : null
                 }
+                <LessonModal ref={this.modal} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
         };
         return this.renderListPage(renderData);

@@ -1,6 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+export class Checkbox extends React.Component {
+    state = { checked: false };
+    box = React.createRef();
+
+    val = (checked) => {
+        if (checked != null) {
+            this.setState({ checked });
+        } else {
+            return this.state.checked;
+        }
+    }
+
+    onCheck = () => this.props.permissionWrite && this.setState({ checked: !this.state.checked });
+
+    render() {
+        const { className, label } = this.props;
+        return (
+            <div className={className} style={{ display: 'inline-flex' }}>
+                <label style={{ marginBottom: 0 }} onClick={this.onCheck}>{label}:&nbsp;</label>
+                <div className='toggle'>
+                    <label style={{ marginBottom: 0 }}>
+                        <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} /><span className='button-indecator' />
+                    </label>
+                </div>
+            </div>);
+    }
+}
+
 export class AdminModal extends React.Component {
     modal = React.createRef();
 
@@ -44,7 +72,7 @@ export class AdminModal extends React.Component {
     );
 
     render = () => null;
-  
+
 }
 
 export class AdminPage extends React.Component {
@@ -55,7 +83,7 @@ export class AdminPage extends React.Component {
     getUserPermission = (prefix, listPermissions = ['read', 'write', 'delete']) => {
         const permission = {},
             currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-            listPermissions.forEach(item => permission[item] = currentPermissions.includes(`${prefix}:${item}`));
+        listPermissions.forEach(item => permission[item] = currentPermissions.includes(`${prefix}:${item}`));
         return permission;
     }
 
