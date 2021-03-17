@@ -15,7 +15,9 @@ module.exports = app => {
             done ? model.find(condition).exec(done) : model.find({}).exec(condition)
         },
 
-        get: (_id, done) => model.findOne({ _id }, done),
+        get: (condition, done) => {
+            done ? model.findOne(condition).exec(done) : model.findById({}).exec(condition)
+        },
 
         update: (_id, $set, $unset, done) => done ?
             model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
