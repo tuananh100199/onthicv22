@@ -143,7 +143,7 @@ class AdminHeader extends React.Component {
                         <li className='app-nav__item'>
                             <a href='#' style={{ color: 'white' }} onClick={this.showDebugModal}>Switch user</a>
                         </li> : null}
-                    <li className='app-search'>
+                    <li className='app-search' style={{ display: 'none' }}>
                         <input ref={this.searchBox} className='app-search__input' type='search' placeholder='Tìm kiếm' onKeyUp={e => e.keyCode == 13 && this.search(e)} />
                         <button className='app-search__button' onClick={this.search}><i className='fa fa-search' /></button>
                     </li>

@@ -218,10 +218,10 @@ class UserPage extends AdminPage {
     passwordModal = React.createRef();
 
     componentDidMount() {
-        T.ready();
+        T.ready(() => T.showSearchBox());
         this.props.getAllRoles();
         this.props.getUserPage(1, 50, {});
-        T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, { searchText }, () => {
+        T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
     }

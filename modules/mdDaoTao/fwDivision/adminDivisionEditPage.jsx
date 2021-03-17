@@ -12,7 +12,6 @@ class DivisionEditPage extends React.Component {
 
     componentDidMount() {
         T.ready('/user/division', () => {
-            T.hideSearchBox();
             const route = T.routeMatcher('/user/division/edit/:_id'), params = route.parse(window.location.pathname);
             this.props.getDivisionItem(params._id, data => {
                 if (data.item) {
