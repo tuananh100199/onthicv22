@@ -4,7 +4,7 @@ import { getUserPage, createUser, updateUser, deleteUser } from './redux';
 import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
 import ImageBox from 'view/component/ImageBox';
-import Dropdown from 'view/component/Dropdown';
+import { Select } from 'view/component/Input';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
 class UserModal extends AdminModal {
@@ -31,7 +31,7 @@ class UserModal extends AdminModal {
         $('#isCourseAdmin').prop('checked', item.isCourseAdmin);
         $('#isLecturer').prop('checked', item.isLecturer);
         $('#isStaff').prop('checked', item.isStaff);
-        this.sex && this.sex.current && this.sex.current.setText(item.sex ? item.sex : '');
+        this.sex.current.val({ id: item.sex, text: item.sex === 'male' ? 'Nam' : 'Nữ' });
 
         let userRoles = item.roles.map(item => item._id),
             allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
@@ -43,9 +43,9 @@ class UserModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const sex = this.sex.current.getSelectedItem(),
-            birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
+        const birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
         let changes = {
+            sex: this.sex.current.val(),
             firstname: $('#userFirstname').val().trim(),
             lastname: $('#userLastname').val().trim(),
             email: $('#userEmail').val().trim(),
@@ -57,10 +57,6 @@ class UserModal extends AdminModal {
             roles: $('#userRoles').val(),
             birthday
         };
-
-        if (T.sexes.indexOf(sex) != -1) {
-            changes.sex = sex;
-        }
         if (changes.firstname == '') {
             T.notify('Tên người dùng bị trống!', 'danger');
             $('#userFirstname').focus();
@@ -118,9 +114,15 @@ class UserModal extends AdminModal {
                         <label htmlFor='userBirthday'>Ngày sinh</label>
                         <input className='form-control' id='userBirthday' type='text' placeholder='Ngày sinh' readOnly={!permissionWrite} />
                     </div>
-                    <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
-                        <label>Giới tính: </label>&nbsp;&nbsp;
-                        {permissionWrite ? <Dropdown ref={this.sex} text='' items={T.sexes} /> : (this.state.sex ? this.state.sex : '')}
+                    <div className='col-md-3 form-group' style={{ display: 'inline-flex' }}>
+                        <label style={{ whiteSpace: 'nowrap' }}>Giới tính: </label>&nbsp;&nbsp;
+                        {permissionWrite ? <Select ref={this.sex} displayLabel={false}
+                            adapter={{
+                                ajax: true,
+                                processResults: () => ({
+                                    results: [{ id: "female", text: "Nữ" }, { id: "male", text: "Nam" }]
+                                })
+                            }} label='Giới tính' /> : (this.state.sex ? this.state.sex : '')}
                     </div>
 
                     <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
