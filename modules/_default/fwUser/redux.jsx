@@ -1,7 +1,7 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const UserGetAll = 'USER_GET_ALL';
+const UserGetAll = 'UserGetAll';
 const UserGetOne = 'UserGetOne';
 const UserGetOneByEmail = 'UserGetOneByEmail';
 const UserGetPage = 'UserGetPage';
