@@ -29,9 +29,9 @@ module.exports = (app) => {
     });
 
     app.post('/api/dang-ky-tu-van', app.permission.check('component:write'), (req, res) => {
-        app.model.dangKyTuVan.create({ title: req.body.title, formTitle: req.body.formTile, description: req.body.description, statistic: [] }, (error, item) => res.send({ error, item }))
+        app.model.dangKyTuVan.create(req.body.newData, (error, item) => res.send({ error, item }))
     });
-
+    
     app.put('/api/dang-ky-tu-van', app.permission.check('component:write'), (req, res) => {
         const changes = req.body.changes;
         if (changes.statistic && changes.statistic == 'empty') changes.statistic = [];

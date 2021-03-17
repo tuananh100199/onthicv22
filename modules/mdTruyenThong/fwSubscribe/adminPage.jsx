@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe } from './redux';
+import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
-class AdminSubscribeModal extends React.Component {
+class AdminSubscribeModal extends AdminModal {
     state = {};
     modal = React.createRef();
 
@@ -13,29 +13,17 @@ class AdminSubscribeModal extends React.Component {
         $(this.modal.current).modal('show');
     }
 
-    render() {
+    render = () => {
+        
         const { email, createdDate } = this.state;
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <div className='modal-dialog modal-lg' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin đăng ký nhận tin</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <label>Email: <b>{email}</b></label><br />
-                            <label>Ngày đăng ký nhận tin: <b>{createdDate}</b></label><br />
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        const renderDataModal = {
+            title: 'Thông tin đăng ký nhận tin',
+            body: <> 
+                <label>Email: <b>{email}</b></label><br />
+                <label>Ngày đăng ký nhận tin: <b>{new Date(createdDate).getText()}</b></label><br />
+            </>
+        };
+        return this.renderModal(renderDataModal);
     }
 }
 
@@ -45,7 +33,7 @@ class SubscribePage extends AdminPage {
     componentDidMount() {
         T.ready();
         this.props.getSubscribePage();
-        T.onSearch = (searchText) => this.props.getSubscribePage(searchText);
+        T.onSearch = (searchText) => this.props.getSubscribePage(1,25,searchText);
     }
 
     showSubscribe = (e, _id) => {
@@ -59,15 +47,18 @@ class SubscribePage extends AdminPage {
         T.confirm('Xoá đăng ký nhận tin', 'Bạn có chắc muốn xoá đăng ký nhận tin này?', true, isConfirm => isConfirm && this.props.deleteSubscribe(item._id));
         e.preventDefault();
     }
+    exportSubscribe = (e) => {
+        this.props.exportSubscribeToExcel();
+    }
 
     render() {
         const permission = this.getUserPermission('subscribe');
-        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.subscribe && this.props.subscribe.page ?
-            this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subscribe && this.props.subscribe.page ?
+            this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có đăng ký nhận tin!';
-        if (list && list.length > 0) {
+        if (this.props.subscribe && this.props.subscribe.page && this.props.subscribe.page.list && this.props.subscribe.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -79,7 +70,7 @@ class SubscribePage extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {list.map((item, index) => (
+                        {this.props.subscribe.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
@@ -91,7 +82,7 @@ class SubscribePage extends AdminPage {
                                         <div className='btn-group'>
                                             {permission.read ?
                                                 <a className='btn btn-primary' href='#' onClick={e => this.showSubscribe(e, item._id)}>
-                                                    <i className='fa fa-lg fa-envelope-open-o' />
+                                                    <i className='fa fa-lg fa-edit' />
                                                 </a> : null}
                                             {permission.delete ?
                                                 <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
@@ -108,11 +99,14 @@ class SubscribePage extends AdminPage {
 
         const renderData = {
             icon: 'fa fa-envelope-o',
-            title: 'Đăng ký nhận tin',
+            title: 'Danh sách đăng ký nhận tin',
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getSubscribePage} />
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel' onClick={e => this.exportSubscribe(e)}>
+                    <i className='fa fa-file-excel-o' />
+                </button>
                 <AdminSubscribeModal ref={this.modal} />
             </>,
         };
@@ -120,6 +114,6 @@ class SubscribePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ subscribe: state.subscribe });
-const mapActionsToProps = { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe };
+const mapStateToProps = state => ({system:state.system, subscribe: state.subscribe });
+const mapActionsToProps = { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(SubscribePage);

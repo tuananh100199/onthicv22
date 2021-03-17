@@ -5,7 +5,7 @@ module.exports = app => {
             3003: { title: 'Đăng ký nhận tin', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:delete' });
+    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:write' }, { name: 'subscribe:delete' });
 
     app.get('/user/subscribe', app.permission.check('subscribe:read'), app.templates.admin);
 
@@ -13,7 +13,11 @@ module.exports = app => {
     app.get('/api/subscribe/page/:pageNumber/:pageSize', app.permission.check('subscribe:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.subscribe.getPage(pageNumber, pageSize, {}, (error, page) => {
+        const condition = {}, searchText = req.query.searchText;
+        if (searchText) {
+            condition.email = new RegExp(searchText, 'i');
+        }
+        app.model.subscribe.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
@@ -28,6 +32,36 @@ module.exports = app => {
         res.send({ error, item });
     }));
 
+    app.get('/api/subscribe/export', app.permission.check('subscribe:write'), (req, res) => {
+        app.model.subscribe.getAll( (error, items) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
+                let cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Email', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Ngày đăng ký', bold: true, border: '1234' },
+                ];
+
+                worksheet.columns = [
+                    { header: 'STT', key: 'id', width: 15},
+                    { header: 'Email', key: 'email', width: 40 },
+                    { header: 'Ngày đăng ký', key: 'createdDate', width: 30 }
+                ];
+                items.forEach((item, index) => {
+                    worksheet.addRow({
+                        id: index + 1,
+                        email: item.email,
+                        createdDate: item.createdDate
+                    });
+                })
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, `Đăng ký nhận tin.xlsx`);
+            }
+        })
+    });
+    
     app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
 
 

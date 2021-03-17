@@ -44,6 +44,7 @@ export class AdminModal extends React.Component {
     );
 
     render = () => null;
+  
 }
 
 export class AdminPage extends React.Component {
@@ -54,7 +55,7 @@ export class AdminPage extends React.Component {
     getUserPermission = (prefix, listPermissions = ['read', 'write', 'delete']) => {
         const permission = {},
             currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        listPermissions.forEach(item => permission[item] = currentPermissions.includes(`${prefix}:${item}`));
+            listPermissions.forEach(item => permission[item] = currentPermissions.includes(`${prefix}:${item}`));
         return permission;
     }
 
