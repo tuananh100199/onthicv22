@@ -33,7 +33,7 @@ export class AdminModal extends React.Component {
                         <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                             <i className='fa fa-fw fa-lg fa-times' />Đóng
                         </button>
-                        <button type='submit' className='btn btn-primary'>
+                        <button type='submit' className='btn btn-primary' data-dismiss='modal'>
                             <i className='fa fa-fw fa-lg fa-save' /> Lưu
                         </button>
                     </div>

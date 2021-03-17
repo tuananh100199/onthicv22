@@ -37,6 +37,8 @@ class AdminDangKyTuVanModal extends React.Component {
             result: dangKyTuVanresult,
         };
         this.props.updateDKTVList(this.state._id, changes);
+        $(this.modal.current).modal('hide');
+
 }
     render() {
         const { lastname, firstname, email, phone, courseType, courseTypeRecommend, result } = this.state;
@@ -100,7 +102,6 @@ class AdminDangKyTuVanModal extends React.Component {
                                 </div>
                             </div>
                         </div>
-
                         <form>
                             <div className='modal-footer'>
                                 <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
