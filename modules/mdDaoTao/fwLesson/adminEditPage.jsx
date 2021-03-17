@@ -16,11 +16,11 @@ class adminEditPage extends React.Component {
             this.props.getLesson(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/bai-hoc/list');
+                    this.props.history.push('/user/dao-tao/bai-hoc');
                 } else if (data.item) {
                     this.setState(data);
                 } else {
-                    this.props.history.push('/user/dao-tao/bai-hoc/list');
+                    this.props.history.push('/user/dao-tao/bai-hoc');
                 }
             });
             let tabIndex = parseInt(T.cookie('componentPageTab')),
@@ -42,7 +42,8 @@ class adminEditPage extends React.Component {
                     <h1><i className='fa fa-book' />Bài học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;Bài học &nbsp;/&nbsp; Chỉnh Sửa
+                        <Link to='/user/dao-tao/bai-hoc'> &nbsp;/&nbsp;Bài học &nbsp;/</Link>
+                        &nbsp; Chỉnh Sửa
                     </ul>
                 </div>
                 <ul className='nav nav-tabs'>
@@ -60,6 +61,6 @@ class adminEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
+const mapStateToProps = state => ({ system: state.system });
 const mapActionsToProps = { updateLesson, getLesson };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

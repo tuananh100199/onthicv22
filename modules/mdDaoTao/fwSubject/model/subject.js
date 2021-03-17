@@ -4,13 +4,12 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         lesson: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
-        feedbackQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'FeedbackQuestion' }], default: [] },
+        subjectQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'SubjectQuestion' }], default: [] },
     });
     const model = app.db.model('Subject', schema);
 
     app.model.subject = {
         create: (data, done) => {
-            if (!data.title) data.title = 'Môn học mới';
             model.create(data, done)
         },
 
@@ -44,7 +43,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lesson', '_id title').populate('feedbackQuestion');
+                if (populate) result.populate('lesson', '_id title').populate('subjectQuestion');
                 result.exec(done);
             };
 
@@ -75,8 +74,8 @@ module.exports = app => {
             model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
         },
 
-        pushFeedbackQuestion: (condition, feedbackQuestionId, feedbackQuestionTitle, feedbackQuestionContent, feedbackQuestionActive, done) => {
-            model.findOneAndUpdate(condition, { $push: { feedbackQuestion: { _id: feedbackQuestionId, title: feedbackQuestionTitle, content: feedbackQuestionContent, active: feedbackQuestionActive } } }, { new: true }).select('_id feedbackQuestion').populate('feedbackQuestion').exec(done);
+        pushSubjectQuestion: (condition, SubjectQuestionId, SubjectQuestionTitle, SubjectQuestionContent, SubjectQuestionActive, done) => {
+            model.findOneAndUpdate(condition, { $push: { subjectQuestion: { _id: SubjectQuestionId, title: SubjectQuestionTitle, content: SubjectQuestionContent, active: SubjectQuestionActive } } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
         },
 
         deleteLesson: (condition, lessonId, done) => {

@@ -9,8 +9,8 @@ export default {
     },
     routes: [
         {
-            path: '/user/dao-tao/mon-hoc/list',
-            component: Loadable({ loading: Loading, loader: () => import('./adminListSubject') })
+            path: '/user/dao-tao/mon-hoc',
+            component: Loadable({ loading: Loading, loader: () => import('./adminSubjectPage') })
         },
         {
             path: '/user/dao-tao/mon-hoc/edit/:subjectId',
