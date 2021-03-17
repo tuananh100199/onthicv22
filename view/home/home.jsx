@@ -14,7 +14,6 @@ import Loader from 'view/component/Loader';
 import HomeMenu from 'view/component/HomeMenu';
 import HomeFooter from 'view/component/HomeFooter';
 import LoginModal from 'view/component/LoginModal';
-import LanguageSwitch from 'view/component/LanguageSwitch';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import _init from 'modules/_default/_init/index';
@@ -78,8 +77,8 @@ class App extends React.Component {
                 }
 
                 const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
-                const pathname = window.location.pathname, paths = routes.map(route => route.props.path)
-                const isMatch = paths.some(path => T.routeMatcher(path).parse(pathname))
+                const pathname = window.location.pathname, paths = routes.map(route => route.props.path);
+                const isMatch = paths.some(path => T.routeMatcher(path).parse(pathname));
                 this.setState({ routes, isMatch });
             } else {
                 setTimeout(done, 200)
@@ -98,36 +97,25 @@ class App extends React.Component {
     };
 
     render() {
-        const { isMatch } = this.state;
         return (
             <BrowserRouter>
-                {isMatch ?
+                {this.state.isMatch ?
                     <React.Fragment>
                         <HomeMenu showLoginModal={this.showLoginModal} />
                         <Switch>
                             {this.state.routes}
-                            <Route path='**' component={Loadable({
-                                loading: Loading,
-                                loader: () => import('view/component/MessagePage')
-                            })} />
+                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
                         </Switch>
                         <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
                         <HomeFooter />
-                        {/*<LanguageSwitch />*/}
-                        <LoginModal ref={this.loginModal} register={this.props.register} login={this.props.login}
-                            forgotPassword={this.props.forgotPassword}
+                        <LoginModal ref={this.loginModal} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />
                         <Loader ref={this.loader} />
                     </React.Fragment> :
                     <React.Fragment>
-                        <div>
-                            <Switch>
-                                <Route path='**' component={Loadable({
-                                    loading: Loading,
-                                    loader: () => import('view/component/MessagePage')
-                                })} />
-                            </Switch>
-                        </div>
+                        <Switch>
+                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
+                        </Switch>
                     </React.Fragment>
                 }
             </BrowserRouter>

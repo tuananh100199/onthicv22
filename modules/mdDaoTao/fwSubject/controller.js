@@ -5,7 +5,12 @@ module.exports = (app) => {
             4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc/list' },
         },
     };
-    app.permission.add({ name: 'subject:read', menu }, { name: 'subject:write', menu });
+
+    app.permission.add(
+        { name: 'subject:read', menu },
+        { name: 'subject:write' },
+    );
+
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/list', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/edit/:subjectId', app.templates.admin);
@@ -27,7 +32,6 @@ module.exports = (app) => {
     app.get('/api/subject/edit/:subjectId', app.permission.check('subject:read'), (req, res) => {
         app.model.subject.get(req.params.subjectId, (error, item) => res.send({ error, item }));
     });
-
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
         app.model.subject.create(req.body.data || {}, (error, item) => res.send({ error, item }));
@@ -68,6 +72,7 @@ module.exports = (app) => {
     app.put('/api/subject/lesson/swap', app.permission.check('subject:write'), (req, res) => {
         app.model.subject.update(req.body._id, req.body.data, (error, item) => res.send({ error, item }));
     });
+
     app.get('/api/feedback-question/:subjectId', (req, res) => {
         const subjectId = req.params.subjectId;
         app.model.subject.get(subjectId, { select: '_id feedbackQuestion', populate: true }, (error, item) => {
@@ -113,5 +118,4 @@ module.exports = (app) => {
             }
         });
     });
-    //End question -----------------------------------------------------------------------------------------------------
 };

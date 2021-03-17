@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateLesson, getLesson } from './redux/reduxLesson';
+import { updateLesson, getLesson } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
@@ -36,7 +36,7 @@ class AdminEditInfo extends React.Component {
             shortDescription: $('#shortDescription').val().trim(),
             detailDescription: this.editor.current.html(),
         };
-        this.props.updateLesson(this.state.item._id, changes)
+        this.props.updateLesson(this.state.item._id, changes);
     }
 
     render() {

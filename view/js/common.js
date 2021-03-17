@@ -4,7 +4,6 @@ import dateformat from 'dateformat';
 import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
-
 const T = {
     PropTypes,
     rootUrl: 'https://hpo.edu.vn',
@@ -42,6 +41,7 @@ const T = {
 
     debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
 
+    documentReady: (done) => $(document).ready(() => setTimeout(done, 250)),
     ready: (pathname, done) => $(document).ready(() => setTimeout(() => {
         T.clearSearchBox && T.clearSearchBox();
 

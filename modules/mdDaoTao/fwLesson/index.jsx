@@ -1,7 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import lesson from './redux/reduxLesson';
+import lesson from './redux';
 import SubMenusPage from 'view/component/SubMenusPage';
 
 export default {

@@ -29,8 +29,8 @@ module.exports = app => {
             finalCreate(data);
         },
 
-        getAll: (done) => {
-            model.find({}).exec(done);
+        getAll: (condition, done) => {
+            done ? model.find(condition).exec(done) : model.find({}).exec(condition)
         },
 
         get: (condition, option, done) => {
@@ -56,6 +56,7 @@ module.exports = app => {
             model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 
         delete: (_id, done) => model.findOne({ _id }, (error, item) => {
+            // TODO: delete image nè Vinh
             if (error) {
                 done(error);
             } else if (item == null) {

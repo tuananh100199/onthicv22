@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux/reduxLesson';
+import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 
@@ -11,7 +11,6 @@ class VideoModal extends React.Component {
         this.state = {};
         this.modal = React.createRef();
         this.imageBox = React.createRef();
-        this.btnSave = React.createRef();
     }
 
     componentDidMount() {
@@ -22,17 +21,15 @@ class VideoModal extends React.Component {
 
     show = (video) => {
         let { _id, title, link, image } = video ? video : { _id: null, title: '', link: '', image: '' };
-
-        $(this.btnSave.current).data('id', _id);
         $('#videoTitle').val(title);
         $('#videoLink').val(link);
         this.imageBox.current.setData('lesson-video:' + (_id ? _id : 'new'));
         this.setState({ image });
-        $(this.modal.current).modal('show');
+        $(this.modal.current).data('id', _id).modal('show');
     }
 
     save = (event) => {
-        const _id = $(this.btnSave.current).data('id'),
+        const _id = $(this.modal.current).data('id'),
             changes = {
                 title: $('#videoTitle').val().trim(),
                 link: $('#videoLink').val().trim(),
@@ -78,26 +75,21 @@ class VideoModal extends React.Component {
                                     <input className='form-control' id='videoTitle' type='text' placeholder='Tiêu đề video' readOnly={readOnly} />
                                 </div>
                             </div>
-
                             <div className='row'>
-                                <div className='col-8'>
-                                    <div className='form-group'>
-                                        <label htmlFor='videoLink'>Đường dẫn</label>
-                                        <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
-                                    </div>
+                                <div className='form-group col-md-8'>
+                                    <label htmlFor='videoLink'>Đường dẫn</label>
+                                    <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
                                 </div>
-                                <div className='col-4'>
-                                    <div className='form-group'>
-                                        <label>Hình đại diện</label>
-                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} readOnly={readOnly} />
-                                    </div>
+                                <div className='form-group col-md-4'>
+                                    <label>Hình đại diện</label>
+                                    <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} readOnly={readOnly} />
                                 </div>
                             </div>
                         </div>
 
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>
+                            <button type='submit' className='btn btn-primary'>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
                         </div>
@@ -138,13 +130,12 @@ class adminEditLessonVideo extends React.Component {
     }
 
     edit = (e, item) => {
-        this.props.getLessonVideo(item._id, video => {
-            this.videoModal.current.show(video);
-        });
+        this.props.getLessonVideo(item._id, video => this.videoModal.current.show(video));
         e.preventDefault();
     }
 
     removeLessonVideo = (e, item, index, _id) => {
+        e.preventDefault();
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
@@ -159,10 +150,10 @@ class adminEditLessonVideo extends React.Component {
                 T.alert('Cancelled!', 'error', false, 500);
             }
         });
-        e.preventDefault();
-    };
+    }
 
     swap = (e, index, _id, isMoveUp) => {
+        e.preventDefault();
         let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
         if (lessonVideoList.length == 1) {
             T.notify('Thay đổi thứ tự bài học thành công', 'success');
@@ -197,7 +188,6 @@ class adminEditLessonVideo extends React.Component {
                 }
             }
         }
-        e.preventDefault();
     };
 
     render() {
@@ -215,7 +205,7 @@ class adminEditLessonVideo extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên bài học</th>
+                            <th style={{ width: '100%' }}>Tên bài học</th>
                             <th style={{ width: 'auto' }}>Link</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
@@ -260,7 +250,7 @@ class adminEditLessonVideo extends React.Component {
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={this.create}>
                         <i className='fa fa-lg fa-plus' /> Thêm
-                                    </button>
+                    </button>
                 </div>
 
                 <VideoModal _id={_id} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} ref={this.videoModal} readOnly={readOnly} />
