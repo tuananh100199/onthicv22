@@ -39,8 +39,8 @@ import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwContentList from 'modules/_default/fwContentList/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
-import fwMonHoc from 'modules/mdDaoTao/fwMonHoc/index';
-import fwBaiHoc from 'modules/mdDaoTao/fwLesson/index';
+import fwSubject from 'modules/mdDaoTao/fwSubject/index';
+import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 
@@ -48,8 +48,9 @@ const modules = [
     _init, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
-    fwDivision, fwContentList, fwCourseType, fwCourse, fwMonHoc, fwBaiHoc, fwDangKyTuVan, fwDonDeNghiHoc,
+    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc,
 ]
+
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 

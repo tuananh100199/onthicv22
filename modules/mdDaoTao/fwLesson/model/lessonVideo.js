@@ -40,7 +40,7 @@ module.exports = app => {
 
                 const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
                 if (select) result.select(select);
-                if (populate) result.populate('lessonVideo', '_id title');
+                if (populate) result.populate('lessonVideo');
                 result.exec(done);
             };
 
