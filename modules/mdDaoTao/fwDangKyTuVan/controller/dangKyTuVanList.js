@@ -42,7 +42,7 @@ module.exports = app => {
     });
 
     app.get('/api/dang-ky-tu-van-list/export', app.permission.check('dangKyTuVan:write'), (req, res) => {
-        app.model.dangKyTuVanList.getAll( (error, items) => {
+        app.model.dangKyTuVanList.getAll((error, items) => {
             if (error) {
                 res.send({ error })
             } else {
@@ -71,7 +71,7 @@ module.exports = app => {
                         firstname: item.firstname,
                         phone: item.phone,
                         email: item.email,
-                        courseType: item.courseType
+                        courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký'
                     });
                 })
                 app.excel.write(worksheet, cells);
