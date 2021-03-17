@@ -4,9 +4,9 @@ module.exports = app => {
         title: String,
         content: String,
     });
-    const model = app.db.model('FeedbackQuestion', schema);
+    const model = app.db.model('SubjectQuestion', schema);
 
-    app.model.feedbackQuestion = {
+    app.model.subjectQuestion = {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => {

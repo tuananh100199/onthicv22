@@ -209,7 +209,6 @@ class AdminEditLessonQuestion extends React.Component {
     }
 
     updateQuestion = (_id, changes) => {
-        console.log(changes)
         this.props.updateQuestion(_id, changes, this.state.item._id, () => {
             T.notify('Cập nhật câu hỏi thành công!', 'success');
         });

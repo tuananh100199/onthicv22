@@ -30,7 +30,7 @@ class LessonModal extends AdminModal {
     }
 
     render = () => this.renderModal({
-        title: 'Bài học',
+        title: 'Bài học mới',
         body:
             <div className='form-group'>
                 <label htmlFor='lessonName'>Tên bài học</label>

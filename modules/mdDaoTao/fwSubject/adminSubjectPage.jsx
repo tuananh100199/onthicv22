@@ -49,13 +49,13 @@ class AdminListSubject extends AdminPage {
     }
 
     create = (e) => {
-        this.modal.current.show();
         e.preventDefault();
+        this.modal.current.show();
     }
 
     delete = (e, item) => {
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteSubject(item._id));
         e.preventDefault();
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteSubject(item._id));
     }
 
     render() {

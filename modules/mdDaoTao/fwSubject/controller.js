@@ -73,48 +73,48 @@ module.exports = (app) => {
         app.model.subject.update(req.body._id, req.body.data, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/subject/feedback/:subjectId', (req, res) => {
+    app.get('/api/subject/question/:subjectId', (req, res) => {
         const subjectId = req.params.subjectId;
-        app.model.subject.get(subjectId, { select: '_id feedbackQuestion', populate: true }, (error, item) => {
+        app.model.subject.get(subjectId, { select: '_id subjectQuestion', populate: true }, (error, item) => {
             res.send({ error, item });
         });
     });
 
-    app.post('/api/subject/feedback/:_id', app.permission.check('subject:write'), (req, res) => {
+    app.post('/api/subject/question/:_id', app.permission.check('subject:write'), (req, res) => {
         const _id = req.params._id, data = req.body.data;
-        app.model.feedbackQuestion.create(data, (error, question) => {
+        app.model.subjectQuestion.create(data, (error, question) => {
             if (error || !question) {
                 res.send({ error });
             } else {
-                app.model.subject.pushFeedbackQuestion({ _id }, question._id, question.title, question.content, question.active, (error, item) => {
+                app.model.subject.pushSubjectQuestion({ _id }, question._id, question.title, question.content, question.active, (error, item) => {
                     res.send({ error, item });
                 });
             }
         });
     });
 
-    app.put('/api/subject/feedback', app.permission.check('subject:write'), (req, res) => {
+    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
         const _id = req.body._id, data = req.body.data;
-        app.model.feedbackQuestion.update(_id, data, (error, question) => {
+        app.model.subjectQuestion.update(_id, data, (error, question) => {
             res.send({ error, question });
         });
     });
 
-    app.put('/api/subject/feedback/swap', app.permission.check('subject:write'), (req, res) => {
+    app.put('/api/subject/question/swap', app.permission.check('subject:write'), (req, res) => {
         const data = req.body.data, subjectId = req.body.subjectId;
         app.model.subject.update(subjectId, data, (error, item) => {
             res.send({ error, item });
         });
     });
 
-    app.delete('/api/subject/feedback', app.permission.check('subject:write'), (req, res) => {
+    app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
         const { data, subjectId, _id } = req.body;
         if (data.questions && data.questions == 'empty') data.questions = [];
         app.model.subject.update(subjectId, data, (error, _) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.feedbackQuestion.delete(_id, error => res.send({ error }));
+                app.model.subjectQuestion.delete(_id, error => res.send({ error }));
             }
         });
     });
