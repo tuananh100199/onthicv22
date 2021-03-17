@@ -57,7 +57,7 @@ module.exports = app => {
                     });
                 })
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, `result.xlsx`);
+                app.excel.attachment(workbook, res, `Đăng ký nhận tin.xlsx`);
             }
         })
     });

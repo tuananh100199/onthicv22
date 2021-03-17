@@ -60,15 +60,6 @@ module.exports = app => {
         });
     });
 
-    app.put('/api/dang-ky-tu-van-list/item/', app.permission.check('dangKyTuVan:write'), (req, res) => {
-        const changes = req.body.changes;
-        app.model.dangKyTuVanList.update(req.body._id, changes, (error, item) => res.send({ error, item }));
-    });
-
-    app.delete('/api/dang-ky-tu-van-list/item', app.permission.check('dangKyTuVan:write'), (req, res) => {
-        app.model.dangKyTuVanList.delete(req.body._id, error => res.send({ error }));
-    });
-
     app.get('/api/dang-ky-tu-van-list/export', app.permission.check('dangKyTuVan:write'), (req, res) => {
         app.model.dangKyTuVanList.getAll((error, items) => {
             if (error) {
@@ -103,9 +94,18 @@ module.exports = app => {
                     });
                 })
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, `result.xlsx`);
+                app.excel.attachment(workbook, res, `Đăng ký tư vấn.xlsx`);
             }
         })
+    });
+
+    app.put('/api/dang-ky-tu-van-list/item/', app.permission.check('dangKyTuVan:write'), (req, res) => {
+        const changes = req.body.changes;
+        app.model.dangKyTuVanList.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.delete('/api/dang-ky-tu-van-list/item', app.permission.check('dangKyTuVan:write'), (req, res) => {
+        app.model.dangKyTuVanList.delete(req.body._id, error => res.send({ error }));
     });
 
     // Home -----------------------------------------------------------------------------------------------------------
