@@ -2,17 +2,19 @@ module.exports = app => {
     const schema = app.db.Schema({
         active: { type: Boolean, default: false },
         title: String,
-        defaultAnswer: String,
         content: String,
-        typeValue: { type: [String], default: [] }
     });
-    const model = app.db.model('LessonQuestion', schema);
+    const model = app.db.model('FeedbackQuestion', schema);
 
-    app.model.lessonQuestion = {
+    app.model.feedbackQuestion = {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => {
-            done ? model.find(condition).exec(done) : model.find({}).exec(condition)
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            model.find(condition).sort({ title: 1 }).exec(done);
         },
 
         get: (condition, done) => {

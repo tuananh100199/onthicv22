@@ -35,7 +35,7 @@ class AdminDonDeNghiList extends React.Component {
                                 </div>
                             </Link>
                         </div>))
-                        : <div className='col-12'>Chưa có loại khóa học chờ duyệt</div>}
+                        : <div>Chưa có khóa học chờ duyệt</div>}
                 </div>
             </main>
         );

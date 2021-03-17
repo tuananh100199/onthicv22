@@ -32,7 +32,7 @@ class ProfilePage extends React.Component {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
 
-                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy, nationality } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
+                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '', nationality: 'VN' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#birthday').datepicker('update', birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');

@@ -1,13 +1,12 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import lesson from './redux/reduxLesson';
-import question from './redux/reduxQuestion'
+import lesson from './redux';
 import SubMenusPage from 'view/component/SubMenusPage';
 
 export default {
     redux: {
-        lesson, question
+        lesson
     },
     routes: [
         {
@@ -16,14 +15,14 @@ export default {
         },
         {
             path: '/user/dao-tao/bai-hoc/list',
-            component: Loadable({ loading: Loading, loader: () => import('./adminListBaiHoc') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminListLesson') })
         },
         {
-            path: '/user/dao-tao/bai-hoc/edit/:baihocId',
-            component: Loadable({ loading: Loading, loader: () => import('./adminEditBaiHoc') })
+            path: '/user/dao-tao/bai-hoc/edit/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/user/dao-tao/bai-hoc/view/:baihocId',
+            path: '/user/dao-tao/bai-hoc/view/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./lessonDetail') })
         },
     ],

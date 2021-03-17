@@ -1,19 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getMonHoc } from './redux';
+import { getSubject } from './redux';
 import { Link } from 'react-router-dom';
 import AdminEditInfo from './adminEditInfo';
-import AdminEditBaiHoc from './adminEditBaiHoc';
+import AdminEditLesson from './adminEditLesson';
+import AdminEditQuestion from './adminEditQuestion';
 
 
-class EditPage extends React.Component {
+class AdminEditPage extends React.Component {
     state = { item: null };
 
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc/list', () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:monHocId').parse(url);
-            this.props.getMonHoc(params.monHocId, data => {
+                params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
+            this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user/dao-tao/mon-hoc/list');
@@ -41,17 +42,19 @@ class EditPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa-file' /> Môn học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;Môn học học &nbsp;/&nbsp; Chỉnh Sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/dao-tao/mon-hoc/list'>Môn học</Link>&nbsp;/&nbsp; Chỉnh Sửa
                     </ul>
                 </div>
                 <ul className='nav nav-tabs'>
                     <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#common'>Thông tin chung</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#lesson'>Bài học</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#question'>Câu hỏi phản hồi</a></li>
                 </ul>
                 <div className='tab-content tile'>
                     <div className='tab-pane fade active show' id='common'><AdminEditInfo history={this.props.history} /></div>
-                    <div className='tab-pane fade' id='lesson'><AdminEditBaiHoc history={this.props.history} /></div>
+                    <div className='tab-pane fade' id='lesson'><AdminEditLesson history={this.props.history} /></div>
+                    <div className='tab-pane fade' id='question'><AdminEditQuestion history={this.props.history} /></div>
                 </div>
             </main>
         );
@@ -59,5 +62,5 @@ class EditPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { getMonHoc };
-export default connect(mapStateToProps, mapActionsToProps)(EditPage);
+const mapActionsToProps = { getSubject };
+export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);
