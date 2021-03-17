@@ -5,12 +5,11 @@ import { getAllCourseType } from '../fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
-class DangKyTuVanModal extends React.Component {
+class DangKyTuVanModal extends AdminModal {
     state = {};
     modal = React.createRef();
-    editor = React.createRef();
 
-    show = (item) => {
+    onShow = (item) => {
         this.setState(item);
         $('#courseTypeRecommend').val(item.courseTypeRecommend);
         $('#dangKyTuVanresult').val(item.result);
@@ -28,7 +27,7 @@ class DangKyTuVanModal extends React.Component {
         $(this.modal.current).modal('show');
     }
 
-    save = () => {
+    onSubmit = () => {
         const courseTypeRecommend = $('#courseTypeRecommend').val(),
             dangKyTuVanresult = $('#dangKyTuVanresult').val();
         const changes = {
@@ -40,57 +39,43 @@ class DangKyTuVanModal extends React.Component {
         });
     }
 
-    render() {
+    render = () => {
         const { lastname, firstname, email, phone, courseType } = this.state;
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin đăng ký tư vấn</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body row'>
-                            <div className='form-group col-md-6'>
-                                <label>Tên người đăng ký: <b>{lastname} {firstname}</b></label>
-                            </div>
-                            <div className='form-group col-md-6'>
-                                <label>Loại khóa học đăng ký: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label>
-                            </div>
-                            <div className='form-group col-md-6'>
-                                <label>Email: <b>{email || 'Chưa đăng ký'}</b></label>
-                            </div>
-                            <div className='form-group col-md-6'>
-                                <label>Số điện thoại: <b>{phone}</b></label>
-                            </div>
+        const renderDataModal = {
+            title: 'Thông tin đăng ký tư vấn',
+            size: 'large',
+            body:
+            <div className='row'>
+                <div className='form-group col-md-6'>
+                    <label>Tên người đăng ký: <b>{lastname} {firstname}</b></label>
+                </div>
+                <div className='form-group col-md-6'>
+                    <label>Loại khóa học đăng ký: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label>
+                </div>
+                <div className='form-group col-md-6'>
+                    <label>Email: <b>{email || 'Chưa đăng ký'}</b></label>
+                </div>
+                <div className='form-group col-md-6'>
+                    <label>Số điện thoại: <b>{phone}</b></label>
+                </div>
 
-                            <div className='form-group col-md-12'>
-                                <label htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
-                                <select id='courseTypeRecommend' >
-                                    <optgroup label='Loại' />
-                                </select>
-                            </div>
-                            <div className='form-group col-md-12'>
-                                <label htmlFor='courseTypeRecommend'>Kết quả tư vấn:</label>
-                                <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={6} />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' onClick={this.save}>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                <div className='form-group col-md-12'>
+                    <label htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
+                    <select id='courseTypeRecommend' >
+                        <optgroup label='Loại' />
+                    </select>
+                </div>
+                <div className='form-group col-md-12'>
+                    <label htmlFor='courseTypeRecommend'>Kết quả tư vấn:</label>
+                    <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={6} />
+                </div>
             </div>
-        );
+        };
+        return this.renderModal(renderDataModal);
     }
 }
 
-class DangKyTuVanPage extends React.Component {
+class DangKyTuVanPage extends AdminPage {
     modal = React.createRef();
 
     componentDidMount() {
@@ -110,6 +95,7 @@ class DangKyTuVanPage extends React.Component {
     }
 
     render() {
+        const permission = this.getUserPermission('dangKyTuVan');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.dangKyTuVanList && this.props.dangKyTuVanList.page ?
             this.props.dangKyTuVanList.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
@@ -125,7 +111,8 @@ class DangKyTuVanPage extends React.Component {
                             <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
                             <th style={{ width: '50%' }}>Email</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học tư vấn</th>
+                            {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
                     <tbody>
@@ -140,16 +127,19 @@ class DangKyTuVanPage extends React.Component {
                                 <td>{item.phone}</td>
                                 <td>{item.email}</td>
                                 <td nowrap='true'>{item.courseType ? item.courseType.title : ''}</td>
-                                <td>
+                                <td nowrap='true'>{item.courseTypeRecommend ? item.courseTypeRecommend.title : ''}</td>
+                                {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.show(e, item._id)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
+                                        {permission.delete || permission.write ?
+                                            <a className='btn btn-primary' href='#' onClick={e => this.show(e, item._id)}>
+                                                <i className='fa fa-lg fa-edit' />
+                                            </a> : null}
+                                        {permission.delete || permission.write ?
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                                <i className='fa fa-lg fa-trash' />
+                                            </a> : null}
                                     </div>
-                                </td>
+                                </td> : null}
                             </tr>
                         ))}
                     </tbody>
@@ -157,24 +147,25 @@ class DangKyTuVanPage extends React.Component {
             );
         }
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
-                </div>
+        const renderData = {
+            icon: 'fa fa fa-envelope-o',
+            title: 'Danh sách đăng ký tư vấn',
+            content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageDKTVList' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDKTVListPage} />
+                    {permission.write ?
                 <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel'
                     onClick={() => this.props.exportDangKyTuVanToExcel()}>
                     <i className='fa fa-file-excel-o' />
-                </button>
+                </button> : null }
                 <DangKyTuVanModal ref={this.modal} getAllCourseType={this.props.getAllCourseType} updateDKTVList={this.props.updateDKTVList} />
-            </main>
-        );
+            </>,
+        };
+        return this.renderListPage(renderData);
     }
 }
 
-const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
+const mapStateToProps = state => ({ system: state.system, dangKyTuVanList: state.dangKyTuVanList });
 const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, getAllCourseType, exportDangKyTuVanToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanPage);

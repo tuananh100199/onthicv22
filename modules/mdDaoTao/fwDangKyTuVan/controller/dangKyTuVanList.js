@@ -1,5 +1,3 @@
-const { cssNumber } = require("jquery");
-
 module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.communication,
