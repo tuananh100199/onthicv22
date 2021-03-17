@@ -104,7 +104,7 @@ export function deleteSubject(_id) {
 }
 export function getLessonList(subjectId, done) {
     return dispatch => {
-        const url = `/api/lesson/${subjectId}`;
+        const url = `/api/subject/lesson/${subjectId}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
@@ -120,7 +120,7 @@ export function getLessonList(subjectId, done) {
 }
 export function addLesson(subjectId, lessonId, done) {
     return dispatch => {
-        const url = `/api/subject/lesson/add/${subjectId}`;
+        const url = `/api/subject/lesson/${subjectId}`;
         T.post(url, { lessonId }, data => {
             if (data.error) {
                 T.notify('Thêm bài học bị lỗi!', 'danger');
@@ -177,7 +177,7 @@ export const ajaxSelectSubject = {
 // Feedback Question
 export function getQuestionsList(subjectId, done) {
     return dispatch => {
-        const url = `/api/feedback-question/${subjectId}`;
+        const url = `/api/subject/feedback/${subjectId}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
@@ -194,7 +194,7 @@ export function getQuestionsList(subjectId, done) {
 
 export function createQuestion(_id, data, done) {
     return dispatch => {
-        const url = `/api/feedback-question/${_id}`;
+        const url = `/api/subject/feedback/${_id}`;
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
@@ -209,7 +209,7 @@ export function createQuestion(_id, data, done) {
 
 export function updateQuestion(_id, data, subjectId, done) {
     return dispatch => {
-        const url = '/api/feedback-question';
+        const url = '/api/subject/feedback';
         T.put(url, { _id, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
@@ -224,7 +224,7 @@ export function updateQuestion(_id, data, subjectId, done) {
 
 export function swapQuestion(subjectId, data, done) {
     return dispatch => {
-        const url = `/api/feedback-question/swap`;
+        const url = `/api/subject/feedback/swap`;
         T.put(url, { subjectId, data }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
@@ -239,7 +239,7 @@ export function swapQuestion(subjectId, data, done) {
 
 export function deleteQuestion(_id, data, subjectId, done) {
     return dispatch => {
-        const url = `/api/feedback-question`;
+        const url = `/api/subject/feedback`;
         T.delete(url, { data, subjectId, _id }, data => {
             if (data.error) {
                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');
