@@ -1,25 +1,27 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc } from './redux/reduxLesson';
+import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux/reduxLesson';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
+import { AdminPage } from 'view/component/AdminPage';
 
-class MonHocPage extends React.Component {
+class ListLessonPage extends AdminPage {
     constructor(props) {
         super(props);
         this.state = { searchText: '', isSearching: false };
     }
     componentDidMount() {
-        this.props.getBaiHocInPage(1, 50, {});
+        this.props.getLessonInPage(1, 50, {});
         T.ready('/user/dao-tao/bai-hoc/list', null);
+        T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
     }
 
     create = (e) => {
-        this.props.createBaiHoc(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
+        this.props.createLesson(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
         e.preventDefault();
     }
     delete = (e, item) => {
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteBaiHoc(item._id));
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
         e.preventDefault();
     }
 
@@ -30,14 +32,14 @@ class MonHocPage extends React.Component {
         if (searchText) condition.searchText = searchText;
 
         this.setState({ isSearching: true }, () => {
-            this.props.getBaiHocInPage(undefined, undefined, condition, () => {
+            this.props.getLessonInPage(undefined, undefined, condition, () => {
                 this.setState({ searchText, isSearching: false });
             });
         })
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+        const permission = this.getUserPermission('lesson');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.lesson && this.props.lesson.page ?
             this.props.lesson.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         let table = 'Không có bài học mới!';
@@ -48,7 +50,7 @@ class MonHocPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '100%' }}>Tiêu đề</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
                     <tbody>
@@ -56,52 +58,46 @@ class MonHocPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
-                                <td>
+                                {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </Link>
-                                        {currentPermissions.contains('course:write') ?
+                                        {permission.write ?
+                                            <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
+                                                <i className='fa fa-lg fa-edit' />
+                                            </Link> : null}
+                                        {permission.delete || permission.write ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
-                                </td>
+                                </td> : null}
                             </tr>))}
                     </tbody>
                 </table>
             );
         }
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Bài học</h1>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
-                            <input className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm bài học' />
-                            <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
-                        </form>
-                        {this.state.isSearching ?
-                            <a href='#' onClick={e => $('#searchTextBox').val('') && this.search(e)} style={{ color: 'red', marginRight: 12, marginTop: 6 }}>
-                                <i className='fa fa-trash' />
-                            </a> : null}
-                    </ul>
-                </div>
+        const renderData = {
+            icon: 'fa fa-book',
+            title: 'Bài học',
+            breadcrumb: [],
+            content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageLesson'
                     pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getBaiHocInPage} />
-                {currentPermissions.contains('course:write') ?
+                    getPage={this.props.getLessonInPage} />
+                {permission.write ?
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
                         onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
-                    </button> : ''}
-            </main>
-        );
+                    </button>
+                    : null
+                }
+            </>,
+        };
+        return this.renderListPage(renderData);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getBaiHocInPage, createBaiHoc, updateBaiHoc, deleteBaiHoc };
-export default connect(mapStateToProps, mapActionsToProps)(MonHocPage);
+const mapActionsToProps = { getLessonInPage, createLesson, updateLesson, deleteLesson };
+export default connect(mapStateToProps, mapActionsToProps)(ListLessonPage);
