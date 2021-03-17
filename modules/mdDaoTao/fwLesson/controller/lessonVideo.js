@@ -5,16 +5,19 @@ module.exports = app => {
             if (error || !lessonVideo) {
                 res.send({ error });
             } else {
-                if (lessonVideo && req.session.videoImage) {
-                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session.videoImage, response => {
-                        res.send({ error: response.error, lessonVideo });
+                if (lessonVideo && req.session['lesson-videoImage']) {
+                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session['lesson-videoImage'], response => {
+                        if (response.error) {
+                            res.send({ error: response.error, lessonVideo });
+                        } else {
+                            app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
+                                res.send({ error, item });
+                            });
+                        }
                     });
                 } else {
                     res.send({ error, lessonVideo });
                 }
-                app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
-                    res.send({ error, item });
-                });
             }
         });
     });
@@ -43,12 +46,15 @@ module.exports = app => {
         app.model.lessonVideo.get(req.params._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/lesson-video/:lessonId', (req, res) => {
+        app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
+    });
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'));
 
     const uploadLessonVideo = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('lesson-video:') && files.LessonVideoImage && files.LessonVideoImage.length > 0) {
-            console.log('Hook: uploadVideo =>lesson video image upload');
+            console.log('Hook: uploadLessonVideo =>lesson video image upload');
             app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring(13), files.LessonVideoImage[0].path, done);
         }
     };
