@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLesson } from './redux/reduxLesson'
+import { getLesson } from './redux'
 
 class LessonDetail extends React.Component {
     componentDidMount() {

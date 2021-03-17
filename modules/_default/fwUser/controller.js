@@ -18,19 +18,22 @@ module.exports = app => {
     app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || '',
+            condition = req.query.condition || {},
             pageCondition = {};
         try {
             if (condition) {
-                const value = { $regex: `.*${condition}.*`, $options: 'i' };
-                pageCondition['$or'] = [
-                    { facebook: value },
-                    { phoneNumber: value },
-                    { organizationId: value },
-                    { email: value },
-                    { firstname: value },
-                    { lastname: value },
-                ];
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition['$or'] = [
+                        { facebook: value },
+                        { phoneNumber: value },
+                        { email: value },
+                        { firstname: value },
+                        { lastname: value },
+                    ];
+                } else {
+                    pageCondition = condition;
+                }
             }
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {

@@ -62,6 +62,8 @@ class AdminHeader extends React.Component {
     componentDidMount() {
         this.props.getUnreadContacts((_, error) => error && this.setState({ showContact: false }));
 
+        T.showSearchBox = () => this.searchBox.current && $(this.searchBox.current).parent().css('display', 'flex');
+        T.hideSearchBox = () => this.searchBox.current && $(this.searchBox.current).parent().css('display', 'none');
         T.clearSearchBox = () => {
             if (this.searchBox.current) this.searchBox.current.value = '';
         }

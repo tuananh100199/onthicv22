@@ -62,7 +62,6 @@ class AdminListSubject extends AdminPage {
         const renderData = {
             icon: 'fa fa-briefcase',
             title: 'Môn học',
-            breadcrumb: [],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageSubject' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

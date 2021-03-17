@@ -25,28 +25,32 @@ import AdminMenu from 'view/component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import _init from 'modules/_default/_init/index';
-import fwHome from 'modules/_default/fwHome/index';
+import fwCluster from 'modules/_default/fwCluster/index';
 import fwUser from 'modules/_default/fwUser/index';
 import fwRole from 'modules/_default/fwRole/index';
+import fwHome from 'modules/_default/fwHome/index';
 import fwMenu from 'modules/_default/fwMenu/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
-import fwContentList from 'modules/_default/fwContentList/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
-import fwCourse from 'modules/mdDaoTao/fwCourse/index';
-import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
-import fwCluster from 'modules/_default/fwCluster/index';
-import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
+import fwContentList from 'modules/_default/fwContentList/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
+import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
+import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
+import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 
 const modules = [
-    _init, fwMenu, fwRole, fwHome, fwUser, fwContact, fwSubscribe, fwEmail, fwForm, fwNews, fwCourse, fwContentList, fwDonDeNghiHoc, fwCluster, fwDivision, fwCourseType, fwSubject, fwLesson, fwDangKyTuVan
+    _init, fwCluster,
+    fwUser, fwRole, fwHome, fwMenu,
+    fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
+    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc,
 ]
+
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 

@@ -6,9 +6,7 @@ import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => {
-            this.onShown(() => $('#addressName').focus());
-        });
+        $(document).ready(() => this.onShown(() => $('#addressName').focus()));
     }
 
     onShow = () => $('#addressName').val('');
@@ -107,7 +105,6 @@ class DivisionPage extends AdminPage {
         const renderData = {
             icon: 'fa fa-university',
             title: 'Cơ sở đào tạo',
-            breadcrumb: [],
             content: <>
                 <div className='tile'>{table}</div>
                 <DivisionModal ref={this.modal} createDivision={this.props.createDivision} history={this.props.history} />
