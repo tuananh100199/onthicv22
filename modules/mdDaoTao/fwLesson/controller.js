@@ -36,7 +36,10 @@ module.exports = (app) => {
 
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
-        app.model.lesson.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+        const author = req.session.user._id,
+            data = req.body.data || {};
+        data.author = author;
+        app.model.lesson.create(data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
@@ -49,7 +52,7 @@ module.exports = (app) => {
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.post('/api/lesson-video/:_id', app.permission.check('lesson:write'), (req, res) => {
+    app.post('/api/lesson/video/:_id', app.permission.check('lesson:write'), (req, res) => {
         const _id = req.params._id, data = req.body.data;
         app.model.lessonVideo.create(data, (error, lessonVideo) => {
             if (error || !lessonVideo) {
@@ -72,16 +75,16 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/lesson-video', app.permission.check('lesson:write'), (req, res) => {
+    app.put('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
         app.model.lessonVideo.update(req.body._id, req.body.data, (error, lessonVideo) => res.send({ error, lessonVideo }));
     });
 
-    app.put('/api/lesson-video/swap', app.permission.check('lesson:write'), (req, res) => {
+    app.put('/api/lesson/video/swap', app.permission.check('lesson:write'), (req, res) => {
         const data = req.body.data, lessonId = req.body.lessonId;
         app.model.lesson.update(lessonId, data, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/lesson-video', app.permission.check('lesson:write'), (req, res) => {
+    app.delete('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
         const { data, lessonId, _id } = req.body;
         if (data.lessonVideo && data.lessonVideo == 'empty') data.lessonVideo = [];
         app.model.lesson.update(lessonId, data, (error, _) => {
@@ -93,20 +96,20 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/lesson-video/item/:_id', (req, res) => {
+    app.get('/api/lesson/video/item/:_id', (req, res) => {
         app.model.lessonVideo.get(req.params._id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/lesson-video/:lessonId', (req, res) => {
+    app.get('/api/lesson/video/:lessonId', (req, res) => {
         app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
     });
 
     // Question APIs --------------------------------------------------------------------------------------------------
-    app.get('/api/lesson-question/:lessonId', (req, res) => {
+    app.get('/api/lesson/question/:lessonId', (req, res) => {
         app.model.lesson.get(req.params.lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/lesson-question/:_id', app.permission.check('lesson:write'), (req, res) => {
+    app.post('/api/lesson/question/:_id', app.permission.check('lesson:write'), (req, res) => {
         const _id = req.params._id, data = req.body.data;
         app.model.lessonQuestion.create(data, (error, question) => {
             if (error || !question) {
@@ -119,15 +122,15 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/lesson-question', app.permission.check('lesson:write'), (req, res) => {
+    app.put('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
         app.model.lessonQuestion.update(req.body._id, req.body.data, (error, question) => res.send({ error, question }));
     });
 
-    app.put('/api/lesson-question/swap', app.permission.check('lesson:write'), (req, res) => {
+    app.put('/api/lesson/question/swap', app.permission.check('lesson:write'), (req, res) => {
         app.model.lesson.update(req.body.lessonId, req.body.data, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/lesson-question', app.permission.check('lesson:write'), (req, res) => {
+    app.delete('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
         const { data, lessonId, _id } = req.body;
         if (data.questions && data.questions == 'empty') data.questions = [];
         app.model.lesson.update(lessonId, data, (error, _) => {

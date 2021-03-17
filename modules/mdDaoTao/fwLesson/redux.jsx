@@ -123,7 +123,7 @@ export const ajaxSelectLesson = {
 // Lesson Video
 export function getLessonVideoList(lessonId, done) {
     return dispatch => {
-        const url = `/api/lesson-video/${lessonId}`;
+        const url = `/api/lesson/video/${lessonId}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
@@ -140,7 +140,7 @@ export function getLessonVideoList(lessonId, done) {
 
 export function createLessonVideo(_id, data, done) {
     return dispatch => {
-        const url = `/api/lesson-video/${_id}`;
+        const url = `/api/lesson/video/${_id}`;
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo video bài giảng bị lỗi!', 'danger');
@@ -155,7 +155,7 @@ export function createLessonVideo(_id, data, done) {
 
 export function updateLessonVideo(_id, data, lessonId, done) {
     return dispatch => {
-        const url = '/api/lesson-video';
+        const url = '/api/lesson/video';
         T.put(url, { _id, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
@@ -170,7 +170,7 @@ export function updateLessonVideo(_id, data, lessonId, done) {
 
 export function swapLessonVideo(lessonId, data, done) {
     return dispatch => {
-        const url = `/api/lesson-video/swap`;
+        const url = `/api/lesson/video/swap`;
         T.put(url, { lessonId, data }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự bài giảng bị lỗi!', 'danger');
@@ -185,7 +185,7 @@ export function swapLessonVideo(lessonId, data, done) {
 
 export function deleteLessonVideo(_id, data, lessonId, done) {
     return dispatch => {
-        const url = `/api/lesson-video`;
+        const url = `/api/lesson/video`;
         T.delete(url, { data, lessonId, _id }, data => {
             if (data.error) {
                 T.notify('Xóa video bài giảng bị lỗi!', 'danger');
@@ -199,7 +199,7 @@ export function deleteLessonVideo(_id, data, lessonId, done) {
 }
 export function getLessonVideo(_id, done) {
     return dispatch => {
-        const url = '/api/lesson-video/item/' + _id;
+        const url = '/api/lesson/video/item/' + _id;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy video bị lỗi!', 'danger');
@@ -213,7 +213,7 @@ export function getLessonVideo(_id, done) {
 // Lesson Question
 export function getQuestionsList(lessonId, done) {
     return dispatch => {
-        const url = `/api/lesson-question/${lessonId}`;
+        const url = `/api/lesson/question/${lessonId}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
@@ -230,7 +230,7 @@ export function getQuestionsList(lessonId, done) {
 
 export function createQuestion(_id, data, done) {
     return dispatch => {
-        const url = `/api/lesson-question/${_id}`;
+        const url = `/api/lesson/question/${_id}`;
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
@@ -245,7 +245,7 @@ export function createQuestion(_id, data, done) {
 
 export function updateQuestion(_id, data, lessonId, done) {
     return dispatch => {
-        const url = '/api/lesson-question';
+        const url = '/api/lesson/question';
         T.put(url, { _id, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
@@ -260,7 +260,7 @@ export function updateQuestion(_id, data, lessonId, done) {
 
 export function swapQuestion(lessonId, data, done) {
     return dispatch => {
-        const url = `/api/lesson-question/swap`;
+        const url = `/api/lesson/question/swap`;
         T.put(url, { lessonId, data }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
@@ -275,7 +275,7 @@ export function swapQuestion(lessonId, data, done) {
 
 export function deleteQuestion(_id, data, lessonId, done) {
     return dispatch => {
-        const url = `/api/lesson-question`;
+        const url = `/api/lesson/question`;
         T.delete(url, { data, lessonId, _id }, data => {
             if (data.error) {
                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');

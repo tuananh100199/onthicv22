@@ -29,7 +29,13 @@ module.exports = app => {
             }
         }),
 
-        getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            model.find(condition).sort({ title: 1 }).exec(done);
+        },
 
         get: (condition, option, done) => {
             const handleGet = (condition, option, done) => {

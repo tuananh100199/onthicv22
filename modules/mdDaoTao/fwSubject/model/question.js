@@ -9,9 +9,17 @@ module.exports = app => {
     app.model.feedbackQuestion = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (done) => model.find({}).exec(done),
+        getAll: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            model.find(condition).sort({ title: 1 }).exec(done);
+        },
 
-        get: (_id, done) => model.findOne({ _id }, done),
+        get: (condition, done) => {
+            done ? model.findOne(condition).exec(done) : model.findById({}).exec(condition)
+        },
 
         update: (_id, $set, $unset, done) => done ?
             model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :

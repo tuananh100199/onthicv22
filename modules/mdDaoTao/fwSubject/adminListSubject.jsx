@@ -3,9 +3,45 @@ import { connect } from 'react-redux';
 import { getSubjectInPage, createSubject, deleteSubject } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
+
+class SubjectModal extends AdminModal {
+    componentDidMount() {
+        $(document).ready(() => {
+            this.onShown(() => $('#subjectName').focus());
+        });
+    }
+
+    onShow = () => $('#subjectName').val('');
+
+    onSubmit = () => {
+        const newData = { title: $('#subjectName').val() };
+        if (newData.title == '') {
+            T.notify('Tên môn học bị trống!', 'danger');
+            $('#subjectName').focus();
+        } else {
+            this.props.createSubject(newData, data => {
+                if (data.item) {
+                    this.hide();
+                    this.props.history.push('/user/dao-tao/mon-hoc/edit/' + data.item._id);
+                }
+            });
+        }
+    }
+
+    render = () => this.renderModal({
+        title: 'Môn học mới',
+        body:
+            <div className='form-group'>
+                <label htmlFor='subjectName'>Tên môn học</label>
+                <input className='form-control' id='subjectName' type='text' placeholder='Nhập môn học' autoFocus={true} />
+            </div>
+    });
+}
 
 class AdminListSubject extends AdminPage {
+    modal = React.createRef();
+
     componentDidMount() {
         this.props.getSubjectInPage();
         T.ready('/user/dao-tao/mon-hoc/list', null);
@@ -13,9 +49,10 @@ class AdminListSubject extends AdminPage {
     }
 
     create = (e) => {
-        this.props.createSubject(data => this.props.history.push('/user/dao-tao/mon-hoc/edit/' + data.item._id));
+        this.modal.current.show();
         e.preventDefault();
     }
+
     delete = (e, item) => {
         T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteSubject(item._id));
         e.preventDefault();
@@ -74,6 +111,7 @@ class AdminListSubject extends AdminPage {
                     </button>
                     : null
                 }
+                <SubjectModal ref={this.modal} createSubject={this.props.createSubject} history={this.props.history} />
             </>,
         };
         return this.renderListPage(renderData);

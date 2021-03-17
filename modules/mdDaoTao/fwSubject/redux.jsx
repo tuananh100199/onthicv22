@@ -56,16 +56,16 @@ export function getSubject(_id, done) {
     }
 }
 
-export function createSubject(done) {
+export function createSubject(newData, done) {
     return dispatch => {
         const url = '/api/subject';
-        T.post(url, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getSubjectInPage());
                 if (done) done(data);
+                dispatch(getSubjectInPage());
             }
         }, error => T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
     }

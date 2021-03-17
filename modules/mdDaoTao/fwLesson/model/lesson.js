@@ -4,6 +4,7 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
+        author: String,
         lessonVideo: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
         lessonQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
     });
