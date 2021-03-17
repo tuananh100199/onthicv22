@@ -16,6 +16,15 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
 
+    app.get('/api/dang-ky-tu-van-list/all', app.permission.check('dangKyTuVan:read'), (req, res) => {
+        const condition = {}, searchText = req.query.searchText;
+        if (searchText) {
+            condition.title = new RegExp(searchText, 'i');
+        }
+        console.log('condition', condition);
+        app.model.dangKyTuVanList.getAll(condition, (error, items) => res.send({ error, items }));
+    });
+
     app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVan:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);

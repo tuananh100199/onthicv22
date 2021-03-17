@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, exportDangKyTuVanToExcel } from './redux/reduxDangKyTuVanList';
+import {getDKTVListAll, getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, exportDangKyTuVanToExcel } from './redux/reduxDangKyTuVanList';
 import { getAllCourseType } from '../fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
-import FileSaver from 'file-saver'
 
 class AdminDangKyTuVanModal extends React.Component {
     state = {};
@@ -54,52 +53,54 @@ class AdminDangKyTuVanModal extends React.Component {
                         </div>
                         <div className='modal-body modal-dktv'>
                             <div className='row'>
-                                <div className='col-12'>
-                                    <div className='row'>
-                                        <div className='col-6'>
-                                            <label htmlFor='userLastname'>Tên người dùng:&nbsp; </label>
-                                            <label>
-                                                <b>{lastname} {firstname}</b>
-                                            </label>
-                                        </div>
-                                        <div className='col-6'>
-                                            <label htmlFor='userFirstname'>Số điện thoại: &nbsp; </label>
-                                            <label>
-                                                <b>{phone}</b>
-                                            </label>
-                                        </div>
+                                <div className='col-6'>
+                                    <label htmlFor='userLastname'>Tên người dùng:&nbsp; </label>
+                                    <label>
+                                        <b>{lastname} {firstname}</b>
+                                    </label>
+                                </div>
+                                <div className='col-6'>
+                                    <label htmlFor='userFirstname'>Số điện thoại: &nbsp; </label>
+                                    <label>
+                                        <b>{phone}</b>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div className='row'>
+                                <div className='col-6'>
+                                    <label>Loại khóa học đăng ký:&nbsp; </label> 
+                                    <label>
+                                            <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b>
+                                    </label>
                                     </div>
-                                   
-                                    <div className='row'>
-                                        <div className='col-6'>
-                                            <label>Loại khóa học đăng ký:&nbsp; </label> 
-                                            <label>
-                                                    <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b>
-                                            </label>
-                                            </div>
-                                        <div className='col-6'>
-                                            <div className='form-group'>
-                                                <label  htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
-                                                <select  id='courseTypeRecommend' >
-                                                    <optgroup  label='Loại' />
-                                                </select>
-                                            </div>
-                                           
-                                        </div>
+                                <div className='col-6'>
+                                    <div className='form-group'>
+                                        <label  htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
+                                        <select  id='courseTypeRecommend' >
+                                            <optgroup  label='Loại' />
+                                        </select>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="row">
                                 <div className='col-12'>
                                     <label>Email:&nbsp; </label> 
                                     <label>
                                             <b>{email ? email : 'Chưa đăng ký'}</b>
                                     </label>
                                 </div>
+                            </div>
+
+                            <div className="row">
                                 <div className='col-md-12'>
                                     <h6 style={{ marginTop: 20, marginBottom: 10 }}>Kết quả tư vấn</h6>
-                                    <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={5} />
+                                    <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={6} />
                                 </div>
                             </div>
                         </div>
+
                         <form>
                             <div className='modal-footer'>
                                 <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
@@ -117,8 +118,11 @@ class DKTVListPage extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
-        this.props.getDKTVListPage();
-        T.ready('/user/dang-ky-tu-van-list');
+        // this.props.getDKTVListPage();
+        // T.ready('/user/dang-ky-tu-van-list');
+            T.ready();
+            this.props.getDKTVListAll();
+            T.onSearch = (searchText) => this.props.getDKTVListAll(searchText);
     }
 
     showDKTVListItem = (e, DKTVListItemId) => {
@@ -201,5 +205,5 @@ class DKTVListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
-const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, getAllCourseType, exportDangKyTuVanToExcel };
+const mapActionsToProps = {getDKTVListAll, getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, getAllCourseType, exportDangKyTuVanToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(DKTVListPage);

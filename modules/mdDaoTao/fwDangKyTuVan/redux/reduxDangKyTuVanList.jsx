@@ -85,10 +85,10 @@ export default function DKTVListReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getDKTVListAll(done) {
+export function getDKTVListAll(searchText, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/all';
-        T.get(url, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả đăng ký tư vấn lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
