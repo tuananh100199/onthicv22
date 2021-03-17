@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
-import { cssNumber } from 'jquery';
 
-class AdminSubscribeModal extends React.Component {
+class AdminSubscribeModal extends AdminModal {
     state = {};
     modal = React.createRef();
 
@@ -14,29 +13,17 @@ class AdminSubscribeModal extends React.Component {
         $(this.modal.current).modal('show');
     }
 
-    render() {
+    render = () => {
+        
         const { email, createdDate } = this.state;
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <div className='modal-dialog modal-lg' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin đăng ký nhận tin</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <label>Email: <b>{email}</b></label><br />
-                            <label>Ngày đăng ký nhận tin: <b>{createdDate}</b></label><br />
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        const renderDataModal = {
+            title: 'Thông tin đăng ký nhận tin',
+            body: <> 
+                <label>Email: <b>{email}</b></label><br />
+                <label>Ngày đăng ký nhận tin: <b>{createdDate}</b></label><br />
+            </>
+        };
+        return this.renderModal(renderDataModal);
     }
 }
 
@@ -95,7 +82,7 @@ class SubscribePage extends AdminPage {
                                         <div className='btn-group'>
                                             {permission.read ?
                                                 <a className='btn btn-primary' href='#' onClick={e => this.showSubscribe(e, item._id)}>
-                                                    <i className='fa fa-lg fa-envelope-open-o' />
+                                                    <i className='fa fa-lg fa-edit' />
                                                 </a> : null}
                                             {permission.delete ?
                                                 <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
@@ -112,7 +99,7 @@ class SubscribePage extends AdminPage {
 
         const renderData = {
             icon: 'fa fa-envelope-o',
-            title: 'Đăng ký nhận tin',
+            title: 'Danh sách đăng ký nhận tin',
             breadcrumb: [],
             content: <>
                 <div className='tile'>{table}</div>
@@ -128,6 +115,6 @@ class SubscribePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ subscribe: state.subscribe });
+const mapStateToProps = state => ({system:state.system, subscribe: state.subscribe });
 const mapActionsToProps = { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(SubscribePage);

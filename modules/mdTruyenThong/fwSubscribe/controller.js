@@ -5,7 +5,7 @@ module.exports = app => {
             3003: { title: 'Đăng ký nhận tin', link: '/user/subscribe', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:delete' });
+    app.permission.add({ name: 'subscribe:read', menu }, { name: 'subscribe:write' }, { name: 'subscribe:delete' });
 
     app.get('/user/subscribe', app.permission.check('subscribe:read'), app.templates.admin);
 
@@ -28,20 +28,16 @@ module.exports = app => {
         res.send({ error, item });
     }));
 
-    app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
-
     app.get('/api/subscribe/export', app.permission.check('subscribe:write'), (req, res) => {
         app.model.subscribe.getAll( (error, items) => {
-            console.log('abc');
             if (error) {
                 res.send({ error })
             } else {
-                console.log('items', items);
                 const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
                 let cells = [
-                    { cell: 'A1', value: 'STT', bold: true },
-                    { cell: 'E1', value: 'Email', bold: true, border: '1234' },
-                    { cell: 'F1', value: 'Ngày đăng ký', bold: true, border: '1234' },
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Email', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Ngày đăng ký', bold: true, border: '1234' },
                 ];
 
                 worksheet.columns = [
@@ -61,6 +57,9 @@ module.exports = app => {
             }
         })
     });
+    
+    app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
+
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/subscribe', (req, res) => app.model.subscribe.create(req.body.subscribe, (error, item) => {

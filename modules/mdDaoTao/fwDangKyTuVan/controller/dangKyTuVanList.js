@@ -48,7 +48,7 @@ module.exports = app => {
             } else {
                 const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
                 let cells = [
-                    { cell: 'A1', value: 'STT', bold: true },
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
                     { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
                     { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
                     { cell: 'D1', value: 'Số điện thoại', bold: true, border: '1234' },
@@ -60,9 +60,9 @@ module.exports = app => {
                     { header: 'STT', key: 'id', width: 15},
                     { header: 'Họ', key: 'lastname', width: 20 },
                     { header: 'Tên', key: 'firstname', width: 20 },
-                    { header: 'Số điện thoại', key: 'phone', width: 15},
+                    { header: 'Số điện thoại', key: 'phone', width: 20},
                     { header: 'Email', key: 'email', width: 40 },
-                    { header: 'Loại khóa học', key: 'courseType', width: 30 }
+                    { header: 'Loại khóa học', key: 'courseType', width: 20 }
                 ];
                 items.forEach((item, index) => {
                     worksheet.addRow({

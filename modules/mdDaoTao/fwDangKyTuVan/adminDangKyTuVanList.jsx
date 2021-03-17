@@ -72,7 +72,7 @@ class AdminDangKyTuVanModal extends React.Component {
                                    
                                     <div className='row'>
                                         <div className='col-6'>
-                                            <label>Loại khóa học:&nbsp; </label> 
+                                            <label>Loại khóa học đăng ký:&nbsp; </label> 
                                             <label>
                                                     <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b>
                                             </label>
