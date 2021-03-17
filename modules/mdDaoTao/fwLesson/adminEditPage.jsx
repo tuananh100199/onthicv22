@@ -10,7 +10,7 @@ class adminEditPage extends React.Component {
     state = { item: null };
 
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/dao-tao/bai-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
             this.props.getLesson(params._id, data => {

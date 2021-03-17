@@ -7,9 +7,7 @@ import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
 class LessonModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => {
-            this.onShown(() => $('#lessonName').focus());
-        });
+        $(document).ready(() => this.onShown(() => $('#lessonName').focus()));
     }
 
     onShow = () => $('#lessonName').val('');
@@ -21,10 +19,7 @@ class LessonModal extends AdminModal {
             $('#lessonName').focus();
         } else {
             this.props.createLesson(newData, data => {
-                if (data.item) {
-                    this.hide();
-                    this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id);
-                }
+                data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id);
             });
         }
     }
