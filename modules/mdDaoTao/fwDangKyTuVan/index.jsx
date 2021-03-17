@@ -16,10 +16,6 @@ export default {
         {
             path: '/user/dang-ky-tu-van-list', component: Loadable({ loading: Loading, loader: () => import('./adminDangKyTuVanList') })
         },
-        {
-            path: '/user/dang-ky-tu-van-list/edit/:dangKyTuVanListId', component: Loadable({ loading: Loading, loader: () => import('./adminDangKyTuVanListDetail') })
-        },
-
     ],
     Section: {
         SectionDangKyTuVan,

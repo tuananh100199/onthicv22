@@ -4,10 +4,7 @@ import { getAllContentList, createContentList, deleteContentList } from './redux
 import { Link } from 'react-router-dom';
 
 class ContentListModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
@@ -43,7 +40,7 @@ class ContentListModal extends React.Component {
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+                <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>Danh sách bài viết</h5>
@@ -59,7 +56,9 @@ class ContentListModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>Lưu</button>
+                            <button type='submit' className='btn btn-primary'>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -68,10 +67,7 @@ class ContentListModal extends React.Component {
     }
 }
 class ContentListPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         this.props.getAllContentList();

@@ -75,7 +75,9 @@ class StaffModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
+                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -210,10 +212,7 @@ class StaffGroupEditPage extends React.Component {
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-group' /> Nhóm nhân viên: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi }} />
-                    </div>
+                    <h1><i className='fa fa-group' /> Nhóm nhân viên: {title.vi}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         &nbsp;/&nbsp;
@@ -221,32 +220,30 @@ class StaffGroupEditPage extends React.Component {
                         &nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
-                <div className='row'>
-                    <div className='tile col-md-12'>
-                        <div className='tile-body'>
-                            <div className='form-group'>
-                                <label className='control-label'>Tiêu đề</label>
-                                <input className='form-control' type='text' placeholder='Tiêu đề' id='stfViTitle' defaultValue={title.vi} readOnly={readOnly} />
-                            </div>
-                            <div className='form-group'>
-                                <label className='control-label'>Title</label>
-                                <input className='form-control' type='text' placeholder='Title' id='stfEnTitle' defaultValue={title.en} readOnly={readOnly} />
-                            </div>
-                            <div className='form-group'>{table}</div>
+                <div className='tile'>
+                    <div className='tile-body'>
+                        <div className='form-group'>
+                            <label className='control-label'>Tiêu đề</label>
+                            <input className='form-control' type='text' placeholder='Tiêu đề' id='stfViTitle' defaultValue={title.vi} readOnly={readOnly} />
                         </div>
-                        {!readOnly ? <div className='tile-footer'>
-                            <div className='row'>
-                                <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                    <button className='btn btn-info' type='button' onClick={this.showAddStaffModal}>
-                                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+                        <div className='form-group'>
+                            <label className='control-label'>Title</label>
+                            <input className='form-control' type='text' placeholder='Title' id='stfEnTitle' defaultValue={title.en} readOnly={readOnly} />
+                        </div>
+                        <div className='form-group'>{table}</div>
+                    </div>
+                    {!readOnly ? <div className='tile-footer'>
+                        <div className='row'>
+                            <div className='col-md-12' style={{ textAlign: 'right' }}>
+                                <button className='btn btn-info' type='button' onClick={this.showAddStaffModal}>
+                                    <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                     </button>&nbsp;
                                     <button className='btn btn-primary' type='button' onClick={this.save}>
-                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                     </button>
-                                </div>
                             </div>
-                        </div> : null}
-                    </div>
+                        </div>
+                    </div> : null}
                 </div>
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />

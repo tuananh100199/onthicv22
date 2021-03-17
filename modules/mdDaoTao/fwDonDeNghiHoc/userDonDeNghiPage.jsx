@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import T from 'view/js/common';
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux';
 import { updateProfile } from 'modules/_default/_init/reduxSystem';
 import { getCourseTypeInPage } from '../fwCourseType/redux';
@@ -105,19 +104,6 @@ class UserDonDeNghiPage extends React.Component {
                 integration: this.state.item.integration ? this.state.item.integration : false,
                 otherDocumentation: $('#otherDocumentation').val(),
             };
-        // if (T.sexes.indexOf(sex) != -1) {
-        //     changesOfUser.sex = sex;
-        // }
-        // if (!changesOfUser.lastname) {
-        //     T.notify('Họ và tên lót bị trống', 'danger');
-        //     $('#userLastname').focus();
-        //     return;
-        // }
-        // if (changesOfUser.firstname == '') {
-        //     T.notify('Tên bị trống', 'danger');
-        //     $('#userFirstName').focus();
-        //     return;
-        // }
         if (changesOfUser.birthday == null) {
             T.notify('Ngày sinh bị trống', 'danger');
             $('#userBirthday').focus();
@@ -251,12 +237,6 @@ class UserDonDeNghiPage extends React.Component {
                                 <label className='control-label' htmlFor='userBirthday'>Ngày sinh <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control col-md-6' type='text' placeholder='Ngày sinh' id='userBirthday' autoComplete='off' data-date-container='#birthdaySection' />
                             </div>
-                            {/* <div className='form-group col-md-3'>
-                                <div className='form-group' style={{ width: '100%' }}>
-
-                                    <Dropdown ref={this.sex} text='' items={T.sexes} />
-                                </div>
-                            </div> */}
                             <div className='form-group col-md-4'>
                                 <label className='control-label'>Số điện thoại <span style={{ color: 'red' }}>*</span></label>
                                 <input className='form-control' type='text' placeholder='Số điện thoại' id='phoneNumber' />
@@ -392,12 +372,6 @@ class UserDonDeNghiPage extends React.Component {
                         <div className='row'>
                             <div className='form-group col-md-3' id='birthdaySection'>
                                 <label className='control-label' htmlFor='userBirthday'>Ngày sinh: &nbsp;<span>{user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : ''}</span></label>
-                            </div>
-                            <div className='form-group col-md-3'>
-                                <div className='form-group' style={{ width: '100%' }}>
-                                    <label className='control-label' style={{ marginLeft: '-10px' }}>Giới tính :&nbsp; <span>{user.sex}</span></label>
-                                    {/* <Dropdown ref={this.sex} text='' items={T.sexes} /> */}
-                                </div>
                             </div>
                             <div className='form-group col-md-6'>
                                 <label className='control-label'>Số điện thoại: &nbsp;<span>{user.phoneNumber}</span></label>

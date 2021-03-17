@@ -1,7 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         advisorId: { type: app.db.Schema.ObjectId, ref: 'User' },
-        branchId: { type: app.db.Schema.ObjectId, ref: 'Address' },
+        branchId: { type: app.db.Schema.ObjectId, ref: 'Division' },
         courseId: { type: app.db.Schema.ObjectId, ref: 'Course' },
     });
     const model = app.db.model('Advisor', schema);

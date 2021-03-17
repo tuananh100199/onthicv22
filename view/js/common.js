@@ -4,7 +4,6 @@ import dateformat from 'dateformat';
 import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
-
 const T = {
     PropTypes,
     rootUrl: 'https://hpo.edu.vn',
@@ -17,7 +16,6 @@ const T = {
         'carousel',
         'contact',
         'content',
-        'event',
         'last news',
         'logo',
         'slogan',
@@ -26,12 +24,12 @@ const T = {
         'subscribe',
         'testimony',
         'video',
-        'listVideo',
+        'list videos',
         'all courses',
         'last course',
-        'contentList',
+        'list contents',
         'dangKyTuVan',
-        'all courseType',
+        'all course types',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
@@ -44,6 +42,8 @@ const T = {
     debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
 
     ready: (pathname, done) => $(document).ready(() => setTimeout(() => {
+        T.clearSearchBox && T.clearSearchBox();
+
         if (pathname == undefined) {
             done = null;
             pathname = window.location.pathname;
@@ -369,7 +369,8 @@ Array.prototype.contains = function (...pattern) {
 };
 
 Date.prototype.getText = function () {
-    return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
+    // return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
+    return T.get2(this.getDate()) + '/' + T.get2(this.getMonth() + 1) + '/' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
 Date.prototype.getDateText = function () {
     return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear();

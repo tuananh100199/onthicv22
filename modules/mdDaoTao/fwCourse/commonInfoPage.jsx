@@ -4,7 +4,7 @@ import { updateCourse, getCourse } from './redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 import { Select } from 'view/component/Input';
-import { ajaxSelectAddress } from 'modules/mdTruyenThong/fwAddress/redux';
+import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 
 class CommonInfoPage extends React.Component {
@@ -93,7 +93,7 @@ class CommonInfoPage extends React.Component {
                                         <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' readOnly={readOnly} />
                                     </div>
                                     <div className='form-group col-md-12 col-lg-3 control-label'>
-                                        <Select ref={this.addressSelect} displayLabel={true} adapter={ajaxSelectAddress} label='Cơ sở ' />
+                                        <Select ref={this.addressSelect} displayLabel={true} adapter={ajaxSelectDivision} label='Cơ sở ' />
                                     </div>
                                     <div className='form-group col-sm-12 col-md-4 col-lg-3 control-label'>
                                         <Select ref={this.licenseClass} displayLabel={true} adapter={ajaxSelectCourseType} label='Loại khóa học ' />

@@ -42,7 +42,7 @@ export default class ComponentModal extends React.Component {
             '<empty>',
             'last news',
             'subscribe', 'contact', 'all staffs',
-            'all news', 'all courses', 'last course', 'all courseType'
+            'all news', 'all courses', 'last course', 'all course types'
         ];
 
         if (types.indexOf(selectedType) == -1) {
@@ -139,7 +139,9 @@ export default class ComponentModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
+                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </div>

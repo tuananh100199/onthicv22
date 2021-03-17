@@ -10,8 +10,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/contact',
-            component: Loadable({ loading: Loading, loader: () => import('./admin') })
+            path: '/user/contact', component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         }
     ],
     Section: {

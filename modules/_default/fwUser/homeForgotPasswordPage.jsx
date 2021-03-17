@@ -65,7 +65,9 @@ export default class ForgotPasswordPage extends React.Component {
                     </div>
                     <p style={{ color: 'red' }} dangerouslySetInnerHTML={{ __html: this.state.error }} />
                     <div style={{ width: '100%', textAlign: 'right' }}>
-                        <button type='button' className='btn btn-primary' onClick={this.save}>Lưu</button>
+                        <button type='button' className='btn btn-primary' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                        </button>
                     </div>
                 </div>
             );

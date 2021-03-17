@@ -34,17 +34,17 @@ class DebugModal extends React.Component {
                                 <span aria-hidden='true'>&times;</span>
                             </button>
                         </div>
-
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label>Chọn người dùng</label>
-                                <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} label='Người dùng' />
+                                <label>Select user</label>
+                                <Select ref={this.userSelect} displayLabel={false} adapter={ajaxSelectUser} placeholder='Select user' />
                             </div>
                         </div>
-
                         <div className='modal-footer'>
-                            <button type='button' className='btn btn-success' onClick={this.switchUser}>Switch</button>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>
+                                <i className='fa fa-fw fa-lg fa-times' />Close</button>
+                            <button type='button' className='btn btn-success' onClick={this.switchUser}>
+                                <i className='fa fa-fw fa-lg fa-refresh' />Switch</button>
                         </div>
                     </div>
                 </div>
@@ -54,17 +54,17 @@ class DebugModal extends React.Component {
 }
 
 class AdminHeader extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { showContact: true };
-        this.contactModal = React.createRef();
-        this.debugModal = React.createRef();
-    }
+    state = { showContact: true };
+    searchBox = React.createRef();
+    contactModal = React.createRef();
+    debugModal = React.createRef();
 
     componentDidMount() {
-        this.props.getUnreadContacts((_, error) => {
-            error && this.setState({ showContact: false });
-        });
+        this.props.getUnreadContacts((_, error) => error && this.setState({ showContact: false }));
+
+        T.clearSearchBox = () => {
+            if (this.searchBox.current) this.searchBox.current.value = '';
+        }
     }
 
     showContact = (e, contactId) => {
@@ -77,9 +77,14 @@ class AdminHeader extends React.Component {
         this.props.logout();
     }
 
-    debugAsRole = (e, role) => {
-        this.props.changeRole(role, user => this.props.updateSystemState({ user }));
+    search = (e) => {
         e.preventDefault();
+        T.onSearch && T.onSearch(this.searchBox.current.value);
+    }
+
+    debugAsRole = (e, role) => {
+        e.preventDefault();
+        this.props.changeRole(role, user => this.props.updateSystemState({ user }));
     }
 
     showDebugModal = e => {
@@ -136,6 +141,10 @@ class AdminHeader extends React.Component {
                         <li className='app-nav__item'>
                             <a href='#' style={{ color: 'white' }} onClick={this.showDebugModal}>Switch user</a>
                         </li> : null}
+                    <li className='app-search'>
+                        <input ref={this.searchBox} className='app-search__input' type='search' placeholder='Tìm kiếm' onKeyUp={e => e.keyCode == 13 && this.search(e)} />
+                        <button className='app-search__button' onClick={this.search}><i className='fa fa-search' /></button>
+                    </li>
                     {this.state.showContact ? this.renderContact() : null}
                     <li>
                         <Link className='app-nav__item' to='/user'>

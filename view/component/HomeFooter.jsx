@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllAddressByUser } from 'modules/mdTruyenThong/fwAddress/redux';
+import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 
 class Footer extends React.Component {
     componentDidMount() {
-        this.props.getAllAddressByUser();
+        this.props.getAllDivisionByUser();
     }
 
     render() {
@@ -30,8 +30,8 @@ class Footer extends React.Component {
                                     </div>
                                     <div className='footer_about_text'>
                                         <ul className=''>
-                                            {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
-                                                this.props.address.list.map((item, index) => (
+                                            {this.props.division && this.props.division.list && this.props.division.list.length > 0 ?
+                                                this.props.division.list.map((item, index) => (
                                                     <li key={index} className='mb-2'>
                                                         <div className='location_title'>{item.title}: {item.address}</div>
                                                         <div className='location_text mt-0'>Điện thoại: {item.phoneNumber}&nbsp;&nbsp;Di động:&nbsp;{item.mobile}</div>
@@ -60,11 +60,11 @@ class Footer extends React.Component {
                             </div>
 
                             <div className='col-lg-4 footer_col'>
-                                {this.props.address && this.props.address.list && this.props.address.list.length > 0 ?
+                                {this.props.division && this.props.division.list && this.props.division.list.length > 0 ?
                                     <div className='google_map_row'>
                                         <div id='carouselFooter' className='carousel slide col' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
                                             <div className='carousel-inner'>
-                                                {this.props.address.list.map((item, index) => (
+                                                {this.props.division.list.map((item, index) => (
                                                     <div className={'carousel-item' + (index == 0 ? ' active' : '')}
                                                         key={index}
                                                         style={{
@@ -121,6 +121,6 @@ class Footer extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, address: state.address });
-const mapActionsToProps = { getAllAddressByUser };
+const mapStateToProps = state => ({ system: state.system, division: state.division });
+const mapActionsToProps = { getAllDivisionByUser };
 export default connect(mapStateToProps, mapActionsToProps)(Footer);

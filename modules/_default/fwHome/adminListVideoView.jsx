@@ -42,7 +42,7 @@ class ListVideoModal extends React.Component {
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+                <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>Danh sách video</h5>
@@ -51,18 +51,16 @@ class ListVideoModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <div className='tab-content'>
-                                <div id='listVideoViTab' className='tab-pane fade show active mt-3'>
-                                    <div className='form-group'>
-                                        <label htmlFor='listVideoName'>Tên danh sách video</label>
-                                        <input className='form-control' id='listVideoName' type='text' placeholder='Tên danh sách video' />
-                                    </div>
-                                </div>
+                            <div className='form-group'>
+                                <label htmlFor='listVideoName'>Tên danh sách video</label>
+                                <input className='form-control' id='listVideoName' type='text' placeholder='Tên danh sách video' />
                             </div>
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>Lưu</button>
+                            <button type='submit' className='btn btn-primary'>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
                         </div>
                     </div>
                 </form>

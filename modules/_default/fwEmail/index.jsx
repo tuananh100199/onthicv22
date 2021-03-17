@@ -6,7 +6,7 @@ export default {
     routes: [
         {
             path: '/user/email',
-            component: Loadable({ loading: Loading, loader: () => import('./admin') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         }
     ],
 };

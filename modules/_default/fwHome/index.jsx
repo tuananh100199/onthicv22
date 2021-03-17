@@ -20,7 +20,6 @@ import SectionStatistic from './sectionStatistic';
 import SectionTestimony from './sectionTestimony';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
-import SectionSubscribe from './sectionSubscribe';
 
 export default {
     redux: {
@@ -74,9 +73,9 @@ export default {
         {
             path: '/request-login',
             component: Loadable({ loading: Loading, loader: () => import('./homeRequestLoginPage') })
-        }
+        },
     ],
     Section: {
-        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo, SectionSubscribe
+        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
     }
 };

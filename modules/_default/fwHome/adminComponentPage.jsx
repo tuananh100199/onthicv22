@@ -15,7 +15,7 @@ import DangKyTuVanPage from 'modules/mdDaoTao/fwDangKyTuVan/adminPage';
 
 class ComponentPage extends React.Component {
     componentDidMount() {
-        T.ready('/user/settings', () => {
+        T.ready(() => {
             let tabIndex = parseInt(T.cookie('componentPageTab')),
                 navTabs = $('#componentPage ul.nav.nav-tabs');
             if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
@@ -51,7 +51,7 @@ class ComponentPage extends React.Component {
                     {/* <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuLogo'>Logo</a></li> */}
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuTestimony'>Testimony</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuStaffGroup'>Nhóm nhân viên</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>List Video</a></li>
+                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuListVideo'>Danh sách Video</a></li>
                     <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#menuDangKyTuVan'>Đăng ký tư vấn</a></li>
                 </ul>
                 <div className='tab-content tile'>
