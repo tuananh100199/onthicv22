@@ -8,8 +8,8 @@ export class AdminModal extends React.Component {
         $(this.modal.current).on('shown.bs.modal', () => modalShown());
     }
 
-    show = () => {
-        this.onShow && this.onShow();
+    show = (item) => {
+        this.onShow && this.onShow(item);
         $(this.modal.current).modal('show');
     }
 
@@ -18,9 +18,9 @@ export class AdminModal extends React.Component {
         $(this.modal.current).modal('hide');
     }
 
-    renderModal = ({ title, body }) => (
+    renderModal = ({ title, body, size }) => (
         <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-            <form className='modal-dialog' role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
+            <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
                 <div className='modal-content'>
                     <div className='modal-header'>
                         <h5 className='modal-title'>{title}</h5>
@@ -33,9 +33,10 @@ export class AdminModal extends React.Component {
                         <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                             <i className='fa fa-fw fa-lg fa-times' />Đóng
                         </button>
-                        <button type='submit' className='btn btn-primary'>
-                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                        </button>
+                        {this.props.permissionWrite == null || this.props.permissionWrite == true ?
+                            <button type='submit' className='btn btn-primary'>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button> : null}
                     </div>
                 </div>
             </form>
@@ -58,6 +59,7 @@ export class AdminPage extends React.Component {
     }
 
     renderListPage = ({ icon, title, breadcrumb, content, onCreate }) => {
+        if (breadcrumb == null) breadcrumb = [];
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -68,7 +70,7 @@ export class AdminPage extends React.Component {
                 </div>
                 {content}
                 {onCreate ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={onCreate}>
                         <i className='fa fa-lg fa-plus' />
                     </button> : null}
             </main>);

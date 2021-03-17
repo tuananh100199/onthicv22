@@ -73,7 +73,7 @@ export function getAllRoles(done) {
 export function getRolePage(pageNumber, pageSize, done) {
     const page = T.updatePage('adminRole', pageNumber, pageSize);
     return dispatch => {
-        const url = '/api/role/page/' + page.pageNumber + '/' + page.pageSize;
+        const url = `/api/role/page/${page.pageNumber}/${page.pageSize}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách vai trò bị lỗi!', 'danger');

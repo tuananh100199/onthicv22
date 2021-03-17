@@ -6,14 +6,13 @@ import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
 class DivisionEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: {} };
-        this.editor = React.createRef();
-        this.imageBox = React.createRef();
-    }
+    state = { item: {} };
+    editor = React.createRef();
+    imageBox = React.createRef();
+
     componentDidMount() {
         T.ready('/user/division', () => {
+            T.hideSearchBox();
             const route = T.routeMatcher('/user/division/edit/:_id'), params = route.parse(window.location.pathname);
             this.props.getDivisionItem(params._id, data => {
                 if (data.item) {
@@ -34,9 +33,9 @@ class DivisionEditPage extends React.Component {
             });
         });
     }
-    changeActive = (event) => {
-        this.setState({ item: { ...this.state.item, isOutside: event.target.checked } })
-    }
+
+    changeActive = (event) => this.setState({ item: { ...this.state.item, isOutside: event.target.checked } });
+
     save = () => {
         const changes = {
             title: $('#title').val(),
@@ -162,6 +161,7 @@ class DivisionEditPage extends React.Component {
         );
     }
 }
+
 const mapStateToProps = state => ({ system: state.system, division: state.division });
 const mapActionsToProps = { updateDivision, getDivisionItem };
 export default connect(mapStateToProps, mapActionsToProps)(DivisionEditPage);

@@ -109,7 +109,6 @@ class SubscribePage extends AdminPage {
         const renderData = {
             icon: 'fa fa-envelope-o',
             title: 'Đăng ký nhận tin',
-            breadcrumb: [],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
