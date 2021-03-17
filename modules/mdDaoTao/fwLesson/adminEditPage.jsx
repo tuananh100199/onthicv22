@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateLesson, getLesson } from './redux/reduxLesson';
+import { updateLesson, getLesson } from './redux';
 import { Link } from 'react-router-dom';
 import AdminEditInfo from './adminEditInfo';
 import AdminEditLessonQuestion from './adminEditLessonQuestion';
@@ -8,7 +8,6 @@ import AdminEditLessonVideo from './adminEditLessonVideo';
 
 class adminEditPage extends React.Component {
     state = { item: null };
-    editor = React.createRef();
 
     componentDidMount() {
         T.ready(() => {
@@ -40,9 +39,7 @@ class adminEditPage extends React.Component {
         return (
             <main className='app-content' id='componentPage' style={{ display: 'none' }}>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-book' />Bài học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
-                    </div>
+                    <h1><i className='fa fa-book' />Bài học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         &nbsp;/&nbsp;Bài học &nbsp;/&nbsp; Chỉnh Sửa

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateSubject, getSubject, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectLesson } from '../fwLesson/redux/reduxLesson';
+import { ajaxSelectLesson } from '../fwLesson/redux';
 import Tooltip from 'rc-tooltip';
 
 class AddLessonModal extends React.Component {

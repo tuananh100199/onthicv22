@@ -1,28 +1,27 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux/reduxLesson';
+import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage } from 'view/component/AdminPage';
 
 class ListLessonPage extends AdminPage {
-    constructor(props) {
-        super(props);
-        this.state = { searchText: '', isSearching: false };
-    }
+    state = { searchText: '', isSearching: false };
+
     componentDidMount() {
-        this.props.getLessonInPage(1, 50, {});
+        this.props.getLessonInPage();
         T.ready('/user/dao-tao/bai-hoc/list', null);
         T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
     }
 
     create = (e) => {
+        e.preventDefault();
         this.props.createLesson(data => this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id));
-        e.preventDefault();
     }
+
     delete = (e, item) => {
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
         e.preventDefault();
+        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
     }
 
     search = (e) => {
@@ -82,15 +81,13 @@ class ListLessonPage extends AdminPage {
             breadcrumb: [],
             content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='pageLesson'
-                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getLessonInPage} />
                 {permission.write ?
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
                         onClick={this.create}>
                         <i className='fa fa-lg fa-plus' />
-                    </button>
-                    : null
+                    </button> : null
                 }
             </>,
         };
