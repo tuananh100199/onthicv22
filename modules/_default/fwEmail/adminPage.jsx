@@ -49,7 +49,6 @@ export default class EmailPage extends React.Component {
         this.emailContact = React.createRef();
         this.emailTuChoiDonDeNghiHoc = React.createRef();
         this.emailDangKyTuVan = React.createRef();
-        this.emailPhanHoiDangKyTuVan = React.createRef();
     }
 
     componentDidMount() {
@@ -62,7 +61,6 @@ export default class EmailPage extends React.Component {
                 this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
                 this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
                 this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
-                this.emailPhanHoiDangKyTuVan.current.set(data.emailPhanHoiDangKyTuVanTitle, data.emailPhanHoiDangKyTuVanText, data.emailPhanHoiDangKyTuVanHtml);
             });
         });
     }
@@ -122,8 +120,6 @@ export default class EmailPage extends React.Component {
                                 <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
                                     params='{name}, {subject}, {message}' />
                                 <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
-                                    params='{name}' />
-                                <EmailItem ref={this.emailPhanHoiDangKyTuVan} id='emailPhanHoiDangKyTuVan'
                                     params='{name}' />
                             </div>
                         </div>

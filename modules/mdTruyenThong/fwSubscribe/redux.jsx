@@ -199,3 +199,8 @@ export function createSubscribe(subscribe, done) {
         }, error => T.notify('Gửi liên hệ bị lỗi!', 'danger'));
     }
 }
+export function exportSubscribeToExcel(done) {
+    return dispatch => {
+        T.download(T.url(`/api/subscribe/export`));
+    }
+}

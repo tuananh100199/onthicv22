@@ -1,572 +1,558 @@
 .component {
-  position: relative;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  min-height: 72px;
-  background-color: #eee;
-
-  .control {
-    display: none;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-  }
-
-  &:hover > .control {
-    display: block;
-  }
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    min-height: 72px;
+    background-color: #eee;
+    .control {
+        display: none;
+        position: absolute;
+        top: 6px;
+        right: 6px;
+    }
+    &:hover>.control {
+        display: block;
+    }
 }
 
 .central-box {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  border: 1px dashed #167ce9;
-  padding: 10px;
-
-  p {
-    margin: 16px;
-  }
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border: 1px dashed #167ce9;
+    padding: 10px;
+    p {
+        margin: 16px;
+    }
 }
 
 .table td {
-  vertical-align: middle !important;
+    vertical-align: middle !important;
 }
 
 .select2-container {
-  width: 100% !important;
+    width: 100% !important;
 }
 
-.menuList > li {
-  width: '100%';
-  margin-top: 10px;
-  margin-bottom: 10px;
-
-  .buttons {
-    display: block;
-    margin-left: 6px;
-  }
-
-  div > div.buttons {
-    visibility: hidden;
-  }
-  div:hover > div.buttons {
-    visibility: visible;
-  }
+.menuList>li {
+    width: '100%';
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .buttons {
+        display: block;
+        margin-left: 6px;
+    }
+    div>div.buttons {
+        visibility: hidden;
+    }
+    div:hover>div.buttons {
+        visibility: visible;
+    }
 }
 
-.tinTucList > li {
-  width: '100%';
-  margin-top: 10px;
-  margin-bottom: 10px;
-
-  .buttons {
-    display: block;
-    margin-left: 6px;
-  }
-
-  div > div.buttons {
-    visibility: hidden;
-  }
-  div:hover > div.buttons {
-    visibility: visible;
-  }
+.tinTucList>li {
+    width: '100%';
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .buttons {
+        display: block;
+        margin-left: 6px;
+    }
+    div>div.buttons {
+        visibility: hidden;
+    }
+    div:hover>div.buttons {
+        visibility: visible;
+    }
 }
 
 .btn-circle {
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  padding: 10px 16px;
-  line-height: 1.33;
-  border-radius: 50%;
-  font-size: 18px;
-
-  .fa {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    padding: 10px 16px;
+    line-height: 1.33;
+    border-radius: 50%;
     font-size: 18px;
-  }
+    .fa {
+        font-size: 18px;
+    }
 }
 
 .swal-button--false {
-  background-color: #28a745;
+    background-color: #28a745;
 }
 
 .has-search {
-  .form-control {
-    padding-left: 2.375rem;
-  }
-  .form-control-feedback {
-    position: absolute;
-    z-index: 2;
-    display: block;
-    width: 2.375rem;
-    height: 2.375rem;
-    line-height: 2.375rem;
-    text-align: center;
-    pointer-events: none;
-    color: #aaa;
-  }
-  .form-control-clear {
-    z-index: 2;
-    display: block;
-    line-height: 2.375rem;
-    text-align: center;
-    pointer-events: none;
-    color: red;
-    top: 5px;
-    right: 0px;
-    width: 16px;
-    height: 16px;
-    float: right;
-  }
+    .form-control {
+        padding-left: 2.375rem;
+    }
+    .form-control-feedback {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        width: 2.375rem;
+        height: 2.375rem;
+        line-height: 2.375rem;
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+    }
+    .form-control-clear {
+        z-index: 2;
+        display: block;
+        line-height: 2.375rem;
+        text-align: center;
+        pointer-events: none;
+        color: red;
+        top: 5px;
+        right: 0px;
+        width: 16px;
+        height: 16px;
+        float: right;
+    }
 }
 
 .form-control-black:focus {
-  border-color: #343a40;
+    border-color: #343a40;
 }
 
 .menuSearchItem {
-  margin-top: 24px;
-  text-align: center;
+    margin-top: 24px;
+    text-align: center;
 }
 
 .button-edit {
-  width: 40px;
-  height: 30px;
-  text-align: center;
-  padding: 0px;
+    width: 40px;
+    height: 30px;
+    text-align: center;
+    padding: 0px;
 }
 
 .list-group-item-tin-tuc {
-  border: 0px;
+    border: 0px;
 }
 
 .control-label {
-  font-size: 16px;
-  font-weight: 600;
-  padding-left: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    padding-left: 10px;
 }
 
 .form-inline .form-group {
-  margin-right: 1rem;
+    margin-right: 1rem;
 }
 
 .statistics-content {
-  margin: 1rem 5px;
+    margin: 1rem 5px;
 }
+
 .statistics-content .time {
-  color: red;
-  border-right: 1px solid;
-  text-align: center;
+    color: red;
+    border-right: 1px solid;
+    text-align: center;
 }
+
 .statistics-content .number {
-  color: blue;
-  text-align: center;
+    color: blue;
+    text-align: center;
 }
+
 .statistics-content .name,
 .statistics-content .reason {
-  text-align: center;
+    text-align: center;
 }
+
 @media (min-width: 768px) {
-  .col-md-2-4 {
-    -webkit-box-flex: 0;
-    -ms-flex: 0 0 20%;
-    flex: 0 0 20%;
-    max-width: 20%;
-  }
+    .col-md-2-4 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 20%;
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
 }
 
 .ribbon {
-  position: relative;
+    position: relative;
 }
+
 .competitor-member {
-  position: relative;
-  min-height: 200px;
-  margin-top: -1px;
-  margin-left: -1px;
-  text-align: center;
-  border: 1px solid #1488db;
-  padding: 55px 0 25px;
+    position: relative;
+    min-height: 200px;
+    margin-top: -1px;
+    margin-left: -1px;
+    text-align: center;
+    border: 1px solid #1488db;
+    padding: 55px 0 25px;
 }
 
 .ribbon3 {
-  width: 130px;
-  height: 30px;
-  line-height: 30px;
-  padding-left: 7px;
-  position: absolute;
-  left: -10px;
-  top: 12px;
-  background: #1488db;
-  color: #fff;
+    width: 130px;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 7px;
+    position: absolute;
+    left: -10px;
+    top: 12px;
+    background: #1488db;
+    color: #fff;
 }
 
 .ribbon3:before {
-  height: 0;
-  width: 0;
-  top: -8.5px;
-  left: 0.1px;
-  border-bottom: 9px solid #0f8de7;
-  border-left: 9px solid transparent;
+    height: 0;
+    width: 0;
+    top: -8.5px;
+    left: 0.1px;
+    border-bottom: 9px solid #0f8de7;
+    border-left: 9px solid transparent;
 }
+
 .ribbon3:after,
 .ribbon3:before {
-  content: '';
-  position: absolute;
+    content: '';
+    position: absolute;
 }
 
 .ribbon3:after {
-  height: 0;
-  width: 0;
-  right: -14.5px;
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
-  border-left: 15px solid #1488db;
+    height: 0;
+    width: 0;
+    right: -14.5px;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 15px solid #1488db;
 }
+
 .ribbon3:after,
 .ribbon3:before {
-  content: '';
-  position: absolute;
+    content: '';
+    position: absolute;
 }
 
 .competitor-actions {
-  position: absolute;
-  right: 5px;
-  top: 5px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
 }
 
 .competitor-member-avatar {
-  position: relative;
-  display: inline-block;
-  width: 100px;
-  border-radius: 50%;
-  border: 1px solid #aab6b6;
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    border-radius: 50%;
+    border: 1px solid #aab6b6;
 }
 
 .competitor-member-info {
-  position: relative;
-  padding: 10px;
-  margin-left: 0;
+    position: relative;
+    padding: 10px;
+    margin-left: 0;
 }
 
 .competitor-member__name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .competitor-member .footer-rotate {
-  width: 100%;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  padding: 0;
-  margin: 0;
-  font-family: Oswald, sans-serif;
-  color: #fff;
-  height: 25px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 0;
+    margin: 0;
+    font-family: Oswald, sans-serif;
+    color: #fff;
+    height: 25px;
 }
 
 .competitor-member .footer-rotate .count-person {
-  width: 50%;
-  height: 100%;
-  float: left;
-  background: #969ef7;
-  position: relative;
-  line-height: 25px;
-  text-align: center;
+    width: 50%;
+    height: 100%;
+    float: left;
+    background: #969ef7;
+    position: relative;
+    line-height: 25px;
+    text-align: center;
 }
 
 .competitor-member .footer-rotate .info-league {
-  width: 50%;
-  height: 100%;
-  float: left;
-  background: #5ab3f3;
-  position: relative;
-  line-height: 25px;
-  text-align: center;
+    width: 50%;
+    height: 100%;
+    float: left;
+    background: #5ab3f3;
+    position: relative;
+    line-height: 25px;
+    text-align: center;
 }
 
 .competitor-member .footer-rotate a {
-  color: #fff;
+    color: #fff;
 }
 
 .competitor-member-avatar img {
-  border-radius: 50%;
+    border-radius: 50%;
 }
 
 #canvas-wrap {
-  overflow-x: scroll;
-  padding: 0 20px;
-  clear: both;
-  border: 5px solid #ecf0f1;
-  background: #d8d8d8;
+    overflow-x: scroll;
+    padding: 0 20px;
+    clear: both;
+    border: 5px solid #ecf0f1;
+    background: #d8d8d8;
 }
 
 .borderCardMember {
-  padding: 0;
-  background-color: #fff;
-  width: 450px;
-  height: 757px;
-  display: inline-block;
-  margin: 20px auto;
-  -webkit-box-shadow: 0 0 0 2px #9b9b9b;
-  box-shadow: 0 0 0 2px #9b9b9b;
+    padding: 0;
+    background-color: #fff;
+    width: 450px;
+    height: 757px;
+    display: inline-block;
+    margin: 20px auto;
+    -webkit-box-shadow: 0 0 0 2px #9b9b9b;
+    box-shadow: 0 0 0 2px #9b9b9b;
 }
 
 .backgroundParent {
-  position: relative;
-  z-index: 1;
-  //   background-color: #a6cc7d;
-  padding: 0 !important;
-  margin: 0 !important;
+    position: relative;
+    z-index: 1;
+    //   background-color: #a6cc7d;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 .backgroundParent .backgroundChildren {
-  //background-image: url(/content/images/bg-card.png);
-  background-position: 50%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  left: 0;
-  z-index: -1;
-  opacity: 0.6;
+    //background-image: url(/content/images/bg-card.png);
+    background-position: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    z-index: -1;
+    opacity: 0.6;
 }
 
 .borderCardMember .card-top .competitor-description {
-  width: 100%;
-  height: 117px;
+    width: 100%;
+    height: 117px;
 }
 
 .competitor-description {
-  text-align: center;
+    text-align: center;
 }
 
 .borderCardMember .card-top .competitor-description .logo {
-  display: inline-block;
-  margin: 6px 0 7.5px;
+    display: inline-block;
+    margin: 6px 0 7.5px;
 }
 
 .borderCardMember .card-top .competitor-description .team-title {
-  margin-top: 0;
-  margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 5px;
 }
 
 .borderCardMember .card-top .competitor-description .team-title input {
-  font-size: 18px;
-  font-weight: 600;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .borderCardMember .wrap-card-bottom {
-  height: 75px;
-  //   margin-top: 543px;
+    height: 75px;
+    //   margin-top: 543px;
 }
 
 .borderCardMember .wrap-card-bottom .card-bottom-main {
-  height: 100%;
+    height: 100%;
 }
 
 .borderCardMember .wrap-card-bottom .card-bottom #power-by {
-  font-size: 8px;
-  color: #000;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  opacity: 0.5;
+    font-size: 8px;
+    color: #000;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    opacity: 0.5;
 }
 
 .borderCardMember .wrap-card-bottom .card-bottom-sub {
-  position: absolute;
-  width: 450px;
-  margin-top: 0;
+    position: absolute;
+    width: 450px;
+    margin-top: 0;
 }
 
 .borderCardMember .wrap-card-bottom .card-bottom {
-  margin: auto;
-  padding: 7px 0 15px;
+    margin: auto;
+    padding: 7px 0 15px;
 }
 
 .competitor-description .team-title input {
-  border: none;
-  background: none;
-  display: block;
-  width: 100%;
-  font-family: firefly, DejaVu Sans, sans-serif;
-  text-decoration: none;
+    border: none;
+    background: none;
+    display: block;
+    width: 100%;
+    font-family: firefly, DejaVu Sans, sans-serif;
+    text-decoration: none;
 }
 
 .borderCardMember .card-center .competitor-description {
-  text-align: center;
-  margin: auto;
-  height: 566px;
-  width: 100%;
+    text-align: center;
+    margin: auto;
+    height: 566px;
+    width: 100%;
 }
 
 .borderCardMember .card-center .competitor-description .title1 {
-  font-weight: 700;
-  margin-top: 12px;
-  font-size: 17px;
-  letter-spacing: -0.5px;
-  padding: 1px;
+    font-weight: 700;
+    margin-top: 12px;
+    font-size: 17px;
+    letter-spacing: -0.5px;
+    padding: 1px;
 }
 
 .borderCardMember .card-center .competitor-description .title2 {
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  font-size: 15px;
-  padding: 1px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    font-size: 15px;
+    padding: 1px;
 }
 
 .borderCardMember .card-center .competitor-description .txtVanDongVien {
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  font-size: 15px;
-  outline: none;
-  width: auto;
-  padding: 1px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    font-size: 15px;
+    outline: none;
+    width: auto;
+    padding: 1px;
 }
 
 .borderCardMember .card-center .competitor-description .avatarCardMember img {
-  border: 2px solid #ececec;
-  border-radius: 50%;
+    border: 2px solid #ececec;
+    border-radius: 50%;
 }
 
 .borderCardMember .card-center .competitor-description .txtTenCauThu {
-  font-weight: 600;
-  margin: 5px 0 5px 3px;
-  letter-spacing: -0.5px;
-  font-size: 15px;
-  width: auto;
-  display: inline-block;
+    font-weight: 600;
+    margin: 5px 0 5px 3px;
+    letter-spacing: -0.5px;
+    font-size: 15px;
+    width: auto;
+    display: inline-block;
 }
 
 .borderCardMember .card-center .competitor-description .txtSoAo {
-  font-weight: 400;
-  letter-spacing: -0.5px;
-  font-size: 15px;
-  margin-top: 5px;
-  width: auto;
-  display: inline-block;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    font-size: 15px;
+    margin-top: 5px;
+    width: auto;
+    display: inline-block;
 }
 
 .borderCardMember .card-center .competitor-description .txtTenDoiFC {
-  text-align: center;
-  margin: 10px 0 -1px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  font-size: 17px;
-  width: auto;
+    text-align: center;
+    margin: 10px 0 -1px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    font-size: 17px;
+    width: auto;
 }
 
 .borderCardMember .wrap-card-bottom .card-bottom-sub .competitor-description,
-.borderCardMember
-  .wrap-card-bottom
-  .card-bottom-sub
-  .competitor-description
-  .colorBgDonorBottom {
-  height: 53px;
+.borderCardMember .wrap-card-bottom .card-bottom-sub .competitor-description .colorBgDonorBottom {
+    height: 53px;
 }
 
-.borderCardMember
-  .wrap-card-bottom
-  .card-bottom
-  .competitor-description
-  .colorBgDonorBottom
-  .img-logo {
-  padding: 11.5px 0;
-  height: 38px;
-  width: 50px;
-  border: 0.5px solid #d8d8d8;
+.borderCardMember .wrap-card-bottom .card-bottom .competitor-description .colorBgDonorBottom .img-logo {
+    padding: 11.5px 0;
+    height: 38px;
+    width: 50px;
+    border: 0.5px solid #d8d8d8;
 }
 
-.borderCardMember
-  .wrap-card-bottom
-  .card-bottom
-  .competitor-description
-  .colorBgDonorBottom
-  img {
-  margin: 7px 10px 0;
-  width: 45px;
-  height: 35px;
+.borderCardMember .wrap-card-bottom .card-bottom .competitor-description .colorBgDonorBottom img {
+    margin: 7px 10px 0;
+    width: 45px;
+    height: 35px;
 }
 
 #canvas-wrap input[data-title]:hover:after {
-  opacity: 1;
-  transition: all 0.1s ease 0.5s;
-  visibility: visible;
+    opacity: 1;
+    transition: all 0.1s ease 0.5s;
+    visibility: visible;
 }
 
 #canvas-wrap input[data-title]:after {
-  content: attr(data-title);
-  background-color: lightblue;
-  color: #111;
-  font-size: 12pt;
-  font-weight: bold;
-  position: absolute;
-  padding: 1px 5px 2px 5px;
-  bottom: -1.6em;
-  left: 100%;
-  white-space: nowrap;
-  box-shadow: 1px 1px 3px #222222;
-  opacity: 0;
-  border: 1px solid #111111;
-  z-index: 99999;
-  visibility: hidden;
+    content: attr(data-title);
+    background-color: lightblue;
+    color: #111;
+    font-size: 12pt;
+    font-weight: bold;
+    position: absolute;
+    padding: 1px 5px 2px 5px;
+    bottom: -1.6em;
+    left: 100%;
+    white-space: nowrap;
+    box-shadow: 1px 1px 3px #222222;
+    opacity: 0;
+    border: 1px solid #111111;
+    z-index: 99999;
+    visibility: hidden;
 }
 
 #canvas-wrap input[data-title] {
-  position: relative;
+    position: relative;
 }
 
 .truncated {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .news-header {
-  text-align: right;
-  background-color: #28a745;
+    text-align: right;
+    background-color: #28a745;
 }
 
 .borderCardMember .wrap-card-bottom .card-bottom #power-by {
-  font-size: 8px;
-  color: #000;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  opacity: 0.5;
+    font-size: 8px;
+    color: #000;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    opacity: 0.5;
 }
 
 .borderCardMember .card-center .competitor-description .avatarCardMember {
-  padding: 5px;
-  margin-top: 15px;
+    padding: 5px;
+    margin-top: 15px;
 }
 
 .row {
-  a {
-    text-decoration: none !important;
-  }
+    a {
+        text-decoration: none !important;
+    }
 }
 
 .widget-small {
-  background-color: white;
-
-  img {
-    background-color: transparent;
-  }
-
-  .info {
-    flex: 1;
-    padding: 0 20px;
-    align-self: center;
-
-    p {
-      color: black;
+    background-color: white;
+    img {
+        background-color: transparent;
     }
-  }
+    .info {
+        flex: 1;
+        padding: 0 20px;
+        align-self: center;
+        p {
+            color: black;
+        }
+    }
+}
+
+.modal-dktv .select2-container {
+    width: calc((50% - 5px) / 2) !important;
 }
