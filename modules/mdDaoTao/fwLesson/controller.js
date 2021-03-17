@@ -12,22 +12,16 @@ module.exports = (app) => {
     app.get('/user/dao-tao/bai-hoc/view/:_id', app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
-    app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
-        let pageNumber = parseInt(req.params.pageNumber),
+    app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || '',
-            pageCondition = {};
-        try {
-            if (condition) {
-                const value = { $regex: `.*${condition}.*`, $options: 'i' };
-                pageCondition['$or'] = [
-                    { title: value },
-                ];
-            }
-            app.model.lesson.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
-        } catch (error) {
-            res.send({ error });
+            condition = {}, searchText = req.query.searchText;
+        if (searchText) {
+            condition.title = new RegExp(searchText, 'i');
         }
+        app.model.lesson.getPage(pageNumber, pageSize, condition, (error, page) => {
+            res.send({ page, error: error || page == null ? 'Danh sách bài học không sẵn sàng!' : null });
+        });
     });
 
     app.get('/api/lesson/edit/:_id', app.permission.check('lesson:read'), (req, res) => {

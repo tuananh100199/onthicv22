@@ -17,7 +17,7 @@ class LessonModal extends AdminModal {
     onSubmit = () => {
         const newData = { title: $('#lessonName').val() };
         if (newData.title == '') {
-            T.notify('Tên cơ sở bị trống!', 'danger');
+            T.notify('Tên bài học bị trống!', 'danger');
             $('#lessonName').focus();
         } else {
             this.props.createLesson(newData, data => {
@@ -30,11 +30,11 @@ class LessonModal extends AdminModal {
     }
 
     render = () => this.renderModal({
-        title: 'Cơ sở mới',
+        title: 'Bài học',
         body:
             <div className='form-group'>
-                <label htmlFor='lessonName'>Tên cơ sở</label>
-                <input className='form-control' id='lessonName' type='text' placeholder='Nhập tên cơ sở' autoFocus={true} />
+                <label htmlFor='lessonName'>Tên bài học</label>
+                <input className='form-control' id='lessonName' type='text' placeholder='Nhập tên bài học' autoFocus={true} />
             </div>
     });
 }
@@ -55,7 +55,7 @@ class ListLessonPage extends AdminPage {
 
     delete = (e, item) => {
         e.preventDefault();
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
+        T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
     }
 
     render() {

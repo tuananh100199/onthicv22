@@ -26,30 +26,22 @@ export default function LessonReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 const getPageUrl = (pageNumber, pageSize) => `/api/lesson/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('pageLesson', true);
-export function getLessonInPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageLesson', pageNumber, pageSize, pageCondition);
-    if (page.pageCondition && typeof page.pageCondition == 'object') {
-        page.pageCondition = JSON.stringify(page.pageCondition);
-    }
+export function getLessonInPage(pageNumber, pageSize, searchText, done) {
+    const page = T.updatePage('pageSubject', pageNumber, pageSize);
     return (dispatch) => {
-        ajaxGetLessonInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, page => {
-            done && done(page);
-            dispatch({ type: LessonGetPage, page });
-        });
+        const url = '/api/lesson/page/' + page.pageNumber + '/' + page.pageSize;
+        T.get(url, { searchText }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                dispatch({ type: LessonGetPage, page: data.page });
+            }
+        }, error => T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
     }
 }
-export function ajaxGetLessonInPage(pageNumber, pageSize, pageCondition, done) {
-    const url = getPageUrl(pageNumber, pageSize);
-    T.get(url, { condition: pageCondition }, data => {
-        if (data.error) {
-            T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
-            console.error('GET: ' + url + '. ' + data.error);
-        } else {
-            if (pageCondition) data.page.pageCondition = pageCondition;
-            done && done(data.page);
-        }
-    }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
-}
+
 export function getLesson(_id, done) {
     return dispatch => {
         const url = '/api/lesson/edit/' + _id;
