@@ -6,16 +6,11 @@ import Editor from 'view/component/CkEditor4';
 import ImageBox from 'view/component/ImageBox';
 
 class SloganModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { readOnly: false };
-
-        this.modal = React.createRef();
-        this.imageBox = React.createRef();
-        this.viEditor = React.createRef();
-        this.enEditor = React.createRef();
-        this.btnSave = React.createRef();
-    }
+    state = { readOnly: false };
+    modal = React.createRef();
+    imageBox = React.createRef();
+    editor = React.createRef();
+    btnSave = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
@@ -23,19 +18,13 @@ class SloganModal extends React.Component {
         }, 250));
     }
 
-    imageChanged = (data) => {
-        this.setState({ image: data.url });
-    }
+    imageChanged = (data) => this.setState({ image: data.url });
 
     show = (selectedItem, index, readOnly) => {
         let { title, image, content } = selectedItem ? selectedItem : { title: '', image: '', content: '' };
-        title = T.language.parse(title, true);
-        content = T.language.parse(content, true);
 
-        $('#seiViTitle').val(title.vi);
-        $('#seiEnTitle').val(title.en);
-        this.viEditor.current.html(content.vi);
-        this.enEditor.current.html(content.en);
+        $('#seiTitle').val(title);
+        this.editor.current.html(content);
         $(this.btnSave.current).data('isNewMember', selectedItem == null).data('index', index);
 
         this.imageBox.current.setData('Slogan', image);
@@ -51,8 +40,8 @@ class SloganModal extends React.Component {
         const btnSave = $(this.btnSave.current),
             isNewMember = btnSave.data('isNewMember'),
             index = btnSave.data('index'),
-            title = JSON.stringify({ vi: $('#seiViTitle').val(), en: $('#seiEnTitle').val() }),
-            content = JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() });
+            title = $('#seiTitle').val(),
+            content = JSON.stringify({ vi: this.editor.current.html(), en: this.enEditor.current.html() });
         if (isNewMember) {
             this.props.addSlogan(title, this.state.image, content);
         } else {
@@ -74,35 +63,13 @@ class SloganModal extends React.Component {
                             </button>
                         </div>
                         <div className='modal-body'>
-                            <ul className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#sloganViTab'>Việt Nam</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#sloganEnTab'>English</a>
-                                </li>
-                            </ul>
-                            <div className='tab-content'>
-                                <div id='sloganViTab' className='tab-pane fade show active'>
-                                    <div className='form-group'>
-                                        <label htmlFor='seiViTitle'>Tiêu đề</label><br />
-                                        <input className='form-control' id='seiViTitle' type='text' placeholder='Tiêu đề' readOnly={readOnly} />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Nội dung</label>
-                                        <Editor ref={this.viEditor} placeholder='Nội dung' readOnly={readOnly} />
-                                    </div>
-                                </div>
-                                <div id='sloganEnTab' className='tab-pane fade'>
-                                    <div className='form-group'>
-                                        <label htmlFor='seiEnTitle'>Title</label><br />
-                                        <input className='form-control' id='seiEnTitle' type='text' placeholder='Title' readOnly={readOnly} />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Content</label>
-                                        <Editor ref={this.enEditor} placeholder='Content' readOnly={readOnly} />
-                                    </div>
-                                </div>
+                            <div className='form-group'>
+                                <label htmlFor='seiTitle'>Tiêu đề</label><br />
+                                <input className='form-control' id='seiTitle' type='text' placeholder='Tiêu đề' readOnly={readOnly} />
+                            </div>
+                            <div className='form-group'>
+                                <label>Nội dung</label>
+                                <Editor ref={this.editor} placeholder='Nội dung' readOnly={readOnly} />
                             </div>
 
                             <div className='form-group'>
@@ -199,7 +166,7 @@ class SloganEditPage extends React.Component {
                         {currentSlogan.items.map((item, index) => (
                             <tr key={index}>
                                 <td>
-                                    <a href='#' onClick={e => this.showEditSloganModal(e, item, index)}>{T.language.parse(item.title)}</a>
+                                    <a href='#' onClick={e => this.showEditSloganModal(e, item, index)}>{item.title}</a>
                                 </td>
                                 <td style={{ textAlign: 'center' }}>
                                     <img src={item.image} style={{ width: '100%' }} />

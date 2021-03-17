@@ -5,21 +5,9 @@ import { countAnswer } from '../reduxAnswer';
 import { Link } from 'react-router-dom';
 import HomeRegistrationForm from './homeRegistrationForm';
 
-const texts = {
-    vi: {
-        noForm: 'Form này không tồn tại hoặc đã bị khóa!',
-        goBack: (onClickFunc) => <p>Nhấp vào <a href='#' onClick={onClickFunc}>đây</a> để trở về.</p>
-    },
-    en: {
-        noForm: 'This form isn\'t exist or has been locked!',
-        goBack: (onClickFunc) => <p>Click <a href='#' onClick={onClickFunc}>here</a> to go back.</p>
-    }
-};
-
 class HomeRegistration extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { language: '' };
 
         this.valueList = [];
         for (let i = 0; i < 300; i++) {
@@ -35,7 +23,6 @@ class HomeRegistration extends React.Component {
     }
 
     render() {
-        const language = T.language(texts);
         const item = this.props.form && this.props.form.form ? this.props.form.form : {};
         if (item == null) {
             return (
@@ -47,8 +34,8 @@ class HomeRegistration extends React.Component {
                             margin: '16px'
                         }
                     }}>
-                        <h3 dangerouslySetInnerHTML={{ __html: language.noForm }} />
-                        {language.goBack(() => this.props.history.goBack())}
+                        <h3 dangerouslySetInnerHTML={{ __html: 'Form này không tồn tại hoặc đã bị khóa!' }} />
+                        <p>Nhấp vào <a href='#' onClick={() => this.props.history.goBack()}>đây</a> để trở về.</p>
                     </div>
                 </div>
             );
@@ -60,8 +47,8 @@ class HomeRegistration extends React.Component {
                         <div className='bg-white' style={{ padding: '5em 0', border: '1px solid #dee2e6' }}>
                             <div className='row justify-content-md-center'>
                                 <div className='col-12 col-md-8'>
-                                    <h3>{T.language.parse(item.title)}</h3>
-                                    <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.description) }} />
+                                    <h3>{item.title}</h3>
+                                    <p dangerouslySetInnerHTML={{ __html: item.description }} />
                                 </div>
                             </div>
                             <HomeRegistrationForm className='row justify-content-md-center' formId={item._id} questions={item.questions}

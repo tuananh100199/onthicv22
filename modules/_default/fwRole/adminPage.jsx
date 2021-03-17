@@ -4,12 +4,8 @@ import { getAllRoles, updateRole, deleteRole, getRolePage, createRole } from './
 import Pagination from 'view/component/Pagination';
 
 class RoleModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { isAdmin: false };
-        this.modal = React.createRef();
-        this.btnSave = React.createRef();
-    }
+    state = { isAdmin: false };
+    modal = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
@@ -21,15 +17,14 @@ class RoleModal extends React.Component {
         const { _id, name, description } = item ?
             item : { _id: null, name: '', permission: [], active: false, };
         this.setState({ isAdmin, name, description });
-        $(this.btnSave.current).data('id', _id);
         $('#roleName').val(name);
         $('#description').val(description);
-        $(this.modal.current).modal('show');
+        $(this.modal.current).data('id', _id).modal('show');
     }
 
     save = (e) => {
         e.preventDefault();
-        const _id = $(this.btnSave.current).data('id'),
+        const _id = $(this.modal.current).data('id'),
             changes = {
                 name: $('#roleName').val().trim(),
                 description: $('#description').val()
@@ -75,7 +70,7 @@ class RoleModal extends React.Component {
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                             {this.state.name != 'admin' || this.state.isAdmin ?
-                                <button type='submit' className='btn btn-primary' ref={this.btnSave}>
+                                <button type='submit' className='btn btn-primary'>
                                     <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                 </button> : ''}
                         </div>

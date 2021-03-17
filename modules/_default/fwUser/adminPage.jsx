@@ -119,15 +119,16 @@ class UserModal extends AdminModal {
                         <label htmlFor='userBirthday'>Ngày sinh</label>
                         <input className='form-control' id='userBirthday' type='text' placeholder='Ngày sinh' readOnly={!permissionWrite} />
                     </div>
-                    <div className='col-md-3 form-group' style={{ display: 'inline-flex' }}>
+                    <div className='col-md-4 form-group' style={{ display: 'inline-flex' }}>
                         <label style={{ whiteSpace: 'nowrap' }}>Giới tính: </label>&nbsp;&nbsp;
-                        {permissionWrite ? <Select ref={this.sex} displayLabel={false}
-                            adapter={{
-                                ajax: true,
-                                processResults: () => ({
-                                    results: [{ id: "female", text: "Nữ" }, { id: "male", text: "Nam" }]
-                                })
-                            }} label='Giới tính' /> : (this.state.sex ? this.state.sex : '')}
+                        {permissionWrite ?
+                            <Select ref={this.sex} displayLabel={false}
+                                adapter={{
+                                    ajax: true,
+                                    processResults: () => ({
+                                        results: [{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]
+                                    })
+                                }} label='Giới tính' /> : (this.state.sex ? this.state.sex : '')}
                     </div>
 
                     <Checkbox ref={this.isCourseAdmin} className='col-md-4 form-group' label='Quản trị viên khoá học' permissionWrite={permissionWrite} />

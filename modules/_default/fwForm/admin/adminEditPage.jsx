@@ -165,17 +165,13 @@ class QuestionModal extends React.Component {
 }
 
 class FormEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: null, numOfRegisterUsers: 0 };
-        this.imageBox = React.createRef();
-        this.viEditor = React.createRef();
-        this.enEditor = React.createRef();
-        this.questionModal = React.createRef();
-    }
+    state = { item: null, numOfRegisterUsers: 0 };
+    imageBox = React.createRef();
+    editor = React.createRef();
+    questionModal = React.createRef();
 
     componentDidMount() {
-        $('#formViTitle').focus();
+        $('#formTitle').focus();
         $('#formStartRegister').datetimepicker(T.dateFormat);
         $('#formStopRegister').datetimepicker(T.dateFormat);
         T.ready('/user/form/list', () => {
@@ -194,13 +190,8 @@ class FormEditPage extends React.Component {
                     data.image = data.item.image ? data.item.image : '/img/avatar.jpg';
                     this.imageBox.current.setData('form:' + data.item._id);
 
-                    let title = T.language.parse(data.item.title, true),
-                        description = T.language.parse(data.item.description, true);
-
-                    $('#formViTitle').val(title.vi);
-                    $('#formEnTitle').val(title.en);
-                    this.viEditor.current.html(description.vi);
-                    this.enEditor.current.html(description.en);
+                    $('#formTitle').val(data.item.title);
+                    this.editor.current.html(data.item.description);
                     $('#formMaxRegisterUsers').val(data.item.maxRegisterUsers);
                     this.props.countAnswer(data.item._id, (numOfRegisterUsers) => {
                         this.setState(Object.assign({}, data, { numOfRegisterUsers: numOfRegisterUsers ? numOfRegisterUsers : 0 }));
@@ -227,10 +218,10 @@ class FormEditPage extends React.Component {
             startRegister = $('#formStartRegister').val(),
             stopRegister = $('#formStopRegister').val(),
             changes = {
-                title: JSON.stringify({ vi: $('#formViTitle').val(), en: $('#formEnTitle').val() }),
+                title: $('#formTitle').val(),
                 active: this.state.item.active,
                 lock: this.state.item.lock,
-                description: JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() }),
+                description: editor.current.html(),
                 maxRegisterUsers: $('#formMaxRegisterUsers').val(),
                 startRegister: startRegister ? T.formatDate(startRegister) : 'empty',
                 stopRegister: stopRegister ? T.formatDate(stopRegister) : 'empty',
@@ -292,7 +283,7 @@ class FormEditPage extends React.Component {
     };
 
     removeQuestion = (e, item, index) => {
-        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
+        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
                 let questionList = this.props.question && this.props.question.questions ? this.props.question.questions : [];
@@ -371,115 +362,90 @@ class FormEditPage extends React.Component {
                 </tbody>
             </table>
         ) : <p>Không có câu hỏi</p>;
-        const title = T.language.parse(item.title, true);
 
         return (
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-edit' /> Form: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
+                        <p dangerouslySetInnerHTML={{ __html: item.title != '' ? 'Tiêu đề: <b>' + item.title + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='col-md-6'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Thông tin form</h3>
-                            <div className='tile-body'>
-                                <ul className='nav nav-tabs'>
-                                    <li className='nav-item'>
-                                        <a className='nav-link active show' data-toggle='tab' href='#formViTab'>Việt Nam</a>
-                                    </li>
-                                    <li className='nav-item'>
-                                        <a className='nav-link' data-toggle='tab' href='#formEnTab'>English</a>
-                                    </li>
-                                </ul>
-                                <div className='tab-content' style={{ paddingTop: '12px' }}>
-                                    <div id='formViTab' className='tab-pane fade show active'>
-                                        <div className='form-group'>
-                                            <label className='control-label'>Tên form</label>
-                                            <input className='form-control' type='text' placeholder='Tên form' id='formViTitle' readOnly={readOnly} defaultValue={item.title} />
-                                        </div>
-                                        <label className='control-label'>Mô tả form</label>
-                                        <Editor ref={this.viEditor} height={200} uploadUrl='/user/upload?category=form' readOnly={readOnly} />
-                                    </div>
-                                    <div id='formEnTab' className='tab-pane fade'>
-                                        <div className='form-group'>
-                                            <label className='control-label'>Form title</label>
-                                            <input className='form-control' type='text' placeholder='Form title' id='formEnTitle' readOnly={readOnly} defaultValue={title.en} />
-                                        </div>
-                                        <label className='control-label'>Form description</label>
-                                        <Editor ref={this.enEditor} height={200} uploadUrl='/user/upload?category=form' readOnly={readOnly} />
-                                    </div>
-                                </div>
+                    <div className='tile col-md-6'>
+                        <h3 className='tile-title'>Thông tin form</h3>
+                        <div className='tile-body'>
+                            <div className='form-group'>
+                                <label className='control-label'>Tên form</label>
+                                <input className='form-control' type='text' placeholder='Tên form' id='formTitle' readOnly={readOnly} defaultValue={item.title} />
+                            </div>
+                            <div className='form-group'>
+                                <label className='control-label'>Mô tả form</label>
+                                <Editor ref={this.editor} height={200} uploadUrl='/user/upload?category=form' readOnly={readOnly} />
                             </div>
                         </div>
                     </div>
 
-                    <div className='col-md-6'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Điều khiển form</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Thời gian mở đăng ký</label>
-                                    <input className='form-control' id='formStartRegister' type='text' placeholder='Thời gian mở đăng ký' defaultValue={item.startRegister} disabled={readOnly} autoComplete='off' />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Thời gian đóng đăng ký</label>
-                                    <input className='form-control' id='formStopRegister' type='text' placeholder='Thời gian đóng đăng ký' defaultValue={item.stopRegister} disabled={readOnly} autoComplete='off' />
-                                </div>
+                    <div className='tile col-md-6'>
+                        <h3 className='tile-title'>Điều khiển form</h3>
+                        <div className='tile-body'>
+                            <div className='form-group'>
+                                <label className='control-label'>Thời gian mở đăng ký</label>
+                                <input className='form-control' id='formStartRegister' type='text' placeholder='Thời gian mở đăng ký' defaultValue={item.startRegister} disabled={readOnly} autoComplete='off' />
+                            </div>
+                            <div className='form-group'>
+                                <label className='control-label'>Thời gian đóng đăng ký</label>
+                                <input className='form-control' id='formStopRegister' type='text' placeholder='Thời gian đóng đăng ký' defaultValue={item.stopRegister} disabled={readOnly} autoComplete='off' />
+                            </div>
 
-                                <div className='row'>
-                                    <div className='col-md-8'>
-                                        <div className='form-group'>
-                                            <label className='control-label'>Hình ảnh nền</label>
-                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='FormImage' readOnly={readOnly} image={this.state.image} />
-                                        </div>
-                                    </div>
-                                    <div className='col-md-4'>
-                                        <div className='form-group' style={{ display: 'inline-flex' }}>
-                                            <label className='control-label'>Kích hoạt:&nbsp;</label>
-                                            <div className='toggle'>
-                                                <label>
-                                                    <input type='checkbox' checked={item.active} onChange={this.changeActive} disabled={readOnly} /><span className='button-indecator' />
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div className='form-group' style={{ display: 'inline-flex' }}>
-                                            <label className='control-label'>Khóa form:&nbsp;</label>
-                                            <div className='toggle'>
-                                                <label>
-                                                    <input type='checkbox' checked={item.lock} onChange={this.changeLock} disabled={readOnly} /><span className='button-indecator' />
-                                                </label>
-                                            </div>
-                                        </div>
+                            <div className='row'>
+                                <div className='col-md-8'>
+                                    <div className='form-group'>
+                                        <label className='control-label'>Hình ảnh nền</label>
+                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='FormImage' readOnly={readOnly} image={this.state.image} />
                                     </div>
                                 </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Số lượng đăng ký tối đa</label><br />
-                                    <input className='form-control' id='formMaxRegisterUsers' type='number' placeholder='Số lượng đăng ký tối đa' readOnly={readOnly} defaultValue={item.maxRegisterUsers}
-                                        aria-describedby='formMaxRegisterUsersHelp' />
-                                    <small className='form-text text-success' id='formMaxRegisterUsersHelp'>Điền -1 nếu không giới hạn số lượng đăng ký tối đa.</small>
+                                <div className='col-md-4'>
+                                    <div className='form-group' style={{ display: 'inline-flex' }}>
+                                        <label className='control-label'>Kích hoạt:&nbsp;</label>
+                                        <div className='toggle'>
+                                            <label>
+                                                <input type='checkbox' checked={item.active} onChange={this.changeActive} disabled={readOnly} /><span className='button-indecator' />
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div className='form-group' style={{ display: 'inline-flex' }}>
+                                        <label className='control-label'>Khóa form:&nbsp;</label>
+                                        <div className='toggle'>
+                                            <label>
+                                                <input type='checkbox' checked={item.lock} onChange={this.changeLock} disabled={readOnly} /><span className='button-indecator' />
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className='form-group row'>
-                                    <label className='control-label col-12'>Số lượng đăng ký tham gia: {this.state.numOfRegisterUsers}</label>
-                                </div>
+                            </div>
+                            <div className='form-group'>
+                                <label className='control-label'>Số lượng đăng ký tối đa</label><br />
+                                <input className='form-control' id='formMaxRegisterUsers' type='number' placeholder='Số lượng đăng ký tối đa' readOnly={readOnly} defaultValue={item.maxRegisterUsers}
+                                    aria-describedby='formMaxRegisterUsersHelp' />
+                                <small className='form-text text-success' id='formMaxRegisterUsersHelp'>Điền -1 nếu không giới hạn số lượng đăng ký tối đa.</small>
+                            </div>
+                            <div className='form-group row'>
+                                <label className='control-label col-12'>Số lượng đăng ký tham gia: {this.state.numOfRegisterUsers}</label>
                             </div>
                         </div>
                     </div>
-                    <div className='col-md-12'>
-                        <div className='tile'>
-                            <h3 className='tile-title'>Danh sách câu hỏi</h3>
-                            <div className='tile-body'>
-                                {questionTable}
-                            </div>
-                            {!readOnly ?
-                                <button type='button' className='btn btn-primary' style={{ position: 'absolute', right: '30px', top: '10px' }} onClick={e => this.showModal(e, null)}>
-                                    Thêm câu hỏi
-                                </button> : null
-                            }
+                    <div className='tile col-md-12'>
+                        <h3 className='tile-title'>Danh sách câu hỏi</h3>
+                        <div className='tile-body'>
+                            {questionTable}
                         </div>
+                        {!readOnly ?
+                            <button type='button' className='btn btn-primary' style={{ position: 'absolute', right: '30px', top: '10px' }} onClick={e => this.showModal(e, null)}>
+                                Thêm câu hỏi
+                            </button> : null
+                        }
                     </div>
                 </div>
                 <button className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }} onClick={() => this.props.history.goBack()}>

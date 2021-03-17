@@ -75,56 +75,53 @@ export default class EmailPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className='fa fa-cog' /> Email</h1>
+                    <h1><i className='fa fa-envelope-o' /> Email</h1>
                 </div>
-                <div className='row'>
-                    <div className='col-12'>
-                        <div className='tile'>
-                            <ul className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>Người dùng mới</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Tạo người dùng mới</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>Mật khẩu mới</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailForgotPassword'>Quên mật khẩu</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Liên hệ</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Đăng ký tư vấn</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Phản hồi đăng ký tư vấn</a>
-                                </li>
-                            </ul>
-                            <div className='tab-content' style={{ marginTop: '12px' }}>
-                                <EmailItem ref={this.emailRegisterMember} id='emailRegisterMember' active={true}
-                                    params='{name}, {url}' />
-                                <EmailItem ref={this.emailCreateMemberByAdmin} id='emailCreateMemberByAdmin'
-                                    params='{name}, {email}, {password}, {url}' />
-                                <EmailItem ref={this.emailNewPassword} id='emailNewPassword'
-                                    params='{name}, {email}, {password}' />
-                                <EmailItem ref={this.emailForgotPassword} id='emailForgotPassword'
-                                    params='{name}, {email}, {url}' />
-                                <EmailItem ref={this.emailContact} id='emailContact'
-                                    params='{name}, {subject}, {message}' />
-                                <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
-                                    params='{name}, {subject}, {message}' />
-                                <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
-                                    params='{name}' />
-                            </div>
-                        </div>
-                    </div>
+
+                <ul className='nav nav-tabs'>
+                    <li className='nav-item'>
+                        <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>Người dùng mới</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Tạo người dùng mới</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>Mật khẩu mới</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailForgotPassword'>Quên mật khẩu</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailContact'>Liên hệ</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailContact'>Đăng ký tư vấn</a>
+                    </li>
+                    <li className='nav-item'>
+                        <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Phản hồi đăng ký tư vấn</a>
+                    </li>
+                </ul>
+
+                <div className='tile tab-content'>
+                    <EmailItem ref={this.emailRegisterMember} id='emailRegisterMember' active={true}
+                        params='{name}, {url}' />
+                    <EmailItem ref={this.emailCreateMemberByAdmin} id='emailCreateMemberByAdmin'
+                        params='{name}, {email}, {password}, {url}' />
+                    <EmailItem ref={this.emailNewPassword} id='emailNewPassword'
+                        params='{name}, {email}, {password}' />
+                    <EmailItem ref={this.emailForgotPassword} id='emailForgotPassword'
+                        params='{name}, {email}, {url}' />
+                    <EmailItem ref={this.emailContact} id='emailContact'
+                        params='{name}, {subject}, {message}' />
+                    <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
+                        params='{name}, {subject}, {message}' />
+                    <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
+                        params='{name}' />
                 </div>
+
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
                     <i className='fa fa-lg fa-save' />
                 </button>

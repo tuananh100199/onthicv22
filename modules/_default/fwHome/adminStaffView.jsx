@@ -4,26 +4,21 @@ import { getAllStaffGroups, createStaffGroup, deleteStaffGroup } from './redux/r
 import { Link } from 'react-router-dom';
 
 class StaffGroupModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-        this.btnSave = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#staffGroupViName').focus())
+            $(this.modal.current).on('shown.bs.modal', () => $('#staffGroupName').focus())
         }, 250));
     }
 
     show = () => {
-        $('#staffGroupViName').val('');
-        $('#staffGroupEnName').val('');
+        $('#staffGroupName').val('');
         $(this.modal.current).modal('show');
     }
 
     save = (event) => {
-        const item = { vi: $('#staffGroupViName').val().trim(), en: $('#staffGroupEnName').val().trim() };
+        const item = $('#staffGroupName').val().trim();
         if (item.vi == '') {
             T.notify('Tên nhóm nhân viên bị trống!', 'danger');
             $('#staffViGroupName').focus();
@@ -56,17 +51,13 @@ class StaffGroupModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='staffGroupViName'>Tên nhóm nhân viên</label>
-                                <input className='form-control' id='staffGroupViName' type='text' placeholder='Tên nhóm nhân viên' />
-                            </div>
-                            <div className='form-group'>
-                                <label htmlFor='staffGroupEnName'>The name of staff group</label>
-                                <input className='form-control' id='staffGroupEnName' type='text' placeholder='The name of staff group' />
+                                <label htmlFor='staffGroupName'>Tên nhóm nhân viên</label>
+                                <input className='form-control' id='staffGroupName' type='text' placeholder='Tên nhóm nhân viên' />
                             </div>
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>
+                            <button type='submit' className='btn btn-primary'>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
                         </div>
@@ -78,10 +69,7 @@ class StaffGroupModal extends React.Component {
 }
 
 class StaffGroupPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.staffGroupModal = React.createRef();
-    }
+    staffGroupModal = React.createRef();
 
     componentDidMount() {
         this.props.getAllStaffGroups();
@@ -107,7 +95,7 @@ class StaffGroupPage extends React.Component {
         let table = null;
         if (this.props.staffGroup && this.props.staffGroup.list && this.props.staffGroup.list.length > 0) {
             table = (
-                <table key={0} className='table table-hover table-bordered'>
+                <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -121,7 +109,7 @@ class StaffGroupPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/staff-group/edit/' + item._id} data-id={item._id}>{T.language.parse(item.title, true).vi}</Link>
+                                    <Link to={'/user/staff-group/edit/' + item._id} data-id={item._id}>{item.title}</Link>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>{item.staff.length}</td>
                                 <td>

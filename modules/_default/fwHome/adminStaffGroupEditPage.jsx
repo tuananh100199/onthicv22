@@ -87,11 +87,8 @@ class StaffModal extends React.Component {
 }
 
 class StaffGroupEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-        this.staffGroupId = null;
-    }
+    modal = React.createRef();
+    staffGroupId = null;
 
     componentDidMount() {
         T.ready('/user/component', () => {
@@ -104,9 +101,7 @@ class StaffGroupEditPage extends React.Component {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
                     this.staffGroupId = params.staffGroupId;
-                    const title = T.language.parse(data.item.title, true);
-                    $('#stfViTitle').val(title.vi).focus();
-                    $('#stfEnTitle').val(title.en);
+                    $('#stfTitle').val(data.item.title).focus();
                 } else {
                     this.props.history.push('/user/component');
                 }
@@ -147,7 +142,7 @@ class StaffGroupEditPage extends React.Component {
 
     save = () => {
         const changes = {
-            title: JSON.stringify({ vi: $('#stfViTitle').val(), en: $('#stfEnTitle').val() }),
+            title: $('#stfTitle').val(),
             staff: this.props.staffGroup.item.staff,
         };
         if (changes.staff && changes.staff.length == 0) changes.staff = 'empty';
@@ -175,10 +170,7 @@ class StaffGroupEditPage extends React.Component {
                                 <td style={{ width: 'auto', textAlign: 'right' }}>{index + 1}</td>
                                 <td>
                                     {readOnly ?
-                                        <a>
-                                            {item.user.firstname + ' ' + item.user.lastname}
-                                        </a>
-                                        :
+                                        <a>{item.user.firstname + ' ' + item.user.lastname}</a> :
                                         <a href='#' onClick={e => this.showEditStaffModal(e, item, index)}>
                                             {item.user.firstname + ' ' + item.user.lastname}
                                         </a>}
@@ -208,7 +200,7 @@ class StaffGroupEditPage extends React.Component {
             table = <p>Không có nhân viên!</p>;
         }
 
-        const title = T.language.parse(currentStaffGroup && currentStaffGroup.title && currentStaffGroup.title != '' ? currentStaffGroup.title : '<empty>', true);
+        const title = currentStaffGroup ? currentStaffGroup.title : '';
         return (
             <main className='app-content' >
                 <div className='app-title'>
@@ -224,26 +216,19 @@ class StaffGroupEditPage extends React.Component {
                     <div className='tile-body'>
                         <div className='form-group'>
                             <label className='control-label'>Tiêu đề</label>
-                            <input className='form-control' type='text' placeholder='Tiêu đề' id='stfViTitle' defaultValue={title.vi} readOnly={readOnly} />
-                        </div>
-                        <div className='form-group'>
-                            <label className='control-label'>Title</label>
-                            <input className='form-control' type='text' placeholder='Title' id='stfEnTitle' defaultValue={title.en} readOnly={readOnly} />
+                            <input className='form-control' type='text' placeholder='Tiêu đề' id='stfTitle' defaultValue={title.vi} readOnly={readOnly} />
                         </div>
                         <div className='form-group'>{table}</div>
                     </div>
-                    {!readOnly ? <div className='tile-footer'>
-                        <div className='row'>
-                            <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-info' type='button' onClick={this.showAddStaffModal}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                                    </button>&nbsp;
-                                    <button className='btn btn-primary' type='button' onClick={this.save}>
-                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                    </button>
-                            </div>
-                        </div>
-                    </div> : null}
+                    {readOnly ? null :
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-info' type='button' onClick={this.showAddStaffModal}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+                            </button>&nbsp;
+                            <button className='btn btn-primary' type='button' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                        </div>}
                 </div>
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />

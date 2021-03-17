@@ -118,7 +118,7 @@ class TestimonyPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/testimony/edit/' + testimony._id} data-id={testimony._id}>{T.language.parse(testimony.title, true).vi}</Link>
+                                    <Link to={'/user/testimony/edit/' + testimony._id} data-id={testimony._id}>{testimony.title}</Link>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>{testimony.items.length}</td>
                                 <td>

@@ -4,14 +4,9 @@ import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } 
 import ImageBox from 'view/component/ImageBox';
 
 class CategoryModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { readOnly: false };
-
-        this.modal = React.createRef();
-        this.imageBox = React.createRef();
-        this.btnSave = React.createRef();
-    }
+    state = { readOnly: false };
+    modal = React.createRef();
+    imageBox = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
@@ -22,17 +17,14 @@ class CategoryModal extends React.Component {
     show = (item, categoryType, readOnly) => {
         const { _id, title, image } = item ? item : { _id: null, title: '', image: '/img/avatar.png' };
         $('#catName').val(title);
-        $(this.btnSave.current).data('id', _id).data('categoryType', categoryType);
-
         this.setState({ image, readOnly });
         this.imageBox.current.setData(this.props.uploadType + ':' + (_id ? _id : 'new'));
 
-        $(this.modal.current).modal('show');
+        $(this.modal.current).data('id', _id).data('categoryType', categoryType).modal('show');
     }
 
     save = () => {
-        const btnSave = $(this.btnSave.current),
-            _id = btnSave.data('id'),
+        const _id = $(this.modal.current).data('id'),
             changes = {
                 title: $('#catName').val().trim()
             };
@@ -40,7 +32,7 @@ class CategoryModal extends React.Component {
         if (_id) { // Update
             this.props.updateCategory(_id, changes, () => $(this.modal.current).modal('hide'));
         } else { // Create
-            changes.type = btnSave.data('categoryType');
+            changes.type = $(this.modal.current).data('categoryType');
             changes.active = false;
             this.props.createCategory(changes, () => $(this.modal.current).modal('hide'));
         }
@@ -61,7 +53,7 @@ class CategoryModal extends React.Component {
                         <div className='modal-body'>
                             <div className='form-group'>
                                 <label htmlFor='catName'>Tên danh mục</label>
-                                <input className='form-control' id='catName' type='text' placeholder='Category name' readOnly={readOnly} />
+                                <input className='form-control' id='catName' type='text' placeholder='Tên danh mục' readOnly={readOnly} />
                             </div>
                             <div className='form-group'>
                                 <label>Hình ảnh</label>
@@ -80,10 +72,7 @@ class CategoryModal extends React.Component {
 }
 
 class Category extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
+    modal = React.createRef();
 
     componentDidMount() {
         this.props.getAll(this.props.type);
@@ -167,8 +156,7 @@ class Category extends React.Component {
                             </tr>
                         ))}
                     </tbody>
-                </table>
-            );
+                </table>);
         }
 
         return (

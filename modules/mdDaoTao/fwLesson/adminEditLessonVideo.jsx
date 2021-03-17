@@ -136,7 +136,7 @@ class adminEditLessonVideo extends React.Component {
 
     removeLessonVideo = (e, item, index, _id) => {
         e.preventDefault();
-        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
+        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
                 let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];

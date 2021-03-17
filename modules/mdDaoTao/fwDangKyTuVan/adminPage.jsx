@@ -104,9 +104,7 @@ class DangKyTuVanPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/dang-ky-tu-van/edit/' + item._id} data-id={item._id}>
-                                        {T.language.parse(item.title)}
-                                    </Link>
+                                    <Link to={'/user/dang-ky-tu-van/edit/' + item._id} data-id={item._id}>{item.title}</Link>
                                 </td>
                                 <td>
                                     <div className='btn-group'>

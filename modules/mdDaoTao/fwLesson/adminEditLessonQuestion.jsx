@@ -215,7 +215,7 @@ class AdminEditLessonQuestion extends React.Component {
     }
 
     removeQuestion = (e, item, index) => {
-        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
+        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
                 let questionList = this.props.lesson && this.props.lesson.questions ? this.props.lesson.questions.lessonQuestion : [];

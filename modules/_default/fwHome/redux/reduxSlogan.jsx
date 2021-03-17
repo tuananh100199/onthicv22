@@ -1,25 +1,4 @@
 import T from 'view/js/common';
-const texts = {
-    vi: {
-        getAllSlogansError: 'Lấy danh sách slogan bị lỗi!',
-        createSloganError: 'Tạo slogan bị lỗi!',
-        updateSloganError: 'Cập nhật slogan bị lỗi!',
-        updateSloganSuccess: 'Cập nhật slogan thành công!',
-        deleteSloganError: 'Xóa slogan bị lỗi!',
-        deleteSloganSuccess: 'Slogan được xóa thành công!',
-        getSloganError: 'Lấy slogan bị lỗi!',
-    },
-    en: {
-        getAllSlogansError: 'Errors when get slogan list!',
-        createSloganError: 'Errors when create new slogan!',
-        updateSloganError: 'Errors when update slogan!',
-        updateSloganSuccess: 'Slogan updated successfully!',
-        deleteSloganError: 'Errors when delete slogan!',
-        deleteSloganSuccess: 'Slogan deleted successfully!',
-        getSloganError: 'Errors when get slogan!',
-    }
-};
-const language = T.language(texts);
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const SloganGetAll = 'Slogan:GetAll';
@@ -95,13 +74,13 @@ export function getAllSlogans(done) {
         const url = `/api/slogan/all`;
         T.get(url, data => {
             if (data.error) {
-                T.notify(language.getAllSlogansError, 'danger');
+                T.notify('Lấy danh sách slogan bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: SloganGetAll, items: data.items });
             }
-        }, error => T.notify(language.getAllSlogansError, 'danger'));
+        }, error => T.notify('Lấy danh sách slogan bị lỗi!', 'danger'));
     }
 }
 
@@ -110,13 +89,13 @@ export function createSlogan(title, done) {
         const url = '/api/slogan';
         T.post(url, { title }, data => {
             if (data.error) {
-                T.notify(language.createSloganError, 'danger');
+                T.notify('Tạo slogan bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllSlogans());
                 if (done) done(data);
             }
-        }, error => T.notify(language.createSloganError, 'danger'));
+        }, error => T.notify('Tạo slogan bị lỗi!', 'danger'));
     }
 }
 
@@ -125,15 +104,15 @@ export function updateSlogan(_id, changes, done) {
         const url = `/api/slogan`;
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify(language.updateSloganError, 'danger');
+                T.notify('Cập nhật slogan bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify(language.updateSloganSuccess, 'info');
+                T.notify('Cập nhật slogan thành công!', 'info');
                 dispatch(getAllSlogans());
                 done && done();
             }
-        }, error => T.notify(language.updateSloganError, 'danger'));
+        }, error => T.notify('Cập nhật slogan bị lỗi!', 'danger'));
     }
 }
 
@@ -142,13 +121,13 @@ export function deleteSlogan(_id) {
         const url = `/api/slogan`;
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify(language.deleteSloganError, 'danger');
+                T.notify('Xóa slogan bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert(language.deleteSloganSuccess, 'error', false, 800);
+                T.alert('Slogan được xóa thành công!', 'error', false, 800);
                 dispatch(getAllSlogans());
             }
-        }, error => T.notify(language.deleteSloganError, 'danger'));
+        }, error => T.notify('Xóa slogan bị lỗi!', 'danger'));
     }
 }
 
@@ -159,13 +138,13 @@ export function getSloganItem(sloganId, done) {
         const url = `/api/slogan/item/${sloganId}`;
         T.get(url, data => {
             if (data.error) {
-                T.notify(language.getSloganError, 'danger');
+                T.notify('Lấy slogan bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done({ item: data.item });
                 dispatch({ type: SloganUpdate, item: data.item });
             }
-        }, error => T.notify(language.getSloganError, 'danger'));
+        }, error => T.notify('Lấy slogan bị lỗi!', 'danger'));
     }
 }
 
@@ -191,11 +170,11 @@ export function getSloganByUser(sloganId, done) {
         const url = `/home/slogan/${sloganId}`;
         T.get(url, data => {
             if (data.error) {
-                T.notify(language.getSloganError, 'danger');
+                T.notify('Lấy slogan bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify(language.getSloganError, 'danger'));
+        }, error => T.notify('Lấy slogan bị lỗi!', 'danger'));
     }
 }

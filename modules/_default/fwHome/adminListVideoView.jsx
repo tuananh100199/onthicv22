@@ -107,9 +107,7 @@ class ListVideoPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/list-video/edit/' + item._id}>
-                                        {T.language.parse(item.title)}
-                                    </Link>
+                                    <Link to={'/user/list-video/edit/' + item._id}>{item.title}</Link>
                                 </td>
                                 <td>
                                     <div className='btn-group'>

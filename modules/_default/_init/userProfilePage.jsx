@@ -9,14 +9,15 @@ class UserProfilePage extends React.Component {
         this.props.getAllDonDeNghiHocChuaHoanThanhByUser();
         T.ready();
     }
+
     create = (e) => {
         this.props.createDonDeNghiHocByUser(data => this.props.history.push('/user/bieu-mau/don-de-nghi-hoc/' + data.item._id));
         e.preventDefault();
     }
+
     render() {
         const unfinished = this.props.donDeNghiHoc && this.props.donDeNghiHoc.unfinished ? this.props.donDeNghiHoc.unfinished : [];
         const finish = this.props.donDeNghiHoc && this.props.donDeNghiHoc.finish ? this.props.donDeNghiHoc.finish : [];
-
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -59,7 +60,6 @@ class UserProfilePage extends React.Component {
                                                 )}</p>
                                                 : <p></p>
                                             }
-
                                         </div>
                                     </div>
                                 </div>

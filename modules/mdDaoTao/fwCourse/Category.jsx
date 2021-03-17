@@ -61,7 +61,7 @@ class CategoryModal extends React.Component {
                         <div className='modal-body'>
                             <div className='form-group'>
                                 <label htmlFor='catName'>Tên danh mục</label>
-                                <input className='form-control' id='catName' type='text' placeholder='Category name' readOnly={readOnly} />
+                                <input className='form-control' id='catName' type='text' placeholder='Tên danh mục' readOnly={readOnly} />
                             </div>
                             <div className='form-group'>
                                 <label>Hình ảnh</label>
