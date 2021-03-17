@@ -20,7 +20,7 @@ class AdminSubscribeModal extends AdminModal {
             title: 'Thông tin đăng ký nhận tin',
             body: <> 
                 <label>Email: <b>{email}</b></label><br />
-                <label>Ngày đăng ký nhận tin: <b>{createdDate}</b></label><br />
+                <label>Ngày đăng ký nhận tin: <b>{new Date(createdDate).getText()}</b></label><br />
             </>
         };
         return this.renderModal(renderDataModal);
@@ -33,7 +33,7 @@ class SubscribePage extends AdminPage {
     componentDidMount() {
         T.ready();
         this.props.getSubscribePage();
-        T.onSearch = (searchText) => this.props.getSubscribePage(searchText);
+        T.onSearch = (searchText) => this.props.getSubscribePage(1,25,searchText);
     }
 
     showSubscribe = (e, _id) => {
@@ -53,12 +53,12 @@ class SubscribePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('subscribe');
-        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.subscribe && this.props.subscribe.page ?
-            this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.subscribe && this.props.subscribe.page ?
+            this.props.subscribe.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có đăng ký nhận tin!';
-        if (list && list.length > 0) {
+        if (this.props.subscribe && this.props.subscribe.page && this.props.subscribe.page.list && this.props.subscribe.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -70,7 +70,7 @@ class SubscribePage extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {list.map((item, index) => (
+                        {this.props.subscribe.page.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>

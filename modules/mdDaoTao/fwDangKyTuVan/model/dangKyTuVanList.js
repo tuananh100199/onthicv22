@@ -24,9 +24,8 @@ module.exports = app => {
             model.create(data, done)
         },
 
-        getAll: (condition, done) => {
-            condition ? model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).exec(done) : model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(done)
-        },
+        getAll: (condition, done) => done ? model.find(condition).populate('courseType', 'title').sort({ title: -1 }).exec(done) : model.find({}).populate('courseType', 'title').sort({ title: 1 }).exec(condition),
+
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -46,7 +45,6 @@ module.exports = app => {
                 });
             }
         }),
-
 
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),

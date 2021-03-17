@@ -1,3 +1,5 @@
+const { cssNumber } = require("jquery");
+
 module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.communication,
@@ -17,18 +19,35 @@ module.exports = app => {
     // APIs -----------------------------------------------------------------------------------------------------------
 
     app.get('/api/dang-ky-tu-van-list/all', app.permission.check('dangKyTuVan:read'), (req, res) => {
-        const condition = {}, searchText = req.query.searchText;
+        const searchText = req.query.searchText,
+        condition = {};
         if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            condition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { phone: value },
+                { email: value },
+            ];
         }
-        console.log('condition', condition);
         app.model.dangKyTuVanList.getAll(condition, (error, items) => res.send({ error, items }));
     });
 
     app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVan:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize),
+            searchText = req.query.searchText,
+            condition = {};
+        if(searchText) {
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            condition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { phone: value },
+                { email: value },
+            ];
+        }
+        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });

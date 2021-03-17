@@ -10,7 +10,8 @@ const DKTVUpdate = 'DKTVList:Update';
 export default function DKTVListReducer(state = null, data) {
     switch (data.type) {
         case DKTVListGetAll:
-            return Object.assign({}, state, { items: data.items });
+            return Object.assign({}, state, { list: data.items });
+
 
         case DKTVListGetPage:
             return Object.assign({}, state, { page: data.page });
@@ -101,11 +102,11 @@ export function getDKTVListAll(searchText, done) {
 }
 
 T.initCookiePage('pageDKTVList');
-export function getDKTVListPage(pageNumber, pageSize, done) {
+export function getDKTVListPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageDKTVList', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        T.get(url,{searchText}, data => {
             if (data.error) {
                 T.notify('Lấy danh sách đăng ký tư vấn!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);

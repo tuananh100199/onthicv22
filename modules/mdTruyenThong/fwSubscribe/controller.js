@@ -13,7 +13,11 @@ module.exports = app => {
     app.get('/api/subscribe/page/:pageNumber/:pageSize', app.permission.check('subscribe:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.subscribe.getPage(pageNumber, pageSize, {}, (error, page) => {
+        const condition = {}, searchText = req.query.searchText;
+        if (searchText) {
+            condition.email = new RegExp(searchText, 'i');
+        }
+        app.model.subscribe.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });

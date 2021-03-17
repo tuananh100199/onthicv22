@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {getDKTVListAll, getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, exportDangKyTuVanToExcel } from './redux/reduxDangKyTuVanList';
+import { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, exportDangKyTuVanToExcel } from './redux/reduxDangKyTuVanList';
 import { getAllCourseType } from '../fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 
@@ -118,11 +118,9 @@ class DKTVListPage extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
-        // this.props.getDKTVListPage();
-        // T.ready('/user/dang-ky-tu-van-list');
-            T.ready();
-            this.props.getDKTVListAll();
-            T.onSearch = (searchText) => this.props.getDKTVListAll(searchText);
+        T.ready();
+        this.props.getDKTVListPage();
+        T.onSearch = (searchText) => this.props.getDKTVListPage(1, 25, searchText);
     }
 
     showDKTVListItem = (e, DKTVListItemId) => {
@@ -145,7 +143,7 @@ class DKTVListPage extends React.Component {
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có đăng ký tư vấn!';
-        if (this.props.dangKyTuVanList && this.props.dangKyTuVanList.page && this.props.dangKyTuVanList.page.list && this.props.dangKyTuVanList.page.list.length > 0) {
+            if (this.props.dangKyTuVanList && this.props.dangKyTuVanList.page && this.props.dangKyTuVanList.page.list && this.props.dangKyTuVanList.page.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -205,5 +203,5 @@ class DKTVListPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
-const mapActionsToProps = {getDKTVListAll, getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, getAllCourseType, exportDangKyTuVanToExcel };
+const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, getAllCourseType, exportDangKyTuVanToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(DKTVListPage);

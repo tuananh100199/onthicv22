@@ -90,30 +90,30 @@ export function getSubscribeAll(done) {
         const url = '/api/subscribe/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger');
+                T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: SubscribeGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger'));
     }
 }
 
 T.initCookiePage('pageSubscribe');
-export function getSubscribePage(pageNumber, pageSize, pageCondition, done) {
+export function getSubscribePage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSubscribe', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/subscribe/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        T.get(url, {searchText}, data => {
             if (data.error) {
-                T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger');
+                T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SubscribeGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
     }
 }
 
@@ -122,13 +122,13 @@ export function getSubscribe(subscribeId, done) {
         const url = '/api/subscribe/item/' + subscribeId;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy liên hệ bị lỗi!', 'danger');
+                T.notify('Lấy đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
                 dispatch({ type: SubscribeUpdate, item: data.item });
             }
-        }, error => T.notify('Lấy liên hệ bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy đăng ký nhận tin bị lỗi!', 'danger'));
     }
 }
 
@@ -143,7 +143,7 @@ export function getUnreadSubscribes(done) {
                 if (done) done(data.items);
                 dispatch({ type: SubscribeGetUnread, items: data.items });
             }
-        }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
     }
 }
 
@@ -152,15 +152,15 @@ export function updateSubscribe(_id, changes, done) {
         const url = '/api/subscribe';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật liên hệ bị lỗi', 'danger');
+                T.notify('Cập nhật đăng ký nhận tin bị lỗi', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật liên hệ thành công!', 'info');
+                T.notify('Cập nhật đăng ký nhận tin thành công!', 'info');
                 dispatch(getSubscribePage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật liên hệ bị lỗi', 'danger'));
+        }, error => T.notify('Cập nhật đăng ký nhận tin bị lỗi', 'danger'));
     }
 }
 
@@ -169,13 +169,13 @@ export function deleteSubscribe(_id) {
         const url = '/api/subscribe';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xoá liên hệ bị lỗi', 'danger');
+                T.notify('Xoá đăng ký nhận tin bị lỗi', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Xoá liên hệ thành công!', 'error', false, 800);
+                T.alert('Xoá đăng ký nhận tin thành công!', 'error', false, 800);
                 dispatch(getSubscribePage());
             }
-        }, error => T.notify('Xoá liên hệ bị lỗi', 'danger'));
+        }, error => T.notify('Xoá đăng ký nhận tin bị lỗi', 'danger'));
     }
 }
 
@@ -191,12 +191,12 @@ export function createSubscribe(subscribe, done) {
         const url = '/api/subscribe';
         T.post(url, { subscribe }, data => {
             if (data.error) {
-                T.notify('Gửi liên hệ bị lỗi!', 'danger');
+                T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Gửi liên hệ bị lỗi!', 'danger'));
+        }, error => T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger'));
     }
 }
 export function exportSubscribeToExcel(done) {
