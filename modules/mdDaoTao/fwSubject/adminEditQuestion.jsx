@@ -5,19 +5,10 @@ import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
 class QuestionModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            itemId: null,
-            value: [],
-            active: false,
-        };
-
-        this.modal = React.createRef();
-        this.btnSave = React.createRef();
-        this.editor = React.createRef();
-        this.dataType = React.createRef();
-    }
+    state = { active: false };
+    modal = React.createRef();
+    editor = React.createRef();
+    dataType = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
@@ -25,54 +16,36 @@ class QuestionModal extends React.Component {
         });
     }
 
-
     show = (item) => {
-        let { title, content, active } = item ?
-            item : { title: '', content: '', active: false, };
-        $(this.btnSave.current).data('isNewMember', item == null);
+        let { _id, title, content, active } = item ? item : { _id: null, title: '', content: '', active: false, };
         $('#questionTitle').val(title);
-        this.setState({
-            itemId: item ? item._id : null,
-            active: active,
-        });
+        this.setState({ active });
         this.editor.current.html(content ? content : '');
-        $(this.modal.current).modal('show');
-    };
+        $(this.modal.current).data('_id', _id).modal('show');
+    }
 
     hide = () => {
         $(this.modal.current).modal('hide');
-    };
+    }
 
-    changeActive = (event) => {
-        this.setState({ active: event.target.checked });
-    };
+    changeActive = e => this.setState({ active: e.target.checked });
 
-    onSelectType = (selectedItem) => {
-        this.setState({ selectedItem });
-    };
-
-    save = (event) => {
-        const itemId = this.state.itemId, btnSave = $(this.btnSave.current), isNewMember = btnSave.data('isNewMember');
-        const changes = {
-            title: $('#questionTitle').val().trim(),
-            content: this.editor.current.html(),
-            active: this.state.active,
-        };
+    save = (e) => {
+        const _id = $(this.modal.current).data('_id'),
+            changes = {
+                title: $('#questionTitle').val().trim(),
+                content: this.editor.current.html(),
+                active: this.state.active,
+            };
 
         if (changes.title == '') {
             T.notify('Tên câu hỏi bị trống', 'danger');
             $('#questionTitle').focus();
         } else {
-            if (isNewMember) {
-                this.props.add(changes);
-                this.hide();
-            } else {
-                this.props.update(itemId, changes);
-                this.hide();
-            }
-
+            _id ? this.props.add(changes) : this.props.update(_id, changes);
+            this.hide();
         }
-        event.preventDefault();
+        e.preventDefault();
     };
 
     render() {
@@ -109,7 +82,7 @@ class QuestionModal extends React.Component {
                         </div>
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>Lưu</button>
+                            <button type='button' className='btn btn-primary' onClick={this.save}>Lưu</button>
                         </div>
                     </div>
                 </form>
@@ -121,35 +94,38 @@ class QuestionModal extends React.Component {
 class AdminEditQuestion extends React.Component {
     state = { item: null };
     editor = React.createRef();
+
     componentDidMount() {
         this.questionModal = React.createRef();
-        T.ready('/user/dao-tao/mon-hoc/list', () => {
+        T.ready('/user/dao-tao/mon-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getQuestionsList(params._id);
             this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 } else if (data.item) {
                     this.setState(data);
                 } else {
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 }
             });
         });
     }
+
     addQuestion = (data) => {
-        this.props.createQuestion(this.state.item._id, data, () => {
-            T.notify('Thêm câu hỏi thành công!', 'success');
-        });
+        this.props.createQuestion(this.state.item._id, data, () => T.notify('Thêm câu hỏi thành công!', 'success'));
     };
+
     showQuestionModal = (e, item) => {
         this.questionModal.current.show(item);
         e.preventDefault();
     };
+
     swap = (e, index, isMoveUp) => {
-        let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.feedbackQuestion : [];
+        e.preventDefault();
+        let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.subjectQuestion : [];
         if (questionList.length == 1) {
             T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
         } else {
@@ -160,7 +136,7 @@ class AdminEditQuestion extends React.Component {
                     const temp = questionList[index - 1], changes = {};
                     questionList[index - 1] = questionList[index];
                     questionList[index] = temp;
-                    changes.feedbackQuestion = questionList;
+                    changes.subjectQuestion = questionList;
                     this.props.swapQuestion(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
@@ -174,25 +150,27 @@ class AdminEditQuestion extends React.Component {
                     questionList[index + 1] = questionList[index];
                     questionList[index] = temp;
 
-                    changes.feedbackQuestion = questionList;
+                    changes.subjectQuestion = questionList;
                     this.props.swapQuestion(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
             }
         }
-        e.preventDefault();
     };
+
     updateQuestion = (_id, changes) => {
         this.props.updateQuestion(_id, changes, this.state.item._id, () => {
             T.notify('Cập nhật câu hỏi thành công!', 'success');
         })
     };
+
     removeQuestion = (e, item, index) => {
+        e.preventDefault();
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title.viText()}</strong>?`, true, isConfirm => {
             if (isConfirm) {
                 const changes = {};
-                let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.feedbackQuestion : [];
+                let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.subjectQuestion : [];
                 questionList.splice(index, 1);
                 if (questionList.length == 0) questionList = 'empty';
                 changes.questions = questionList;
@@ -203,18 +181,17 @@ class AdminEditQuestion extends React.Component {
                 T.alert('Cancelled!', 'error', false, 500);
             }
         });
-        e.preventDefault();
     };
 
     render() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
         const _id = params._id;
-        const feedbackQuestion = this.props.subject && this.props.subject.questions && this.props.subject.questions.feedbackQuestion ?
-            this.props.subject.questions.feedbackQuestion : []
+        const subjectQuestion = this.props.subject && this.props.subject.questions && this.props.subject.questions.subjectQuestion ?
+            this.props.subject.questions.subjectQuestion : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = 'Chưa có câu hỏi!';
-        if (feedbackQuestion && feedbackQuestion.length > 0) {
+        if (subjectQuestion && subjectQuestion.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -225,7 +202,7 @@ class AdminEditQuestion extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {feedbackQuestion.map((item, index) => (
+                        {subjectQuestion.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'#'}>{item.title}</Link></td>
@@ -262,7 +239,7 @@ class AdminEditQuestion extends React.Component {
                     </button>
                 </div>
                 <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
-                <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
         );
     }

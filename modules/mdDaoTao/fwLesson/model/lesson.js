@@ -4,6 +4,7 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
+        author: String,
         lessonVideo: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
         lessonQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
     });
@@ -13,7 +14,6 @@ module.exports = app => {
         create: (data, done) => {
             model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
                 data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-                if (!data.title) data.title = 'Bài học mới';
                 model.create(data, done)
             })
         },
