@@ -14,8 +14,12 @@ module.exports = (app) => {
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.subject.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize),
+            condition = {}, searchText = req.query.searchText;
+        if (searchText) {
+            condition.title = new RegExp(searchText, 'i');
+        }
+        app.model.subject.getPage(pageNumber, pageSize, condition, (error, page) => {
             res.send({ page, error: error || page == null ? 'Danh sách môn học không sẵn sàng!' : null });
         });
     });

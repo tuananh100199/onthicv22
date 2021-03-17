@@ -13,6 +13,7 @@ class ListLessonPage extends AdminPage {
     componentDidMount() {
         this.props.getLessonInPage(1, 50, {});
         T.ready('/user/dao-tao/bai-hoc/list', null);
+        T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
     }
 
     create = (e) => {

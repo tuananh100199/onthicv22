@@ -259,7 +259,7 @@ class AdminEditQuestion extends React.Component {
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
-                                    </button>
+                    </button>
                 </div>
                 <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} />
                 <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>

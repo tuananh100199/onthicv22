@@ -9,6 +9,7 @@ class AdminListSubject extends AdminPage {
     componentDidMount() {
         this.props.getSubjectInPage();
         T.ready('/user/dao-tao/mon-hoc/list', null);
+        T.onSearch = (searchText) => this.props.getSubjectInPage(null, null, searchText);
     }
 
     create = (e) => {

@@ -25,11 +25,11 @@ export default function SubjectReducer(state = null, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageSubject');
-export function getSubjectInPage(pageNumber, pageSize, done) {
+export function getSubjectInPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSubject', pageNumber, pageSize);
     return (dispatch) => {
         const url = '/api/subject/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
