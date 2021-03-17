@@ -3,38 +3,27 @@ import { connect } from 'react-redux';
 import { getUserInPage, createUser, updateUser, deleteUser } from './redux';
 import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
-import { UserPasswordModal, RolesModal, UserModal } from './adminModal';
+import { UserPasswordModal, UserModal } from './adminModal';
 
 class UserPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { searchText: '', isSearching: false };
-        this.userModal = React.createRef();
-        this.passwordModal = React.createRef();
-        this.rolesModal = React.createRef();
-    }
+    state = { searchText: '', isSearching: false };
+    userModal = React.createRef();
+    passwordModal = React.createRef();
 
     componentDidMount() {
         this.props.getAllRoles();
-        T.ready(() => {
-            this.props.getUserInPage(1, 50, {});
-        });
+        T.ready(() => this.props.getUserInPage(1, 50, {}));
     }
 
     edit = (e, item) => {
         e.preventDefault();
         this.userModal.current.show(item);
-    };
-
-    editRoles = (e, item) => {
-        e.preventDefault();
-        this.rolesModal.current.show(item);
-    };
+    }
 
     changePassword = (e, item) => {
         e.preventDefault();
         this.passwordModal.current.show(item);
-    };
+    }
 
     changeActive = item => this.props.updateUser(item._id, { active: !item.active })
 
@@ -42,7 +31,7 @@ class UserPage extends React.Component {
         e.preventDefault();
         T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
             isConfirm && this.props.deleteUser(item._id));
-    };
+    }
 
     search = (e) => {
         e.preventDefault();
@@ -72,7 +61,6 @@ class UserPage extends React.Component {
                             <th style={{ width: '70%' }}>Tên</th>
                             <th style={{ width: '30%' }}>Email</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Vai trò</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                             <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
                         </tr>
@@ -85,13 +73,6 @@ class UserPage extends React.Component {
                                 <td>{item.email}</td>
                                 <td style={{ textAlign: 'center' }}>
                                     <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td style={{ textAlign: 'left' }}>
-                                    {hasUpdate ? (
-                                        <a href='#' onClick={e => this.editRoles(e, item)}>
-                                            {item.roles ? item.roles.map((role, index) => <label style={{ whiteSpace: 'nowrap' }} key={index}>_ {role.name}</label>) : ''}
-                                        </a>
-                                    ) : (item.roles ? item.roles : []).map((role, index) => <label style={{ whiteSpace: 'nowrap' }} key={index}>_ {role.name}</label>)}
                                 </td>
                                 <td className='toggle' style={{ textAlign: 'center' }}>
                                     <label>
@@ -119,9 +100,7 @@ class UserPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-user' /> Người dùng</h1>
-                    </div>
+                    <h1><i className='fa fa-users' /> Người dùng</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
                             <input className='app-search__input' id='searchTextBox' type='search' placeholder='Search' />
@@ -145,12 +124,8 @@ class UserPage extends React.Component {
                     </button>
                 ) : ''}
 
-                <UserModal ref={this.userModal} hasUpdate={hasUpdate}
-                    allRoles={allRoles}
+                <UserModal ref={this.userModal} hasUpdate={hasUpdate} allRoles={allRoles}
                     updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserInPage} />
-                <RolesModal ref={this.rolesModal} hasUpdate={hasUpdate}
-                    allRoles={allRoles}
-                    updateUser={this.props.updateUser} getPage={this.props.getUserInPage} />
                 <UserPasswordModal updateUser={this.props.updateUser} hasUpdate={hasUpdate} ref={this.passwordModal} />
             </main>
         );

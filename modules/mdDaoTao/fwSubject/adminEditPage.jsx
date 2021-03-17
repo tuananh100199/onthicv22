@@ -42,8 +42,8 @@ class AdminEditPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className='fa fa-file' /> Môn học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;Môn học học &nbsp;/&nbsp; Chỉnh Sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/dao-tao/mon-hoc/list'>Môn học</Link>&nbsp;/&nbsp; Chỉnh Sửa
                     </ul>
                 </div>
                 <ul className='nav nav-tabs'>

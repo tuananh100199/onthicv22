@@ -1,25 +1,31 @@
 module.exports = (app) => {
     const schema = app.db.Schema({
+        division: { type: app.db.Schema.ObjectId, ref: 'Division' },                   // Thuộc đơn vị nào
+
         roles: [{ type: app.db.Schema.ObjectId, ref: 'Role', default: [] }],
         firstname: String,
         lastname: String,
-        sex: { type: String, enum: ['Nam', 'Nữ'], default: 'Nam' },
+        sex: { type: String, enum: ['male', 'female'], default: 'male' },
         birthday: Date,
         email: String,
         password: String,
         phoneNumber: String,
-        nationality: String, // Quoc tich
-        residence: String, // Noi cu tru
-        identityCard: String, // CMND, CCCD
-        regularResidence: String, // Noi dang ky ho khau thuong tru
 
-        identityIssuedBy: String, // Noi cap CMND, CCCD
-        identityDate: Date, // Ngay cap CMND, CCCD
+        nationality: String,                                                                        // Quốc tịch
+        residence: String,                                                                          // Nơi cư trú
+        regularResidence: String,                                                                   // Nơi đăng ký hộ khẩu thường trú
+
+        identityCard: String,                                                                       // CMND, CCCD
+        identityIssuedBy: String,                                                                   // Nơi cấp CMND, CCCD
+        identityDate: Date,                                                                         // Ngày cấp CMND, CCCD
+
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,
 
-        isLecture: Boolean,
+        isCourseAdmin: Boolean,                                                                     // Là quản trị viên khoá học
+        isLecturer: Boolean,                                                                        // Là giảng viên
+        isStaff: Boolean,                                                                           // Là nhân viên
 
         token: String,
         tokenDate: Date,

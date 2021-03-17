@@ -36,7 +36,7 @@ class AdminEditInfo extends React.Component {
             shortDescription: $('#shortDescription').val().trim(),
             detailDescription: this.editor.current.html(),
         };
-        this.props.updateLesson(this.state.item._id, changes)
+        this.props.updateLesson(this.state.item._id, changes);
     }
 
     render() {
