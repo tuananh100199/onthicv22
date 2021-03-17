@@ -2,12 +2,12 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc/list' },
+            4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
     app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write', menu });
 
-    app.get('/user/dao-tao/bai-hoc/list', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/edit/:_id', app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/view/:_id', app.templates.admin);
 
@@ -37,7 +37,7 @@ module.exports = (app) => {
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         const author = req.session.user._id,
-            data = req.body.data || {};
+            data = req.body.newData;
         data.author = author;
         app.model.lesson.create(data, (error, item) => res.send({ error, item }));
     });

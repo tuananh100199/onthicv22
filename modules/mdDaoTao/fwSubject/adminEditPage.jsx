@@ -11,17 +11,17 @@ class AdminEditPage extends React.Component {
     state = { item: null };
 
     componentDidMount() {
-        T.ready('/user/dao-tao/mon-hoc/list', () => {
+        T.ready('/user/dao-tao/mon-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 } else if (data.item) {
                     this.setState(data);
                 } else {
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 }
             });
             let tabIndex = parseInt(T.cookie('componentPageTab')),
@@ -43,7 +43,7 @@ class AdminEditPage extends React.Component {
                     <h1><i className='fa fa-file' /> Môn học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        <Link to='/user/dao-tao/mon-hoc/list'>&nbsp;/&nbsp;Môn học &nbsp;/</Link>
+                        <Link to='/user/dao-tao/mon-hoc'>&nbsp;/&nbsp;Môn học &nbsp;/</Link>
                         &nbsp; Chỉnh Sửa
                     </ul>
                 </div>

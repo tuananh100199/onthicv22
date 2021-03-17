@@ -65,16 +65,16 @@ export function getLesson(_id, done) {
     }
 }
 
-export function createLesson(done) {
+export function createLesson(newData, done) {
     return dispatch => {
         const url = '/api/lesson';
-        T.post(url, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonInPage());
                 if (done) done(data);
+                dispatch(getLessonInPage());
             }
         }, error => T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
     }

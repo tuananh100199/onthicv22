@@ -61,18 +61,18 @@ class AdminEditLesson extends React.Component {
         this.addLessonModal = React.createRef();
     }
     componentDidMount() {
-        T.ready('/user/dao-tao/mon-hoc/list', () => {
+        T.ready('/user/dao-tao/mon-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getLessonList(params._id);
             this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 } else if (data.item) {
                     this.setState(data);
                 } else {
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 }
             });
         });
@@ -192,7 +192,7 @@ class AdminEditLesson extends React.Component {
                         </Tooltip>
                     </div>
                 }
-                <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
                 <AddLessonModal ref={this.addLessonModal} addLesson={this.props.addLesson} _id={_id} />
             </div>);
     }

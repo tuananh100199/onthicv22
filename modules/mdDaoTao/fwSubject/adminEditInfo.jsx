@@ -9,13 +9,13 @@ class AdminEditInfo extends React.Component {
     editor = React.createRef();
 
     componentDidMount() {
-        T.ready('/user/dao-tao/mon-hoc/list', () => {
+        T.ready('/user/dao-tao/mon-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getSubject(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 } else if (data.item) {
                     const item = data.item;
                     $('#title').val(item.title);
@@ -24,7 +24,7 @@ class AdminEditInfo extends React.Component {
                     this.setState(data);
                     $('#title').focus();
                 } else {
-                    this.props.history.push('/user/dao-tao/mon-hoc/list');
+                    this.props.history.push('/user/dao-tao/mon-hoc');
                 }
             });
         });
@@ -64,7 +64,7 @@ class AdminEditInfo extends React.Component {
                             <i className='fa fa-lg fa-save' /> Lưu
                                 </button>
                     </div>}
-                <Link to='/user/dao-tao/mon-hoc/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>);
     }
 }

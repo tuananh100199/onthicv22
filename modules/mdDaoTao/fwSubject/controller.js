@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc/list' },
+            4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc' },
         },
     };
 
@@ -12,9 +12,9 @@ module.exports = (app) => {
     );
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
-    app.get('/user/dao-tao/mon-hoc/list', app.permission.check('subject:read'), app.templates.admin);
+    app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/edit/:subjectId', app.templates.admin);
-    app.get('/user/dao-tao/mon-hoc/list-bai-hoc/:subjectId', app.templates.admin);
+    app.get('/user/dao-tao/mon-hoc-bai-hoc/:subjectId', app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -34,7 +34,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+        app.model.subject.create(req.body.newData, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {
