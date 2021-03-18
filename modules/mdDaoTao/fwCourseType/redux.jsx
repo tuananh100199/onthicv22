@@ -94,7 +94,6 @@ export function updateCourseType(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin loại khóa học thành công!', 'info');
                 dispatch({ type: CourseTypeUpdate, item: data.item });
                 dispatch(getCourseTypeInPage());
                 done && done();
