@@ -62,6 +62,9 @@ class DivisionEditPage extends AdminPage {
         } else if (!changes.mobile) {
             T.notify('Di động bị trống!', 'danger');
             this.itemMobile.focus();
+        } else if (!T.validateMobile(changes.mobile)) {
+            T.notify('Di động không hợp lệ!!', 'danger');
+            this.itemMobile.focus();
         } else if (!changes.mapURL) {
             T.notify('Đường dẫn Google Map bị trống!', 'danger');
             this.itemMapUrl.focus();
