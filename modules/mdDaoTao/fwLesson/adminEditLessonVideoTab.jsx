@@ -20,7 +20,7 @@ class VideoModal extends AdminModal {
         $('#videoLink').val(link);
         this.imageBox.current.setData('lesson-video:' + (_id ? _id : 'new'));
         this.setState({ image });
-        $(this.modal.current).data('id', _id).modal('show');
+        $(this.modal.current).data('_id', _id).modal('show');
     }
 
     onSubmit = () => {

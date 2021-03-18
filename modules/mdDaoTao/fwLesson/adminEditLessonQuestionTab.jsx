@@ -7,7 +7,6 @@ import { AdminModal, FormCheckbox } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
     editor = React.createRef();
-    dataType = React.createRef();
     componentDidMount() {
         $(document).ready(() => this.onShown(() => $('#questionName').focus()));
     }
@@ -74,7 +73,6 @@ class QuestionModal extends AdminModal {
 
 class AdminEditLessonQuestion extends React.Component {
     state = { item: null };
-    editor = React.createRef();
     modal = React.createRef();
 
     componentDidMount() {
