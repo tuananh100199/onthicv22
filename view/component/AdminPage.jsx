@@ -2,34 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
-export class Checkbox extends React.Component {
-    state = { checked: false };
-    box = React.createRef();
-
-    val = (checked) => {
-        if (checked != null) {
-            this.setState({ checked });
-        } else {
-            return this.state.checked;
-        }
-    }
-
-    onCheck = () => this.props.permissionWrite && this.setState({ checked: !this.state.checked });
-
-    render() {
-        const { className, label } = this.props;
-        return (
-            <div className={className} style={{ display: 'inline-flex' }}>
-                <label style={{ marginBottom: 0 }} onClick={this.onCheck}>{label}:&nbsp;</label>
-                <div className='toggle'>
-                    <label style={{ marginBottom: 0 }}>
-                        <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} /><span className='button-indecator' />
-                    </label>
-                </div>
-            </div>);
-    }
-}
-
 export class FormCheckbox extends React.Component {
     state = { checked: false };
     box = React.createRef();
@@ -49,7 +21,7 @@ export class FormCheckbox extends React.Component {
         if (style == null) style = {};
         return (
             <div className={className} style={{ ...style, display: 'inline-flex' }}>
-                <label style={{ marginBottom: 0, cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>
+                <label style={{ cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>
                 <div className='toggle'>
                     <label style={{ marginBottom: 0 }}>
                         <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} /><span className='button-indecator' />

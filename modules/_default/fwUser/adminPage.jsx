@@ -5,15 +5,12 @@ import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
 import ImageBox from 'view/component/ImageBox';
 import { Select } from 'view/component/Input';
-import { AdminPage, AdminModal, Checkbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormCheckbox } from 'view/component/AdminPage';
 
 class UserModal extends AdminModal {
     state = {};
     sex = React.createRef();
     imageBox = React.createRef();
-    isCourseAdmin = React.createRef();
-    isLecturer = React.createRef();
-    isStaff = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
@@ -30,13 +27,11 @@ class UserModal extends AdminModal {
         $('#userBirthday').val(item.birthday ? T.dateToText(item.birthday, 'dd/mm/yyyy') : '');
         $('#userEmail').val(item.email);
         $('#userPhoneNumber').val(item.phoneNumber);
-        $('#userActive').prop('checked', item.active);
-        $('#isLecturer').prop('checked', item.isLecturer);
-        $('#isStaff').prop('checked', item.isStaff);
+        this.itemActive.value(item.active);
+        this.itemIsCourseAdmin.value(item.isCourseAdmin);
+        this.itemIsStaff.value(item.isStaff);
+        this.itemIsLecturer.value(item.isLecturer);
         this.sex.current.val({ id: item.sex, text: item.sex === 'male' ? 'Nam' : 'Nữ' });
-        this.isCourseAdmin.current.val(item.isCourseAdmin);
-        this.isLecturer.current.val(item.isLecturer);
-        this.isStaff.current.val(item.isStaff);
 
         let userRoles = item.roles.map(item => item._id),
             allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
@@ -55,10 +50,10 @@ class UserModal extends AdminModal {
             lastname: $('#userLastname').val().trim(),
             email: $('#userEmail').val().trim(),
             phoneNumber: $('#userPhoneNumber').val().trim(),
-            active: $('#userActive').prop('checked'),
-            isCourseAdmin: this.isCourseAdmin.current.val(),
-            isLecturer: this.isLecturer.current.val(),
-            isStaff: this.isStaff.current.val(),
+            active: this.itemActive.value(),
+            isCourseAdmin: this.itemIsCourseAdmin.value(),
+            isStaff: this.itemIsStaff.value(),
+            isLecturer: this.itemIsLecturer.value(),
             roles: $('#userRoles').val(),
             birthday
         };
@@ -84,6 +79,7 @@ class UserModal extends AdminModal {
 
     render = () => {
         const permissionWrite = this.props.permissionWrite;
+        const readOnly = this.props.readOnly;
         return this.renderModal({
             title: 'Thông tin người dùng',
             size: 'large',
@@ -131,9 +127,9 @@ class UserModal extends AdminModal {
                                 }} label='Giới tính' /> : (this.state.sex ? this.state.sex : '')}
                     </div>
 
-                    <Checkbox ref={this.isCourseAdmin} className='col-md-4 form-group' label='Quản trị viên khoá học' permissionWrite={permissionWrite} />
-                    <Checkbox ref={this.isStaff} className='col-md-4 form-group' label='Nhân viên' permissionWrite={permissionWrite} />
-                    <Checkbox ref={this.isLecturer} className='col-md-4 form-group' label='Giáo viên' permissionWrite={permissionWrite} />
+                    <FormCheckbox ref={e => this.itemIsCourseAdmin = e} className='col-md-4' label='Quản trị viên khoá học' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsStaff = e} className='col-md-4' label='Nhân viên' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsLecturer = e} className='col-md-4' label='Giáo viên' readOnly={readOnly} />
 
                     <div className='col-md-12 form-group' style={{ display: this.state._id ? 'block' : 'none' }}>
                         <label htmlFor='userRoles'>Vai trò</label><br />
@@ -141,7 +137,7 @@ class UserModal extends AdminModal {
                             <optgroup label='Lựa chọn Vai trò' />
                         </select>
                     </div>
-                    <Checkbox id='userActive' className='col-md-12 form-group' label='Kích hoạt' permissionWrite={permissionWrite} />
+                    <FormCheckbox ref={e => this.itemActive = e} className='col-md-12' label='Kích hoạt' readOnly={readOnly} />
                 </div>),
         });
     }
@@ -295,7 +291,7 @@ class UserPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getUserPage} />
-                <UserModal ref={this.userModal} permissionWrite={permission.write} allRoles={allRoles}
+                <UserModal ref={this.userModal} readOnly={!permission.write} permissionWrite={permission.write} allRoles={allRoles}
                     updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserPage} />
                 <UserPasswordModal updateUser={this.props.updateUser} permissionWrite={permission.write} ref={this.passwordModal} />
             </>,
