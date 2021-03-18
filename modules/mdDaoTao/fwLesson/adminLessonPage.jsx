@@ -94,6 +94,7 @@ class ListLessonPage extends AdminPage {
         const renderData = {
             icon: 'fa fa-book',
             title: 'Bài học',
+            breadcrumb: ['Bài học'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

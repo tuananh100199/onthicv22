@@ -14,11 +14,11 @@ class AdminSubscribeModal extends AdminModal {
     }
 
     render = () => {
-        
+
         const { email, createdDate } = this.state;
         const renderDataModal = {
             title: 'Thông tin đăng ký nhận tin',
-            body: <> 
+            body: <>
                 <label>Email: <b>{email}</b></label><br />
                 <label>Ngày đăng ký nhận tin: <b>{new Date(createdDate).getText()}</b></label><br />
             </>
@@ -33,7 +33,7 @@ class SubscribePage extends AdminPage {
     componentDidMount() {
         T.ready();
         this.props.getSubscribePage();
-        T.onSearch = (searchText) => this.props.getSubscribePage(1,25,searchText);
+        T.onSearch = (searchText) => this.props.getSubscribePage(1, 25, searchText);
     }
 
     showSubscribe = (e, _id) => {
@@ -99,7 +99,8 @@ class SubscribePage extends AdminPage {
 
         const renderData = {
             icon: 'fa fa-envelope-o',
-            title: 'Danh sách đăng ký nhận tin',
+            title: 'Đăng ký nhận tin',
+            breadcrumb: ['Đăng ký nhận tin'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
@@ -114,6 +115,6 @@ class SubscribePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({system:state.system, subscribe: state.subscribe });
+const mapStateToProps = state => ({ system: state.system, subscribe: state.subscribe });
 const mapActionsToProps = { getSubscribePage, getSubscribe, updateSubscribe, deleteSubscribe, exportSubscribeToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(SubscribePage);

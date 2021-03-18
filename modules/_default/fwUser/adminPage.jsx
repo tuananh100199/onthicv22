@@ -290,6 +290,7 @@ class UserPage extends AdminPage {
         const renderData = {
             icon: 'fa fa-users',
             title: 'Người dùng',
+            breadcrumb: ['Người dùng'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
