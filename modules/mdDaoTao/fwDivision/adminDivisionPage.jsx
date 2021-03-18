@@ -36,8 +36,9 @@ class DivisionPage extends AdminPage {
     modal = React.createRef();
 
     componentDidMount() {
-        T.ready();
         this.props.getAllDivisions();
+        T.ready();
+        T.showSearchBox();
         T.onSearch = (searchText) => this.props.getAllDivisions(searchText);
     }
 

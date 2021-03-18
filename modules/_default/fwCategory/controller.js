@@ -5,8 +5,14 @@ module.exports = app => {
     );
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/category/:type', app.permission.check('category:read'), (req, res) =>
-        app.model.category.getAll({ type: req.params.type }, (error, items) => res.send({ error, items })));
+    app.get('/api/category/:type', app.permission.check('category:read'), (req, res) => {
+        const condition = { type: req.params.type },
+            searchText = req.query.searchText;
+        if (searchText) {
+            condition.title = new RegExp(searchText, 'i');
+        }
+        app.model.category.getAll(condition, (error, items) => res.send({ error, items }));
+    });
 
     app.post('/api/category', app.permission.check('category:write'), (req, res) => app.model.category.create(req.body.data, (error, item) => {
         const categoryType = item.type + 'CategoryImage';
@@ -26,7 +32,6 @@ module.exports = app => {
     });
 
     app.delete('/api/category', app.permission.check('category:write'), (req, res) => app.model.category.delete(req.body._id, error => res.send({ error })));
-
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/category'));

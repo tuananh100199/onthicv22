@@ -88,9 +88,15 @@
 	margin-right: 15px;
 	padding: 10px 0;
 	@media(max-width: 480px) { display: none; }
+	
+	&:focus-within {
+		width: 100%;
+	}
 }
 
+
 .app-search__input {
+	width: 100%;
 	border: 0;
 	padding: 5px 10px;
 	padding-right: 30px;
@@ -98,6 +104,11 @@
 	background-color: rgba(255,255,255,0.8);
 	transition: background-color 0.3s ease;
 	&::placeholder { color: rgba(0,0,0,0.4); }
+
+	&:focus {
+		// width: 100%;
+		color: red;
+	}
 }
 .app-search__button {
 	position: absolute;

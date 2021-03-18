@@ -14,7 +14,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 
 import { changeCarouselItem } from 'modules/_default/fwHome/redux/reduxCarousel';
 import { changeVideo } from 'modules/_default/fwHome/redux/reduxVideo';
-import { changeCategory } from 'modules/_default/_init/reduxCategory';
+import { changeCategory } from 'modules/_default/fwCategory/redux';
 import { getSystemState, updateSystemState } from 'modules/_default/_init/reduxSystem';
 import { changeUser } from 'modules/_default/fwUser/redux';
 import { addContact, changeContact } from 'modules/mdTruyenThong/fwContact/redux';
@@ -25,6 +25,7 @@ import AdminMenu from 'view/component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import _init from 'modules/_default/_init/index';
+import fwCategory from 'modules/_default/fwCategory/index';
 import fwCluster from 'modules/_default/fwCluster/index';
 import fwUser from 'modules/_default/fwUser/index';
 import fwRole from 'modules/_default/fwRole/index';
@@ -47,10 +48,10 @@ import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 
 
 const modules = [
-    _init, fwCluster,
+    _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
-    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc,fwDriveQuestion,
+    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
 ]
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
