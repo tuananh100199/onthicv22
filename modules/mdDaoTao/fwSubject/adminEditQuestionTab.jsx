@@ -3,32 +3,31 @@ import { connect } from 'react-redux';
 import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
-import { AdminModal, FormCheckbox } from 'view/component/AdminPage';
+import { AdminModal, FormCheckbox, FormEditor, FormTextBox } from 'view/component/AdminPage';
 class QuestionModal extends AdminModal {
     editor = React.createRef();
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $('#questionName').focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
-        console.log(item)
         let { _id, title, content, active } = item ? item : { _id: null, title: '', content: '', active: false };
-        $('#questionName').val(title ? title : '');
+        this.itemTitle.value(title)
+        this.itemEditor.value(content);
         this.itemIsActive.value(active);
-        this.editor.current.html(content ? content : '');
         $(this.modal.current).data('_id', _id).modal('show');
     }
 
     onSubmit = () => {
         const _id = $(this.modal.current).data('_id');
         let newData = {
-            title: $('#questionName').val().trim(),
-            content: this.editor.current.html(),
+            title: this.itemTitle.value(),
+            content: this.itemEditor.value(),
             active: this.itemIsActive.value(),
         };
         if (newData.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
-            $('#questionName').focus();
+            this.itemTitle.focus();
         } else {
             !_id ? this.props.add(newData) : this.props.update(_id, newData);
             this.hide();
@@ -40,15 +39,9 @@ class QuestionModal extends AdminModal {
         size: 'large',
         body:
             <div>
-                <div className='form-group'>
-                    <label htmlFor='questionName'>Tên câu hỏi</label>
-                    <input className='form-control' id='questionName' type='text' placeholder='Nhập tên câu hỏi' autoFocus={true} />
-                </div>
-                <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-4' label='Kích hoạt' />
-                <div className='form-group'>
-                    <label htmlFor=''>Nội dung câu hỏi</label>
-                    <Editor ref={this.editor} />
-                </div>
+                <FormTextBox ref={e => this.itemTitle = e} label='Tên câu hỏi' />
+                <FormCheckbox ref={e => this.itemIsActive = e} className='form-group col-md-4' label='Kích hoạt' />
+                <FormEditor ref={e => this.itemEditor = e} label='Nội dung câu hỏi' />
             </div>
     });
 }

@@ -2,42 +2,41 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
-import Editor from 'view/component/CkEditor4';
-import { AdminModal, FormCheckbox } from 'view/component/AdminPage';
+import { AdminModal, FormCheckbox, FormTextBox, FormEditor, FormRichTextBox } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
     editor = React.createRef();
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $('#questionName').focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
         let { _id, title, content, active, defaultAnswer, typeValue } = item ? item : { _id: null, title: '', content: '', active: false, defaultAnswer: '', typeValue: [] };
-        $('#questionName').val(title ? title : '');
-        $('#questionDefault').val(defaultAnswer);
-        $('#questionAnswer').val(typeValue.join('\n'));
+        this.itemTitle.value(title)
+        this.itemAnswer.value(defaultAnswer);
+        this.itemListAnswer.value(typeValue.join('\n'));
         this.itemIsActive.value(active);
-        this.editor.current.html(content ? content : '');
+        this.itemEditor.value(content);
         $(this.modal.current).data('_id', _id).modal('show');
     }
 
     onSubmit = () => {
         const _id = $(this.modal.current).data('_id');
-        const answerString = $('#questionAnswer').val();
+        const answerString = this.itemListAnswer.value();
         let ret = (answerString ? answerString : '').split('\n');
         for (let i = 0; i < ret.length; i++) {
             if (ret[i] == '') ret.splice(i, 1);
         }
         let newData = {
-            title: $('#questionName').val().trim(),
-            defaultAnswer: $('#questionDefault').val() ? $('#questionDefault').val().trim() : '',
-            content: this.editor.current.html(),
+            title: this.itemTitle.value(),
+            defaultAnswer: this.itemAnswer.value(),
+            content: this.itemEditor.value(),
             active: this.itemIsActive.value(),
             typeValue: ret,
         };
         if (newData.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
-            $('#questionName').focus();
+            this.itemTitle.focus();
         } else {
             if (newData.typeValue.length == 0 || newData.typeValue[0] == '') newData.typeValue = 'empty';
             !_id ? this.props.add(newData) : this.props.update(_id, newData);
@@ -50,23 +49,11 @@ class QuestionModal extends AdminModal {
         size: 'large',
         body:
             <div>
-                <div className='form-group'>
-                    <label htmlFor='questionName'>Tên câu hỏi</label>
-                    <input className='form-control' id='questionName' type='text' placeholder='Nhập tên câu hỏi' autoFocus={true} />
-                </div>
-                <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-4' label='Kích hoạt' />
-                <div className='form-group'>
-                    <label htmlFor=''>Nội dung câu hỏi</label>
-                    <Editor ref={this.editor} />
-                </div>
-                <div className='form-group'>
-                    <label>Danh sách câu trả lời</label>
-                    <textarea defaultValue='' className='form-control' id='questionAnswer' style={{ width: '100%', minHeight: '100px', padding: '0 3px' }} />
-                </div>
-                <div className='form-group'>
-                    <label htmlFor='questionDefault'>Đáp án</label>
-                    <input type='text' className='form-control' id='questionDefault' />
-                </div>
+                <FormTextBox ref={e => this.itemTitle = e} label='Tên câu hỏi' />
+                <FormCheckbox ref={e => this.itemIsActive = e} className='form-group col-md-4' label='Kích hoạt' />
+                <FormEditor ref={e => this.itemEditor = e} label='Nội dung câu hỏi' />
+                <FormRichTextBox ref={e => this.itemListAnswer = e} label='Danh sách câu trả lời' rows='4' />
+                <FormTextBox ref={e => this.itemAnswer = e} label='Đáp án' />
             </div>
     });
 }

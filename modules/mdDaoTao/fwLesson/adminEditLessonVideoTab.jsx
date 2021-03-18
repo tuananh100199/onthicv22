@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
-import { AdminModal } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
     modal = React.createRef();
@@ -11,13 +11,13 @@ class VideoModal extends AdminModal {
     state = React.createRef();
 
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $('#videoName').focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (video) => {
         let { _id, title, link, image } = video ? video : { _id: null, title: '', link: '', image: '' };
-        $('#videoName').val(title);
-        $('#videoLink').val(link);
+        this.itemTitle.value(title);
+        this.itemLink.value(link);
         this.imageBox.current.setData('lesson-video:' + (_id ? _id : 'new'));
         this.setState({ image });
         $(this.modal.current).data('_id', _id).modal('show');
@@ -26,15 +26,15 @@ class VideoModal extends AdminModal {
     onSubmit = () => {
         const _id = $(this.modal.current).data('_id');
         let newData = {
-            title: $('#videoName').val().trim(),
-            link: $('#videoLink').val().trim(),
+            title: this.itemTitle.value(),
+            link: this.itemLink.value(),
         };
         if (newData.title == '') {
             T.notify('Tên video bị trống!', 'danger');
-            $('#videoName').focus();
+            this.itemTitle.focus();
         } else if (newData.link == '') {
             T.notify('Link video bị trống!', 'danger');
-            $('#videoLink').focus();
+            this.itemLink.focus();
         } else {
             !_id ?
                 this.props.createLessonVideo(this.props._id, newData, () => {
@@ -53,18 +53,10 @@ class VideoModal extends AdminModal {
         size: 'large',
         body:
             <div>
-                <div className='tab-pane fade show active'>
-                    <div className='form-group'>
-                        <label htmlFor='videoTitle'>Tiêu đề</label>
-                        <input className='form-control' id='videoName' type='text' placeholder='Tiêu đề video' />
-                    </div>
-                </div>
+                <FormTextBox ref={e => this.itemTitle = e} label='Tên video' />
                 <div className='row'>
-                    <div className='form-group col-md-8'>
-                        <label htmlFor='videoLink'>Đường dẫn</label>
-                        <input className='form-control' id='videoLink' type='text' placeholder='Link' />
-                    </div>
-                    <div className='form-group col-md-4'>
+                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' className='col-md-8' />
+                    <div className='col-md-4'>
                         <label>Hình đại diện</label>
                         <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
                     </div>
