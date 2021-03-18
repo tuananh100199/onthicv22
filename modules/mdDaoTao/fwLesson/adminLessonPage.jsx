@@ -96,15 +96,17 @@ class ListLessonPage extends AdminPage {
             title: 'Bài học',
             breadcrumb: ['Bài học'],
             content: <>
-                <div className='tile'>{table}</div>
+                <div className='tile'>{table}
+                    {permission.write ?
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button type='button' className='btn btn-success' onClick={this.create}>
+                                <i className='fa fa-lg fa-plus' /> Thêm
+                            </button>
+                        </div> : null
+                    }
+                </div>
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getLessonInPage} />
-                {permission.write ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                        onClick={this.create}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button> : null
-                }
                 <LessonModal ref={this.modal} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
         };
