@@ -24,7 +24,7 @@ module.exports = app => {
             model.create(data, done)
         },
 
-        getAll: (condition, done) => done ? model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).exec(done) : model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate('courseType', 'title').populate('courseTypeRecommend', 'title').sort({ _id: -1 }).exec(done) : model.find({}).populate('courseType', 'title').populate('courseTypeRecommend', 'title').sort({ _id: -1 }).exec(condition),
 
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {

@@ -71,6 +71,7 @@ module.exports = app => {
                     { cell: 'D1', value: 'Số điện thoại', bold: true, border: '1234' },
                     { cell: 'E1', value: 'Email', bold: true, border: '1234' },
                     { cell: 'F1', value: 'Loại khóa học', bold: true, border: '1234' },
+                    { cell: 'G1', value: 'Loại khóa học tư vấn', bold: true, border: '1234' },
                 ];
 
                 worksheet.columns = [
@@ -79,7 +80,9 @@ module.exports = app => {
                     { header: 'Tên', key: 'firstname', width: 20 },
                     { header: 'Số điện thoại', key: 'phone', width: 20},
                     { header: 'Email', key: 'email', width: 40 },
-                    { header: 'Loại khóa học', key: 'courseType', width: 20 }
+                    { header: 'Loại khóa học', key: 'courseType', width: 20 },
+                    { header: 'Loại khóa học tư vấn', key: 'courseTypeRecommend', width: 20 }
+
                 ];
                 items.forEach((item, index) => {
                     worksheet.addRow({
@@ -88,7 +91,8 @@ module.exports = app => {
                         firstname: item.firstname,
                         phone: item.phone,
                         email: item.email,
-                        courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký'
+                        courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký',
+                        courseTypeRecommend: item.courseTypeRecommend ? item.courseTypeRecommend.title : 'Chưa đăng ký'
                     });
                 })
                 app.excel.write(worksheet, cells);
