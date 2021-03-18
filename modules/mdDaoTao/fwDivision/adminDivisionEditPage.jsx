@@ -93,8 +93,7 @@ class DivisionEditPage extends AdminPage {
                             <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='DivisionImage' readOnly={readOnly} />
                         </div>
                         <div className='col-md-9 order-md-1'>
-                            <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' readOnly={readOnly} value={this.state.title}
-                                onChange={e => this.setState({ title: e.target.value })} />
+                            <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' readOnly={readOnly} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
                             <FormRichTextBox ref={e => this.itemAddress = e} label='Địa chỉ' readOnly={readOnly} rows='2' />
                         </div>
                         <div className='col-md-12 order-sm-12'>
