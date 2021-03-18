@@ -5,17 +5,19 @@ import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
 import { ajaxSelectLesson } from '../fwLesson/redux';
 import Tooltip from 'rc-tooltip';
-
-class AddLessonModal extends React.Component {
-    modal = React.createRef();
+import { AdminModal } from 'view/component/AdminPage';
+class AddLessonModal extends AdminModal {
     lessonSelect = React.createRef();
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => $('#questionName').focus()));
+    }
 
-    show = () => {
+    onShow = () => {
         this.lessonSelect.current.val(null);
         $(this.modal.current).modal('show');
     }
 
-    addLesson = () => {
+    onSubmit = () => {
         const lessonId = this.lessonSelect.current.val();
         this.props.addLesson(this.props._id, lessonId, () => {
             T.notify('Thêm bài học thành công!', 'success');
@@ -23,40 +25,22 @@ class AddLessonModal extends React.Component {
         });
     }
 
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <div className='modal-dialog' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thêm bài học</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label>Chọn bài học</label>
-                                <Select ref={this.lessonSelect} displayLabel={false} adapter={ajaxSelectLesson} label='Bài học' />
-                            </div>
-                        </div>
-
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-success' onClick={this.addLesson}>Thêm</button>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                        </div>
-                    </div>
+    render = () => this.renderModal({
+        title: 'Thêm bài học',
+        body:
+            <div>
+                <div className='form-group'>
+                    <label>Chọn bài học</label>
+                    <Select ref={this.lessonSelect} displayLabel={false} adapter={ajaxSelectLesson} label='Bài học' />
                 </div>
             </div>
-        );
-    }
+    });
 }
 
 class AdminEditLesson extends React.Component {
     state = { item: null };
     editor = React.createRef();
-    addLessonModal = React.createRef();
+    modal = React.createRef();
 
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc', () => {
@@ -78,7 +62,7 @@ class AdminEditLesson extends React.Component {
 
     showAddLessonModal = e => {
         e.preventDefault();
-        this.addLessonModal.current.show();
+        this.modal.current.show();
     }
 
     delete = (e, _id, lessonId, lessonTitle) => {
@@ -195,7 +179,7 @@ class AdminEditLesson extends React.Component {
                     </div>
                 }
                 <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                <AddLessonModal ref={this.addLessonModal} addLesson={this.props.addLesson} _id={_id} />
+                <AddLessonModal ref={this.modal} addLesson={this.props.addLesson} _id={_id} />
             </div>);
     }
 }
