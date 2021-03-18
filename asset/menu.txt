@@ -22,4 +22,5 @@
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4040 - Khoá học (/user/course/list)
+	4050 - Danh mục câu hỏi thi (/user/drive-question-category)
 7000. Đơn đề nghị học - sát hạch (/user/don-de-nghi-hoc)
