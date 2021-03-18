@@ -149,12 +149,13 @@ class DangKyTuVanPage extends AdminPage {
 
         const renderData = {
             icon: 'fa fa fa-envelope-o',
-            title: 'Danh sách đăng ký tư vấn',
+            title: 'Đăng ký tư vấn',
+            breadcrumb: ['Đăng ký tư vấn'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageDKTVList' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDKTVListPage} />
-                    {permission.write ?
+                {permission.write ?
                 <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel'
                     onClick={() => this.props.exportDangKyTuVanToExcel()}>
                     <i className='fa fa-file-excel-o' />

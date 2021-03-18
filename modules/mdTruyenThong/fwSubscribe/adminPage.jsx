@@ -105,9 +105,10 @@ class SubscribePage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getSubscribePage} />
+                {permission.write ?
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel' onClick={e => this.exportSubscribe(e)}>
                     <i className='fa fa-file-excel-o' />
-                </button>
+                </button> : null }
                 <AdminSubscribeModal ref={this.modal} />
             </>,
         };
