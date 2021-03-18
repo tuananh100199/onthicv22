@@ -149,9 +149,7 @@ class LogoPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/logo/edit/' + item._id} data-id={item._id}>
-                                        {T.language.parse(item.title)}
-                                    </Link>
+                                    <Link to={'/user/logo/edit/' + item._id} data-id={item._id}>{item.title}</Link>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>{item.items.length}</td>
                                 <td>

@@ -73,7 +73,7 @@ class SectionLogo extends React.Component {
                 <div className='container'>
                     <div className='row justify-content-start pt-3 pb-3'>
                         <div className='col-md-12 heading-section ftco-animate'>
-                            <h2 className='mb-4 text-center'><strong>{T.language.parse(this.state.logo.title)}</strong></h2>
+                            <h2 className='mb-4 text-center'><strong>{this.state.logo.title}</strong></h2>
                         </div>
                     </div>
 
@@ -87,8 +87,8 @@ class SectionLogo extends React.Component {
                                                 style={{ backgroundImage: `url('${item.image}')` }}>
                                             </a>
                                             <div className='text p-3'>
-                                                <h3><a href='#'>{T.language.parse(item.name)}</a></h3>
-                                                <span className='listing'>{T.language.parse(item.address)}</span>
+                                                <h3><a href='#'>{item.name}</a></h3>
+                                                <span className='listing'>{item.address}</span>
                                             </div>
                                         </div>
                                     </div>

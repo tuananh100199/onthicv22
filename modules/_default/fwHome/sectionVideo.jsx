@@ -42,7 +42,7 @@ class SectionVideo extends React.Component {
                 <div className='container'>
                     <div className='row d-md-flex justify-content-center'>
                         <div className='col-md-9 about-video text-center'>
-                            <h2>{T.language.parse(videoTitle)}</h2>
+                            <h2>{videoTitle}</h2>
                             <div className='video d-flex justify-content-center'>
                                 <a href={videoUrl} className='button popup-youtube d-flex justify-content-center align-items-center'>
                                     <span className='fa fa-play' />

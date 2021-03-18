@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Editor from 'view/component/CkEditor4';
 
-export class Checkbox extends React.Component {
+export class FormCheckbox extends React.Component {
     state = { checked: false };
     box = React.createRef();
 
-    val = (checked) => {
+    value = (checked) => {
         if (checked != null) {
             this.setState({ checked });
         } else {
@@ -13,13 +14,14 @@ export class Checkbox extends React.Component {
         }
     }
 
-    onCheck = () => this.props.permissionWrite && this.setState({ checked: !this.state.checked });
+    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked });
 
     render() {
-        const { className, label } = this.props;
+        let { className, label, style } = this.props;
+        if (style == null) style = {};
         return (
-            <div className={className} style={{ display: 'inline-flex' }}>
-                <label style={{ marginBottom: 0 }} onClick={this.onCheck}>{label}:&nbsp;</label>
+            <div className={className} style={{ ...style, display: 'inline-flex' }}>
+                <label style={{ cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>
                 <div className='toggle'>
                     <label style={{ marginBottom: 0 }}>
                         <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} /><span className='button-indecator' />
@@ -27,6 +29,98 @@ export class Checkbox extends React.Component {
                 </div>
             </div>);
     }
+}
+
+export class FormTextBox extends React.Component {
+    state = { value: '' };
+    input = React.createRef();
+
+    value = (text) => {
+        if (text === '' || text) {
+            this.setState({ value: text });
+        } else {
+            return this.state.value;
+        }
+    }
+
+    focus = () => this.input.current.focus();
+
+    render() {
+        let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
+        type = type.toLowerCase();
+        className = 'form-group' + (className ? ' ' + className : '');
+        return readOnly ? (
+            <div className={className}>
+                <label>{label}</label>{this.state.value ? ': ' : ''}<b>{this.state.value}</b>
+            </div>
+        ) : (
+            <div className={className}>
+                <label onClick={e => this.input.current.focus()}>{label}</label>
+                <input ref={this.input} type={type} className='form-control' placeholder={label} value={this.state.value}
+                    onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
+            </div>);
+    };
+}
+
+export class FormRichTextBox extends React.Component {
+    state = { value: '' };
+    input = React.createRef();
+
+    value = (text) => {
+        if (text === '' || text) {
+            this.setState({ value: text });
+        } else {
+            return this.state.value;
+        }
+    }
+
+    focus = () => this.input.current.focus();
+
+    render() {
+        let { rows = 3, label = '', className = '', readOnly = false, onChange = null } = this.props;
+        className = 'form-group' + (className ? ' ' + className : '');
+        return readOnly ? (
+            <div className={className}>
+                <label>{label}</label>{this.state.value ? <br /> : ''}<b>{this.state.value}</b>
+            </div>
+        ) : (
+            <div className={className}>
+                <label onClick={e => this.input.current.focus()}>{label}</label>
+                <textarea ref={this.input} className='form-control' placeholder={label} value={this.state.value} rows={rows}
+                    onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
+            </div>);
+    };
+}
+
+export class FormEditor extends React.Component {
+    state = { value: '' };
+    input = React.createRef();
+
+    value = (text) => {
+        if (text === '' || text) {
+            this.input.current.html(text);
+            this.setState({ value: text });
+        } else {
+            return this.props.readOnly ? this.state.value : this.input.current ? this.input.current.html() : '';
+        }
+    }
+
+    focus = () => this.input.current.focus();
+
+    render() {
+        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '' } = this.props;
+        className = 'form-group' + (className ? ' ' + className : '');
+        return readOnly ? (
+            <div className={className}>
+                <label>{label}</label>{this.state.value ? <br /> : ''}
+                <p style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: this.state.value }} />
+            </div>
+        ) : (
+            <div className={className}>
+                <label>{label}</label>
+                <Editor ref={this.input} height={height} placeholder={label} uploadUrl={uploadUrl} />
+            </div>);
+    };
 }
 
 export class AdminModal extends React.Component {
@@ -94,7 +188,8 @@ export class AdminPage extends React.Component {
                 <div className='app-title'>
                     <h1><i className={icon} /> {title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>{breadcrumb}&nbsp;/&nbsp;{title}
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
+                        {breadcrumb.map((item, index) => <span key={index}>&nbsp;/&nbsp;{item}</span>)}
                     </ul>
                 </div>
                 {content}

@@ -16,7 +16,7 @@ class SectionApplyForm extends React.Component {
                 if (this.props.formId) {
                     ajaxGetForm(this.props.formId, {}, ({ error, item }) => {
                         if (item) {
-                            this.setState({ selectedForm: { value: item._id, label: item.title.viText(), lock: item.lock, active: item.active } });
+                            this.setState({ selectedForm: { value: item._id, label: item.title, lock: item.lock, active: item.active } });
                         }
                     })
                     done && done();
@@ -31,7 +31,7 @@ class SectionApplyForm extends React.Component {
                     if (data.error) {
                         T.notify('Lấy danh sách form bị lỗi!', 'danger');
                     } else {
-                        const options = data.page.list.map(item => ({ value: item._id, label: item.title.viText(), lock: item.lock, active: item.active }));
+                        const options = data.page.list.map(item => ({ value: item._id, label: item.title, lock: item.lock, active: item.active }));
                         this.setState({ options });
                     }
                 })
@@ -55,7 +55,7 @@ class SectionApplyForm extends React.Component {
                             if (data.error) {
                                 T.notify('Lấy danh sách form bị lỗi!', 'danger');
                             } else {
-                                const options = data.page.list.map(item => ({ value: item._id, label: item.title.viText(), lock: item.lock, active: item.active }));
+                                const options = data.page.list.map(item => ({ value: item._id, label: item.title, lock: item.lock, active: item.active }));
                                 this.setState({ options });
                             }
                         })
@@ -104,7 +104,7 @@ class SectionApplyForm extends React.Component {
             if (data.error) {
                 T.notify('Lấy danh sách form bị lỗi!', 'danger');
             } else {
-                const options = data.page.list.map(item => ({ value: item._id, label: item.title.viText(), lock: item.lock, active: item.active }));
+                const options = data.page.list.map(item => ({ value: item._id, label: item.title, lock: item.lock, active: item.active }));
                 this.setState({ options });
             }
         })

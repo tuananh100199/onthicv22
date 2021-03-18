@@ -94,13 +94,12 @@ class HomeMenu extends React.Component {
                     let link = item.link ? item.link.toLowerCase().trim() : '/',
                         isExternalLink = link.startsWith('http://') || link.startsWith('https://');
                     link = item.link ? item.link : '#';
-                    const title = T.language.parse(item.title);
 
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> : (item.link ?
-                                <Link to={link} onClick={() => this.onMenuClick(link)}>{title}</Link> :
-                                <a href='#' onClick={e => e.preventDefault()}>{title}</a>)}
+                            {isExternalLink ? <a href={link} target='_blank'>{item.title}</a> : (item.link ?
+                                <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
+                                <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>)}
                             <ul className='dropdown'>{
                                 item.submenus.map((subMenu, subIndex) => {
                                     const link = subMenu.link ? subMenu.link.toLowerCase().trim() : '/';
@@ -108,16 +107,16 @@ class HomeMenu extends React.Component {
                                         return <li key={subIndex}>---</li>;
                                     } else {
                                         return isExternalLink ?
-                                            <li key={subIndex}><a href={link}>{T.language.parse(subMenu.title)}</a></li> :
-                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{T.language.parse(subMenu.title)}</Link></li>
+                                            <li key={subIndex}><a href={link}>{subMenu.title}</a></li> :
+                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{subMenu.title}</Link></li>
                                     }
                                 })}
                             </ul>
                         </li>
                     ) :
                         <li key={index} className={currentLink == link ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank'>{title}</a> :
-                                (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{title}  </Link>)}
+                            {isExternalLink ? <a href={link} target='_blank'>{item.title}</a> :
+                                (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
                         </li>;
                 }
             });

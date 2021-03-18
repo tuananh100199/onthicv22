@@ -52,7 +52,6 @@ class ProfilePage extends React.Component {
         });
     }
 
-
     saveCommon = (e) => {
         const changesOfUser = {
             sex: this.sex.current.val(),

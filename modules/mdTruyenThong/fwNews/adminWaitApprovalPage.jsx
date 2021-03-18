@@ -50,9 +50,7 @@ class NewsWaitApprovalPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <Link to={'/user/news/draft/edit/' + item._id} data-id={item._id}>
-                                        {T.language.parse(item.title)}
-                                    </Link>
+                                    <Link to={'/user/news/draft/edit/' + item._id} data-id={item._id}>{item.title}</Link>
                                 </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
                                     <img src={item.image} alt='avatar' style={{ height: '32px' }} />

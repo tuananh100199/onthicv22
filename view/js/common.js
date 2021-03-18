@@ -229,33 +229,6 @@ const T = {
 
 T.socket = T.debug ? io({ transports: ['websocket'] }) : io.connect(T.rootUrl, { transports: ['websocket'], secure: true });
 
-T.language = texts => {
-    let lg = T.cookie('language');
-    if (lg == null || (lg != 'vi' && lg != 'en')) lg = 'vi';
-    return texts ? (texts[lg] ? texts[lg] : {}) : lg;
-};
-T.language.next = () => {
-    const language = T.cookie('language');
-    return (language == null || language == 'en') ? 'vi' : 'en';
-};
-T.language.current = () => {
-    const language = T.cookie('language');
-    return (language == null || language == 'en') ? 'en' : 'vi';
-};
-T.language.switch = () => {
-    const language = T.language.next();
-    T.cookie('language', language);
-    return { language };
-};
-T.language.parse = (text, getAll) => {
-    let obj = {};
-    try { obj = JSON.parse(text) } catch { };
-    if (obj.vi == null) obj.vi = text;
-    if (obj.en == null) obj.en = text;
-    return getAll ? obj : obj[T.language()];
-};
-T.language.getMonth = () => (['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai']);
-
 T.get2 = x => ('0' + x).slice(-2);
 T.socket.on('connect', () => {
     if (T.connected === 0) {
@@ -339,18 +312,8 @@ T.clone = function () {
     return result;
 };
 
-
 export default T;
 
-
-
-String.prototype.getText = function () {
-    return T.language.parse(this);
-};
-
-String.prototype.viText = function () {
-    return T.language.parse(this, true).vi;
-};
 
 String.prototype.replaceAll = function (search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
@@ -370,11 +333,7 @@ Array.prototype.contains = function (...pattern) {
 };
 
 Date.prototype.getText = function () {
-    // return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
     return T.get2(this.getDate()) + '/' + T.get2(this.getMonth() + 1) + '/' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
-};
-Date.prototype.getDateText = function () {
-    return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear();
 };
 Date.prototype.getTimeText = function () {
     return T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());

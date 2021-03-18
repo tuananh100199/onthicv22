@@ -105,6 +105,7 @@ class DivisionPage extends AdminPage {
         const renderData = {
             icon: 'fa fa-university',
             title: 'Cơ sở đào tạo',
+            breadcrumb: ['Cơ sở đào tạo'],
             content: <>
                 <div className='tile'>{table}</div>
                 <DivisionModal ref={this.modal} createDivision={this.props.createDivision} history={this.props.history} />

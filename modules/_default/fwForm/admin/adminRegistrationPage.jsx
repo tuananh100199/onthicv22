@@ -73,44 +73,41 @@ class adminRegistrationPage extends React.Component {
     };
 
     createRow = (list, pageNumber, pageSize, readOnly) => {
-        return list.map((item, index) => {
-            return (
-                <tr key={index}>
-                    <td style={{ whiteSpace: 'nowrap' }}>{(Math.max(pageNumber, 1) - 1) * pageSize + index + 1}</td>
-                    <td style={{ whileSpace: 'nowrap' }}>
-                        {!readOnly ? (
-                            <a href='#' onClick={e => this.showEdit(e, item._id)} >
-                                {item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname)}
-                            </a>
-                        ) : (item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname))}
-                    </td>
-                    <td className='toggle' style={{ textAlign: 'center' }}>
-                        <label>
-                            <input type='checkbox' disabled={readOnly} checked={item.attendance} onChange={e => this.changeAttendance(e, item)} />
-                            <span className='button-indecator' />
-                        </label>
-                    </td>
+        return list.map((item, index) => (
+            <tr key={index}>
+                <td style={{ whiteSpace: 'nowrap' }}>{(Math.max(pageNumber, 1) - 1) * pageSize + index + 1}</td>
+                <td style={{ whileSpace: 'nowrap' }}>
                     {!readOnly ? (
-                        <td key='action' className='btn-group' >
-                            <button type='button' className='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Chỉnh sửa câu trả lời'
-                                onClick={e => this.showEdit(e, item._id)}>
-                                <i className='fa fa-lg fa-edit' />
-                            </button>
-                            <button type='button' className='btn btn-danger' onClick={e => this.remove(e, item._id)}>
-                                <i className='fa fa-lg fa-trash' />
-                            </button>
-                        </td>
-                    ) : null}
-                </tr>
-            );
-        });
+                        <a href='#' onClick={e => this.showEdit(e, item._id)} >
+                            {item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname)}
+                        </a>
+                    ) : (item.user ? (item.user.lastname + ' ' + item.user.firstname) : (item.userLastname + ' ' + item.userFirstname))}
+                </td>
+                <td className='toggle' style={{ textAlign: 'center' }}>
+                    <label>
+                        <input type='checkbox' disabled={readOnly} checked={item.attendance} onChange={e => this.changeAttendance(e, item)} />
+                        <span className='button-indecator' />
+                    </label>
+                </td>
+                {!readOnly ? (
+                    <td key='action' className='btn-group' >
+                        <button type='button' className='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Chỉnh sửa câu trả lời'
+                            onClick={e => this.showEdit(e, item._id)}>
+                            <i className='fa fa-lg fa-edit' />
+                        </button>
+                        <button type='button' className='btn btn-danger' onClick={e => this.remove(e, item._id)}>
+                            <i className='fa fa-lg fa-trash' />
+                        </button>
+                    </td>
+                ) : null}
+            </tr>
+        ));
     };
 
     render() {
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const readOnly = !currentPermission.contains('form:write');
         const item = this.state.item ? this.state.item : { _id: '', title: '', createdDate: new Date(), maxRegisterUsers: -1 };
-        const title = T.language.parse(item.title, true);
         const questions = this.props.question && this.props.question.questions ? this.props.question.questions : [];
         const { totalItem, pageSize, pageTotal, pageNumber, list } = this.props.answer && this.props.answer.page ?
             this.props.answer.page : { totalItem: 0, pageSize: 50, pageTotal: 0, pageNumber: 1, list: [] };
@@ -137,7 +134,7 @@ class adminRegistrationPage extends React.Component {
                 <div className='app-title'>
                     <div>
                         <h1><i className='fa fa-edit' /> Form: Danh sách đăng ký form</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
+                        <p dangerouslySetInnerHTML={{ __html: item.title != '' ? 'Tiêu đề: <b>' + item.title + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
                     </div>
                 </div>
 

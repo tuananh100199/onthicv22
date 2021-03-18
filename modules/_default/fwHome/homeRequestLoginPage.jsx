@@ -109,7 +109,6 @@ class HomeRequestLoginPage extends React.Component {
     };
 
     render() {
-        const language = T.language(texts);
         const user = this.props.system && this.props.system.user ? this.props.system.user : null;
         if (user) {
             return (

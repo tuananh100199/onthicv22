@@ -139,29 +139,6 @@ class RegisterElement extends React.Component {
     }
 }
 
-const texts = {
-    vi: {
-        register: 'Đăng ký sự kiện',
-        notDated: 'Chưa đến ngày mở đăng ký',
-        overDated: 'Đã quá hạn đăng ký tham gia',
-        enough: 'Đã đủ số lượng đăng ký tham gia',
-        noForm: 'Không có form đăng ký từ sự kiện này',
-        registerAction: 'Gửi form',
-        notLoggedIn: 'Bạn chưa đăng nhập!',
-        askLogin: 'Đăng nhập?'
-    },
-    en: {
-        register: 'Register event',
-        notDated: 'Not yet to open the registration',
-        overDated: 'Registration deadline is exceeded',
-        enough: 'Enough number of participants',
-        noForm: 'No registration form from this event',
-        registerAction: 'Submit',
-        notLoggedIn: `You haven't logged in yet!`,
-        askLogin: 'Login?'
-    }
-};
-
 class HomeRegistrationForm extends React.Component {
     constructor(props) {
         super(props);
@@ -175,10 +152,9 @@ class HomeRegistrationForm extends React.Component {
 
     submit = (e) => {
         const { formId, questions, system } = this.props;
-        const language = T.language(texts);
         const userId = system.user ? system.user._id : null;
         if (userId == null) {
-            T.notify(language.notLoggedIn, 'danger');
+            T.notify('Bạn chưa đăng nhập!', 'danger');
             e.preventDefault();
             return;
         }
@@ -206,7 +182,6 @@ class HomeRegistrationForm extends React.Component {
 
     render() {
         const { className, formId, formInfo, questions, system } = this.props;
-        const language = T.language(texts);
         const createForm = () => {
             if (system && system.user && system.user._id && formId) {
                 const { startRegister, stopRegister, maxRegisterUsers, numOfRegisterUsers } = formInfo ? formInfo : {
@@ -217,16 +192,16 @@ class HomeRegistrationForm extends React.Component {
                 };
                 const currentTime = new Date();
                 if (startRegister && currentTime < new Date(startRegister)) {
-                    return <p>{language.notDated}</p>;
+                    return <p>Chưa đến ngày mở đăng ký</p>;
                 }
                 if (stopRegister && currentTime > new Date(stopRegister)) {
-                    return <p>{language.overDated}</p>;
+                    return <p>Đã quá hạn đăng ký tham gia</p>;
                 }
                 if (maxRegisterUsers >= 0 && numOfRegisterUsers >= maxRegisterUsers) {
-                    return <p>{language.enough}</p>;
+                    return <p>Đã đủ số lượng đăng ký tham gia</p>;
                 }
                 if (!questions || questions.length == 0) {
-                    return <p>{language.noForm}</p>;
+                    return <p>Không có form đăng ký từ sự kiện này</p>;
                 }
 
                 let form = [];
@@ -234,22 +209,16 @@ class HomeRegistrationForm extends React.Component {
                     form.push(<RegisterElement key={i} element={questions[i]} index={i} ref={this.valueList[i]} />);
                 }
                 form.push(<button key='button' className='btn btn-primary'
-                    onClick={this.submit}>{language.registerAction}</button>);
+                    onClick={this.submit}>Gửi form</button>);
                 return form;
             } else {
-                return <p>{language.notLoggedIn} | <Link to={'/request-login?formId=' + formId} className='text-primary'><small>{language.askLogin}</small></Link></p>;
+                return <p>Bạn chưa đăng nhập! | <Link to={'/request-login?formId=' + formId} className='text-primary'><small>Đăng nhập?</small></Link></p>;
             }
         };
 
         return (
-            <div className={className}>
-                <div className='col-12 col-md-8'>
-                    <div className='row'>
-                        <div className='col-12'>
-                            {createForm()}
-                        </div>
-                    </div>
-                </div>
+            <div className={'col-12 col-md-8 ' + className}>
+                {createForm()}
             </div>
         );
     }

@@ -55,7 +55,7 @@ export default class ComponentModal extends React.Component {
                     found = false;
                 for (let i = 0; i < items.length; i++) {
                     if (viewItemId == items[i]._id) {
-                        viewItemText = T.language.parse(items[i].text);
+                        viewItemText = items[i].text;
                         found = true;
                         break;
                     }
@@ -69,7 +69,7 @@ export default class ComponentModal extends React.Component {
 
     selectPageItem = (e, pageItem) => {
         $(this.btnSave.current).data('viewId', pageItem._id);
-        this.setState({ viewItemText: T.language.parse(pageItem.text) });
+        this.setState({ viewItemText: pageItem.text });
         e.preventDefault();
     }
 
@@ -130,7 +130,7 @@ export default class ComponentModal extends React.Component {
                                     <div className='dropdown-menu'>
                                         {this.state.viewItems.map((item, index) => (
                                             <a key={index} className='dropdown-item' href='#' onClick={e => this.selectPageItem(e, item)}>
-                                                {T.language.parse(item.text ? item.text : item)}
+                                                {item.text}
                                             </a>
                                         ))}
                                     </div>

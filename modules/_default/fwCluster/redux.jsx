@@ -89,7 +89,6 @@ export function deleteCluster(id) {
     }
 }
 
-
 export function getSystemImageAll() {
     return dispatch => {
         const url = `/api/cluster/image/all`;
