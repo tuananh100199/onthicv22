@@ -12,10 +12,9 @@ class CategoryModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, image } = item ? item : { _id: null, title: '', image: '/img/avatar.png' };
+        const { _id, title, image } = item ? item : { _id: '', title: '', image: '/img/avatar.png' };
         this.itemTitle.value(title);
-        this.imageBox.setData(this.props.uploadType + ':' + (_id ? _id : 'new'));
-
+        this.imageBox.setData(this.props.uploadType + ':' + (_id || 'new'));
         this.setState({ image });
         this.data('_id', _id);
     }
@@ -37,8 +36,8 @@ class CategoryModal extends AdminModal {
         body: (
             <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
-                <div className='form-group'>
-                    <label>Hình ảnh</label>
+                <div className='form-group' style={{ display: this.data('_id') ? 'block' : 'none' }}>
+                    <label>Hình ảnh {this.data('_id')}</label>
                     <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
                 </div>
             </>),

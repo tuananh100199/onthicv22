@@ -23,8 +23,9 @@ module.exports = app => {
         }
     }));
 
-    app.put('/api/category', app.permission.check('category:write'), (req, res) =>
-        app.model.category.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));
+    app.put('/api/category', app.permission.check('category:write'), (req, res) => {
+        app.model.category.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
 
     app.put('/api/category/swap', app.permission.check('category:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';
