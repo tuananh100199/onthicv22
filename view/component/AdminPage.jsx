@@ -47,7 +47,7 @@ export class FormTextBox extends React.Component {
 
     render() {
         let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
-        type = type.toLowerCase();
+        type = type.toLowerCase(); // type = text | email | password
         className = 'form-group' + (className ? ' ' + className : '');
         return readOnly ? (
             <div className={className}>
@@ -124,7 +124,9 @@ export class FormEditor extends React.Component {
 }
 
 export class AdminModal extends React.Component {
+    state = { display: 'hide' };
     modal = React.createRef();
+    _data = {};
 
     onShown = (modalShown) => {
         $(this.modal.current).on('shown.bs.modal', () => modalShown());
@@ -138,6 +140,14 @@ export class AdminModal extends React.Component {
     hide = () => {
         this.onHide && this.onHide();
         $(this.modal.current).modal('hide');
+    }
+
+    data = (key, value) => {
+        if (value === '' || value) {
+            this._data[key] = value;
+        } else {
+            return this._data[key];
+        }
     }
 
     renderModal = ({ title, body, size }) => (
@@ -166,7 +176,6 @@ export class AdminModal extends React.Component {
     );
 
     render = () => null;
-
 }
 
 export class AdminPage extends React.Component {
