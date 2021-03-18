@@ -37,11 +37,15 @@ module.exports = app => {
     app.createFolder(app.path.join(app.publicPath, '/img/category'));
 
     const uploadCategoryImage = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('eventCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
-            console.log('Hook: uploadCategoryImage => event');
-            app.uploadComponentImage(req, 'category', app.model.category.get, fields.userData[0].substring(19), files.CategoryImage[0].path, done);
+        if (fields.userData && fields.userData[0].startsWith('newsCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => news');
+            app.uploadComponentImage(req, 'category', app.model.category.get, fields.userData[0].substring('newsCategoryImage:'.length), files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('driveQuestionCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => drive-question');
+            app.uploadComponentImage(req, 'category', app.model.category.get, fields.userData[0].substring('driveQuestionCategoryImage:'.length), files.CategoryImage[0].path, done);
         }
     };
+
     app.uploadHooks.add('uploadCategoryImage', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadCategoryImage(req, fields, files, params, done), done, 'category:write'));
 };
