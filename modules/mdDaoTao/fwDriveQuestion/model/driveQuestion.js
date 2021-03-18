@@ -1,13 +1,13 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        active: { type: Boolean, default: false },
+        active: { type: Boolean, default: false },                                  // Có thể dài, nên dùng FormRichTextBox
         title: String,
         image: String,
-        answers: { type: [String], default: [] },
-        result: { type: Number, default: 0 },
+        answers: { type: String, default: '' },                                     // Dùng FormRichTextBox => mỗi câu là 1 dòng
+        result: { type: Number, default: 0 },                                       // Ghi là 1 thì dòng 1 của answers là đúng. Hiển thị: nếu answers có 3 dòng thì phải hiện Đáp án 1, Đáp án 2, Đáp án 3
         priority: { type: Number, default: 0 },
-        importance: { type: Boolean, default: false },
-        category: { type: app.db.Schema.ObjectId, ref: 'DriveQuestionCategory' },
+        importance: { type: Boolean, default: false },                              // true => câu liệt
+        category: [{ type: app.db.Schema.ObjectId, ref: 'DriveQuestionCategory' }], // Phân loại câu hỏi
     });
     const model = app.db.model('DriveQuestion', schema);
 
@@ -55,7 +55,5 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
-
-        // deleteAll: (condition, done) => model.deleteMany(condition, (error) => done(error)),
     };
 };
