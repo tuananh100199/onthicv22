@@ -10,26 +10,37 @@ class CategoryModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => this.itemTitle.value('');
+    onShow = (item) =>{
+        if(item) {
+            this.setState(item.item);
+            this.itemTitle.value(this.state.title);
+        }else{
+            this.itemTitle.value('');
+        }
+        $(this.modal.current).modal('show');
+    } 
 
     onSubmit = () => {
         const newData = { title: this.itemTitle.value() };
         if (newData.title == '') {
             T.notify('Tên loại câu hỏi thi bị trống!', 'danger');
             this.itemTitle.focus();
+        } else if (this.state && this.state._id){
+            this.props.updateDriveQuestionCategory(this.state._id, newData, () => T.notify('Cập nhật loại câu hỏi thi thành công!', 'success'));
+            this.hide();
         } else {
             this.props.createDriveQuestionCategory(newData, data => {
                 if (data.item) {
+                    T.notify('Tạo loại câu hỏi thi thành công!', 'success');
                     this.hide();
-                    this.props.history.push('/user/drive-question-category/edit/' + data.item._id);
                 }
             });
         }
     }
 
     render = () => this.renderModal({
-        title: 'Loại câu hỏi thi mới',
-        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên loại câu hỏi thi' />
+        title: 'Loại câu hỏi thi',
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên loại câu hỏi thi'/>
     });
 }
 
@@ -78,8 +89,8 @@ class DriveQuestionCategoryPage extends AdminPage {
                                 <td><Link to={'/user/drive-question-category/edit/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
-                                        <input type='checkbox' checked={item.isOutside}
-                                            onChange={() => permission.write && this.props.updateDriveQuestionCategory(item._id, { isOutside: item.isOutside ? 0 : 1 }, () => T.notify('Cập nhật loại câu hỏi thi thành công!', 'success'))} />
+                                        <input type='checkbox' checked={item.active}
+                                            onChange={() => permission.write && this.props.updateDriveQuestionCategory(item._id, { active: item.active ? 0 : 1 }, () => T.notify('Cập nhật loại câu hỏi thi thành công!', 'success'))} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>
@@ -106,7 +117,7 @@ class DriveQuestionCategoryPage extends AdminPage {
             breadcrumb: ['Loại câu hỏi thi'],
             content: <>
                 <div className='tile'>{table}</div>
-                <CategoryModal ref={this.modal} createDriveQuestionCategory={this.props.createDriveQuestionCategory} history={this.props.history} />
+                <CategoryModal ref={this.modal} createDriveQuestionCategory={this.props.createDriveQuestionCategory} updateDriveQuestionCategory={this.props.updateDriveQuestionCategory} history={this.props.history} />
             </>,
         };
         if (permission.write) renderData.onCreate = this.create;
