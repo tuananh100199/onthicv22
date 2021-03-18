@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getSubject } from './redux';
 import { Link } from 'react-router-dom';
-import AdminEditInfo from './adminEditInfo';
-import AdminEditLesson from './adminEditLesson';
-import AdminEditQuestion from './adminEditQuestion';
+import AdminEditInfo from './adminEditInfoTab';
+import AdminEditLesson from './adminEditLessonTab';
+import AdminEditQuestion from './adminEditQuestionTab';
 
 
 class AdminEditPage extends React.Component {

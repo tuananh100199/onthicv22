@@ -3,106 +3,80 @@ import { connect } from 'react-redux';
 import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
+import { AdminModal } from 'view/component/AdminPage';
 
-
-class VideoModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-        this.modal = React.createRef();
-        this.imageBox = React.createRef();
-    }
+class VideoModal extends AdminModal {
+    modal = React.createRef();
+    imageBox = React.createRef();
+    state = React.createRef();
 
     componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#videoTitle').focus());
-        }, 250));
+        $(document).ready(() => this.onShown(() => $('#videoName').focus()));
     }
 
-    show = (video) => {
+    onShow = (video) => {
         let { _id, title, link, image } = video ? video : { _id: null, title: '', link: '', image: '' };
-        $('#videoTitle').val(title);
+        $('#videoName').val(title);
         $('#videoLink').val(link);
         this.imageBox.current.setData('lesson-video:' + (_id ? _id : 'new'));
         this.setState({ image });
         $(this.modal.current).data('id', _id).modal('show');
     }
 
-    save = (event) => {
-        const _id = $(this.modal.current).data('id'),
-            changes = {
-                title: $('#videoTitle').val().trim(),
-                link: $('#videoLink').val().trim(),
-            };
-        if (changes.title == '') {
-            T.notify('Tiêu đề video bị trống!', 'danger');
-            $('#videoTitle').focus();
-        } else if (changes.link == '') {
+    onSubmit = () => {
+        const _id = $(this.modal.current).data('_id');
+        let newData = {
+            title: $('#videoName').val().trim(),
+            link: $('#videoLink').val().trim(),
+        };
+        if (newData.title == '') {
+            T.notify('Tên video bị trống!', 'danger');
+            $('#videoName').focus();
+        } else if (newData.link == '') {
             T.notify('Link video bị trống!', 'danger');
             $('#videoLink').focus();
         } else {
-            if (_id) {
-                this.props.updateLessonVideo(_id, changes, this.props._id, () => {
-                    T.notify('Cập nhật video bài giảng thành công!', 'success');
-                    $(this.modal.current).modal('hide');
-                });
-            } else { // Create
-                this.props.createLessonVideo(this.props._id, changes, () => {
+            !_id ?
+                this.props.createLessonVideo(this.props._id, newData, () => {
                     T.notify('Thêm video bài giảng thành công!', 'success');
-                    $(this.modal.current).modal('hide');
-                });
-            }
+                    this.hide();
+                })
+                : this.props.updateLessonVideo(_id, newData, this.props._id, () => {
+                    T.notify('Cập nhật video bài giảng thành công!', 'success');
+                    this.hide();
+                })
         }
-        event.preventDefault();
     }
 
-    render() {
-        const readOnly = this.props.readOnly;
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={e => this.save(e)}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin video</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='tab-pane fade show active'>
-                                <div className='form-group'>
-                                    <label htmlFor='videoTitle'>Tiêu đề</label>
-                                    <input className='form-control' id='videoTitle' type='text' placeholder='Tiêu đề video' readOnly={readOnly} />
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='form-group col-md-8'>
-                                    <label htmlFor='videoLink'>Đường dẫn</label>
-                                    <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
-                                </div>
-                                <div className='form-group col-md-4'>
-                                    <label>Hình đại diện</label>
-                                    <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} readOnly={readOnly} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
+    render = () => this.renderModal({
+        title: 'Video mới',
+        size: 'large',
+        body:
+            <div>
+                <div className='tab-pane fade show active'>
+                    <div className='form-group'>
+                        <label htmlFor='videoTitle'>Tiêu đề</label>
+                        <input className='form-control' id='videoName' type='text' placeholder='Tiêu đề video' />
                     </div>
-                </form>
+                </div>
+                <div className='row'>
+                    <div className='form-group col-md-8'>
+                        <label htmlFor='videoLink'>Đường dẫn</label>
+                        <input className='form-control' id='videoLink' type='text' placeholder='Link' />
+                    </div>
+                    <div className='form-group col-md-4'>
+                        <label>Hình đại diện</label>
+                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
+                    </div>
+                </div>
             </div>
-        );
-    }
+    });
 }
 
 class adminEditLessonVideo extends React.Component {
     state = { item: null };
     editor = React.createRef();
+    modal = React.createRef();
 
     componentDidMount() {
         this.videoModal = React.createRef();
@@ -125,12 +99,12 @@ class adminEditLessonVideo extends React.Component {
     }
 
     create = (e) => {
-        this.videoModal.current.show(null);
+        this.modal.current.show(null);
         e.preventDefault();
     }
 
     edit = (e, item) => {
-        this.props.getLessonVideo(item._id, video => this.videoModal.current.show(video));
+        this.props.getLessonVideo(item._id, video => this.modal.current.show(video));
         e.preventDefault();
     }
 
@@ -252,8 +226,7 @@ class adminEditLessonVideo extends React.Component {
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
-
-                <VideoModal _id={_id} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} ref={this.videoModal} readOnly={readOnly} />
+                <VideoModal _id={_id} ref={this.modal} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} />
                 <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
         );

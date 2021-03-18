@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateLesson, getLesson } from './redux';
 import { Link } from 'react-router-dom';
-import AdminEditInfo from './adminEditInfo';
-import AdminEditLessonQuestion from './adminEditLessonQuestion';
-import AdminEditLessonVideo from './adminEditLessonVideo';
+import AdminEditInfo from './adminEditInfoTab';
+import AdminEditLessonQuestion from './adminEditLessonQuestionTab';
+import AdminEditLessonVideo from './adminEditLessonVideoTab';
 
 class adminEditPage extends React.Component {
     state = { item: null };
