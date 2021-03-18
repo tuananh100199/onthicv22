@@ -43,12 +43,14 @@ import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
+import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
+
 
 const modules = [
     _init, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
-    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc,
+    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc,fwDriveQuestion,
 ]
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

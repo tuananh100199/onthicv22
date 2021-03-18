@@ -15,7 +15,7 @@ module.exports = app => {
         },
 
         get: (condition, done) => {
-            done ? model.findOne(condition).exec(done) : model.findById(condition).exec(condition)
+            typeof condition == 'string' ? model.findById(condition).exec(done) : model.findOne(condition).exec(done)
         },
 
         update: (_id, $set, $unset, done) => done ?
