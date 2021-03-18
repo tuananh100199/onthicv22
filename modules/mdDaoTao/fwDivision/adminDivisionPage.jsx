@@ -2,20 +2,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisions, createDivision, deleteDivision, updateDivision } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $('#addressName').focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => $('#addressName').val('');
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: $('#addressName').val() };
+        const newData = { title: this.itemTitle.value() };
         if (newData.title == '') {
             T.notify('Tên cơ sở bị trống!', 'danger');
-            $('#addressName').focus();
+            this.itemTitle.focus();
         } else {
             this.props.createDivision(newData, data => {
                 if (data.item) {
@@ -28,11 +28,7 @@ class DivisionModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Cơ sở mới',
-        body:
-            <div className='form-group'>
-                <label htmlFor='addressName'>Tên cơ sở</label>
-                <input className='form-control' id='addressName' type='text' placeholder='Nhập tên cơ sở' autoFocus={true} />
-            </div>
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' />
     });
 }
 
