@@ -15,7 +15,7 @@ class QuestionModal extends AdminModal {
         this.itemAnswer.value(defaultAnswer);
         this.itemListAnswer.value(typeValue.join('\n'));
         this.itemIsActive.value(active);
-        this.itemEditor.value(content);
+        this.itemEditor.html(content);
         $(this.modal.current).data('_id', _id).modal('show');
     }
 
@@ -29,7 +29,7 @@ class QuestionModal extends AdminModal {
         let newData = {
             title: this.itemTitle.value(),
             defaultAnswer: this.itemAnswer.value(),
-            content: this.itemEditor.value(),
+            content: this.itemEditor.html(),
             active: this.itemIsActive.value(),
             typeValue: ret,
         };

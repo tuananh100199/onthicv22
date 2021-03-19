@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import { AdminModal, FormCheckbox, FormEditor, FormTextBox } from 'view/component/AdminPage';
+
 class QuestionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
@@ -11,7 +12,7 @@ class QuestionModal extends AdminModal {
     onShow = (item) => {
         let { _id, title, content, active } = item ? item : { _id: null, title: '', content: '', active: false };
         this.itemTitle.value(title)
-        this.itemEditor.value(content);
+        this.itemEditor.html(content);
         this.itemIsActive.value(active);
         $(this.modal.current).data('_id', _id).modal('show');
     }
@@ -20,7 +21,7 @@ class QuestionModal extends AdminModal {
         const _id = $(this.modal.current).data('_id');
         let newData = {
             title: this.itemTitle.value(),
-            content: this.itemEditor.value(),
+            content: this.itemEditor.html(),
             active: this.itemIsActive.value(),
         };
         if (newData.title == '') {

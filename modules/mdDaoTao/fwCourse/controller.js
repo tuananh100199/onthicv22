@@ -8,7 +8,7 @@ module.exports = (app) => {
 
     app.permission.add(
         { name: 'course:read', menu },
-        { name: 'course:write' }
+        { name: 'course:write' },
     );
 
     app.get('/user/course/list', app.permission.check('course:read'), app.templates.admin);
