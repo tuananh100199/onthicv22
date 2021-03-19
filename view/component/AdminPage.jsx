@@ -28,11 +28,10 @@ export class FormTabs extends React.Component {
             tabPanes.push(<div key={index} className={'tab-pane fade' + className} id={tabId}>{item.component}</div>);
         });
 
-        return (
-            <>
-                <ul ref={e => this.tabs = e} className={'nav nav-tabs ' + tabClassName}>{tabLinks}</ul>
-                <div className={'tab-content ' + contentClassName}>{tabPanes}</div>
-            </>);
+        return <>
+            <ul ref={e => this.tabs = e} className={'nav nav-tabs ' + tabClassName}>{tabLinks}</ul>
+            <div className={'tab-content ' + contentClassName}>{tabPanes}</div>
+        </>;
     }
 }
 

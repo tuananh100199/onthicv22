@@ -3,12 +3,10 @@ import { connect } from 'react-redux';
 import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
-import { AdminModal, FormTextBox, BackButton } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
-    modal = React.createRef();
-    imageBox = React.createRef();
-    state = React.createRef();
+    state = {};
 
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
@@ -18,30 +16,30 @@ class VideoModal extends AdminModal {
         let { _id, title, link, image } = video ? video : { _id: null, title: '', link: '', image: '' };
         this.itemTitle.value(title);
         this.itemLink.value(link);
-        this.imageBox.current.setData('lesson-video:' + (_id ? _id : 'new'));
+        this.imageBox.setData('lesson-video:' + (_id ? _id : 'new'));
         this.setState({ image });
-        $(this.modal.current).data('_id', _id).modal('show');
+        this.data('_id', _id);
     }
 
     onSubmit = () => {
-        const _id = $(this.modal.current).data('_id');
-        let newData = {
+        const _id = this.data('_id');
+        let data = {
             title: this.itemTitle.value(),
             link: this.itemLink.value(),
         };
-        if (newData.title == '') {
+        if (data.title == '') {
             T.notify('Tên video bị trống!', 'danger');
             this.itemTitle.focus();
-        } else if (newData.link == '') {
+        } else if (data.link == '') {
             T.notify('Link video bị trống!', 'danger');
             this.itemLink.focus();
         } else {
             !_id ?
-                this.props.createLessonVideo(this.props._id, newData, () => {
+                this.props.create(this.props._id, data, () => {
                     T.notify('Thêm video bài giảng thành công!', 'success');
                     this.hide();
                 })
-                : this.props.updateLessonVideo(_id, newData, this.props._id, () => {
+                : this.props.update(_id, data, this.props._id, () => {
                     T.notify('Cập nhật video bài giảng thành công!', 'success');
                     this.hide();
                 })
@@ -59,15 +57,14 @@ class VideoModal extends AdminModal {
                 </div>
                 <div className='col-md-4'>
                     <label>Hình đại diện</label>
-                    <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
+                    <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
                 </div>
             </div>
     });
 }
 
-class adminEditLessonVideo extends React.Component {
+class adminEditVideoTab extends React.Component {
     state = { item: null };
-    modal = React.createRef();
 
     componentDidMount() {
         this.videoModal = React.createRef();
@@ -81,7 +78,6 @@ class adminEditLessonVideo extends React.Component {
                     this.props.history.push('/user/dao-tao/bai-hoc');
                 } else if (data.item) {
                     this.setState(data);
-
                 } else {
                     this.props.history.push('/user/dao-tao/bai-hoc');
                 }
@@ -89,35 +85,22 @@ class adminEditLessonVideo extends React.Component {
         });
     }
 
-    create = (e) => {
-        this.modal.current.show(null);
-        e.preventDefault();
-    }
+    createVideo = e => e.preventDefault() || this.modalVideo.show(null);
 
-    edit = (e, item) => {
-        this.props.getLessonVideo(item._id, video => this.modal.current.show(video));
-        e.preventDefault();
-    }
+    editVideo = (e, item) => e.preventDefault() || this.props.getLessonVideo(item._id, video => this.modalVideo.show(video));
 
-    removeLessonVideo = (e, item, index, _id) => {
-        e.preventDefault();
-        T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title}</strong>?`, true, isConfirm => {
-            if (isConfirm) {
-                const changes = {};
-                let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
-                lessonVideoList.splice(index, 1);
-                if (lessonVideoList.length == 0) lessonVideoList = 'empty';
-                changes.lessonVideo = lessonVideoList;
-                this.props.deleteLessonVideo(item._id, changes, _id, () => {
-                    T.alert('Xoá video thành công!', 'success', false, 1000);
-                })
-            } else {
-                T.alert('Cancelled!', 'error', false, 500);
-            }
-        });
-    }
+    deleteVideo = (e, item, index, _id) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title}</strong>?`, true, isConfirm => {
+        if (isConfirm) {
+            let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
+            lessonVideoList.splice(index, 1);
+            if (lessonVideoList.length == 0) lessonVideoList = 'empty';
+            this.props.deleteLessonVideo(item._id, { lessonVideo: lessonVideoList }, _id, () => T.alert('Xoá video thành công!', 'success', false, 1000));
+        } else {
+            T.alert('Cancelled!', 'error', false, 500);
+        }
+    });
 
-    swap = (e, index, _id, isMoveUp) => {
+    swapVideos = (e, index, _id, isMoveUp) => {
         e.preventDefault();
         let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
         if (lessonVideoList.length == 1) {
@@ -186,18 +169,18 @@ class adminEditLessonVideo extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _id, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _id, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
-                                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
+                                        <a className='btn btn-primary' href='#' onClick={e => this.editVideo(e, item)}>
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.removeLessonVideo(e, item, index, _id)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item, index, _id)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -212,17 +195,16 @@ class adminEditLessonVideo extends React.Component {
             <div className='tile-body'>
                 {table}
                 <div style={{ textAlign: 'right' }}>
-                    <button type='button' className='btn btn-success' onClick={this.create}>
+                    <button type='button' className='btn btn-success' onClick={this.createVideo}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
             </div>
-            <VideoModal _id={_id} ref={this.modal} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} />
-            <BackButton to='/user/dao-tao/bai-hoc' />
+            <VideoModal _id={_id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} />
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
-export default connect(mapStateToProps, mapActionsToProps)(adminEditLessonVideo);
+const mapActionsToProps = { getLesson, updateLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo };
+export default connect(mapStateToProps, mapActionsToProps)(adminEditVideoTab);

@@ -192,9 +192,9 @@ class AdminEditLessonQuestion extends React.Component {
                             </tr>
                         ))}
                     </tbody>
-                </table>
-            );
+                </table>);
         }
+
         return (
             <div>
                 <div className='tile-body'>{table}</div>
@@ -204,7 +204,6 @@ class AdminEditLessonQuestion extends React.Component {
                     </button>
                 </div>
                 <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
-                <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
         );
     }
