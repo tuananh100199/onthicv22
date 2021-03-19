@@ -8,6 +8,10 @@ export default {
         {
             path: '/user/drive-question/category',
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') }),
+        },
+        {
+            path: '/user/drive-question',
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         }
     ]
 };
