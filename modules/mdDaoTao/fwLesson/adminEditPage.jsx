@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateLesson, getLesson } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTabs } from 'view/component/AdminPage';
+import { AdminPage, FormTabs, FormTextBox, FormRichTextBox, FormEditor } from 'view/component/AdminPage';
 import AdminEditInfo from './adminEditInfoTab';
 import AdminEditLessonQuestion from './adminEditLessonQuestionTab';
 import AdminEditLessonVideo from './adminEditLessonVideoTab';

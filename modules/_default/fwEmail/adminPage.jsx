@@ -6,12 +6,12 @@ class EmailItem extends React.Component {
     title = React.createRef();
     editor = React.createRef();
 
-    set(title, text, html) {
+    set = (title, text, html) => {
         this.title.current.value = title;
         this.editor.current.html(html);
     }
 
-    get() {
+    get = () => {
         return {
             title: this.title.current.value,
             text: this.editor.current.text(),
@@ -19,24 +19,21 @@ class EmailItem extends React.Component {
         }
     }
 
-    render() {
-        const className = this.props.active ? 'tab-pane fade active show' : 'tab-pane fade';
-        return (
-            <div className={className} id={this.props.id}>
-                <div className='tile-body'>
-                    <div className='form-group'>
-                        <label className='control-label'>Chủ đề</label>
-                        <input className='form-control' type='text' defaultValue='' ref={this.title} placeholder='Subject' />
-                    </div>
-                    <div className='form-group'>
-                        <label className='control-label'>HTML</label>
-                        <small className='form-text text-muted'>Parameters: {this.props.params}</small>
-                        <Editor ref={this.editor} placeholder='Content' height={600} />
-                    </div>
+    render = () => (
+        <div className={this.props.active ? 'tab-pane fade active show' : 'tab-pane fade'} id={this.props.id}>
+            <div className='tile-body'>
+                <div className='form-group'>
+                    <label className='control-label'>Chủ đề</label>
+                    <input className='form-control' type='text' defaultValue='' ref={this.title} placeholder='Subject' />
+                </div>
+                <div className='form-group'>
+                    <label className='control-label'>HTML</label>
+                    <small className='form-text text-muted'>Parameters: {this.props.params}</small>
+                    <Editor ref={this.editor} placeholder='Content' height={600} />
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default class EmailPage extends React.Component {

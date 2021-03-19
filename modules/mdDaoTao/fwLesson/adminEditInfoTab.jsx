@@ -20,8 +20,8 @@ class AdminEditInfo extends React.Component {
                     this.itemTitle.value(item.title);
                     this.itemDescription.value(item.shortDescription);
                     this.itemEditor.value(item.detailDescription);
-                    this.setState(data);
                     this.itemTitle.focus();
+                    this.setState(data);
                 } else {
                     this.props.history.push('/user/dao-tao/bai-hoc');
                 }
