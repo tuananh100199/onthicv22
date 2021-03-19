@@ -33,8 +33,6 @@ class DivisionModal extends AdminModal {
 }
 
 class DivisionPage extends AdminPage {
-    modal = React.createRef();
-
     componentDidMount() {
         this.props.getAllDivisions();
         T.ready();
@@ -42,10 +40,7 @@ class DivisionPage extends AdminPage {
         T.onSearch = (searchText) => this.props.getAllDivisions(searchText);
     }
 
-    create = (e) => {
-        this.modal.current.show();
-        e.preventDefault();
-    }
+    create = e => e.preventDefault() || this.modal.show();
 
     delete = (e, item) => {
         T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm && this.props.deleteDivision(item._id));
@@ -105,7 +100,7 @@ class DivisionPage extends AdminPage {
             breadcrumb: ['Cơ sở đào tạo'],
             content: <>
                 <div className='tile'>{table}</div>
-                <DivisionModal ref={this.modal} createDivision={this.props.createDivision} history={this.props.history} />
+                <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} />
             </>,
         };
         if (permission.write) renderData.onCreate = this.create;

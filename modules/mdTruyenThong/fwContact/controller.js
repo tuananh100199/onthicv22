@@ -42,7 +42,6 @@ module.exports = app => {
         app.model.contact.delete(req.body._id, error => res.send({ error }));
     });
 
-
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/contact', (req, res) => app.model.contact.create(req.body.contact, (error, item) => {
         if (item) {

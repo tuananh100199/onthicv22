@@ -4,48 +4,40 @@ import { createContact } from './redux';
 import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 
 class SectionContact extends React.Component {
-    constructor(props) {
-        super(props);
-        this.background = React.createRef();
-        this.name = React.createRef();
-        this.email = React.createRef();
-        this.subject = React.createRef();
-        this.message = React.createRef();
-    }
     componentDidMount() {
         T.ftcoAnimate();
-        $(this.background.current).parallax()
+        $(this.background).parallax()
     }
 
     componentWillUnmount() {
-        $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy')
+        $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy')
     }
 
     sendMessage = (e) => {
         e.preventDefault();
-        if (this.name.current.value == '') {
+        if (this.name.value == '') {
             T.notify('Tên bị trống!', 'danger');
-            (this.name.current).focus();
-        } else if (this.email.current.value == '') {
+            this.name.focus();
+        } else if (this.email.value == '') {
             T.notify('Email bị trống!', 'danger');
-            (this.email.current).focus();
-        } else if (!T.validateEmail(this.email.current.value)) {
+            this.email.focus();
+        } else if (!T.validateEmail(this.email.value)) {
             T.notify('Email không hợp lệ!', 'danger');
-            (this.email.current).focus();
-        } else if (this.subject.current.value == '') {
+            this.email.focus();
+        } else if (this.subject.value == '') {
             T.notify('Chủ đề bị trống!', 'danger');
-            (this.subject.current).focus();
-        } else if (this.message.current.value == '') {
+            this.subject.focus();
+        } else if (this.message.value == '') {
             T.notify('Nội dung bị trống!', 'danger');
-            (this.message.current).focus();
+            this.message.focus();
         } else {
             this.props.createContact({
-                name: this.name.current.value,
-                email: this.email.current.value,
-                subject: this.subject.current.value,
-                message: this.message.current.value
+                name: this.name.value,
+                email: this.email.value,
+                subject: this.subject.value,
+                message: this.message.value
             }, () => {
-                this.name.current.value = this.email.current.value = this.subject.current.value = this.message.current.value = '';
+                this.name.value = this.email.value = this.subject.value = this.message.value = '';
                 T.notify('Tin nhắn của bạn đã được gửi!', 'success', true, 3000);
             });
         }
@@ -61,7 +53,7 @@ class SectionContact extends React.Component {
 
         return [
             <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
-                <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={contact} data-speed='0.8' />
+                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={contact} data-speed='0.8' />
                 <div className='home_overlay'><img src='img/home_overlay.png' alt='' /></div>
                 <div className='home_container'>
                     <div className='container'>
@@ -86,10 +78,10 @@ class SectionContact extends React.Component {
                                 <div className='contact_form_title'>Liên hệ</div>
                                 <form className='contact_form' id='contact_form' onSubmit={this.sendMessage}>
                                     <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
-                                        <input type='text' className='contact_input' ref={this.name} placeholder='Tên' />
-                                        <input type='email' className='contact_input' ref={this.email} placeholder='Email' />
-                                        <input type='text' className='contact_input w-100' ref={this.subject} placeholder='Chủ đề' />
-                                        <textarea name='message' className='contact_input w-100' ref={this.message} cols='30' rows='10' placeholder='Nội dung' />
+                                        <input type='text' className='contact_input' ref={e => this.name = e} placeholder='Tên' />
+                                        <input type='email' className='contact_input' ref={e => this.email = e} placeholder='Email' />
+                                        <input type='text' className='contact_input w-100' ref={e => this.subject = e} placeholder='Chủ đề' />
+                                        <textarea name='message' className='contact_input w-100' ref={e => this.message = e} cols='30' rows='10' placeholder='Nội dung' />
                                     </div>
                                     <button className='button button_1 contact_button trans_200'>gửi tin nhắn</button>
                                 </form>
