@@ -111,7 +111,7 @@ class DivisionEditPage extends AdminPage {
                     <h3 className='tile-title'>Mô tả</h3>
                     <div className='tile-body'>
                         <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
-                        <FormEditor ref={e => this.itemEditor = e} height='400px' label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                        <FormEditor ref={e => this.itemEditor = e} height='400px' label='Mô tả chi tiết' uploadUrl='/user/upload?category=division' readOnly={readOnly} />
                     </div>
                 </div>
 

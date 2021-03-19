@@ -2,21 +2,35 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
-import Editor from 'view/component/CkEditor4';
 import { Select } from 'view/component/Input';
 import { ajaxSelectSubject } from '../fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
+import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox } from 'view/component/AdminPage';
 
-class CourseTypeModal extends React.Component {
-    state = { item: null };
-    modal = React.createRef();
+class CourseTypeModal extends AdminModal {
     subjectSelect = React.createRef();
 
     show = () => {
-        this.subjectSelect.current.val('');
-        $(this.modal.current).modal('show');
+        this.itemSubject.value('');
+        // this.subjectSelect.current.val('');
+        this.tiemSubject.focus();
+        // $(this.modal.current).modal('show');
     }
 
+    onSubmit = () => {
+        const changeItem = this.itemSubject.value();
+        if (!changeItem) {
+            T.notify('Tên cơ sở bị trống!', 'danger');
+            this.tiemSubject.focus();
+        } else {
+            const subjectList = this.props.item.subjectList;
+            subjectList.push(changeItem);
+            this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
+                T.notify('Thêm môn học thành công', 'success');
+                this.hide();
+            });
+        }
+    }
     save = (event) => {
         const changeItem = this.subjectSelect.current.val();
         const subjectList = this.props.item.subjectList;
@@ -114,10 +128,10 @@ class AdminCourseTypeEditPage extends React.Component {
         })
     }
 
-    showSelectModal = (e) => {
-        e.preventDefault();
-        this.modal.current.show();
-    }
+    // showSelectModal = (e) => {
+    //     e.preventDefault();
+    //     this.modal.current.show();
+    // }
 
     changeActive = (event) => this.setState({ item: { ...this.state.item, isPriceDisplayed: event.target.checked } })
 
@@ -206,14 +220,16 @@ class AdminCourseTypeEditPage extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className='form-group'>
+                        <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
+                        <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                        {/* <div className='form-group'>
                             <label className='control-label'>Mô tả ngắn gọn</label>
                             <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={5} />
                         </div>
                         <div className='form-group'>
                             <label className='control-label'>Mô tả chi tiết </label>
                             <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                        </div>
+                        </div> */}
                         <div className='tile-footer' style={{ textAlign: 'right' }}>
                             <button className='btn btn-primary' type='button' onClick={this.save}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
@@ -224,7 +240,7 @@ class AdminCourseTypeEditPage extends React.Component {
                         {table}
                         {readOnly ? null :
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-success' type='button' onClick={this.showSelectModal}>
+                                <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
                             </div>}
