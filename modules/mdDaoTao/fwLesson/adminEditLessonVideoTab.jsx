@@ -52,14 +52,14 @@ class VideoModal extends AdminModal {
         title: 'Video mới',
         size: 'large',
         body:
-            <div>
-                <FormTextBox ref={e => this.itemTitle = e} label='Tên video' />
-                <div className='row'>
-                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' className='col-md-8' />
-                    <div className='col-md-4'>
-                        <label>Hình đại diện</label>
-                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
-                    </div>
+            <div className='row'>
+                <div className='col-md-8'>
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tên video' />
+                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' />
+                </div>
+                <div className='col-md-4'>
+                    <label>Hình đại diện</label>
+                    <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
                 </div>
             </div>
     });
@@ -163,7 +163,6 @@ class adminEditLessonVideo extends React.Component {
         const lessonVideo = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ?
             this.props.lesson.listLessonVideo.lessonVideo : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermissions.includes('lesson:write');
         let table = 'Chưa có bài học!';
         if (lessonVideo && lessonVideo.length > 0) {
             table = (

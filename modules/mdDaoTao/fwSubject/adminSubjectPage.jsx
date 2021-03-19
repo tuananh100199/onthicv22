@@ -3,28 +3,24 @@ import { connect } from 'react-redux';
 import { getSubjectInPage, createSubject, deleteSubject } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 class SubjectModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => {
-            this.onShown(() => $('#subjectName').focus());
-        });
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => $('#subjectName').val('');
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: $('#subjectName').val() };
+        const newData = { title: this.itemTitle.value(), };
         if (newData.title == '') {
             T.notify('Tên môn học bị trống!', 'danger');
-            $('#subjectName').focus();
+            this.itemTitle.focus();
         } else {
             this.props.createSubject(newData, data => {
-                if (data.item) {
-                    this.hide();
-                    this.props.history.push('/user/dao-tao/mon-hoc/edit/' + data.item._id);
-                }
+                this.hide();
+                data && data.item && this.props.history.push('/user/dao-tao/mon-hoc/edit/' + data.item._id);
             });
         }
     }
@@ -32,10 +28,7 @@ class SubjectModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Môn học mới',
         body:
-            <div className='form-group'>
-                <label htmlFor='subjectName'>Tên môn học</label>
-                <input className='form-control' id='subjectName' type='text' placeholder='Nhập môn học' autoFocus={true} />
-            </div>
+            <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' />
     });
 }
 

@@ -2,10 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
-import Editor from 'view/component/CkEditor4';
 import { AdminModal, FormCheckbox, FormEditor, FormTextBox } from 'view/component/AdminPage';
 class QuestionModal extends AdminModal {
-    editor = React.createRef();
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
@@ -40,7 +38,7 @@ class QuestionModal extends AdminModal {
         body:
             <div>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên câu hỏi' />
-                <FormCheckbox ref={e => this.itemIsActive = e} className='form-group col-md-4' label='Kích hoạt' />
+                <FormCheckbox ref={e => this.itemIsActive = e} label='Kích hoạt' />
                 <FormEditor ref={e => this.itemEditor = e} label='Nội dung câu hỏi' />
             </div>
     });
@@ -48,7 +46,6 @@ class QuestionModal extends AdminModal {
 
 class AdminEditQuestion extends React.Component {
     state = { item: null };
-    editor = React.createRef();
     modal = React.createRef();
 
     componentDidMount() {

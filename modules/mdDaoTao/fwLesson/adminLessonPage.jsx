@@ -3,22 +3,23 @@ import { connect } from 'react-redux';
 import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 class LessonModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $('#lessonName').focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => $('#lessonName').val('');
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: $('#lessonName').val() };
+        const newData = { title: this.itemTitle.value(), };
         if (newData.title == '') {
             T.notify('Tên bài học bị trống!', 'danger');
-            $('#lessonName').focus();
+            this.itemTitle.focus();
         } else {
             this.props.createLesson(newData, data => {
+                this.hide();
                 data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id);
             });
         }
@@ -27,10 +28,7 @@ class LessonModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Bài học mới',
         body:
-            <div className='form-group'>
-                <label htmlFor='lessonName'>Tên bài học</label>
-                <input className='form-control' id='lessonName' type='text' placeholder='Nhập tên bài học' autoFocus={true} />
-            </div>
+            <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' />
     });
 }
 
