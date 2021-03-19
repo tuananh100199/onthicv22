@@ -63,7 +63,9 @@ module.exports = (app) => {
                         }
                     });
                 } else {
-                    res.send({ error, lessonVideo });
+                    app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
+                        res.send({ error, item });
+                    })
                 }
             }
         });
