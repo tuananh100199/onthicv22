@@ -1,31 +1,27 @@
 import React from 'react';
 import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem';
 import Editor from 'view/component/CkEditor4';
+import { AdminPage, FormTabs, FormTextBox, FormRichTextBox, FormEditor } from 'view/component/AdminPage';
 
 class EmailItem extends React.Component {
     title = React.createRef();
     editor = React.createRef();
 
     set = (title, text, html) => {
-        this.title.current.value = title;
+        this.title.value(title);
         this.editor.current.html(html);
     }
 
-    get = () => {
-        return {
-            title: this.title.current.value,
-            text: this.editor.current.text(),
-            html: this.editor.current.html(),
-        }
-    }
+    get = () => ({
+        title: this.title.value(),
+        text: this.editor.current.text(),
+        html: this.editor.current.html(),
+    });
 
     render = () => (
         <div className={this.props.active ? 'tab-pane fade active show' : 'tab-pane fade'} id={this.props.id}>
             <div className='tile-body'>
-                <div className='form-group'>
-                    <label className='control-label'>Chủ đề</label>
-                    <input className='form-control' type='text' defaultValue='' ref={this.title} placeholder='Subject' />
-                </div>
+                <FormTextBox ref={e => this.title = e} label='Chủ đề' readOnly={this.props.readOnly} />
                 <div className='form-group'>
                     <label className='control-label'>HTML</label>
                     <small className='form-text text-muted'>Parameters: {this.props.params}</small>
@@ -63,8 +59,8 @@ export default class EmailPage extends React.Component {
     }
 
     save = () => {
-        const emailType = $('ul.nav.nav-tabs li.nav-item a.nav-link.active').attr('href').substring(1);
-        const email = this[emailType].current.get();
+        const emailType = $('ul.nav.nav-tabs li.nav-item a.nav-link.active').attr('href').substring(1),
+            email = this[emailType].current.get();
         saveSystemEmails(emailType, email);
     }
 

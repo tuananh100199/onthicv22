@@ -19,7 +19,7 @@ class AdminEditInfo extends React.Component {
                     const item = data.item;
                     this.itemTitle.value(item.title);
                     this.itemDescription.value(item.shortDescription);
-                    this.itemEditor.value(item.detailDescription);
+                    this.itemEditor.html(item.detailDescription);
                     this.itemTitle.focus();
                     this.setState(data);
                 } else {
@@ -33,7 +33,7 @@ class AdminEditInfo extends React.Component {
         const changes = {
             title: this.itemTitle.value(),
             shortDescription: this.itemDescription.value(),
-            detailDescription: this.itemEditor.value(),
+            detailDescription: this.itemEditor.html(),
         };
         this.props.updateLesson(this.state.item._id, changes);
     }
