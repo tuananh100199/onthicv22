@@ -140,7 +140,7 @@ class AdminHeader extends React.Component {
                 <a className='app-sidebar__toggle' href='#' data-toggle='sidebar' aria-label='Hide Sidebar' />
                 <ul className='app-nav'>
                     {isAdmin || isDebug ?
-                        <li className='app-nav__item'>
+                        <li className='app-nav__item' style={{ whiteSpace: 'nowrap' }}>
                             <a href='#' style={{ color: 'white' }} onClick={this.showDebugModal}>Switch user</a>
                         </li> : null}
                     <li className='app-search' style={{ display: 'none' }}>

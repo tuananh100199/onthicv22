@@ -4,7 +4,7 @@ module.exports = app => {
         type: String,
         title: String,
         image: String,
-        active: { type: Boolean, default: false }
+        active: { type: Boolean, default: true }
     });
     const model = app.db.model('Category', schema);
 
@@ -32,7 +32,7 @@ module.exports = app => {
             });
         }),
 
-        getAll: (condition, done) =>  model.find(condition).sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
 
         get: (_id, done) => model.findOne({ _id }, done),
 

@@ -16,7 +16,8 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/division/all', app.permission.check('division:read'), (req, res) => {
-        const condition = {}, searchText = req.query.searchText;
+        const condition = {},
+            searchText = req.query.searchText;
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');
         }
