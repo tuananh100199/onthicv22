@@ -219,9 +219,6 @@ class adminEditLessonVideo extends React.Component {
             </div>
             <VideoModal _id={_id} ref={this.modal} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} />
             <BackButton to='/user/dao-tao/bai-hoc' />
-            {/* <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
-                <i className='fa fa-lg fa-reply' />
-            </Link> */}
         </>;
     }
 }

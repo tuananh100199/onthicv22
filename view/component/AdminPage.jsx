@@ -250,7 +250,5 @@ export class AdminPage extends React.Component {
             </main>);
     }
 
-    render() {
-        return null;
-    }
+    render() { return null; }
 }

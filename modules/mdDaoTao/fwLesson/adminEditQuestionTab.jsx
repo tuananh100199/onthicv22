@@ -198,7 +198,7 @@ class AdminEditLessonQuestion extends React.Component {
         return (
             <div>
                 <div className='tile-body'>{table}</div>
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
