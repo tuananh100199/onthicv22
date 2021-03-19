@@ -15,6 +15,8 @@ export class FormTabs extends React.Component {
 
     onSelectTab = (e, tabIndex) => e.preventDefault() || this.setState({ tabIndex }) || T.cookie(this.props.id || 'tab', tabIndex);
 
+    selectedTabIndex = () => this.state.tabIndex;
+
     render() {
         const { tabClassName = '', contentClassName = '', tabs = [] } = this.props,
             id = this.props.id || 'tab',
@@ -132,6 +134,8 @@ export class FormEditor extends React.Component {
             return this.props.readOnly ? this.state.value : this.input ? this.input.html() : '';
         }
     }
+
+    text = () => this.input.text();
 
     focus = () => this.input.focus();
 

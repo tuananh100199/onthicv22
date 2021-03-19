@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import { AdminModal, FormCheckbox, FormEditor, FormTextBox } from 'view/component/AdminPage';
+
 class QuestionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
