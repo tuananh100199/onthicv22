@@ -39,10 +39,10 @@ export default function categoryReducer(state = [], data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAll(type) {
+export function getAll(type, searchText) {
     return dispatch => {
-        const url = '/api/category/' + type;
-        T.get(url, data => {
+        const url = `/api/category/${type}`;
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Get categories failed!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

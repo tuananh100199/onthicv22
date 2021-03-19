@@ -2,9 +2,9 @@ module.exports = (app) => {
     const menu = {
         parentMenu: { index: 3100, title: 'Tin tức', icon: 'fa-newspaper-o' },
         menus: {
-            3101: { title: 'Danh mục', link: '/user/news/category' },
+            3101: { title: 'Danh mục tin tức', link: '/user/news/category' },
             3102: { title: 'Tin tức', link: '/user/news/list' },
-            3103: { title: 'Chờ duyệt', link: '/user/news/draft' },
+            3103: { title: 'Tin tức chờ duyệt', link: '/user/news/draft' },
         },
     };
 

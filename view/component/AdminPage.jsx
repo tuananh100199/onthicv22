@@ -47,7 +47,7 @@ export class FormTextBox extends React.Component {
 
     render() {
         let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
-        type = type.toLowerCase();
+        type = type.toLowerCase(); // type = text | email | password
         className = 'form-group' + (className ? ' ' + className : '');
         return readOnly ? (
             <div className={className}>
@@ -124,7 +124,9 @@ export class FormEditor extends React.Component {
 }
 
 export class AdminModal extends React.Component {
+    state = { display: '' };
     modal = React.createRef();
+    _data = {};
 
     onShown = (modalShown) => {
         $(this.modal.current).on('shown.bs.modal', () => modalShown());
@@ -132,41 +134,52 @@ export class AdminModal extends React.Component {
 
     show = (item) => {
         this.onShow && this.onShow(item);
+        // this.setState({ display: 'show123' });
         $(this.modal.current).modal('show');
     }
 
     hide = () => {
         this.onHide && this.onHide();
+        // this.setState({ display: '' });
         $(this.modal.current).modal('hide');
     }
 
-    renderModal = ({ title, body, size }) => (
-        <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-            <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
-                <div className='modal-content'>
-                    <div className='modal-header'>
-                        <h5 className='modal-title'>{title}</h5>
-                        <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                            <span aria-hidden='true'>&times;</span>
+    data = (key, value) => {
+        if (value === '' || value) {
+            this._data[key] = value;
+        } else {
+            return this._data[key];
+        }
+    }
+
+    renderModal = ({ title, body, size }) => {
+        return (
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>{title}</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+                        <div className='modal-body'>{body}</div>
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>
+                                <i className='fa fa-fw fa-lg fa-times' />Đóng
                         </button>
-                    </div>
-                    <div className='modal-body'>{body}</div>
-                    <div className='modal-footer'>
-                        <button type='button' className='btn btn-secondary' data-dismiss='modal'>
-                            <i className='fa fa-fw fa-lg fa-times' />Đóng
-                        </button>
-                        {this.props.permissionWrite == null || this.props.permissionWrite == true ?
-                            <button type='submit' className='btn btn-primary'>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            {this.props.permissionWrite == null || this.props.permissionWrite == true ?
+                                <button type='submit' className='btn btn-primary'>
+                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button> : null}
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
-    );
+                </form>
+            </div>
+        )
+    };
 
     render = () => null;
-
 }
 
 export class AdminPage extends React.Component {

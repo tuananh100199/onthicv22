@@ -169,7 +169,18 @@ class SectionDangKyTuVan extends React.Component {
                                         <select className='col-6 contact_input w-100' id='courseType' ref={this.courseType} defaultValue={null} >
                                             <optgroup className='contact_input' label='Lựa chọn loại khóa học' />
                                         </select>
-                                        <input type='tel' className='intro_input' placeholder='Số điện thoại' ref={this.phone} required='required' />
+                                        <input
+                                            onKeyPress={(event) => {
+                                                if (!/[0-9]/.test(event.key)) {
+                                                event.preventDefault();
+                                                }
+                                            }} 
+                                            type='tel' 
+                                            className='intro_input' 
+                                            placeholder='Số điện thoại' 
+                                            ref={this.phone} 
+                                            required='required'
+                                            />
                                         <input type='text' className='intro_input w-100' ref={this.email} placeholder='Email' />
                                     </div>
                                     <button className='button button_1 intro_button trans_200'>gửi tin nhắn</button>
