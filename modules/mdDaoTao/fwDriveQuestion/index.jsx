@@ -1,8 +1,10 @@
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
+import driveQuestion from './redux';
 
 export default {
     redux: {
+        driveQuestion
     },
     routes: [
         {

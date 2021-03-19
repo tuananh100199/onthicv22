@@ -72,6 +72,7 @@ export function createDriveQuestion(newData, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
+                T.notify('Tạo câu hỏi thi thành công!', 'success');
                 dispatch(getAllDriveQuestions());
             }
         }, error => T.notify('Tạo câu hỏi thi bị lỗi!', 'danger'));
@@ -88,10 +89,26 @@ export function updateDriveQuestion(_id, changes, done) {
                 done && done(data.error);
             } else {
                 dispatch({ type: DriveQuestionGet, item: data.item });
+                T.notify('Cập nhật câu hỏi thi thành công!', 'success');
                 dispatch(getAllDriveQuestions());
                 done && done();
             }
         }, error => T.notify('Cập nhật câu hỏi thi bị lỗi!', 'danger'));
+    }
+}
+
+export function swapDriveQuestion(data, done) {
+    return dispatch => {
+        const url = `/api/drive-question/swap`;
+        T.put(url, { data }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự câu hỏi thi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                dispatch(getAllDriveQuestions());
+                done && done();
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
@@ -129,7 +146,7 @@ export function getAllDriveQuestionByUser(done) {
 
 export const ajaxSelectDriveQuestion = {
     ajax: true,
-    url: '/api/drive-question/all',
+    url: '/api/category/drive-question',
     data: {},
     processResults: response => ({
         results: response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : []

@@ -23,6 +23,7 @@ class QuestionModal extends AdminModal {
         const _id = $(this.modal.current).data('_id');
         const answerString = this.itemListAnswer.value();
         let ret = (answerString ? answerString : '').split('\n');
+        console.log('ret', ret);
         for (let i = 0; i < ret.length; i++) {
             if (ret[i] == '') ret.splice(i, 1);
         }
