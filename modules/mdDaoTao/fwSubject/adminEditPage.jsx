@@ -6,7 +6,6 @@ import AdminEditInfo from './adminEditInfoTab';
 import AdminEditLesson from './adminEditLessonTab';
 import AdminEditQuestion from './adminEditQuestionTab';
 
-
 class AdminEditPage extends React.Component {
     state = { item: null };
 

@@ -41,21 +41,20 @@ class AdminEditInfo extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('subject:write');
-        return (
-            <div>
-                <div className='tile-body'>
-                    <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' />
-                    <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' />
-                    <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' />
-                </div>
-                {readOnly ? null :
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
-                        <button type='button' className='btn btn-primary' onClick={this.save}>
-                            <i className='fa fa-lg fa-save' /> Lưu
+        return <>
+            <div className='tile-body'>
+                <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' />
+                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' />
+                <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' />
+            </div>
+            {readOnly ? null :
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <button type='button' className='btn btn-primary' onClick={this.save}>
+                        <i className='fa fa-lg fa-save' /> Lưu
                                 </button>
-                    </div>}
-                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-            </div>);
+                </div>}
+            <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+        </>;
     }
 }
 

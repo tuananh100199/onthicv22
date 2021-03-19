@@ -184,19 +184,19 @@ class AdminEditQuestion extends React.Component {
                 </table>
             );
         }
-        return (
-            <div>
-                <div className='tile-body'>{table}</div>
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
+        return <>
+            <div className='tile-body'>
+                {table}
+                <div style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
-                    </button>
+                        </button>
                 </div>
-                {/* <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} /> */}
-                <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
-                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
-        );
+            {/* <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} /> */}
+            <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
+            <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+        </>;
     }
 }
 

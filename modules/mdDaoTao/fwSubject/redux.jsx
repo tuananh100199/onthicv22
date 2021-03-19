@@ -102,6 +102,7 @@ export function deleteSubject(_id) {
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
     }
 }
+
 export function getLessonList(subjectId, done) {
     return dispatch => {
         const url = `/api/subject/lesson/${subjectId}`;
@@ -134,7 +135,6 @@ export function addLesson(subjectId, lessonId, done) {
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
-
 export function swapLesson(_id, data, done) {
     return dispatch => {
         const url = `/api/subject/lesson/swap`;
@@ -174,7 +174,8 @@ export const ajaxSelectSubject = {
         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
     })
 }
-// question Question
+
+// Question
 export function getQuestionsList(subjectId, done) {
     return dispatch => {
         const url = `/api/subject/question/${subjectId}`;
