@@ -54,7 +54,7 @@ export function getAllCourseType(done) {
 
 export function getCourseType(_id, done) {
     return dispatch => {
-        const url = `/api/course-type/edit/${_id}`;
+        const url = `/api/course-type/item/${_id}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy loại khóa học bị lỗi!', 'danger');

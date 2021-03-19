@@ -6,7 +6,6 @@ import { AdminPage } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class CourseTypePage extends AdminPage {
-
     componentDidMount() {
         this.props.getCourseTypeInPage();
     }
@@ -15,10 +14,12 @@ class CourseTypePage extends AdminPage {
         this.props.createCourseType(data => this.props.history.push('/user/course-type/edit/' + data.item._id));
         e.preventDefault();
     }
+
     delete = (e, item) => {
         T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', true, isConfirm => isConfirm && this.props.deleteCourseType(item._id));
         e.preventDefault();
     }
+
     render() {
         const permission = this.getUserPermission('course-type');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.courseType && this.props.courseType.page ?

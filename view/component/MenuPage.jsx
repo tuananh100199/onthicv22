@@ -70,7 +70,7 @@ export default class MenuPage extends React.Component {
             } else if (item.viewType == 'content' && item.view) {
                 itemView = <div style={{ marginTop: '110px' }} dangerouslySetInnerHTML={{ __html: item.view.content }} />;
             } else if (item.viewType == 'all course types') {
-                itemView = <fwCourseType.Section.SectionCourseTypeList />;
+                itemView = <fwCourseType.Section.SectionListView />;
             }
 
             let childComponents = [];

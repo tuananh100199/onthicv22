@@ -125,45 +125,41 @@ class CourseTypeEditPage extends AdminPage {
                 </table>
             );
 
-        const tabs = [
-            {
-                title: 'Thông tin chung', component: <>
+        const componentInfo = <>
+            <div className='row'>
+                <div className='form-group col-md-3 order-md-12'>
+                    <label>Hình đại diện</label>
+                    <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='CourseTypeImage' readOnly={readOnly} />
+                </div>
+                <div className='col-md-9 order-md-1'>
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
                     <div className='row'>
-                        <div className='form-group col-md-3 order-md-12'>
-                            <label>Hình đại diện</label>
-                            <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='CourseTypeImage' readOnly={readOnly} />
-                        </div>
-                        <div className='col-md-9 order-md-1'>
-                            <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' readOnly={readOnly} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
-                            <div className='row'>
-                                <FormTextBox className='col-md-6 order-md-1' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
-                                <FormCheckbox className='col-md-3 order-md-12' style={{ display: 'flex' }} ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' />
-                            </div>
-                        </div>
+                        <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
+                        <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
                     </div>
-                    <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
-                    <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                    <div style={{ textAlign: 'right' }}>
-                        <button className='btn btn-primary' type='button' onClick={this.save}>
-                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                    </div>
-                </>
-            },
-            {
-                title: 'Môn học', component: <>
-                    {table}
-                    {readOnly ? null :
-                        <div style={{ textAlign: 'right' }}>
-                            <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
-                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                                </button>
-                        </div>}
-                    <CourseTypeModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
-                </>
-            },
-        ];
+                </div>
+            </div>
 
+            <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
+            <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+            <div style={{ textAlign: 'right' }}>
+                <button className='btn btn-primary' type='button' onClick={this.save}>
+                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                </button>
+            </div>
+        </>;
+        const componentSubject = <>
+            {table}
+            {readOnly ? null :
+                <div style={{ textAlign: 'right' }}>
+                    <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
+                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+                                </button>
+                </div>}
+            <CourseTypeModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
+        </>;
+
+        const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
         const renderData = {
             icon: 'fa fa-file',
             title: 'Loại khóa học: ' + this.state.title,

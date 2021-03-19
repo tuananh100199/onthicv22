@@ -14,23 +14,21 @@ module.exports = app => {
     const model = app.db.model('Division', schema);
 
     app.model.division = {
-        create: (data, done) => model.find({}).sort({ title: 1 }).limit(1).exec(() => {
-            model.create(data, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    item.image = `/img/division/${item._id}.jpg`;
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => {
-                        if (error) {
-                            done(error);
-                        } else {
-                            item.save(done);
-                        }
-                    });
-                }
-            });
+        create: (data, done) => model.create(data, (error, item) => {
+            if (error) {
+                done(error);
+            } else {
+                item.image = `/img/division/${item._id}.jpg`;
+                const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                    destPath = app.path.join(app.publicPath, item.image);
+                app.fs.copyFile(srcPath, destPath, error => {
+                    if (error) {
+                        done(error);
+                    } else {
+                        item.save(done);
+                    }
+                });
+            }
         }),
 
         getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
