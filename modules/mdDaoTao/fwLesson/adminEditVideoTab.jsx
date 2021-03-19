@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
-import { AdminModal, FormTextBox } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox, BackButton } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
     modal = React.createRef();
@@ -208,18 +208,21 @@ class adminEditLessonVideo extends React.Component {
                 </table>
             );
         }
-        return (
-            <div>
-                <div className='tile-body'>{table}</div>
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
+        return <>
+            <div className='tile-body'>
+                {table}
+                <div style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={this.create}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
-                <VideoModal _id={_id} ref={this.modal} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} />
-                <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
-        );
+            <VideoModal _id={_id} ref={this.modal} createLessonVideo={this.props.createLessonVideo} updateLessonVideo={this.props.updateLessonVideo} />
+            <BackButton to='/user/dao-tao/bai-hoc' />
+            {/* <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+                <i className='fa fa-lg fa-reply' />
+            </Link> */}
+        </>;
     }
 }
 

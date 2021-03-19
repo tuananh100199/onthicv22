@@ -27,8 +27,7 @@ class LessonModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Bài học mới',
-        body:
-            <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' />
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' />
     });
 }
 
@@ -86,19 +85,12 @@ class LessonPage extends AdminPage {
             title: 'Bài học',
             breadcrumb: ['Bài học'],
             content: <>
-                <div className='tile'>{table}
-                    {permission.write ?
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button type='button' className='btn btn-success' onClick={this.create}>
-                                <i className='fa fa-lg fa-plus' /> Thêm
-                            </button>
-                        </div> : null
-                    }
-                </div>
+                <div className='tile'>{table}</div>
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
                 <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
         };
+        if (permission.write) renderData.onCreate = this.create;
         return this.renderPage(renderData);
     }
 }

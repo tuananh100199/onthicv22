@@ -4,8 +4,8 @@ import { updateLesson, getLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, FormTextBox, FormRichTextBox, FormEditor } from 'view/component/AdminPage';
 import AdminEditInfo from './adminEditInfoTab';
-import AdminEditLessonQuestion from './adminEditLessonQuestionTab';
-import AdminEditLessonVideo from './adminEditLessonVideoTab';
+import AdminEditLessonQuestion from './adminEditQuestionTab';
+import AdminEditLessonVideo from './adminEditVideoTab';
 
 class adminEditPage extends AdminPage {
     state = {};

@@ -156,6 +156,13 @@ export class FormEditor extends React.Component {
     };
 }
 
+export class BackButton extends React.Component {
+    render = () =>
+        <Link to={this.props.to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+            <i className='fa fa-lg fa-reply' />
+        </Link>;
+}
+
 export class AdminModal extends React.Component {
     state = { display: '' };
     _data = {};
