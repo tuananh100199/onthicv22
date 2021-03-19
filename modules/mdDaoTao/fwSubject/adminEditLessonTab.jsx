@@ -39,7 +39,6 @@ class AddLessonModal extends AdminModal {
 
 class AdminEditLesson extends React.Component {
     state = { item: null };
-    editor = React.createRef();
     modal = React.createRef();
 
     componentDidMount() {

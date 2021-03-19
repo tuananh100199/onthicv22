@@ -67,7 +67,6 @@ class VideoModal extends AdminModal {
 
 class adminEditLessonVideo extends React.Component {
     state = { item: null };
-    editor = React.createRef();
     modal = React.createRef();
 
     componentDidMount() {

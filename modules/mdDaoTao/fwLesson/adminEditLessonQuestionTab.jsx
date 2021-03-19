@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { AdminModal, FormCheckbox, FormTextBox, FormEditor, FormRichTextBox } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
-    editor = React.createRef();
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
