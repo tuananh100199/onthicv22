@@ -118,9 +118,7 @@ class SubjectPage extends React.Component {
                         a.title.localeCompare(b.title)).map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>
-                                    {item.title ? item.title : 'null'}
-                                </td>
+                                <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     {!readOnly &&
                                         <div className='btn-group'>

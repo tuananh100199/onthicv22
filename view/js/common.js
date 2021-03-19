@@ -147,9 +147,11 @@ const T = {
     },
 
     validateEmail: email => (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i).test(String(email).toLowerCase()),
+    validateMobile: mobile => /0[0-9]{9,}\b/g.test(mobile),
 
     dateToText: (date, format) => dateformat(date, format ? format : 'dd/mm/yyyy HH:MM:ss'),
     numberDisplay: number => number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
+    mobileDisplay: mobile => mobile.toString().replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3'),
 
     // Libraries ----------------------------------------------------------------------------------
     routeMatcher: routeMatcherLib.routeMatcher,
