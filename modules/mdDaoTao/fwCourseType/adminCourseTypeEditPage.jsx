@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
 import { ajaxSelectSubject } from '../fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
-import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormTabs } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {
-    subjectSelect = React.createRef();
-
+    // subjectSelect = React.createRef();
     show = () => {
         this.itemSubject.value('');
         // this.subjectSelect.current.val('');
@@ -91,39 +90,53 @@ class CourseTypeEditPage extends AdminPage {
             const route = T.routeMatcher('/user/course-type/edit/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
                 if (item) {
-                    this.setState(item);
                     // Custom loop fuction to reduce repeat code when fetching data into initialValue of each FormItem
-                    Object.keys(item).forEach(i => {
-                        const formItemRef = this[`item${i[0].toUpperCase() + i.slice(1)}`];
-                        formItemRef && (i === 'image' ? this.itemImage.setData('course-type:' + (this.state._id || 'new'), (this.state.image || '/img/avatar.png')) : formItemRef.value(item[i]))
-                    })
+                    Object.entries(item).forEach(([key, value]) => {
+                        const formItemRef = this[`item${key[0].toUpperCase()}${key.slice(1)}`];
+                        switch (key) {
+                            case 'image':
+                                formItemRef.setData('course-type:' + (item._id || 'new'), (value || '/img/avatar.png'));
+                                break;
+                            case 'detailDescription': formItemRef.html(value); break;
+                            default: formItemRef && formItemRef.value(value);
+                        }
+                    });
+                    // for (const [key, value] of Object.entries(item)) {
+                    //     const formItemRef = this[`item${key[0].toUpperCase() + key.slice(1)}`];
+                    // }
+                    // Object.keys(item).forEach(i => {
+                    //     const formItemRef = this[`item${i[0][0].toUpperCase() + i[0].slice(1)}`];
+
+                    //     formItemRef && (i === 'image' ? this.itemImage.setData('course-type:' + (this.state._id || 'new'), (this.state.image || '/img/avatar.png')) : formItemRef.value(item[i]))
+                    // })
                     this.itemTitle.focus();
+                    this.setState(item);
                 } else this.props.history.push('/user/course-type/list');
             });
-            let tabIndex = parseInt(T.cookie('componentPageTab')),
-                navTabs = $('#componentPage ul.nav.nav-tabs');
-            if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
-            navTabs.find('li:nth-child(' + (tabIndex + 1) + ') a').tab('show');
-            $('#componentPage').fadeIn();
+            // let tabIndex = parseInt(T.cookie('componentPageTab')),
+            //     navTabs = $('#componentPage ul.nav.nav-tabs');
+            // if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
+            // navTabs.find('li:nth-child(' + (tabIndex + 1) + ') a').tab('show');
+            // $('#componentPage').fadeIn();
 
-            $(`a[data-toggle='tab']`).on('shown.bs.tab', e => {
-                T.cookie('componentPageTab', $(e.target).parent().index());
-            });
+            // $(`a[data-toggle='tab']`).on('shown.bs.tab', e => {
+            //     T.cookie('componentPageTab', $(e.target).parent().index());
+            // });
         });
     }
 
     remove = (e, index) => {
-        e.preventDefault();
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                let subjectList = this.props.courseType.courseType.subjectList || [];
+                let subjectList = this.props.courseType.item.subjectList || [];
                 subjectList.splice(index, 1);
                 if (subjectList.length == 0) subjectList = 'empty';
-                this.props.updateCourseType(this.state.item._id, { subjectList }, () => {
+                this.props.updateCourseType(this.state._id, { subjectList }, () => {
                     T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800);
                 });
             }
         })
+        e.preventDefault();
     }
 
     // showSelectModal = (e) => {
@@ -135,122 +148,188 @@ class CourseTypeEditPage extends AdminPage {
 
     save = () => {
         const changes = {
-            title: $('#title').val().trim(),
-            price: $('#price').val().trim(),
-            shortDescription: $('#shortDescription').val().trim(),
-            detailDescription: this.editor.current.html(),
-            isPriceDisplayed: this.state.item.isPriceDisplayed
+            title: this.itemTitle.value(),
+            shortDescription: this.itemShortDescription.value().trim(),
+            detailDescription: this.itemDetailDescription.html(),
+            price: this.itemPrice.value().trim(),
+            isPriceDisplayed: this.itemIsPriceDisplayed.value()
         };
-        this.props.updateCourseType(this.state.item._id, changes)
+        this.props.updateCourseType(this.state._id, changes, () => T.notify('Cập nhật loại khóa học thành công!', 'success'))
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermissions.includes('course-type:write');
-        const item = this.props.courseType && this.props.courseType.courseType ? this.props.courseType.courseType : { title: '', subjectList: [] };
-        let table = item.subjectList && item.subjectList.length ? (
-            <table className='table table-hover table-bordered'>
-                <thead>
-                    <tr>
-                        <th style={{ width: 'auto' }}>#</th>
-                        <th style={{ width: '100%' }}>Tên môn học</th>
-                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {item.subjectList.sort((a, b) => a.title.localeCompare(b.title)).map((item, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
-                            <td>
-                                {readOnly ? null :
-                                    <div className='btn-group'>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
-                                    </div>}
-                            </td>
+        const permission = this.getUserPermission('course-type'), readOnly = !permission.write;
+        const item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjectList: [] };
+        let table = 'Không có môn học!';
+        if (item.subjectList && item.subjectList.length)
+            table = (
+                <table className='table table-hover table-bordered'>
+                    <thead>
+                        <tr>
+                            <th style={{ width: 'auto' }}>#</th>
+                            <th style={{ width: '100%' }}>Tên môn học</th>
+                            {permission.delete && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        ) : <p>Không có môn học!</p>
+                    </thead>
+                    <tbody>
+                        {item.subjectList.sort((a, b) => a.title.localeCompare(b.title)).map((item, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>
+                                    {permission.write ?
+                                        <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} data-id={item._id}>
+                                            {item.title}
+                                        </Link> : item.title}</td>
+                                <td>
+                                    {permission.delete ?
+                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item)}>
+                                            <i className='fa fa-lg fa-trash' />
+                                        </a> : null}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
 
-        return (
-            <main className='app-content' id='componentPage' style={{ display: 'none' }}>
-                <div className='app-title'>
-                    <h1><i className='fa fa-file' /> Loại khóa học: {item.title || ''}</h1>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
-                        <Link to='/user/course/list'>Loại khóa học</Link>&nbsp;/&nbsp;Chỉnh sửa
-                    </ul>
-                </div>
-
-                <ul className='nav nav-tabs'>
-                    <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#courseTypeCommon'>Thông tin chung</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#courseTypeSubject'>Môn học</a></li>
-                </ul>
-                <div className='tab-content tile'>
-                    <div className='tab-pane fade active show' id='courseTypeCommon'>
-                        <div className='row'>
-                            <div className='form-group col-md-3 order-md-12'>
-                                <label className='control-label'>Hình đại diện</label>
-                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseTypeImage' />
-                            </div>
-                            <div className='col-md-9 order-md-1'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Tên</label>
-                                    <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
-                                </div>
-                                <div className='row'>
-                                    <div className='form-group col-md-6 order-md-1'>
-                                        <label className='control-label'>Giá</label>
-                                        <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
+        const tabs = [
+            {
+                title: 'Thông tin chung', component: <>
+                    <div className='row'>
+                        <div className='form-group col-md-3 order-md-12'>
+                            <label>Hình đại diện</label>
+                            <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='CourseTypeImage' readOnly={readOnly} />
+                        </div>
+                        <div className='col-md-9 order-md-1'>
+                            <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' readOnly={readOnly} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
+                            {/* <div className='form-group'>
+                                <label className='control-label'>Tên</label>
+                                <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
+                            </div> */}
+                            <div className='row'>
+                                <FormTextBox className='col-md-6 order-md-1' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
+                                {/* <div className='form-group col-md-6 order-md-1'>
+                                    <label className='control-label'>Giá</label>
+                                    <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
+                                </div> */}
+                                <FormCheckbox className='col-md-3 order-md-12' style={{ display: 'flex' }} ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' />
+                                {/* <div className='form-group col-md-3 order-md-12' style={{ display: 'flex' }}>
+                                    <label className='control-label'>Hiển thị giá:</label>
+                                    <div className='toggle' style={{ paddingLeft: '10px' }}>
+                                        <label>
+                                            <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
+                                        </label>
                                     </div>
-                                    <div className='form-group col-md-3 order-md-12' style={{ display: 'flex' }}>
-                                        <label className='control-label'>Hiển thị giá:</label>
-                                        <div className='toggle' style={{ paddingLeft: '10px' }}>
-                                            <label>
-                                                <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
-                        <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
-                        <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                        {/* <div className='form-group'>
-                            <label className='control-label'>Mô tả ngắn gọn</label>
-                            <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={5} />
-                        </div>
-                        <div className='form-group'>
-                            <label className='control-label'>Mô tả chi tiết </label>
-                            <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                        </div> */}
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button className='btn btn-primary' type='button' onClick={this.save}>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                    </div>
+                    <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
+                    <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
-                        </div>
                     </div>
-                    <div className='tab-pane fade' id='courseTypeSubject'>
-                        {table}
-                        {readOnly ? null :
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+                </>
+            },
+            {
+                title: 'Môn học', component: <>
+                    {table}
+                    {readOnly ? null :
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
-                            </div>}
-                        <CourseTypeModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
-                    </div>
-                </div>
+                        </div>}
+                    <CourseTypeModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
+                </>
+            },
+        ];
 
-                <Link to='/user/course-type/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>
-            </main>
-        );
+        const renderData = {
+            icon: 'fa fa-file',
+            title: 'Loại khóa học: ' + this.state.title,
+            breadcrumb: [<Link to='/user/course-type/list'>Loại khóa học</Link>, 'Chỉnh sửa'],
+            content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
+        };
+        return this.renderPage(renderData);
+
+        // return (
+        //     <main className='app-content' id='componentPage' style={{ display: 'none' }}>
+        //         <div className='app-title'>
+        //             <h1><i className='fa fa-file' /> Loại khóa học: {item.title || ''}</h1>
+        //             <ul className='app-breadcrumb breadcrumb'>
+        //                 <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+        //                 <Link to='/user/course/list'>Loại khóa học</Link>&nbsp;/&nbsp;Chỉnh sửa
+        //             </ul>
+        //         </div>
+
+        //         <ul className='nav nav-tabs'>
+        //             <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#courseTypeCommon'>Thông tin chung</a></li>
+        //             <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#courseTypeSubject'>Môn học</a></li>
+        //         </ul>
+        //         <div className='tab-content tile'>
+        //             <div className='tab-pane fade active show' id='courseTypeCommon'>
+        //                 <div className='row'>
+        //                     <div className='form-group col-md-3 order-md-12'>
+        //                         <label className='control-label'>Hình đại diện</label>
+        //                         <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='CourseTypeImage' />
+        //                     </div>
+        //                     <div className='col-md-9 order-md-1'>
+        //                         <div className='form-group'>
+        //                             <label className='control-label'>Tên</label>
+        //                             <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
+        //                         </div>
+        //                         <div className='row'>
+        //                             <div className='form-group col-md-6 order-md-1'>
+        //                                 <label className='control-label'>Giá</label>
+        //                                 <input className='form-control' type='number' placeholder='Giá loại khóa học' id='price' readOnly={readOnly} />
+        //                             </div>
+        //                             <div className='form-group col-md-3 order-md-12' style={{ display: 'flex' }}>
+        //                                 <label className='control-label'>Hiển thị giá:</label>
+        //                                 <div className='toggle' style={{ paddingLeft: '10px' }}>
+        //                                     <label>
+        //                                         <input type='checkbox' checked={this.state.item ? this.state.item.isPriceDisplayed : 0} onChange={(e) => this.changeActive(e)} /><span className='button-indecator' />
+        //                                     </label>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 </div>
+        //                 <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
+        //                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+        //                 {/* <div className='form-group'>
+        //                     <label className='control-label'>Mô tả ngắn gọn</label>
+        //                     <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={5} />
+        //                 </div>
+        //                 <div className='form-group'>
+        //                     <label className='control-label'>Mô tả chi tiết </label>
+        //                     <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+        //                 </div> */}
+        //                 <div className='tile-footer' style={{ textAlign: 'right' }}>
+        //                     <button className='btn btn-primary' type='button' onClick={this.save}>
+        //                         <i className='fa fa-fw fa-lg fa-save' /> Lưu
+        //                     </button>
+        //                 </div>
+        //             </div>
+        //             <div className='tab-pane fade' id='courseTypeSubject'>
+        //                 {table}
+        //                 {readOnly ? null :
+        //                     <div className='tile-footer' style={{ textAlign: 'right' }}>
+        //                         <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
+        //                             <i className='fa fa-fw fa-lg fa-plus' /> Thêm
+        //                         </button>
+        //                     </div>}
+        //                 <CourseTypeModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
+        //             </div>
+        //         </div>
+
+        //         <Link to='/user/course-type/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+        //             <i className='fa fa-lg fa-reply' />
+        //         </Link>
+        //     </main>
+        // );
     }
 }
 
