@@ -8,18 +8,17 @@ import ImageBox from 'view/component/ImageBox';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormTabs } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {
-    subjectSelect = React.createRef();
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $(this.subjectSelect.current).focus()));
+        $(document).ready(() => this.onShown(() => $(this.subjectSelect).focus()));
     }
 
-    onShow = () => this.subjectSelect.current.val('');
+    onShow = () => this.subjectSelect.val('');
 
     onSubmit = () => {
-        const changeItem = this.subjectSelect.current.val();
+        const changeItem = this.subjectSelect.val();
         if (!changeItem) {
             T.notify('Tên cơ sở bị trống!', 'danger');
-            $(this.subjectSelect.current).focus();
+            $(this.subjectSelect).focus();
         } else {
             const subjectList = this.props.item.subjectList;
             subjectList.push(changeItem);
@@ -33,7 +32,7 @@ class CourseTypeModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Môn học',
         body:
-            <Select ref={this.subjectSelect} displayLabel={true}
+            <Select ref={e => this.subjectSelect = e} displayLabel={true}
                 adapter={{
                     ...ajaxSelectSubject, processResults: response =>
                         ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
@@ -43,7 +42,6 @@ class CourseTypeModal extends AdminModal {
 
 class CourseTypeEditPage extends AdminPage {
     state = {};
-    modal = React.createRef();
 
     componentDidMount() {
         T.ready('/user/course-type/list', () => {
@@ -61,7 +59,9 @@ class CourseTypeEditPage extends AdminPage {
                     });
                     this.itemTitle.focus();
                     this.setState(item);
-                } else this.props.history.push('/user/course-type/list');
+                } else {
+                    this.props.history.push('/user/course-type/list');
+                }
             });
         });
     }
@@ -79,6 +79,7 @@ class CourseTypeEditPage extends AdminPage {
         })
         e.preventDefault();
     }
+
     save = () => {
         const changes = {
             title: this.itemTitle.value(),

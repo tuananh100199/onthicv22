@@ -10,15 +10,10 @@ class CourseTypePage extends AdminPage {
         this.props.getCourseTypeInPage();
     }
 
-    create = (e) => {
-        this.props.createCourseType(data => this.props.history.push('/user/course-type/edit/' + data.item._id));
-        e.preventDefault();
-    }
+    create = e => e.preventDefault() || this.props.createCourseType(data => this.props.history.push('/user/course-type/edit/' + data.item._id));
 
-    delete = (e, item) => {
-        T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', true, isConfirm => isConfirm && this.props.deleteCourseType(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', true, isConfirm =>
+        isConfirm && this.props.deleteCourseType(item._id));
 
     render() {
         const permission = this.getUserPermission('course-type');

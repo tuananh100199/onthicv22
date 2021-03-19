@@ -27,35 +27,27 @@ class SubjectModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Môn học mới',
-        body:
-            <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' />
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' />
     });
 }
 
 class AdminListSubject extends AdminPage {
-    modal = React.createRef();
-
     componentDidMount() {
         this.props.getSubjectInPage();
         T.ready('/user/dao-tao/mon-hoc', null);
         T.onSearch = (searchText) => this.props.getSubjectInPage(null, null, searchText);
     }
 
-    create = (e) => {
-        e.preventDefault();
-        this.modal.current.show();
-    }
+    create = e => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteSubject(item._id));
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm =>
+        isConfirm && this.props.deleteSubject(item._id));
 
     render() {
         const permission = this.getUserPermission('subject');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.subject && this.props.subject.page ?
             this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
-        let table = 'Không có loại Môn học!';
+        let table = 'Không có môn học!';
         if (list && list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
@@ -71,44 +63,37 @@ class AdminListSubject extends AdminPage {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
-                                {permission.write || permission.delete ? <td>
-                                    <div className='btn-group'>
-                                        {permission.write ?
-                                            <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} className='btn btn-primary'>
-                                                <i className='fa fa-lg fa-edit' />
-                                            </Link> : null}
-                                        {permission.delete || permission.write ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td> : null}
+                                {permission.write || permission.delete ?
+                                    <td>
+                                        <div className='btn-group'>
+                                            {permission.write ?
+                                                <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} className='btn btn-primary'>
+                                                    <i className='fa fa-lg fa-edit' />
+                                                </Link> : null}
+                                            {permission.delete ?
+                                                <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                                    <i className='fa fa-lg fa-trash' />
+                                                </a> : null}
+                                        </div>
+                                    </td> : null}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             );
         }
+
         const renderData = {
             icon: 'fa fa-briefcase',
             title: 'Môn học',
             breadcrumb: ['Môn học'],
             content: <>
-
-                <div className='tile'>{table}
-                    {permission.write ?
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button type='button' className='btn btn-success' onClick={this.create}>
-                                <i className='fa fa-lg fa-plus' /> Thêm
-                            </button>
-                        </div> : null
-                    }
-                </div>
-                <Pagination name='pageSubject' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getSubjectInPage} />
-                <SubjectModal ref={this.modal} createSubject={this.props.createSubject} history={this.props.history} />
+                <div className='tile'>{table}</div>
+                <Pagination name='pageSubject' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getSubjectInPage} />
+                <SubjectModal ref={e => this.modal = e} createSubject={this.props.createSubject} history={this.props.history} />
             </>,
         };
+        if (permission.write) renderData.onCreate = this.create;
         return this.renderPage(renderData);
     }
 }

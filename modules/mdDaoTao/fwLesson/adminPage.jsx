@@ -70,7 +70,7 @@ class LessonPage extends AdminPage {
                                             <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
                                                 <i className='fa fa-lg fa-edit' />
                                             </Link> : null}
-                                        {permission.delete || permission.write ?
+                                        {permission.delete ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}

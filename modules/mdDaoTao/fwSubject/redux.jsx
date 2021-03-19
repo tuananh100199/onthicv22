@@ -43,7 +43,7 @@ export function getSubjectInPage(pageNumber, pageSize, searchText, done) {
 
 export function getSubject(_id, done) {
     return dispatch => {
-        const url = '/api/subject/edit/' + _id;
+        const url = `/api/subject/item/${_id}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
