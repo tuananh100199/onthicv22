@@ -4,7 +4,8 @@ module.exports = app => {
         type: String,
         title: String,
         image: String,
-        active: { type: Boolean, default: true }
+        active: { type: Boolean, default: true },
+        description: String,
     });
     const model = app.db.model('Category', schema);
 
