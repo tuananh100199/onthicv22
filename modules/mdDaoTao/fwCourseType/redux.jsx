@@ -4,7 +4,6 @@ import T from 'view/js/common';
 const CourseTypeGetPage = 'CourseTypeGetPage';
 const CourseTypeGetOne = 'CourseTypeGetOne';
 const CourseTypeGetAll = 'CourseTypeGetAll';
-const CourseTypeUpdate = 'CourseTypeUpdate';
 
 export default function courseTypeReducer(state = null, data) {
     switch (data.type) {
@@ -14,9 +13,7 @@ export default function courseTypeReducer(state = null, data) {
             return Object.assign({}, state, { page: data.page });
 
         case CourseTypeGetOne:
-            return Object.assign({}, state, { courseType: data.item });
-        case CourseTypeUpdate:
-            return Object.assign({}, state, { courseType: data.item });
+            return Object.assign({}, state, { item: data.item });
         default:
             return state;
     }
@@ -63,7 +60,7 @@ export function getCourseType(_id, done) {
                 T.notify('Lấy loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                if (done) done(data.item);
                 dispatch({ type: CourseTypeGetOne, item: data.item });
             }
         }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
@@ -94,8 +91,7 @@ export function updateCourseType(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin loại khóa học thành công!', 'info');
-                dispatch({ type: CourseTypeUpdate, item: data.item });
+                dispatch({ type: CourseTypeGetOne, item: data.item });
                 dispatch(getCourseTypeInPage());
                 done && done();
             }
