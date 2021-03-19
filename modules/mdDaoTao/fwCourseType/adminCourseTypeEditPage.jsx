@@ -92,6 +92,7 @@ class CourseTypeEditPage extends AdminPage {
             this.props.getCourseType(params._id, item => {
                 if (item) {
                     this.setState(item);
+                    // Custom loop fuction to reduce repeat code when fetching data into initialValue of each FormItem
                     Object.keys(item).forEach(i => {
                         const formItemRef = this[`item${i[0].toUpperCase() + i.slice(1)}`];
                         formItemRef && (i === 'image' ? this.itemImage.setData('course-type:' + (this.state._id || 'new'), (this.state.image || '/img/avatar.png')) : formItemRef.value(item[i]))
