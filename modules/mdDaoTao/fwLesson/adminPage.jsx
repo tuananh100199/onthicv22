@@ -32,24 +32,17 @@ class LessonModal extends AdminModal {
     });
 }
 
-class ListLessonPage extends AdminPage {
-    modal = React.createRef();
-
+class LessonPage extends AdminPage {
     componentDidMount() {
         this.props.getLessonInPage();
-        T.ready('/user/dao-tao/bai-hoc', null);
-        T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
+        T.ready('/user/dao-tao/bai-hoc');
+        T.onSearch = searchText => this.props.getLessonInPage(null, null, searchText);
     }
 
-    create = (e) => {
-        this.modal.current.show();
-        e.preventDefault();
-    }
+    create = e => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm =>
+        isConfirm && this.props.deleteLesson(item._id));
 
     render() {
         const permission = this.getUserPermission('lesson');
@@ -85,8 +78,7 @@ class ListLessonPage extends AdminPage {
                                 </td> : null}
                             </tr>))}
                     </tbody>
-                </table>
-            );
+                </table>);
         }
 
         const renderData = {
@@ -103,15 +95,14 @@ class ListLessonPage extends AdminPage {
                         </div> : null
                     }
                 </div>
-                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getLessonInPage} />
-                <LessonModal ref={this.modal} createLesson={this.props.createLesson} history={this.props.history} />
+                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
+                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
         };
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = { getLessonInPage, createLesson, updateLesson, deleteLesson };
-export default connect(mapStateToProps, mapActionsToProps)(ListLessonPage);
+export default connect(mapStateToProps, mapActionsToProps)(LessonPage);

@@ -121,7 +121,7 @@ class DivisionEditPage extends AdminPage {
                     </button> : null}
             </>,
         };
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 

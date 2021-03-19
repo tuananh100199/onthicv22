@@ -109,7 +109,7 @@ class AdminListSubject extends AdminPage {
                 <SubjectModal ref={this.modal} createSubject={this.props.createSubject} history={this.props.history} />
             </>,
         };
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 
