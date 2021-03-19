@@ -63,7 +63,7 @@ export function getCourseType(_id, done) {
                 T.notify('Lấy loại khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                if (done) done(data.item);
                 dispatch({ type: CourseTypeGetOne, item: data.item });
             }
         }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));

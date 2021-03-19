@@ -13,7 +13,7 @@ class CourseTypeModal extends AdminModal {
     show = () => {
         this.itemSubject.value('');
         // this.subjectSelect.current.val('');
-        this.tiemSubject.focus();
+        this.itemSubject.focus();
         // $(this.modal.current).modal('show');
     }
 
@@ -31,76 +31,73 @@ class CourseTypeModal extends AdminModal {
             });
         }
     }
-    save = (event) => {
-        const changeItem = this.subjectSelect.current.val();
-        const subjectList = this.props.item.subjectList;
-        subjectList.push(changeItem);
-        this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
-            T.notify('Thêm môn học thành công', 'success');
-            $(this.modal.current).modal('hide');
-        });
-        event.preventDefault();
-    }
-
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <div className='modal-dialog' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Môn học</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <Select ref={this.subjectSelect} displayLabel={true}
-                                    adapter={{
-                                        ...ajaxSelectSubject, processResults: response =>
-                                            ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-                                    }} label='Môn học' />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-success' onClick={this.save}>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    // save = (event) => {
+    //     const changeItem = this.subjectSelect.current.val();
+    //     const subjectList = this.props.item.subjectList;
+    //     subjectList.push(changeItem);
+    //     this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
+    //         T.notify('Thêm môn học thành công', 'success');
+    //         $(this.modal.current).modal('hide');
+    //     });
+    //     event.preventDefault();
+    // }
+    render = () => this.renderModal({
+        title: 'Môn học',
+        body: <Select ref={e => this.itemSubject = e} displayLabel={true}
+            adapter={{
+                ...ajaxSelectSubject, processResults: response =>
+                    ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+            }} label='Môn học' />
+    });
+    // render() {
+    //     return (
+    //         <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+    //             <div className='modal-dialog' role='document'>
+    //                 <div className='modal-content'>
+    //                     <div className='modal-header'>
+    //                         <h5 className='modal-title'>Môn học</h5>
+    //                         <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+    //                             <span aria-hidden='true'>&times;</span>
+    //                         </button>
+    //                     </div>
+    //                     <div className='modal-body'>
+    //                         <div className='form-group'>
+    //                             <Select ref={this.subjectSelect} displayLabel={true}
+    //                                 adapter={{
+    //                                     ...ajaxSelectSubject, processResults: response =>
+    //                                         ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+    //                                 }} label='Môn học' />
+    //                         </div>
+    //                     </div>
+    //                     <div className='modal-footer'>
+    //                         <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+    //                         <button type='button' className='btn btn-success' onClick={this.save}>
+    //                             <i className='fa fa-fw fa-lg fa-save' /> Lưu
+    //                         </button>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 }
 
-class AdminCourseTypeEditPage extends React.Component {
-    state = { item: null };
-    editor = React.createRef();
+class CourseTypeEditPage extends AdminPage {
+    state = {};
     modal = React.createRef();
-    imageBox = React.createRef();
 
     componentDidMount() {
         T.ready('/user/course-type/list', () => {
-            const route = T.routeMatcher('/user/course-type/edit/:courseTypeId'),
-                courseTypeId = route.parse(window.location.pathname).courseTypeId;
-            this.props.getCourseType(courseTypeId, data => {
-                if (data.error) {
-                    T.notify('Lấy loại khóa học bị lỗi!', 'danger');
-                    this.props.history.push('/user/course-type/list');
-                } else if (data.item) {
-                    const item = data.item;
-                    $('#title').val(item.title);
-                    $('#price').val(item.price);
-                    $('#shortDescription').val(item.shortDescription);
-                    this.editor.current.html(item.detailDescription);
-                    this.imageBox.current.setData('course-type:' + (item._id || 'new'), item.image ? item.image : '/img/avatar.png');
-                    this.setState(data);
-                    $('#title').focus();
-                } else {
-                    this.props.history.push('/user/course-type/list');
-                }
+            const route = T.routeMatcher('/user/course-type/edit/:_id'), params = route.parse(window.location.pathname);
+            this.props.getCourseType(params._id, item => {
+                if (item) {
+                    this.setState(item);
+                    Object.keys(item).forEach(i => {
+                        const formItemRef = this[`item${i[0].toUpperCase() + i.slice(1)}`];
+                        formItemRef && (i === 'image' ? this.itemImage.setData('course-type:' + (this.state._id || 'new'), (this.state.image || '/img/avatar.png')) : formItemRef.value(item[i]))
+                    })
+                    this.itemTitle.focus();
+                } else this.props.history.push('/user/course-type/list');
             });
             let tabIndex = parseInt(T.cookie('componentPageTab')),
                 navTabs = $('#componentPage ul.nav.nav-tabs');
@@ -133,7 +130,7 @@ class AdminCourseTypeEditPage extends React.Component {
     //     this.modal.current.show();
     // }
 
-    changeActive = (event) => this.setState({ item: { ...this.state.item, isPriceDisplayed: event.target.checked } })
+    // changeActive = (event) => this.setState({ item: { ...this.state.item, isPriceDisplayed: event.target.checked } })
 
     save = () => {
         const changes = {
@@ -258,4 +255,4 @@ class AdminCourseTypeEditPage extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
 const mapActionsToProps = { updateCourseType, getCourseType };
-export default connect(mapStateToProps, mapActionsToProps)(AdminCourseTypeEditPage);
+export default connect(mapStateToProps, mapActionsToProps)(CourseTypeEditPage);
