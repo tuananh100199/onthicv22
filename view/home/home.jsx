@@ -1,4 +1,3 @@
-import './scss/style.scss';
 import './home.scss';
 import T from '../js/common';
 import React from 'react';
@@ -10,27 +9,28 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import Loadable from 'react-loadable';
-import Loading from '../component/Loading.jsx';
-import Loader from '../component/Loader.jsx';
-import HomeMenu from '../component/HomeMenu.jsx';
-import HomeFooter from '../component/HomeFooter.jsx';
-import LoginModal from '../component/LoginModal.jsx';
-import LanguageSwitch from '../component/LanguageSwitch.jsx';
+import Loading from 'view/component/Loading';
+import Loader from 'view/component/Loader';
+import HomeMenu from 'view/component/HomeMenu';
+import HomeFooter from 'view/component/HomeFooter';
+import LoginModal from 'view/component/LoginModal';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
-import _init from '../../module/_init/index.jsx';
-import fwContact from '../../module/fwContact/index.jsx';
-import fwHome from '../../module/fwHome/index.jsx';
-import fwMenu from '../../module/fwMenu/index.jsx';
-import fwUser from '../../module/fwUser/index.jsx';
-import fwForm from '../../module/fwForm/index.jsx';
-import fwNews from '../../module/fwNews/index.jsx';
-import fwCourse from '../../module/fwCourse/index.jsx';
-import fwContentList from '../../module/fwContentList/index.jsx';
-import fwAddress from '../../module/fwAddress/index.jsx';
+import _init from 'modules/_default/_init/index';
+import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
+import fwHome from 'modules/_default/fwHome/index';
+import fwMenu from 'modules/_default/fwMenu/index';
+import fwUser from 'modules/_default/fwUser/index';
+import fwForm from 'modules/_default/fwForm/index';
+import fwNews from 'modules/mdTruyenThong/fwNews/index';
+import fwCourse from 'modules/mdDaoTao/fwCourse/index';
+import fwContentList from 'modules/_default/fwContentList/index';
+import fwDivision from 'modules/mdDaoTao/fwDivision/index';
+import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 
-const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwForm, fwNews, fwCourse, fwContentList, fwAddress];
-import { getSystemState, register, login, forgotPassword, logout } from '../../module/_init/reduxSystem.jsx';
+const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwForm, fwNews, fwCourse, fwContentList, fwDivision, fwCourseType];
+import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {},
@@ -54,18 +54,12 @@ class App extends React.Component {
     state = { routes: [], isMatch: true };
 
     componentDidMount() {
-        // $(window).bind('beforeunload', function() {
-        //     return "Do you want to exit this page?";
-        // });
         const done = () => {
             if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
-                const handlePaddingFooter = () => {
-                    const footerHeight = $('footer').height();
-                    $('#paddingFooterSection').css('padding-bottom', footerHeight + 'px');
-                }
-                handlePaddingFooter();
+                const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
+                handlePaddingFooter()
+                setTimeout(handlePaddingFooter, 250)
                 $(window).on('resize', handlePaddingFooter);
-                new WOW().init();
                 this.loader.current.isShown() && this.loader.current.hide();
                 let menuList = [...this.props.system.menus];
                 while (menuList.length) {
@@ -74,7 +68,7 @@ class App extends React.Component {
                     if (!link.startsWith('http://') && !link.startsWith('https://') && routeMapper[link] == undefined) {
                         addRoute({
                             path: link,
-                            component: Loadable({ loading: Loading, loader: () => import('../component/MenuPage.jsx') })
+                            component: Loadable({ loading: Loading, loader: () => import('view/component/MenuPage') })
                         });
                     }
                     if (currentMenu.submenus && currentMenu.submenus.length) {
@@ -83,8 +77,8 @@ class App extends React.Component {
                 }
 
                 const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
-                const pathname = window.location.pathname, paths = routes.map(route => route.props.path)
-                const isMatch = paths.some(path => T.routeMatcher(path).parse(pathname))
+                const pathname = window.location.pathname, paths = routes.map(route => route.props.path);
+                const isMatch = paths.some(path => T.routeMatcher(path).parse(pathname));
                 this.setState({ routes, isMatch });
             } else {
                 setTimeout(done, 200)
@@ -103,36 +97,25 @@ class App extends React.Component {
     };
 
     render() {
-        const { isMatch } = this.state;
         return (
             <BrowserRouter>
-                {isMatch ?
+                {this.state.isMatch ?
                     <React.Fragment>
                         <HomeMenu showLoginModal={this.showLoginModal} />
                         <Switch>
                             {this.state.routes}
-                            <Route path='**' component={Loadable({
-                                loading: Loading,
-                                loader: () => import('../component/MessagePage.jsx')
-                            })} />
+                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
                         </Switch>
                         <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
                         <HomeFooter />
-                        {/*<LanguageSwitch />*/}
-                        <LoginModal ref={this.loginModal} register={this.props.register} login={this.props.login}
-                            forgotPassword={this.props.forgotPassword}
+                        <LoginModal ref={this.loginModal} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />
                         <Loader ref={this.loader} />
                     </React.Fragment> :
                     <React.Fragment>
-                        <div>
-                            <Switch>
-                                <Route path='**' component={Loadable({
-                                    loading: Loading,
-                                    loader: () => import('../component/MessagePage.jsx')
-                                })} />
-                            </Switch>
-                        </div>
+                        <Switch>
+                            <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
+                        </Switch>
                     </React.Fragment>
                 }
             </BrowserRouter>

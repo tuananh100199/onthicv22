@@ -1,0 +1,252 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import { getTestimonyItem, updateTestimony, addTestimonyIntoGroup, updateTestimonyInGroup, removeTestimonyFromGroup, swapTestimonyInGroup } from './redux/reduxTestimony';
+import { Link } from 'react-router-dom';
+import Editor from 'view/component/CkEditor4';
+import ImageBox from 'view/component/ImageBox';
+
+class TestimonyModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+
+        this.modal = React.createRef();
+        this.imageBox = React.createRef();
+        this.editor = React.createRef();
+        this.btnSave = React.createRef();
+    }
+
+    componentDidMount() {
+        T.ready(() => {
+            $(this.modal.current).on('shown.bs.modal', () => $('#ttmFullname').focus());
+        });
+    }
+
+    imageChanged = (data) => {
+        this.setState({ image: data.image });
+    }
+
+    show = (selectedItem, index) => {
+        let { fullname, jobPosition, image, content } = selectedItem ? selectedItem : { fullname: '', jobPosition: '', image: '', content: '' };
+        $('#ttmFullname').val(fullname);
+        $('#ttmJobPosition').val(jobPosition);
+        this.editor.current.html(content);
+        $(this.btnSave.current).data('isNewMember', selectedItem == null).data('index', index);
+
+        this.imageBox.current.setData('testimony:' + (selectedItem ? this.props._id + '_' + new Date().getTime() : 'new'));
+        this.setState({ image });
+
+        $(this.modal.current).modal('show');
+    }
+    hide() {
+        $(this.modal.current).modal('hide');
+    }
+
+    save = (event) => {
+        const btnSave = $(this.btnSave.current),
+            isNewMember = btnSave.data('isNewMember'),
+            index = btnSave.data('index'),
+            fullname = $('#ttmFullname').val(),
+            jobPosition = $('#ttmJobPosition').val(),
+            content = this.editor.current.html();
+        if (isNewMember) {
+            this.props.addTestimony(fullname, jobPosition, this.state.image, content);
+        } else {
+            this.props.updateTestimony(index, fullname, jobPosition, this.state.image, content);
+        }
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+            // TODO: Lỗi tải lên ảnh cho Testimony: có tạo ảnh trong DB nhưng không hiển thị ảnh trên ImageBox.
+            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <h5 className='modal-title'>Testimony</h5>
+                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
+                        </div>
+                        <div className='modal-body'>
+                            <div className='row'>
+                                <div className='col-md-8'>
+                                    <div className='form-group'>
+                                        <label htmlFor='ttmFullname'>Họ và Tên</label><br />
+                                        <input className='form-control' id='ttmFullname' type='text' placeholder='Họ và Tên' />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label htmlFor='ttmJobPosition'>Vị trí việc làm</label><br />
+                                        <input className='form-control' id='ttmJobPosition' type='text' placeholder='Vị trí việc làm' />
+                                    </div>
+                                </div>
+                                <div className='col-md-4'>
+                                    <div className='form-group'>
+                                        <label>Hình ảnh</label>
+                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='TestimonyImage' userData='testimony' image={this.state.image} success={this.imageChanged} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='form-group'>
+                                <label htmlFor='sgaContent'>Nội dung</label>
+                                <Editor ref={this.editor} placeholder='Nội dung' />
+                            </div>
+                        </div>
+                        <div className='modal-footer'>
+                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
+                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
+class TestimonyEditPage extends React.Component {
+    modal = React.createRef();
+
+    componentDidMount() {
+        T.ready(() => {
+            const route = T.routeMatcher('/user/testimony/edit/:testimonyId'),
+                params = route.parse(window.location.pathname);
+
+            this.props.getTestimonyItem(params.testimonyId, data => {
+                if (data.error) {
+                    T.notify('Lấy nhóm testimony bị lỗi!', 'danger');
+                    this.props.history.push('/user/component');
+                } else if (data.item) {
+                    $('#tepTitle').val(data.item.title).focus();
+                } else {
+                    this.props.history.push('/user/component');
+                }
+            });
+        });
+    }
+
+    showAddTestimonyModal = () => this.modal.current.show();
+    showEditTestimonyModal = (e, selectedTestimony, index) => {
+        this.modal.current.show(selectedTestimony, index);
+        e.preventDefault();
+    }
+
+    add = (fullname, jobPosition, image, content) => {
+        this.props.addTestimonyIntoGroup(fullname, jobPosition, image, content);
+        this.modal.current.hide();
+    }
+    update = (index, fullname, jobPosition, image, content) => {
+        this.props.updateTestimonyInGroup(index, fullname, jobPosition, image, content);
+        this.modal.current.hide();
+    }
+    remove = (e, index) => {
+        this.props.removeTestimonyFromGroup(index);
+        e.preventDefault();
+    }
+    swap = (e, index, isMoveUp) => {
+        this.props.swapTestimonyInGroup(index, isMoveUp);
+        e.preventDefault();
+    }
+
+    save = () => {
+        const changes = {
+            title: $('#tepTitle').val(),
+            items: this.props.testimony.item.items,
+        };
+        this.props.updateTestimony(this.props.testimony.item._id, changes);
+    }
+
+    render() {
+        let table = null,
+            currentTestimony = this.props.testimony ? this.props.testimony.item : null;
+        const _id = currentTestimony ? currentTestimony._id : null;
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
+            readOnly = !currentPermissions.includes('component:write');
+
+        if (currentTestimony && currentTestimony.items.length > 0) {
+            table = (
+                <table className='table table-hover table-bordered'>
+                    <thead>
+                        <tr>
+                            <th style={{ width: '80%' }}>Họ tên</th>
+                            <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                            {!readOnly ? <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th> : null}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentTestimony.items.map((item, index) => (
+                            <tr key={index}>
+                                <td>
+                                    {readOnly ? <a>{item.fullname}</a> : <a href='#' onClick={e => this.showEditTestimonyModal(e, item, index)}>{item.fullname}</a>}
+                                    <p>{item.jobPosition}</p>
+                                </td>
+                                <td style={{ textAlign: 'center' }}>
+                                    <img src={item.image} style={{ width: '100%' }} />
+                                </td>
+                                {!readOnly ? <td>
+                                    <div className='btn-group'>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
+                                            <i className='fa fa-lg fa-arrow-up' />
+                                        </a>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
+                                            <i className='fa fa-lg fa-arrow-down' />
+                                        </a>
+                                        <a className='btn btn-primary' href='#' onClick={e => this.showEditTestimonyModal(e, item, index)}>
+                                            <i className='fa fa-lg fa-edit' />
+                                        </a>
+                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
+                                            <i className='fa fa-lg fa-trash' />
+                                        </a>
+                                    </div>
+                                </td> : null}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
+        } else {
+            table = <p>Không có testimony!</p>;
+        }
+
+        const title = currentTestimony ? currentTestimony.title : '';
+        return (
+            <main className='app-content' >
+                <div className='app-title'>
+                    <h1><i className='fa fa-yelp' /> Testimony: {title}</h1>
+                    <ul className='app-breadcrumb breadcrumb'>
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/component'>Thành phần giao diện</Link>&nbsp;/&nbsp;Chỉnh sửa
+                    </ul>
+                </div>
+                <div className='tile'>
+                    <div className='tile-body'>
+                        <div className='form-group'>
+                            <label className='control-label'>Tiêu đề</label>
+                            <input className='form-control' type='text' placeholder='Tiêu đề' id='tepViTitle' defaultValue={title} readOnly={readOnly} />
+                        </div>
+                        <div className='form-group'>{table}</div>
+                    </div>
+                    {!readOnly ? <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button className='btn btn-info' type='button' onClick={this.showAddTestimonyModal}>
+                            <i className='fa fa-fw fa-lg fa-plus'></i>Thêm testimony
+                        </button>&nbsp;
+                        <button className='btn btn-primary' type='button' onClick={this.save}>
+                            <i className='fa fa-fw fa-lg fa-save'></i>Lưu
+                        </button>
+                    </div> : null}
+                </div>
+                <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>
+
+                <TestimonyModal ref={this.modal} _id={_id} addTestimony={this.add} updateTestimony={this.update} />
+            </main>
+        );
+    }
+}
+
+const mapStateToProps = state => ({ system: state.system, testimony: state.testimony });
+const mapActionsToProps = { getTestimonyItem, updateTestimony, addTestimonyIntoGroup, updateTestimonyInGroup, removeTestimonyFromGroup, swapTestimonyInGroup };
+export default connect(mapStateToProps, mapActionsToProps)(TestimonyEditPage);

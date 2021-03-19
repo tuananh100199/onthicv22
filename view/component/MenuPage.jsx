@@ -1,10 +1,13 @@
 import React from 'react';
 
-import fwHome from '../../module/fwHome/index.jsx';
-import fwContact from '../../module/fwContact/index.jsx';
-import fwNews from '../../module/fwNews/index.jsx'
-import fwCourse from '../../module/fwCourse/index.jsx'
-import fwContentList from '../../module/fwContentList/index.jsx'
+import fwHome from 'modules/_default/fwHome/index';
+import fwContentList from 'modules/_default/fwContentList/index';
+import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
+import fwNews from 'modules/mdTruyenThong/fwNews/index';
+import fwCourse from 'modules/mdDaoTao/fwCourse/index';
+import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
+import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 
 export default class MenuPage extends React.Component {
     state = { component: null };
@@ -36,9 +39,13 @@ export default class MenuPage extends React.Component {
                 itemView = <fwHome.Section.SectionSlogan sloganId={item.viewId} />;
             } else if (item.viewType == 'video') {
                 itemView = <fwHome.Section.SectionVideo videoId={item.viewId} />;
-            } else if (item.viewType == 'listVideo') {
+            }
+            else if (item.viewType == 'dangKyTuVan') {
+                itemView = <fwDangKyTuVan.Section.SectionDangKyTuVan dangKyTuVanId={item.viewId} />;
+            }
+            else if (item.viewType == 'list videos') {
                 itemView = <fwHome.Section.SectionListVideo listVideoId={item.viewId} />;
-            } else if (item.viewType == 'contentList') {
+            } else if (item.viewType == 'list contents') {
                 itemView = <fwContentList.Section.SectionContent listContentId={item.viewId} />;
             } else if (item.viewType == 'statistic') {
                 itemView = <fwHome.Section.SectionStatistic statisticId={item.viewId} />;
@@ -58,8 +65,12 @@ export default class MenuPage extends React.Component {
                 itemView = <fwCourse.Section.SectionCourseList />;
             } else if (item.viewType == 'last course') {
                 itemView = <fwCourse.Section.SectionCourse />;
+            } else if (item.viewType == 'subscribe') {
+                itemView = <fwSubscribe.Section.SectionSubscribe />;
             } else if (item.viewType == 'content' && item.view) {
-                itemView = <div dangerouslySetInnerHTML={{ __html: T.language.parse(item.view.content) }} />;
+                itemView = <div style={{ marginTop: '110px' }} dangerouslySetInnerHTML={{ __html: item.view.content }} />;
+            } else if (item.viewType == 'all course types') {
+                itemView = <fwCourseType.Section.SectionCourseTypeList />;
             }
 
             let childComponents = [];

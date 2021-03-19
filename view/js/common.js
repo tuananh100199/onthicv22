@@ -4,11 +4,10 @@ import dateformat from 'dateformat';
 import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
-
 const T = {
     PropTypes,
-    rootUrl: 'https://hiepphat.bktphcm.net',
-    sexes: ['male', 'female'],
+    rootUrl: 'https://hpo.edu.vn',
+    sexes: ['Nam', 'Nữ'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
         '<empty>',
@@ -17,7 +16,6 @@ const T = {
         'carousel',
         'contact',
         'content',
-        'event',
         'last news',
         'logo',
         'slogan',
@@ -26,10 +24,12 @@ const T = {
         'subscribe',
         'testimony',
         'video',
-        'listVideo',
+        'list videos',
         'all courses',
         'last course',
-        'contentList'
+        'list contents',
+        'dangKyTuVan',
+        'all course types',
     ],
     defaultPageSize: 50,
     defaultUserPageSize: 21,
@@ -41,7 +41,10 @@ const T = {
 
     debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
 
+    documentReady: (done) => $(document).ready(() => setTimeout(done, 250)),
     ready: (pathname, done) => $(document).ready(() => setTimeout(() => {
+        T.clearSearchBox && T.clearSearchBox();
+
         if (pathname == undefined) {
             done = null;
             pathname = window.location.pathname;
@@ -204,23 +207,6 @@ const T = {
         swal({ icon, title, content, dangerMode, buttons: { cancel: true, confirm: true }, }).then(done);
     },
 
-    confirm3: (title, html, icon, buttonDanger, buttonSuccess, done) => {
-        var content = document.createElement('div');
-        content.innerHTML = html;
-        "Bạn có muốn <b>ghi đè</b> dữ liệu đang có bằng dữ liệu mới không?<br>Nếu không rõ, hãy chọn <b>Không ghi đè</b>!";
-        swal({
-            icon,
-            title,
-            content,
-            dangerMode: true,
-            buttons: {
-                cancel: { text: "Huỷ", value: null, visible: true },
-                confirm: { text: buttonDanger, value: true },
-                false: { text: buttonSuccess, value: false }
-            }
-        }).then(done)
-    },
-
     dateFormat: { format: 'dd/mm/yyyy hh:ii', autoclose: true, todayBtn: true },
     birthdayFormat: { format: 'dd/mm/yyyy', autoclose: true, todayBtn: true },
     formatDate: str => {
@@ -233,7 +219,7 @@ const T = {
     },
 
     tooltip: (timeOut = 250) => {
-        $(function() {
+        $(function () {
             setTimeout(() => {
                 $('[data-toggle="tooltip"]').tooltip();
             }, timeOut);
@@ -241,34 +227,7 @@ const T = {
     },
 };
 
-T.socket = T.debug ? io({ transports:['websocket'] }) : io.connect(T.rootUrl, { transports:['websocket'], secure: true });
-
-T.language = texts => {
-    let lg = T.cookie('language');
-    if (lg == null || (lg != 'vi' && lg != 'en')) lg = 'vi';
-    return texts ? (texts[lg] ? texts[lg] : {}) : lg;
-};
-T.language.next = () => {
-    const language = T.cookie('language');
-    return (language == null || language == 'en') ? 'vi' : 'en';
-};
-T.language.current = () => {
-    const language = T.cookie('language');
-    return (language == null || language == 'en') ? 'en' : 'vi';
-};
-T.language.switch = () => {
-    const language = T.language.next();
-    T.cookie('language', language);
-    return { language };
-};
-T.language.parse = (text, getAll) => {
-    let obj = {};
-    try { obj = JSON.parse(text) } catch {};
-    if (obj.vi == null) obj.vi = text;
-    if (obj.en == null) obj.en = text;
-    return getAll ? obj : obj[T.language()];
-};
-T.language.getMonth = () => (['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai']);
+T.socket = T.debug ? io({ transports: ['websocket'] }) : io.connect(T.rootUrl, { transports: ['websocket'], secure: true });
 
 T.get2 = x => ('0' + x).slice(-2);
 T.socket.on('connect', () => {
@@ -307,31 +266,35 @@ $(() => {
     setTimeout(T.onResize, 100);
 });
 
-T.ftcoAnimate = () => {
-    // $('.ftco-animate').waypoint(function (direction) {
-    //     if (direction === 'down' && !$(this.element).hasClass('ftco-animated')) {
-    //         $(this.element).addClass('item-animate');
-    //         setTimeout(function () {
-    //             $('body .ftco-animate.item-animate').each(function (k) {
-    //                 const el = $(this);
-    //                 setTimeout(function () {
-    //                     var effect = el.data('animate-effect');
-    //                     if (effect === 'fadeIn') {
-    //                         el.addClass('fadeIn ftco-animated');
-    //                     } else if (effect === 'fadeInLeft') {
-    //                         el.addClass('fadeInLeft ftco-animated');
-    //                     } else if (effect === 'fadeInRight') {
-    //                         el.addClass('fadeInRight ftco-animated');
-    //                     } else {
-    //                         el.addClass('fadeInUp ftco-animated');
-    //                     }
-    //                     el.removeClass('item-animate');
-    //                 }, k * 50, 'easeInOutExpo');
-    //             });
-    //
-    //         }, 100);
-    //     }
-    // }, { offset: '95%' });
+T.ftcoAnimate = (timeOut = 250) => {
+    setTimeout(() => {
+        let i = 0;
+        $('.ftco-animate').waypoint(function (direction) {
+            if (direction === 'down' && !$(this.element ? this.element : this).hasClass('ftco-animated')) {
+                i++;
+                $(this.element ? this.element : this).addClass('item-animate');
+                setTimeout(function () {
+                    $('body .ftco-animate.item-animate').each(function (k) {
+                        var el = $(this);
+                        setTimeout(function () {
+                            var effect = el.data('animate-effect');
+                            if (effect === 'fadeIn') {
+                                el.addClass('fadeIn ftco-animated');
+                            } else if (effect === 'fadeInLeft') {
+                                el.addClass('fadeInLeft ftco-animated');
+                            } else if (effect === 'fadeInRight') {
+                                el.addClass('fadeInRight ftco-animated');
+                            } else {
+                                el.addClass('fadeInUp ftco-animated');
+                            }
+                            el.removeClass('item-animate');
+                        }, k * 50, 'easeInOutExpo');
+                    });
+
+                }, 100);
+            }
+        }, { offset: '95%' });
+    }, timeOut)
 };
 
 T.truncate = (str, length) => {
@@ -340,7 +303,7 @@ T.truncate = (str, length) => {
     return tempStr + '...'
 }
 
-T.clone = function() {
+T.clone = function () {
     let result = {};
     for (let i = 0, length = arguments.length; i < length; i++) {
         const obj = JSON.parse(JSON.stringify(arguments[i]));
@@ -349,45 +312,32 @@ T.clone = function() {
     return result;
 };
 
-
 export default T;
 
 
-
-String.prototype.getText = function() {
-    return T.language.parse(this);
-};
-
-String.prototype.viText = function() {
-    return T.language.parse(this, true).vi;
-};
-
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
 
-String.prototype.upFirstChar = function() {
+String.prototype.upFirstChar = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-String.prototype.lowFirstChar = function() {
+String.prototype.lowFirstChar = function () {
     return this.charAt(0).toLowerCase() + this.slice(1);
 }
 
 //Array prototype -----------------------------------------------------------------------------------------------------
-Array.prototype.contains = function(...pattern) {
+Array.prototype.contains = function (...pattern) {
     return pattern.reduce((result, item) => result && this.includes(item), true);
 };
 
-Date.prototype.getText = function() {
-    return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
+Date.prototype.getText = function () {
+    return T.get2(this.getDate()) + '/' + T.get2(this.getMonth() + 1) + '/' + this.getFullYear() + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getDateText = function() {
-    return T.language.getMonth()[this.getMonth()] + ' ' + T.get2(this.getDate()) + ', ' + this.getFullYear();
-};
-Date.prototype.getTimeText = function() {
+Date.prototype.getTimeText = function () {
     return T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
-Date.prototype.getShortText = function() {
+Date.prototype.getShortText = function () {
     return this.getFullYear() + '/' + T.get2(this.getMonth() + 1) + '/' + T.get2(this.getDate()) + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };

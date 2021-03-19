@@ -1,12 +1,12 @@
 import React from 'react';
-import Dropdown from './Dropdown.jsx';
+import Dropdown from './Dropdown';
 
 export const OverlayLoading = (props) =>
     <React.Fragment>
         <div className='overlay' style={{ zIndex: 1000 }}>
             <div className='m-loader mr-4'>
                 <svg className='m-circular' viewBox='25 25 50 50'>
-                    <circle className='path' cx='50' cy='50' r='20' fill='none' strokeWidth='4' strokeMiterlimit='10'/>
+                    <circle className='path' cx='50' cy='50' r='20' fill='none' strokeWidth='4' strokeMiterlimit='10' />
                 </svg>
             </div>
         </div>
@@ -14,11 +14,6 @@ export const OverlayLoading = (props) =>
     </React.Fragment>;
 
 export default class Pagination extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
-
     pageNumberChanged = (e, pageNumber, pageCondition) => {
         if (this.props.done) {
             if (pageCondition) {
@@ -33,7 +28,6 @@ export default class Pagination extends React.Component {
                 this.props.getPage(pageNumber, null);
             }
         }
-        // this.props.getPage(pageNumber, null);
         e.preventDefault();
     }
     pageSizeChanged = (pageSize, pageCondition) => {
@@ -50,7 +44,6 @@ export default class Pagination extends React.Component {
                 this.props.getPage(null, pageSize);
             }
         }
-        // this.props.getPage(null, pageSize);
     }
 
     render() {

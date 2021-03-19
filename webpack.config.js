@@ -25,7 +25,7 @@ CleanFilesPlugin.prototype.apply = compiler => {
             }
         });
     };
-    
+
     compiler.hooks.done.tap('CleanFiles', () => cleanFilesPluginOptions.forEach(removeFiles));
 };
 
@@ -63,7 +63,7 @@ module.exports = (env, argv) => ({
     output: {
         path: path.join(__dirname, 'public'),
         publicPath: '/',
-        filename: argv.mode === 'production' ? "js/[name]-[contenthash].js" : "js/[name].js"
+        filename: argv.mode === 'production' ? 'js/[name]-[contenthash].js' : 'js/[name].js'
         // filename: 'js/[name].js',
     },
     plugins: [
@@ -109,6 +109,10 @@ module.exports = (env, argv) => ({
         compress: true,
         historyApiFallback: true,
         disableHostCheck: true
+    },
+    resolve: {
+        modules: [path.resolve(__dirname, './'), 'node_modules'],
+        extensions: ['.js', '.jsx', '.json']
     },
     optimization: { minimize: true }
 });
