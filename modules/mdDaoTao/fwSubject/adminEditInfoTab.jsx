@@ -2,11 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateSubject, getSubject } from './redux';
 import { Link } from 'react-router-dom';
-import Editor from 'view/component/CkEditor4';
+import { FormTextBox, FormRichTextBox, FormEditor } from 'view/component/AdminPage';
 
 class AdminEditInfo extends React.Component {
     state = { item: null };
-    editor = React.createRef();
 
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc', () => {
@@ -18,11 +17,11 @@ class AdminEditInfo extends React.Component {
                     this.props.history.push('/user/dao-tao/mon-hoc');
                 } else if (data.item) {
                     const item = data.item;
-                    $('#title').val(item.title);
-                    $('#shortDescription').val(item.shortDescription);
-                    this.editor.current.html(item.detailDescription);
+                    this.itemTitle.value(item.title);
+                    this.itemDescription.value(item.shortDescription);
+                    this.itemEditor.value(item.detailDescription);
                     this.setState(data);
-                    $('#title').focus();
+                    this.itemTitle.focus();
                 } else {
                     this.props.history.push('/user/dao-tao/mon-hoc');
                 }
@@ -32,9 +31,9 @@ class AdminEditInfo extends React.Component {
 
     save = () => {
         const changes = {
-            title: $('#title').val().trim(),
-            shortDescription: $('#shortDescription').val().trim(),
-            detailDescription: this.editor.current.html(),
+            title: this.itemTitle.value(),
+            shortDescription: this.itemDescription.value(),
+            detailDescription: this.itemEditor.value(),
         };
         this.props.updateSubject(this.state.item._id, changes)
     };
@@ -45,18 +44,9 @@ class AdminEditInfo extends React.Component {
         return (
             <div>
                 <div className='tile-body'>
-                    <div className='form-group'>
-                        <label className='control-label'>Tên môn học</label>
-                        <input className='form-control' type='text' placeholder='Tên loại khóa học' id='title' readOnly={readOnly} />
-                    </div>
-                    <div className='form-group'>
-                        <label className='control-label'>Mô tả ngắn gọn</label>
-                        <textarea defaultValue='' className='form-control' id='shortDescription' placeholder='Mô tả ngắn gọn' readOnly={readOnly} rows={2} />
-                    </div>
-                    <div className='form-group'>
-                        <label className='control-label'>Mô tả chi tiết </label>
-                        <Editor ref={this.editor} height='400px' placeholder='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                    </div>
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' />
+                    <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' />
+                    <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' />
                 </div>
                 {readOnly ? null :
                     <div className='tile-footer' style={{ textAlign: 'right' }}>

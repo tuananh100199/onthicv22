@@ -2,6 +2,38 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
+export class FormTabs extends React.Component {
+    state = { tabIndex: 0 };
+
+    componentDidMount() {
+        $(document).ready(() => {
+            let tabIndex = parseInt(T.cookie(this.props.id || 'tab'));
+            if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= $(this.tabs).children().length) tabIndex = 0;
+            this.setState({ tabIndex });
+        });
+    }
+
+    onSelectTab = (e, tabIndex) => e.preventDefault() || this.setState({ tabIndex }) || T.cookie(this.props.id || 'tab', tabIndex);
+
+    render() {
+        const { tabClassName = '', contentClassName = '', tabs = [] } = this.props,
+            id = this.props.id || 'tab',
+            tabLinks = [], tabPanes = [];
+        tabs.forEach((item, index) => {
+            const tabId = id + '_' + T.randomPassword(8),
+                className = (index == this.state.tabIndex ? ' active show' : '');
+            tabLinks.push(<li key={index} className={'nav-item' + className}><a className='nav-link' data-toggle='tab' href={'#' + tabId} onClick={e => this.onSelectTab(e, index)}>{item.title}</a></li>);
+            tabPanes.push(<div key={index} className={'tab-pane fade' + className} id={tabId}>{item.component}</div>);
+        });
+
+        return (
+            <>
+                <ul ref={e => this.tabs = e} className={'nav nav-tabs ' + tabClassName}>{tabLinks}</ul>
+                <div className={'tab-content ' + contentClassName}>{tabPanes}</div>
+            </>);
+    }
+}
+
 export class FormCheckbox extends React.Component {
     state = { checked: false };
     box = React.createRef();
@@ -134,13 +166,11 @@ export class AdminModal extends React.Component {
 
     show = (item) => {
         this.onShow && this.onShow(item);
-        // this.setState({ display: 'show123' });
         $(this.modal.current).modal('show');
     }
 
     hide = () => {
         this.onHide && this.onHide();
-        // this.setState({ display: '' });
         $(this.modal.current).modal('hide');
     }
 
@@ -194,7 +224,7 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderListPage = ({ icon, title, breadcrumb, content, onCreate }) => {
+    renderPage = ({ icon, title, breadcrumb, content, onCreate }) => {
         if (breadcrumb == null) breadcrumb = [];
         return (
             <main className='app-content'>

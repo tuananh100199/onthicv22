@@ -109,7 +109,7 @@ class DivisionPage extends AdminPage {
             </>,
         };
         if (permission.write) renderData.onCreate = this.create;
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 

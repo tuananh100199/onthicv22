@@ -265,7 +265,7 @@ class UserPage extends AdminPage {
             </>,
         };
         if (permission.write) renderData.onCreate = this.edit;
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 

@@ -3,22 +3,23 @@ import { connect } from 'react-redux';
 import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
 
 class LessonModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $('#lessonName').focus()));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => $('#lessonName').val('');
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: $('#lessonName').val() };
+        const newData = { title: this.itemTitle.value(), };
         if (newData.title == '') {
             T.notify('Tên bài học bị trống!', 'danger');
-            $('#lessonName').focus();
+            this.itemTitle.focus();
         } else {
             this.props.createLesson(newData, data => {
+                this.hide();
                 data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id);
             });
         }
@@ -27,31 +28,21 @@ class LessonModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Bài học mới',
         body:
-            <div className='form-group'>
-                <label htmlFor='lessonName'>Tên bài học</label>
-                <input className='form-control' id='lessonName' type='text' placeholder='Nhập tên bài học' autoFocus={true} />
-            </div>
+            <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' />
     });
 }
 
-class ListLessonPage extends AdminPage {
-    modal = React.createRef();
-
+class LessonPage extends AdminPage {
     componentDidMount() {
         this.props.getLessonInPage();
-        T.ready('/user/dao-tao/bai-hoc', null);
-        T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
+        T.ready('/user/dao-tao/bai-hoc');
+        T.onSearch = searchText => this.props.getLessonInPage(null, null, searchText);
     }
 
-    create = (e) => {
-        this.modal.current.show();
-        e.preventDefault();
-    }
+    create = e => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm =>
+        isConfirm && this.props.deleteLesson(item._id));
 
     render() {
         const permission = this.getUserPermission('lesson');
@@ -87,8 +78,7 @@ class ListLessonPage extends AdminPage {
                                 </td> : null}
                             </tr>))}
                     </tbody>
-                </table>
-            );
+                </table>);
         }
 
         const renderData = {
@@ -96,22 +86,23 @@ class ListLessonPage extends AdminPage {
             title: 'Bài học',
             breadcrumb: ['Bài học'],
             content: <>
-                <div className='tile'>{table}</div>
-                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getLessonInPage} />
-                {permission.write ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                        onClick={this.create}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button> : null
-                }
-                <LessonModal ref={this.modal} createLesson={this.props.createLesson} history={this.props.history} />
+                <div className='tile'>{table}
+                    {permission.write ?
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button type='button' className='btn btn-success' onClick={this.create}>
+                                <i className='fa fa-lg fa-plus' /> Thêm
+                            </button>
+                        </div> : null
+                    }
+                </div>
+                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
+                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
         };
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = { getLessonInPage, createLesson, updateLesson, deleteLesson };
-export default connect(mapStateToProps, mapActionsToProps)(ListLessonPage);
+export default connect(mapStateToProps, mapActionsToProps)(LessonPage);

@@ -45,31 +45,31 @@ class DangKyTuVanModal extends AdminModal {
             title: 'Thông tin đăng ký tư vấn',
             size: 'large',
             body:
-            <div className='row'>
-                <div className='form-group col-md-6'>
-                    <label>Tên người đăng ký: <b>{lastname} {firstname}</b></label>
-                </div>
-                <div className='form-group col-md-6'>
-                    <label>Loại khóa học đăng ký: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label>
-                </div>
-                <div className='form-group col-md-6'>
-                    <label>Email: <b>{email || 'Chưa đăng ký'}</b></label>
-                </div>
-                <div className='form-group col-md-6'>
-                    <label>Số điện thoại: <b>{phone}</b></label>
-                </div>
+                <div className='row'>
+                    <div className='form-group col-md-6'>
+                        <label>Tên người đăng ký: <b>{lastname} {firstname}</b></label>
+                    </div>
+                    <div className='form-group col-md-6'>
+                        <label>Loại khóa học đăng ký: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label>
+                    </div>
+                    <div className='form-group col-md-6'>
+                        <label>Email: <b>{email || 'Chưa đăng ký'}</b></label>
+                    </div>
+                    <div className='form-group col-md-6'>
+                        <label>Số điện thoại: <b>{phone}</b></label>
+                    </div>
 
-                <div className='form-group col-md-12'>
-                    <label htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
-                    <select id='courseTypeRecommend' >
-                        <optgroup label='Loại' />
-                    </select>
+                    <div className='form-group col-md-12'>
+                        <label htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
+                        <select id='courseTypeRecommend' >
+                            <optgroup label='Loại' />
+                        </select>
+                    </div>
+                    <div className='form-group col-md-12'>
+                        <label htmlFor='courseTypeRecommend'>Kết quả tư vấn:</label>
+                        <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={6} />
+                    </div>
                 </div>
-                <div className='form-group col-md-12'>
-                    <label htmlFor='courseTypeRecommend'>Kết quả tư vấn:</label>
-                    <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={6} />
-                </div>
-            </div>
         };
         return this.renderModal(renderDataModal);
     }
@@ -156,14 +156,14 @@ class DangKyTuVanPage extends AdminPage {
                 <Pagination name='pageDKTVList' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDKTVListPage} />
                 {permission.write ?
-                <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel'
-                    onClick={() => this.props.exportDangKyTuVanToExcel()}>
-                    <i className='fa fa-file-excel-o' />
-                </button> : null }
+                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel'
+                        onClick={() => this.props.exportDangKyTuVanToExcel()}>
+                        <i className='fa fa-file-excel-o' />
+                    </button> : null}
                 <DangKyTuVanModal ref={this.modal} getAllCourseType={this.props.getAllCourseType} updateDKTVList={this.props.updateDKTVList} />
             </>,
         };
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 
