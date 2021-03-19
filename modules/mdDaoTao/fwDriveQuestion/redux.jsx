@@ -5,7 +5,7 @@ const DriveQuestionGet = 'DriveQuestionGet';
 const DriveQuestionGetAll = 'DriveQuestionGetAll';
 const DriveQuestionUpdate = 'DriveQuestionUpdate';
 
-export default function addressReducer(state = null, data) {
+export default function driveQuestionReducer(state = null, data) {
     switch (data.type) {
         case DriveQuestionGetAll:
             return Object.assign({}, state, { list: data.items });

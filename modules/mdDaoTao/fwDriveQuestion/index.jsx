@@ -12,6 +12,6 @@ export default {
         {
             path: '/user/drive-question',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
-        }
+        },
     ]
 };

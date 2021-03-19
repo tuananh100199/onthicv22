@@ -14,7 +14,7 @@ class QuestionModal extends AdminModal {
     onSubmit = () => {
         const newData = { title: this.itemTitle.value() };
         if (newData.title == '') {
-            T.notify('Tên cơ sở bị trống!', 'danger');
+            T.notify('Tên câu hỏi thi bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
             this.props.createDriveQuestion(newData, data => {
@@ -27,8 +27,8 @@ class QuestionModal extends AdminModal {
     }
 
     render = () => this.renderModal({
-        title: 'Cơ sở mới',
-        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' />
+        title: 'Câu hỏi thi mới',
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên câu hỏi thi' />
     });
 }
 
@@ -48,21 +48,21 @@ class AdminQuestionPage extends AdminPage {
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm && this.props.deleteDriveQuestion(item._id));
+        T.confirm('Xóa câu hỏi thi', 'Bạn có chắc bạn muốn xóa câu hỏi thi này?', true, isConfirm => isConfirm && this.props.deleteDriveQuestion(item._id));
         e.preventDefault();
     }
 
     render() {
         const permission = this.getUserPermission('driveQuestion');
-        let table = 'Không có cơ sở!';
+        let table = 'Không có câu hỏi thi!';
         if (this.props.driveQuestion && this.props.driveQuestion.list && this.props.driveQuestion.list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên cơ sở</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở ngoài</th>
+                            <th style={{ width: '80%' }}>Tên câu hỏi thi</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                             <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                             {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
@@ -75,12 +75,12 @@ class AdminQuestionPage extends AdminPage {
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.isOutside}
-                                            onChange={() => permission.write && this.props.updateDriveQuestion(item._id, { isOutside: item.isOutside ? 0 : 1 }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
+                                            onChange={() => permission.write && this.props.updateDriveQuestion(item._id, { isOutside: item.isOutside ? 0 : 1 }, () => T.notify('Cập nhật câu hỏi thi thành công!', 'success'))} />
                                         <span className='button-indecator' />
                                     </label>
                                 </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={item.image} alt='avatarDivision' style={{ height: '32px' }} />
+                                    <img src={item.image} alt='avatarDriveQuestion' style={{ height: '32px' }} />
                                 </td>
                                 {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
@@ -100,9 +100,9 @@ class AdminQuestionPage extends AdminPage {
         }
 
         const renderData = {
-            icon: 'fa fa-university',
-            title: 'Cơ sở đào tạo',
-            breadcrumb: ['Cơ sở đào tạo'],
+            icon: 'fa fa-list-alt',
+            title: 'Câu hỏi thi',
+            breadcrumb: ['Câu hỏi thi'],
             content: <>
                 <div className='tile'>{table}</div>
                 <QuestionModal ref={this.modal} createDriveQuestion={this.props.createDriveQuestion} history={this.props.history} />
