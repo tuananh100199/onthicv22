@@ -3,6 +3,7 @@ module.exports = app => {
         title: String,
         link: String,
         image: String,
+        active: { type: Boolean, default: true },
     });
     const model = app.db.model('LessonVideo', schema);
 
