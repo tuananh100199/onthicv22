@@ -86,17 +86,21 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                for (let i = 0; i < item.lessonVideo.length; i++) {
-                    const lessonVideo = item.lessonVideo[i];
+                for (let index = 0, length = item.lessonVideo.length; index < item.lessonVideo.length; index++) {
+                    const lessonVideo = item.lessonVideo[index];
                     if (lessonVideo._id == _lessonVideoId) {
-                        //TODO
+                        const newIndex = index + (isMoveUp ? -1 : +1);
+                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
+                            item.lessonVideo.splice(index, 1);
+                            item.lessonVideo.splice(newIndex, 0, lessonVideo);
+                            item.save();
+                        }
                         break;
                     }
                 }
                 res.send({ lessonVideo: item.lessonVideo });
             }
         });
-        app.model.lesson.update(_lessonId, data, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
@@ -155,7 +159,7 @@ module.exports = (app) => {
     const uploadLessonVideo = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('lesson-video:') && files.LessonVideoImage && files.LessonVideoImage.length > 0) {
             console.log('Hook: uploadLessonVideo =>lesson video image upload');
-            app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring(13), files.LessonVideoImage[0].path, done);
+            app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring('lesson-video:'.length), files.LessonVideoImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadLessonVideo', (req, fields, files, params, done) =>

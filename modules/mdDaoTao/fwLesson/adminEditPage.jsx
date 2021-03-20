@@ -110,47 +110,15 @@ class adminEditPage extends AdminPage {
     }
 
     createVideo = e => e.preventDefault() || this.modalVideo.show();
-    editVideo = (e, video) => e.preventDefault() || this.modalVideo.show(video);
-    deleteVideo = (e, video, lessonId) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
-        isConfirm && this.props.deleteLessonVideo(lessonId, video._id));
-    swapVideos = (e, video, lessonId, isMoveUp) => {
-        e.preventDefault() || this.props.swapLessonVideo(lessonId, video._id, isMoveUp);
-        // let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
-        // if (lessonVideoList.length == 1) {
-        //     T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        // } else {
-        //     if (isMoveUp) {
-        //         if (index == 0) {
-        //             T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        //         } else {
-        //             const temp = lessonVideoList[index - 1], changes = {};
-
-        //             lessonVideoList[index - 1] = lessonVideoList[index];
-        //             lessonVideoList[index] = temp;
-
-        //             changes.lessonVideo = lessonVideoList;
-        //             this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
-        //         }
-        //     } else {
-        //         if (index == lessonVideoList.length - 1) {
-        //             T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        //         } else {
-        //             const temp = lessonVideoList[index + 1], changes = {};
-
-        //             lessonVideoList[index + 1] = lessonVideoList[index];
-        //             lessonVideoList[index] = temp;
-
-        //             changes.lessonVideo = lessonVideoList;
-        //             this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
-        //         }
-        //     }
-        // }
-    };
+    editVideo = (e, video) => e.preventDefault() || this.modalVideo.show(video) || console.log(video._id);
+    deleteVideo = (e, video) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
+        isConfirm && this.props.deleteLessonVideo(this.state._id, video._id));
+    swapVideos = (e, video, isMoveUp) => e.preventDefault() || this.props.swapLessonVideo(this.state._id, video._id, isMoveUp);
 
     render() {
         const permission = this.getUserPermission('lesson'),
             readOnly = !permission.write;
-        const { _id: _lessonId, lessonVideo } = this.props.lesson && this.props.lesson.item ? this.props.lesson.item : { lessonVideo: [] };
+        const { lessonVideo } = this.props.lesson && this.props.lesson.item ? this.props.lesson.item : { lessonVideo: [] };
 
         let tableVideo = 'Chưa có video!';
         if (lessonVideo && lessonVideo.length > 0) {
@@ -176,18 +144,17 @@ class adminEditPage extends AdminPage {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, item, _lessonId, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, item, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, item, _lessonId, false)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, item, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
-
                                         <a className='btn btn-primary' href='#' onClick={e => this.editVideo(e, item)}>
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {permission.write ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item, _lessonId)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>

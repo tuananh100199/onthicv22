@@ -165,7 +165,7 @@ export function updateLessonVideo(_lessonId, _lessonVideoId, data, done) {
     }
 }
 
-export function swapLessonVideo(_lessonId, _lessonVideoId, done) {
+export function swapLessonVideo(_lessonId, _lessonVideoId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/lesson/video/swap`;
         T.put(url, { _lessonId, _lessonVideoId, isMoveUp }, data => {
