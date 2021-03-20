@@ -6,7 +6,7 @@ const LessonUpdateItem = 'LessonUpdate';
 const LessonGetItemVideos = 'LessonGetItemVideos';
 const LessonGetItemQuestions = 'LessonGetItemQuestions';
 
-export default function LessonReducer(state = {}, data) {
+export default function lessonReducer(state = {}, data) {
     switch (data.type) {
         case LessonGetPage:
             return Object.assign({}, state, { page: data.page });

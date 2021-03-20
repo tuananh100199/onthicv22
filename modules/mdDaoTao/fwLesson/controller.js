@@ -81,8 +81,22 @@ module.exports = (app) => {
     });
 
     app.put('/api/lesson/video/swap', app.permission.check('lesson:write'), (req, res) => {
-        const data = req.body.data, lessonId = req.body.lessonId;
-        app.model.lesson.update(lessonId, data, (error, item) => res.send({ error, item }));
+        const { _lessonId, _lessonVideoId, isMoveUp } = req.body;
+        app.model.lesson.get(req.body._lessonId, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                for (let i = 0; i < item.lessonVideo.length; i++) {
+                    const lessonVideo = item.lessonVideo[i];
+                    if (lessonVideo._id == _lessonVideoId) {
+                        //TODO
+                        break;
+                    }
+                }
+                res.send({ lessonVideo: item.lessonVideo });
+            }
+        });
+        app.model.lesson.update(_lessonId, data, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
