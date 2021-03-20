@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectSubject } from 'modules/mdDaotao/fwSubject/redux';
+import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormTabs } from 'view/component/AdminPage';
 

@@ -51,7 +51,7 @@ const modules = [
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
     fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
-]
+];
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;

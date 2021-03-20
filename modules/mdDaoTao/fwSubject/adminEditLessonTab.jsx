@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getSubjectLessonList, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectLesson } from '../fwLesson/redux';
+import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
 import Tooltip from 'rc-tooltip';
 import { AdminModal } from 'view/component/AdminPage';
 

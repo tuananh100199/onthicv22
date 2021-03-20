@@ -111,40 +111,40 @@ class adminEditPage extends AdminPage {
 
     createVideo = e => e.preventDefault() || this.modalVideo.show();
     editVideo = (e, video) => e.preventDefault() || this.modalVideo.show(video);
-    deleteVideo = (e, item, index, lessonId) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title}</strong>?`, true, isConfirm =>
-        isConfirm && this.props.deleteLessonVideo(lessonId, item._id));
-    swapVideos = (e, index, lessonId, isMoveUp) => {
-        e.preventDefault();
-        let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
-        if (lessonVideoList.length == 1) {
-            T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        } else {
-            if (isMoveUp) {
-                if (index == 0) {
-                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
-                } else {
-                    const temp = lessonVideoList[index - 1], changes = {};
+    deleteVideo = (e, video, lessonId) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
+        isConfirm && this.props.deleteLessonVideo(lessonId, video._id));
+    swapVideos = (e, video, lessonId, isMoveUp) => {
+        e.preventDefault() || this.props.swapLessonVideo(lessonId, video._id, isMoveUp);
+        // let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
+        // if (lessonVideoList.length == 1) {
+        //     T.notify('Thay đổi thứ tự bài học thành công', 'success');
+        // } else {
+        //     if (isMoveUp) {
+        //         if (index == 0) {
+        //             T.notify('Thay đổi thứ tự bài học thành công', 'success');
+        //         } else {
+        //             const temp = lessonVideoList[index - 1], changes = {};
 
-                    lessonVideoList[index - 1] = lessonVideoList[index];
-                    lessonVideoList[index] = temp;
+        //             lessonVideoList[index - 1] = lessonVideoList[index];
+        //             lessonVideoList[index] = temp;
 
-                    changes.lessonVideo = lessonVideoList;
-                    this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
-                }
-            } else {
-                if (index == lessonVideoList.length - 1) {
-                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
-                } else {
-                    const temp = lessonVideoList[index + 1], changes = {};
+        //             changes.lessonVideo = lessonVideoList;
+        //             this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
+        //         }
+        //     } else {
+        //         if (index == lessonVideoList.length - 1) {
+        //             T.notify('Thay đổi thứ tự bài học thành công', 'success');
+        //         } else {
+        //             const temp = lessonVideoList[index + 1], changes = {};
 
-                    lessonVideoList[index + 1] = lessonVideoList[index];
-                    lessonVideoList[index] = temp;
+        //             lessonVideoList[index + 1] = lessonVideoList[index];
+        //             lessonVideoList[index] = temp;
 
-                    changes.lessonVideo = lessonVideoList;
-                    this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
-                }
-            }
-        }
+        //             changes.lessonVideo = lessonVideoList;
+        //             this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
+        //         }
+        //     }
+        // }
     };
 
     render() {
@@ -176,10 +176,10 @@ class adminEditPage extends AdminPage {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _lessonId, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, item, _lessonId, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _lessonId, false)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, item, _lessonId, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
@@ -187,7 +187,7 @@ class adminEditPage extends AdminPage {
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {permission.write ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item, index, _lessonId)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item, _lessonId)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>

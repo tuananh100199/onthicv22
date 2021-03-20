@@ -3,7 +3,7 @@
 // // import { updateCourse, getCourse } from './redux.jsx'
 // // import { Link } from 'react-router-dom';
 // // import { Select } from '../../view/component/Input.jsx';
-// // import { ajaxSelectSubject } from 'modules/mdDaotao/fwSubject/redux.jsx';
+// // import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux.jsx';
 
 // // class SubjectModal extends React.Component {
 // //     state = { item: null };
