@@ -15,7 +15,7 @@ export default {
         },
         {
             path: '/user/dao-tao/bai-hoc',
-            component: Loadable({ loading: Loading, loader: () => import('./adminLessonPage') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
             path: '/user/dao-tao/bai-hoc/edit/:_id',

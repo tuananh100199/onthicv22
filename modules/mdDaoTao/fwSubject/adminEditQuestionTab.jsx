@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import { AdminModal, FormCheckbox, FormEditor, FormTextBox } from 'view/component/AdminPage';
+
 class QuestionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
@@ -11,7 +12,7 @@ class QuestionModal extends AdminModal {
     onShow = (item) => {
         let { _id, title, content, active } = item ? item : { _id: null, title: '', content: '', active: false };
         this.itemTitle.value(title)
-        this.itemEditor.value(content);
+        this.itemEditor.html(content);
         this.itemIsActive.value(active);
         $(this.modal.current).data('_id', _id).modal('show');
     }
@@ -20,7 +21,7 @@ class QuestionModal extends AdminModal {
         const _id = $(this.modal.current).data('_id');
         let newData = {
             title: this.itemTitle.value(),
-            content: this.itemEditor.value(),
+            content: this.itemEditor.html(),
             active: this.itemIsActive.value(),
         };
         if (newData.title == '') {
@@ -183,19 +184,19 @@ class AdminEditQuestion extends React.Component {
                 </table>
             );
         }
-        return (
-            <div>
-                <div className='tile-body'>{table}</div>
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
+        return <>
+            <div className='tile-body'>
+                {table}
+                <div style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
-                    </button>
+                        </button>
                 </div>
-                {/* <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} /> */}
-                <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
-                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
-        );
+            {/* <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} /> */}
+            <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
+            <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+        </>;
     }
 }
 

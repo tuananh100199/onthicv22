@@ -23,7 +23,7 @@ class DivisionEditPage extends AdminPage {
                     this.itemMapUrl.value(mapURL);
                     this.itemShortDescription.value(shortDescription);
 
-                    this.itemEditor.value(detailDescription);
+                    this.itemEditor.html(detailDescription);
                     this.itemIsOutside.value(isOutside);
                     this.itemImage.setData('division:' + (_id || 'new'), image ? image : '/img/avatar.png');
 
@@ -45,7 +45,7 @@ class DivisionEditPage extends AdminPage {
             mapURL: this.itemMapUrl.value(),
             isOutside: this.itemIsOutside.value() ? 1 : 0,
             shortDescription: this.itemShortDescription.value().trim(),
-            detailDescription: this.itemEditor.value(),
+            detailDescription: this.itemEditor.html(),
         };
         if (!changes.title) {
             T.notify('Tên cơ sở bị trống!', 'danger');
@@ -121,7 +121,7 @@ class DivisionEditPage extends AdminPage {
                     </button> : null}
             </>,
         };
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 

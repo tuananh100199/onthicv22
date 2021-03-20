@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getAllCourseTypeByUser } from './redux';
 import { Link } from 'react-router-dom';
 
-class SectionCourseTypeList extends React.Component {
+class SectionListView extends React.Component {
     componentDidMount() {
         this.props.getAllCourseTypeByUser();
     }
@@ -17,9 +17,9 @@ class SectionCourseTypeList extends React.Component {
                 </div>
                 <div className='row'>
                     {items ? items.map((item, index) => (
-                        <div className='col-xl-4 col-md-6 service_col' key={index}  >
+                        <div key={index} className='col-xl-4 col-md-6 service_col'>
                             <div className='text-center'>
-                                <img style={{ borderRadius: '50%' }} src={item.image} height={100} width={100} alt="" />
+                                <img style={{ borderRadius: '50%' }} src={item.image} height={100} width={100} alt='' />
                                 <div className='service_title'><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
                                 {item.isPriceDisplayed && <h3 className='service_title'>{T.numberDisplay(item.price ? `Giá : ${item.price} VND` : '')}</h3>}
                                 <div className='service_text'>
@@ -34,4 +34,4 @@ class SectionCourseTypeList extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
 const mapActionsToProps = { getAllCourseTypeByUser };
-export default connect(mapStateToProps, mapActionsToProps)(SectionCourseTypeList);
+export default connect(mapStateToProps, mapActionsToProps)(SectionListView);

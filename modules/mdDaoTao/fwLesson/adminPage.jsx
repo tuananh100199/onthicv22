@@ -27,29 +27,21 @@ class LessonModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Bài học mới',
-        body:
-            <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' />
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' />
     });
 }
 
-class ListLessonPage extends AdminPage {
-    modal = React.createRef();
-
+class LessonPage extends AdminPage {
     componentDidMount() {
         this.props.getLessonInPage();
-        T.ready('/user/dao-tao/bai-hoc', null);
-        T.onSearch = (searchText) => this.props.getLessonInPage(null, null, searchText);
+        T.ready('/user/dao-tao/bai-hoc');
+        T.onSearch = searchText => this.props.getLessonInPage(null, null, searchText);
     }
 
-    create = (e) => {
-        this.modal.current.show();
-        e.preventDefault();
-    }
+    create = e => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(item._id));
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Bài học', 'Bạn có chắc bạn muốn xóa bài học này?', 'warning', true, isConfirm =>
+        isConfirm && this.props.deleteLesson(item._id));
 
     render() {
         const permission = this.getUserPermission('lesson');
@@ -77,7 +69,7 @@ class ListLessonPage extends AdminPage {
                                             <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
                                                 <i className='fa fa-lg fa-edit' />
                                             </Link> : null}
-                                        {permission.delete || permission.write ?
+                                        {permission.delete ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
@@ -85,8 +77,7 @@ class ListLessonPage extends AdminPage {
                                 </td> : null}
                             </tr>))}
                     </tbody>
-                </table>
-            );
+                </table>);
         }
 
         const renderData = {
@@ -94,24 +85,16 @@ class ListLessonPage extends AdminPage {
             title: 'Bài học',
             breadcrumb: ['Bài học'],
             content: <>
-                <div className='tile'>{table}
-                    {permission.write ?
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button type='button' className='btn btn-success' onClick={this.create}>
-                                <i className='fa fa-lg fa-plus' /> Thêm
-                            </button>
-                        </div> : null
-                    }
-                </div>
-                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getLessonInPage} />
-                <LessonModal ref={this.modal} createLesson={this.props.createLesson} history={this.props.history} />
+                <div className='tile'>{table}</div>
+                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
+                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
         };
-        return this.renderListPage(renderData);
+        if (permission.write) renderData.onCreate = this.create;
+        return this.renderPage(renderData);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = { getLessonInPage, createLesson, updateLesson, deleteLesson };
-export default connect(mapStateToProps, mapActionsToProps)(ListLessonPage);
+export default connect(mapStateToProps, mapActionsToProps)(LessonPage);
