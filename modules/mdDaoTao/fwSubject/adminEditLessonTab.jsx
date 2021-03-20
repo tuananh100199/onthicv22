@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateSubject, getSubject, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
+import { getSubjectLessonList, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
 import { ajaxSelectLesson } from '../fwLesson/redux';
@@ -15,15 +15,15 @@ class AddLessonModal extends AdminModal {
 
     onShow = () => {
         this.lessonSelect.current.val(null);
-        $(this.modal.current).modal('show');
     }
 
     onSubmit = () => {
         const lessonId = this.lessonSelect.current.val();
-        this.props.addLesson(this.props._id, lessonId, () => {
+        this.props.addSubjectLesson(this.props._id, lessonId, () => {
             T.notify('Thêm bài học thành công!', 'success');
-            $(this.modal.current).modal('hide');
+            this.hide();
         });
+
     }
 
     render = () => this.renderModal({
@@ -39,24 +39,15 @@ class AddLessonModal extends AdminModal {
 }
 
 class AdminEditLesson extends React.Component {
-    state = { item: null };
+    state = {};
     modal = React.createRef();
 
     componentDidMount() {
         T.ready('/user/dao-tao/mon-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
-            this.props.getLessonList(params._id);
-            this.props.getSubject(params._id, data => {
-                if (data.error) {
-                    T.notify('Lấy môn học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/mon-hoc');
-                } else if (data.item) {
-                    this.setState(data);
-                } else {
-                    this.props.history.push('/user/dao-tao/mon-hoc');
-                }
-            });
+            this.props.getSubjectLessonList(params._id);
+            this.setState({ subjectId: params._id })
         });
     }
 
@@ -67,17 +58,11 @@ class AdminEditLesson extends React.Component {
 
     delete = (e, _id, lessonId, lessonTitle) => {
         e.preventDefault();
-        T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa bài ' + lessonTitle + ' khỏi môn học này?', 'warning', true, isConfirm => isConfirm && this.props.deleteLesson(_id, lessonId));
+        T.confirm('Xóa Bài học', `Bạn có chắc bạn muốn xóa bài học <strong>${lessonTitle}</strong>?`, true, isConfirm => isConfirm && this.props.deleteSubjectLesson(_id, lessonId, () => {
+            T.alert('Xoá câu hỏi thành công!', 'success', false, 1000);
+        })
+        )
     }
-
-    save = () => {
-        const changes = {
-            title: $('#title').val().trim(),
-            shortDescription: $('#shortDescription').val().trim(),
-            detailDescription: this.editor.current.html(),
-        };
-        this.props.updateSubject(this.state.item._id, changes)
-    };
 
     swap = (e, index, _id, isMoveUp) => {
         e.preventDefault();
@@ -95,7 +80,7 @@ class AdminEditLesson extends React.Component {
                     lessonList[index] = temp;
 
                     changes.lesson = lessonList;
-                    this.props.swapLesson(_id, changes, () => {
+                    this.props.swapSubjectLesson(_id, changes, () => {
                         T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
@@ -109,7 +94,7 @@ class AdminEditLesson extends React.Component {
                     lessonList[index] = temp;
 
                     changes.lesson = lessonList;
-                    this.props.swapLesson(_id, changes, () => {
+                    this.props.swapSubjectLesson(_id, changes, () => {
                         T.notify('Thay đổi thứ tự bài học thành công', 'success');
                     });
                 }
@@ -118,9 +103,6 @@ class AdminEditLesson extends React.Component {
     };
 
     render() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
-        const _id = params._id;
         const lesson = this.props.subject && this.props.subject.listLesson && this.props.subject.listLesson.lesson ?
             this.props.subject.listLesson.lesson : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
@@ -143,10 +125,10 @@ class AdminEditLesson extends React.Component {
                                 <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, this.state.subjectId, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, _id, false)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, this.state.subjectId, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
@@ -154,7 +136,7 @@ class AdminEditLesson extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, _id, item._id, item.title)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, this.state.subjectId, item._id, item.title)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -178,12 +160,11 @@ class AdminEditLesson extends React.Component {
                     </div>
                 }
             </div>
-            <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-            <AddLessonModal ref={this.modal} addLesson={this.props.addLesson} _id={_id} />
+            <AddLessonModal ref={this.modal} addSubjectLesson={this.props.addSubjectLesson} _id={this.state.subjectId} />
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { updateSubject, getSubject, getLessonList, addLesson, swapLesson, deleteLesson };
+const mapActionsToProps = { getSubjectLessonList, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditLesson);

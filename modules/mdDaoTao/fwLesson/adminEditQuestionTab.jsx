@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
+import { getLesson, getLessonQuestionsList, createLessonQuestion, updateLessonQuestion, swapLessonQuestion, deleteLessonQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import { AdminModal, FormCheckbox, FormTextBox, FormEditor, FormRichTextBox } from 'view/component/AdminPage';
 
@@ -65,7 +65,7 @@ class AdminEditLessonQuestion extends React.Component {
         T.ready('/user/dao-tao/bai-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
-            this.props.getQuestionsList(params._id);
+            this.props.getLessonQuestionsList(params._id);
             this.props.getLesson(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
@@ -80,7 +80,7 @@ class AdminEditLessonQuestion extends React.Component {
     }
 
     addQuestion = (data) => {
-        this.props.createQuestion(this.state.item._id, data, () => {
+        this.props.createLessonQuestion(this.state.item._id, data, () => {
             T.notify('Thêm câu hỏi thành công!', 'success');
         });
     }
@@ -103,7 +103,7 @@ class AdminEditLessonQuestion extends React.Component {
                     questionList[index - 1] = questionList[index];
                     questionList[index] = temp;
                     changes.lessonQuestion = questionList;
-                    this.props.swapQuestion(this.state.item._id, changes, () => {
+                    this.props.swapLessonQuestion(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
@@ -115,7 +115,7 @@ class AdminEditLessonQuestion extends React.Component {
                     questionList[index + 1] = questionList[index];
                     questionList[index] = temp;
                     changes.lessonQuestion = questionList;
-                    this.props.swapQuestion(this.state.item._id, changes, () => {
+                    this.props.swapLessonQuestion(this.state.item._id, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
@@ -124,8 +124,8 @@ class AdminEditLessonQuestion extends React.Component {
         e.preventDefault();
     }
 
-    updateQuestion = (_id, changes) => {
-        this.props.updateQuestion(_id, changes, this.state.item._id, () => {
+    updateLessonQuestion = (_id, changes) => {
+        this.props.updateLessonQuestion(_id, changes, this.state.item._id, () => {
             T.notify('Cập nhật câu hỏi thành công!', 'success');
         });
     }
@@ -138,7 +138,7 @@ class AdminEditLessonQuestion extends React.Component {
                 questionList.splice(index, 1);
                 if (questionList.length == 0) questionList = 'empty';
                 changes.questions = questionList;
-                this.props.deleteQuestion(item._id, changes, this.state.item._id, () => {
+                this.props.deleteLessonQuestion(item._id, changes, this.state.item._id, () => {
                     T.alert('Xoá câu hỏi thành công!', 'success', false, 1000);
                 })
             } else {
@@ -203,12 +203,12 @@ class AdminEditLessonQuestion extends React.Component {
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
-                <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
+                <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateLessonQuestion} />
             </div>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getLesson, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
+const mapActionsToProps = { getLesson, getLessonQuestionsList, createLessonQuestion, updateLessonQuestion, swapLessonQuestion, deleteLessonQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditLessonQuestion);

@@ -62,6 +62,7 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
+                console.log(item)
                 app.deleteImage(item.image);
                 item.remove(done);
             }
@@ -74,8 +75,12 @@ module.exports = app => {
             model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
         },
 
-        pushSubjectQuestion: (condition, SubjectQuestionId, SubjectQuestionTitle, SubjectQuestionContent, SubjectQuestionActive, done) => {
-            model.findOneAndUpdate(condition, { $push: { subjectQuestion: { _id: SubjectQuestionId, title: SubjectQuestionTitle, content: SubjectQuestionContent, active: SubjectQuestionActive } } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
+        addSubjectQuestion: (condition, subjectQuestion, done) => {
+            model.findOneAndUpdate(condition, { $push: { subjectQuestion } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
+        },
+
+        deleteSubjectQuestion: (condition, subjectQuestion, done) => {
+            model.findOneAndUpdate(condition, { $pull: { subjectQuestion } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
         },
 
         deleteLesson: (condition, lessonId, done) => {

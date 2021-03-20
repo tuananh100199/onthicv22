@@ -9,6 +9,7 @@ module.exports = (app) => {
     app.permission.add(
         { name: 'subject:read', menu },
         { name: 'subject:write' },
+        { name: 'subject:delete' },
     );
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
@@ -81,12 +82,11 @@ module.exports = (app) => {
     });
 
     app.post('/api/subject/question/:_id', app.permission.check('subject:write'), (req, res) => {
-        const _id = req.params._id, data = req.body.data;
-        app.model.subjectQuestion.create(data, (error, question) => {
-            if (error || !question) {
+        app.model.subjectQuestion.create(req.body.data, (error, subjectQuestion) => {
+            if (error || !subjectQuestion) {
                 res.send({ error });
             } else {
-                app.model.subject.pushSubjectQuestion({ _id }, question._id, question.title, question.content, question.active, (error, item) => {
+                app.model.subject.addSubjectQuestion({ _id: req.params._id }, subjectQuestion, (error, item) => {
                     res.send({ error, item });
                 });
             }
@@ -108,14 +108,8 @@ module.exports = (app) => {
     });
 
     app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { data, subjectId, _id } = req.body;
-        if (data.questions && data.questions == 'empty') data.questions = [];
-        app.model.subject.update(subjectId, data, (error, _) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.subjectQuestion.delete(_id, error => res.send({ error }));
-            }
+        app.model.subject.deleteSubjectQuestion({ _id: req.body.subjectId }, req.body._id, (error, item) => {
+            res.send({ error, item });
         });
     });
 };

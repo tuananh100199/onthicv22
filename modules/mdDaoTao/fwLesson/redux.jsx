@@ -203,7 +203,7 @@ export function getLessonVideo(_id, done) {
     }
 }
 // Lesson Question
-export function getQuestionsList(lessonId, done) {
+export function getLessonQuestionsList(lessonId, done) {
     return dispatch => {
         const url = `/api/lesson/question/${lessonId}`;
         T.get(url, data => {
@@ -220,7 +220,7 @@ export function getQuestionsList(lessonId, done) {
     }
 }
 
-export function createQuestion(_id, data, done) {
+export function createLessonQuestion(_id, data, done) {
     return dispatch => {
         const url = `/api/lesson/question/${_id}`;
         T.post(url, { data }, data => {
@@ -228,14 +228,14 @@ export function createQuestion(_id, data, done) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(_id));
+                dispatch(getLessonQuestionsList(_id));
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
 
-export function updateQuestion(_id, data, lessonId, done) {
+export function updateLessonQuestion(_id, data, lessonId, done) {
     return dispatch => {
         const url = '/api/lesson/question';
         T.put(url, { _id, data }, data => {
@@ -243,14 +243,14 @@ export function updateQuestion(_id, data, lessonId, done) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(lessonId));
+                dispatch(getLessonQuestionsList(lessonId));
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function swapQuestion(lessonId, data, done) {
+export function swapLessonQuestion(lessonId, data, done) {
     return dispatch => {
         const url = `/api/lesson/question/swap`;
         T.put(url, { lessonId, data }, data => {
@@ -258,14 +258,14 @@ export function swapQuestion(lessonId, data, done) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(lessonId));
+                dispatch(getLessonQuestionsList(lessonId));
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function deleteQuestion(_id, data, lessonId, done) {
+export function deleteLessonQuestion(_id, data, lessonId, done) {
     return dispatch => {
         const url = `/api/lesson/question`;
         T.delete(url, { data, lessonId, _id }, data => {
@@ -273,7 +273,7 @@ export function deleteQuestion(_id, data, lessonId, done) {
                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(lessonId));
+                dispatch(getLessonQuestionsList(lessonId));
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion } from './redux'
+import { getSubjectQuestionList, createSubjectQuestion, updateSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion } from './redux'
 import { Link } from 'react-router-dom';
 import { AdminModal, FormCheckbox, FormEditor, FormTextBox } from 'view/component/AdminPage';
 
@@ -14,11 +14,11 @@ class QuestionModal extends AdminModal {
         this.itemTitle.value(title)
         this.itemEditor.html(content);
         this.itemIsActive.value(active);
-        $(this.modal.current).data('_id', _id).modal('show');
+        this.data('_id', _id);
     }
 
     onSubmit = () => {
-        const _id = $(this.modal.current).data('_id');
+        const _id = this.data('_id');
         let newData = {
             title: this.itemTitle.value(),
             content: this.itemEditor.html(),
@@ -46,7 +46,7 @@ class QuestionModal extends AdminModal {
 }
 
 class AdminEditQuestion extends React.Component {
-    state = { item: null };
+    state = {};
     modal = React.createRef();
 
     componentDidMount() {
@@ -54,22 +54,13 @@ class AdminEditQuestion extends React.Component {
         T.ready('/user/dao-tao/mon-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
-            this.props.getQuestionsList(params._id);
-            this.props.getSubject(params._id, data => {
-                if (data.error) {
-                    T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/mon-hoc');
-                } else if (data.item) {
-                    this.setState(data);
-                } else {
-                    this.props.history.push('/user/dao-tao/mon-hoc');
-                }
-            });
+            this.props.getSubjectQuestionList(params._id);
+            this.setState({ subjectId: params._id });
         });
     }
 
     addQuestion = (data) => {
-        this.props.createQuestion(this.state.item._id, data, () => T.notify('Thêm câu hỏi thành công!', 'success'));
+        this.props.createSubjectQuestion(this.state.subjectId, data, () => T.notify('Thêm câu hỏi thành công!', 'success'));
     };
 
     showQuestionModal = (e, item) => {
@@ -91,7 +82,7 @@ class AdminEditQuestion extends React.Component {
                     questionList[index - 1] = questionList[index];
                     questionList[index] = temp;
                     changes.subjectQuestion = questionList;
-                    this.props.swapQuestion(this.state.item._id, changes, () => {
+                    this.props.swapSubjectQuestion(this.state.subjectId, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
@@ -105,7 +96,7 @@ class AdminEditQuestion extends React.Component {
                     questionList[index] = temp;
 
                     changes.subjectQuestion = questionList;
-                    this.props.swapQuestion(this.state.item._id, changes, () => {
+                    this.props.swapSubjectQuestion(this.state.subjectId, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
@@ -113,22 +104,17 @@ class AdminEditQuestion extends React.Component {
         }
     };
 
-    updateQuestion = (_id, changes) => {
-        this.props.updateQuestion(_id, changes, this.state.item._id, () => {
+    updateSubjectQuestion = (_id, changes) => {
+        this.props.updateSubjectQuestion(_id, changes, this.state.subjectId, () => {
             T.notify('Cập nhật câu hỏi thành công!', 'success');
         })
     };
 
-    removeQuestion = (e, item, index) => {
+    removeQuestion = (e, item) => {
         e.preventDefault();
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title}</strong>?`, true, isConfirm => {
             if (isConfirm) {
-                const changes = {};
-                let questionList = this.props.subject && this.props.subject.questions ? this.props.subject.questions.subjectQuestion : [];
-                questionList.splice(index, 1);
-                if (questionList.length == 0) questionList = 'empty';
-                changes.questions = questionList;
-                this.props.deleteQuestion(item._id, changes, this.state.item._id, () => {
+                this.props.deleteSubjectQuestion(item._id, this.state.subjectId, () => {
                     T.alert('Xoá câu hỏi thành công!', 'success', false, 1000);
                 })
             } else {
@@ -138,9 +124,6 @@ class AdminEditQuestion extends React.Component {
     };
 
     render() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
-        const _id = params._id;
         const subjectQuestion = this.props.subject && this.props.subject.questions && this.props.subject.questions.subjectQuestion ?
             this.props.subject.questions.subjectQuestion : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
@@ -173,7 +156,7 @@ class AdminEditQuestion extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {currentPermissions.contains('subject:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, _id)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, this.state.subjectId)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -193,13 +176,11 @@ class AdminEditQuestion extends React.Component {
                         </button>
                 </div>
             </div>
-            {/* <QuestionModal add={this.addQuestion} update={this.updateQuestion} ref={this.questionModal} /> */}
-            <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
-            <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+            <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateSubjectQuestion} />
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { getSubject, getQuestionsList, createQuestion, updateQuestion, swapQuestion, deleteQuestion };
+const mapActionsToProps = { getSubjectQuestionList, createSubjectQuestion, updateSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditQuestion);

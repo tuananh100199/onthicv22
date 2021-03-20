@@ -52,6 +52,7 @@ class adminEditPage extends AdminPage {
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' readOnly={readOnly} />
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={readOnly} />
             </div>
+            <div></div>
             <div style={{ textAlign: 'right' }}>
                 <button type='button' className='btn btn-primary' onClick={this.saveInfo}>
                     <i className='fa fa-lg fa-save' /> Lưu
