@@ -2,62 +2,79 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateLesson, getLesson } from './redux';
 import { Link } from 'react-router-dom';
-import AdminEditInfo from './adminEditInfoTab';
-import AdminEditLessonQuestion from './adminEditLessonQuestionTab';
-import AdminEditLessonVideo from './adminEditLessonVideoTab';
+import { AdminPage, FormTabs, FormTextBox, FormRichTextBox, FormEditor, BackButton } from 'view/component/AdminPage';
+import AdminEditLessonQuestion from './adminEditQuestionTab';
+import AdminEditLessonVideo from './adminEditVideoTab';
 
-class adminEditPage extends React.Component {
-    state = { item: null };
+const adminPageLink = '/user/dao-tao/bai-hoc';
+class adminEditPage extends AdminPage {
+    state = {};
 
     componentDidMount() {
-        T.ready('/user/dao-tao/bai-hoc', () => {
+        T.ready(adminPageLink, () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
             this.props.getLesson(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/bai-hoc');
+                    this.props.history.push(adminPageLink);
                 } else if (data.item) {
-                    this.setState(data);
-                } else {
-                    this.props.history.push('/user/dao-tao/bai-hoc');
-                }
-            });
-            let tabIndex = parseInt(T.cookie('componentPageTab')),
-                navTabs = $('#componentPage ul.nav.nav-tabs');
-            if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
-            navTabs.find('li:nth-child(' + (tabIndex + 1) + ') a').tab('show');
-            $('#componentPage').fadeIn();
+                    const { _id, title, shortDescription, detailDescription } = data.item;
+                    this.itemTitle.value(title);
+                    this.itemDescription.value(shortDescription);
+                    this.itemEditor.html(detailDescription);
 
-            $(`a[data-toggle='tab']`).on('shown.bs.tab', e => {
-                T.cookie('componentPageTab', $(e.target).parent().index());
+                    this.setState({ _id, title });
+                    this.itemTitle.focus();
+                } else {
+                    this.props.history.push(adminPageLink);
+                }
             });
         });
     }
 
+    saveInfo = () => {
+        const changes = {
+            title: this.itemTitle.value(),
+            shortDescription: this.itemDescription.value(),
+            detailDescription: this.itemEditor.html(),
+        };
+        this.props.updateLesson(this.state._id, changes);
+    }
+
     render() {
-        return (
-            <main className='app-content' id='componentPage' style={{ display: 'none' }}>
-                <div className='app-title'>
-                    <h1><i className='fa fa-book' />Bài học:&nbsp; {this.state.item ? this.state.item.title : ''}</h1>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        <Link to='/user/dao-tao/bai-hoc'> &nbsp;/&nbsp;Bài học &nbsp;/</Link>
-                        &nbsp; Chỉnh Sửa
-                    </ul>
-                </div>
-                <ul className='nav nav-tabs'>
-                    <li className='nav-item'><a className='nav-link active show' data-toggle='tab' href='#common'>Thông tin chung</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#lessonVideo'>Video bài giảng</a></li>
-                    <li className='nav-item'><a className='nav-link' data-toggle='tab' href='#lessonQuestion'>Câu hỏi</a></li>
-                </ul>
-                <div className='tab-content tile'>
-                    <div className='tab-pane fade active show' id='common'><AdminEditInfo history={this.props.history} /></div>
-                    <div className='tab-pane fade' id='lessonVideo'><AdminEditLessonVideo history={this.props.history} /></div>
-                    <div className='tab-pane fade' id='lessonQuestion'><AdminEditLessonQuestion history={this.props.history} /></div>
-                </div>
-            </main>
-        );
+        const permission = this.getUserPermission('lesson'),
+            readOnly = !permission.write;
+
+        const componentInfo = <>
+            <div className='tile-body'>
+                <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' readOnly={readOnly} />
+                <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={readOnly} />
+            </div>
+            <div style={{ textAlign: 'right' }}>
+                <button type='button' className='btn btn-primary' onClick={this.saveInfo}>
+                    <i className='fa fa-lg fa-save' /> Lưu
+                </button>
+            </div>
+        </>;
+
+        const tabs = [
+            { title: 'Thông tin chung', component: componentInfo },
+            { title: 'Video bài giảng', component: <AdminEditLessonVideo readOnly={readOnly} history={this.props.history} /> },
+            { title: 'Câu hỏi', component: <AdminEditLessonQuestion readOnly={readOnly} history={this.props.history} /> },
+        ];
+
+        const renderData = {
+            icon: 'fa fa-book',
+            title: 'Bài học: ' + this.state.title,
+            breadcrumb: [<Link to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
+            content: <>
+                <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />
+                <BackButton to={adminPageLink} />
+            </>,
+        };
+        return this.renderPage(renderData);
     }
 }
 

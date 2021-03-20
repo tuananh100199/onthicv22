@@ -2,9 +2,41 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
+export class FormTabs extends React.Component {
+    state = { tabIndex: 0 };
+
+    componentDidMount() {
+        $(document).ready(() => {
+            let tabIndex = parseInt(T.cookie(this.props.id || 'tab'));
+            if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= $(this.tabs).children().length) tabIndex = 0;
+            this.setState({ tabIndex });
+        });
+    }
+
+    onSelectTab = (e, tabIndex) => e.preventDefault() || this.setState({ tabIndex }) || T.cookie(this.props.id || 'tab', tabIndex);
+
+    selectedTabIndex = () => this.state.tabIndex;
+
+    render() {
+        const { tabClassName = '', contentClassName = '', tabs = [] } = this.props,
+            id = this.props.id || 'tab',
+            tabLinks = [], tabPanes = [];
+        tabs.forEach((item, index) => {
+            const tabId = id + '_' + T.randomPassword(8),
+                className = (index == this.state.tabIndex ? ' active show' : '');
+            tabLinks.push(<li key={index} className={'nav-item' + className}><a className='nav-link' data-toggle='tab' href={'#' + tabId} onClick={e => this.onSelectTab(e, index)}>{item.title}</a></li>);
+            tabPanes.push(<div key={index} className={'tab-pane fade' + className} id={tabId}>{item.component}</div>);
+        });
+
+        return <>
+            <ul ref={e => this.tabs = e} className={'nav nav-tabs ' + tabClassName}>{tabLinks}</ul>
+            <div className={'tab-content ' + contentClassName}>{tabPanes}</div>
+        </>;
+    }
+}
+
 export class FormCheckbox extends React.Component {
     state = { checked: false };
-    box = React.createRef();
 
     value = (checked) => {
         if (checked != null) {
@@ -33,7 +65,6 @@ export class FormCheckbox extends React.Component {
 
 export class FormTextBox extends React.Component {
     state = { value: '' };
-    input = React.createRef();
 
     value = (text) => {
         if (text === '' || text) {
@@ -43,7 +74,7 @@ export class FormTextBox extends React.Component {
         }
     }
 
-    focus = () => this.input.current.focus();
+    focus = () => this.input.focus();
 
     render() {
         let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
@@ -55,8 +86,8 @@ export class FormTextBox extends React.Component {
             </div>
         ) : (
             <div className={className}>
-                <label onClick={e => this.input.current.focus()}>{label}</label>
-                <input ref={this.input} type={type} className='form-control' placeholder={label} value={this.state.value}
+                <label onClick={e => this.input.focus()}>{label}</label>
+                <input ref={e => this.input = e} type={type} className='form-control' placeholder={label} value={this.state.value}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
     };
@@ -64,7 +95,6 @@ export class FormTextBox extends React.Component {
 
 export class FormRichTextBox extends React.Component {
     state = { value: '' };
-    input = React.createRef();
 
     value = (text) => {
         if (text === '' || text) {
@@ -74,7 +104,7 @@ export class FormRichTextBox extends React.Component {
         }
     }
 
-    focus = () => this.input.current.focus();
+    focus = () => this.input.focus();
 
     render() {
         let { rows = 3, label = '', className = '', readOnly = false, onChange = null } = this.props;
@@ -85,8 +115,8 @@ export class FormRichTextBox extends React.Component {
             </div>
         ) : (
             <div className={className}>
-                <label onClick={e => this.input.current.focus()}>{label}</label>
-                <textarea ref={this.input} className='form-control' placeholder={label} value={this.state.value} rows={rows}
+                <label onClick={e => this.input.focus()}>{label}</label>
+                <textarea ref={e => this.input = e} className='form-control' placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
     };
@@ -94,21 +124,22 @@ export class FormRichTextBox extends React.Component {
 
 export class FormEditor extends React.Component {
     state = { value: '' };
-    input = React.createRef();
 
-    value = (text) => {
+    html = (text) => {
         if (text === '' || text) {
-            this.input.current.html(text);
+            this.input.html(text);
             this.setState({ value: text });
         } else {
-            return this.props.readOnly ? this.state.value : this.input.current ? this.input.current.html() : '';
+            return this.props.readOnly ? this.state.value : this.input ? this.input.html() : '';
         }
     }
 
-    focus = () => this.input.current.focus();
+    text = () => this.input.text();
+
+    focus = () => this.input.focus();
 
     render() {
-        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '' } = this.props;
+        let { height = '400px', label = '', className = '', readOnly = false, uploadUrl = '', smallText = '' } = this.props;
         className = 'form-group' + (className ? ' ' + className : '');
         return readOnly ? (
             <div className={className}>
@@ -118,30 +149,35 @@ export class FormEditor extends React.Component {
         ) : (
             <div className={className}>
                 <label>{label}</label>
-                <Editor ref={this.input} height={height} placeholder={label} uploadUrl={uploadUrl} />
+                {smallText ? <small className='form-text text-muted'>{smallText}</small> : null}
+                <Editor ref={e => this.input = e} height={height} placeholder={label} uploadUrl={uploadUrl} />
             </div>);
     };
 }
 
+export class BackButton extends React.Component {
+    render = () =>
+        <Link to={this.props.to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
+            <i className='fa fa-lg fa-reply' />
+        </Link>;
+}
+
 export class AdminModal extends React.Component {
     state = { display: '' };
-    modal = React.createRef();
     _data = {};
 
     onShown = (modalShown) => {
-        $(this.modal.current).on('shown.bs.modal', () => modalShown());
+        $(this.modal).on('shown.bs.modal', () => modalShown());
     }
 
     show = (item) => {
         this.onShow && this.onShow(item);
-        // this.setState({ display: 'show123' });
-        $(this.modal.current).modal('show');
+        $(this.modal).modal('show');
     }
 
     hide = () => {
         this.onHide && this.onHide();
-        // this.setState({ display: '' });
-        $(this.modal.current).modal('hide');
+        $(this.modal).modal('hide');
     }
 
     data = (key, value) => {
@@ -154,7 +190,7 @@ export class AdminModal extends React.Component {
 
     renderModal = ({ title, body, size }) => {
         return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+            <div className='modal' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
                 <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -194,7 +230,7 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderListPage = ({ icon, title, breadcrumb, content, onCreate }) => {
+    renderPage = ({ icon, title, breadcrumb, content, onCreate }) => {
         if (breadcrumb == null) breadcrumb = [];
         return (
             <main className='app-content'>
@@ -213,7 +249,5 @@ export class AdminPage extends React.Component {
             </main>);
     }
 
-    render() {
-        return null;
-    }
+    render() { return null; }
 }
