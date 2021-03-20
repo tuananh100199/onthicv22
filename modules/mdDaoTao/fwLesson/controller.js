@@ -5,14 +5,14 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
-    app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write', menu });
+    app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write' }, { name: 'lesson:delete' });
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/edit/:_id', app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/view/:_id', app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
-    app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
+    app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = {}, searchText = req.query.searchText;
@@ -24,10 +24,9 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/lesson/edit/:_id', app.permission.check('lesson:read'), (req, res) => {
+    app.get('/api/lesson/item/:_id', app.permission.check('lesson:read'), (req, res) => {
         app.model.lesson.get(req.params._id, (error, item) => res.send({ error, item }));
     });
-
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         const author = req.session.user._id,
@@ -42,37 +41,43 @@ module.exports = (app) => {
         app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
+    app.delete('/api/lesson', app.permission.check('lesson:delete'), (req, res) => {
+        //TODO: delete all videos and questions
         app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.post('/api/lesson/video/:_id', app.permission.check('lesson:write'), (req, res) => {
-        const _id = req.params._id, data = req.body.data;
-        app.model.lessonVideo.create(data, (error, lessonVideo) => {
-            if (error || !lessonVideo) {
-                res.send({ error });
+    // Video APIs -----------------------------------------------------------------------------------------------------
+    app.get('/api/lesson/video/item/:_lessonVideoId', (req, res) => { //TODO: mobile không dùng thì xoá
+        app.model.lessonVideo.get(req.params._lessonVideoId, (error, item) => res.send({ error, item }));
+    });
+
+    app.post('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
+        app.model.lessonVideo.create(req.body.data, (error, lessonVideo) => {
+            if (error || lessonVideo == null) {
+                res.send({ error: error || 'Lesson video is empty!' });
             } else {
-                if (lessonVideo && req.session['lesson-videoImage']) {
-                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session['lesson-videoImage'], response => {
-                        if (response.error) {
-                            res.send({ error: response.error, lessonVideo });
-                        } else {
-                            app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
-                                res.send({ error, item });
-                            });
-                        }
-                    });
+                const pushLessonVideo = () => app.model.lesson.addLessonVideo(req.body._lessonId, lessonVideo, (error, item) => {
+                    res.send({ error, lessonVideo: item && item.lessonVideo ? item.lessonVideo : [] });
+                });
+
+                if (req.session['lesson-videoImage']) {
+                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session['lesson-videoImage'], response =>
+                        response.error ? res.send({ error: response.error }) : pushLessonVideo());
                 } else {
-                    app.model.lesson.pushLessonVideo({ _id }, lessonVideo._id, lessonVideo.title, lessonVideo.link, lessonVideo.image, (error, item) => {
-                        res.send({ error, item });
-                    })
+                    pushLessonVideo();
                 }
             }
         });
     });
 
     app.put('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
-        app.model.lessonVideo.update(req.body._id, req.body.data, (error, lessonVideo) => res.send({ error, lessonVideo }));
+        app.model.lessonVideo.update(req.body._lessonVideoId, req.body.data, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.lesson.get(req.body._lessonId, (error, item) => res.send({ error, lessonVideo: item && item.lessonVideo ? item.lessonVideo : [] }));
+            }
+        });
     });
 
     app.put('/api/lesson/video/swap', app.permission.check('lesson:write'), (req, res) => {
@@ -81,28 +86,20 @@ module.exports = (app) => {
     });
 
     app.delete('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
-        const { data, lessonId, _id } = req.body;
-        if (data.lessonVideo && data.lessonVideo == 'empty') data.lessonVideo = [];
-        app.model.lesson.update(lessonId, data, (error, _) => {
+        app.model.lessonVideo.delete(req.body._lessonVideoId, error => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.lessonVideo.delete(_id, error => res.send({ error }));
+                app.model.lesson.deleteLessonVideo(req.body._lessonId, req.body._lessonVideoId, (error, item) => {
+                    res.send({ error, lessonVideo: item && item.lessonVideo ? item.lessonVideo : [] });
+                });
             }
         });
     });
 
-    app.get('/api/lesson/video/item/:_id', (req, res) => {
-        app.model.lessonVideo.get(req.params._id, (error, item) => res.send({ error, item }));
-    });
-
-    app.get('/api/lesson/video/:lessonId', (req, res) => {
-        app.model.lesson.get(req.params.lessonId, { select: '_id lessonVideo', populate: true }, (error, item) => res.send({ error, item }));
-    });
-
     // Question APIs --------------------------------------------------------------------------------------------------
-    app.get('/api/lesson/question/:lessonId', (req, res) => {
-        app.model.lesson.get(req.params.lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
+    app.get('/api/lesson/question/:_lessonId', (req, res) => {
+        app.model.lesson.get(req.params._lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/lesson/question/:_id', app.permission.check('lesson:write'), (req, res) => {
@@ -111,7 +108,7 @@ module.exports = (app) => {
             if (error || !question) {
                 res.send({ error });
             } else {
-                app.model.lesson.pushLessonQuestion({ _id }, question._id, question.title, question.defaultAnswer, question.content, question.active, question.typeValue, (error, item) => {
+                app.model.lesson.addLessonQuestion({ _id }, question._id, question.title, question.defaultAnswer, question.content, question.active, question.typeValue, (error, item) => {
                     res.send({ error, item });
                 });
             }

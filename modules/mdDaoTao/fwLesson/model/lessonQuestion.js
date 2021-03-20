@@ -9,14 +9,16 @@ module.exports = app => {
     const model = app.db.model('LessonQuestion', schema);
 
     app.model.lessonQuestion = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) => {
+            model.create(data, done);
+        },
 
         getAll: (condition, done) => {
-            done ? model.find(condition).exec(done) : model.find({}).exec(condition)
+            done ? model.find(condition).exec(done) : model.find({}).exec(condition);
         },
 
         get: (condition, done) => {
-            done ? model.findOne(condition).exec(done) : model.findById({}).exec(condition)
+            done ? model.findOne(condition).exec(done) : model.findById({}).exec(condition);
         },
 
         update: (_id, $set, $unset, done) => done ?
@@ -24,7 +26,6 @@ module.exports = app => {
             model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 
         delete: (_id, done) => model.findOne({ _id }, (error, item) => {
-            //TODO: xóa câu trả lời liên quan tới câu hỏi này
             if (error) {
                 done(error);
             } else if (item == null) {

@@ -2,105 +2,34 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateLesson, getLesson, createLessonVideo, getLessonVideoList, swapLessonVideo, deleteLessonVideo, getLessonVideo, updateLessonVideo } from './redux';
 import { Link } from 'react-router-dom';
-import ImageBox from 'view/component/ImageBox';
-import { AdminModal, FormTextBox } from 'view/component/AdminPage';
 
-class VideoModal extends AdminModal {
+class adminEditVideoTab extends React.Component {
     state = {};
 
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
-    }
-
-    onShow = (video) => {
-        let { _id, title, link, image } = video ? video : { _id: null, title: '', link: '', image: '' };
-        this.itemTitle.value(title);
-        this.itemLink.value(link);
-        this.imageBox.setData('lesson-video:' + (_id ? _id : 'new'));
-        this.setState({ image });
-        this.data('_id', _id);
-    }
-
-    onSubmit = () => {
-        const _id = this.data('_id');
-        let data = {
-            title: this.itemTitle.value(),
-            link: this.itemLink.value(),
-        };
-        if (data.title == '') {
-            T.notify('Tên video bị trống!', 'danger');
-            this.itemTitle.focus();
-        } else if (data.link == '') {
-            T.notify('Link video bị trống!', 'danger');
-            this.itemLink.focus();
-        } else {
-            !_id ?
-                this.props.create(this.props._id, data, () => {
-                    T.notify('Thêm video bài giảng thành công!', 'success');
-                    this.hide();
-                })
-                : this.props.update(_id, data, this.props._id, () => {
-                    T.notify('Cập nhật video bài giảng thành công!', 'success');
-                    this.hide();
-                })
-        }
-    }
-
-    render = () => this.renderModal({
-        title: 'Video mới',
-        size: 'large',
-        body:
-            <div className='row'>
-                <div className='col-md-8'>
-                    <FormTextBox ref={e => this.itemTitle = e} label='Tên video' />
-                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' />
-                </div>
-                <div className='col-md-4'>
-                    <label>Hình đại diện</label>
-                    <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} />
-                </div>
-            </div>
-    });
-}
-
-class adminEditVideoTab extends React.Component {
-    state = { item: null };
-
-    componentDidMount() {
-        this.videoModal = React.createRef();
         T.ready('/user/dao-tao/bai-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
             this.props.getLessonVideoList(params._id);
-            this.props.getLesson(params._id, data => {
-                if (data.error) {
-                    T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/bai-hoc');
-                } else if (data.item) {
-                    this.setState(data);
-                } else {
-                    this.props.history.push('/user/dao-tao/bai-hoc');
-                }
-            });
         });
     }
 
-    createVideo = e => e.preventDefault() || this.modalVideo.show(null);
+    createVideo = e => e.preventDefault() || this.modalVideo.show();
 
     editVideo = (e, item) => e.preventDefault() || this.props.getLessonVideo(item._id, video => this.modalVideo.show(video));
 
-    deleteVideo = (e, item, index, _id) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title}</strong>?`, true, isConfirm => {
+    deleteVideo = (e, item, index, lessonId) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa video <strong>${item.title}</strong>?`, true, isConfirm => {
         if (isConfirm) {
             let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
             lessonVideoList.splice(index, 1);
             if (lessonVideoList.length == 0) lessonVideoList = 'empty';
-            this.props.deleteLessonVideo(item._id, { lessonVideo: lessonVideoList }, _id, () => T.alert('Xoá video thành công!', 'success', false, 1000));
+            this.props.deleteLessonVideo(item._id, { lessonVideo: lessonVideoList }, lessonId, () => T.alert('Xoá video thành công!', 'success', false, 1000));
         } else {
             T.alert('Cancelled!', 'error', false, 500);
         }
     });
 
-    swapVideos = (e, index, _id, isMoveUp) => {
+    swapVideos = (e, index, lessonId, isMoveUp) => {
         e.preventDefault();
         let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
         if (lessonVideoList.length == 1) {
@@ -116,9 +45,7 @@ class adminEditVideoTab extends React.Component {
                     lessonVideoList[index] = temp;
 
                     changes.lessonVideo = lessonVideoList;
-                    this.props.swapLessonVideo(_id, changes, () => {
-                        T.notify('Thay đổi thứ tự bài học thành công', 'success');
-                    });
+                    this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
                 }
             } else {
                 if (index == lessonVideoList.length - 1) {
@@ -130,9 +57,7 @@ class adminEditVideoTab extends React.Component {
                     lessonVideoList[index] = temp;
 
                     changes.lessonVideo = lessonVideoList;
-                    this.props.swapLessonVideo(_id, changes, () => {
-                        T.notify('Thay đổi thứ tự bài học thành công', 'success');
-                    });
+                    this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
                 }
             }
         }
@@ -141,13 +66,13 @@ class adminEditVideoTab extends React.Component {
     render() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
-        const _id = params._id;
+        const _lessonId = params._id;
         const lessonVideo = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ?
             this.props.lesson.listLessonVideo.lessonVideo : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        let table = 'Chưa có bài học!';
+        let tableVideo = 'Chưa có bài học!';
         if (lessonVideo && lessonVideo.length > 0) {
-            table = (
+            tableVideo = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
@@ -169,10 +94,10 @@ class adminEditVideoTab extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _id, true)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _lessonId, true)}>
                                             <i className='fa fa-lg fa-arrow-up' />
                                         </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _id, false)}>
+                                        <a className='btn btn-success' href='#' onClick={e => this.swapVideos(e, index, _lessonId, false)}>
                                             <i className='fa fa-lg fa-arrow-down' />
                                         </a>
 
@@ -180,7 +105,7 @@ class adminEditVideoTab extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item, index, _id)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item, index, _lessonId)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>
@@ -193,14 +118,14 @@ class adminEditVideoTab extends React.Component {
         }
         return <>
             <div className='tile-body'>
-                {table}
+                {tableVideo}
                 <div style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={this.createVideo}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
             </div>
-            <VideoModal _id={_id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} />
+            <VideoModal lessonId={_lessonId} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} />
         </>;
     }
 }
