@@ -81,14 +81,14 @@ class DangKyTuVanPage extends React.Component {
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa nhóm thống kê', 'Bạn có chắc bạn muốn xóa nhóm thống kê này?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này ?', true, isConfirm => isConfirm && this.props.deleteDangKyTuVan(item._id));
         e.preventDefault();
     }
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             permissionWrite = currentPermissions.includes('component:write');
-        let table = 'Không có nhóm thống kê!';
+        let table = 'Không có đăng ký tư vấn!';
         if (this.props.dangKyTuVan && this.props.dangKyTuVan.list && this.props.dangKyTuVan.list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered'>
