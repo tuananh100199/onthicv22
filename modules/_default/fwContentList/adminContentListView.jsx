@@ -137,6 +137,6 @@ class ContentListPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contentList: state.contentList, content: state.content });
+const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
 const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);
