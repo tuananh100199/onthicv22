@@ -33,14 +33,11 @@ module.exports = app => {
             });
         },
 
-        // getAll: (condition, done) => {
-        //     done ? model.find(condition).sort({ priority: +1 }).exec(done) : model.find({}).sort({ priority: +1 }).exec(condition)
-        // },
-        getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).sort({ priority: 1 }).exec(done) : model.find({}).sort({ priority: 1 }).exec(condition),
 
 
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).exec(done) : model.findOne(condition).exec(done)
+            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
         },
 
         update: (_id, $set, $unset, done) => done ?

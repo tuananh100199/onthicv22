@@ -9,7 +9,6 @@ import { AdminPage, AdminModal, FormCheckbox, FormTextBox, FormEditor, FormRichT
 
 class QuestionModal extends AdminModal {
     imageBox = React.createRef();
-    itemCategories = React.createRef();
     itemResult = React.createRef();
 
     componentDidMount() {
@@ -17,18 +16,17 @@ class QuestionModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id, title, active, image, answers, result, importance } = item ? item: { _id: null, title: '', active: false, image: '', answers: '', result: 0, importance: false };
+        let { _id, title, active, image, answers, result, importance, categories } = item ? item: { _id: null, title: '', active: false, image: '', answers: '', result: 0, importance: false, categories: [] };
         item ? this.setState(item) : this.setState({_id: null});
         this.itemTitle.value(title);
         this.itemAnswers.value(answers);
-        this.itemResult.current.val(result);
+        this.itemResult.current.val();
         this.itemIsActive.value(active);
         this.itemIsImportance.value(importance);
-        this.itemCategories.current.val();
+        this.itemCategories.val(categories.map(item => item._id));
         this.itemImage.setData('driveQuestion:' + _id, image ? image : '/img/avatar.jpg');
 
-        if(answers) {
-            console.log('answers', answers);
+        if(answers) {   
             this.handleSplit(answers);
         }
         $(this.modal.current).modal('show');
@@ -42,13 +40,14 @@ class QuestionModal extends AdminModal {
             active: this.itemIsActive.value(),
             importance: this.itemIsImportance.value(),
             result: this.itemResult.current.val(),
-            categories: this.itemCategories.current.val()
+            categories: this.itemCategories.val()
         };
+
         if (newData.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
             this.itemTitle.focus();
         }else if(newData.result == '') {
-            T.notify('Tên câu hỏi bị trống!', 'danger');
+            T.notify('Kết quả bị trống!', 'danger');
 
         } else {
             !this.state._id ? this.props.createDriveQuestion(newData) : this.props.updateDriveQuestion(this.state._id, newData);
@@ -83,7 +82,7 @@ class QuestionModal extends AdminModal {
                         <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='DriveQuestionImage' image={ this.state.image } />
                     </div> 
                 </div> 
-                <Select ref={this.itemCategories} displayLabel={true} adapter={ajaxSelectDriveQuestion} multiple={true} label='Loại khóa học' />
+                <Select ref={e => this.itemCategories = e} displayLabel={true} adapter={ajaxSelectDriveQuestion} multiple={true} label='Loại khóa học' />
                 <FormRichTextBox ref={e => this.itemAnswers= e} label='Danh sách câu trả lời' rows='4'  onChange={this.handleChange} />
                 <Select 
                     ref={this.itemResult} 
@@ -189,7 +188,7 @@ class AdminQuestionPage extends AdminPage {
             </>,
         };
         if (permission.write) renderData.onCreate = this.create;
-        return this.renderListPage(renderData);
+        return this.renderPage(renderData);
     }
 }
 
