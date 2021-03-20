@@ -46,7 +46,6 @@ import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 
-
 const modules = [
     _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
