@@ -10,7 +10,6 @@ import statistic from './redux/reduxStatistic';
 import testimony from './redux/reduxTestimony';
 import video from './redux/reduxVideo';
 import listVideo from './redux/reduxListVideo';
-import contentList from '../fwContentList/redux';
 
 import SectionCarousel from './sectionCarousel';
 import SectionLogo from './sectionLogo';
@@ -23,7 +22,7 @@ import SectionListVideo from './sectionListVideo';
 
 export default {
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo, contentList
+        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo
     },
     routes: [
         {
@@ -37,10 +36,6 @@ export default {
         {
             path: '/user/content/edit/:contentId',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentEditPage') })
-        },
-        {
-            path: '/user/list-content/edit/:listContentId',
-            component: Loadable({ loading: Loading, loader: () => import('../fwContentList/adminContentListEditPage') })
         },
         {
             path: '/user/slogan/edit/:sloganId',

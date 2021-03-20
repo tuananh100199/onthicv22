@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, exportDangKyTuVanToExcel } from './redux/reduxDangKyTuVanList';
-import { getAllCourseType } from '../fwCourseType/redux';
+import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal } from 'view/component/AdminPage';
 

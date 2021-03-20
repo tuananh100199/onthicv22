@@ -15,9 +15,7 @@ export default class ComponentPage extends AdminPage {
         let tabs = [];
         const titleList = ['Bài viết', 'Danh sách bài viết', 'Tập hình ảnh', 'Video', 'Thống kê', 'Testimony', 'Nhóm nhân viên', 'Danh sách Video', 'Đăng ký tư vấn'];
         const componentList = [<ContentPage />, <ContentListPage />, <CarouselPage />, <VideoPage />, <StatisticPage />, <TestimonyPage />, <StaffGroupPage />, <ListVideoPage />, <DangKyTuVanPage />];
-        for (let i = 0; i < titleList.length; i++) {
-            tabs.push({ title: titleList[i], component: componentList[i] })
-        };
+        for (let i = 0; i < titleList.length; i++) tabs.push({ title: titleList[i], component: componentList[i] });
         const renderData = {
             icon: 'fa fa-cogs',
             title: 'Thành phần giao diện',
