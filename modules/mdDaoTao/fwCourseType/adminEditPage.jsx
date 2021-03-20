@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectSubject } from '../fwSubject/redux';
+import { ajaxSelectSubject } from 'modules/mdDaotao/fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormTabs } from 'view/component/AdminPage';
 
@@ -153,11 +153,11 @@ class CourseTypeEditPage extends AdminPage {
             {table}
             {readOnly ? null :
                 <div style={{ textAlign: 'right' }}>
-                    <button className='btn btn-success' type='button' onClick={() => this.modal.current.show()}>
+                    <button className='btn btn-success' type='button' onClick={() => this.modal.show()}>
                         <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                                </button>
+                    </button>
                 </div>}
-            <CourseTypeModal ref={this.modal} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
+            <CourseTypeModal ref={e => this.modal = e} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
         </>;
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];

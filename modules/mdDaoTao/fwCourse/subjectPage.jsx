@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { updateCourse, getCourse } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectSubject } from '../fwSubject/redux';
+import { ajaxSelectSubject } from 'modules/mdDaotao/fwSubject/redux';
 
 class SubjectModal extends React.Component {
     state = { item: null };
