@@ -27,7 +27,10 @@ class CategoryModal extends AdminModal {
         } else { // Create
             changes.type = this.props.type;
             changes.active = true;
-            this.props.createCategory(changes, () => this.hide());
+            this.props.createCategory(changes, () => {
+                T.notify('Tạo danh mục câu hỏi thi thành công', 'success');
+                this.hide()
+            });
         }
     }
 
@@ -37,7 +40,7 @@ class CategoryModal extends AdminModal {
             <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
                 <div className='form-group' style={{ display: this.data('_id') ? 'block' : 'none' }}>
-                    <label>Hình ảnh {this.data('_id')}</label>
+                    <label>Hình ảnh</label>
                     <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
                 </div>
             </>),

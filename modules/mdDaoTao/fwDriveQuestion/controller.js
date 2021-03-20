@@ -15,7 +15,6 @@ module.exports = app => {
 
     app.get('/user/drive-question/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/drive-question', app.permission.check('driveQuestion:read'), app.templates.admin);
-    app.get('/user/drive-question/edit/:id', app.permission.check('driveQuestion:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-question/all', app.permission.check('driveQuestion:read'), (req, res) => {
@@ -40,10 +39,6 @@ module.exports = app => {
 
     app.delete('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {
         app.model.driveQuestion.delete(req.body._id, error => res.send({ error }));
-    });
-
-    app.get('/home/drive-question/all', (req, res) => {
-        app.model.driveQuestion.getAll((error, items) => res.send({ error, items }));
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------

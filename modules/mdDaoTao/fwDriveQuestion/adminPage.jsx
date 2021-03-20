@@ -1,15 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDriveQuestions, getDriveQuestionItem, createDriveQuestion, deleteDriveQuestion, updateDriveQuestion, ajaxSelectDriveQuestion } from './redux';
-import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 import { Select } from 'view/component/Input';
-import { AdminPage, AdminModal, FormCheckbox, FormTextBox, FormEditor, FormRichTextBox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormCheckbox, FormRichTextBox } from 'view/component/AdminPage';
 
 
 class QuestionModal extends AdminModal {
     imageBox = React.createRef();
-    itemResult = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
@@ -20,33 +18,34 @@ class QuestionModal extends AdminModal {
         item ? this.setState(item) : this.setState({_id: null});
         this.itemTitle.value(title);
         this.itemAnswers.value(answers);
-        this.itemResult.current.val();
         this.itemIsActive.value(active);
         this.itemIsImportance.value(importance);
         this.itemCategories.val(categories.map(item => item._id));
         this.itemImage.setData('driveQuestion:' + _id, image ? image : '/img/avatar.jpg');
-
-        if(answers) {   
-            this.handleSplit(answers);
+        if (answers) {  
+            this.handleSplit(answers, (options) => {
+                this.itemResult.val(options[result - 1]);
+            });    
+        } else {
+            this.itemResult.val('');
+            this.setState({result: ''});
         }
         $(this.modal.current).modal('show');
     }
     
-
     onSubmit = () => {
         let newData = {
             title: this.itemTitle.value(),
             answers: this.itemAnswers.value(),
             active: this.itemIsActive.value(),
             importance: this.itemIsImportance.value(),
-            result: this.itemResult.current.val(),
+            result: this.itemResult.val(),
             categories: this.itemCategories.val()
         };
-
         if (newData.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
             this.itemTitle.focus();
-        }else if(newData.result == '') {
+        } else if(newData.answers!='' && newData.result == '') {
             T.notify('Kết quả bị trống!', 'danger');
 
         } else {
@@ -54,17 +53,20 @@ class QuestionModal extends AdminModal {
             this.hide();
         }
     }
-    handleSplit = (str) => {
+
+    handleSplit = (str, done) => {
         let ret = str.trim().split('\n');
         for (let i = 0; i < ret.length; i++) {
             if (ret[i] == '') ret.splice(i, 1);
         }
-        let options = ret.map((item, index) => ({ id: index, text: item }))
-        this.setState({result: options});
+        let options = ret.map((item, index) => ({ id: index +1, text: item }))
+        this.setState({result: options}, () => {
+            done && done(options)
+        });
     }
     handleChange = (event) => {
         this.handleSplit(event.target.value);
-    };
+    }
       
     render = () => this.renderModal({
         title: 'Câu hỏi mới',
@@ -85,7 +87,7 @@ class QuestionModal extends AdminModal {
                 <Select ref={e => this.itemCategories = e} displayLabel={true} adapter={ajaxSelectDriveQuestion} multiple={true} label='Loại khóa học' />
                 <FormRichTextBox ref={e => this.itemAnswers= e} label='Danh sách câu trả lời' rows='4'  onChange={this.handleChange} />
                 <Select 
-                    ref={this.itemResult} 
+                    ref={e => this.itemResult = e}
                     displayLabel={true}
                     label='Đáp án'
                     adapter={{
