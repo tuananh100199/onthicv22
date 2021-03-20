@@ -18,7 +18,7 @@ module.exports = app => {
         'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml',
         'emailContactTitle', 'emailContactText', 'emailContactHtml',
         'emailTuChoiDonDeNghiHocTitle', 'emailTuChoiDonDeNghiHocText', 'emailTuChoiDonDeNghiHocHtml',
-        'emailDangKyTuVanTitle','emailDangKyTuVanText','emailDangKyTuVanHtml',
+        'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml',
     ];
 
     app.get('/api/email/all', app.permission.check('system:email'), (req, res) => app.model.setting.get(...EmailParams, result => res.send(result)));
@@ -81,10 +81,10 @@ module.exports = app => {
             emailDangKyTuVanTitle: 'Hiệp Phát: Đăng ký tư vấn!',
             emailDangKyTuVanText: 'Chào {name}, Cám ơn bạn đã gửi đăng ký tư vấn cho chúng tôi, chúng tôi sẽ liên hệ cho bạn sớm nhất. Trân trọng, Giảng viên hướng dẫn, Website: ' + app.rootUrl + '',
             emailDangKyTuVanHtml: 'Chào <b>{name}</b>,<br/><br/>' +
-                    'Cám ơn bạn đã gửi đăng ký tư vấn cho chúng tôi, chúng tôi sẽ liên hệ cho bạn sớm nhất:<br/><br/>' +
-                    'Trân trọng,<br/>' +
-                    'Hiệp Phát<br/>' +
-                    'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
+                'Cám ơn bạn đã gửi đăng ký tư vấn cho chúng tôi, chúng tôi sẽ liên hệ cho bạn sớm nhất:<br/><br/>' +
+                'Trân trọng,<br/>' +
+                'Hiệp Phát<br/>' +
+                'Website: <a href="' + app.rootUrl + '">' + app.rootUrl + '</a>'
         }),
     });
 };

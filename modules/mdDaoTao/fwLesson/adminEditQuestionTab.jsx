@@ -15,7 +15,7 @@ class QuestionModal extends AdminModal {
         this.itemAnswer.value(defaultAnswer);
         this.itemListAnswer.value(typeValue.join('\n'));
         this.itemIsActive.value(active);
-        this.itemEditor.value(content);
+        this.itemEditor.html(content);
         $(this.modal.current).data('_id', _id).modal('show');
     }
 
@@ -29,7 +29,7 @@ class QuestionModal extends AdminModal {
         let newData = {
             title: this.itemTitle.value(),
             defaultAnswer: this.itemAnswer.value(),
-            content: this.itemEditor.value(),
+            content: this.itemEditor.html(),
             active: this.itemIsActive.value(),
             typeValue: ret,
         };
@@ -192,19 +192,18 @@ class AdminEditLessonQuestion extends React.Component {
                             </tr>
                         ))}
                     </tbody>
-                </table>
-            );
+                </table>);
         }
+
         return (
             <div>
                 <div className='tile-body'>{table}</div>
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right' }}>
                     <button type='button' className='btn btn-success' onClick={e => this.showQuestionModal(e, null)}>
                         <i className='fa fa-lg fa-plus' /> Thêm
                     </button>
                 </div>
                 <QuestionModal ref={this.modal} add={this.addQuestion} history={this.props.history} update={this.updateQuestion} />
-                <Link to='/user/dao-tao/bai-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
             </div>
         );
     }

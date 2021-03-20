@@ -130,11 +130,11 @@ class DangKyTuVanPage extends AdminPage {
                                 <td nowrap='true'>{item.courseTypeRecommend ? item.courseTypeRecommend.title : ''}</td>
                                 {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
-                                        {permission.delete || permission.write ?
+                                        {permission.write ?
                                             <a className='btn btn-primary' href='#' onClick={e => this.show(e, item._id)}>
                                                 <i className='fa fa-lg fa-edit' />
                                             </a> : null}
-                                        {permission.delete || permission.write ?
+                                        {permission.delete ?
                                             <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}

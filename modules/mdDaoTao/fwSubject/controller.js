@@ -29,7 +29,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/subject/edit/:subjectId', app.permission.check('subject:read'), (req, res) => {
+    app.get('/api/subject/item/:subjectId', app.permission.check('subject:read'), (req, res) => {
         app.model.subject.get(req.params.subjectId, (error, item) => res.send({ error, item }));
     });
 

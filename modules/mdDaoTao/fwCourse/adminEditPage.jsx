@@ -5,6 +5,7 @@ import { getCourse } from './redux.jsx';
 import CommonInfoPage from './commonInfoPage.jsx';
 import SubjectPage from './subjectPage.jsx';
 // import AdvisorPage from './advisorPage.jsx';
+
 class EditPage extends React.Component {
     state = { item: null };
 

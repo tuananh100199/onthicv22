@@ -3,7 +3,6 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DivisionGet = 'DivisionGet';
 const DivisionGetAll = 'DivisionGetAll';
-const DivisionUpdate = 'DivisionUpdate';
 
 export default function addressReducer(state = null, data) {
     switch (data.type) {
@@ -13,20 +12,6 @@ export default function addressReducer(state = null, data) {
         case DivisionGet: {
             return Object.assign({}, state, { item: data.item });
         }
-
-        case DivisionUpdate:
-            state = Object.assign({}, state);
-            const updatedItem = data.item;
-            if (state && state.selectedItem && state.selectedItem._id == updatedItem.addressId) {
-                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
-                    if (items[i]._id == updatedItem._id) {
-                        state.selectedItem.items.splice(i, 1, updatedItem);
-                        break;
-                    }
-                }
-            }
-            return state;
-
         default:
             return state;
     }

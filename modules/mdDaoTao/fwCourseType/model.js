@@ -11,24 +11,19 @@ module.exports = app => {
     const model = app.db.model('CourseType', schema);
 
     app.model.courseType = {
-        create: (data, done) => model.find({}).sort({ title: 1 }).limit(1).exec(() => {
-            model.create({ ...data, title: !data.title && 'Loại khoá học mới' }, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    item.image = `/img/course-type/${item._id}.jpg`;
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => {
-                        if (error) {
-                            done(error);
-                        } else {
-                            item.save(done);
-                        }
-                    });
-                }
-            });
+        create: (data, done) => model.create({ ...data, title: data.title || 'Loại khoá học mới' }, (error, item) => {
+            if (error) {
+                done(error);
+            } else {
+                item.image = `/img/course-type/${item._id}.jpg`;
+                const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                    destPath = app.path.join(app.publicPath, item.image);
+                app.fs.copyFile(srcPath, destPath, error => {
+                    error ? done(error) : item.save(done);
+                });
+            }
         }),
+
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
@@ -43,8 +38,11 @@ module.exports = app => {
                 });
             }
         }),
-        getAll: done => model.find({}).sort({ title: 1 }).exec(done),
+
+        getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
+
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('subjectList') : model.findOne(condition, done).populate('subjectList'),
+
         update: (_id, $set, $unset, done) => done ?
             model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
             model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),

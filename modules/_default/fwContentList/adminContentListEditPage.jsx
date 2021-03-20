@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getContentListItem, updateContentList } from './redux';
-import { ajaxSelectContent } from '../fwHome/redux/reduxContent';
+import { ajaxSelectContent } from 'modules/_default/fwHome/redux/reduxContent';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
 import ImageBox from 'view/component/ImageBox';
@@ -27,8 +27,7 @@ class ContentModal extends React.Component {
         const listItem = this.props.item.items;
         if (this.state.item && this.state.item._id) {
             // Update
-            let index = 0;
-            for (; index < listItem.length; index++) {
+            for (index = 0; index < listItem.length; index++) {
                 if (this.state.item._id == listItem[index]._id) {
                     break;
                 }

@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { updateSubject, getSubject, getLessonList, addLesson, swapLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
-import { ajaxSelectLesson } from '../fwLesson/redux';
+import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
 import Tooltip from 'rc-tooltip';
 import { AdminModal } from 'view/component/AdminPage';
+
 class AddLessonModal extends AdminModal {
     lessonSelect = React.createRef();
     componentDidMount() {
@@ -165,11 +166,10 @@ class AdminEditLesson extends React.Component {
             );
         }
 
-        return (
-            <div>
-                <div className='tile-body'>{table}</div>
+        return <>
+            <div className='tile-body'>{table}
                 {readOnly ? null :
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right' }}>
                         <Tooltip placement='bottom' overlay='Thêm bài học mới'>
                             <button type='button' className='btn btn-success' onClick={this.showAddLessonModal}>
                                 <i className='fa fa-lg fa-plus' /> Thêm
@@ -177,9 +177,10 @@ class AdminEditLesson extends React.Component {
                         </Tooltip>
                     </div>
                 }
-                <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
-                <AddLessonModal ref={this.modal} addLesson={this.props.addLesson} _id={_id} />
-            </div>);
+            </div>
+            <Link to='/user/dao-tao/mon-hoc' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
+            <AddLessonModal ref={this.modal} addLesson={this.props.addLesson} _id={_id} />
+        </>;
     }
 }
 
