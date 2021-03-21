@@ -96,16 +96,22 @@ class QuestionModal extends AdminModal {
         }
     }
 
-    render = () => this.renderModal({
-        title: 'Câu hỏi',
-        size: 'large',
-        body: <div className='row'>
-            <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Câu hỏi' rows='4' readOnly={this.props.readOnly} />
-            <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-12' label='Danh sách câu trả lời' rows='4' readOnly={this.props.readOnly} />
-            <FormTextBox ref={e => this.itemTrueAnswer = e} className='col-md-8' label='Đáp án' readOnly={this.props.readOnly} />
-            <FormCheckbox ref={e => this.itemActive = e} className='col-md-4' label='Kích hoạt' readOnly={this.props.readOnly} />
-        </div>
-    });
+    render = () => {
+        return this.renderModal({
+            title: 'Câu hỏi',
+            size: 'large',
+            body: <div className='row'>
+                <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Câu hỏi' rows='4' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-8' label='Danh sách câu trả lời' rows='5' readOnly={this.props.readOnly} />
+                <div className='col-md-4'>
+                    <label>Hình minh họa</label>
+                    <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='LessonQuestionImage' image={this.state.image} readOnly={this.props.readOnly} />
+                </div>
+                <FormTextBox ref={e => this.itemTrueAnswer = e} className='col-md-8' label='Đáp án' readOnly={this.props.readOnly} type='number' />
+                <FormCheckbox ref={e => this.itemActive = e} className='col-md-4' label='Kích hoạt' readOnly={this.props.readOnly} />
+            </div>
+        });
+    };
 }
 
 const adminPageLink = '/user/dao-tao/bai-hoc';

@@ -7,6 +7,7 @@ import Pagination from 'view/component/Pagination';
 
 class CourseTypePage extends AdminPage {
     componentDidMount() {
+        T.ready();
         this.props.getCourseTypeInPage();
     }
 

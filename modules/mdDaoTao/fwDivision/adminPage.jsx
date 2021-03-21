@@ -35,8 +35,7 @@ class DivisionModal extends AdminModal {
 class DivisionPage extends AdminPage {
     componentDidMount() {
         this.props.getAllDivisions();
-        T.ready();
-        T.showSearchBox();
+        T.ready(() => T.showSearchBox());
         T.onSearch = (searchText) => this.props.getAllDivisions(searchText);
     }
 

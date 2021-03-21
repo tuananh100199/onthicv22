@@ -44,6 +44,7 @@ const T = {
     documentReady: (done) => $(document).ready(() => setTimeout(done, 250)),
     ready: (pathname, done) => $(document).ready(() => setTimeout(() => {
         T.clearSearchBox && T.clearSearchBox();
+        T.hideSearchBox();
 
         if (pathname == undefined) {
             done = null;
