@@ -85,7 +85,7 @@ module.exports = (app, config) => {
                                         getUserToken();
                                     } else {
                                         app.redis.expire(tokenKey, 30 * 24 * 60 * 60); // 30 days
-                                        res.send({ token });
+                                        res.send({ token, user });
                                     }
                                 });
                             });
