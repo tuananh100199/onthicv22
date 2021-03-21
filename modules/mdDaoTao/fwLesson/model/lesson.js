@@ -5,7 +5,7 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         author: String,
-        lessonVideo: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
+        videos: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
         lessonQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
     });
     const model = app.db.model('Lesson', schema);
@@ -45,7 +45,7 @@ module.exports = app => {
                 condition = {};
             }
             if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).populate('lessonVideo').populate('lessonQuestion').exec(done);
+            model.findOne(condition).populate('videos').populate('lessonQuestion').exec(done);
         },
 
         update: (_id, $set, $unset, done) => done ?
@@ -65,11 +65,11 @@ module.exports = app => {
             });
         },
 
-        addLessonVideo: (_id, lessonVideo, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { lessonVideo } }, { new: true }).populate('lessonVideo').exec(done);
+        addLessonVideo: (_id, videos, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { videos } }, { new: true }).populate('videos').exec(done);
         },
         deleteLessonVideo: (_id, _lessonVideoId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { lessonVideo: _lessonVideoId } }).populate('lessonVideo').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { videos: _lessonVideoId } }).populate('videos').exec(done);
         },
 
         addLessonQuestion: (_id, lessonQuestion, done) => {

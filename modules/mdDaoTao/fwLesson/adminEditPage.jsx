@@ -166,12 +166,11 @@ class adminEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('lesson');
-        // permission.write = false; //TODO: delete
-        const { lessonVideo, lessonQuestion } = this.props.lesson && this.props.lesson.item ? this.props.lesson.item : { lessonVideo: [], lessonQuestion: [] };
+        const { videos, lessonQuestion } = this.props.lesson && this.props.lesson.item ? this.props.lesson.item : { videos: [], lessonQuestion: [] };
 
         let tableVideo = 'Chưa có video!',
             tableQuestion = 'Chưa có câu hỏi!';
-        if (lessonVideo && lessonVideo.length > 0) {
+        if (videos && videos.length > 0) {
             tableVideo = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -185,7 +184,7 @@ class adminEditPage extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {lessonVideo.map((item, index) => (
+                        {videos.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><a className='text-primary' href='#' onClick={e => this.editVideo(e, item)}>{item.title}</a></td>

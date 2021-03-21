@@ -58,7 +58,7 @@ module.exports = (app) => {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
             } else {
                 const addLessonVideo = () => app.model.lesson.addLessonVideo(_lessonId, lessonVideo, (error, item) => {
-                    res.send({ error, lessonVideo: item && item.lessonVideo ? item.lessonVideo : [] });
+                    res.send({ error, videos: item && item.videos ? item.videos : [] });
                 });
 
                 if (req.session['lesson-videoImage']) {
@@ -77,7 +77,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.lesson.get(_lessonId, (error, item) => res.send({ error, lessonVideo: item && item.lessonVideo ? item.lessonVideo : [] }));
+                app.model.lesson.get(_lessonId, (error, item) => res.send({ error, videos: item && item.videos ? item.videos : [] }));
             }
         });
     });
@@ -88,19 +88,19 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                for (let index = 0, length = item.lessonVideo.length; index < item.lessonVideo.length; index++) {
-                    const lessonVideo = item.lessonVideo[index];
+                for (let index = 0, length = item.videos.length; index < item.videos.length; index++) {
+                    const lessonVideo = item.videos[index];
                     if (lessonVideo._id == _lessonVideoId) {
                         const newIndex = index + (isMoveUp ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
-                            item.lessonVideo.splice(index, 1);
-                            item.lessonVideo.splice(newIndex, 0, lessonVideo);
+                            item.videos.splice(index, 1);
+                            item.videos.splice(newIndex, 0, lessonVideo);
                             item.save();
                         }
                         break;
                     }
                 }
-                res.send({ lessonVideo: item.lessonVideo });
+                res.send({ videos: item.videos });
             }
         });
     });
@@ -112,7 +112,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.lesson.deleteLessonVideo(_lessonId, _lessonVideoId, (error, item) => {
-                    res.send({ error, lessonVideo: item && item.lessonVideo ? item.lessonVideo : [] });
+                    res.send({ error, videos: item && item.videos ? item.videos : [] });
                 });
             }
         });

@@ -139,7 +139,7 @@ export function createLessonVideo(_lessonId, data, done) {
                 T.notify('Tạo video bài giảng bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
@@ -155,7 +155,7 @@ export function updateLessonVideo(_lessonId, _lessonVideoId, data, done) {
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 T.notify('Cập nhật video bài giảng thành công!', 'success');
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
@@ -170,7 +170,7 @@ export function swapLessonVideo(_lessonId, _lessonVideoId, isMoveUp, done) {
                 T.notify('Thay đổi thứ tự video bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
@@ -186,7 +186,7 @@ export function deleteLessonVideo(_lessonId, _lessonVideoId, done) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Video được xóa thành công!', 'error', false, 800);
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));
