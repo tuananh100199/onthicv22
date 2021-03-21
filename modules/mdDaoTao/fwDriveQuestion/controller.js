@@ -38,6 +38,7 @@ module.exports = app => {
             res.send({ error, page });
         });
     });
+    
     app.get('/api/drive-question/item/:_id', app.permission.check('driveQuestion:read'), (req, res) =>
         app.model.driveQuestion.get(req.params._id, (error, item) => res.send({ error, item })));
 

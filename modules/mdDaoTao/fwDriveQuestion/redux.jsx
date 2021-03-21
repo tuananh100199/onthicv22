@@ -4,7 +4,6 @@ import T from 'view/js/common';
 const DriveQuestionGet = 'DriveQuestionGet';
 const DriveQuestionGetAll = 'DriveQuestionGetAll';
 const DriveQuestionGetPage = 'DriveQuestion:GetPage';
-const DriveQuestionUpdate = 'DriveQuestionUpdate';
 
 export default function driveQuestionReducer(state = null, data) {
     switch (data.type) {
@@ -17,19 +16,6 @@ export default function driveQuestionReducer(state = null, data) {
         case DriveQuestionGet: {
             return Object.assign({}, state, { item: data.item });
         }
-
-        case DriveQuestionUpdate:
-            state = Object.assign({}, state);
-            const updatedItem = data.item;
-            if (state && state.selectedItem && state.selectedItem._id == updatedItem.addressId) {
-                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
-                    if (items[i]._id == updatedItem._id) {
-                        state.selectedItem.items.splice(i, 1, updatedItem);
-                        break;
-                    }
-                }
-            }
-            return state;
 
         default:
             return state;

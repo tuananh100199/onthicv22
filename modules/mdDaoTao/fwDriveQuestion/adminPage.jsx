@@ -187,7 +187,8 @@ class AdminQuestionPage extends AdminPage {
                                 </td> : null}
                             </tr>))}
                     </tbody>
-                </table>);
+                </table>
+            );
         }
 
         const renderData = {
