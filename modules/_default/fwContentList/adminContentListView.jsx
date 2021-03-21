@@ -107,7 +107,7 @@ class ContentListPage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/list-content/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                        <Link to={'/user/list-content/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.includes('component:write') ?

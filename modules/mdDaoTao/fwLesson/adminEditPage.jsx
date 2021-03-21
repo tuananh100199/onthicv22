@@ -314,7 +314,7 @@ class adminEditPage extends AdminPage {
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];
         const renderData = {
             icon: 'fa fa-book',
-            title: 'Bài học: ' + this.state.title,
+            title: 'Bài học: ' + (this.state.title || '...'),
             breadcrumb: [<Link to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
             content: <><FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} /><BackButton to={adminPageLink} /></>,
         };

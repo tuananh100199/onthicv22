@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisions, createDivision, deleteDivision, updateDivision } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
     componentDidMount() {
@@ -48,50 +48,34 @@ class DivisionPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('division');
-        let table = 'Không có cơ sở!';
-        if (this.props.division && this.props.division.list && this.props.division.list.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên cơ sở</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở ngoài</th>
-                            <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                            {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.division.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><Link to={'/user/division/edit/' + item._id}>{item.title}</Link></td>
-                                <td className='toggle' style={{ textAlign: 'center' }} >
-                                    <label>
-                                        <input type='checkbox' checked={item.isOutside}
-                                            onChange={() => permission.write && this.props.updateDivision(item._id, { isOutside: item.isOutside ? 0 : 1 }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={item.image} alt='avatarDivision' style={{ height: '32px' }} />
-                                </td>
-                                {permission.write || permission.delete ? <td>
-                                    <div className='btn-group'>
-                                        {permission.write ?
-                                            <Link to={'/user/division/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
-                                                <i className='fa fa-lg fa-edit' />
-                                            </Link> : null}
-                                        {permission.delete ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td> : null}
-                            </tr>))}
-                    </tbody>
-                </table>);
-        }
+        const table = renderTable({
+            dataSource: this.props.division,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '80%' }}>Tên cơ sở</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Cơ sở ngoài</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} url={'/user/division/edit/' + item._id} />
+                    <TableCell type='checkbox' content={item.isOutside} readOnly={!permission.write} onChanged={isOutside => this.props.updateDivision(item._id, { isOutside }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
+                    <TableCell type='image' style={{ width: '20%' }} content={item.image} />
+                    <TableCell content={(
+                        <div className='btn-group'>
+                            <Link to={'/user/division/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                <i className='fa fa-lg fa-edit' />
+                            </Link>
+                            {permission.delete ?
+                                <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                    <i className='fa fa-lg fa-trash' />
+                                </a> : null}
+                        </div>)} />
+                </tr>),
+        });
 
         const renderData = {
             icon: 'fa fa-university',

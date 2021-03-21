@@ -2,6 +2,55 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
+// Table components ---------------------------------------------------------------------------------------------------
+export class TableCell extends React.Component { // type = number | link | image | checkbox | text
+    render() {
+        let { type = 'text', content = '', readOnly = false, style = {}, alt = '', display = true } = this.props;
+        if (style == null) style = {};
+
+        if (display != true) {
+            return null;
+        } else if (type == 'number') {
+            return <td style={{ textAlign: 'right', ...style }}>{content}</td>
+        } else if (type == 'link') {
+            const url = this.props.url.trim();
+            return url.startsWith('http://') || url.startsWith('https://') ?
+                <td style={{ textAlign: 'left', ...style }}><a href={url} target='_blank'>{content}</a></td> :
+                <td style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
+        } else if (type == 'image') {
+            return <td style={{ textAlign: 'center', ...style }}><img src={content} alt={alt} style={{ height: '32px' }} /></td>;
+        } else if (type == 'checkbox') {
+            return (
+                <td style={{ textAlign: 'center', ...style }} className='toggle'  >
+                    <label>
+                        <input type='checkbox' checked={content} onChange={() => readOnly || this.props.onChanged(content ? 0 : 1)} />
+                        <span className='button-indecator' />
+                    </label>
+                </td>);
+        } else if (type == 'text') {
+            return <td style={{ textAlign: 'left', ...style }}>{content}</td>;
+        } else {
+            return <td style={{ ...style }}>{content}</td>;
+        }
+    }
+}
+
+export function renderTable({ style = {}, className = '', dataSource = null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
+    const list = dataSource && (dataSource.list || (dataSource.page ? dataSource.page.list : null));
+    if (list == null) {
+        return loadingText;
+    } else if (list.length) {
+        return (
+            <table className={'table table-hover table-bordered ' + className} style={style}>
+                <thead>{renderHead()}</thead>
+                <tbody>{list.map(renderRow)}</tbody>
+            </table>);
+    } else {
+        return emptyTable;
+    }
+};
+
+// Form components ----------------------------------------------------------------------------------------------------
 export class FormTabs extends React.Component {
     state = { tabIndex: 0 };
 
@@ -149,6 +198,7 @@ export class FormEditor extends React.Component {
     };
 }
 
+// Page components ----------------------------------------------------------------------------------------------------
 export class BackButton extends React.Component {
     render = () =>
         <Link to={this.props.to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
