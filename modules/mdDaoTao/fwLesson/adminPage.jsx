@@ -80,7 +80,7 @@ class LessonPage extends AdminPage {
                 </table>);
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học',
             breadcrumb: ['Bài học'],
@@ -90,8 +90,7 @@ class LessonPage extends AdminPage {
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
             </>,
             onCreate: permission.write ? this.create : null,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

@@ -147,7 +147,7 @@ class DangKyTuVanPage extends AdminPage {
             );
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa fa-envelope-o',
             title: 'Đăng ký tư vấn',
             breadcrumb: ['Đăng ký tư vấn'],
@@ -162,8 +162,7 @@ class DangKyTuVanPage extends AdminPage {
                     </button> : null}
                 <DangKyTuVanModal ref={this.modal} getAllCourseType={this.props.getAllCourseType} updateDKTVList={this.props.updateDKTVList} />
             </>,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

@@ -161,13 +161,12 @@ class CourseTypeEditPage extends AdminPage {
         </>;
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học: ' + this.state.title,
             breadcrumb: [<Link to='/user/course-type/list'>Loại khóa học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

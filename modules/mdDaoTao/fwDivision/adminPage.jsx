@@ -77,7 +77,7 @@ class DivisionPage extends AdminPage {
                 </tr>),
         });
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-university',
             title: 'Cơ sở đào tạo',
             breadcrumb: ['Cơ sở đào tạo'],
@@ -86,8 +86,7 @@ class DivisionPage extends AdminPage {
                 <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} readOnly={!permission.write} />
             </>,
             onCreate: permission.write ? this.create : null,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

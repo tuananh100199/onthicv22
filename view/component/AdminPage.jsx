@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ImageBox from 'view/component/ImageBox';
 import Editor from 'view/component/CkEditor4';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -201,6 +202,19 @@ export class FormEditor extends React.Component {
                 </div>
             </div>);
     };
+}
+
+export class FormImageBox extends React.Component {
+    setData = data => this.imageBox.setData(this.props.uploadType + ':' + (data || 'new'));
+
+    render() {
+        let { label = '', className = '', readOnly = false, postUrl = '/user/upload', uploadType = '', image } = this.props;
+        return (
+            <div className={className}>
+                <label>{label}</label>
+                <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} />
+            </div>);
+    }
 }
 
 // Page components ----------------------------------------------------------------------------------------------------

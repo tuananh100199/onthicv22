@@ -186,18 +186,18 @@ module.exports = (app) => {
     app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'), app.path.join(app.publicPath, '/img/lesson-question'));
 
     const uploadLessonVideo = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('lesson-video:') && files.LessonVideoImage && files.LessonVideoImage.length > 0) {
+        if (fields.userData && fields.userData[0].startsWith('LessonVideoImage:') && files.LessonVideoImage && files.LessonVideoImage.length > 0) {
             console.log('Hook: uploadLessonVideo =>lesson video image upload');
-            app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring('lesson-video:'.length), files.LessonVideoImage[0].path, done);
+            app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring('LessonVideoImage:'.length), files.LessonVideoImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadLessonVideo', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadLessonVideo(req, fields, files, params, done), done, 'lesson:write'));
 
     const uploadLessonQuestion = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('lesson-question:') && files.LessonQuestionImage && files.LessonQuestionImage.length > 0) {
+        if (fields.userData && fields.userData[0].startsWith('lessonQuestion:') && files.LessonQuestionImage && files.LessonQuestionImage.length > 0) {
             console.log('Hook: uploadLessonQuestion =>lesson question image upload');
-            app.uploadComponentImage(req, 'lesson-question', app.model.lessonQuestion.get, fields.userData[0].substring('lesson-question:'.length), files.LessonQuestionImage[0].path, done);
+            app.uploadComponentImage(req, 'lesson-question', app.model.lessonQuestion.get, fields.userData[0].substring('lessonQuestion:'.length), files.LessonQuestionImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadLessonQuestion', (req, fields, files, params, done) =>

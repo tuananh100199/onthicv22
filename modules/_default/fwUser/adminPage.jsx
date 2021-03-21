@@ -251,7 +251,7 @@ class UserPage extends AdminPage {
             );
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-users',
             title: 'Người dùng',
             breadcrumb: ['Người dùng'],
@@ -264,8 +264,7 @@ class UserPage extends AdminPage {
                 <UserPasswordModal updateUser={this.props.updateUser} ref={this.passwordModal} />
             </>,
             onCreate: permission.write ? this.edit : null,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

@@ -6,8 +6,7 @@ import {
     createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
 } from './redux';
 import { Link } from 'react-router-dom';
-import ImageBox from 'view/component/ImageBox';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
     state = {};
@@ -16,10 +15,10 @@ class VideoModal extends AdminModal {
     }
 
     onShow = (video) => {
-        let { _id, title, link, image, active } = video ? video : { _id: null, title: '', link: '', image: '', active: true };
+        let { _id, title, link, image, active } = video || { _id: null, title: '', link: '', image: '', active: true };
         this.itemTitle.value(title);
         this.itemLink.value(link);
-        this.imageBox.setData('lesson-video:' + (_id ? _id : 'new'));
+        this.imageBox.setData(_id);
         this.itemActive.value(active);
 
         this.setState({ _id, image });
@@ -53,10 +52,7 @@ class VideoModal extends AdminModal {
                     <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
                 </div>
-                <div className='col-md-4'>
-                    <label>Hình đại diện</label>
-                    <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='LessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
-                </div>
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='LessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
             </div>
     });
 }
@@ -68,14 +64,14 @@ class QuestionModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id, title, answers, trueAnswer, active } = item ? item : { _id: null, title: '', answers: [], trueAnswer: 0, active: true };
+        let { _id, title, answers, trueAnswer, image, active } = item || { _id: null, title: '', answers: [], trueAnswer: 0, active: true };
         this.itemTitle.value(title)
         this.itemAnswers.value(answers.join('\n'));
         this.itemTrueAnswer.value(trueAnswer);
-        this.imageBox.setData('lesson-question:' + (_id ? _id : 'new'));
+        this.imageBox.setData(_id);
         this.itemActive.value(active);
 
-        this.setState({ _id });
+        this.setState({ _id, image });
     }
 
     onSubmit = () => {
@@ -104,10 +100,7 @@ class QuestionModal extends AdminModal {
             body: <div className='row'>
                 <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Câu hỏi' rows='4' readOnly={this.props.readOnly} />
                 <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-8' label='Danh sách câu trả lời' rows='5' readOnly={this.props.readOnly} />
-                <div className='col-md-4'>
-                    <label>Hình minh họa</label>
-                    <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='LessonQuestionImage' image={this.state.image} readOnly={this.props.readOnly} />
-                </div>
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình minh họa' uploadType='LessonQuestionImage' image={this.state.image} readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemTrueAnswer = e} className='col-md-8' label='Đáp án' readOnly={this.props.readOnly} type='number' />
                 <FormCheckbox ref={e => this.itemActive = e} className='col-md-4' label='Kích hoạt' readOnly={this.props.readOnly} />
             </div>
@@ -151,14 +144,12 @@ class adminEditPage extends AdminPage {
         detailDescription: this.itemEditor.html(),
     });
 
-    createVideo = e => e.preventDefault() || this.modalVideo.show();
-    editVideo = (e, video) => e.preventDefault() || this.modalVideo.show(video);
+    showVideoModal = (e, video) => e.preventDefault() || this.modalVideo.show(video);
     deleteVideo = (e, video) => e.preventDefault() || T.confirm('Xóa video', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteLessonVideo(this.state._id, video._id));
     swapVideo = (e, video, isMoveUp) => e.preventDefault() || this.props.swapLessonVideo(this.state._id, video._id, isMoveUp);
 
-    createQuestion = e => e.preventDefault() || this.modalQuestion.show();
-    editQuestion = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
+    showQuestionModal = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
     deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteLessonQuestion(this.state._id, question._id));
     swapQuestion = (e, question, isMoveUp) => e.preventDefault() || this.props.swapLessonQuestion(this.state._id, question._id, isMoveUp);
@@ -180,7 +171,7 @@ class adminEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} onClick={e => this.editVideo(e, item)} />
+                    <TableCell type='link' content={item.title} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='link' content={item.link} url={item.link} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='checkbox' content={item.active} readOnly={!permission.write} onChanged={active => this.props.updateLessonVideo(this.state._id, item._id, { active })} />
@@ -192,7 +183,7 @@ class adminEditPage extends AdminPage {
                             {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, false)}>
                                 <i className='fa fa-lg fa-arrow-down' />
                             </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.editVideo(e, item)}>
+                            <a className='btn btn-primary' href='#' onClick={e => this.showVideoModal(e, item)}>
                                 <i className='fa fa-lg fa-edit' />
                             </a>
                             {permission.write ?
@@ -216,7 +207,7 @@ class adminEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} onClick={e => this.editQuestion(e, item)} />
+                    <TableCell type='link' content={item.title} onClick={e => this.showQuestionModal(e, item)} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='checkbox' content={item.active} readOnly={!permission.write} onChanged={active => this.props.updateLessonQuestion(this.state._id, item._id, { active })} />
                     <TableCell content={(
@@ -227,7 +218,7 @@ class adminEditPage extends AdminPage {
                             {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, false)}>
                                 <i className='fa fa-lg fa-arrow-down' />
                             </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.editQuestion(e, item)}>
+                            <a className='btn btn-primary' href='#' onClick={e => this.showQuestionModal(e, item)}>
                                 <i className='fa fa-lg fa-edit' />
                             </a>
                             {permission.write ?
@@ -249,26 +240,25 @@ class adminEditPage extends AdminPage {
         const componentVideo = (
             <div className='tile-body'>
                 {tableVideo}
-                {permission.write ? <CirclePageButton type='create' onClick={this.createVideo} /> : null}
+                {permission.write ? <CirclePageButton type='create' onClick={this.showVideoModal} /> : null}
                 <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} readOnly={!permission.write} />
             </div>);
 
         const componentQuestion = (
             <div className='tile-body'>
                 {tableQuestion}
-                {permission.write ? <CirclePageButton type='create' onClick={this.createQuestion} /> : null}
+                {permission.write ? <CirclePageButton type='create' onClick={this.showQuestionModal} /> : null}
                 <QuestionModal lessonId={this.state._id} ref={e => this.modalQuestion = e} create={this.props.createLessonQuestion} update={this.props.updateLessonQuestion} readOnly={!permission.write} />
             </div>);
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
             breadcrumb: [<Link to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: adminPageLink,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 
