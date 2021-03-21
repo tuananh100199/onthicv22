@@ -83,7 +83,7 @@ class DivisionPage extends AdminPage {
             breadcrumb: ['Cơ sở đào tạo'],
             content: <>
                 <div className='tile'>{table}</div>
-                <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} />
+                <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} readOnly={!permission.write} />
             </>,
             onCreate: permission.write ? this.create : null,
         };

@@ -86,8 +86,8 @@ class LessonPage extends AdminPage {
             breadcrumb: ['Bài học'],
             content: <>
                 <div className='tile'>{table}</div>
+                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} readOnly={!permission.write} />
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
-                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
             onCreate: permission.write ? this.create : null,
         };

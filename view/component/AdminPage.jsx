@@ -26,7 +26,7 @@ export class TableCell extends React.Component { // type = number | link | image
             return <td style={{ textAlign: 'center', ...style }}><img src={content} alt={alt} style={{ height: '32px' }} /></td>;
         } else if (type == 'checkbox') {
             return (
-                <td style={{ textAlign: 'center', ...style }} className='toggle'  >
+                <td style={{ textAlign: 'center', ...style }} className='toggle'>
                     <label>
                         <input type='checkbox' checked={content} onChange={() => readOnly || this.props.onChanged(content ? 0 : 1)} />
                         <span className='button-indecator' />
@@ -256,7 +256,7 @@ export class AdminModal extends React.Component {
         const { readOnly } = this.props;
         return (
             <div className='modal fade' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
-                <form className={'modal-dialog modal-dialog-centered' + (size == 'large' ? ' modal-lg' : '')} role='document'
+                <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document'
                     onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
                     <div className='modal-content'>
                         <div className='modal-header'>

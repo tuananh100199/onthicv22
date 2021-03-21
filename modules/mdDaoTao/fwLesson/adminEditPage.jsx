@@ -72,6 +72,7 @@ class QuestionModal extends AdminModal {
         this.itemTitle.value(title)
         this.itemAnswers.value(answers.join('\n'));
         this.itemTrueAnswer.value(trueAnswer);
+        this.imageBox.setData('lesson-question:' + (_id ? _id : 'new'));
         this.itemActive.value(active);
 
         this.setState({ _id });
