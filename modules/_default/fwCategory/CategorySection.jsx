@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './redux';
 import ImageBox from 'view/component/ImageBox';
-import { AdminModal, FormTextBox, FormRichTextBox } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class CategoryModal extends AdminModal {
     state = {};
@@ -15,38 +15,28 @@ class CategoryModal extends AdminModal {
         const { _id, title, description, image } = item ? item : { _id: '', title: '', description: '', image: '/img/avatar.png' };
         this.itemTitle.value(title);
         this.itemDescription.value(description);
-        this.imageBox.setData(this.props.uploadType + ':' + (_id || 'new'));
-        this.setState({ image });
-        this.data('_id', _id);
+        this.imageBox.setData(`${this.props.uploadType}:${_id || 'new'}`);
+        this.setState({ _id, image });
     }
 
     onSubmit = () => {
-        const _id = this.data('_id'),
-            changes = { title: this.itemTitle.value().trim(), description: this.itemDescription.value().trim() };
-        if (_id) { // Update
-            this.props.updateCategory(_id, changes, () => this.hide());
+        const changes = { title: this.itemTitle.value().trim(), description: this.itemDescription.value().trim() };
+        if (this.state._id) { // Update
+            this.props.update(this.state._id, changes, () => this.hide());
         } else { // Create
             changes.type = this.props.type;
             changes.active = true;
-            this.props.createCategory(changes, () => {
-                T.notify('Tạo danh mục câu hỏi thi thành công', 'success');
-                this.hide()
-            });
+            this.props.create(changes, () => this.hide());
         }
     }
 
     render = () => this.renderModal({
         title: 'Danh mục',
-        body: (
-            <>
-                <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
-                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả (nếu có)' readOnly={this.props.readOnly} />
-                <div className='form-group' style={{ display: this.data('_id') ? 'block' : 'none' }}>
-                    <label>Hình ảnh</label>
-                    <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
-                </div>
-
-            </>),
+        body: <>
+            <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
+            <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả (nếu có)' readOnly={this.props.readOnly} />
+            <FormImageBox ref={e => this.imageBox = e} className='form-group' label='Hình đại diện' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
+        </>,
     });
 }
 
@@ -72,67 +62,32 @@ class CategorySection extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.contains('category:write');
-        let table = 'Không có danh mục!';
-        if (this.props.category && this.props.category.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên danh mục</th>
-                            <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.category.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><a href='#' onClick={e => this.edit(e, item)}>{item.title}</a></td>
-                                <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }} >
-                                    <label>
-                                        <input type='checkbox' checked={item.active} onChange={() => !readOnly && this.changeActive(item, index)} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        {readOnly ? null : (
-                                            <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, true)}>
-                                                <i className='fa fa-lg fa-arrow-up' />
-                                            </a>)}
-                                        {readOnly ? null : (<a className='btn btn-success' href='#' onClick={e => this.swap(e, item, false)}>
-                                            <i className='fa fa-lg fa-arrow-down' />
-                                        </a>)}
-                                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        {readOnly ? null :
-                                            < a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a>}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>);
-        }
+        const table = renderTable({
+            getDataSource: () => this.props.category,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '80%' }}>Tên danh mục</th>
+                    <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
+                    <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
+                    <TableCell type='image' style={{ width: '20%' }} content={item.image || '/img/avatar.png'} />
+                    <TableCell type='checkbox' content={item.active} readOnly={readOnly} onChanged={active => this.changeActive(item, { active })} />
+                    <TableCell type='buttons' content={item} readOnly={readOnly} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
+                </tr>),
+        });
 
-        return (
-            <>
-                <div className='tile'>{table}</div>
-                {readOnly ? null :
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>}
-                <CategoryModal ref={e => this.modal = e} readOnly={readOnly} uploadType={this.props.uploadType} type={this.props.type}
-                    createCategory={this.props.createCategory} updateCategory={this.props.updateCategory} />
-            </>);
+        return <>
+            <div className='tile'>{table}</div>
+            {readOnly ? null : <CirclePageButton type='create' onClick={this.create} />}
+            <CategoryModal ref={e => this.modal = e} readOnly={readOnly} uploadType={this.props.uploadType} type={this.props.type}
+                create={this.props.createCategory} update={this.props.updateCategory} />
+        </>;
     }
 }
 

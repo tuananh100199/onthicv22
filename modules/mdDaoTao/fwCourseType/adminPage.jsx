@@ -67,7 +67,7 @@ class CourseTypePage extends AdminPage {
                 </table>);
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học',
             breadcrumb: ['Loại khóa học'],
@@ -75,9 +75,8 @@ class CourseTypePage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypeInPage} />
             </>,
-        };
-        if (permission.write) renderData.onCreate = this.create;
-        return this.renderPage(renderData);
+            onCreate: permission.write ? this.create : null,
+        });
     }
 }
 

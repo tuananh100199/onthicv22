@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ImageBox from 'view/component/ImageBox';
 import Editor from 'view/component/CkEditor4';
 
 // Table components ---------------------------------------------------------------------------------------------------
-export class TableCell extends React.Component { // type = number | link | image | checkbox | text
+export class TableCell extends React.Component { // type = number | link | image | checkbox | buttons | text (default)
     render() {
         let { type = 'text', content = '', readOnly = false, style = {}, alt = '', display = true } = this.props;
         if (style == null) style = {};
@@ -13,30 +14,51 @@ export class TableCell extends React.Component { // type = number | link | image
         } else if (type == 'number') {
             return <td style={{ textAlign: 'right', ...style }}>{content}</td>
         } else if (type == 'link') {
-            const url = this.props.url.trim();
-            return url.startsWith('http://') || url.startsWith('https://') ?
-                <td style={{ textAlign: 'left', ...style }}><a href={url} target='_blank'>{content}</a></td> :
-                <td style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
+            let url = this.props.url ? this.props.url.trim() : '',
+                onClick = this.props.onClick;
+            if (onClick) {
+                return <td style={{ ...style }}><a href='#' onClick={onClick}>{content}</a></td>;
+            } else {
+                return url.startsWith('http://') || url.startsWith('https://') ?
+                    <td style={{ textAlign: 'left', ...style }}><a href={url} target='_blank'>{content}</a></td> :
+                    <td style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
+            }
         } else if (type == 'image') {
             return <td style={{ textAlign: 'center', ...style }}><img src={content} alt={alt} style={{ height: '32px' }} /></td>;
         } else if (type == 'checkbox') {
             return (
-                <td style={{ textAlign: 'center', ...style }} className='toggle'  >
+                <td style={{ textAlign: 'center', ...style }} className='toggle'>
                     <label>
                         <input type='checkbox' checked={content} onChange={() => readOnly || this.props.onChanged(content ? 0 : 1)} />
                         <span className='button-indecator' />
                     </label>
                 </td>);
-        } else if (type == 'text') {
-            return <td style={{ textAlign: 'left', ...style }}>{content}</td>;
+        } else if (type == 'buttons') {
+            const { onSwap, onEdit, onDelete, children } = this.props;
+            return (
+                <td style={{ ...style }}>
+                    <div className='btn-group'>
+                        {children}
+                        {!readOnly && onSwap ?
+                            <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, true)}><i className='fa fa-lg fa-arrow-up' /></a> : null}
+                        {!readOnly && onSwap ?
+                            <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, false)}><i className='fa fa-lg fa-arrow-down' /></a> : null}
+                        {onEdit && typeof onEdit == 'function' ?
+                            <a className='btn btn-primary' href='#' onClick={e => onEdit(e, content)}><i className='fa fa-lg fa-edit' /></a> : null}
+                        {onEdit && typeof onEdit == 'string' ?
+                            <Link to={onEdit} className='btn btn-primary'><i className='fa fa-lg fa-edit' /></Link> : null}
+                        {!readOnly && onDelete ?
+                            <a className='btn btn-danger' href='#' onClick={e => onDelete(e, content)}><i className='fa fa-lg fa-trash' /></a> : null}
+                    </div>
+                </td>);
         } else {
             return <td style={{ ...style }}>{content}</td>;
         }
     }
 }
 
-export function renderTable({ style = {}, className = '', dataSource = null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
-    const list = dataSource && (dataSource.list || (dataSource.page ? dataSource.page.list : null));
+export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
+    const list = getDataSource();
     if (list == null) {
         return loadingText;
     } else if (list.length) {
@@ -198,12 +220,41 @@ export class FormEditor extends React.Component {
     };
 }
 
+export class FormImageBox extends React.Component {
+    // setData = data => this.imageBox.setData(this.props.uploadType + ':' + (data || 'new'));
+    setData = data => this.imageBox.setData(data);
+
+    render() {
+        let { label = '', className = '', readOnly = false, postUrl = '/user/upload', uploadType = '', image } = this.props;
+        return (
+            <div className={className}>
+                <label>{label}</label>
+                <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} />
+            </div>);
+    }
+}
+
 // Page components ----------------------------------------------------------------------------------------------------
-export class BackButton extends React.Component {
-    render = () =>
-        <Link to={this.props.to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
-            <i className='fa fa-lg fa-reply' />
-        </Link>;
+export class CirclePageButton extends React.Component {
+    render() {
+        const { type = 'back', style = {}, to = '', onClick = () => { } } = this.props; // type = back | save | create
+        if (type == 'save') {
+            return (
+                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
+                    <i className='fa fa-lg fa-save' />
+                </button>);
+        } else if (type == 'create') {
+            return (
+                <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
+                    <i className='fa fa-lg fa-plus' />
+                </button>);
+        } else {
+            return (
+                <Link to={to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', ...style }}>
+                    <i className='fa fa-lg fa-reply' />
+                </Link>);
+        }
+    }
 }
 
 export class AdminModal extends React.Component {
@@ -235,7 +286,7 @@ export class AdminModal extends React.Component {
     renderModal = ({ title, body, size }) => {
         const { readOnly } = this.props;
         return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
+            <div className='modal fade' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
                 <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -275,7 +326,7 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderPage = ({ icon, title, breadcrumb, content, onCreate }) => {
+    renderPage = ({ icon, title, breadcrumb, content, backRoute, onCreate, onSave }) => {
         if (breadcrumb == null) breadcrumb = [];
         return (
             <main className='app-content'>
@@ -287,10 +338,9 @@ export class AdminPage extends React.Component {
                     </ul>
                 </div>
                 {content}
-                {onCreate ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={onCreate}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button> : null}
+                {backRoute ? <CirclePageButton type='back' to={backRoute} /> : null}
+                {onCreate ? <CirclePageButton type='create' onClick={onCreate} /> : null}
+                {onSave ? <CirclePageButton type='save' onClick={onSave} /> : null}
             </main>);
     }
 

@@ -49,7 +49,7 @@ class DivisionPage extends AdminPage {
     render() {
         const permission = this.getUserPermission('division');
         const table = renderTable({
-            dataSource: this.props.division,
+            getDataSource: () => this.props.division && this.props.division.list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -64,30 +64,20 @@ class DivisionPage extends AdminPage {
                     <TableCell type='link' content={item.title} url={'/user/division/edit/' + item._id} />
                     <TableCell type='checkbox' content={item.isOutside} readOnly={!permission.write} onChanged={isOutside => this.props.updateDivision(item._id, { isOutside }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            <Link to={'/user/division/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
-                                <i className='fa fa-lg fa-edit' />
-                            </Link>
-                            {permission.delete ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} onEdit={'/user/division/edit/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-university',
             title: 'Cơ sở đào tạo',
             breadcrumb: ['Cơ sở đào tạo'],
             content: <>
                 <div className='tile'>{table}</div>
-                <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} />
+                <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} readOnly={!permission.write} />
             </>,
-        };
-        if (permission.write) renderData.onCreate = this.create;
-        return this.renderPage(renderData);
+            onCreate: permission.write ? this.create : null,
+        });
     }
 }
 

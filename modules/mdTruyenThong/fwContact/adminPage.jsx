@@ -63,18 +63,16 @@ class ContactPage extends AdminPage {
                 </table>);
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-envelope-o',
             title: 'Liên hệ',
             breadcrumb: ['Liên hệ'],
             content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getContactPage} />
+                <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getContactPage} />
                 <AdminContactModal ref={e => this.modal = e} />
             </>,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

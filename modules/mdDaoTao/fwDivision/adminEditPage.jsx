@@ -74,9 +74,8 @@ class DivisionEditPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('division'),
-            readOnly = !permission.write;
-        const renderData = {
+        const permission = this.getUserPermission('division');
+        return this.renderPage({
             icon: 'fa fa-university',
             title: 'Cơ sở đào tạo: ' + this.state.title,
             breadcrumb: [<Link to='/user/division'>Cơ sở đào tạo</Link>, 'Chỉnh sửa'],
@@ -87,19 +86,19 @@ class DivisionEditPage extends AdminPage {
                     <div className='tile-body row'>
                         <div className='col-md-3 order-md-12 form-group'>
                             <label>Hình đại diện</label>
-                            <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='DivisionImage' readOnly={readOnly} />
+                            <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='DivisionImage' readOnly={!permission.write} />
                         </div>
                         <div className='col-md-9 order-md-1'>
-                            <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' readOnly={readOnly} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
-                            <FormRichTextBox ref={e => this.itemAddress = e} label='Địa chỉ' readOnly={readOnly} rows='2' />
+                            <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' readOnly={!permission.write} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
+                            <FormRichTextBox ref={e => this.itemAddress = e} label='Địa chỉ' readOnly={!permission.write} rows='2' />
                         </div>
                         <div className='col-md-12 order-sm-12'>
                             <div className='row'>
-                                <FormTextBox className='col-md-4' ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
-                                <FormTextBox className='col-md-4' ref={e => this.itemPhoneNumber = e} label='Số điện thoại' readOnly={readOnly} />
-                                <FormTextBox className='col-md-4' ref={e => this.itemMobile = e} label='Di động' readOnly={readOnly} />
+                                <FormTextBox className='col-md-4' ref={e => this.itemEmail = e} label='Email' readOnly={!permission.write} type='email' />
+                                <FormTextBox className='col-md-4' ref={e => this.itemPhoneNumber = e} label='Số điện thoại' readOnly={!permission.write} />
+                                <FormTextBox className='col-md-4' ref={e => this.itemMobile = e} label='Di động' readOnly={!permission.write} />
                             </div>
-                            <FormTextBox ref={e => this.itemMapUrl = e} label='Đường dẫn Google Map' readOnly={readOnly} />
+                            <FormTextBox ref={e => this.itemMapUrl = e} label='Đường dẫn Google Map' readOnly={!permission.write} />
                         </div>
                     </div>
                 </div>
@@ -107,21 +106,14 @@ class DivisionEditPage extends AdminPage {
                 <div className='tile'>
                     <h3 className='tile-title'>Mô tả</h3>
                     <div className='tile-body'>
-                        <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
-                        <FormEditor ref={e => this.itemEditor = e} height='400px' label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                        <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={!permission.write} />
+                        <FormEditor ref={e => this.itemEditor = e} height='400px' label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={!permission.write} />
                     </div>
                 </div>
-
-                <Link to='/user/division' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>
-                {permission.write ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                        <i className='fa fa-lg fa-save' />
-                    </button> : null}
             </>,
-        };
-        return this.renderPage(renderData);
+            backRoute: '/user/division',
+            onSave: permission.write ? this.save : null,
+        });
     }
 }
 

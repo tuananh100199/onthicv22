@@ -83,7 +83,7 @@ class AdminListSubject extends AdminPage {
             );
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-briefcase',
             title: 'Môn học',
             breadcrumb: ['Môn học'],
@@ -92,9 +92,8 @@ class AdminListSubject extends AdminPage {
                 <Pagination name='pageSubject' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getSubjectInPage} />
                 <SubjectModal ref={e => this.modal = e} createSubject={this.props.createSubject} history={this.props.history} />
             </>,
-        };
-        if (permission.write) renderData.onCreate = this.create;
-        return this.renderPage(renderData);
+            onCreate: permission.write ? this.create : null,
+        });
     }
 }
 
