@@ -51,8 +51,6 @@ class CategorySection extends AdminPage {
 
     swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapCategory(item._id, isMoveUp, this.props.type);
 
-    changeActive = (item) => this.props.updateCategory(item._id, { active: !item.active });
-
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá danh mục', 'Bạn có chắc bạn muốn xoá danh mục này?', true, isConfirm =>
         isConfirm && this.props.deleteCategory(item._id));
 
@@ -73,7 +71,7 @@ class CategorySection extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image || '/img/avatar.png'} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, { active })} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCategory(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });

@@ -1,14 +1,11 @@
 module.exports = app => {
-    const userMenu = {
+    const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
             2060: { title: 'Người dùng', link: '/user/user', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
-    app.permission.add(
-        { name: 'user:read', menu: userMenu },
-        { name: 'user:write', menu: userMenu },
-    );
+    app.permission.add({ name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' });
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
     app.get('/user/profile', app.permission.check(), app.templates.admin);
@@ -156,7 +153,7 @@ module.exports = app => {
         })
     });
 
-    app.delete('/api/user', app.permission.check('user:write'), (req, res) => {
+    app.delete('/api/user', app.permission.check('user:delete'), (req, res) => {
         app.model.user.delete(req.body._id, error => res.send({ error }));
     });
 

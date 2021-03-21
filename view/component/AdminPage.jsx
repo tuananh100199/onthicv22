@@ -152,9 +152,8 @@ export class FormTextBox extends React.Component {
     render() {
         let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
         type = type.toLowerCase(); // type = text | email | password
-        className = 'form-group' + (className ? ' ' + className : '');
         return (
-            <div className={className}>
+            <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
                 <input ref={e => this.input = e} type={type} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
@@ -222,14 +221,78 @@ export class FormEditor extends React.Component {
     };
 }
 
+export class FormSelect extends React.Component {
+    state = {}
+    componentDidMount() {
+        $(this.input).select2();
+    }
+
+    value = function (value) {
+        const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
+        if (arguments.length) {
+            const { adapter, data, label } = this.props,
+                options = { placeholder: label, dropdownParent };
+            if (adapter) {
+                options.ajax = { ...adapter, delay: 500 };
+            } else {
+                options.data = data;
+            }
+
+            $(this.input).select2(options).val(value).trigger('change');
+        } else {
+            return $(this.input).val();
+        }
+    }
+
+    render = () => {
+        const { className = '', style = {}, label = '', multiple = false, readOnly = false, onChanged = null } = this.props;
+        return (
+            <div className={'form-group ' + className} style={style}>
+                <label>{label}</label>
+                <label style={{ width: '100%', marginBottom: '0' }}>
+                    <select ref={e => this.input = e} className='form-control' multiple={multiple} disabled={readOnly} onChange={() => onChanged && onChanged('TODO')}>
+                        {/* <optgroup label={'Lựa chọn ' + label} /> */}
+                    </select>
+                </label>
+            </div>
+        )
+    }
+}
+
+export class FormDatePicker extends React.Component {
+    state = { value: '' };
+    componentDidMount() {
+        $(document).ready(() => $(this.input).datepicker({ format: 'dd/mm/yyyy', autoclose: true }));
+    }
+
+    value = function (date) {
+        if (arguments.length) {
+            date = date ? T.dateToText(date, 'dd/mm/yyyy') : '';
+            this.setState({ value: date });
+            $(this.input).val(date);
+        } else {
+            date = $(this.input).val();
+            return date ? T.formatDate(date) : null;
+        }
+    }
+
+    render() {
+        let { label = '', className = '', readOnly = false } = this.props;
+        return (
+            <div className={'form-group ' + (className || '')}>
+                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
+                <input ref={e => this.input = e} className='form-control' type='text' placeholder={label} readOnly={readOnly} />
+            </div>);
+    }
+}
+
 export class FormImageBox extends React.Component {
-    // setData = data => this.imageBox.setData(this.props.uploadType + ':' + (data || 'new'));
     setData = data => this.imageBox.setData(data);
 
     render() {
-        let { label = '', className = '', readOnly = false, postUrl = '/user/upload', uploadType = '', image } = this.props;
+        let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', image } = this.props;
         return (
-            <div className={className}>
+            <div className={className} style={style}>
                 <label>{label}</label>
                 <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} />
             </div>);

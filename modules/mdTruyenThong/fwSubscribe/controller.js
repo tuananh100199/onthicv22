@@ -37,8 +37,8 @@ module.exports = app => {
             if (error) {
                 res.send({ error })
             } else {
-                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
-                let cells = [
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Subscribe');
+                const cells = [
                     { cell: 'A1', value: 'STT', bold: true, border: '1234' },
                     { cell: 'B1', value: 'Email', bold: true, border: '1234' },
                     { cell: 'C1', value: 'Ngày đăng ký', bold: true, border: '1234' },
@@ -57,7 +57,7 @@ module.exports = app => {
                     });
                 })
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, `Đăng ký nhận tin.xlsx`);
+                app.excel.attachment(workbook, res, `Subscribe.xlsx`);
             }
         })
     });

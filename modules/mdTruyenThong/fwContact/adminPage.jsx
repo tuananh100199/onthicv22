@@ -20,8 +20,8 @@ class ContactPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('contact');
-        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.contact && this.props.contact.page ?
-            this.props.contact.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.contact && this.props.contact.page ?
+            this.props.contact.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = renderTable({
