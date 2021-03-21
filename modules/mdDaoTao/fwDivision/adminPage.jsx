@@ -49,7 +49,7 @@ class DivisionPage extends AdminPage {
     render() {
         const permission = this.getUserPermission('division');
         const table = renderTable({
-            dataSource: this.props.division,
+            getDataSource: () => this.props.division && this.props.division.list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

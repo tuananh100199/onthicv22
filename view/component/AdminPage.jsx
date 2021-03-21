@@ -35,8 +35,8 @@ export class TableCell extends React.Component { // type = number | link | image
     }
 }
 
-export function renderTable({ style = {}, className = '', dataSource = null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
-    const list = dataSource && (dataSource.list || (dataSource.page ? dataSource.page.list : null));
+export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
+    const list = getDataSource();
     if (list == null) {
         return loadingText;
     } else if (list.length) {

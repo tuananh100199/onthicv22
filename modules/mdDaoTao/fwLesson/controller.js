@@ -47,10 +47,6 @@ module.exports = (app) => {
     });
 
     // Video APIs -----------------------------------------------------------------------------------------------------
-    app.get('/api/lesson/video/item/:_lessonVideoId', (req, res) => { //TODO: mobile không dùng thì xoá
-        app.model.lessonVideo.get(req.params._lessonVideoId, (error, item) => res.send({ error, item }));
-    });
-
     app.post('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
         const { _lessonId, data } = req.body;
         app.model.lessonVideo.create(data, (error, lessonVideo) => {
@@ -119,10 +115,6 @@ module.exports = (app) => {
     });
 
     // Question APIs --------------------------------------------------------------------------------------------------
-    app.get('/api/lesson/question', (req, res) => {
-        app.model.lesson.get(req.body._lessonId, { select: '_id lessonQuestion', populate: true }, (error, item) => res.send({ error, item }));
-    });
-
     app.post('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
         const { _lessonId, data } = req.body;
         app.model.lessonQuestion.create(data, (error, lessonQuestion) => {
@@ -130,7 +122,7 @@ module.exports = (app) => {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
             } else {
                 const addLessonQuestion = () => app.model.lesson.addLessonQuestion(_lessonId, lessonQuestion, (error, item) => {
-                    res.send({ error, lessonQuestion: item && item.lessonQuestion ? item.lessonQuestion : [] });
+                    res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
 
                 if (req.session['lesson-questionImage']) {
@@ -149,7 +141,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.lesson.get(_lessonId, (error, item) => res.send({ error, lessonQuestion: item && item.lessonQuestion ? item.lessonQuestion : [] }));
+                app.model.lesson.get(_lessonId, (error, item) => res.send({ error, questions: item && item.questions ? item.questions : [] }));
             }
         });
     });
@@ -160,19 +152,19 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                for (let index = 0, length = item.lessonQuestion.length; index < item.lessonQuestion.length; index++) {
-                    const lessonQuestion = item.lessonQuestion[index];
+                for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
+                    const lessonQuestion = item.questions[index];
                     if (lessonQuestion._id == _lessonQuestionId) {
                         const newIndex = index + (isMoveUp ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
-                            item.lessonQuestion.splice(index, 1);
-                            item.lessonQuestion.splice(newIndex, 0, lessonQuestion);
+                            item.questions.splice(index, 1);
+                            item.questions.splice(newIndex, 0, lessonQuestion);
                             item.save();
                         }
                         break;
                     }
                 }
-                res.send({ lessonQuestion: item.lessonQuestion });
+                res.send({ questions: item.questions });
             }
         });
     });
@@ -184,7 +176,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.lesson.deleteLessonQuestion(_lessonId, _lessonQuestionId, (error, item) => {
-                    res.send({ error, lessonQuestion: item && item.lessonQuestion ? item.lessonQuestion : [] });
+                    res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }
         });
