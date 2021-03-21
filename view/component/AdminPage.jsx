@@ -300,10 +300,11 @@ export class AdminModal extends React.Component {
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                                 <i className='fa fa-fw fa-lg fa-times' />Đóng
                         </button>
-                            {readOnly == null || readOnly == true ? null :
+                            {/* {readOnly == null || readOnly == true ? null : */}
                                 <button type='submit' className='btn btn-primary'>
                                     <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                </button>}
+                                </button>
+                                {/* } */}
                         </div>
                     </div>
                 </form>
