@@ -45,7 +45,7 @@ class VideoModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Video mới',
         size: 'large',
-        body:
+        body: (
             <div className='row'>
                 <div className='col-md-8'>
                     <FormTextBox ref={e => this.itemTitle = e} label='Tên video' readOnly={this.props.readOnly} />
@@ -53,7 +53,7 @@ class VideoModal extends AdminModal {
                     <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
                 </div>
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='LessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
-            </div>
+            </div>),
     });
 }
 
@@ -174,7 +174,7 @@ class adminEditPage extends AdminPage {
                     <TableCell type='link' content={item.title} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='link' content={item.link} url={item.link} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
-                    <TableCell type='checkbox' content={item.active} readOnly={!permission.write} onChanged={active => this.props.updateLessonVideo(this.state._id, item._id, { active })} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateLessonVideo(this.state._id, item._id, { active })} />
                     <TableCell content={(
                         <div className='btn-group'>
                             {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, true)}>
@@ -209,7 +209,7 @@ class adminEditPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.showQuestionModal(e, item)} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
-                    <TableCell type='checkbox' content={item.active} readOnly={!permission.write} onChanged={active => this.props.updateLessonQuestion(this.state._id, item._id, { active })} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateLessonQuestion(this.state._id, item._id, { active })} />
                     <TableCell content={(
                         <div className='btn-group'>
                             {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, true)}>

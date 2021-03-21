@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonInPage, createLesson, updateLesson, deleteLesson } from './redux';
+import { getLessonPage, createLesson, updateLesson, deleteLesson } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
@@ -33,9 +33,9 @@ class LessonModal extends AdminModal {
 
 class LessonPage extends AdminPage {
     componentDidMount() {
-        this.props.getLessonInPage();
+        this.props.getLessonPage();
         T.ready('/user/dao-tao/bai-hoc');
-        T.onSearch = searchText => this.props.getLessonInPage(null, null, searchText);
+        T.onSearch = searchText => this.props.getLessonPage(null, null, searchText);
     }
 
     create = e => e.preventDefault() || this.modal.show();
@@ -87,7 +87,7 @@ class LessonPage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} readOnly={!permission.write} />
-                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
+                <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonPage} />
             </>,
             onCreate: permission.write ? this.create : null,
         });
@@ -95,5 +95,5 @@ class LessonPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getLessonInPage, createLesson, updateLesson, deleteLesson };
+const mapActionsToProps = { getLessonPage: getLessonPage, createLesson, updateLesson, deleteLesson };
 export default connect(mapStateToProps, mapActionsToProps)(LessonPage);

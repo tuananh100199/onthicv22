@@ -10,22 +10,22 @@ const SubscribeUpdate = 'Subscribe:Update';
 export default function subscribeReducer(state = null, data) {
     switch (data.type) {
         case SubscribeGetAll:
-            return Object.assign({}, state, { items: data.items });
+            return Object.assign({}, state, { list: data.list });
 
         case SubscribeGetPage:
             return Object.assign({}, state, { page: data.page });
 
         case SubscribeGetUnread:
-            return Object.assign({}, state, { unreads: data.items });
+            return Object.assign({}, state, { unreads: data.list });
 
         case SubscribeAdd:
             if (state) {
-                let addedItems = Object.assign({}, state.items),
+                let addedList = Object.assign({}, state.list),
                     addedPage = Object.assign({}, state.page),
                     addedUnreads = Object.assign({}, state.unreads),
                     addedItem = data.item;
-                if (addedItems) {
-                    addedItems.splice(0, 0, addedItem);
+                if (addedList) {
+                    addedList.splice(0, 0, addedItem);
                 }
                 if (addedPage && addedPage.pageNumber == 1) {
                     addedPage.list = addedPage.list.slice(0);
@@ -34,21 +34,21 @@ export default function subscribeReducer(state = null, data) {
                 if (addedItem && addedItem.read == false) {
                     addedUnreads.splice(0, 0, addedItem);
                 }
-                return Object.assign({}, state, { items: addedItems, page: addedPage, unreads: addedUnreads });
+                return Object.assign({}, state, { list: addedList, page: addedPage, unreads: addedUnreads });
             } else {
                 return state;
             }
 
         case SubscribeUpdate: {
             if (state) {
-                let updatedItems = Object.assign({}, state.items),
+                let updatedList = Object.assign({}, state.list),
                     updatedPage = Object.assign({}, state.page),
                     updatedUnreads = Object.assign({}, state.unreads),
                     updatedItem = data.item;
-                if (updatedItems) {
-                    for (let i = 0, n = updatedItems.length; i < n; i++) {
-                        if (updatedItems[i]._id == updatedItem._id) {
-                            updatedItems.splice(i, 1, updatedItem);
+                if (updatedList) {
+                    for (let i = 0, n = updatedList.length; i < n; i++) {
+                        if (updatedList[i]._id == updatedItem._id) {
+                            updatedList.splice(i, 1, updatedItem);
                             break;
                         }
                     }
@@ -73,7 +73,7 @@ export default function subscribeReducer(state = null, data) {
                         updatedPage.list.splice(0, 1, updatedItem);
                     }
                 }
-                return Object.assign({}, state, { items: updatedItems, page: updatedPage, unreads: updatedUnreads });
+                return Object.assign({}, state, { list: updatedList, page: updatedPage, unreads: updatedUnreads });
             } else {
                 return state;
             }
@@ -93,8 +93,8 @@ export function getSubscribeAll(done) {
                 T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: SubscribeGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: SubscribeGetAll, list: data.list });
             }
         }, error => T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger'));
     }
@@ -105,7 +105,7 @@ export function getSubscribePage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSubscribe', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/subscribe/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, {searchText}, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -140,8 +140,8 @@ export function getUnreadSubscribes(done) {
                 done && done(null, data.error);
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: SubscribeGetUnread, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: SubscribeGetUnread, list: data.list });
             }
         }, error => T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
     }

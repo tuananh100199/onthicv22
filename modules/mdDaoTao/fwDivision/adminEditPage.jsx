@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getDivisionItem, updateDivision } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox } from 'view/component/AdminPage';
-import ImageBox from 'view/component/ImageBox';
+import { AdminPage, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox } from 'view/component/AdminPage';
 
 class DivisionEditPage extends AdminPage {
     state = {};
@@ -84,10 +83,7 @@ class DivisionEditPage extends AdminPage {
                     <FormCheckbox style={{ position: 'absolute', right: '24px', top: '24px' }} ref={e => this.itemIsOutside = e} label='Cơ sở ngoài' />
                     <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body row'>
-                        <div className='col-md-3 order-md-12 form-group'>
-                            <label>Hình đại diện</label>
-                            <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='DivisionImage' readOnly={!permission.write} />
-                        </div>
+                        <FormImageBox ref={e => this.itemImage = e} className='col-md-3 order-md-12 form-group' label='Hình đại diện' uploadType='DivisionImage' image={this.state.image} readOnly={!permission.write} />
                         <div className='col-md-9 order-md-1'>
                             <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' readOnly={!permission.write} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
                             <FormRichTextBox ref={e => this.itemAddress = e} label='Địa chỉ' readOnly={!permission.write} rows='2' />

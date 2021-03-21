@@ -77,50 +77,33 @@ module.exports = (app) => {
 
     app.put('/api/news/swap', app.permission.check('news:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';
-        app.model.news.swapPriority(req.body._id, isMoveUp, (error) =>
-            res.send({ error })
-        );
+        app.model.news.swapPriority(req.body._id, isMoveUp, (error) => res.send({ error }));
     });
 
-    app.put('/api/news', app.permission.check('news:write'), (req, res) =>
-        app.model.news.update(req.body._id, req.body.changes, (error, item) =>
-            res.send({ error, item })
-        )
-    );
+    app.put('/api/news', app.permission.check('news:write'), (req, res) => {
+        app.model.news.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+    });
 
-    app.get(
-        '/api/news/item/:newsId',
-        app.permission.check('news:read'),
-        (req, res) => {
-            app.model.category.getAll({ type: 'news', active: true },
-                (error, categories) => {
-                    if (error || categories == null) {
-                        res.send({ error: 'Lỗi khi lấy danh mục!' });
-                    } else {
-                        app.model.news.get(req.params.newsId, (error, item) => {
-                            res.send({
-                                error,
-                                categories: categories.map((item) => ({
-                                    id: item._id,
-                                    text: item.title,
-                                })),
-                                item,
-                            });
-                        });
-                    }
-                }
-            );
-        }
-    );
-    app.get(
-        '/api/draft-news/toNews/:draftId',
-        app.permission.check('news:write'),
-        (req, res) => {
-            app.model.draft.toNews(req.params.draftId, (error, item) =>
-                res.send({ error, item })
-            );
-        }
-    );
+    app.get('/api/news/item/:newsId', app.permission.check('news:read'), (req, res) => {
+        app.model.category.getAll({ type: 'news', active: true }, (error, categories) => {
+            if (error || categories == null) {
+                res.send({ error: 'Lỗi khi lấy danh mục!' });
+            } else {
+                app.model.news.get(req.params.newsId, (error, item) => {
+                    res.send({
+                        error,
+                        categories: categories.map((item) => ({ id: item._id, text: item.title, })),
+                        item,
+                    });
+                });
+            }
+        });
+    });
+
+    app.get('/api/draft-news/toNews/:draftId', app.permission.check('news:write'), (req, res) => {
+        app.model.draft.toNews(req.params.draftId, (error, item) => res.send({ error, item }));
+    });
+
     app.get(
         '/api/draft-news/item/:newsId',
         app.permission.check('news:draft'),
@@ -133,10 +116,7 @@ module.exports = (app) => {
                         app.model.draft.get(req.params.newsId, (error, item) => {
                             res.send({
                                 error,
-                                categories: categories.map((item) => ({
-                                    id: item._id,
-                                    text: item.title,
-                                })),
+                                categories: categories.map((item) => ({ id: item._id, text: item.title, })),
                                 item,
                             });
                         });
@@ -146,11 +126,9 @@ module.exports = (app) => {
         }
     );
 
-    app.put('/api/draft-news', app.permission.check('news:draft'), (req, res) =>
-        app.model.draft.update(req.body._id, req.body.changes, (error, item) =>
-            res.send({ error, item })
-        )
-    );
+    app.put('/api/draft-news', app.permission.check('news:draft'), (req, res) => {
+        app.model.draft.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/news/page/:pageNumber/:pageSize', (req, res) => {
@@ -222,25 +200,19 @@ module.exports = (app) => {
         // }
         res.send({ error, item });
     };
-    app.get('/news/item/id/:newsId', (req, res) =>
-        app.model.news.readById(req.params.newsId, (error, item) =>
-            readNews(req, res, error, item)
-        )
-    );
-    app.get('/news/item/link/:newsLink', (req, res) =>
-        app.model.news.readByLink(req.params.newsLink, (error, item) =>
-            readNews(req, res, error, item)
-        )
-    );
-    app.put('/news/item/check-link', (req, res) =>
+    app.get('/news/item/id/:newsId', (req, res) => {
+        app.model.news.readById(req.params.newsId, (error, item) => readNews(req, res, error, item));
+    });
+    app.get('/news/item/link/:newsLink', (req, res) => {
+        app.model.news.readByLink(req.params.newsLink, (error, item) => readNews(req, res, error, item));
+    });
+    app.put('/news/item/check-link', (req, res) => {
         app.model.news.getByLink(req.body.link, (error, item) => {
             res.send({
-                error: error ?
-                    'Lỗi hệ thống' : item == null || item._id == req.body._id ?
-                        null : 'Link không hợp lệ',
+                error: error ? 'Lỗi hệ thống' : item == null || item._id == req.body._id ? null : 'Link không hợp lệ',
             });
         })
-    );
+    });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(
@@ -250,16 +222,9 @@ module.exports = (app) => {
         app.path.join(app.publicPath, '/img/draftNews')
     );
 
-    app.uploadHooks.add(
-        'uploadNewsCkEditor',
-        (req, fields, files, params, done) =>
-            app.permission.has(
-                req,
-                () => app.uploadCkEditorImage('news', fields, files, params, done),
-                done,
-                'news:write'
-            )
-    );
+    app.uploadHooks.add('uploadNewsCkEditor', (req, fields, files, params, done) => {
+        app.permission.has(req, () => app.uploadCkEditorImage('news', fields, files, params, done), done, 'news:write');
+    });
 
     const uploadNewsAvatar = (req, fields, files, params, done) => {
         if (
@@ -269,24 +234,12 @@ module.exports = (app) => {
             files.NewsImage.length > 0
         ) {
             console.log('Hook: uploadNewsAvatar => news image upload');
-            app.uploadComponentImage(
-                req,
-                'news',
-                app.model.news.get,
-                fields.userData[0].substring(5),
-                files.NewsImage[0].path,
-                done
-            );
+            app.uploadComponentImage(req, 'news', app.model.news.get, fields.userData[0].substring(5), files.NewsImage[0].path, done);
         }
     };
-    app.uploadHooks.add('uploadNewsAvatar', (req, fields, files, params, done) =>
-        app.permission.has(
-            req,
-            () => uploadNewsAvatar(req, fields, files, params, done),
-            done,
-            'news:write'
-        )
-    );
+    app.uploadHooks.add('uploadNewsAvatar', (req, fields, files, params, done) => {
+        app.permission.has(req, () => uploadNewsAvatar(req, fields, files, params, done), done, 'news:write');
+    });
 
     const uploadNewsDraftAvatar = (req, fields, files, params, done) => {
         if (
@@ -296,24 +249,10 @@ module.exports = (app) => {
             files.NewsDraftImage.length > 0
         ) {
             console.log('Hook: uploadNewsDraftAvatar => news draft image upload');
-            app.uploadComponentImage(
-                req,
-                'draftNews',
-                app.model.draft.get,
-                fields.userData[0].substring(10),
-                files.NewsDraftImage[0].path,
-                done
-            );
+            app.uploadComponentImage(req, 'draftNews', app.model.draft.get, fields.userData[0].substring(10), files.NewsDraftImage[0].path, done);
         }
     };
-    app.uploadHooks.add(
-        'uploadNewsDraftAvatar',
-        (req, fields, files, params, done) =>
-            app.permission.has(
-                req,
-                () => uploadNewsDraftAvatar(req, fields, files, params, done),
-                done,
-                'news:draft'
-            )
-    );
+    app.uploadHooks.add('uploadNewsDraftAvatar', (req, fields, files, params, done) => {
+        app.permission.has(req, () => uploadNewsDraftAvatar(req, fields, files, params, done), done, 'news:draft');
+    });
 };

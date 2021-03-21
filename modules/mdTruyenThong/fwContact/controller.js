@@ -24,11 +24,11 @@ module.exports = app => {
     });
 
     app.get('/api/contact/all', app.permission.check('contact:read'), (req, res) => {
-        app.model.contact.getAll((error, items) => res.send({ error, items }));
+        app.model.contact.getAll((error, list) => res.send({ error, list }));
     });
 
     app.get('/api/contact/unread', app.permission.check('contact:read'), (req, res) => {
-        app.model.contact.getUnread((error, items) => res.send({ error, items }));
+        app.model.contact.getUnread((error, list) => res.send({ error, list }));
     });
 
     app.get('/api/contact/item/:_id', app.permission.check('contact:write'), (req, res) => {

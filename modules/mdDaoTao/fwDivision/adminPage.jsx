@@ -41,10 +41,8 @@ class DivisionPage extends AdminPage {
 
     create = e => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm && this.props.deleteDivision(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa cơ sở', 'Bạn có chắc bạn muốn xóa cơ sở này?', true, isConfirm => isConfirm &&
+        this.props.deleteDivision(item._id));
 
     render() {
         const permission = this.getUserPermission('division');
@@ -62,9 +60,9 @@ class DivisionPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/division/edit/' + item._id} />
-                    <TableCell type='checkbox' content={item.isOutside} readOnly={!permission.write} onChanged={isOutside => this.props.updateDivision(item._id, { isOutside }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
+                    <TableCell type='checkbox' content={item.isOutside} permission={permission} onChanged={isOutside => this.props.updateDivision(item._id, { isOutside }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image} />
-                    <TableCell type='buttons' content={item} onEdit={'/user/division/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/division/edit/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 

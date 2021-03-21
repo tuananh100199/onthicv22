@@ -174,7 +174,7 @@ class Category extends React.Component {
         }
 
         return (
-            <div>
+            <>
                 <div className='tile'>{table}</div>
                 {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
@@ -182,7 +182,7 @@ class Category extends React.Component {
                     </button>
                 }
                 <CategoryModal ref={this.modal} createCategory={this.props.createCategory} updateCategory={this.props.updateCategory} uploadType={this.props.uploadType} />
-            </div>
+            </>
         );
     }
 }

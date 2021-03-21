@@ -4,15 +4,17 @@ import ImageBox from 'view/component/ImageBox';
 import Editor from 'view/component/CkEditor4';
 
 // Table components ---------------------------------------------------------------------------------------------------
-export class TableCell extends React.Component { // type = number | link | image | checkbox | buttons | text (default)
+export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', readOnly = false, style = {}, alt = '', display = true } = this.props;
+        let { type = 'text', content = '', permission = {}, style = {}, alt = '', display = true } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
             return null;
         } else if (type == 'number') {
             return <td style={{ textAlign: 'right', ...style }}>{content}</td>
+        } else if (type == 'date') {
+            return <td style={{ ...style }}>{new Date(content).getText()}</td>
         } else if (type == 'link') {
             let url = this.props.url ? this.props.url.trim() : '',
                 onClick = this.props.onClick;
@@ -29,7 +31,7 @@ export class TableCell extends React.Component { // type = number | link | image
             return (
                 <td style={{ textAlign: 'center', ...style }} className='toggle'>
                     <label>
-                        <input type='checkbox' checked={content} onChange={() => readOnly || this.props.onChanged(content ? 0 : 1)} />
+                        <input type='checkbox' checked={content} onChange={() => permission.write && this.props.onChanged(content ? 0 : 1)} />
                         <span className='button-indecator' />
                     </label>
                 </td>);
@@ -39,15 +41,15 @@ export class TableCell extends React.Component { // type = number | link | image
                 <td style={{ ...style }}>
                     <div className='btn-group'>
                         {children}
-                        {!readOnly && onSwap ?
+                        {permission.write && onSwap ?
                             <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, true)}><i className='fa fa-lg fa-arrow-up' /></a> : null}
-                        {!readOnly && onSwap ?
+                        {permission.write && onSwap ?
                             <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, false)}><i className='fa fa-lg fa-arrow-down' /></a> : null}
                         {onEdit && typeof onEdit == 'function' ?
                             <a className='btn btn-primary' href='#' onClick={e => onEdit(e, content)}><i className='fa fa-lg fa-edit' /></a> : null}
                         {onEdit && typeof onEdit == 'string' ?
                             <Link to={onEdit} className='btn btn-primary'><i className='fa fa-lg fa-edit' /></Link> : null}
-                        {!readOnly && onDelete ?
+                        {permission.delete && onDelete ?
                             <a className='btn btn-danger' href='#' onClick={e => onDelete(e, content)}><i className='fa fa-lg fa-trash' /></a> : null}
                     </div>
                 </td>);

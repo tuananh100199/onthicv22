@@ -1,12 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './redux';
-import ImageBox from 'view/component/ImageBox';
-import { AdminModal, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class CategoryModal extends AdminModal {
     state = {};
-
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
@@ -40,11 +38,10 @@ class CategoryModal extends AdminModal {
     });
 }
 
-class CategorySection extends React.Component {
+class CategorySection extends AdminPage {
     componentDidMount() {
         this.props.getAll(this.props.type);
-        T.ready();
-        T.showSearchBox();
+        T.ready(() => T.showSearchBox());
         T.onSearch = (searchText) => this.props.getAll(this.props.type, searchText);
     }
 
@@ -60,8 +57,7 @@ class CategorySection extends React.Component {
         isConfirm && this.props.deleteCategory(item._id));
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.contains('category:write');
+        const permission = this.getUserPermission('category');
         const table = renderTable({
             getDataSource: () => this.props.category,
             renderHead: () => (
@@ -77,15 +73,15 @@ class CategorySection extends React.Component {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image || '/img/avatar.png'} />
-                    <TableCell type='checkbox' content={item.active} readOnly={readOnly} onChanged={active => this.changeActive(item, { active })} />
-                    <TableCell type='buttons' content={item} readOnly={readOnly} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, { active })} />
+                    <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
 
         return <>
             <div className='tile'>{table}</div>
-            {readOnly ? null : <CirclePageButton type='create' onClick={this.create} />}
-            <CategoryModal ref={e => this.modal = e} readOnly={readOnly} uploadType={this.props.uploadType} type={this.props.type}
+            {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
+            <CategoryModal ref={e => this.modal = e} readOnly={!permission.write} uploadType={this.props.uploadType} type={this.props.type}
                 create={this.props.createCategory} update={this.props.updateCategory} />
         </>;
     }

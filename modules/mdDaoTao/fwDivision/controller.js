@@ -21,7 +21,7 @@ module.exports = app => {
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');
         }
-        app.model.division.getAll(condition, (error, items) => res.send({ error, items }));
+        app.model.division.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/division/item/:_id', app.permission.check('division:read'), (req, res) =>
@@ -40,7 +40,7 @@ module.exports = app => {
     });
 
     app.get('/home/division/all', (req, res) => {
-        app.model.division.getAll((error, items) => res.send({ error, items }));
+        app.model.division.getAll((error, list) => res.send({ error, list }));
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ module.exports = app => {
     const uploadDivision = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('division:') && files.DivisionImage && files.DivisionImage.length > 0) {
             console.log('Hook: uploadDivision => division image upload');
-            app.uploadComponentImage(req, 'division', app.model.division.get, fields.userData[0].substring(9), files.DivisionImage[0].path, done);
+            app.uploadComponentImage(req, 'division', app.model.division.get, fields.userData[0].substring('division:'.length), files.DivisionImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadDivision', (req, fields, files, params, done) =>

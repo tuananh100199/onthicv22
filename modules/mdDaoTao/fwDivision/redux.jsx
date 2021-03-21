@@ -7,7 +7,7 @@ const DivisionGetAll = 'DivisionGetAll';
 export default function addressReducer(state = null, data) {
     switch (data.type) {
         case DivisionGetAll:
-            return Object.assign({}, state, { list: data.items });
+            return Object.assign({}, state, { list: data.list });
 
         case DivisionGet: {
             return Object.assign({}, state, { item: data.item });
@@ -26,8 +26,8 @@ export function getAllDivisions(searchText, done) {
                 T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: DivisionGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: DivisionGetAll, list: data.list });
             }
         }, error => T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger'));
     }
@@ -104,7 +104,7 @@ export function getAllDivisionByUser(done) {
                 T.notify('Lấy danh sách cơ sở bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: DivisionGetAll, items: data.items });
+                dispatch({ type: DivisionGetAll, list: data.list });
             }
             if (done) done(data);
 
@@ -117,6 +117,6 @@ export const ajaxSelectDivision = {
     url: '/api/division/all',
     data: {},
     processResults: response => ({
-        results: response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : []
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
     })
 }
