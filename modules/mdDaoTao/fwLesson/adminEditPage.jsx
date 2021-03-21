@@ -7,7 +7,7 @@ import {
 } from './redux';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, BackButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
     state = {};
@@ -151,14 +151,12 @@ class adminEditPage extends AdminPage {
     });
 
     createVideo = e => e.preventDefault() || this.modalVideo.show();
-    changeVideoActive = (video) => this.props.updateLessonVideo(this.state._id, video._id, { active: !video.active });
     editVideo = (e, video) => e.preventDefault() || this.modalVideo.show(video);
     deleteVideo = (e, video) => e.preventDefault() || T.confirm('Xóa video', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteLessonVideo(this.state._id, video._id));
     swapVideo = (e, video, isMoveUp) => e.preventDefault() || this.props.swapLessonVideo(this.state._id, video._id, isMoveUp);
 
     createQuestion = e => e.preventDefault() || this.modalQuestion.show();
-    changeQuestionActive = (question) => this.props.updateLessonQuestion(this.state._id, question._id, { active: !question.active });
     editQuestion = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
     deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteLessonQuestion(this.state._id, question._id));
@@ -166,156 +164,108 @@ class adminEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('lesson');
-        const { videos, lessonQuestion } = this.props.lesson && this.props.lesson.item ? this.props.lesson.item : { videos: [], lessonQuestion: [] };
 
-        let tableVideo = 'Chưa có video!',
-            tableQuestion = 'Chưa có câu hỏi!';
-        if (videos && videos.length > 0) {
-            tableVideo = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tên bài học</th>
-                            <th style={{ width: 'auto' }}>Link</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {videos.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><a className='text-primary' href='#' onClick={e => this.editVideo(e, item)}>{item.title}</a></td>
-                                <td><a href={item.link} target='_blank'>{item.link}</a></td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }} >
-                                    <label>
-                                        <input type='checkbox' checked={item.active} onChange={() => permission.write && this.changeVideoActive(item)} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, true)}>
-                                            <i className='fa fa-lg fa-arrow-up' />
-                                        </a> : null}
-                                        {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, false)}>
-                                            <i className='fa fa-lg fa-arrow-down' />
-                                        </a> : null}
-                                        <a className='btn btn-primary' href='#' onClick={e => this.editVideo(e, item)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        {permission.write ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        }
-        if (lessonQuestion && lessonQuestion.length > 0) {
-            tableQuestion = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tên câu hỏi</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lessonQuestion.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><a className='text-primary' href='#' onClick={e => this.editQuestion(e, item)}>{item.title}</a></td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }} >
-                                    <label>
-                                        <input type='checkbox' checked={item.active} onChange={() => permission.write && this.changeQuestionActive(item)} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, true)}>
-                                            <i className='fa fa-lg fa-arrow-up' />
-                                        </a> : null}
-                                        {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, false)}>
-                                            <i className='fa fa-lg fa-arrow-down' />
-                                        </a> : null}
-                                        <a className='btn btn-primary' href='#' onClick={e => this.editQuestion(e, item)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        {permission.write ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteQuestion(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>);
-        }
+        const tableVideo = renderTable({
+            getDataSource: () => this.props.lesson && this.props.lesson.item && this.props.lesson.item.videos,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên bài học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Link</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} onClick={e => this.editVideo(e, item)} />
+                    <TableCell type='link' content={item.link} url={item.link} />
+                    <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
+                    <TableCell type='checkbox' content={item.active} readOnly={!permission.write} onChanged={active => this.props.updateLessonVideo(this.state._id, item._id, { active })} />
+                    <TableCell content={(
+                        <div className='btn-group'>
+                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, true)}>
+                                <i className='fa fa-lg fa-arrow-up' />
+                            </a> : null}
+                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, false)}>
+                                <i className='fa fa-lg fa-arrow-down' />
+                            </a> : null}
+                            <a className='btn btn-primary' href='#' onClick={e => this.editVideo(e, item)}>
+                                <i className='fa fa-lg fa-edit' />
+                            </a>
+                            {permission.write ?
+                                <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
+                                    <i className='fa fa-lg fa-trash' />
+                                </a> : null}
+                        </div>)} />
+                </tr>),
+        });
 
-        const componentInfo = <>
+        const tableQuestion = renderTable({
+            getDataSource: () => this.props.lesson && this.props.lesson.item && this.props.lesson.item.questions,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên câu hỏi</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} onClick={e => this.editQuestion(e, item)} />
+                    <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
+                    <TableCell type='checkbox' content={item.active} readOnly={!permission.write} onChanged={active => this.props.updateLessonQuestion(this.state._id, item._id, { active })} />
+                    <TableCell content={(
+                        <div className='btn-group'>
+                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, true)}>
+                                <i className='fa fa-lg fa-arrow-up' />
+                            </a> : null}
+                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, false)}>
+                                <i className='fa fa-lg fa-arrow-down' />
+                            </a> : null}
+                            <a className='btn btn-primary' href='#' onClick={e => this.editQuestion(e, item)}>
+                                <i className='fa fa-lg fa-edit' />
+                            </a>
+                            {permission.write ?
+                                <a className='btn btn-danger' href='#' onClick={e => this.deleteQuestion(e, item)}>
+                                    <i className='fa fa-lg fa-trash' />
+                                </a> : null}
+                        </div>)} />
+                </tr>),
+        });
+
+        const componentInfo = (
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='3' readOnly={!permission.write} />
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={!permission.write} />
-            </div>
-            {permission.write ?
-                <div style={{ textAlign: 'right' }}>
-                    <button type='button' className='btn btn-primary' onClick={this.saveInfo}>
-                        <i className='fa fa-lg fa-save' /> Lưu
-                    </button>
-                </div> : null}
-        </>;
+                {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+            </div>);
 
-        const componentVideo = <>
+        const componentVideo = (
             <div className='tile-body'>
                 {tableVideo}
-                {permission.write ?
-                    <div style={{ textAlign: 'right' }}>
-                        <button type='button' className='btn btn-success' onClick={this.createVideo}>
-                            <i className='fa fa-lg fa-plus' /> Thêm
-                        </button>
-                    </div> : null}
-            </div>
-            <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} readOnly={!permission.write} />
-        </>;
+                {permission.write ? <CirclePageButton type='create' onClick={this.createVideo} /> : null}
+                <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} readOnly={!permission.write} />
+            </div>);
 
-        const componentQuestion = <>
+        const componentQuestion = (
             <div className='tile-body'>
                 {tableQuestion}
-                {permission.write ?
-                    <div style={{ textAlign: 'right' }}>
-                        <button type='button' className='btn btn-success' onClick={this.createQuestion}>
-                            <i className='fa fa-lg fa-plus' /> Thêm
-                        </button>
-                    </div> : null}
-            </div>
-            <QuestionModal lessonId={this.state._id} ref={e => this.modalQuestion = e} create={this.props.createLessonQuestion} update={this.props.updateLessonQuestion} readOnly={!permission.write} />
-        </>;
+                {permission.write ? <CirclePageButton type='create' onClick={this.createQuestion} /> : null}
+                <QuestionModal lessonId={this.state._id} ref={e => this.modalQuestion = e} create={this.props.createLessonQuestion} update={this.props.updateLessonQuestion} readOnly={!permission.write} />
+            </div>);
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];
         const renderData = {
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
             breadcrumb: [<Link to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
-            content: <><FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} /><BackButton to={adminPageLink} /></>,
+            content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
+            backRoute: adminPageLink,
         };
         return this.renderPage(renderData);
     }

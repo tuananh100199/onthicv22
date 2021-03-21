@@ -87,7 +87,7 @@ module.exports = (app) => {
                 for (let index = 0, length = item.videos.length; index < item.videos.length; index++) {
                     const lessonVideo = item.videos[index];
                     if (lessonVideo._id == _lessonVideoId) {
-                        const newIndex = index + (isMoveUp ? -1 : +1);
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
                             item.videos.splice(index, 1);
                             item.videos.splice(newIndex, 0, lessonVideo);
@@ -155,7 +155,7 @@ module.exports = (app) => {
                 for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
                     const lessonQuestion = item.questions[index];
                     if (lessonQuestion._id == _lessonQuestionId) {
-                        const newIndex = index + (isMoveUp ? -1 : +1);
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
                             item.questions.splice(index, 1);
                             item.questions.splice(newIndex, 0, lessonQuestion);

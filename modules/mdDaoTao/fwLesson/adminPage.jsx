@@ -89,8 +89,8 @@ class LessonPage extends AdminPage {
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
                 <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
+            onCreate: permission.write ? this.create : null,
         };
-        if (permission.write) renderData.onCreate = this.create;
         return this.renderPage(renderData);
     }
 }

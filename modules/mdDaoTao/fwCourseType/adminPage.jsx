@@ -75,8 +75,8 @@ class CourseTypePage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypeInPage} />
             </>,
+            onCreate: permission.write ? this.create : null,
         };
-        if (permission.write) renderData.onCreate = this.create;
         return this.renderPage(renderData);
     }
 }

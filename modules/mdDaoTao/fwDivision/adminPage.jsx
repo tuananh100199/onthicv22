@@ -85,8 +85,8 @@ class DivisionPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} />
             </>,
+            onCreate: permission.write ? this.create : null,
         };
-        if (permission.write) renderData.onCreate = this.create;
         return this.renderPage(renderData);
     }
 }
