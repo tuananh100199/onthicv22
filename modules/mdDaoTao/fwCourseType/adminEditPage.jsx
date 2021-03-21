@@ -102,7 +102,7 @@ class CourseTypeEditPage extends AdminPage {
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '100%' }}>Tên môn học</th>
-                            {permission.delete && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
+                            {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
                     <tbody>
@@ -161,13 +161,12 @@ class CourseTypeEditPage extends AdminPage {
         </>;
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học: ' + this.state.title,
             breadcrumb: [<Link to='/user/course-type/list'>Loại khóa học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 
