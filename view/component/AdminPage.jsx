@@ -4,7 +4,7 @@ import ImageBox from 'view/component/ImageBox';
 import Editor from 'view/component/CkEditor4';
 
 // Table components ---------------------------------------------------------------------------------------------------
-export class TableCell extends React.Component { // type = number | link | image | checkbox | text
+export class TableCell extends React.Component { // type = number | link | image | checkbox | buttons | text (default)
     render() {
         let { type = 'text', content = '', readOnly = false, style = {}, alt = '', display = true } = this.props;
         if (style == null) style = {};
@@ -33,8 +33,22 @@ export class TableCell extends React.Component { // type = number | link | image
                         <span className='button-indecator' />
                     </label>
                 </td>);
-        } else if (type == 'text') {
-            return <td style={{ textAlign: 'left', ...style }}>{content}</td>;
+        } else if (type == 'buttons') {
+            const { onSwap, onEdit, onDelete, children } = this.props;
+            return (
+                <td style={{ ...style }}>
+                    <div className='btn-group'>
+                        {children}
+                        {!readOnly && onSwap ?
+                            <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, true)}><i className='fa fa-lg fa-arrow-up' /></a> : null}
+                        {!readOnly && onSwap ?
+                            <a className='btn btn-warning' href='#' onClick={e => onSwap(e, content, false)}><i className='fa fa-lg fa-arrow-down' /></a> : null}
+                        {onEdit ?
+                            <a className='btn btn-primary' href='#' onClick={e => onEdit(e, content)}><i className='fa fa-lg fa-edit' /></a> : null}
+                        {!readOnly && onDelete ?
+                            < a className='btn btn-danger' href='#' onClick={e => onDelete(e, content)}><i className='fa fa-lg fa-trash' /></a> : null}
+                    </div>
+                </td>);
         } else {
             return <td style={{ ...style }}>{content}</td>;
         }
@@ -205,7 +219,8 @@ export class FormEditor extends React.Component {
 }
 
 export class FormImageBox extends React.Component {
-    setData = data => this.imageBox.setData(this.props.uploadType + ':' + (data || 'new'));
+    // setData = data => this.imageBox.setData(this.props.uploadType + ':' + (data || 'new'));
+    setData = data => this.imageBox.setData(data);
 
     render() {
         let { label = '', className = '', readOnly = false, postUrl = '/user/upload', uploadType = '', image } = this.props;

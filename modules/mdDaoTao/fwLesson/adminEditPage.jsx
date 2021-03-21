@@ -18,7 +18,7 @@ class VideoModal extends AdminModal {
         let { _id, title, link, image, active } = video || { _id: null, title: '', link: '', image: '', active: true };
         this.itemTitle.value(title);
         this.itemLink.value(link);
-        this.imageBox.setData(_id);
+        this.imageBox.setData(`LessonVideoImage:${_id || 'new'}`);
         this.itemActive.value(active);
 
         this.setState({ _id, image });
@@ -68,7 +68,7 @@ class QuestionModal extends AdminModal {
         this.itemTitle.value(title)
         this.itemAnswers.value(answers.join('\n'));
         this.itemTrueAnswer.value(trueAnswer);
-        this.imageBox.setData(_id);
+        this.imageBox.setData(`LessonQuestionImage:${_id || 'new'}`);
         this.itemActive.value(active);
 
         this.setState({ _id, image });
