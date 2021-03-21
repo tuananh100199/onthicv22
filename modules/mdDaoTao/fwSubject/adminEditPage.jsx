@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import AdminEditInfo from './adminEditInfoTab';
 import AdminEditLesson from './adminEditLessonTab';
 import AdminEditQuestion from './adminEditQuestionTab';
-import { AdminPage, AdminModal, FormTextBox, FormTabs } from 'view/component/AdminPage';
+import { AdminPage, FormTabs } from 'view/component/AdminPage';
 
 class AdminEditPage extends AdminPage {
     state = {};

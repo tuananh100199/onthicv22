@@ -3,13 +3,17 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DriveQuestionGet = 'DriveQuestionGet';
 const DriveQuestionGetAll = 'DriveQuestionGetAll';
+const DriveQuestionGetPage = 'DriveQuestion:GetPage';
 const DriveQuestionUpdate = 'DriveQuestionUpdate';
 
 export default function driveQuestionReducer(state = null, data) {
     switch (data.type) {
         case DriveQuestionGetAll:
             return Object.assign({}, state, { list: data.items });
-
+        
+        case DriveQuestionGetPage:
+                return Object.assign({}, state, { page: data.page });
+    
         case DriveQuestionGet: {
             return Object.assign({}, state, { item: data.item });
         }
@@ -48,6 +52,22 @@ export function getAllDriveQuestions(searchText, done) {
     }
 }
 
+export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
+    const page = T.updatePage('pageDriveQuestion', pageNumber, pageSize);
+    return dispatch => {
+        const url = '/api/drive-question/page/' + page.pageNumber + '/' + page.pageSize;
+        T.get(url,{searchText}, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                dispatch({ type: DriveQuestionGetPage, page: data.page });
+            }
+        }, error => T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger'));
+    }
+}
+
 export function getDriveQuestionItem(_id, done) {
     return dispatch => {
         const url = '/api/drive-question/item/' + _id;
@@ -73,7 +93,7 @@ export function createDriveQuestion(newData, done) {
             } else {
                 if (done) done(data);
                 T.notify('Tạo câu hỏi thi thành công!', 'success');
-                dispatch(getAllDriveQuestions());
+                dispatch(getDriveQuestionPage());
             }
         }, error => T.notify('Tạo câu hỏi thi bị lỗi!', 'danger'));
     }
@@ -90,25 +110,26 @@ export function updateDriveQuestion(_id, changes, done) {
             } else {
                 dispatch({ type: DriveQuestionGet, item: data.item });
                 T.notify('Cập nhật câu hỏi thi thành công!', 'success');
-                dispatch(getAllDriveQuestions());
+                dispatch(getDriveQuestionPage());
                 done && done();
             }
         }, error => T.notify('Cập nhật câu hỏi thi bị lỗi!', 'danger'));
     }
 }
 
-export function swapDriveQuestion(data, done) {
+export function swapDriveQuestion(_id, isMoveUp, done) {
     return dispatch => {
         const url = `/api/drive-question/swap`;
-        T.put(url, { data }, data => {
+        T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi thi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getAllDriveQuestions());
+                T.notify('Thay đổi thứ tự câu hỏi thi thành công!', 'success');
+                dispatch(getDriveQuestionPage());
                 done && done();
             }
-        }, error => console.error('PUT: ' + url + '.', error));
+        }, error => T.notify('Thay đổi thứ tự câu hỏi thi bị lỗi!', 'danger'));
     }
 }
 
@@ -121,26 +142,9 @@ export function deleteDriveQuestion(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xóa câu hỏi thi thành công!', 'error', false, 800);
-                dispatch(getAllDriveQuestions());
+                dispatch(getDriveQuestionPage());
             }
         }, error => T.notify('Xóa câu hỏi thi bị lỗi!', 'danger'));
-    }
-}
-
-// Home ---------------------------------------------------------------------------------------------------------------
-export function getAllDriveQuestionByUser(done) {
-    return dispatch => {
-        const url = '/home/drive-question/all';
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách câu hỏi thi bị lỗi', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                dispatch({ type: DriveQuestionGetAll, items: data.items });
-            }
-            if (done) done(data);
-
-        }, error => T.notify('Lấy danh sách câu hỏi thi bị lỗi', 'danger'));
     }
 }
 

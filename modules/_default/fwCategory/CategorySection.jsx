@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './redux';
 import ImageBox from 'view/component/ImageBox';
-import { AdminModal, FormTextBox } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox, FormRichTextBox } from 'view/component/AdminPage';
 
 class CategoryModal extends AdminModal {
     state = {};
@@ -12,8 +12,9 @@ class CategoryModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, image } = item ? item : { _id: '', title: '', image: '/img/avatar.png' };
+        const { _id, title, description, image } = item ? item : { _id: '', title: '', description: '', image: '/img/avatar.png' };
         this.itemTitle.value(title);
+        this.itemDescription.value(description);
         this.imageBox.setData(this.props.uploadType + ':' + (_id || 'new'));
         this.setState({ image });
         this.data('_id', _id);
@@ -21,7 +22,7 @@ class CategoryModal extends AdminModal {
 
     onSubmit = () => {
         const _id = this.data('_id'),
-            changes = { title: this.itemTitle.value().trim() };
+            changes = { title: this.itemTitle.value().trim(), description: this.itemDescription.value().trim() };
         if (_id) { // Update
             this.props.updateCategory(_id, changes, () => this.hide());
         } else { // Create
@@ -39,10 +40,12 @@ class CategoryModal extends AdminModal {
         body: (
             <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả (nếu có)' readOnly={this.props.readOnly} />
                 <div className='form-group' style={{ display: this.data('_id') ? 'block' : 'none' }}>
                     <label>Hình ảnh</label>
                     <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
                 </div>
+
             </>),
     });
 }

@@ -5,7 +5,7 @@ const SubjectGetItem = 'SubjectGetItem';
 const SubjectGetLessonItem = 'SubjectGetLessonItem';
 const SubjectGetQuestionItem = 'SubjectGetQuestionItem';
 
-export default function SubjectReducer(state = null, data) {
+export default function subjectReducer(state = null, data) {
     switch (data.type) {
         case SubjectGetPage:
             return Object.assign({}, state, { page: data.page });
@@ -18,6 +18,7 @@ export default function SubjectReducer(state = null, data) {
 
         case SubjectGetQuestionItem:
             return Object.assign({}, state, { questions: data.questions });
+
         default:
             return state;
     }

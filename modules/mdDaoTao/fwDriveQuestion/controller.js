@@ -25,7 +25,19 @@ module.exports = app => {
         }
         app.model.driveQuestion.getAll(condition, (error, items) => res.send({ error, items }));
     });
-
+    
+    app.get('/api/drive-question/page/:pageNumber/:pageSize', app.permission.check('driveQuestion:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = {}, searchText = req.query.searchText;
+            if (searchText) {
+                condition.title = new RegExp(searchText, 'i');
+            }
+        app.model.driveQuestion.getPage(pageNumber, pageSize, condition, (error, page) => {
+            page.list = page.list.map(item => app.clone(item, { message: '' }));
+            res.send({ error, page });
+        });
+    });
     app.get('/api/drive-question/item/:_id', app.permission.check('driveQuestion:read'), (req, res) =>
         app.model.driveQuestion.get(req.params._id, (error, item) => res.send({ error, item })));
 
@@ -35,6 +47,13 @@ module.exports = app => {
 
     app.put('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {
         app.model.driveQuestion.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+  
+    app.put('/api/drive-question/swap', app.permission.check('driveQuestion:write'), (req, res) => {
+        const isMoveUp = req.body.isMoveUp.toString() == 'true';
+        app.model.driveQuestion.swapPriority(req.body._id, isMoveUp, (error) =>
+            res.send({ error })
+        );
     });
 
     app.delete('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {

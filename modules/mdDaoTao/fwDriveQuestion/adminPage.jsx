@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllDriveQuestions, getDriveQuestionItem, createDriveQuestion, deleteDriveQuestion, updateDriveQuestion, ajaxSelectDriveQuestion } from './redux';
+import {getDriveQuestionPage, getDriveQuestionItem, createDriveQuestion, deleteDriveQuestion, updateDriveQuestion, ajaxSelectDriveQuestion, swapDriveQuestion } from './redux';
 import ImageBox from 'view/component/ImageBox';
 import { Select } from 'view/component/Input';
+import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormCheckbox, FormRichTextBox } from 'view/component/AdminPage';
 
 
@@ -105,10 +106,10 @@ class AdminQuestionPage extends AdminPage {
     modal = React.createRef();
 
     componentDidMount() {
-        this.props.getAllDriveQuestions();
+        this.props.getDriveQuestionPage();
         T.ready();
         T.showSearchBox();
-        T.onSearch = (searchText) => this.props.getAllDriveQuestions(searchText);
+        T.onSearch = (searchText) => this.props.getDriveQuestionPage(searchText);
     }
 
     create = (e) => {
@@ -123,6 +124,7 @@ class AdminQuestionPage extends AdminPage {
         });
     }
     
+    swapQuestion = (e, _questionId, isMoveUp) => e.preventDefault() || this.props.swapDriveQuestion(_questionId, isMoveUp);
 
     delete = (e, item) => {
         T.confirm('Xóa câu hỏi thi', 'Bạn có chắc bạn muốn xóa câu hỏi thi này?', true, isConfirm => isConfirm && this.props.deleteDriveQuestion(item._id));
@@ -131,8 +133,10 @@ class AdminQuestionPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('driveQuestion');
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.driveQuestion && this.props.driveQuestion.page ?
+            this.props.driveQuestion.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         let table = 'Không có câu hỏi thi!';
-        if (this.props.driveQuestion && this.props.driveQuestion.list && this.props.driveQuestion.list.length > 0) {
+        if (list && list.length >0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -145,7 +149,7 @@ class AdminQuestionPage extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.driveQuestion.list.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
@@ -165,6 +169,12 @@ class AdminQuestionPage extends AdminPage {
                                 </td>
                                 {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
+                                        {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item._id, true)}>
+                                            <i className='fa fa-lg fa-arrow-up' />
+                                        </a> : null}
+                                        {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item._id, false)}>
+                                            <i className='fa fa-lg fa-arrow-down' />
+                                        </a> : null}
                                         {permission.delete || permission.write ?
                                             <a className='btn btn-primary' href='#' onClick={e => this.show(e, item._id)}>
                                                 <i className='fa fa-lg fa-edit' />
@@ -186,6 +196,8 @@ class AdminQuestionPage extends AdminPage {
             breadcrumb: ['Câu hỏi thi'],
             content: <>
                 <div className='tile'>{table}</div>
+                <Pagination name='pageDKTVList' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                    getPage={this.props.getDriveQuestionPage} />
                 <QuestionModal ref={this.modal} createDriveQuestion={this.props.createDriveQuestion} updateDriveQuestion={this.props.updateDriveQuestion} history={this.props.history} />
             </>,
         };
@@ -195,5 +207,5 @@ class AdminQuestionPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveQuestion: state.driveQuestion, driveQuestionCategory: state.driveQuestionCategory });
-const mapActionsToProps = { getAllDriveQuestions, getDriveQuestionItem, createDriveQuestion, deleteDriveQuestion, updateDriveQuestion };
+const mapActionsToProps = { getDriveQuestionPage, getDriveQuestionItem, createDriveQuestion, deleteDriveQuestion, updateDriveQuestion, swapDriveQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);
