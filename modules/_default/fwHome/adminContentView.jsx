@@ -4,22 +4,14 @@ import { getAllContents, createContent, updateContent, deleteContent } from './r
 import { Link } from 'react-router-dom';
 
 class ContentPage extends React.Component {
-    constructor(props) {
-        super(props);
-    }
     componentDidMount() {
         this.props.getAllContents();
     }
 
-    create = (e) => {
-        this.props.createContent(data => this.props.history.push('/user/content/edit/' + data.item._id));
-        e.preventDefault();
-    }
+    create = (e) => e.preventDefault() || this.props.createContent(data => this.props.history.push('/user/content/edit/' + data.item._id));
 
-    delete = (e, item) => {
-        T.confirm('Xóa nội dung', 'Bạn có chắc bạn muốn xóa nội dung này?', true, isConfirm => isConfirm && this.props.deleteContent(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa nội dung', 'Bạn có chắc bạn muốn xóa nội dung này?', true, isConfirm =>
+        isConfirm && this.props.deleteContent(item._id));
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],

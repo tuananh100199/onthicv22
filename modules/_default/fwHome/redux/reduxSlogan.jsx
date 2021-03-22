@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('slogan');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const SloganGetAll = 'Slogan:GetAll';

@@ -1,4 +1,7 @@
 import T from 'view/js/common';
+T.pushComponentTypes('all courses');
+T.pushComponentTypes('last course');
+
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseGetCourseInPage = 'Course:GetCourseInPage';
 const CourseGetCourse = 'Course:GetCourse';

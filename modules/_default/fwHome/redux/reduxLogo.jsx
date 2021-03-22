@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('logo');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const LogoGetAll = 'Logo:GetAll';

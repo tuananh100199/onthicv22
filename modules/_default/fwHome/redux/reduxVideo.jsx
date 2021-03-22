@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('video');
 
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
 const VideoGetPage = 'Video:GetPage';

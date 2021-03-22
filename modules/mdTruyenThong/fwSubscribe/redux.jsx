@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('subscribe');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const SubscribeGetAll = 'Subscribe:GetAll';

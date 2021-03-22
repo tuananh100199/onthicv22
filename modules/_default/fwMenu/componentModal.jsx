@@ -1,12 +1,11 @@
 import React from 'react';
 import { AdminModal, FormTextBox, FormSelect } from 'view/component/AdminPage';
 
-let componentTypes = T.pageTypes.map(item => ({ id: item, text: item }));
-
 export default class ComponentModal extends AdminModal {
     state = { viewType: '<empty>', viewItemText: '<empty>', viewItems: [] };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemClassname.focus()));
+        this.componentTypes = T.componentTypes.map(item => ({ id: item, text: item }));
     }
 
     onShow = ({ parentId, component }) => {
@@ -81,7 +80,7 @@ export default class ComponentModal extends AdminModal {
         body: <>
             <FormTextBox ref={e => this.itemClassname = e} label='Classname' readOnly={this.props.readOnly} />
             <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: marginTop: 50px' readOnly={this.props.readOnly} />
-            <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
+            <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={this.componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
             <div className='form-group' id='comView' style={{ display: 'none' }}>
                 <label>Tên thành phần:</label>&nbsp;&nbsp;
                 <img id='comLoading' src='/img/loading.gif' style={{ height: '32px', width: 'auto', display: 'none' }} />

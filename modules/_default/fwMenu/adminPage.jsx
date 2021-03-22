@@ -87,10 +87,10 @@ class MenuPage extends AdminPage {
                         {(this.props.menu ? this.props.menu : []).map(menu => this.renderMenu(menu, 0, permissionMenu.write, permissionMenu.delete))}
                     </ul>
                 </div>
-                {permissionMenu.write ?
+                {/* {permissionMenu.write ?
                     <button type='button' className='btn btn-danger btn-circle' style={{ position: 'fixed', bottom: '10px' }} onClick={this.props.buildMenu}>
                         <i className='fa fa-lg fa-refresh' />
-                    </button> : null}
+                    </button> : null} */}
                 {permissionComponent.read ?
                     <button type='button' className='btn btn-info btn-circle' style={{ position: 'fixed', right: '66px', bottom: '10px' }} onClick={() => this.props.history.push('/user/component')}>
                         <i className='fa fa-lg fa-cogs' />

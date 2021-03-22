@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('list videos');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ListVideoGetAll = 'ListVideo:GetAll';

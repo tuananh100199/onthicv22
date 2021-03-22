@@ -138,10 +138,10 @@ module.exports = app => {
         app.model.menu.create(data, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/menu/build', app.permission.check('menu:write'), (req, res) => { //TODO: delete
-        app.buildAppMenus(null, () => app.worker.refreshState({ menuUpdate: true }));
-        res.send('OK');
-    });
+    // app.put('/api/menu/build', app.permission.check('menu:write'), (req, res) => { //TODO: delete
+    //     app.buildAppMenus(null, () => app.worker.refreshState({ menuUpdate: true }));
+    //     res.send('OK');
+    // });
 
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
         app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
@@ -217,12 +217,6 @@ module.exports = app => {
     app.delete('/api/menu/component', app.permission.check('component:write'), (req, res) => {
         app.model.component.delete(req.body._id, (error) => res.send({ error }));
     });
-
-    app.put('/api/menu/build', app.permission.check('component:write'), (req, res) => {
-        app.buildAppMenus();
-        res.send('OK')
-    });
-
 
     app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
         const pageType = req.params.pageType;

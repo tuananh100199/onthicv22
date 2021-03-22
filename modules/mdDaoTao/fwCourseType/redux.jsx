@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('all course types');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseTypeGetPage = 'CourseTypeGetPage';
