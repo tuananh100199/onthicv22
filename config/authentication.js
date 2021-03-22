@@ -1,4 +1,4 @@
-module.exports = (app, config) => {
+module.exports = (app) => {
     app.isGuest = (req, res, next) => {
         if (req.session.user == null) {
             next();
@@ -74,7 +74,7 @@ module.exports = (app, config) => {
             } else if (user.active) {
                 const getUserToken = () => {
                     const token = user._id + '_' + app.getToken(8),
-                        tokenKey = config.name + '_mobile:' + token;
+                        tokenKey = app.appName + '_mobile:' + token;
                     app.redis.get(tokenKey, (error, value) => {
                         if (error || value) {
                             getUserToken();

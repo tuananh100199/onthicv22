@@ -64,7 +64,15 @@ export class TableCell extends React.Component { // type = number | date | link 
 export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
     const list = getDataSource();
     if (list == null) {
-        return loadingText;
+        return (
+            <div className='overlay' style={{ minHeight: '120px' }}>
+                <div className='m-loader mr-4'>
+                    <svg className='m-circular' viewBox='25 25 50 50'>
+                        <circle className='path' cx='50' cy='50' r='20' fill='none' strokeWidth='4' strokeMiterlimit='10' />
+                    </svg>
+                </div>
+                <h3 className='l-text'>{loadingText}</h3>
+            </div>);
     } else if (list.length) {
         return (
             <table className={'table table-hover table-bordered ' + className} style={style}>
@@ -222,6 +230,7 @@ export class FormEditor extends React.Component {
 export class FormSelect extends React.Component {
     componentDidMount() {
         $(this.input).select2();
+        $(this.input).on('select2:select', e => this.props.onChange && this.props.onChange(e.params.data));
     }
 
     value = function (value) {
@@ -242,12 +251,12 @@ export class FormSelect extends React.Component {
     }
 
     render = () => {
-        const { className = '', style = {}, label = '', multiple = false, readOnly = false, onChanged = null } = this.props;
+        const { className = '', style = {}, label = '', multiple = false, readOnly = false } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
                 <label>{label}</label>
                 <label style={{ width: '100%', marginBottom: '0' }}>
-                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly} onChange={() => onChanged && onChanged('TODO')}>
+                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
                         {/* <optgroup label={'Lựa chọn ' + label} /> */}
                     </select>
                 </label>

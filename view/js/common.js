@@ -1,18 +1,14 @@
-import PropTypes from 'prop-types';
 import io from 'socket.io-client';
 import dateformat from 'dateformat';
 import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
 const T = {
-    PropTypes,
     rootUrl: 'https://hpo.edu.vn',
-    sexes: ['Nam', 'Nữ'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
     pageTypes: [
         '<empty>',
         'all news',
-        'all staffs',
         'carousel',
         'contact',
         'content',

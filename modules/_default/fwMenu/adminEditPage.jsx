@@ -3,93 +3,53 @@ import { connect } from 'react-redux';
 import { updateMenu, getMenu, createComponent, updateComponent, swapComponent, deleteComponent, getComponentViews } from './redux';
 import { Link } from 'react-router-dom';
 import ComponentModal from './componentModal';
+import { AdminPage, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 
-class MenuEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            _id: null,
-            priority: 1,
-            title: '',
-            view: 0,
-            items: [],
-            active: false,
-        };
-    }
+class MenuEditPage extends AdminPage {
+    state = { _id: null, priority: 1, title: '', link: '', view: 0, items: [], active: false };
+    menuId = null;
 
     componentDidMount() {
-        this.getData();
-        T.ready();
+        T.ready('/user/menu', () => {
+            const route = T.routeMatcher('/user/menu/edit/:menuId'),
+                params = route.parse(window.location.pathname);
+            this.menuId = params.menuId;
+            this.getData();
+        });
     }
 
     getData = () => {
-        const route = T.routeMatcher('/user/menu/edit/:menuId'),
-            params = route.parse(window.location.pathname);
-
-        this.props.getMenu(params.menuId, data => {
+        this.props.getMenu(this.menuId, data => {
             if (data.error) {
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 this.props.history.push('/user/menu');
             } else if (data.menu) {
-                const link = data.menu.link ? data.menu.link.toLowerCase() : '/';
-                if (link.startsWith('http://') || link.startsWith('https://')) {
-                    $(this.menuLink).html(link).attr('href', link);
-                } else {
-                    $(this.menuLink).html(T.rootUrl + link).attr('href', link);
-                }
-
                 this.setState(data.menu);
+                this.itemTitle.value(data.menu.title);
+                this.itemLink.value(data.menu.link);
+                this.itemActive.value(data.menu.active);
             } else {
                 this.props.history.push('/user/menu');
             }
         });
     }
-    changeActive = event => this.setState({ active: event.target.checked });
-
-    menuLinkChange = event => {
-        const link = event.target.value.toLowerCase();
-        if (link.startsWith('http://') || link.startsWith('https://')) {
-            $(this.menuLink).html(event.target.value).attr('href', event.target.value);
-        } else {
-            $(this.menuLink).html(T.rootUrl + event.target.value).attr('href', event.target.value);
-        }
-    }
+    changeActive = e => this.setState({ active: e.target.checked });
 
     save = () => {
         const changes = {
-            title: $('#menuTitle').val(),
-            link: $('#menuLink').val().trim(),
-            active: this.state.active,
+            title: this.itemTitle.value(),
+            link: this.itemLink.value(),
+            active: this.itemActive.value(),
         };
-
         this.props.updateMenu(this.state._id, changes, () => $('#menuLink').val(changes.link));
     }
 
-    showComponent = (e, parentId, component) => {
-        this.modal.show({ parentId, component });
-        e.preventDefault();
-    }
-    createComponent = (parentId, data, done) => {
-        this.props.createComponent(parentId, data, () => {
-            this.getData();
-            done();
-        });
-    }
-    updateComponent = (_id, data, done) => {
-        this.props.updateComponent(_id, data, () => {
-            this.getData();
-            done();
-        });
-    }
-    swapComponent = (e, component, isMoveUp) => {
-        this.props.swapComponent(component._id, isMoveUp, this.getData);
-        e.preventDefault();
-    }
-    deleteComponent = (e, component) => {
-        T.confirm('Xóa component', 'Bạn có chắc bạn muốn xóa component này?', 'warning', true, isConfirm =>
-            isConfirm && this.props.deleteComponent(component._id, () => this.getData()));
-        e.preventDefault();
-    }
+    showComponent = (e, parentId, component) => e.preventDefault() || this.modal.show({ parentId, component });
+    createComponent = (parentId, data, done) => this.props.createComponent(parentId, data, () => this.getData() || done());
+    updateComponent = (_id, data, done) => this.props.updateComponent(_id, data, () => this.getData() || done());
+    swapComponent = (e, component, isMoveUp) => e.preventDefault() || this.props.swapComponent(component._id, isMoveUp, this.getData);
+    deleteComponent = (e, component) => e.preventDefault() || T.confirm('Xóa component', 'Bạn có chắc bạn muốn xóa component này?', 'warning', true, isConfirm =>
+        isConfirm && this.props.deleteComponent(component._id, () => this.getData()));
 
     renderComponents = (hasUpdate, level, components) => components.map((component, index) => {
         const buttons = [];
@@ -178,8 +138,6 @@ class MenuEditPage extends React.Component {
                 mainStyle.backgroundColor = '#fb3553';
                 component.viewName = '';
             }
-
-
         }
         let displayText = component.viewType + (component.viewName ? ` - ${component.viewName} ` : '');
         if (component.className.trim() != '') displayText += ' (' + component.className.trim() + ')';
@@ -194,70 +152,49 @@ class MenuEditPage extends React.Component {
     });
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            hasUpdate = currentPermissions.includes('menu:write');
-        const { title, createdDate } = this.state;
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-edit' /> Menu: {title || ''}{createdDate ? ' (' + T.dateToText(createdDate) + ')' : ''}</h1>
-                    </div>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
-                        <Link to='/user/menu'>Menu</Link>&nbsp;/&nbsp;Chỉnh sửa
-                    </ul>
-                </div>
+        const permission = this.getUserPermission('menu');
+        const { title, link, createdDate } = this.state;
+        const linkLabel = link == '' ? 'Link' :
+            (link.startsWith('http://') || link.startsWith('https://') ?
+                <>Link: <a href={link} style={{ fontWeight: 'bold' }} target='_blank'>{link}</a></> :
+                <>Link: <a href={T.rootUrl + link} style={{ fontWeight: 'bold' }} target='_blank'>{T.rootUrl + link}</a></>);
+        return this.renderPage({
+            icon: 'fa fa-bars',
+            title: `Menu: ${title || ''}${createdDate ? ' (' + T.dateToText(createdDate) + ')' : ''}`,
+            breadcrumb: [<Link to='/user/menu'>Menu</Link>, 'Chỉnh sửa'],
+            content: <>
                 <div className='tile'>
-                    <h3 className='tile-title'>Thông tin chung
-                    <div style={{ display: 'flex', position: 'absolute', top: '20px', right: '20px' }}>
-                            <label className='control-label' style={{ marginTop: '6px' }}>Kích hoạt: &nbsp;</label>
-                            <div className='toggle'>
-                                <label>
-                                    <input type='checkbox' checked={this.state.active} onChange={(e) => hasUpdate && this.changeActive(e)} /><span className='button-indecator' />
-                                </label>
-                            </div>
-                        </div>
-                    </h3>
-                    <div className='tile-body'>
-                        <div className='row'>
-                            <div className='form-group col-md-6'>
-                                <label className='control-label'>Menu</label>
-                                <input className='form-control' type='text' placeholder='Menu' id='menuTitle' defaultValue={title} autoFocus={true} readOnly={!hasUpdate} />
-                            </div>
-                            <div className='form-group col-md-6'>
-                                <label className='control-label'>Link:&nbsp;</label>
-                                <a href='#' ref={e => this.menuLink = e} style={{ fontWeight: 'bold' }} target='_blank' />
-                                <input className='form-control' id='menuLink' type='text' placeholder='Link' defaultValue={this.state.link} onChange={this.menuLinkChange} readOnly={!hasUpdate} />
-                            </div>
-                        </div>
-                        {hasUpdate ?
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.save}>
-                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                    </button>
-                            </div> : null}
+                    <h3 className='tile-title'>Thông tin chung</h3>
+                    <div className='tile-body row'>
+                        <FormTextBox ref={e => this.itemTitle = e} className='col-md-6' label='Menu' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
+                        <FormTextBox ref={e => this.itemLink = e} className='col-md-6' label={linkLabel} onChange={e => this.setState({ link: e.target.value })} readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemActive = e} className='col-md-6' label='Kích hoạt' readOnly={!permission.write} />
                     </div>
+                    {permission.write ?
+                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                            <button className='btn btn-primary' type='button' onClick={this.save}>
+                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            </button>
+                        </div> : null}
                 </div>
 
                 <div className='tile'>
                     <h3 className='tile-title'>Cấu trúc trang web</h3>
                     <div className='tile-body'>
-                        {this.state.component ? this.renderComponents(hasUpdate, 0, [this.state.component]) : null}
+                        {this.state.component ? this.renderComponents(permission.write, 0, [this.state.component]) : null}
                     </div>
                 </div>
-                <Link to='/user/menu' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>
-                {currentPermissions.includes('component:read') ?
-                    <button type='button' className='btn btn-info btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }}
-                        onClick={() => this.props.history.push('/user/component')}>
+
+                {permission.read ?
+                    <button type='button' className='btn btn-info btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={() => this.props.history.push('/user/component')}>
                         <i className='fa fa-lg fa-cogs' />
                     </button> : null}
 
-                <ComponentModal onUpdate={this.updateComponent} onCreate={this.createComponent} getComponentViews={this.props.getComponentViews} readOnly={!hasUpdate} ref={e => this.modal = e} />
-            </main>
-        );
+                <ComponentModal ref={e => this.modal = e} getComponentViews={this.props.getComponentViews} readOnly={!permission.write}
+                    onUpdate={this.updateComponent} onCreate={this.createComponent} />
+            </>,
+            backRoute: '/user/menu',
+        });
     }
 }
 
