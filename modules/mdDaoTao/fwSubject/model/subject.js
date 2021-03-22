@@ -36,22 +36,13 @@ module.exports = app => {
             model.find(condition).sort({ title: 1 }).exec(done);
         },
 
-        get: (condition, option, done) => {
-            const handleGet = (condition, option, done) => {
-                const select = option.select ? option.select : null;
-                const populate = option.populate ? option.populate : false;
-
-                const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
-                if (select) result.select(select);
-                if (populate) result.populate('lesson', '_id title').populate('subjectQuestion');
-                result.exec(done);
-            };
-
-            if (done) {
-                handleGet(condition, option, done);
-            } else {
-                handleGet(condition, {}, option);
+        get: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
             }
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).populate('lesson').populate('subjectQuestion').exec(done);
         },
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
@@ -67,23 +58,20 @@ module.exports = app => {
             }
         }),
 
-        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
-
-
-        addLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
+        addSubjectLesson: (condition, subjectLessonId, done) => {
+            model.findOneAndUpdate(condition, { $push: { lesson: subjectLessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
         },
 
-        addSubjectQuestion: (condition, subjectQuestion, done) => {
-            model.findOneAndUpdate(condition, { $push: { subjectQuestion } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
+        deleteSubjectLesson: (_id, subjectLessonId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { lesson: subjectLessonId } }).populate('lesson').exec(done);
         },
 
-        deleteSubjectQuestion: (condition, subjectQuestion, done) => {
-            model.findOneAndUpdate(condition, { $pull: { subjectQuestion } }).exec(done);
+        addSubjectQuestion: (_id, subjectQuestion, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { subjectQuestion } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
         },
 
-        deleteLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $pull: { lesson: lessonId } }).exec(done);
+        deleteSubjectQuestion: (_id, subjectQuestionId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { subjectQuestion: subjectQuestionId } }).populate('subjectQuestion').exec(done);
         },
     };
 };

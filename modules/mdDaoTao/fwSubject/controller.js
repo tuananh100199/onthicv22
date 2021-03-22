@@ -48,12 +48,8 @@ module.exports = (app) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.get('/api/subject/lesson/:subjectId', (req, res) => {
-        app.model.subject.get(req.params.subjectId, { select: '_id lesson', populate: true }, (error, item) => res.send({ error, item }));
-    });
-
-    app.post('/api/subject/lesson/:subjectId', app.permission.check('subject:write'), (req, res) => {
-        const subjectId = req.params.subjectId,
+    app.post('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+        const subjectId = req.body.subjectId,
             lessonId = req.body.lessonId;
         app.model.subject.get({ _id: subjectId, lesson: { _id: lessonId } }, (error, item) => {
             if (error) {
@@ -61,23 +57,50 @@ module.exports = (app) => {
             } else if (item) {
                 res.send({ check: `Môn học đã có bài học này!` });
             } else {
-                app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, item }));
+                app.model.subject.addSubjectLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, item }));
             }
         });
     });
 
-    app.delete('/api/subject/lesson/:_id', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.deleteLesson({ _id: req.params._id }, req.body.lessonId, (error, item) => res.send({ error, item }));
+    app.put('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+        const { subjectId, subjectLessonId, newSubjectLessonId } = req.body,
+            changes = { _id: newSubjectLessonId }
+        app.model.subject.get(subjectId, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.update(subjectLessonId, changes, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
+    app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectLessonId } = req.body;
+        app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error, item) => {
+            res.send({ error, item });
+        });
     });
 
     app.put('/api/subject/lesson/swap', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.update(req.body._id, req.body.data, (error, item) => res.send({ error, item }));
-    });
-
-    app.get('/api/subject/question/:subjectId', (req, res) => {
-        const subjectId = req.params.subjectId;
-        app.model.subject.get(subjectId, { select: '_id subjectQuestion', populate: true }, (error, item) => {
-            res.send({ error, item });
+        const { _subjectId, _subjectLessonId, isMoveUp } = req.body;
+        app.model.subject.get(_subjectId, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                for (let index = 0, length = item.lesson.length; index < item.lesson.length; index++) {
+                    const subjectLesson = item.lesson[index];
+                    if (subjectLesson._id == _subjectLessonId) {
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
+                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
+                            item.lesson.splice(index, 1);
+                            item.lesson.splice(newIndex, 0, subjectLesson);
+                            item.save();
+                        }
+                        break;
+                    }
+                }
+                res.send({ error, item });
+            }
         });
     });
 
@@ -86,30 +109,47 @@ module.exports = (app) => {
             if (error || !subjectQuestion) {
                 res.send({ error });
             } else {
-                app.model.subject.addSubjectQuestion({ _id: req.body._id }, subjectQuestion, (error, item) => {
+                app.model.subject.addSubjectQuestion(req.body.subjectId, subjectQuestion, (error, item) => {
                     res.send({ error, item });
                 });
             }
         });
     });
 
-    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const _id = req.body._id, data = req.body.data;
-        app.model.subjectQuestion.update(_id, data, (error, question) => {
-            res.send({ error, question });
-        });
-    });
-
     app.put('/api/subject/question/swap', app.permission.check('subject:write'), (req, res) => {
-        const data = req.body.data, subjectId = req.body.subjectId;
-        app.model.subject.update(subjectId, data, (error, item) => {
-            res.send({ error, item });
+        const { _subjectId, _subjectQuestionId, isMoveUp } = req.body;
+        app.model.subject.get(_subjectId, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                for (let index = 0, length = item.subjectQuestion.length; index < item.subjectQuestion.length; index++) {
+                    const subjectQuestion = item.subjectQuestion[index];
+                    if (subjectQuestion._id == _subjectQuestionId) {
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
+                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
+                            item.subjectQuestion.splice(index, 1);
+                            item.subjectQuestion.splice(newIndex, 0, subjectQuestion);
+                            item.save();
+                        }
+                        break;
+                    }
+                }
+                res.send({ error, item });
+            }
         });
     });
 
     app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.deleteSubjectQuestion({ _id: req.body.subjectId }, req.body._id, (error, item) => {
-            res.send({ error, item });
+        const { _subjectId, _subjectQuestionId } = req.body;
+        app.model.subjectQuestion.delete(_subjectQuestionId, error => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.deleteSubjectQuestion(_subjectId, _subjectQuestionId, (error, item) => {
+                    res.send({ error, item });
+                });
+            }
         });
     });
+
 };
