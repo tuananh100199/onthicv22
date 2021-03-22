@@ -6,7 +6,7 @@ import {
     createSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion, updateSubjectQuestion,
 } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 import { Select } from 'view/component/Input';
 import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
 
@@ -118,6 +118,7 @@ class AdminEditPage extends AdminPage {
     };
 
     showLessonModal = (e) => e.preventDefault() || this.modalLesson.show();
+    showLesson = (e, lesson) => e.preventDefault() || window.open('/user/dao-tao/bai-hoc/edit/' + lesson._id, '_blank');;
     deleteLesson = (e, lesson) => e.preventDefault() || T.confirm('Xóa Bài học', `Bạn có chắc bạn muốn xóa bài học <strong>${lesson.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteSubjectLesson(this.state._id, lesson._id, () => {
             T.alert('Xoá bài học thành công!', 'success', false, 1000)
@@ -142,7 +143,7 @@ class AdminEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} onClick={e => this.showLessonModal(e, item)} />
+                    <TableCell type='link' content={item.title} onClick={e => this.showLesson(e, item)} />
                     <TableCell content={(
                         <div className='btn-group'>
                             {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapLesson(e, item, true)}>
@@ -151,7 +152,7 @@ class AdminEditPage extends AdminPage {
                             {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapLesson(e, item, false)}>
                                 <i className='fa fa-lg fa-arrow-down' />
                             </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.showLessonModal(e, item)}>
+                            <a className='btn btn-primary' href='#' onClick={e => this.showLesson(e, item)}>
                                 <i className='fa fa-lg fa-edit' />
                             </a>
                             {permission.write ?
