@@ -3,6 +3,7 @@ module.exports = app => {
         title: String,
         link: String,
         image: String,
+        active: { type: Boolean, default: true },
     });
     const model = app.db.model('LessonVideo', schema);
 
@@ -25,7 +26,12 @@ module.exports = app => {
         },
 
         get: (condition, done) => {
-            done ? model.findOne(condition).exec(done) : model.findById({}).exec(condition)
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).exec(done);
         },
 
         update: (_id, $set, $unset, done) => done ?

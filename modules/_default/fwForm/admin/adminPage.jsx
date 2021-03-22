@@ -73,7 +73,7 @@ class FormPage extends React.Component {
                                 </label>
                             </td>
                             <td className='btn-group'>
-                                <Link to={'/user/form/registration/' + item._id} data-id={item._id} className='btn btn-warning'>
+                                <Link to={'/user/form/registration/' + item._id} className='btn btn-warning'>
                                     <i className='fa fa-lg fa-list-alt' />
                                 </Link>
                                 <Link to={'/user/form/edit/' + item._id} className='btn btn-primary'>

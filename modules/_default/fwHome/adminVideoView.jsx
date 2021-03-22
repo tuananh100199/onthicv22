@@ -167,7 +167,7 @@ class VideoPage extends React.Component {
                                     <a href={item.link} target='_blank'>{item.link}</a>
                                 </td>
                                 <td style={{ textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
+                                    <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
                                 </td>
                                 <td>
                                     <div className='btn-group'>

@@ -80,18 +80,17 @@ class LessonPage extends AdminPage {
                 </table>);
         }
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học',
             breadcrumb: ['Bài học'],
             content: <>
                 <div className='tile'>{table}</div>
+                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} readOnly={!permission.write} />
                 <Pagination name='pageLesson' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getLessonInPage} />
-                <LessonModal ref={e => this.modal = e} createLesson={this.props.createLesson} history={this.props.history} />
             </>,
-        };
-        if (permission.write) renderData.onCreate = this.create;
-        return this.renderPage(renderData);
+            onCreate: permission.write ? this.create : null,
+        });
     }
 }
 

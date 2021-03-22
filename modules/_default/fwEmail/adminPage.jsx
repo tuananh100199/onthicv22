@@ -62,7 +62,7 @@ class EmailPage extends AdminPage {
             component: <EmailItem ref={e => this[item.id] = e} id={item.id} params={item.params} readOnly={!permission.email} />
         }));
 
-        const renderData = {
+        return this.renderPage({
             icon: 'fa fa-envelope-o',
             title: 'Email',
             breadcrumb: ['Email'],
@@ -73,8 +73,7 @@ class EmailPage extends AdminPage {
                         <i className='fa fa-lg fa-save' />
                     </button> : null}
             </>,
-        };
-        return this.renderPage(renderData);
+        });
     }
 }
 

@@ -3,8 +3,6 @@ import T from 'view/js/common';
 const LessonGetPage = 'LessonGetPage';
 const LessonGetItem = 'LessonGetItem';
 const LessonUpdateItem = 'LessonUpdate';
-const LessonGetItemVideos = 'LessonGetItemVideos';
-const LessonGetItemQuestions = 'LessonGetItemQuestions';
 
 export default function lessonReducer(state = {}, data) {
     switch (data.type) {
@@ -22,7 +20,7 @@ export default function lessonReducer(state = {}, data) {
                     }
                 }
             }
-            return Object.assign({}, state, { item: data.item, page: updatedPage });
+            return Object.assign({}, state, { item: updatedItem, page: updatedPage });
 
         case LessonUpdateItem:
             updatedPage = Object.assign({}, state.page || {});
@@ -35,10 +33,8 @@ export default function lessonReducer(state = {}, data) {
                     }
                 }
             }
-            return Object.assign({}, state, { item: data.item, page: updatedPage });
+            return Object.assign({}, state, { item: updatedItem, page: updatedPage });
 
-        case LessonGetItemQuestions:
-            return Object.assign({}, state, { questions: data.questions });
         default:
             return state;
     }
@@ -143,7 +139,7 @@ export function createLessonVideo(_lessonId, data, done) {
                 T.notify('Tạo video bài giảng bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
@@ -155,25 +151,26 @@ export function updateLessonVideo(_lessonId, _lessonVideoId, data, done) {
         const url = '/api/lesson/video';
         T.put(url, { _lessonId, _lessonVideoId, data }, data => {
             if (data.error) {
-                T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
+                T.notify('Cập nhật video bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                T.notify('Cập nhật video bài giảng thành công!', 'success');
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function swapLessonVideo(_lessonId, _lessonVideoId, done) {
+export function swapLessonVideo(_lessonId, _lessonVideoId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/lesson/video/swap`;
         T.put(url, { _lessonId, _lessonVideoId, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Thay đổi thứ tự bài giảng bị lỗi!', 'danger');
+                T.notify('Thay đổi thứ tự video bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
@@ -185,103 +182,74 @@ export function deleteLessonVideo(_lessonId, _lessonVideoId, done) {
         const url = `/api/lesson/video`;
         T.delete(url, { _lessonId, _lessonVideoId }, data => {
             if (data.error) {
-                T.notify('Xóa video bài giảng bị lỗi!', 'danger');
+                T.notify('Xóa video bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Video được xóa thành công!', 'error', false, 800);
-                dispatch({ type: LessonUpdateItem, item: { lessonVideo: data.lessonVideo } });
+                dispatch({ type: LessonUpdateItem, item: { videos: data.videos } });
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));
     }
 }
 
-export function getLessonVideo(_id, done) {
-    return dispatch => {
-        const url = '/api/lesson/video/item/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy video bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                done(data.item);
-            }
-        }, error => T.notify('Lấy video bị lỗi!', 'danger'));
-    }
-}
-
 // Lesson Question ----------------------------------------------------------------------------------------------------
-export function getLessonQuestionsList(lessonId, done) {
+export function createLessonQuestion(_lessonId, data, done) {
     return dispatch => {
-        const url = `/api/lesson/question/${lessonId}`;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                dispatch({ type: LessonGetItemQuestions, questions: data.item });
-                done && done(data.item);
-            }
-        }, error => {
-            console.error('GET: ' + url + '.', error);
-        });
-    }
-}
-
-export function createLessonQuestion(_id, data, done) {
-    return dispatch => {
-        const url = `/api/lesson/question/${_id}`;
-        T.post(url, { data }, data => {
+        const url = `/api/lesson/question`;
+        T.post(url, { _lessonId, data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonQuestionsList(_id));
+                dispatch({ type: LessonUpdateItem, item: { questions: data.questions } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
 
-export function updateLessonQuestion(_id, data, lessonId, done) {
+export function updateLessonQuestion(_lessonId, _lessonQuestionId, data, done) {
     return dispatch => {
         const url = '/api/lesson/question';
-        T.put(url, { _id, data }, data => {
+        T.put(url, { _lessonId, _lessonQuestionId, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonQuestionsList(lessonId));
+                T.notify('Cập nhật câu hỏi thành công!', 'success');
+                dispatch({ type: LessonUpdateItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function swapLessonQuestion(lessonId, data, done) {
+export function swapLessonQuestion(_lessonId, _lessonQuestionId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/lesson/question/swap`;
-        T.put(url, { lessonId, data }, data => {
+        T.put(url, { _lessonId, _lessonQuestionId, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonQuestionsList(lessonId));
+                dispatch({ type: LessonUpdateItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function deleteLessonQuestion(_id, lessonId, done) {
+export function deleteLessonQuestion(_lessonId, _lessonQuestionId, done) {
     return dispatch => {
         const url = `/api/lesson/question`;
-        T.delete(url, { lessonId, _id }, data => {
+        T.delete(url, { _lessonId, _lessonQuestionId }, data => {
             if (data.error) {
                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonQuestionsList(lessonId));
+                T.alert('Câu hỏi được xóa thành công!', 'error', false, 800);
+                dispatch({ type: LessonUpdateItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));

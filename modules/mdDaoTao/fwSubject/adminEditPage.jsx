@@ -62,7 +62,8 @@ class AdminEditPage extends AdminPage {
             { title: 'Bài học', component: <AdminEditLesson readOnly={readOnly} history={this.props.history} /> },
             { title: 'Câu hỏi phản hồi', component: <AdminEditQuestion readOnly={readOnly} history={this.props.history} /> },
         ];
-        const renderData = {
+
+        return this.renderPage({
             icon: 'fa fa-file',
             title: 'Môn học: ' + this.state.title,
             breadcrumb: [<Link to='/user/dao-tao/mon-hoc'>Môn học</Link>, 'Chỉnh sửa'],
@@ -70,8 +71,7 @@ class AdminEditPage extends AdminPage {
                 <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />
                 <BackButton to={adminPageLink} />
             </>,
-        };
-        return this.renderPage(renderData);
+        })
     }
 }
 
