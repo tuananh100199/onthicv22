@@ -39,7 +39,7 @@ export default function categoryReducer(state = [], data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAll(type, searchText) {
+export function getCategoryAll(type, searchText, done) {
     return dispatch => {
         const url = `/api/category/${type}`;
         T.get(url, { searchText }, data => {
@@ -48,6 +48,7 @@ export function getAll(type, searchText) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: CategoryGetAll, items: data.items });
+                done && done(data.items);
             }
         }, error => T.notify('Get categories failed!', 'danger'));
     }
@@ -93,7 +94,7 @@ export function swapCategory(_id, isMoveUp, type) {
                 T.notify('Swap position failed!', 'danger')
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getAll(type));
+                dispatch(getCategoryAll(type));
             }
         }, error => T.notify('Swap position failed!', 'danger'));
     }

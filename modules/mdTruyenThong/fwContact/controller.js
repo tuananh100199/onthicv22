@@ -5,10 +5,7 @@ module.exports = app => {
             3002: { title: 'Liên hệ', link: '/user/contact', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add(
-        { name: 'contact:read', menu },
-        { name: 'contact:write' },
-    );
+    app.permission.add({ name: 'contact:read', menu }, { name: 'contact:write' }, { name: 'contact:delete' });
 
     app.get('/contact(.htm(l)?)?', app.templates.home);
     app.get('/user/contact', app.permission.check('contact:read'), app.templates.admin);
@@ -24,11 +21,11 @@ module.exports = app => {
     });
 
     app.get('/api/contact/all', app.permission.check('contact:read'), (req, res) => {
-        app.model.contact.getAll((error, items) => res.send({ error, items }));
+        app.model.contact.getAll((error, list) => res.send({ error, list }));
     });
 
     app.get('/api/contact/unread', app.permission.check('contact:read'), (req, res) => {
-        app.model.contact.getUnread((error, items) => res.send({ error, items }));
+        app.model.contact.getUnread((error, list) => res.send({ error, list }));
     });
 
     app.get('/api/contact/item/:_id', app.permission.check('contact:write'), (req, res) => {
@@ -38,7 +35,7 @@ module.exports = app => {
         });
     });
 
-    app.delete('/api/contact', app.permission.check('contact:write'), (req, res) => {
+    app.delete('/api/contact', app.permission.check('contact:delete'), (req, res) => {
         app.model.contact.delete(req.body._id, error => res.send({ error }));
     });
 

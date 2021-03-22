@@ -210,7 +210,7 @@ export function updateUser(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin người dùng thành công!', 'info');
+                T.notify('Cập nhật thông tin người dùng thành công!', 'success');
                 dispatch(changeUser(data.user));
                 done && done();
             }

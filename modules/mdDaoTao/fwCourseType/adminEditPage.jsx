@@ -20,7 +20,7 @@ class CourseTypeModal extends AdminModal {
             T.notify('Tên cơ sở bị trống!', 'danger');
             $(this.subjectSelect).focus();
         } else {
-            const subjectList = this.props.item.subjectList;
+            const subjectList = this.props.item.subjectList.map(item => item._id);
             subjectList.push(changeItem);
             this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
                 T.notify('Thêm môn học thành công', 'success');
@@ -69,7 +69,7 @@ class CourseTypeEditPage extends AdminPage {
     remove = (e, index) => {
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                let subjectList = this.props.courseType.item.subjectList || [];
+                let subjectList = this.props.courseType.item.subjectList.map(item => item._id) || [];
                 subjectList.splice(index, 1);
                 if (subjectList.length == 0) subjectList = 'empty';
                 this.props.updateCourseType(this.state._id, { subjectList }, () => {
@@ -111,7 +111,7 @@ class CourseTypeEditPage extends AdminPage {
                                 <td>{index + 1}</td>
                                 <td>
                                     {permission.write ?
-                                        <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} data-id={item._id}>
+                                        <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>
                                             {item.title}
                                         </Link> : item.title}</td>
                                 <td>

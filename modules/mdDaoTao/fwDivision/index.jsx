@@ -14,6 +14,6 @@ export default {
         {
             path: '/user/division',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
-        }
+        },
     ]
 };

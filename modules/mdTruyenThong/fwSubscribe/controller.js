@@ -23,29 +23,29 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/subscribe/all', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.getAll((error, items) => res.send({ error, items })));
+    app.get('/api/subscribe/all', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.getAll((error, list) => res.send({ error, list })));
 
-    app.get('/api/subscribe/unread', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.getUnread((error, items) => res.send({ error, items })));
+    app.get('/api/subscribe/unread', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.getUnread((error, list) => res.send({ error, list })));
 
     app.get('/api/subscribe/item/:_id', app.permission.check('subscribe:read'), (req, res) => app.model.subscribe.read(req.params._id, (error, item) => {
         if (item) app.io.emit('subscribe-changed', item);
         res.send({ error, item });
     }));
 
-    app.get('/api/subscribe/export', app.permission.check('subscribe:write'), (req, res) => {
-        app.model.subscribe.getAll( (error, items) => {
+    app.get('/api/subscribe/export', app.permission.check('subscribe:read'), (req, res) => {
+        app.model.subscribe.getAll((error, items) => {
             if (error) {
                 res.send({ error })
             } else {
-                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
-                let cells = [
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Subscribe');
+                const cells = [
                     { cell: 'A1', value: 'STT', bold: true, border: '1234' },
                     { cell: 'B1', value: 'Email', bold: true, border: '1234' },
                     { cell: 'C1', value: 'Ngày đăng ký', bold: true, border: '1234' },
                 ];
 
                 worksheet.columns = [
-                    { header: 'STT', key: 'id', width: 15},
+                    { header: 'STT', key: 'id', width: 15 },
                     { header: 'Email', key: 'email', width: 40 },
                     { header: 'Ngày đăng ký', key: 'createdDate', width: 30 }
                 ];
@@ -57,12 +57,14 @@ module.exports = app => {
                     });
                 })
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, `Đăng ký nhận tin.xlsx`);
+                app.excel.attachment(workbook, res, `Subscribe.xlsx`);
             }
         })
     });
-    
-    app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => app.model.subscribe.delete(req.body._id, error => res.send({ error })));
+
+    app.delete('/api/subscribe', app.permission.check('subscribe:delete'), (req, res) => {
+        app.model.subscribe.delete(req.body._id, error => res.send({ error }));
+    });
 
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------

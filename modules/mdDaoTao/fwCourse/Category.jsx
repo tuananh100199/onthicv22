@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './reduxCategory';
+import { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory } from './reduxCategory';
 import ImageBox from 'view/component/ImageBox';
 
 class CategoryModal extends React.Component {
@@ -88,7 +88,7 @@ class Category extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getAll(this.props.type);
+        this.props.getCategoryAll(this.props.type);
     }
 
     create = (e) => {
@@ -174,7 +174,7 @@ class Category extends React.Component {
         }
 
         return (
-            <div>
+            <>
                 <div className='tile'>{table}</div>
                 {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
@@ -182,11 +182,11 @@ class Category extends React.Component {
                     </button>
                 }
                 <CategoryModal ref={this.modal} createCategory={this.props.createCategory} updateCategory={this.props.updateCategory} uploadType={this.props.uploadType} />
-            </div>
+            </>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, category: state.category })
-const mapActionsToProps = { getAll, createCategory, swapCategory, updateCategory, deleteCategory };
+const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory };
 export default connect(mapStateToProps, mapActionsToProps)(Category);

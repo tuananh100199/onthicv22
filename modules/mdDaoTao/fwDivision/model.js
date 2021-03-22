@@ -31,11 +31,17 @@ module.exports = app => {
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
+        getAll: (condition, done) => done ?
+            model.find(condition).sort({ title: 1 }).exec(done) :
+            model.find({}).sort({ title: 1 }).exec(condition),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).exec(done) : model.findOne(condition).exec(done),
+        get: (condition, done) => typeof condition == 'string' ?
+            model.findById(condition).exec(done) :
+            model.findOne(condition).exec(done),
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

@@ -1,10 +1,7 @@
 import React from 'react';
 
 export default class ForgotPasswordPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { message: '', error: '' };
-    }
+    state = { message: '', error: '' };
 
     componentDidMount() {
         T.post(window.location.pathname,
@@ -39,10 +36,7 @@ export default class ForgotPasswordPage extends React.Component {
         }
     }
 
-    goToHomePage = (e) => {
-        this.props.history.push('/');
-        e.preventDefault();
-    }
+    goToHomePage = (e) => e.preventDefault() || this.props.history.push('/');
 
     render() {
         if (this.state.message && this.state.message !== '') {

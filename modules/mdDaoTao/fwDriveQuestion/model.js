@@ -4,7 +4,7 @@ module.exports = app => {
         title: String,
         image: String,
         answers: { type: String, default: '' },                                     // Dùng FormRichTextBox => mỗi câu là 1 dòng
-        result: { type: Number, default: 0 },                                       // Ghi là 1 thì dòng 1 của answers là đúng. Hiển thị: nếu answers có 3 dòng thì phải hiện Đáp án 1, Đáp án 2, Đáp án 3
+        trueAnswer: { type: Number, default: 0 },                                   // Ghi là 1 thì dòng 1 của answers là đúng. Hiển thị: nếu answers có 3 dòng thì phải hiện Đáp án 1, Đáp án 2, Đáp án 3
         priority: { type: Number, default: 0 },
         importance: { type: Boolean, default: false },                              // true => câu liệt
         categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],            // Phân loại câu hỏi, xử lý giống news
@@ -67,14 +67,14 @@ module.exports = app => {
                     });
             }
         }),
-        
+
         delete: (_id, done) => model.findOne({ _id }, (error, item) => {
             if (error) {
                 done(error);
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.deleteImage(item.image); //TODO: test
+                app.deleteImage(item.image);
                 item.remove(done);
             }
         }),

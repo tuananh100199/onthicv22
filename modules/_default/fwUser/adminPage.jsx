@@ -3,49 +3,37 @@ import { connect } from 'react-redux';
 import { getUserPage, createUser, updateUser, deleteUser } from './redux';
 import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
-import ImageBox from 'view/component/ImageBox';
-import { Select } from 'view/component/Input';
-import { AdminPage, AdminModal, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class UserModal extends AdminModal {
-    state = {};
-    sex = React.createRef();
-    imageBox = React.createRef();
-
+    state = { allRoles: [] };
     componentDidMount() {
-        $(document).ready(() => {
-            !this.props.readOnly && $('#userRoles').select2();
-            $('#userBirthday').datepicker({ format: 'dd/mm/yyyy', autoclose: true });
-            $(this.modal.current).on('shown.bs.modal', () => this.itemLastname.focus())
-        });
+        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
     onShow = (item) => {
         if (item == null) item = { _id: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
         this.itemFirstname.value(item.firstname);
         this.itemLastname.value(item.lastname);
-        $('#userBirthday').val(item.birthday ? T.dateToText(item.birthday, 'dd/mm/yyyy') : '');
+        this.itemBirthday.value(item.birthday)
         this.itemEmail.value(item.email);
         this.itemPhoneNumber.value(item.phoneNumber);
         this.itemActive.value(item.active);
         this.itemIsCourseAdmin.value(item.isCourseAdmin);
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
-        this.sex.current.val({ id: item.sex, text: item.sex === 'male' ? 'Nam' : 'Nữ' });
+        this.itemSex.value(item.sex);
+        this.imageBox.setData(`user:${item._id ? item._id : 'new'}`);
 
-        let userRoles = item.roles.map(item => item._id),
-            allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
-        $('#userRoles').select2({ placeholder: 'Lựa chọn Vai trò', data: allRoles }).val(userRoles).trigger('change');
-
-        this.setState({ _id: item._id, image: item.image, sex: item.sex });
-        this.imageBox.current.setData(`user:${item._id ? item._id : 'new'}`);
-        $(this.modal.current).modal('show');
+        const allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
+        this.setState({ _id: item._id, image: item.image, allRoles }, () => {
+            this.itemRoles.value(item.roles.map(item => item._id));
+        });
     }
 
     onSubmit = () => {
-        const birthday = $('#userBirthday').val() ? T.formatDate($('#userBirthday').val()) : null;
-        let changes = {
-            sex: this.sex.current.val(),
+        const changes = {
+            sex: this.itemSex.value(),
             firstname: this.itemFirstname.value().trim(),
             lastname: this.itemLastname.value().trim(),
             email: this.itemEmail.value().trim(),
@@ -54,8 +42,8 @@ class UserModal extends AdminModal {
             isCourseAdmin: this.itemIsCourseAdmin.value(),
             isStaff: this.itemIsStaff.value(),
             isLecturer: this.itemIsLecturer.value(),
-            roles: $('#userRoles').val(),
-            birthday
+            roles: this.itemRoles.value(),
+            birthday: this.itemBirthday.value(),
         };
         if (changes.firstname == '') {
             T.notify('Tên người dùng bị trống!', 'danger');
@@ -84,46 +72,24 @@ class UserModal extends AdminModal {
             size: 'large',
             body: (
                 <div className='row'>
-                    <div className='col-md-8'>
+                    <div className={this.state._id ? 'col-md-8' : 'col-md-12'}>
                         <div className='row'>
                             <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} />
                             <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} />
                         </div>
                         <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
                     </div>
-
-                    <div className='col-md-4 form-group' style={{ visibility: this.state._id ? 'visible' : 'hidden' }}>
-                        <label>Hình đại diện</label>
-                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='UserImage' userData='user' readOnly={readOnly} image={this.state.image} />
-                    </div>
+                    <FormImageBox ref={e => this.imageBox = e} className='col-md-4 form-group' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly} />
 
                     <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
-                    <div className='col-md-4 form-group'>
-                        <label htmlFor='userBirthday'>Ngày sinh</label>
-                        <input className='form-control' id='userBirthday' type='text' placeholder='Ngày sinh' readOnly={readOnly} />
-                    </div>
-                    <div className='col-md-4 form-group'>
-                        <label>Giới tính</label>
-                        {readOnly ? (this.state.sex ? this.state.sex : '') :
-                            <Select ref={this.sex} displayLabel={false}
-                                adapter={{
-                                    ajax: true,
-                                    processResults: () => ({
-                                        results: [{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]
-                                    })
-                                }} label='Giới tính' />}
-                    </div>
+                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
 
                     <FormCheckbox ref={e => this.itemIsCourseAdmin = e} className='col-md-4' label='Quản trị viên khoá học' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsStaff = e} className='col-md-4' label='Nhân viên' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsLecturer = e} className='col-md-4' label='Giáo viên' readOnly={readOnly} />
 
-                    <div className='col-md-12 form-group' style={{ display: this.state._id ? 'block' : 'none' }}>
-                        <label htmlFor='userRoles'>Vai trò</label><br />
-                        <select className='form-control' id='userRoles' multiple={true} disabled={readOnly} defaultValue={[]}>
-                            <optgroup label='Lựa chọn Vai trò' />
-                        </select>
-                    </div>
+                    <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemActive = e} className='col-md-12' label='Kích hoạt' readOnly={readOnly} />
                 </div>),
         });
@@ -169,87 +135,54 @@ class UserPasswordModal extends AdminModal {
 
 class UserPage extends AdminPage {
     state = { searchText: '', isSearching: false };
-    userModal = React.createRef();
-    passwordModal = React.createRef();
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
         this.props.getAllRoles();
-        this.props.getUserPage(1, 50, {});
+        this.props.getUserPage(1);
         T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
     }
 
-    edit = (e, item) => e.preventDefault() || this.userModal.current.show(item);
+    edit = (e, item) => e.preventDefault() || this.userModal.show(item);
 
-    changePassword = (e, item) => e.preventDefault() || this.passwordModal.current.show(item);
-
-    changeActive = item => this.props.updateUser(item._id, { active: !item.active })
+    changePassword = (e, item) => e.preventDefault() || this.passwordModal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
         isConfirm && this.props.deleteUser(item._id));
-
-    search = (e) => {
-        e.preventDefault();
-        let condition = {},
-            searchText = $('#searchTextBox').val();
-        if (searchText) condition.searchText = searchText;
-
-        this.props.getUserPage(undefined, undefined, condition, () => {
-            const isSearching = Object.keys(condition).length > 0;
-            this.setState({ searchText, isSearching });
-        });
-    };
 
     render() {
         const permission = this.getUserPermission('user');
         const allRoles = this.props.role && this.props.role.items ? this.props.role.items : [];
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
             this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: null };
-        let table = 'Không có người dùng!';
-        if (list && list.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered table-responsive'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '70%' }}>Tên</th>
-                            <th style={{ width: '30%' }}>Email</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                            <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.user.page.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><a href='#' onClick={e => this.edit(e, item)}>{item.lastname + ' ' + item.firstname}</a></td>
-                                <td>{item.email}</td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }}>
-                                    <label>
-                                        <input type='checkbox' checked={item.active} onChange={() => this.changeActive(item, index)} disabled={!permission.write} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}><i className='fa fa-lg fa-edit' /></a>
-                                        {permission.write ? <a className='btn btn-info' href='#' onClick={e => this.changePassword(e, item)}><i className='fa fa-lg fa-key' /></a> : ''}
-                                        {item.default || !permission.write ? null :
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a>}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        }
+        const table = renderTable({
+            getDataSource: () => this.props.user && this.props.user.page && this.props.user.page.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '70%' }}>Tên</th>
+                    <th style={{ width: '30%' }}>Email</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={item.email} />
+                    <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateUser(item._id, { active })} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={e => !item.default && this.delete(e, item)}>
+                        {permission.write ?
+                            <a className='btn btn-info' href='#' onClick={e => !item.default && this.changePassword(e, item)}>
+                                <i className='fa fa-lg fa-key' />
+                            </a> : null}
+                    </TableCell>
+                </tr>),
+        });
 
         return this.renderPage({
             icon: 'fa fa-users',
@@ -259,9 +192,9 @@ class UserPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getUserPage} />
-                <UserModal ref={this.userModal} readOnly={!permission.write} allRoles={allRoles}
+                <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles}
                     updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserPage} />
-                <UserPasswordModal updateUser={this.props.updateUser} ref={this.passwordModal} />
+                <UserPasswordModal ref={e => this.passwordModal = e} updateUser={this.props.updateUser} />
             </>,
             onCreate: permission.write ? this.edit : null,
         });

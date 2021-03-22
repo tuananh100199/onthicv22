@@ -2,7 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         image: String,
-        answers: { type: [String], default: [] },
+        answers: { type: String, default: '' },
         trueAnswer: Number,
         active: { type: Boolean, default: true },
     });
