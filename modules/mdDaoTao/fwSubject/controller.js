@@ -49,8 +49,8 @@ module.exports = (app) => {
     });
 
     app.post('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
-        const subjectId = req.body.subjectId,
-            lessonId = req.body.lessonId;
+        const subjectId = req.body._subjectId,
+            lessonId = req.body._subjectLessonId;
         app.model.subject.get({ _id: subjectId, lessons: { _id: lessonId } }, (error, item) => {
             if (error) {
                 res.send({ error });
@@ -101,7 +101,7 @@ module.exports = (app) => {
             if (error || !questions) {
                 res.send({ error });
             } else {
-                app.model.subject.addSubjectQuestion(req.body.subjectId, questions, (error, item) => {
+                app.model.subject.addSubjectQuestion(req.body._subjectId, questions, (error, item) => {
                     res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }

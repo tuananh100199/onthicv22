@@ -106,10 +106,10 @@ export function deleteSubject(_id) {
     }
 }
 
-export function addSubjectLesson(subjectId, lessonId, done) {
+export function addSubjectLesson(_subjectId, _subjectLessonId, done) {
     return dispatch => {
         const url = `/api/subject/lesson`;
-        T.post(url, { subjectId, lessonId }, data => {
+        T.post(url, { _subjectId, _subjectLessonId }, data => {
             if (data.error) {
                 T.notify('Thêm bài học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
@@ -164,10 +164,10 @@ export const ajaxSelectSubject = {
     })
 }
 
-export function createSubjectQuestion(subjectId, data, done) {
+export function createSubjectQuestion(_subjectId, data, done) {
     return dispatch => {
         const url = `/api/subject/question`;
-        T.post(url, { subjectId, data }, data => {
+        T.post(url, { _subjectId, data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
