@@ -66,13 +66,8 @@ class EmailPage extends AdminPage {
             icon: 'fa fa-envelope-o',
             title: 'Email',
             breadcrumb: ['Email'],
-            content: <>
-                <FormTabs ref={e => this.tabs = e} id='emailPageTab' contentClassName='tile' tabs={tabs} />
-                {permission.email ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                        <i className='fa fa-lg fa-save' />
-                    </button> : null}
-            </>,
+            content: <FormTabs ref={e => this.tabs = e} id='emailPageTab' contentClassName='tile' tabs={tabs} />,
+            onSave: permission.email ? this.save : null,
         });
     }
 }

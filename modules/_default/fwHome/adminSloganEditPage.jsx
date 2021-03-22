@@ -158,8 +158,8 @@ class SloganEditPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: '70%' }}>Tiêu đề</th>
-                            <th style={{ width: '30%', textAlign: 'center' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap', textAlign: 'center' }}>Thao tác</th>
+                            <th style={{ width: '30%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

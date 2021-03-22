@@ -1,6 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        active: { type: Boolean, default: false },                                  // Có thể dài, nên dùng FormRichTextBox
+        active: { type: Boolean, default: true },                                  // Có thể dài, nên dùng FormRichTextBox
         title: String,
         image: String,
         answers: { type: String, default: '' },                                     // Dùng FormRichTextBox => mỗi câu là 1 dòng

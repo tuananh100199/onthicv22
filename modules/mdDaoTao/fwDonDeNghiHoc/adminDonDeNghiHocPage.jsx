@@ -66,9 +66,9 @@ class AdminDonDeNghiHocPage extends React.Component {
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '85%' }}>Người dùng</th>
-                        {/* <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hạng</th> */}
-                        <th style={{ width: '15%', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                        {/* <th style={{ width: 'auto', textAlign: 'center' }}>Hạng</th> */}
+                        <th style={{ width: '15%', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -1,13 +1,16 @@
 import T from 'view/js/common';
 
-const ClusterGetAll = 'Cluster:GetAll';
-const SystemImageGetAll = 'SystemImage:GetAll';
+const ClusterGetAll = 'ClusterGetAll';
+const SystemImageGetAll = 'SystemImageGetAll';
+
 export default function clusterReducer(state = null, data) {
     switch (data.type) {
         case ClusterGetAll:
             return Object.assign({}, state, { clusters: data.items });
+
         case SystemImageGetAll:
             return Object.assign({}, state, { images: data.items });
+
         default:
             return state;
     }

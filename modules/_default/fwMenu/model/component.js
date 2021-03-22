@@ -1,16 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         priority: Number,
-        viewType: {
-            type: String,
-            enum: [
-                '<empty>',
-                'carousel', 'slogan', 'video', 'statistic', 'staff group', 'testimony', 'all staffs', 'last news',
-                'subscribe', 'contact', 'logo',
-                'dangKyTuVan', 'content', 'all news', 'list videos', 'all courses', 'last course',
-                'list contents', 'all course types'
-            ],
-        },
+        viewType: String,
         viewId: app.db.Schema.Types.ObjectId,
         className: String,
         style: String,

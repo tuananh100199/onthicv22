@@ -2,15 +2,16 @@ module.exports = app => {
     app.permission.add(
         { name: 'category:read' },
         { name: 'category:write' },
+        { name: 'category:delete' },
     );
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/category/:type', app.permission.check('category:read'), (req, res) => {
+    app.get('/api/category/:type', (req, res) => {
         const condition = { type: req.params.type },
-            searchText = req.query.searchText;
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
-        }
+            searchText = req.query.searchText,
+            active = req.query.active;
+        if (searchText) condition.title = new RegExp(searchText, 'i');
+        if (active) condition.active = active == 'true';
         app.model.category.getAll(condition, (error, items) => res.send({ error, items }));
     });
 

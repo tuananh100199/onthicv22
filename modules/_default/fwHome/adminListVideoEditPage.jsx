@@ -215,8 +215,8 @@ class ListVideoEditPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '50%' }}>Tên </th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Link</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
+                            <th style={{ width: '50%', textAlign: 'center' }} nowrap='true'>Link</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                             {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
                         </tr>
                     </thead>

@@ -12,7 +12,7 @@ class QuestionModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id, title, active, image, answers, trueAnswer, importance, categories } = item || { title: '', active: false, image: '', answers: '', trueAnswer: 0, importance: false, categories: [] };
+        let { _id, title, active, image, answers, trueAnswer, importance, categories } = item || { title: '', active: true, image: '', answers: '', trueAnswer: 0, importance: false, categories: [] };
         this.itemTitle.value(title);
         this.itemImage.setData('driveQuestion:' + _id, image ? image : '/img/avatar.jpg');
         this.itemAnswers.value(answers);

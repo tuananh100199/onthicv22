@@ -25,7 +25,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course-type/all', app.permission.check('course-type:read'), (req, res) => {
+    app.get('/api/course-type/all', (req, res) => {
         app.model.courseType.getAll((error, items) => res.send({ error, items }));
     });
 

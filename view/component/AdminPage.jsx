@@ -6,32 +6,32 @@ import Editor from 'view/component/CkEditor4';
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, style = {}, alt = '', display = true } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, alt = '', display = true } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
             return null;
         } else if (type == 'number') {
-            return <td style={{ textAlign: 'right', ...style }}>{content}</td>
+            return <td className={className} style={{ textAlign: 'right', ...style }}>{content}</td>
         } else if (type == 'date') {
-            return <td style={{ ...style }}>{new Date(content).getText()}</td>
+            return <td className={className} style={{ ...style }}>{new Date(content).getText()}</td>
         } else if (type == 'link') {
             let url = this.props.url ? this.props.url.trim() : '',
                 onClick = this.props.onClick;
             if (onClick) {
-                return <td style={{ ...style }}><a href='#' onClick={onClick}>{content}</a></td>;
+                return <td className={className} style={{ ...style }}><a href='#' onClick={onClick}>{content}</a></td>;
             } else {
                 return url.startsWith('http://') || url.startsWith('https://') ?
-                    <td style={{ textAlign: 'left', ...style }}><a href={url} target='_blank'>{content}</a></td> :
-                    <td style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
+                    <td className={className} style={{ textAlign: 'left', ...style }}><a href={url} target='_blank'>{content}</a></td> :
+                    <td className={className} style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
             }
         } else if (type == 'image') {
             return content ?
-                <td style={{ textAlign: 'center', ...style }}><img src={content} alt={alt} style={{ height: '32px' }} /></td> :
-                <td style={{ textAlign: 'center', ...style }}>{alt}</td>;
+                <td style={{ textAlign: 'center', ...style }} className={className}><img src={content} alt={alt} style={{ height: '32px' }} /></td> :
+                <td style={{ textAlign: 'center', ...style }} className={className}>{alt}</td>;
         } else if (type == 'checkbox') {
             return (
-                <td style={{ textAlign: 'center', ...style }} className='toggle'>
+                <td style={{ textAlign: 'center', ...style }} className={'toggle ' + className}>
                     <label>
                         <input type='checkbox' checked={content} onChange={() => permission.write && this.props.onChanged(content ? 0 : 1)} />
                         <span className='button-indecator' />
@@ -40,7 +40,7 @@ export class TableCell extends React.Component { // type = number | date | link 
         } else if (type == 'buttons') {
             const { onSwap, onEdit, onDelete, children } = this.props;
             return (
-                <td style={{ ...style }}>
+                <td className={className} style={{ ...style }}>
                     <div className='btn-group'>
                         {children}
                         {permission.write && onSwap ?
@@ -56,7 +56,7 @@ export class TableCell extends React.Component { // type = number | date | link 
                     </div>
                 </td>);
         } else {
-            return <td style={{ ...style }}>{content}</td>;
+            return <td className={className} style={{ ...style }}>{content}</td>;
         }
     }
 }
@@ -152,13 +152,14 @@ export class FormTextBox extends React.Component {
     focus = () => this.input.focus();
 
     render() {
-        let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
+        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props;
         type = type.toLowerCase(); // type = text | email | password
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
                 <input ref={e => this.input = e} type={type} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
+                {smallText ? <small>{smallText}</small> : null}
             </div>);
     };
 }
