@@ -116,7 +116,7 @@ class CoursePage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '100%' }}>Tiêu đề</th>
                             <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

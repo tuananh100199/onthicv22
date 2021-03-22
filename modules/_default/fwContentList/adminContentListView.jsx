@@ -94,7 +94,7 @@ class ContentListPage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tên danh sách</th>
                             <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh nền</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

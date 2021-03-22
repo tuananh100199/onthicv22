@@ -62,9 +62,9 @@ class CategorySection extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '80%' }}>Tên danh mục</th>
-                    <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                    <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
-                    <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>

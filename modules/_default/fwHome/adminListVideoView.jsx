@@ -99,7 +99,7 @@ class ListVideoPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '100%' }}>Tên danh sách</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: 'auto', textAlign='center' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

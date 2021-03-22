@@ -168,8 +168,8 @@ class StatisticEditPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '100%' }}>Tên (Việt Nam)</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Số lượng</th>
-                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
+                            <th style={{ width: 'auto', textAlign: 'right' }} nowrap='true'>Số lượng</th>
+                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                         </tr>
                     </thead>
                     <tbody>

@@ -110,7 +110,7 @@ class SubjectPage extends React.Component {
                     <tr>
                         <th style={{ width: 'auto' }}>#</th>
                         <th style={{ width: '100%' }}>Tên môn học</th>
-                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>}
+                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                     </tr>
                 </thead>
                 <tbody>

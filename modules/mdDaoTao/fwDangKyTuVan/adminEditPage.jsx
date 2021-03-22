@@ -196,9 +196,9 @@ class DangKyTuVanEditPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Tên</th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Số lượng</th>
-                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
+                            <th style={{ width: '50%', textAlign: 'center' }}>Tên</th>
+                            <th style={{ width: '50%', textAlign: 'right' }} nowrap='true'>Số lượng</th>
+                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                         </tr>
                     </thead>
                     <tbody>

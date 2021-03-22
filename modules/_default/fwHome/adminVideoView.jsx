@@ -152,8 +152,8 @@ class VideoPage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '40%' }}>Tiêu đề</th>
                             <th style={{ width: '60%' }}>Link</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>

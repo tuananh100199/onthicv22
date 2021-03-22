@@ -45,84 +45,69 @@ class ClusterPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('cluster');
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            permissionDelete = currentPermissions.includes('cluster:delete');
-
-        const clusters = this.props.cluster && this.props.cluster.clusters ? this.props.cluster.clusters : [],
-            clusterTable = clusters && clusters.length > 0 ? (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>Id</th>
-                            <th style={{ width: '100%' }} nowrap='true'>Image name</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Image version</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Start date</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>Status</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {clusters.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td style={{ textAlign: 'center' }}>{item.pid}</td>
-                                <td>{item.imageInfo}</td>
-                                <td style={{ textAlign: 'center' }}>{item.version}</td>
-                                <td nowrap='true'>{new Date(item.createdDate).getShortText()}</td>
-                                <td className={item.status == 'running' ? 'text-primary' : 'text-danger'}>{item.status}</td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <div className='btn-group'>
-                                        {permission.write &&
-                                            <a className='btn btn-success' href='#' onClick={e => this.resetCluster(e, item)}>
-                                                <i className='fa fa-lg fa-refresh' />
-                                            </a>}
-                                        {permission.delete && clusters.length > 1 &&
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteCluster(e, item)}>
-                                                <i className='fa fa-trash-o fa-lg' />
-                                            </a>}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            ) : 'No cluster!';
-
-        const images = this.props.cluster && this.props.cluster.images ? this.props.cluster.images : [],
-            imageTable = images && images.length > 0 ? (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }} nowrap='true'>Image name</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Created date</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {images.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()).map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td>{item.filename}</td>
-                                <td nowrap='true'>{new Date(item.createdDate).getShortText()}</td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <div className='btn-group'>
-                                        {permission.write &&
-                                            <a className='btn btn-success' href='#' onClick={e => this.applySystemImage(e, item)}>
-                                                <i className='fa fa-lg fa-arrow-up' />
-                                            </a>}
-                                        {permission.delete &&
-                                            <a className='btn btn-danger' href='#' onClick={e => this.deleteSystemImage(e, item)}>
-                                                <i className='fa fa-trash-o fa-lg' />
-                                            </a>}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            ) : 'No image!';
+        const clusterTable = renderTable({
+            getDataSource: () => this.props.cluster && this.props.cluster.clusters,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Id</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Image name</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Image version</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Start date</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Status</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Actions</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.pid} />
+                    <TableCell type='text' content={item.imageInfo} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={item.version} />
+                    <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={new Date(item.createdDate).getShortText()} />
+                    <TableCell type='text' className={item.status == 'running' ? 'text-primary' : 'text-danger'} content={item.status} />
+                    <td style={{ textAlign: 'center' }}>
+                        <div className='btn-group'>
+                            {permission.write &&
+                                <a className='btn btn-success' href='#' onClick={e => this.resetCluster(e, item)}>
+                                    <i className='fa fa-lg fa-refresh' />
+                                </a>}
+                            {permission.delete && this.props.cluster.clusters.length > 1 &&
+                                <a className='btn btn-danger' href='#' onClick={e => this.deleteCluster(e, item)}>
+                                    <i className='fa fa-trash-o fa-lg' />
+                                </a>}
+                        </div>
+                    </td>
+                </tr>),
+        });
+        const imageTable = renderTable({
+            getDataSource: () => this.props.cluster && this.props.cluster.images && this.props.cluster.images.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()),
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Image name</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Created date</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Actions</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <td style={{ textAlign: 'right' }}>{index + 1}</td>
+                    <td>{item.filename}</td>
+                    <td nowrap='true'>{new Date(item.createdDate).getShortText()}</td>
+                    <td style={{ textAlign: 'center' }}>
+                        <div className='btn-group'>
+                            {permission.write &&
+                                <a className='btn btn-success' href='#' onClick={e => this.applySystemImage(e, item)}>
+                                    <i className='fa fa-lg fa-arrow-up' />
+                                </a>}
+                            {permission.delete &&
+                                <a className='btn btn-danger' href='#' onClick={e => this.deleteSystemImage(e, item)}>
+                                    <i className='fa fa-trash-o fa-lg' />
+                                </a>}
+                        </div>
+                    </td>
+                </tr>),
+        });
 
         return (
             <main className='app-content'>
