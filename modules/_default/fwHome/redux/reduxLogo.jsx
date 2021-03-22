@@ -87,10 +87,10 @@ export function getAllLogos(done) {
     }
 }
 
-export function createLogo(title, done) {
+export function createLogo(newData, done) {
     return dispatch => {
         const url = '/api/logo';
-        T.post(url, { title }, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo nhóm logo bị lỗi', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);

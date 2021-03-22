@@ -1,12 +1,14 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        items: [{
-            name: String,
-            address: String,
-            link: String,
-            image: String,
-        }]
+        items: {
+            type: [{
+                name: String,
+                address: String,
+                link: String,
+                image: String,
+            }], default: []
+        }
     });
     const model = app.db.model('Logo', schema);
 
@@ -14,7 +16,7 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: done => model.find({}).sort({ title: -1 }).exec((error, items) => {
-            const list = (items && items.length ? items : []).map(item => app.clone(item, {image: ''}));
+            const list = (items && items.length ? items : []).map(item => app.clone(item, { image: '' }));
             done(error, list);
         }),
 
