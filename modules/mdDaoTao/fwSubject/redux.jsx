@@ -147,7 +147,6 @@ export function deleteSubjectLesson(_subjectId, _subjectLessonId, done) {
                 T.notify('Xóa bài học bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.notify('Xóa bài học thành công!', 'success');
                 dispatch({ type: SubjectGetItem, item: { lessons: data.item.lessons } });
                 done && done();
             }
