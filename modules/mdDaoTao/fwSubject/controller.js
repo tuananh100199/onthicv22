@@ -62,18 +62,6 @@ module.exports = (app) => {
         });
     });
 
-    // app.put('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
-    //     const { subjectId, subjectLessonId, newSubjectLessonId } = req.body,
-    //         changes = { _id: newSubjectLessonId }
-    //     app.model.subject.get(subjectId, (error, item) => {
-    //         if (error) {
-    //             res.send({ error });
-    //         } else {
-    //             app.model.subject.update(subjectLessonId, changes, (error, item) => res.send({ error, item }));
-    //         }
-    //     });
-    // });
-
     app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const { _subjectId, _subjectLessonId } = req.body;
         app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error, item) => {

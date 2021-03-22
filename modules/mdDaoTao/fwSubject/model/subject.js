@@ -59,7 +59,7 @@ module.exports = app => {
         }),
 
         addSubjectLesson: (condition, subjectLessonId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lesson: subjectLessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
+            model.findOneAndUpdate(condition, { $push: { lesson: subjectLessonId } }, { new: true }).populate('lesson').exec(done);
         },
 
         deleteSubjectLesson: (_id, subjectLessonId, done) => {
@@ -67,7 +67,7 @@ module.exports = app => {
         },
 
         addSubjectQuestion: (_id, subjectQuestion, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { subjectQuestion } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
+            model.findOneAndUpdate({ _id }, { $push: { subjectQuestion } }, { new: true }).populate('subjectQuestion').exec(done);
         },
 
         deleteSubjectQuestion: (_id, subjectQuestionId, done) => {
