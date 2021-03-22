@@ -29,7 +29,7 @@ module.exports = (app) => {
             footer: '/img/footer.jpg',
             contact: '/img/contact.jpg',
             subscribe: '/img/subcribe.jpg',
-            facebook: 'https://www.facebook.com/bachkhoa.oisp',
+            facebook: 'https://www.facebook.com',
             youtube: '',
             twitter: '',
             instagram: '',
@@ -38,7 +38,7 @@ module.exports = (app) => {
             email: app.email.from,
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
-            address: 'Block B4 - Ho Chi Minh City University of Technology | 268 Ly Thuong Kiet Street, District 10, Hochiminh City, Vietnam',
+            address: '',
         },
 
         refresh: (option, done) => {
@@ -146,9 +146,7 @@ module.exports = (app) => {
         delete data.emailPassword;
 
         if (app.isDebug) data.isDebug = true;
-        if (req.session.user) {
-            data.user = req.session.user;
-        }
+        if (req.session.user) data.user = req.session.user;
 
         app.model.menu.getAll({ active: true }, (error, menus) => {
             if (menus) {
@@ -164,9 +162,9 @@ module.exports = (app) => {
                 app.model.role.getAll((error, roles) => {
                     data.roles = roles || [];
                     res.send(data);
-                })
+                });
             } else {
-                res.send(data)
+                res.send(data);
             }
         });
     });
@@ -194,15 +192,27 @@ module.exports = (app) => {
     });
 
     app.get('/api/menu/path', (req, res) => {
-        let pathname = req.query.pathname;
-        if (pathname) {
-            // let pathname = app.url.parse(req.headers.referer).pathname;
-            if (pathname.length > 1 && pathname.endsWith('/'))
-                pathname = pathname.substring(0, pathname.length - 1);
-            if (!pathname) pathname = '/';
-            const menu = app.state.menus[pathname];
-            if (menu) {
-                const menuComponents = [];
+        new Promise((resolve, reject) => { // Get menus from Redis
+            app.redis.get(app.redis.menusKey, (error, menus) => {
+                if (error) {
+                    reject('System has errors!');
+                } else {
+                    let pathname = req.query.pathname;
+                    if (pathname) {
+                        if (pathname.length > 1 && pathname.endsWith('/'))
+                            pathname = pathname.substring(0, pathname.length - 1);
+                        if (!pathname) pathname = '/';
+                        const menu = (menus ? JSON.parse(menus) : app.state.menus)[pathname]; // TODO: const menu = JSON.parse(menus)[pathname];
+                        menu ? resolve(menu) : reject('Invalid link!');
+                    } else {
+                        reject('Invalid link!')
+                    }
+                }
+            });
+        }).then(menu => {
+            if (menu.component) {
+                res.send(menu.component);
+            } else if (menu.componentId) {
                 const getComponent = (index, componentIds, components, done) => {
                     if (index < componentIds.length) {
                         app.model.component.get(componentIds[index], (error, component) => {
@@ -213,27 +223,11 @@ module.exports = (app) => {
                                 component.components = [];
                                 components.push(component);
 
-                                const getNextComponent = (view) => {
-                                    if (view) component.view = view;
-                                    if (component.componentIds) {
-                                        getComponent(0, component.componentIds, component.components, () => {
-                                            getComponent(index + 1, componentIds, components, done)
-                                        });
-                                    } else {
-                                        getComponent(index + 1, componentIds, components, done);
-                                    }
-                                };
-
-                                if (component.viewType && component.viewId) {
-                                    const viewType = component.viewType;
-                                    if (component.viewId && (viewType == 'carousel' || viewType == 'content')) {
-                                        app.model[viewType].get(component.viewId, (error, item) => getNextComponent(item));
-                                    } else {
-                                        getNextComponent();
-                                    }
-                                } else {
-                                    getNextComponent();
-                                }
+                                // Duyệt hết các components con rồi mới duyệt đến component kế tiếp
+                                const getNextComponent = () => getComponent(index + 1, componentIds, components, done);
+                                component.componentIds ?
+                                    getComponent(0, component.componentIds, component.components, getNextComponent) :
+                                    getNextComponent()
                             }
                         });
                     } else {
@@ -241,27 +235,15 @@ module.exports = (app) => {
                     }
                 };
 
-                if (menu.component) {
+                const menuComponents = [];
+                getComponent(0, [menu.componentId], menuComponents, () => {
+                    menu.component = menuComponents[0];
                     res.send(menu.component);
-                } else if (menu.componentId) {
-                    getComponent(0, [menu.componentId], menuComponents, () => {
-                        menu.component = menuComponents[0];
-                        res.send(menu.component);
-                    });
-                } else {
-                    res.send({ error: 'Invalid menu!' });
-                }
+                });
             } else {
-                res.send({ error: 'Invalid link!' });
+                res.send({ error: 'Invalid menu!' });
             }
-        } else {
-            res.send({ error: 'Invalid link!' });
-        }
-    });
-
-    app.delete('/api/clear-session', app.permission.check(), (req, res) => {
-        req.session[req.body.sessionName] = null; //TODO: delete Redis session
-        res.end();
+        }).catch(error => res.send({ error }));
     });
 
 
@@ -273,9 +255,7 @@ module.exports = (app) => {
             if (enableInit) {
                 app.model.setting.init(app.state.data, () => app.state.refresh())
             } else {
-                setTimeout(() => {
-                    app.state.refresh()
-                }, 200);
+                setTimeout(() => { app.state.refresh() }, 200);
             }
         },
     });

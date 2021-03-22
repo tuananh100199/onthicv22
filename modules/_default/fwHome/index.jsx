@@ -11,6 +11,7 @@ import testimony from './redux/reduxTestimony';
 import video from './redux/reduxVideo';
 import listVideo from './redux/reduxListVideo';
 
+import SectionContent from './sectionContent';
 import SectionCarousel from './sectionCarousel';
 import SectionLogo from './sectionLogo';
 import SectionSlogan from './sectionSlogan';
@@ -71,6 +72,6 @@ export default {
         },
     ],
     Section: {
-        SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
+        SectionContent, SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
     }
 };

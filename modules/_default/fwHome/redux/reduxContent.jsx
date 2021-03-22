@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+T.pushComponentTypes('content');
 
 // Reducer -------------------------------------------------------------------------------------------------------------
 const ContentGetAll = 'Content:GetAll';

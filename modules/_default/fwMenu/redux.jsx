@@ -167,10 +167,10 @@ export function getComponentViews(type, done) {
     }
 }
 
-export function buildMenu() {
-    return dispatch => {
-        const url = `/api/menu/build`;
-        T.put(url, () => T.notify('Cập nhật menu thành công!', 'info'),
-            error => T.notify('Cập nhật menu bị lỗi!', 'danger'));
-    };
-}
+// export function buildMenu() {
+//     return dispatch => {
+//         const url = `/api/menu/build`;
+//         T.put(url, () => T.notify('Cập nhật menu thành công!', 'info'),
+//             error => T.notify('Cập nhật menu bị lỗi!', 'danger'));
+//     };
+// }

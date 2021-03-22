@@ -1,36 +1,13 @@
-import PropTypes from 'prop-types';
 import io from 'socket.io-client';
 import dateformat from 'dateformat';
 import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
 const T = {
-    PropTypes,
     rootUrl: 'https://hpo.edu.vn',
-    sexes: ['Nam', 'Nữ'],
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
-    pageTypes: [
-        '<empty>',
-        'all news',
-        'all staffs',
-        'carousel',
-        'contact',
-        'content',
-        'last news',
-        'logo',
-        'slogan',
-        'staff group',
-        'statistic',
-        'subscribe',
-        'testimony',
-        'video',
-        'list videos',
-        'all courses',
-        'last course',
-        'list contents',
-        'dangKyTuVan',
-        'all course types',
-    ],
+    componentTypes: ['<empty>'],
+    pushComponentTypes: (type) => !T.componentTypes.contains(type) && T.componentTypes.push(type),
     defaultPageSize: 50,
     defaultUserPageSize: 21,
     defaultUserSidebarSize: 3,

@@ -34,25 +34,20 @@ module.exports = (cluster, isDebug) => {
     app.faviconPath = app.path.join(__dirname, '..', package.path.favicon);
 
     // Configure ------------------------------------------------------------------------------------------------------
-    require('./common')(app, package.name);
+    require('./common')(app, app.appName);
     require('./view')(app, express);
     require('./database')(app);
     require('./packages')(app, server, package);
-    require('./authentication')(app, package);
+    require('./authentication')(app);
     require('./permission')(app);
     require('./io')(app, server);
 
     // Init -----------------------------------------------------------------------------------------------------------
     app.createTemplate('home', 'admin');
     app.loadModules();
-    app.readyHooks.add('adminInit', {
+    app.readyHooks.add('setupAdmin', {
         ready: () => app.model != null && app.model.user != null,
-        run: () => {
-            const enableInit = process.env['enableInit'] == 'true';
-            if (enableInit) {
-                app.setupAdmin()
-            }
-        },
+        run: () => process.env['enableInit'] == 'true' && app.setupAdmin(),
     });
 
     app.get('/user', app.permission.check(), app.templates.admin);
