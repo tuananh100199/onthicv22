@@ -57,28 +57,27 @@ module.exports = (app) => {
             } else if (item) {
                 res.send({ check: `Môn học đã có bài học này!` });
             } else {
-                app.model.subject.addSubjectLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, item }));
+                app.model.subject.addSubjectLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lesson: item && item.lesson ? item.lesson : [] }));
             }
         });
     });
 
-    app.put('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
-        const { subjectId, subjectLessonId, newSubjectLessonId } = req.body,
-            changes = { _id: newSubjectLessonId }
-        app.model.subject.get(subjectId, (error, item) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.subject.update(subjectLessonId, changes, (error, item) => res.send({ error, item }));
-            }
-        });
-    });
+    // app.put('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+    //     const { subjectId, subjectLessonId, newSubjectLessonId } = req.body,
+    //         changes = { _id: newSubjectLessonId }
+    //     app.model.subject.get(subjectId, (error, item) => {
+    //         if (error) {
+    //             res.send({ error });
+    //         } else {
+    //             app.model.subject.update(subjectLessonId, changes, (error, item) => res.send({ error, item }));
+    //         }
+    //     });
+    // });
 
     app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const { _subjectId, _subjectLessonId } = req.body;
         app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error, item) => {
-
-            res.send({ error, item });
+            res.send({ error, lesson: item && item.lesson ? item.lesson : [] });
         });
     });
 
@@ -100,7 +99,7 @@ module.exports = (app) => {
                         break;
                     }
                 }
-                res.send({ error, item });
+                res.send({ lesson: item.lesson });
             }
         });
     });
@@ -111,7 +110,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.subject.addSubjectQuestion(req.body.subjectId, subjectQuestion, (error, item) => {
-                    res.send({ error, item });
+                    res.send({ error, questions: item && item.subjectQuestion ? item.subjectQuestion : [] });
                 });
             }
         });
@@ -135,7 +134,7 @@ module.exports = (app) => {
                         break;
                     }
                 }
-                res.send({ error, item });
+                res.send({ questions: item.subjectQuestion });
             }
         });
     });
@@ -146,7 +145,9 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
+                app.model.subject.get(_subjectId, (error, item) => {
+                    res.send({ error, questions: item && item.subjectQuestion ? item.subjectQuestion : [] })
+                });
             }
         });
     });
@@ -158,7 +159,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.subject.deleteSubjectQuestion(_subjectId, _subjectQuestionId, (error, item) => {
-                    res.send({ error, item });
+                    res.send({ error, questions: item && item.subjectQuestion ? item.subjectQuestion : [] });
                 });
             }
         });
