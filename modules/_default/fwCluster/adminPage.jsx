@@ -65,18 +65,12 @@ class ClusterPage extends AdminPage {
                     <TableCell type='text' style={{ textAlign: 'center' }} content={item.version} />
                     <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={new Date(item.createdDate).getShortText()} />
                     <TableCell type='text' className={item.status == 'running' ? 'text-primary' : 'text-danger'} content={item.status} />
-                    <td style={{ textAlign: 'center' }}>
-                        <div className='btn-group'>
-                            {permission.write &&
-                                <a className='btn btn-success' href='#' onClick={e => this.resetCluster(e, item)}>
-                                    <i className='fa fa-lg fa-refresh' />
-                                </a>}
-                            {permission.delete && this.props.cluster.clusters.length > 1 &&
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteCluster(e, item)}>
-                                    <i className='fa fa-trash-o fa-lg' />
-                                </a>}
-                        </div>
-                    </td>
+                    <TableCell type='buttons' content={item} style={{ textAlign: 'center' }} permission={permission} onDelete={this.deleteCluster}>
+                        {permission.write &&
+                            <a className='btn btn-success' href='#' onClick={e => this.resetCluster(e, item)}>
+                                <i className='fa fa-lg fa-refresh' />
+                            </a>}
+                    </TableCell>
                 </tr>),
         });
         const imageTable = renderTable({
@@ -91,34 +85,26 @@ class ClusterPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                    <td>{item.filename}</td>
-                    <td nowrap='true'>{new Date(item.createdDate).getShortText()}</td>
-                    <td style={{ textAlign: 'center' }}>
-                        <div className='btn-group'>
-                            {permission.write &&
-                                <a className='btn btn-success' href='#' onClick={e => this.applySystemImage(e, item)}>
-                                    <i className='fa fa-lg fa-arrow-up' />
-                                </a>}
-                            {permission.delete &&
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteSystemImage(e, item)}>
-                                    <i className='fa fa-trash-o fa-lg' />
-                                </a>}
-                        </div>
-                    </td>
+                    <TableCell type='text' content={item.filename} />
+                    <TableCell type='text' style={{ textAlign: 'center', whiteSpace: 'nowrap' }} content={new Date(item.createdDate).getShortText()} />
+                    <TableCell type='buttons' content={item} style={{ textAlign: 'center' }} permission={permission} onDelete={this.deleteSystemImage}>
+                        {permission.write &&
+                            <a className='btn btn-success' href='#' onClick={e => this.applySystemImage(e, item)}>
+                                <i className='fa fa-lg fa-arrow-up' />
+                            </a>}
+                    </TableCell>
                 </tr>),
         });
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa-braille' /> Cluster</h1>
-                </div>
-
+        return this.renderPage({
+            icon: 'fa fa-braille',
+            title: 'Cluster',
+            breadcrumb: ['Cluster'],
+            content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Cluster</h3>
                     <div className='tile-body'>{clusterTable}</div>
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right' }}>
                         {/* <button className='btn btn-success' type='button' onClick={this.resetAllClusters}>
                             <i className='fa fa-fw fa-lg fa-refresh'/>Reset
                         </button>&nbsp;&nbsp; */}
@@ -131,14 +117,14 @@ class ClusterPage extends AdminPage {
                 <div className='tile'>
                     <h3 className='tile-title'>System Image</h3>
                     <div className='tile-body'>{imageTable}</div>
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right' }}>
                         <button className='btn btn-warning' type='button' onClick={this.refreshSystemImages}>
                             <i className='fa fa-fw fa-lg fa-refresh' />Refresh
                         </button>
                     </div>
                 </div>
-            </main>
-        );
+            </>,
+        });
     }
 }
 
