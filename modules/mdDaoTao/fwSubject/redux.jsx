@@ -116,7 +116,7 @@ export function addSubjectLesson(subjectId, lessonId, done) {
             } else if (data.check) {
                 T.notify(data.check, 'danger');
             } else {
-                dispatch({ type: SubjectGetItem, item: { lesson: data.lesson } });
+                dispatch({ type: SubjectGetItem, item: { lessons: data.lessons } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
@@ -132,7 +132,7 @@ export function swapSubjectLesson(_subjectId, _subjectLessonId, isMoveUp, done) 
                 T.notify('Thay đổi thứ tự bài học bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch({ type: SubjectGetItem, item: { lesson: data.lesson } });
+                dispatch({ type: SubjectGetItem, item: { lessons: data.lessons } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
@@ -148,7 +148,7 @@ export function deleteSubjectLesson(_subjectId, _subjectLessonId, done) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.notify('Xóa bài học thành công!', 'success');
-                dispatch({ type: SubjectGetItem, item: { lesson: data.lesson } });
+                dispatch({ type: SubjectGetItem, item: { lessons: data.item.lessons } });
                 done && done();
             }
         }, error => console.error('POST: ' + url + '.', error));
@@ -172,7 +172,7 @@ export function createSubjectQuestion(subjectId, data, done) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch({ type: SubjectGetItem, item: { subjectQuestion: data.questions } });
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
@@ -188,7 +188,7 @@ export function updateSubjectQuestion(_subjectId, _subjectQuestionId, data, done
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 T.notify('Cập nhật câu hỏi thành công!', 'success');
-                dispatch({ type: SubjectGetItem, item: { subjectQuestion: data.questions } });
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
@@ -203,7 +203,7 @@ export function swapSubjectQuestion(_subjectId, _subjectQuestionId, isMoveUp, do
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch({ type: SubjectGetItem, item: { subjectQuestion: data.questions } });
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
@@ -219,7 +219,7 @@ export function deleteSubjectQuestion(_subjectQuestionId, _subjectId, done) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.notify('Xóa câu hỏi thành công!', 'success');
-                dispatch({ type: SubjectGetItem, item: { subjectQuestion: data.questions } });
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));

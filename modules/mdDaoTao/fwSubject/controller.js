@@ -51,21 +51,25 @@ module.exports = (app) => {
     app.post('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const subjectId = req.body.subjectId,
             lessonId = req.body.lessonId;
-        app.model.subject.get({ _id: subjectId, lesson: { _id: lessonId } }, (error, item) => {
+        app.model.subject.get({ _id: subjectId, lessons: { _id: lessonId } }, (error, item) => {
             if (error) {
                 res.send({ error });
             } else if (item) {
                 res.send({ check: `Môn học đã có bài học này!` });
             } else {
-                app.model.subject.addSubjectLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lesson: item && item.lesson ? item.lesson : [] }));
+                app.model.subject.addSubjectLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
             }
         });
     });
 
     app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const { _subjectId, _subjectLessonId } = req.body;
-        app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error, item) => {
-            res.send({ error, lesson: item && item.lesson ? item.lesson : [] });
+        app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
+            }
         });
     });
 
@@ -75,30 +79,30 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                for (let index = 0, length = item.lesson.length; index < item.lesson.length; index++) {
-                    const subjectLesson = item.lesson[index];
+                for (let index = 0, length = item.lessons.length; index < item.lessons.length; index++) {
+                    const subjectLesson = item.lessons[index];
                     if (subjectLesson._id == _subjectLessonId) {
                         const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
-                            item.lesson.splice(index, 1);
-                            item.lesson.splice(newIndex, 0, subjectLesson);
+                            item.lessons.splice(index, 1);
+                            item.lessons.splice(newIndex, 0, subjectLesson);
                             item.save();
                         }
                         break;
                     }
                 }
-                res.send({ lesson: item.lesson });
+                res.send({ lessons: item.lessons });
             }
         });
     });
 
     app.post('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        app.model.subjectQuestion.create(req.body.data, (error, subjectQuestion) => {
-            if (error || !subjectQuestion) {
+        app.model.subjectQuestion.create(req.body.data, (error, questions) => {
+            if (error || !questions) {
                 res.send({ error });
             } else {
-                app.model.subject.addSubjectQuestion(req.body.subjectId, subjectQuestion, (error, item) => {
-                    res.send({ error, questions: item && item.subjectQuestion ? item.subjectQuestion : [] });
+                app.model.subject.addSubjectQuestion(req.body.subjectId, questions, (error, item) => {
+                    res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }
         });
@@ -110,19 +114,19 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                for (let index = 0, length = item.subjectQuestion.length; index < item.subjectQuestion.length; index++) {
-                    const subjectQuestion = item.subjectQuestion[index];
-                    if (subjectQuestion._id == _subjectQuestionId) {
+                for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
+                    const questions = item.questions[index];
+                    if (questions._id == _subjectQuestionId) {
                         const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
-                            item.subjectQuestion.splice(index, 1);
-                            item.subjectQuestion.splice(newIndex, 0, subjectQuestion);
+                            item.questions.splice(index, 1);
+                            item.questions.splice(newIndex, 0, questions);
                             item.save();
                         }
                         break;
                     }
                 }
-                res.send({ questions: item.subjectQuestion });
+                res.send({ questions: item.questions });
             }
         });
     });
@@ -134,7 +138,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.subject.get(_subjectId, (error, item) => {
-                    res.send({ error, questions: item && item.subjectQuestion ? item.subjectQuestion : [] })
+                    res.send({ error, questions: item && item.questions ? item.questions : [] })
                 });
             }
         });
@@ -147,7 +151,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 app.model.subject.deleteSubjectQuestion(_subjectId, _subjectQuestionId, (error, item) => {
-                    res.send({ error, questions: item && item.subjectQuestion ? item.subjectQuestion : [] });
+                    res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }
         });

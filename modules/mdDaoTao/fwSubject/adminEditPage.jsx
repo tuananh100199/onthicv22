@@ -132,7 +132,7 @@ class AdminEditPage extends AdminPage {
         const permission = this.getUserPermission('subject'),
             readOnly = !permission.write;
         const tableLesson = renderTable({
-            getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.lesson,
+            getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.lessons,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -163,7 +163,7 @@ class AdminEditPage extends AdminPage {
         });
 
         const tableQuestion = renderTable({
-            getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.subjectQuestion,
+            getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.questions,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

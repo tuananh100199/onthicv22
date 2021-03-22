@@ -3,8 +3,8 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
-        lesson: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
-        subjectQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'SubjectQuestion' }], default: [] },
+        lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'SubjectQuestion' }], default: [] },
     });
     const model = app.db.model('Subject', schema);
 
@@ -42,7 +42,7 @@ module.exports = app => {
                 condition = {};
             }
             if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).populate('lesson').populate('subjectQuestion').exec(done);
+            model.findOne(condition).populate('lessons').populate('questions').exec(done);
         },
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
@@ -58,20 +58,20 @@ module.exports = app => {
             }
         }),
 
-        addSubjectLesson: (condition, subjectLessonId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lesson: subjectLessonId } }, { new: true }).populate('lesson').exec(done);
+        addSubjectLesson: (condition, lessons, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
         },
 
-        deleteSubjectLesson: (_id, subjectLessonId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { lesson: subjectLessonId } }).populate('lesson').exec(done);
+        deleteSubjectLesson: (_id, _subjectLessonId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }).populate('lessons').exec(done);
         },
 
-        addSubjectQuestion: (_id, subjectQuestion, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { subjectQuestion } }, { new: true }).populate('subjectQuestion').exec(done);
+        addSubjectQuestion: (_id, questions, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
         },
 
         deleteSubjectQuestion: (_id, subjectQuestionId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { subjectQuestion: subjectQuestionId } }).populate('subjectQuestion').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { questions: subjectQuestionId } }).populate('questions').exec(done);
         },
     };
 };
