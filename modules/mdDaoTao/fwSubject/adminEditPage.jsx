@@ -92,7 +92,7 @@ class AdminEditPage extends AdminPage {
                 params = T.routeMatcher('/user/dao-tao/mon-hoc/edit/:_id').parse(url);
             this.props.getSubject(params._id, data => {
                 if (data.error) {
-                    T.notify('Lấy bài học bị lỗi!', 'danger');
+                    T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push(adminPageLink);
                 } else if (data.item) {
                     const { _id, title, shortDescription, detailDescription } = data.item;
