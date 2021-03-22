@@ -77,6 +77,7 @@ module.exports = (app) => {
     app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const { _subjectId, _subjectLessonId } = req.body;
         app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error, item) => {
+
             res.send({ error, item });
         });
     });
@@ -135,6 +136,17 @@ module.exports = (app) => {
                     }
                 }
                 res.send({ error, item });
+            }
+        });
+    });
+
+    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectQuestionId, data } = req.body;
+        app.model.subjectQuestion.update(_subjectQuestionId, data, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
             }
         });
     });

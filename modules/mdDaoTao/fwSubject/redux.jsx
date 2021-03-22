@@ -187,6 +187,7 @@ export function updateSubjectQuestion(_subjectId, _subjectQuestionId, data, done
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
+                T.notify('Cập nhật câu hỏi thành công!', 'success');
                 dispatch({ type: SubjectGetItem, item: data.item });
                 done && done();
             }
