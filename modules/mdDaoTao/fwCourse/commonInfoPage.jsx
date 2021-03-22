@@ -83,73 +83,63 @@ class CommonInfoPage extends React.Component {
         };
         return (
             <>
-                <div className='row'>
-                    <div className='col-12 col-md-12'>
-                        <div className='tile'>
-                            <div className='tile-body'>
-                                <div className='row'>
-                                    <div className='form-group col-sm-12 col-md-8 col-lg-6'>
-                                        <label className='control-label'>Tên khóa học</label>
-                                        <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' readOnly={readOnly} />
-                                    </div>
-                                    <div className='form-group col-md-12 col-lg-3 control-label'>
-                                        <Select ref={this.addressSelect} displayLabel={true} adapter={ajaxSelectDivision} label='Cơ sở ' />
-                                    </div>
-                                    <div className='form-group col-sm-12 col-md-4 col-lg-3 control-label'>
-                                        <Select ref={this.licenseClass} displayLabel={true} adapter={ajaxSelectCourseType} label='Loại khóa học ' />
-                                    </div>
-                                </div>
+                <div className='tile'>
+                    <div className='row'>
+                        <div className='form-group col-sm-12 col-md-8 col-lg-6'>
+                            <label className='control-label'>Tên khóa học</label>
+                            <input className='form-control' type='text' placeholder='Tên khóa học' id='courseTitle' readOnly={readOnly} />
+                        </div>
+                        <div className='form-group col-md-12 col-lg-3'>
+                            <label className='control-label'>Cơ sở</label>
+                            <Select ref={this.addressSelect} adapter={ajaxSelectDivision} label='Cơ sở ' />
+                        </div>
+                        <div className='form-group col-sm-12 col-md-4 col-lg-3'>
+                            <label className='control-label'>Loại khóa học</label>
+                            <Select ref={this.licenseClass} adapter={ajaxSelectCourseType} label='Loại khóa học ' />
+                        </div>
+                    </div>
 
-                                <div className='row'>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-4' id='launchTimeSection'>
-                                        <label className='control-label' htmlFor='launchTime'>Thời gian khai giảng</label>
-                                        <input type='text' className='form-control' id='launchTime' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#launchTimeSection' />
-                                    </div>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-4' id='startTimeSection'>
-                                        <label className='control-label' htmlFor='startTime'>Thời gian bắt đầu</label>
-                                        <input type='text' className='form-control' id='startTime' placeholder='Thời gian bắt đầu' autoComplete='off' data-date-container='#startTimeSection' />
-                                    </div>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-4' id='endTimeSection'>
-                                        <label className='control-label' htmlFor='endTime'>Thời gian kết thúc</label>
-                                        <input type='text' className='form-control' id='endTime' placeholder='Thời gian kết thúc' autoComplete='off' data-date-container='#endTimeSection' />
-                                    </div>
-                                </div>
-                                <div className='row'>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-6' id='endSubTimeExpectSection'>
-                                        <label className='control-label' htmlFor='endSubTimeExpect'> Thời gian thi kết thúc môn dự kiến</label>
-                                        <input type='text' className='form-control' id='endSubTimeExpect' placeholder='Thời gian thi kết thúc môn dự kiến' autoComplete='off' data-date-container='#endSubTimeExpectSection' />
-                                    </div>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-6' id='endSubTimeOfficialSection'>
-                                        <label className='control-label' htmlFor='endSubTimeOfficial'> Thời gian thi kết thúc môn chính thức</label>
-                                        <input type='text' className='form-control' id='endSubTimeOfficial' placeholder='Thời gian thi kết thúc môn chính thức' autoComplete='off' data-date-container='#endSubTimeOfficialSection' />
-                                    </div>
-                                </div>
-                                <div className='row'>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-6' id='graduationTestTimeExpectSection'>
-                                        <label className='control-label' htmlFor='graduationTestTimeExpect'> Thời gian thi tốt nghiệp dự kiến</label>
-                                        <input type='text' className='form-control' id='graduationTestTimeExpect' placeholder='Thời gian thi tốt nghiệp dự kiến' autoComplete='off' data-date-container='#graduationTestTimeExpectSection' />
-                                    </div>
-                                    <div className='form-group col-md-12 col-lg-6 col-xl-6' id='graduationTestTimeOfficialSection'>
-                                        <label className='control-label' htmlFor='graduationTestTimeOfficial'> Thời gian thi tốt nghiệp chính thức</label>
-                                        <input type='text' className='form-control' id='graduationTestTimeOfficial' placeholder='Thời gian thi tốt nghiệp chính thức' autoComplete='off' data-date-container='#graduationTestTimeOfficialSection' />
-                                    </div>
-                                </div>
-                            </div>
+                    <div className='row'>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-4' id='launchTimeSection'>
+                            <label className='control-label' htmlFor='launchTime'>Thời gian khai giảng</label>
+                            <input type='text' className='form-control' id='launchTime' placeholder='Thời gian khai giảng' autoComplete='off' data-date-container='#launchTimeSection' />
+                        </div>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-4' id='startTimeSection'>
+                            <label className='control-label' htmlFor='startTime'>Thời gian bắt đầu</label>
+                            <input type='text' className='form-control' id='startTime' placeholder='Thời gian bắt đầu' autoComplete='off' data-date-container='#startTimeSection' />
+                        </div>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-4' id='endTimeSection'>
+                            <label className='control-label' htmlFor='endTime'>Thời gian kết thúc</label>
+                            <input type='text' className='form-control' id='endTime' placeholder='Thời gian kết thúc' autoComplete='off' data-date-container='#endTimeSection' />
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-6' id='endSubTimeExpectSection'>
+                            <label className='control-label' htmlFor='endSubTimeExpect'> Thời gian thi kết thúc môn dự kiến</label>
+                            <input type='text' className='form-control' id='endSubTimeExpect' placeholder='Thời gian thi kết thúc môn dự kiến' autoComplete='off' data-date-container='#endSubTimeExpectSection' />
+                        </div>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-6' id='endSubTimeOfficialSection'>
+                            <label className='control-label' htmlFor='endSubTimeOfficial'> Thời gian thi kết thúc môn chính thức</label>
+                            <input type='text' className='form-control' id='endSubTimeOfficial' placeholder='Thời gian thi kết thúc môn chính thức' autoComplete='off' data-date-container='#endSubTimeOfficialSection' />
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-6' id='graduationTestTimeExpectSection'>
+                            <label className='control-label' htmlFor='graduationTestTimeExpect'> Thời gian thi tốt nghiệp dự kiến</label>
+                            <input type='text' className='form-control' id='graduationTestTimeExpect' placeholder='Thời gian thi tốt nghiệp dự kiến' autoComplete='off' data-date-container='#graduationTestTimeExpectSection' />
+                        </div>
+                        <div className='form-group col-md-12 col-lg-6 col-xl-6' id='graduationTestTimeOfficialSection'>
+                            <label className='control-label' htmlFor='graduationTestTimeOfficial'> Thời gian thi tốt nghiệp chính thức</label>
+                            <input type='text' className='form-control' id='graduationTestTimeOfficial' placeholder='Thời gian thi tốt nghiệp chính thức' autoComplete='off' data-date-container='#graduationTestTimeOfficialSection' />
                         </div>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className='col-md-12'>
-                        <div className='tile'>
-                            <div className='tile-body'>
-                                <label className='control-label'>Tóm tắt khóa học</label>
-                                <textarea defaultValue='' className='form-control' id='courseAbstract' placeholder='Tóm tắt khóa học' readOnly={readOnly}
-                                    style={{ minHeight: '100px', marginBottom: '12px' }} />
-                                <label className='control-label'>Nội dung khóa học</label>
-                                <Editor ref={this.editor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=course' readOnly={readOnly} />
-                            </div>
-                        </div>
-                    </div>
+                <div className='tile'>
+                    <label className='control-label'>Tóm tắt khóa học</label>
+                    <textarea defaultValue='' className='form-control' id='courseAbstract' placeholder='Tóm tắt khóa học' readOnly={readOnly}
+                        style={{ minHeight: '100px', marginBottom: '12px' }} />
+                    <label className='control-label'>Nội dung khóa học</label>
+                    <Editor ref={this.editor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=course' readOnly={readOnly} />
                 </div>
 
                 <Link to='/user/course/list' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}><i className='fa fa-lg fa-reply' /></Link>
