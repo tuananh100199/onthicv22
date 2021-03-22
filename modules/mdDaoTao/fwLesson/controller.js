@@ -117,12 +117,11 @@ module.exports = (app) => {
     });
 
     app.post('/api/lesson/question/:_id', app.permission.check('lesson:write'), (req, res) => {
-        const _id = req.params._id, data = req.body.data;
-        app.model.lessonQuestion.create(data, (error, question) => {
+        app.model.lessonQuestion.create(req.body.data, (error, question) => {
             if (error || !question) {
                 res.send({ error });
             } else {
-                app.model.lesson.addLessonQuestion({ _id }, question._id, question.title, question.defaultAnswer, question.content, question.active, question.typeValue, (error, item) => {
+                app.model.lesson.addLessonQuestion({ _id: req.params._id }, question, (error, item) => {
                     res.send({ error, item });
                 });
             }
@@ -138,14 +137,8 @@ module.exports = (app) => {
     });
 
     app.delete('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
-        const { data, lessonId, _id } = req.body;
-        if (data.questions && data.questions == 'empty') data.questions = [];
-        app.model.lesson.update(lessonId, data, (error, _) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.lessonQuestion.delete(_id, error => res.send({ error }));
-            }
+        app.model.lesson.deleteLessonQuestion({ _id: req.body.lessonId }, req.body._id, (error, item) => {
+            res.send({ error, item });
         });
     });
 

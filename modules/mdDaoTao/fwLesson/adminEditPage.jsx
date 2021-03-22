@@ -7,7 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, BackButton } from 'view/component/AdminPage';
-// import AdminEditLessonQuestion from './adminEditQuestionTab';
+import AdminEditLessonQuestion from './adminEditQuestionTab';
 
 class VideoModal extends AdminModal {
     state = {};
@@ -115,36 +115,36 @@ class adminEditPage extends AdminPage {
         isConfirm && this.props.deleteLessonVideo(lessonId, video._id));
     swapVideos = (e, video, lessonId, isMoveUp) => {
         e.preventDefault() || this.props.swapLessonVideo(lessonId, video._id, isMoveUp);
-        // let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
-        // if (lessonVideoList.length == 1) {
-        //     T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        // } else {
-        //     if (isMoveUp) {
-        //         if (index == 0) {
-        //             T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        //         } else {
-        //             const temp = lessonVideoList[index - 1], changes = {};
+        let lessonVideoList = this.props.lesson && this.props.lesson.listLessonVideo && this.props.lesson.listLessonVideo.lessonVideo ? this.props.lesson.listLessonVideo.lessonVideo : [];
+        if (lessonVideoList.length == 1) {
+            T.notify('Thay đổi thứ tự bài học thành công', 'success');
+        } else {
+            if (isMoveUp) {
+                if (index == 0) {
+                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
+                } else {
+                    const temp = lessonVideoList[index - 1], changes = {};
 
-        //             lessonVideoList[index - 1] = lessonVideoList[index];
-        //             lessonVideoList[index] = temp;
+                    lessonVideoList[index - 1] = lessonVideoList[index];
+                    lessonVideoList[index] = temp;
 
-        //             changes.lessonVideo = lessonVideoList;
-        //             this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
-        //         }
-        //     } else {
-        //         if (index == lessonVideoList.length - 1) {
-        //             T.notify('Thay đổi thứ tự bài học thành công', 'success');
-        //         } else {
-        //             const temp = lessonVideoList[index + 1], changes = {};
+                    changes.lessonVideo = lessonVideoList;
+                    this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
+                }
+            } else {
+                if (index == lessonVideoList.length - 1) {
+                    T.notify('Thay đổi thứ tự bài học thành công', 'success');
+                } else {
+                    const temp = lessonVideoList[index + 1], changes = {};
 
-        //             lessonVideoList[index + 1] = lessonVideoList[index];
-        //             lessonVideoList[index] = temp;
+                    lessonVideoList[index + 1] = lessonVideoList[index];
+                    lessonVideoList[index] = temp;
 
-        //             changes.lessonVideo = lessonVideoList;
-        //             this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
-        //         }
-        //     }
-        // }
+                    changes.lessonVideo = lessonVideoList;
+                    this.props.swapLessonVideo(lessonId, changes, () => T.notify('Thay đổi thứ tự bài học thành công', 'success'));
+                }
+            }
+        }
     };
 
     render() {
@@ -228,7 +228,7 @@ class adminEditPage extends AdminPage {
         const tabs = [
             { title: 'Thông tin chung', component: componentInfo },
             { title: 'Video', component: componentVideo },
-            // { title: 'Câu hỏi', component: <AdminEditLessonQuestion readOnly={readOnly} history={this.props.history} /> },
+            { title: 'Câu hỏi', component: <AdminEditLessonQuestion readOnly={readOnly} history={this.props.history} /> },
         ];
 
         const renderData = {

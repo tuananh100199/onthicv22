@@ -211,79 +211,79 @@ export function getLessonVideo(_id, done) {
 }
 
 // Lesson Question ----------------------------------------------------------------------------------------------------
-// export function getQuestionsList(lessonId, done) {
-//     return dispatch => {
-//         const url = `/api/lesson/question/${lessonId}`;
-//         T.get(url, data => {
-//             if (data.error) {
-//                 T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
-//                 console.error('GET: ' + url + '.', data.error);
-//             } else {
-//                 dispatch({ type: LessonGetQuestionItem, questions: data.item });
-//                 done && done(data.item);
-//             }
-//         }, error => {
-//             console.error('GET: ' + url + '.', error);
-//         });
-//     }
-// }
+export function getLessonQuestionsList(lessonId, done) {
+    return dispatch => {
+        const url = `/api/lesson/question/${lessonId}`;
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: LessonGetItemQuestions, questions: data.item });
+                done && done(data.item);
+            }
+        }, error => {
+            console.error('GET: ' + url + '.', error);
+        });
+    }
+}
 
-// export function createQuestion(_id, data, done) {
-//     return dispatch => {
-//         const url = `/api/lesson/question/${_id}`;
-//         T.post(url, { data }, data => {
-//             if (data.error) {
-//                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
-//                 console.error('POST: ' + url + '.', data.error);
-//             } else {
-//                 dispatch(getQuestionsList(_id));
-//                 done && done(data.item);
-//             }
-//         }, error => console.error('POST: ' + url + '.', error));
-//     }
-// }
+export function createLessonQuestion(_id, data, done) {
+    return dispatch => {
+        const url = `/api/lesson/question/${_id}`;
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo câu hỏi bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                dispatch(getLessonQuestionsList(_id));
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    }
+}
 
-// export function updateQuestion(_id, data, lessonId, done) {
-//     return dispatch => {
-//         const url = '/api/lesson/question';
-//         T.put(url, { _id, data }, data => {
-//             if (data.error) {
-//                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
-//                 console.error('PUT: ' + url + '.', data.error);
-//             } else {
-//                 dispatch(getQuestionsList(lessonId));
-//                 done && done();
-//             }
-//         }, error => console.error('PUT: ' + url + '.', error));
-//     }
-// }
+export function updateLessonQuestion(_id, data, lessonId, done) {
+    return dispatch => {
+        const url = '/api/lesson/question';
+        T.put(url, { _id, data }, data => {
+            if (data.error) {
+                T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                dispatch(getLessonQuestionsList(lessonId));
+                done && done();
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    }
+}
 
-// export function swapQuestion(lessonId, data, done) {
-//     return dispatch => {
-//         const url = `/api/lesson/question/swap`;
-//         T.put(url, { lessonId, data }, data => {
-//             if (data.error) {
-//                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
-//                 console.error('PUT: ' + url + '.', data.error);
-//             } else {
-//                 dispatch(getQuestionsList(lessonId));
-//                 done && done();
-//             }
-//         }, error => console.error('PUT: ' + url + '.', error));
-//     }
-// }
+export function swapLessonQuestion(lessonId, data, done) {
+    return dispatch => {
+        const url = `/api/lesson/question/swap`;
+        T.put(url, { lessonId, data }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                dispatch(getLessonQuestionsList(lessonId));
+                done && done();
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    }
+}
 
-// export function deleteQuestion(_id, data, lessonId, done) {
-//     return dispatch => {
-//         const url = `/api/lesson/question`;
-//         T.delete(url, { data, lessonId, _id }, data => {
-//             if (data.error) {
-//                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');
-//                 console.error('DELETE: ' + url + '.', data.error);
-//             } else {
-//                 dispatch(getQuestionsList(lessonId));
-//                 done && done();
-//             }
-//         }, error => console.error('DELETE: ' + url + '.', error));
-//     }
-// }
+export function deleteLessonQuestion(_id, lessonId, done) {
+    return dispatch => {
+        const url = `/api/lesson/question`;
+        T.delete(url, { lessonId, _id }, data => {
+            if (data.error) {
+                T.notify('Xóa câu hỏi bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                dispatch(getLessonQuestionsList(lessonId));
+                done && done();
+            }
+        }, error => console.error('DELETE: ' + url + '.', error));
+    }
+}

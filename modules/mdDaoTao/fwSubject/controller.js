@@ -81,12 +81,12 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/api/subject/question/:_id', app.permission.check('subject:write'), (req, res) => {
+    app.post('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
         app.model.subjectQuestion.create(req.body.data, (error, subjectQuestion) => {
             if (error || !subjectQuestion) {
                 res.send({ error });
             } else {
-                app.model.subject.addSubjectQuestion({ _id: req.params._id }, subjectQuestion, (error, item) => {
+                app.model.subject.addSubjectQuestion({ _id: req.body._id }, subjectQuestion, (error, item) => {
                     res.send({ error, item });
                 });
             }

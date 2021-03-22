@@ -75,8 +75,8 @@ module.exports = app => {
         addLessonQuestion: (_id, lessonQuestion, done) => {
             model.findOneAndUpdate({ _id }, { $push: { lessonQuestion } }, { new: true }).populate('lessonQuestion').exec(done);
         },
-        deleteLessonQuestion: (_id, lessonQuestionId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { lessonQuestion: lessonQuestionId } }).populate('lessonQuestion').exec(done);
+        deleteLessonQuestion: (_id, lessonQuestion, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { lessonQuestion } }).populate('lessonQuestion').exec(done);
         },
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),

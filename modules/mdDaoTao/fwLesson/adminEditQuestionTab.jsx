@@ -66,21 +66,12 @@ class AdminEditLessonQuestion extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
             this.props.getLessonQuestionsList(params._id);
-            this.props.getLesson(params._id, data => {
-                if (data.error) {
-                    T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/dao-tao/bai-hoc');
-                } else if (data.item) {
-                    this.setState(data);
-                } else {
-                    this.props.history.push('/user/dao-tao/bai-hoc');
-                }
-            });
+            this.setState({ subjectId: params._id });
         });
     }
 
     addQuestion = (data) => {
-        this.props.createLessonQuestion(this.state.item._id, data, () => {
+        this.props.createLessonQuestion(this.state.subjectId, data, () => {
             T.notify('Thêm câu hỏi thành công!', 'success');
         });
     }
@@ -103,7 +94,7 @@ class AdminEditLessonQuestion extends React.Component {
                     questionList[index - 1] = questionList[index];
                     questionList[index] = temp;
                     changes.lessonQuestion = questionList;
-                    this.props.swapLessonQuestion(this.state.item._id, changes, () => {
+                    this.props.swapLessonQuestion(this.state.subjectId, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
@@ -115,7 +106,7 @@ class AdminEditLessonQuestion extends React.Component {
                     questionList[index + 1] = questionList[index];
                     questionList[index] = temp;
                     changes.lessonQuestion = questionList;
-                    this.props.swapLessonQuestion(this.state.item._id, changes, () => {
+                    this.props.swapLessonQuestion(this.state.subjectId, changes, () => {
                         T.notify('Thay đổi thứ tự câu hỏi thành công', 'success');
                     });
                 }
@@ -125,35 +116,27 @@ class AdminEditLessonQuestion extends React.Component {
     }
 
     updateLessonQuestion = (_id, changes) => {
-        this.props.updateLessonQuestion(_id, changes, this.state.item._id, () => {
+        this.props.updateLessonQuestion(_id, changes, this.state.subjectId, () => {
             T.notify('Cập nhật câu hỏi thành công!', 'success');
         });
     }
 
-    removeQuestion = (e, item, index) => {
+    removeQuestion = (e, item, _id) => {
+        e.preventDefault();
         T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${item.title}</strong>?`, true, isConfirm => {
             if (isConfirm) {
-                const changes = {};
-                let questionList = this.props.lesson && this.props.lesson.questions ? this.props.lesson.questions.lessonQuestion : [];
-                questionList.splice(index, 1);
-                if (questionList.length == 0) questionList = 'empty';
-                changes.questions = questionList;
-                this.props.deleteLessonQuestion(item._id, changes, this.state.item._id, () => {
+                this.props.deleteLessonQuestion(item._id, _id, () => {
                     T.alert('Xoá câu hỏi thành công!', 'success', false, 1000);
                 })
             } else {
                 T.alert('Cancelled!', 'error', false, 500);
             }
         });
-        e.preventDefault();
     };
 
     render() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
-        const _id = params._id;
-        const lessonQuestion = this.props.lesson && this.props.lesson.questions && this.props.lesson.questions.lessonQuestion ?
-            this.props.lesson.questions.lessonQuestion : []
+        const lessonQuestion = this.props.lesson && this.props.lesson.item && this.props.lesson.item.lessonQuestion ?
+            this.props.lesson.item.lessonQuestion : []
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = 'Chưa có câu hỏi!';
         if (lessonQuestion && lessonQuestion.length > 0) {
@@ -184,7 +167,7 @@ class AdminEditLessonQuestion extends React.Component {
                                             <i className='fa fa-lg fa-edit' />
                                         </a>
                                         {currentPermissions.contains('lesson:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, index, _id)}>
+                                            <a className='btn btn-danger' href='#' onClick={e => this.removeQuestion(e, item, this.state.subjectId)}>
                                                 <i className='fa fa-lg fa-trash' />
                                             </a> : null}
                                     </div>

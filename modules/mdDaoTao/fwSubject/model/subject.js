@@ -62,7 +62,6 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                console.log(item)
                 app.deleteImage(item.image);
                 item.remove(done);
             }
@@ -80,7 +79,7 @@ module.exports = app => {
         },
 
         deleteSubjectQuestion: (condition, subjectQuestion, done) => {
-            model.findOneAndUpdate(condition, { $pull: { subjectQuestion } }, { new: true }).select('_id subjectQuestion').populate('subjectQuestion').exec(done);
+            model.findOneAndUpdate(condition, { $pull: { subjectQuestion } }).exec(done);
         },
 
         deleteLesson: (condition, lessonId, done) => {

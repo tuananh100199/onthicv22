@@ -196,8 +196,8 @@ export function getSubjectQuestionList(subjectId, done) {
 
 export function createSubjectQuestion(_id, data, done) {
     return dispatch => {
-        const url = `/api/subject/question/${_id}`;
-        T.post(url, { data }, data => {
+        const url = `/api/subject/question`;
+        T.post(url, { _id, data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
