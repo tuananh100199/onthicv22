@@ -1,40 +1,29 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getClusterAll, createCluster, resetCluster, deleteCluster, getSystemImageAll, applySystemImage, deleteSystemImage } from './redux';
+import { AdminPage, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
-class AdminPage extends React.Component {
+class ClusterPage extends AdminPage {
     componentDidMount() {
+        T.ready();
         this.props.getSystemImageAll();
         this.props.getClusterAll();
         T.socket.on('workers-changed', () => this.props.getClusterAll());
-        T.ready();
     }
 
     componentWillUnmount() {
         T.socket.off('workers-changed');
     }
 
-    createCluster = (e) => {
-        e.preventDefault();
-        this.props.createCluster();
-    }
-    resetCluster = (e, item) => {
-        e.preventDefault();
-        T.confirm('Reset cluster', `Are you sure you want to reset cluster ${item.pid}?`, true, isConfirm => isConfirm && this.props.resetCluster(item.pid));
-    }
-    deleteCluster = (e, item) => {
-        e.preventDefault();
-        T.confirm('Delete cluster', `Are you sure you want to delete cluster ${item.pid}?`, true, isConfirm => isConfirm && this.props.deleteCluster(item.pid));
-    }
-    resetAllClusters = (e) => {
-        e.preventDefault();
-        T.confirm('Delete cluster', 'Are you sure you want to reset all clusters?', true, isConfirm => isConfirm && this.props.resetCluster());
-    }
+    createCluster = (e) => e.preventDefault() || this.props.createCluster();
+    resetCluster = (e, item) => e.preventDefault() || T.confirm('Reset cluster', `Are you sure you want to reset cluster ${item.pid}?`, true, isConfirm =>
+        isConfirm && this.props.resetCluster(item.pid));
+    deleteCluster = (e, item) => e.preventDefault() || T.confirm('Delete cluster', `Are you sure you want to delete cluster ${item.pid}?`, true, isConfirm =>
+        isConfirm && this.props.deleteCluster(item.pid));
+    resetAllClusters = (e) => e.preventDefault() || T.confirm('Delete cluster', 'Are you sure you want to reset all clusters?', true, isConfirm =>
+        isConfirm && this.props.resetCluster());
 
-    refreshSystemImages = (e) => {
-        e.preventDefault();
-        this.props.getSystemImageAll();
-    }
+    refreshSystemImages = (e) => e.preventDefault() || this.props.getSystemImageAll();
     applySystemImage = (e, item) => {
         e.preventDefault();
         let applyButton = $(e.target);
@@ -51,15 +40,12 @@ class AdminPage extends React.Component {
             }
         });
     }
-    deleteSystemImage = (e, item) => {
-        e.preventDefault();
-        T.confirm('Delete image', `Are you sure you want to delete image ${item.filename}?`, true, isConfirm =>
-            isConfirm && this.props.deleteSystemImage(item.filename));
-    }
+    deleteSystemImage = (e, item) => e.preventDefault() || T.confirm('Delete image', `Are you sure you want to delete image ${item.filename}?`, true,
+        isConfirm => isConfirm && this.props.deleteSystemImage(item.filename));
 
     render() {
+        const permission = this.getUserPermission('cluster');
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            permissionUpdate = currentPermissions.includes('cluster:write'),
             permissionDelete = currentPermissions.includes('cluster:delete');
 
         const clusters = this.props.cluster && this.props.cluster.clusters ? this.props.cluster.clusters : [],
@@ -87,11 +73,11 @@ class AdminPage extends React.Component {
                                 <td className={item.status == 'running' ? 'text-primary' : 'text-danger'}>{item.status}</td>
                                 <td style={{ textAlign: 'center' }}>
                                     <div className='btn-group'>
-                                        {permissionUpdate &&
+                                        {permission.write &&
                                             <a className='btn btn-success' href='#' onClick={e => this.resetCluster(e, item)}>
                                                 <i className='fa fa-lg fa-refresh' />
                                             </a>}
-                                        {permissionDelete && clusters.length > 1 &&
+                                        {permission.delete && clusters.length > 1 &&
                                             <a className='btn btn-danger' href='#' onClick={e => this.deleteCluster(e, item)}>
                                                 <i className='fa fa-trash-o fa-lg' />
                                             </a>}
@@ -122,11 +108,11 @@ class AdminPage extends React.Component {
                                 <td nowrap='true'>{new Date(item.createdDate).getShortText()}</td>
                                 <td style={{ textAlign: 'center' }}>
                                     <div className='btn-group'>
-                                        {permissionUpdate &&
+                                        {permission.write &&
                                             <a className='btn btn-success' href='#' onClick={e => this.applySystemImage(e, item)}>
                                                 <i className='fa fa-lg fa-arrow-up' />
                                             </a>}
-                                        {permissionDelete &&
+                                        {permission.delete &&
                                             <a className='btn btn-danger' href='#' onClick={e => this.deleteSystemImage(e, item)}>
                                                 <i className='fa fa-trash-o fa-lg' />
                                             </a>}
@@ -173,4 +159,4 @@ class AdminPage extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, cluster: state.cluster });
 const mapActionsToProps = { getClusterAll, createCluster, resetCluster, deleteCluster, getSystemImageAll, applySystemImage, deleteSystemImage };
-export default connect(mapStateToProps, mapActionsToProps)(AdminPage);
+export default connect(mapStateToProps, mapActionsToProps)(ClusterPage);
