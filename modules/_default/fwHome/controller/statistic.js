@@ -6,7 +6,7 @@ module.exports = app => {
         app.model.statistic.get(req.params.statisticId, (error, item) => res.send({ error, item })));
 
     app.post('/api/statistic', app.permission.check('component:write'), (req, res) =>
-        app.model.statistic.create({ title: req.body.title, description: req.body.description, image: req.body.image, items: [] }, (error, item) => res.send({ error, item })));
+        app.model.statistic.create(req.body.newData, (error, item) => res.send({ error, item })));
 
     app.put('/api/statistic', app.permission.check('component:write'), (req, res) => {
         const changes = req.body.changes;

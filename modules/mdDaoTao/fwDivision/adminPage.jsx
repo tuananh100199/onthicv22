@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllDivisions, createDivision, deleteDivision, updateDivision } from './redux';
-import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
