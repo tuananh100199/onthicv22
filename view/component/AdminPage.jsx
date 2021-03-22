@@ -26,7 +26,9 @@ export class TableCell extends React.Component { // type = number | date | link 
                     <td style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
             }
         } else if (type == 'image') {
-            return <td style={{ textAlign: 'center', ...style }}><img src={content} alt={alt} style={{ height: '32px' }} /></td>;
+            return content ?
+                <td style={{ textAlign: 'center', ...style }}><img src={content} alt={alt} style={{ height: '32px' }} /></td> :
+                <td style={{ textAlign: 'center', ...style }}>{alt}</td>;
         } else if (type == 'checkbox') {
             return (
                 <td style={{ textAlign: 'center', ...style }} className='toggle'>
@@ -175,16 +177,11 @@ export class FormRichTextBox extends React.Component {
     focus = () => this.input.focus();
 
     render() {
-        let { rows = 3, label = '', className = '', readOnly = false, onChange = null } = this.props;
-        className = 'form-group' + (className ? ' ' + className : '');
-        return readOnly ? (
-            <div className={className}>
-                <label>{label}</label>{this.state.value ? <br /> : ''}<b>{this.state.value}</b>
-            </div>
-        ) : (
-            <div className={className}>
-                <label onClick={e => this.input.focus()}>{label}</label>
-                <textarea ref={e => this.input = e} className='form-control' placeholder={label} value={this.state.value} rows={rows}
+        const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null } = this.props;
+        return (
+            <div className={'form-group ' + (className ? className : '')} style={style}>
+                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <><br /><b>{this.state.value}</b></> : ''}
+                <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
     };
@@ -222,7 +219,6 @@ export class FormEditor extends React.Component {
 }
 
 export class FormSelect extends React.Component {
-    state = {}
     componentDidMount() {
         $(this.input).select2();
     }
@@ -230,12 +226,12 @@ export class FormSelect extends React.Component {
     value = function (value) {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
-            const { adapter, data, label } = this.props,
+            const { data, label } = this.props,
                 options = { placeholder: label, dropdownParent };
-            if (adapter) {
-                options.ajax = { ...adapter, delay: 500 };
-            } else {
+            if (Array.isArray(data)) {
                 options.data = data;
+            } else {
+                options.ajax = { ...data, delay: 500 };
             }
 
             $(this.input).select2(options).val(value).trigger('change');
@@ -250,7 +246,7 @@ export class FormSelect extends React.Component {
             <div className={'form-group ' + className} style={style}>
                 <label>{label}</label>
                 <label style={{ width: '100%', marginBottom: '0' }}>
-                    <select ref={e => this.input = e} className='form-control' multiple={multiple} disabled={readOnly} onChange={() => onChanged && onChanged('TODO')}>
+                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly} onChange={() => onChanged && onChanged('TODO')}>
                         {/* <optgroup label={'Lựa chọn ' + label} /> */}
                     </select>
                 </label>
@@ -290,11 +286,13 @@ export class FormImageBox extends React.Component {
     setData = data => this.imageBox.setData(data);
 
     render() {
-        let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', image } = this.props;
+        let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', image = null, onDelete = null, onSuccess = null } = this.props;
         return (
             <div className={className} style={style}>
-                <label>{label}</label>
-                <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} />
+                <label>{label}&nbsp;</label>
+                {!readOnly && image && onDelete ?
+                    <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
+                <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} success={data => onSuccess && onSuccess(data.image)} />
             </div>);
     }
 }
@@ -364,12 +362,11 @@ export class AdminModal extends React.Component {
                         <div className='modal-footer'>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                                 <i className='fa fa-fw fa-lg fa-times' />Đóng
-                        </button>
-                            {/* {readOnly == null || readOnly == true ? null : */}
+                            </button>
+                            {readOnly == null || readOnly == true ? null :
                                 <button type='submit' className='btn btn-primary'>
                                     <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                </button>
-                                {/* } */}
+                                </button>}
                         </div>
                     </div>
                 </form>

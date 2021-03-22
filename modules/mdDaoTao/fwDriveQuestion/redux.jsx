@@ -9,10 +9,10 @@ export default function driveQuestionReducer(state = null, data) {
     switch (data.type) {
         case DriveQuestionGetAll:
             return Object.assign({}, state, { list: data.items });
-        
+
         case DriveQuestionGetPage:
-                return Object.assign({}, state, { page: data.page });
-    
+            return Object.assign({}, state, { page: data.page });
+
         case DriveQuestionGet: {
             return Object.assign({}, state, { item: data.item });
         }
@@ -42,7 +42,7 @@ export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageDriveQuestion', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/drive-question/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url,{searchText}, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -69,10 +69,10 @@ export function getDriveQuestionItem(_id, done) {
     }
 }
 
-export function createDriveQuestion(newData, done) {
+export function createDriveQuestion(data, done) {
     return dispatch => {
         const url = '/api/drive-question';
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi thi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
@@ -119,7 +119,7 @@ export function swapDriveQuestion(_id, isMoveUp, done) {
     }
 }
 
-export function deleteDriveQuestion(_id) {
+export function deleteDriveQuestion(_id, done) {
     return dispatch => {
         const url = '/api/drive-question';
         T.delete(url, { _id }, data => {
@@ -129,16 +129,24 @@ export function deleteDriveQuestion(_id) {
             } else {
                 T.alert('Xóa câu hỏi thi thành công!', 'error', false, 800);
                 dispatch(getDriveQuestionPage());
+                done && done();
             }
         }, error => T.notify('Xóa câu hỏi thi bị lỗi!', 'danger'));
     }
 }
 
-export const ajaxSelectDriveQuestion = {
-    ajax: true,
-    url: '/api/category/drive-question',
-    data: {},
-    processResults: response => ({
-        results: response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : []
-    })
+export function deleteDriveQuestionImage(_id, done) {
+    return dispatch => {
+        const url = '/api/drive-question/image';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa hình minh họa bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Xóa hình minh họa thành công!', 'error', false, 800);
+                dispatch(getDriveQuestionPage());
+                done && done();
+            }
+        }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
+    }
 }

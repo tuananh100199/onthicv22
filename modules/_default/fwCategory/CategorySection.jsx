@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './redux';
+import { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory } from './redux';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class CategoryModal extends AdminModal {
@@ -40,9 +40,9 @@ class CategoryModal extends AdminModal {
 
 class CategorySection extends AdminPage {
     componentDidMount() {
-        this.props.getAll(this.props.type);
+        this.props.getCategoryAll(this.props.type);
         T.ready(() => T.showSearchBox());
-        T.onSearch = (searchText) => this.props.getAll(this.props.type, searchText);
+        T.onSearch = (searchText) => this.props.getCategoryAll(this.props.type, searchText);
     }
 
     create = (e) => e.preventDefault() || this.modal.show();
@@ -86,5 +86,5 @@ class CategorySection extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, category: state.category })
-const mapActionsToProps = { getAll, createCategory, swapCategory, updateCategory, deleteCategory };
+const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory };
 export default connect(mapStateToProps, mapActionsToProps)(CategorySection);

@@ -7,7 +7,7 @@ module.exports = app => {
         },
     };
     app.permission.add(
-        { name: 'category:read', menu },
+        // { name: 'category:read', menu },
         { name: 'driveQuestion:read', menu },
         { name: 'driveQuestion:write' },
         { name: 'driveQuestion:delete' }
@@ -23,42 +23,53 @@ module.exports = app => {
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');
         }
-        app.model.driveQuestion.getAll(condition, (error, items) => res.send({ error, items }));
+        app.model.driveQuestion.getAll(condition, (error, list) => res.send({ error, list }));
     });
-    
+
     app.get('/api/drive-question/page/:pageNumber/:pageSize', app.permission.check('driveQuestion:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = {}, searchText = req.query.searchText;
-            if (searchText) {
-                condition.title = new RegExp(searchText, 'i');
-            }
-        app.model.driveQuestion.getPage(pageNumber, pageSize, condition, (error, page) => {
-            page.list = page.list.map(item => app.clone(item, { message: '' }));
+            searchText = req.query.searchText,
+            pageCondition = {};
+        if (searchText) {
+            pageCondition.title = new RegExp(searchText, 'i');
+        }
+        app.model.driveQuestion.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ error, page });
         });
     });
-    
-    app.get('/api/drive-question/item/:_id', app.permission.check('driveQuestion:read'), (req, res) =>
-        app.model.driveQuestion.get(req.params._id, (error, item) => res.send({ error, item })));
+
+    app.get('/api/drive-question/item/:_id', app.permission.check('driveQuestion:read'), (req, res) => {
+        app.model.driveQuestion.get(req.params._id, (error, item) => res.send({ error, item }));
+    });
 
     app.post('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {
-        app.model.driveQuestion.create(req.body.newData, (error, item) => res.send({ error, item }));
+        app.model.driveQuestion.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {
         app.model.driveQuestion.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
-  
+
     app.put('/api/drive-question/swap', app.permission.check('driveQuestion:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';
-        app.model.driveQuestion.swapPriority(req.body._id, isMoveUp, (error) =>
-            res.send({ error })
-        );
+        app.model.driveQuestion.swapPriority(req.body._id, isMoveUp, (error) => res.send({ error }));
     });
 
-    app.delete('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {
+    app.delete('/api/drive-question', app.permission.check('driveQuestion:delete'), (req, res) => {
         app.model.driveQuestion.delete(req.body._id, error => res.send({ error }));
+    });
+
+    app.delete('/api/drive-question/image', app.permission.check('driveQuestion:write'), (req, res) => {
+        app.model.driveQuestion.get(req.body._id, (error, item) => {
+            if (item) {
+                app.deleteImage(item.image);
+                item.image = null;
+                item.save(error => res.send({ error }));
+            } else {
+                res.send({ error: error || 'Id không hợp lệ!' });
+            }
+        });
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------

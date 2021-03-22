@@ -18,7 +18,7 @@ class VideoModal extends AdminModal {
         let { _id, title, link, image, active } = video || { _id: null, title: '', link: '', image: '', active: true };
         this.itemTitle.value(title);
         this.itemLink.value(link);
-        this.imageBox.setData(`LessonVideoImage:${_id || 'new'}`);
+        this.imageBox.setData(`lessonVideoImage:${_id || 'new'}`);
         this.itemActive.value(active);
 
         this.setState({ _id, image });
@@ -52,57 +52,82 @@ class VideoModal extends AdminModal {
                     <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
                 </div>
-                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='LessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='lessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
             </div>),
     });
 }
 
 class QuestionModal extends AdminModal {
-    state = {};
+    state = { answers: '' };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
     onShow = (item) => {
-        let { _id, title, answers, trueAnswer, image, active } = item || { _id: null, title: '', answers: [], trueAnswer: 0, active: true };
+        let { _id, title, answers, trueAnswer, image, active } = item || { _id: null, title: '', answers: '', trueAnswer: 0, active: true };
         this.itemTitle.value(title)
-        this.itemAnswers.value(answers.join('\n'));
-        this.itemTrueAnswer.value(trueAnswer);
-        this.imageBox.setData(`LessonQuestionImage:${_id || 'new'}`);
+        this.imageBox.setData(`lessonQuestionImage:${_id || 'new'}`);
+        this.itemAnswers.value(answers);
         this.itemActive.value(active);
 
-        this.setState({ _id, image });
+        this.setState({ _id, image, answers, trueAnswer });
     }
 
     onSubmit = () => {
-        const data = {
-            title: this.itemTitle.value(),
-            trueAnswer: this.itemTrueAnswer.value(),
-            answers: (this.itemAnswers.value() || '').split('\n'),
-            active: this.itemActive.value(),
-        };
-        for (let i = 0; i < data.answers.length; i++) {
-            if (data.answers[i] == '') data.answers.splice(i, 1);
-        }
+        const answers = this.state.answers.split('\n'),
+            data = {
+                title: this.itemTitle.value(),
+                answers: this.state.answers,
+                trueAnswer: this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
+                active: this.itemActive.value(),
+            };
         if (data.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
             this.itemTitle.focus();
+        } else if (data.answers == '') {
+            T.notify('Câu trả lời bị trống!', 'danger');
+            this.itemAnswers.focus();
+        } else if (data.trueAnswer == null) {
+            T.notify('Đáp án bị trống!', 'danger');
         } else {
             this.state._id ? this.props.update(this.props.lessonId, this.state._id, data) : this.props.create(this.props.lessonId, data);
             this.hide();
         }
     }
 
+    setTrueAnswer = (e, trueAnswer) => e.preventDefault() || this.setState({ trueAnswer });
+
+    deleteImage = () => T.confirm('Xoá hình minh họa', 'Bạn có chắc bạn muốn xoá hình minh họa này?', true, isConfirm =>
+        isConfirm && this.props.deleteImage(this.state._id, () => this.setState({ image: null }))); //TODO
+
     render = () => {
+        const readOnly = this.props.readOnly,
+            answers = this.state.answers.split('\n'),
+            trueAnswer = this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
+            defaultStyle = { width: '40px', height: '40px', lineHeight: '40px', borderRadius: '50%', textAlign: 'center', marginLeft: '8px', cursor: 'pointer' },
+            listAnswers = [],
+            listTrueAnswers = answers.map((item, index) => {
+                listAnswers.push(<p key={index}>{index + 1}. {item}</p>)
+                const trueAnswerStyle = trueAnswer == index ? { color: 'white', backgroundColor: '#28a745' } : {};
+                return <label key={index} style={{ ...defaultStyle, ...trueAnswerStyle }} onClick={e => !readOnly && this.setTrueAnswer(e, index)}>{index + 1}</label>
+            });
+
         return this.renderModal({
             title: 'Câu hỏi',
             size: 'large',
             body: <div className='row'>
-                <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-12' label='Câu hỏi' rows='4' readOnly={this.props.readOnly} />
-                <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-8' label='Danh sách câu trả lời' rows='5' readOnly={this.props.readOnly} />
-                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình minh họa' uploadType='LessonQuestionImage' image={this.state.image} readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemTrueAnswer = e} className='col-md-8' label='Đáp án' readOnly={this.props.readOnly} type='number' />
-                <FormCheckbox ref={e => this.itemActive = e} className='col-md-4' label='Kích hoạt' readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' label='Câu hỏi' rows='6' readOnly={readOnly} />
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình minh họa' uploadType='lessonQuestionImage' image={this.state.image}
+                    onDelete={this.deleteImage} onSuccess={image => this.setState({ image })} readOnly={readOnly} />
+
+                <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-12' label='Danh sách câu trả lời' rows='5' onChange={e => this.setState({ answers: e.target.value })} readOnly={readOnly} style={{ display: readOnly ? 'none' : 'block' }} />
+                <div className='col-md-12' style={{ display: readOnly ? 'block' : 'none' }}>
+                    <label>Danh sách câu trả lời</label>
+                    <b>{listAnswers}</b>
+                </div>
+                <label className='col-md-12'>Đáp án:{listTrueAnswers}</label>
+
+                <FormCheckbox ref={e => this.itemActive = e} className='col-md-4' label='Kích hoạt' readOnly={readOnly} />
             </div>
         });
     };

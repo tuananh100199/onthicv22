@@ -139,7 +139,7 @@ class UserPage extends AdminPage {
     componentDidMount() {
         T.ready(() => T.showSearchBox());
         this.props.getAllRoles();
-        this.props.getUserPage(1, 50, {});
+        this.props.getUserPage(1);
         T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
