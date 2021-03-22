@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getClusterAll, createCluster, resetCluster, deleteCluster, getSystemImageAll, applySystemImage, deleteSystemImage } from './redux';
-import { AdminPage, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
 class ClusterPage extends AdminPage {
     componentDidMount() {

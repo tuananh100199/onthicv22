@@ -15,9 +15,6 @@ class MenuEditPage extends React.Component {
             items: [],
             active: false,
         };
-
-        this.modal = React.createRef();
-        this.menuLink = React.createRef();
     }
 
     componentDidMount() {
@@ -36,9 +33,9 @@ class MenuEditPage extends React.Component {
             } else if (data.menu) {
                 const link = data.menu.link ? data.menu.link.toLowerCase() : '/';
                 if (link.startsWith('http://') || link.startsWith('https://')) {
-                    $(this.menuLink.current).html(link).attr('href', link);
+                    $(this.menuLink).html(link).attr('href', link);
                 } else {
-                    $(this.menuLink.current).html(T.rootUrl + link).attr('href', link);
+                    $(this.menuLink).html(T.rootUrl + link).attr('href', link);
                 }
 
                 this.setState(data.menu);
@@ -52,9 +49,9 @@ class MenuEditPage extends React.Component {
     menuLinkChange = event => {
         const link = event.target.value.toLowerCase();
         if (link.startsWith('http://') || link.startsWith('https://')) {
-            $(this.menuLink.current).html(event.target.value).attr('href', event.target.value);
+            $(this.menuLink).html(event.target.value).attr('href', event.target.value);
         } else {
-            $(this.menuLink.current).html(T.rootUrl + event.target.value).attr('href', event.target.value);
+            $(this.menuLink).html(T.rootUrl + event.target.value).attr('href', event.target.value);
         }
     }
 
@@ -69,7 +66,7 @@ class MenuEditPage extends React.Component {
     }
 
     showComponent = (e, parentId, component) => {
-        this.modal.current.show(parentId, component);
+        this.modal.show({ parentId, component });
         e.preventDefault();
     }
     createComponent = (parentId, data, done) => {
@@ -230,7 +227,7 @@ class MenuEditPage extends React.Component {
                             </div>
                             <div className='form-group col-md-6'>
                                 <label className='control-label'>Link:&nbsp;</label>
-                                <a href='#' ref={this.menuLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                <a href='#' ref={e => this.menuLink = e} style={{ fontWeight: 'bold' }} target='_blank' />
                                 <input className='form-control' id='menuLink' type='text' placeholder='Link' defaultValue={this.state.link} onChange={this.menuLinkChange} readOnly={!hasUpdate} />
                             </div>
                         </div>
@@ -258,7 +255,7 @@ class MenuEditPage extends React.Component {
                         <i className='fa fa-lg fa-cogs' />
                     </button> : null}
 
-                <ComponentModal onUpdate={this.updateComponent} onCreate={this.createComponent} getComponentViews={this.props.getComponentViews} ref={this.modal} />
+                <ComponentModal onUpdate={this.updateComponent} onCreate={this.createComponent} getComponentViews={this.props.getComponentViews} readOnly={!hasUpdate} ref={e => this.modal = e} />
             </main>
         );
     }

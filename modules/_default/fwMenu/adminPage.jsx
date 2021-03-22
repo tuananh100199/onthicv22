@@ -41,15 +41,10 @@ class MenuPage extends React.Component {
         this.props.updateMenuPriorities(changes);
     }
 
-    changeActive = (e, item) => {
-        e.preventDefault();
-        this.props.updateMenu(item._id, { active: !item.active });
-    }
+    changeActive = (e, item) => e.preventDefault() || this.props.updateMenu(item._id, { active: !item.active });
 
-    delete = (e, item) => {
-        T.confirm('Xóa menu', 'Bạn có chắc bạn muốn xóa menu này?', true, isConfirm => isConfirm && this.props.deleteMenu(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa menu', 'Bạn có chắc bạn muốn xóa menu này?', true, isConfirm =>
+        isConfirm && this.props.deleteMenu(item._id));
 
     renderMenu = (menu, level, hasCreate, hasUpdate, hasDelete) => (
         <li key={menu._id} data-id={menu._id}>

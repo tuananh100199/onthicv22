@@ -152,13 +152,14 @@ export class FormTextBox extends React.Component {
     focus = () => this.input.focus();
 
     render() {
-        let { type = 'text', label = '', className = '', readOnly = false, onChange = null } = this.props;
+        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props;
         type = type.toLowerCase(); // type = text | email | password
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
                 <input ref={e => this.input = e} type={type} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
+                {smallText ? <small>{smallText}</small> : null}
             </div>);
     };
 }
