@@ -90,7 +90,7 @@ class AdminListSubject extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageSubject' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getSubjectInPage} />
-                <SubjectModal ref={e => this.modal = e} createSubject={this.props.createSubject} history={this.props.history} />
+                <SubjectModal ref={e => this.modal = e} createSubject={this.props.createSubject} history={this.props.history} readOnly={!permission.write} />
             </>,
             onCreate: permission.write ? this.create : null,
         });
