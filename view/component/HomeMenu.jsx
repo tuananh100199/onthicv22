@@ -4,11 +4,8 @@ import { logout } from 'modules/_default/_init/reduxSystem';
 import { Link } from 'react-router-dom';
 
 class HomeMenu extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { link: '' };
-        this.nav = React.createRef();
-    }
+    state = { link: '' };
+    nav = React.createRef();
 
     componentDidMount() {
         const done = () => {
@@ -56,14 +53,10 @@ class HomeMenu extends React.Component {
             initMenu();
             $(window).on('resize', () => {
                 setHeader();
-                setTimeout(() => {
-                    $(window).trigger('resize.px.parallax');
-                }, 375);
+                setTimeout(() => $(window).trigger('resize.px.parallax'), 375);
             });
 
-            $(document).on('scroll', () => {
-                setHeader();
-            });
+            $(document).on('scroll', () => setHeader());
 
             done()
         });
@@ -132,8 +125,8 @@ class HomeMenu extends React.Component {
         // youtube = youtube ? <li style={{ marginTop: '12px' }}><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
         // twitter = twitter ? <li style={{ marginTop: '12px' }}><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true'/></a></li> : '';
         // instagram = instagram ? <li style={{ marginTop: '12px' }}><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true'/></a></li> : '';
-        return [
-            <header key={0} className='header trans_400'>
+        return <>
+            <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
                     <div className='logo'>
                         <Link to='/' onClick={() => {
@@ -157,13 +150,15 @@ class HomeMenu extends React.Component {
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
                         <div className='social header_social'>
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
-                                {user && user._id ? <div className='btn-group'>
-                                    <div className='button button_2 mr-1'> <a href={'mailto:' + email}>Email</a></div>
-                                    <div className='button button_1 mr-1'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
-                                    <div className='btn-group m-auto'>
-                                        <a style={{ color: '#4CA758' }} href='#' onClick={this.logout}>Thoát</a>
-                                    </div>
-                                </div> :
+                                {user && user._id ?
+                                    <div className='btn-group'>
+                                        <div className='button button_2 mr-1'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
+                                        <div className='button button_1 mr-1'> <a href={'mailto:' + email}>Đăng ký tư vấn</a></div>
+                                        <div className='btn-group m-auto pl-2'>
+                                            <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className="fa fa-user-circle-o" aria-hidden="true"></i></a></li>
+                                            <li data-toggle='tooltip' title='Đăng xuất'><a href="#" onClick={this.logout} ><i className="fa fa-power-off" style={{ color: 'red' }} aria-hidden="true"></i></a></li>
+                                        </div>
+                                    </div> :
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>
                                         <div className='button button_1 mr-1'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
@@ -177,9 +172,9 @@ class HomeMenu extends React.Component {
                         <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
                     </div>
                 </div>
-            </header>,
-            <div key={1} className='menu_overlay trans_400' />,
-            <div key={2} className='menu trans_400'>
+            </header>
+            <div className='menu_overlay trans_400' />
+            <div className='menu trans_400'>
                 <div className='menu_close_container'>
                     <div className='menu_close'>
                         <div />
@@ -187,9 +182,7 @@ class HomeMenu extends React.Component {
                     </div>
                 </div>
                 <nav className='menu_nav'>
-                    <ul>
-                        {menus}
-                    </ul>
+                    <ul>{menus}</ul>
                     {user && user._id ? <div className='btn-group mt-4'>
                         <div className='button button_2 mr-1'> <a href={'mailto:' + email}>Email</a></div>
                         <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /> Thoát</a></div>
@@ -207,7 +200,7 @@ class HomeMenu extends React.Component {
                     </ul>
                 </div>
             </div>
-        ]
+        </>;
     }
 }
 
