@@ -2,68 +2,66 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem';
 import ImageBox from 'view/component/ImageBox';
+import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
-class SettingsPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.address = React.createRef();
-        this.email = React.createRef();
-        this.emailPassword1 = React.createRef();
-        this.emailPassword2 = React.createRef();
-        this.mobile = React.createRef();
-        this.fax = React.createRef();
-        this.facebook = React.createRef();
-        this.youtube = React.createRef();
-        this.twitter = React.createRef();
-        this.instagram = React.createRef();
-    }
+
+class SettingsPage extends AdminPage {
 
     componentDidMount() {
         T.ready();
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
+        this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+        this.setState(systemInfo);
+
+        this.systemAddress.value(address);
+        this.systemEmail.value(email);
+        this.systemMobile.value(mobile);
+        this.systemFax.value(fax);
+        this.systemFacebook.value(facebook);
+        this.systemYoutube.value(youtube);
+        this.systemTwitter.value(twitter);
+        this.systemInstagram.value(instagram);
+        // this.systemLogo.value(logo);
+        // this.systemFooter.value(footer);
+        // this.systemContact.value(contact);
+        // this.systemSubscribe.value(subscribe);
+        // this.systemFooter.value(footer);
     }
 
     saveCommonInfo = () => {
         this.props.saveSystemState({
-            address: $(this.address.current).val().trim(),
-            email: $(this.email.current).val().trim(),
-            mobile: $(this.mobile.current).val().trim(),
-            fax: $(this.fax.current).val().trim(),
-            facebook: $(this.facebook.current).val().trim(),
-            youtube: $(this.youtube.current).val().trim(),
-            twitter: $(this.twitter.current).val().trim(),
-            instagram: $(this.instagram.current).val().trim(),
+            address: this.systemAddress.value(),
+            email: this.systemEmail.value(),
+            mobile: this.systemMobile.value(),
+            fax: this.systemFax.value(),
+            facebook: this.systemFacebook.value(),
+            youtube: this.systemYoutube.value(),
+            twitter: this.systemTwitter.value(),
+            instagram: this.systemInstagram.value(),
         });
     }
 
     changePassword = () => {
-        const emailPassword1 = $(this.emailPassword1.current).val(),
-            emailPassword2 = $(this.emailPassword2.current).val();
+        const emailPassword1 = this.emailPassword1.value(),
+            emailPassword2 = this.emailPassword2.value();
         if (emailPassword1 == '') {
-            T.notify('New password of current email is empty!', 'danger');
-            $(this.emailPassword1.current).focus();
+            T.notify('Mật khẩu mới của email hiện tại bị trống!', 'danger');
+            this.emailPassword1.focus();
         } else if (emailPassword2 == '') {
-            T.notify('Please retype new password!', 'danger');
-            $(this.emailPassword2.current).focus();
+            T.notify('Nhập lại mật khẩu mới!', 'danger');
+            this.emailPassword2.focus();
         } else if (emailPassword1 != emailPassword2) {
-            T.notify('New password and retype password are not match!', 'danger');
-            $(this.emailPassword1.current).focus();
+            T.notify('Mật khẩu mới không giống nhau!', 'danger');
+            this.emailPassword1.focus();
         } else {
             this.props.saveSystemState({ password: emailPassword1 });
-            $(this.emailPassword1.current).val('');
-            $(this.emailPassword2.current).val('');
+            this.emailPassword1.value(''),
+            this.emailPassword2.value('');
         }
     }
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
-
-        try {
-            addressList = JSON.parse(addressList);
-        } catch (e) {
-            addressList = []
-        }
-
+        let readOnly = false;
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -74,38 +72,14 @@ class SettingsPage extends React.Component {
                         <div className='tile'>
                             <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Địa chỉ</label>
-                                    <input className='form-control' type='text' placeholder='Địa chỉ' ref={this.address} defaultValue={address} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Email</label>
-                                    <input className='form-control' type='email' placeholder='Email' ref={this.email} defaultValue={email} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Số điện thoại</label>
-                                    <input className='form-control' type='text' placeholder='Số điện thoại' ref={this.mobile} defaultValue={mobile} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Fax</label>
-                                    <input className='form-control' type='text' placeholder='Fax' ref={this.fax} defaultValue={fax} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Facebook</label>
-                                    <input className='form-control' type='text' placeholder='Facebook' ref={this.facebook} defaultValue={facebook} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Youtube</label>
-                                    <input className='form-control' type='text' placeholder='Youtube' ref={this.youtube} defaultValue={youtube} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Twitter</label>
-                                    <input className='form-control' type='text' placeholder='Twitter' ref={this.twitter} defaultValue={twitter} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Instagram</label>
-                                    <input className='form-control' type='text' placeholder='Instagram' ref={this.instagram} defaultValue={instagram} />
-                                </div>
+                                <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemEmail = e} label='Email' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemFax = e} label='Fax' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' readOnly={readOnly} defaultValue='' />
+                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' readOnly={readOnly} defaultValue='' />
                             </div>
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
@@ -119,11 +93,8 @@ class SettingsPage extends React.Component {
                         <div className='tile'>
                             <h3 className='tile-title'>Thay đổi mật khẩu</h3>
                             <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Mật khẩu mới</label>
-                                    <input className='form-control' type='password' placeholder='Mật khẩu mới' ref={this.emailPassword1} defaultValue='' autoComplete='new-password' />
-                                    <input className='form-control mt-1' type='password' placeholder='Nhập lại mật khẩu' ref={this.emailPassword2} defaultValue='' autoComplete='new-password' />
-                                </div>
+                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' readOnly={readOnly} defaultValue='' autoComplete='new-password'/>
+                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' readOnly={readOnly} defaultValue='' autoComplete='new-password'/>
                             </div>
                             <div className='tile-footer'>
                                 <div className='row'>
@@ -142,9 +113,11 @@ class SettingsPage extends React.Component {
                                 <div className='tile-body'>
                                     <div className='form-group'>
                                         <label className='control-label'>Logo công ty</label>
-                                        <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
+                                        {/* <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} /> */}
                                     </div>
+                                    <FormImageBox ref={e => this.systemLogo = e} className='form-group' label='Logo công ty' uploadType='SettingImage' readOnly={readOnly} />
 
+{/* 
                                     <div className='form-group'>
                                         <label className='control-label'>Hình nền cuối trang web</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
@@ -158,7 +131,7 @@ class SettingsPage extends React.Component {
                                     <div className='form-group'>
                                         <label className='control-label'>Hình nền phần Đăng ký nhận tin</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='subscribe' image={subscribe} />
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
