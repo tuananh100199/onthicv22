@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem';
 import ImageBox from 'view/component/ImageBox';
 
-class MultimediaPage extends React.Component {
+class SettingsPage extends React.Component {
     constructor(props) {
         super(props);
         this.address = React.createRef();
@@ -171,4 +171,4 @@ class MultimediaPage extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system });
 const mapActionsToProps = { saveSystemState };
-export default connect(mapStateToProps, mapActionsToProps)(MultimediaPage);
+export default connect(mapStateToProps, mapActionsToProps)(SettingsPage);

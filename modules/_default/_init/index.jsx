@@ -18,8 +18,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userProfilePage') })
         },
         {
-            path: '/user/multimedia',
-            component: Loadable({ loading: Loading, loader: () => import('./adminMultimediaPage') })
+            path: '/user/settings',
+            component: Loadable({ loading: Loading, loader: () => import('./adminSettingsPage') })
         },
         {
             path: '/user/settings',

@@ -8,7 +8,7 @@ module.exports = (app) => {
     const menuSettings = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2010: { title: 'Thông tin chung', link: '/user/multimedia', icon: 'fa-gear', backgroundColor: '#0091EA' }
+            2010: { title: 'Thông tin chung', link: '/user/settings', icon: 'fa-gear', backgroundColor: '#0091EA' }
         },
     };
 
@@ -16,7 +16,6 @@ module.exports = (app) => {
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
-    app.get('/user/multimedia', app.permission.check('system:settings'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
 
     // System data ----------------------------------------------------------------------------------------------------------------------------------
