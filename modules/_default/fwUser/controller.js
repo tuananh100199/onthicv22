@@ -29,7 +29,16 @@ module.exports = app => {
                         { lastname: value },
                     ];
                 } else {
-                    pageCondition = condition;
+                    if (condition.isAll == 'true') {
+                        condition = {}
+                    } else {
+                        if (condition.isCourseAdmin == 'true') pageCondition.isCourseAdmin = true;
+                        if (condition.isStaff == 'true') pageCondition.isStaff = true;
+                        if (condition.isLecturer == 'true') pageCondition.isLecturer = true;
+                        if (condition.isLecturer == 'false' && condition.isCourseAdmin == 'false' && condition.isStaff == 'false') {
+                            pageCondition.isLecturer = pageCondition.isStaff = pageCondition.isCourseAdmin = false;
+                        };
+                    }
                 }
             }
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
@@ -40,20 +49,6 @@ module.exports = app => {
 
     app.get('/api/user/all', app.permission.check('user:read'), (_, res) => {
         app.model.user.getAll((error, items) => res.send({ error, items }));
-    });
-
-    app.post('/api/user/role/all', app.permission.check('user:read'), (req, res) => {
-        const changes = req.body.roleFilter,
-            condition = {
-                isCourseAdmin: changes.isCourseAdmin,
-                isStaff: changes.isStaff,
-                isLecturer: changes.isLecturer
-            }
-        if (changes.isAll == 'true') {
-            app.model.user.getAll((error, items) => res.send({ error, items }));
-        } else {
-            app.model.user.getAll(condition, (error, items) => res.send({ error, items }));
-        }
     });
 
     app.get('/api/user/:_id', app.permission.orCheck('user:read', 'user:login'), (req, res) => {

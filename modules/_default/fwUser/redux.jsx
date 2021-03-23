@@ -106,21 +106,6 @@ export function getAllStaffs(done) {
     }
 }
 
-export function getUserByRole(roleFilter, done) {
-    return dispatch => {
-        const url = '/api/user/role/all';
-        T.post(url, { roleFilter }, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.items);
-                dispatch({ type: GET_USER_BY_ROLE, items: data.items });
-            }
-        }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
-    }
-}
-
 const getPageUrl = (pageNumber, pageSize) => `/api/user/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('adminUser', true);
 export function getUserPage(pageNumber, pageSize, pageCondition, done) {
