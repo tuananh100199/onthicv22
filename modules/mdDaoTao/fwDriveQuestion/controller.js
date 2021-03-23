@@ -29,9 +29,8 @@ module.exports = app => {
     app.get('/api/drive-question/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            searchText = req.query.searchText,
-            categories = req.query.categories;
-        pageCondition = {};
+            { searchText, categories } = req.query,
+            pageCondition = {};
         if (categories) {
             pageCondition.categories = [categories];
         }
