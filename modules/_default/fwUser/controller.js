@@ -2,14 +2,14 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2060: { title: 'Người dùng', link: '/user/user', icon: 'fa-users', backgroundColor: '#2e7d32' },
+            2060: { title: 'Người dùng', link: '/user/member', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
     app.permission.add({ name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' });
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
     app.get('/user/profile', app.permission.check(), app.templates.admin);
-    app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
+    app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:login'), (req, res) => {

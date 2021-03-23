@@ -8,14 +8,14 @@ module.exports = (app) => {
     const menuSettings = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2010: { title: 'Thông tin chung', link: '/user/settings', icon: 'fa-gear', backgroundColor: '#0091EA' }
+            2010: { title: 'Thông tin chung', link: '/user/setting', icon: 'fa-gear', backgroundColor: '#0091EA' }
         },
     };
 
     app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, { name: 'system:settings', menu: menuSettings }, { name: 'statistic' },);
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
-    app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
+    app.get('/user/setting', app.permission.check('system:settings'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
 
     // System data ----------------------------------------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ module.exports = (app) => {
         data: {
             todayViews: 0,
             allViews: 0,
-            logo: '/img/favicon.jpg',
+            logo: '/img/favicon.png',
             map: '/img/map.png',
             footer: '/img/footer.jpg',
             contact: '/img/contact.jpg',
