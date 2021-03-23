@@ -65,17 +65,17 @@ module.exports = app => {
             });
         },
 
-        addLessonVideo: (_id, videos, done) => {
+        addVideo: (_id, videos, done) => {
             model.findOneAndUpdate({ _id }, { $push: { videos } }, { new: true }).populate('videos').exec(done);
         },
-        deleteLessonVideo: (_id, _lessonVideoId, done) => {
+        deleteVideo: (_id, _lessonVideoId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { videos: _lessonVideoId } }).populate('videos').exec(done);
         },
 
-        addLessonQuestion: (_id, questions, done) => {
+        addQuestion: (_id, questions, done) => {
             model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
         },
-        deleteLessonQuestion: (_id, lessonQuestionId, done) => {
+        deleteQuestion: (_id, lessonQuestionId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { questions: lessonQuestionId } }).populate('questions').exec(done);
         },
 

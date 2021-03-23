@@ -53,15 +53,15 @@ module.exports = (app) => {
             if (error || lessonVideo == null) {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
             } else {
-                const addLessonVideo = () => app.model.lesson.addLessonVideo(_lessonId, lessonVideo, (error, item) => {
+                const addVideo = () => app.model.lesson.addVideo(_lessonId, lessonVideo, (error, item) => {
                     res.send({ error, videos: item && item.videos ? item.videos : [] });
                 });
 
                 if (req.session['lesson-videoImage']) {
                     app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session['lesson-videoImage'], response =>
-                        response.error ? res.send({ error: response.error }) : addLessonVideo());
+                        response.error ? res.send({ error: response.error }) : addVideo());
                 } else {
-                    addLessonVideo();
+                    addVideo();
                 }
             }
         });
@@ -107,7 +107,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.lesson.deleteLessonVideo(_lessonId, _lessonVideoId, (error, item) => {
+                app.model.lesson.deleteVideo(_lessonId, _lessonVideoId, (error, item) => {
                     res.send({ error, videos: item && item.videos ? item.videos : [] });
                 });
             }
@@ -121,15 +121,15 @@ module.exports = (app) => {
             if (error || lessonQuestion == null) {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
             } else {
-                const addLessonQuestion = () => app.model.lesson.addLessonQuestion(_lessonId, lessonQuestion, (error, item) => {
+                const addQuestion = () => app.model.lesson.addQuestion(_lessonId, lessonQuestion, (error, item) => {
                     res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
 
                 if (req.session['lesson-questionImage']) {
                     app.uploadComponentImage(req, 'lesson-question', app.model.lessonQuestion.get, lessonQuestion._id, req.session['lesson-questionImage'], response =>
-                        response.error ? res.send({ error: response.error }) : addLessonQuestion());
+                        response.error ? res.send({ error: response.error }) : addQuestion());
                 } else {
-                    addLessonQuestion();
+                    addQuestion();
                 }
             }
         });
@@ -175,7 +175,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.lesson.deleteLessonQuestion(_lessonId, _lessonQuestionId, (error, item) => {
+                app.model.lesson.deleteQuestion(_lessonId, _lessonQuestionId, (error, item) => {
                     res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }

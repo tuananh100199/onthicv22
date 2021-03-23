@@ -57,14 +57,14 @@ module.exports = (app) => {
             } else if (item) {
                 res.send({ check: `Môn học đã có bài học này!` });
             } else {
-                app.model.subject.addSubjectLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
+                app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
             }
         });
     });
 
     app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const { _subjectId, _subjectLessonId } = req.body;
-        app.model.subject.deleteSubjectLesson(_subjectId, _subjectLessonId, (error) => {
+        app.model.subject.deleteLesson(_subjectId, _subjectLessonId, (error) => {
             if (error) {
                 res.send({ error });
             } else {
@@ -101,7 +101,7 @@ module.exports = (app) => {
             if (error || !questions) {
                 res.send({ error });
             } else {
-                app.model.subject.addSubjectQuestion(req.body._subjectId, questions, (error, item) => {
+                app.model.subject.addQuestion(req.body._subjectId, questions, (error, item) => {
                     res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }
@@ -150,7 +150,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.subject.deleteSubjectQuestion(_subjectId, _subjectQuestionId, (error, item) => {
+                app.model.subject.deleteQuestion(_subjectId, _subjectQuestionId, (error, item) => {
                     res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }

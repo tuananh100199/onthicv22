@@ -10,7 +10,7 @@ module.exports = app => {
 
     app.model.subject = {
         create: (data, done) => {
-            model.create(data, done)
+            model.create(data, done);
         },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -58,19 +58,19 @@ module.exports = app => {
             }
         }),
 
-        addSubjectLesson: (condition, lessons, done) => {
+        addLesson: (condition, lessons, done) => {
             model.findOneAndUpdate(condition, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
         },
 
-        deleteSubjectLesson: (_id, _subjectLessonId, done) => {
+        deleteLesson: (_id, _subjectLessonId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }).populate('lessons').exec(done);
         },
 
-        addSubjectQuestion: (_id, questions, done) => {
+        addQuestion: (_id, questions, done) => {
             model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
         },
 
-        deleteSubjectQuestion: (_id, subjectQuestionId, done) => {
+        deleteQuestion: (_id, subjectQuestionId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { questions: subjectQuestionId } }).populate('questions').exec(done);
         },
     };
