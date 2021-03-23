@@ -82,10 +82,10 @@ export function getAllStatistics(done) {
     }
 }
 
-export function createStatistic(title, description, background, done) {
+export function createStatistic(newData, done) {
     return dispatch => {
         const url = '/api/statistic';
-        T.post(url, { title, description, background }, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo thống kê bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
