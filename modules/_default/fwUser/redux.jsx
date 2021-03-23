@@ -8,6 +8,7 @@ const UserGetPage = 'UserGetPage';
 const UserUpdate = 'UserUpdate';
 const GET_STAFFS = 'User:GetStaffs';
 const GET_STAFF_IN_PAGE = 'User:GetStaffPage';
+const GET_USER_BY_ROLE = 'User:GetUserByRole'
 
 export default function userReducer(state = null, data) {
     switch (data.type) {
@@ -19,6 +20,8 @@ export default function userReducer(state = null, data) {
             return Object.assign({}, state, { user: data.user });
         case GET_STAFFS:
             return Object.assign({}, state, { staffs: data.items });
+        case GET_USER_BY_ROLE:
+            return Object.assign({}, state, { role: data.items });
         case UserGetPage:
             return Object.assign({}, state, { page: data.page });
         case GET_STAFF_IN_PAGE:
@@ -98,6 +101,21 @@ export function getAllStaffs(done) {
             } else {
                 if (done) done(data.items);
                 dispatch({ type: GET_STAFFS, items: data.items });
+            }
+        }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
+    }
+}
+
+export function getUserByRole(roleFilter, done) {
+    return dispatch => {
+        const url = '/api/user/role/all';
+        T.post(url, { roleFilter }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.items);
+                dispatch({ type: GET_USER_BY_ROLE, items: data.items });
             }
         }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
     }

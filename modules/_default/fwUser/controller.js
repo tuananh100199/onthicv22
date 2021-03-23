@@ -42,6 +42,20 @@ module.exports = app => {
         app.model.user.getAll((error, items) => res.send({ error, items }));
     });
 
+    app.post('/api/user/role/all', app.permission.check('user:read'), (req, res) => {
+        const changes = req.body.roleFilter,
+            condition = {
+                isCourseAdmin: changes.isCourseAdmin,
+                isStaff: changes.isStaff,
+                isLecturer: changes.isLecturer
+            }
+        if (changes.isAll == 'true') {
+            app.model.user.getAll((error, items) => res.send({ error, items }));
+        } else {
+            app.model.user.getAll(condition, (error, items) => res.send({ error, items }));
+        }
+    });
+
     app.get('/api/user/:_id', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
         app.model.user.get(req.params._id, (error, user) => res.send({ error, user }));
     });

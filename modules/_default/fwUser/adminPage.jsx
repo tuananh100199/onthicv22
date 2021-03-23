@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserPage, createUser, updateUser, deleteUser } from './redux';
+import { getUserPage, createUser, updateUser, deleteUser, getUserByRole } from './redux';
 import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
@@ -133,16 +133,111 @@ class UserPasswordModal extends AdminModal {
     });
 }
 
+export class RoleFilter extends React.Component {
+    state = {}
+    render() {
+        let { isCourseAdmin, isStaff, isLecturer, isAll } = this.props.filter;
+        return (
+            <div className='row '>
+                <label>All:</label>
+                <div className='toggle col-md-2 p-0'>
+                    <label>
+                        <input type='checkbox' checked={isAll} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: !isAll
+                            }
+                            this.props.getUserByRole(changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>QT:</label>
+                <div className='toggle col-md-2 p-0'>
+                    <label>
+                        <input type='checkbox' checked={isCourseAdmin} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: !isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserByRole(changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>NV:</label>
+                <div className='toggle col-md-2 p-0'>
+                    <label>
+                        <input type='checkbox' checked={isStaff} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: !isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserByRole(changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>GV:</label>
+                <div className='toggle col-md-2 p-0'>
+                    <label>
+                        <input type='checkbox' checked={isLecturer} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: !isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserByRole(changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+            </div>
+
+        );
+    }
+}
+
 class UserPage extends AdminPage {
     state = { searchText: '', isSearching: false };
+    constructor(props) {
+        super(props);
+        this.state = {
+            roleFilter: (T.cookie('roleFilter') ? T.cookie('roleFilter') :
+                {
+                    isCourseAdmin: false,
+                    isStaff: false,
+                    isLecturer: false,
+                    isAll: true,
+                })
+        }
+    }
+
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
         this.props.getAllRoles();
         this.props.getUserPage(1);
+        this.props.getUserByRole(this.state.roleFilter)
         T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
+    }
+
+    setRoleFilter = (roleFilter) => {
+        this.setState({ roleFilter: roleFilter })
+        T.cookie('roleFilter', roleFilter)
     }
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);
@@ -158,7 +253,7 @@ class UserPage extends AdminPage {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
             this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: null };
         const table = renderTable({
-            getDataSource: () => this.props.user && this.props.user.page && this.props.user.page.list,
+            getDataSource: () => this.props.user && this.props.user.role,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -187,7 +282,7 @@ class UserPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Người dùng',
-            header: 'Hello Vinh',
+            header: <RoleFilter getUserByRole={this.props.getUserByRole} setRoleFilter={this.setRoleFilter} filter={this.state.roleFilter} />,
             breadcrumb: ['Người dùng'],
             content: <>
                 <div className='tile'>{table}</div>
@@ -203,5 +298,5 @@ class UserPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, user: state.user, role: state.role });
-const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, getAllRoles };
+const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, getAllRoles, getUserByRole };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);
