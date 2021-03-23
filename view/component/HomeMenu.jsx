@@ -122,7 +122,7 @@ class HomeMenu extends React.Component {
             });
         }
 
-        let { logo, user, facebook, youtube, twitter, instagram, mobile } = this.props.system ? this.props.system : {};
+        let { logo, user, facebook, youtube, twitter, instagram, mobile, email } = this.props.system ? this.props.system : {logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: ''};
         facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -158,16 +158,20 @@ class HomeMenu extends React.Component {
                         <div className='social header_social'>
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
                                 {user && user._id ? <div className='btn-group'>
-                                    <div className='button button_2 mr-1'><a href='/user'>USER</a></div>
-                                    <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
-                                </div> : <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
+                                    <div className='button button_2 mr-1'> <a href={'mailto:' + email}>Email</a></div>
+                                    <div className='button button_1 mr-1'><a href='#'><i className='fa fa-phone'/> {mobile}</a></div>
+                                    <div className='btn-group m-auto'>
+                                        <a style={{color: '#4CA758'}} href='#'  onClick={this.logout}>Thoát</a>
+                                    </div>
+                                </div> :
+                                <div className='btn-group'>
+                                    <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>
+                                    <div className='button button_1 mr-1'><a href='#'><i className='fa fa-phone'/> {mobile}</a></div>
+                                 </div>}
                                 {/*{twitter}*/}
                                 {/*{facebook}*/}
                                 {/*{youtube}*/}
                                 {/*{instagram}*/}
-                                <div className='hotline' style={{ marginLeft: '5px', fontSize: '15px' }}>
-                                    <i className='fa fa-phone' /> {mobile}
-                                </div>
                             </ul>
                         </div>
                         <div className='hamburger'><i className='fa fa-bars' aria-hidden='true' /></div>
@@ -187,8 +191,8 @@ class HomeMenu extends React.Component {
                         {menus}
                     </ul>
                     {user && user._id ? <div className='btn-group mt-4'>
-                        <div className='button button_4 mr-1'><a href='/user'>USER</a></div>
-                        <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off' /></a></div>
+                        <div className='button button_2 mr-1'> <a href={'mailto:' + email}>Email</a></div>
+                        <div className='button button_1 mr-1'><a href='#' onClick={this.logout}><i className='fa fa-power-off'/> Thoát</a></div>
                     </div> : <div className='button button_4 mr-1 text-center'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>}
                 </nav>
                 <div className='menu_extra'>
