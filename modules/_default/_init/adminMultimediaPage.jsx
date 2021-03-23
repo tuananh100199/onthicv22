@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem';
 import ImageBox from 'view/component/ImageBox';
+
 class MultimediaPage extends React.Component {
     constructor(props) {
         super(props);
@@ -140,22 +141,22 @@ class MultimediaPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='tile-body'>
                                     <div className='form-group'>
-                                        <label className='control-label'>Logo</label>
+                                        <label className='control-label'>Logo công ty</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Background footer</label>
+                                        <label className='control-label'>Hình nền cuối trang web</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Liên hệ</label>
+                                        <label className='control-label'>Hình nền phần Liên hệ</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='contact' image={contact} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Subscriber</label>
+                                        <label className='control-label'>Hình nền phần Đăng ký nhận tin</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='subscribe' image={subscribe} />
                                     </div>
                                 </div>
