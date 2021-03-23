@@ -34,7 +34,6 @@ import fwMenu from 'modules/_default/fwMenu/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwEmail from 'modules/_default/fwEmail/index';
-import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwContentList from 'modules/_default/fwContentList/index';
@@ -50,7 +49,7 @@ window.T = T;
 const modules = [
     _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
-    fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
+    fwContact, fwSubscribe, fwEmail, fwNews,
     fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
 ];
 

@@ -7,7 +7,6 @@ module.exports = app => {
         },
     };
     app.permission.add(
-        // { name: 'category:read', menu },
         { name: 'driveQuestion:read', menu },
         { name: 'driveQuestion:write' },
         { name: 'driveQuestion:delete' }
