@@ -398,13 +398,14 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderPage = ({ icon, title, breadcrumb, content, backRoute, onCreate, onSave }) => {
+    renderPage = ({ icon, title, header, breadcrumb, content, backRoute, onCreate, onSave }) => {
         if (breadcrumb == null) breadcrumb = [];
         return (
             <main className='app-content'>
                 <div className='app-title'>
                     <h1><i className={icon} /> {title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
+                        {header}
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         {breadcrumb.map((item, index) => <span key={index}>&nbsp;/&nbsp;{item}</span>)}
                     </ul>

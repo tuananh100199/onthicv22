@@ -187,6 +187,7 @@ class UserPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Người dùng',
+            header: 'Hello Vinh',
             breadcrumb: ['Người dùng'],
             content: <>
                 <div className='tile'>{table}</div>
