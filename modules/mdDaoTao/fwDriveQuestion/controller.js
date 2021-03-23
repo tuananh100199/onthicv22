@@ -26,11 +26,15 @@ module.exports = app => {
         app.model.driveQuestion.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/drive-question/page/:pageNumber/:pageSize', app.permission.check('driveQuestion:read'), (req, res) => {
+    app.get('/api/drive-question/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             searchText = req.query.searchText,
-            pageCondition = {};
+            categories = req.query.categories;
+        pageCondition = {};
+        if (categories) {
+            pageCondition.categories = [categories];
+        }
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');
         }
