@@ -226,10 +226,7 @@ module.exports = (app) => {
                 };
 
                 const menuComponents = [];
-                getComponent(0, [menu.componentId], menuComponents, () => {
-                    menu.component = menuComponents[0];
-                    res.send(menu.component);
-                });
+                getComponent(0, [menu.componentId], menuComponents, () => res.send(menuComponents[0]));
             } else {
                 res.send({ error: 'Invalid menu!' });
             }
