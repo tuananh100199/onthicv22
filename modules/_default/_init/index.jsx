@@ -2,7 +2,6 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import system from './reduxSystem';
-import SubMenusPage from 'view/component/SubMenusPage';
 
 export default {
     redux: {
@@ -18,12 +17,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userProfilePage') })
         },
         {
-            path: '/user/settings',
+            path: '/user/setting',
             component: Loadable({ loading: Loading, loader: () => import('./adminSettingsPage') })
-        },
-        {
-            path: '/user/settings',
-            component: () => <SubMenusPage menuLink='/user/settings' menuKey={2000} headerIcon='fa-gear' />
         },
     ],
 };
