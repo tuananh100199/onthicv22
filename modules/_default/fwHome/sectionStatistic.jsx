@@ -6,8 +6,8 @@ class SectionStatistic extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.statisticId) {
-            this.props.getStatisticByUser(this.props.statisticId, statistic => this.setState({ statistic }));
+        if (this.props.viewId) {
+            this.props.getStatisticByUser(this.props.viewId, statistic => this.setState({ statistic }));
         }
     }
 

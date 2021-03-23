@@ -4,8 +4,8 @@ import { getStaffGroupItemByUser } from './redux/reduxStaffGroup';
 
 class SectionStaffGroup extends React.Component {
     componentDidMount() {
-        if (this.props.staffGroupId) {
-            this.props.getStaffGroupItemByUser(this.props.staffGroupId, data => this.setState(data.item));
+        if (this.props.viewId) {
+            this.props.getStaffGroupItemByUser(this.props.viewId, data => this.setState(data.item));
         }
     }
 

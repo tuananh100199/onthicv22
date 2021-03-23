@@ -6,6 +6,9 @@ import dangKyTuVanList from './redux/reduxDangKyTuVanList';
 import dangKyTuVan from './redux/reduxDangKyTuVan';
 
 export default {
+    init: () => {
+        T.component['dangKyTuVan'] = (viewId) => <SectionDangKyTuVan viewId={viewId} />;
+    },
     redux: {
         dangKyTuVan, dangKyTuVanList,
     },

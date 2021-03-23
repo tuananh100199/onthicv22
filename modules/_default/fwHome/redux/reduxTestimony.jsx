@@ -1,5 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('testimony');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const TestimonyGetAll = 'Testimony:GetAll';

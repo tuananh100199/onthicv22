@@ -1,5 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('slogan');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const SloganGetAll = 'Slogan:GetAll';
@@ -134,9 +133,9 @@ export function deleteSlogan(_id) {
 
 
 
-export function getSloganItem(sloganId, done) {
+export function getSloganItem(_id, done) {
     return dispatch => {
-        const url = `/api/slogan/item/${sloganId}`;
+        const url = `/api/slogan/item/${_id}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy slogan bị lỗi!', 'danger');
@@ -166,9 +165,9 @@ export function swapSloganInGroup(index, isMoveUp) {
 }
 
 
-export function getSloganByUser(sloganId, done) {
+export function getSloganByUser(_id, done) {
     return dispatch => {
-        const url = `/home/slogan/${sloganId}`;
+        const url = `/home/slogan/${_id}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy slogan bị lỗi!', 'danger');

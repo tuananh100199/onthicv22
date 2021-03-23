@@ -1,5 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('carousel');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CarouselGetAll = 'Carousel:GetAll';

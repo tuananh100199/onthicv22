@@ -5,8 +5,8 @@ import { getContent } from './redux/reduxContent';
 class sectionContent extends React.Component {
     state = { content: {} };
     componentDidMount() {
-        if (this.props.contentId) {
-            this.props.getContent(this.props.contentId, data => data && data.item && this.setState(data.item));
+        if (this.props.viewId) {
+            this.props.getContent(this.props.viewId, data => data && data.item && this.setState(data.item));
         }
     }
 

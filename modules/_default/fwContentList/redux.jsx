@@ -1,5 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('list contents');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ContentListGet = 'ContentList:Get';

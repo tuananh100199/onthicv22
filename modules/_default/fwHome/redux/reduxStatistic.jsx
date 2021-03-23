@@ -1,5 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('statistic');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const StatisticGetAll = 'Statistic:GetAll';

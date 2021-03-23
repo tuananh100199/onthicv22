@@ -6,8 +6,8 @@ class SectionTestimony extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.testimonyId) {
-            this.props.getTestimonyByUser(this.props.testimonyId, testimony => testimony && this.setState({ testimony }));
+        if (this.props.viewId) {
+            this.props.getTestimonyByUser(this.props.viewId, testimony => testimony && this.setState({ testimony }));
         }
     }
 

@@ -29,6 +29,7 @@ import fwContentList from 'modules/_default/fwContentList/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 
+window.T = T;
 const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwForm, fwNews, fwCourse, fwContentList, fwDivision, fwCourseType];
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
 
@@ -36,6 +37,7 @@ import { getSystemState, register, login, forgotPassword, logout } from 'modules
 const reducers = {}, routeMapper = {},
     addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
+    module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
     module.routes.forEach((route) => {
         if (!route.path.startsWith('/user')) {
@@ -45,7 +47,6 @@ modules.forEach(module => {
 });
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());
-window.T = T;
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {

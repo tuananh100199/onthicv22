@@ -1,9 +1,13 @@
+import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import courseType from './redux';
 import SectionListView from './sectionListView';
 
 export default {
+    init: () => {
+        T.component['all course types'] = (viewId) => <SectionListView viewId={viewId} />;
+    },
     redux: {
         courseType,
     },

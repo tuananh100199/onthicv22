@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu, buildMenu } from './redux';
+import { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu } from './redux';
 import { AdminPage } from 'view/component/AdminPage';
 
 class MenuPage extends AdminPage {
@@ -102,5 +102,5 @@ class MenuPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, menu: state.menu });
-const mapActionsToProps = { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu, buildMenu };
+const mapActionsToProps = { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu };
 export default connect(mapStateToProps, mapActionsToProps)(MenuPage);

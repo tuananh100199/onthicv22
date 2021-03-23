@@ -6,8 +6,8 @@ class SectionSlogan extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.sloganId) {
-            this.props.getSloganByUser(this.props.sloganId, slogan => slogan && this.setState({ slogan }));
+        if (this.props.viewId) {
+            this.props.getSloganByUser(this.props.viewId, slogan => slogan && this.setState({ slogan }));
         }
     }
 

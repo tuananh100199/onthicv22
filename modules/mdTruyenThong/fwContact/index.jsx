@@ -5,6 +5,9 @@ import SectionContact from './sectionContact';
 import contact from './redux';
 
 export default {
+    init: () => {
+        T.component['contact'] = (viewId) => <SectionContact viewId={viewId} />;
+    },
     redux: {
         contact,
     },

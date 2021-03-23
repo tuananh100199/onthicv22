@@ -6,8 +6,8 @@ class SectionVideo extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.videoId) {
-            this.props.getVideo(this.props.videoId, item => {
+        if (this.props.viewId) {
+            this.props.getVideo(this.props.viewId, item => {
                 if (item) {
                     this.setState({ title: item.title, link: item.link, image: item.image });
                     const done = () => {

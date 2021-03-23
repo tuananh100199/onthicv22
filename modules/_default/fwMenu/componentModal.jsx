@@ -5,7 +5,7 @@ export default class ComponentModal extends AdminModal {
     state = { viewType: '<empty>', viewItemText: '<empty>', viewItems: [] };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemClassname.focus()));
-        this.componentTypes = T.componentTypes.map(item => ({ id: item, text: item }));
+        this.componentTypes = Object.keys(T.component).sort().map(item => ({ id: item, text: item }));
     }
 
     onShow = ({ parentId, component }) => {

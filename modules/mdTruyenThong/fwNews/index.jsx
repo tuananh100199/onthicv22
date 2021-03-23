@@ -1,3 +1,4 @@
+import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import SectionNews from './sectionNews';
@@ -5,6 +6,10 @@ import SectionNewsList from './sectionNewsList';
 import news from './redux';
 
 export default {
+    init: () => {
+        T.component['all news'] = (viewId) => <SectionNewsList viewId={viewId} />;
+        T.component['last news'] = (viewId) => <SectionNews viewId={viewId} />;
+    },
     redux: {
         news,
     },

@@ -18,8 +18,8 @@ class SectionDangKyTuVan extends React.Component {
 
     componentDidMount() {
         $(document).ready(() => {
-            if (this.props.dangKyTuVanId) {
-                this.props.getDangKyTuVanByUser(this.props.dangKyTuVanId, data => {
+            if (this.props.viewId) {
+                this.props.getDangKyTuVanByUser(this.props.viewId, data => {
                     if (data) {
                         this.setState(data);
                         var ctrl = new ScrollMagic.Controller();
@@ -172,15 +172,15 @@ class SectionDangKyTuVan extends React.Component {
                                         <input
                                             onKeyPress={(event) => {
                                                 if (!/[0-9]/.test(event.key)) {
-                                                event.preventDefault();
+                                                    event.preventDefault();
                                                 }
-                                            }} 
-                                            type='tel' 
-                                            className='intro_input' 
-                                            placeholder='Số điện thoại' 
-                                            ref={this.phone} 
+                                            }}
+                                            type='tel'
+                                            className='intro_input'
+                                            placeholder='Số điện thoại'
+                                            ref={this.phone}
                                             required='required'
-                                            />
+                                        />
                                         <input type='text' className='intro_input w-100' ref={this.email} placeholder='Email' />
                                     </div>
                                     <button className='button button_1 intro_button trans_200'>gửi tin nhắn</button>

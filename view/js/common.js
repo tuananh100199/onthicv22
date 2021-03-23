@@ -6,8 +6,7 @@ import './sweetalert.min.js';
 const T = {
     rootUrl: 'https://hpo.edu.vn',
     questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
-    componentTypes: ['<empty>'],
-    pushComponentTypes: (type) => !T.componentTypes.contains(type) && T.componentTypes.push(type),
+    component: { '<empty>': null },
     defaultPageSize: 50,
     defaultUserPageSize: 21,
     defaultUserSidebarSize: 3,

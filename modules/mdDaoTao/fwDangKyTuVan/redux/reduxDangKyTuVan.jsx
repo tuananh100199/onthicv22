@@ -1,5 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('dangKyTuVan');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DangKyTuVanGetAll = 'DangKyTuVan:GetAll';

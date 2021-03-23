@@ -12,8 +12,8 @@ class SectionContent extends React.Component {
 
     componentDidMount() {
         $(document).ready(() => {
-            if (this.props.listContentId) {
-                this.props.getContentListByUser(this.props.listContentId, data => {
+            if (this.props.viewId) {
+                this.props.getContentListByUser(this.props.viewId, data => {
                     if (data.item) {
                         this.setState({ item: data.item }, () => {
                             T.ftcoAnimate()

@@ -1,10 +1,15 @@
+import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import SectionCourse from './sectionCourse';
 import SectionCourseList from './sectionCourseList';
+import SectionCourse from './sectionCourse';
 import course from './redux';
 
 export default {
+    init: () => {
+        T.component['all courses'] = (viewId) => <SectionCourseList viewId={viewId} />;
+        T.component['last course'] = (viewId) => <SectionCourse viewId={viewId} />;
+    },
     redux: {
         course,
     },

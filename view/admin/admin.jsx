@@ -46,6 +46,7 @@ import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 
+window.T = T;
 const modules = [
     _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
@@ -57,6 +58,7 @@ const modules = [
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 
 modules.forEach(module => {
+    module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
     module.routes.forEach((route) => {
         if (route.path.startsWith('/user')) {
@@ -67,7 +69,6 @@ modules.forEach(module => {
 
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());
-window.T = T;
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {

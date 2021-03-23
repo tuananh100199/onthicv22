@@ -1,6 +1,4 @@
 import T from 'view/js/common';
-T.pushComponentTypes('all news');
-T.pushComponentTypes('last news');
 T.initCookiePage('pageNews');
 T.initCookiePage('pageDraftNews');
 
