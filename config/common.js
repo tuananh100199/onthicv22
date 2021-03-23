@@ -51,6 +51,7 @@ module.exports = (app, appName) => {
         // setting: {
         //     index: 2000, title: 'Cấu hình', link: '/user/settings', icon: 'fa-cog', // subMenusRender: false,
         // },
+        setting: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
         communication: { index: 3000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
     };
