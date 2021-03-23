@@ -33,8 +33,6 @@ module.exports = (app) => {
             youtube: '',
             twitter: '',
             instagram: '',
-            latitude: 10.7744962,
-            longitude: 106.6606518,
             email: app.email.from,
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
@@ -121,13 +119,6 @@ module.exports = (app) => {
             if (req.body.instagram != null || req.body.instagram == '') {
                 changes.instagram = req.body.instagram.trim();
             }
-            if (req.body.latitude != null || req.body.latitude == '') {
-                changes.latitude = req.body.latitude.trim();
-            }
-            if (req.body.longitude != null || req.body.longitude == '') {
-                changes.longitude = req.body.longitude.trim();
-            }
-
             app.model.setting.set(changes, (error) => {
                 if (error) {
                     res.send({ error: 'Update failed!' });
