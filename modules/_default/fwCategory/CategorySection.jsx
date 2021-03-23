@@ -10,7 +10,7 @@ class CategoryModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, description, image } = item ? item : { _id: '', title: '', description: '', image: '/img/avatar.png' };
+        const { _id, title, description, image } = item || { _id: '', title: '', description: '', image: '/img/avatar.png' };
         this.itemTitle.value(title);
         this.itemDescription.value(description);
         this.imageBox.setData(`${this.props.uploadType}:${_id || 'new'}`);

@@ -19,7 +19,7 @@ class CarouselItemModal extends React.Component {
     }
 
     show = (item, carouselId) => {
-        let { _id, title, image, link, subtitle, description } = item ? item : { _id: null, title: '', image: '/img/avatar.jpg', link: '' };
+        let { _id, title, image, link, subtitle, description } = item || { _id: null, title: '', image: '/img/avatar.jpg', link: '' };
 
         $(this.btnSave.current).data('id', _id).data('carouselId', carouselId);
         $('#carouselName').val(title);

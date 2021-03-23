@@ -103,7 +103,6 @@ export function getAllStaffs(done) {
     }
 }
 
-const getPageUrl = (pageNumber, pageSize) => `/api/user/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('adminUser', true);
 export function getUserPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminUser', pageNumber, pageSize);
@@ -124,7 +123,7 @@ export function getUserPage(pageNumber, pageSize, pageCondition, done) {
 
 export const ajaxSelectUser = {
     ajax: true,
-    url: getPageUrl(1, 20),
+    url: `/api/user/page/1/20`,
     data: params => ({ condition: params.term }),
     processResults: response => ({
         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : []

@@ -195,7 +195,7 @@ class UserPage extends AdminPage {
                     getPage={this.props.getUserPage} />
                 <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles}
                     updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserPage} />
-                <UserPasswordModal ref={e => this.passwordModal = e} updateUser={this.props.updateUser} />
+                <UserPasswordModal ref={e => this.passwordModal = e} readOnly={!permission.write} updateUser={this.props.updateUser} />
             </>,
             onCreate: permission.write ? this.edit : null,
         });
