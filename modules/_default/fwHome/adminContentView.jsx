@@ -16,7 +16,7 @@ class ContentView extends React.Component {
     render() {
         const permission = this.props.permission;
         const table = renderTable({
-            getDataSource: () => this.props.component.content,
+            getDataSource: () => this.props.component.content && this.props.component.content.list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

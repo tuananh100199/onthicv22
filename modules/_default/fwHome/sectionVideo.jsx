@@ -56,6 +56,6 @@ class SectionVideo extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ video: state.video });
+const mapStateToProps = state => ({ component: state.component });
 const mapActionsToProps = { getVideo };
 export default connect(mapStateToProps, mapActionsToProps)(SectionVideo);
