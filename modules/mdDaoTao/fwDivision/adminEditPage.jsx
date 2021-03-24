@@ -83,7 +83,7 @@ class DivisionEditPage extends AdminPage {
                     <FormCheckbox style={{ position: 'absolute', right: '24px', top: '24px' }} ref={e => this.itemIsOutside = e} label='Cơ sở ngoài' />
                     <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body row'>
-                        <FormImageBox ref={e => this.itemImage = e} className='col-md-3 order-md-12 form-group' label='Hình đại diện' uploadType='DivisionImage' image={this.state.image} readOnly={!permission.write} />
+                        <FormImageBox ref={e => this.itemImage = e} className='col-md-3 order-md-12' label='Hình đại diện' uploadType='DivisionImage' image={this.state.image} readOnly={!permission.write} />
                         <div className='col-md-9 order-md-1'>
                             <FormTextBox ref={e => this.itemTitle = e} label='Tên cơ sở' readOnly={!permission.write} value={this.state.title} onChange={e => this.setState({ title: e.target.value })} />
                             <FormRichTextBox ref={e => this.itemAddress = e} label='Địa chỉ' readOnly={!permission.write} rows='2' />

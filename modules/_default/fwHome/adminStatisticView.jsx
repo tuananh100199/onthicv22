@@ -31,7 +31,8 @@ class StatisticModal extends AdminModal {
     }
     render = () => this.renderModal({
         title: 'Thống kê',
-        body: <> <FormTextBox ref={e => this.itemTitle = e} label='Tên nhóm thống kê' />
+        body: <>
+            <FormTextBox ref={e => this.itemTitle = e} label='Tên nhóm thống kê' />
             <FormEditor ref={e => this.itemDescription = e} height='200px' label='Mô tả chi tiết' uploadUrl='/user/upload?category=statistic' />
         </>
     });

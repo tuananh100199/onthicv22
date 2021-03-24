@@ -26,11 +26,7 @@ class ContentDetail extends React.Component {
             let url = window.location.pathname,
                 params = T.routeMatcher('/content/item/:contentId').parse(url);
             this.setState({ _id: params.contentId });
-            this.props.getContent(params.contentId, data => {
-                if (data.item) {
-                    this.setState(data.item);
-                }
-            });
+            this.props.getContent(params.contentId, data => data.item && this.setState(data.item));
         }
     }
 

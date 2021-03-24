@@ -1,9 +1,10 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
+import { combineReducers } from 'redux';
 
-import carousel from './redux/reduxCarousel';
-import content from './redux/reduxContent';
+import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
+import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
 import logo from './redux/reduxLogo';
 import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
@@ -27,31 +28,35 @@ export default {
         T.component['content'] = {
             render: (viewId) => <SectionContent viewId={viewId} />,
             backgroundColor: '#f48fb1',
+            adapter: ajaxSelectContent,
+            getItem: ajaxGetContent,
         };
         T.component['carousel'] = {
             render: (viewId) => <SectionCarousel viewId={viewId} />,
             backgroundColor: '#ef9a9a',
+            adapter: ajaxSelectCarousel,
+            getItem: ajaxGetCarousel,
         };
-        T.component['logo'] = {
-            render: (viewId) => <SectionLogo viewId={viewId} />,
-            backgroundColor: '#ef9a9a',
-        };
-        T.component['slogan'] = {
-            render: (viewId) => <SectionSlogan viewId={viewId} />,
-            backgroundColor: '#b2ebf2',
-        };
+        // T.component['logo'] = {
+        //     render: (viewId) => <SectionLogo viewId={viewId} />,
+        //     backgroundColor: '#ef9a9a',
+        // };
+        // T.component['slogan'] = {
+        //     render: (viewId) => <SectionSlogan viewId={viewId} />,
+        //     backgroundColor: '#b2ebf2',
+        // };
         // T.component['staff group'] = {
         //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
         //     backgroundColor: '#e6ee9c',
         // };
-        T.component['statistic'] = {
-            render: (viewId) => <SectionStatistic viewId={viewId} />,
-            backgroundColor: '#b388ff',
-        };
-        T.component['testimony'] = {
-            render: (viewId) => <SectionTestimony viewId={viewId} />,
-            backgroundColor: '#b2dfdb',
-        };
+        // T.component['statistic'] = {
+        //     render: (viewId) => <SectionStatistic viewId={viewId} />,
+        //     backgroundColor: '#b388ff',
+        // };
+        // T.component['testimony'] = {
+        //     render: (viewId) => <SectionTestimony viewId={viewId} />,
+        //     backgroundColor: '#b2dfdb',
+        // };
         T.component['video'] = {
             render: (viewId) => <SectionVideo viewId={viewId} />,
             backgroundColor: '#90caf9',
@@ -62,7 +67,7 @@ export default {
         };
     },
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo
+        component: combineReducers({ carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo })
     },
     routes: [
         {

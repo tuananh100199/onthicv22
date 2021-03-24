@@ -79,7 +79,7 @@ class UserModal extends AdminModal {
                         </div>
                         <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
                     </div>
-                    <FormImageBox ref={e => this.imageBox = e} className='col-md-4 form-group' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly} />
+                    <FormImageBox ref={e => this.imageBox = e} className='col-md-4' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly} />
 
                     <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
                     <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />

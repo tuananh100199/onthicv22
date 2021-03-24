@@ -8,7 +8,7 @@ const ContentDelete = 'Content:Delete';
 export default function contentReducer(state = [], data) {
     switch (data.type) {
         case ContentGetAll:
-            return data.items;
+            return data.list;
 
         case ContentUpdate:
             state = state.slice();
@@ -44,8 +44,8 @@ export function getAllContents(done) {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: ContentGetAll, items: data.items ? data.items : [] });
+                if (done) done(data.list);
+                dispatch({ type: ContentGetAll, list: data.list ? data.list : [] });
             }
         }, error => {
             console.error('GET: ' + url + '. ' + error);
@@ -98,22 +98,16 @@ export function deleteContent(_id) {
     }
 }
 
-
-export function getContent(id, done) {
-    return dispatch => {
-        const url = '/api/content/item/' + id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                dispatch({ type: ContentUpdate, item: data.item });
-                if (done) done({ item: data.item });
-            }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
-    }
+export function getContent(_id, done) {
+    return dispatch => ajaxGetContent(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy nội dung bị lỗi!', 'danger');
+            console.error(`GET: ${url}. ${data.error}`);
+        } else {
+            dispatch({ type: ContentUpdate, item: data.item });
+            done && done(data);
+        }
+    });
 }
 
 export function getContentByUser(id, done) {
@@ -133,11 +127,12 @@ export function getContentByUser(id, done) {
     }
 }
 
-export const ajaxSelectContent = {
-    ajax: true,
-    url: `/api/content/all`,
-    data: {},
-    processResults: response => ({
-        results: response && response.items ? response.items.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : []
-    })
-}
+export const ajaxSelectContent = T.createAjaxAdapter(
+    '/api/content/all',
+    response => response && response.list ? response.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : []
+);
+
+export function ajaxGetContent(_id, done) {
+    const url = '/api/content';
+    T.get(url, { _id }, done, error => T.notify('Lấy nội dung bị lỗi!', 'danger'));
+};
