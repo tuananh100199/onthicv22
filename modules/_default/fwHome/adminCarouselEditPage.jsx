@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem } from './redux/reduxCarousel';
+import { getCarousel, updateCarousel, createCarousel, updateCarouselItem, swapCarouselItem, deleteCarouselItem } from './redux/reduxCarousel';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 
@@ -46,14 +46,14 @@ class CarouselItemModal extends React.Component {
             $('#carouselName').focus();
         } else {
             if (_id) { // Update
-                this.props.updateCarouselItem(_id, changes, error => {
+                this.props.update(_id, changes, error => {
                     if (error == undefined || error == null) {
                         $(this.modal.current).modal('hide');
                     }
                 });
             } else { // Create
                 changes.carouselId = carouselId;
-                this.props.createCarouselItem(changes, () => $(this.modal.current).modal('hide'));
+                this.props.create(changes, () => $(this.modal.current).modal('hide'));
             }
         }
     };
@@ -281,12 +281,12 @@ class CarouselEditPage extends React.Component {
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                <CarouselItemModal ref={this.modal} createCarouselItem={this.props.createCarouselItem} updateCarouselItem={this.props.updateCarouselItem} />
+                <CarouselItemModal ref={this.modal} create={this.props.createCarousel} update={this.props.updateCarouselItem} />
             </main>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, carousel: state.carousel });
-const mapActionsToProps = { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem };
+const mapActionsToProps = { getCarousel, updateCarousel, createCarousel, updateCarouselItem, swapCarouselItem, deleteCarouselItem };
 export default connect(mapStateToProps, mapActionsToProps)(CarouselEditPage);

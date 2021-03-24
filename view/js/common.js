@@ -204,6 +204,13 @@ const T = {
             }, timeOut);
         });
     },
+
+    createAjaxAdapter: (url, parseResponse) => ({
+        ajax: true,
+        url,
+        data: {},
+        processResults: response => ({ results: parseResponse(response) }),
+    }),
 };
 
 T.socket = T.debug ? io({ transports: ['websocket'] }) : io.connect(T.rootUrl, { transports: ['websocket'], secure: true });

@@ -17,8 +17,8 @@ class ContentPage extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
         let table = null,
-            items = this.props.content ? this.props.content : null;
-        if (items && items.length > 0) {
+            list = this.props.content ? this.props.content : null;
+        if (list && list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered'>
                     <thead>
@@ -30,7 +30,7 @@ class ContentPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>

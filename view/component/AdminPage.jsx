@@ -237,21 +237,23 @@ export class FormSelect extends React.Component {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
             const { data, label } = this.props,
-                options = { placeholder: label, dropdownParent };
-            if (Array.isArray(data)) {
-                options.data = data;
-            } else {
-                options.ajax = { ...data, delay: 500 };
+                options = { placeholder: label, tags: true, dropdownParent };
+            if (this.props.multiple) {
+                value = value ? (Array.isArray(value) ? value : [value]) : [];
             }
 
-            if (this.props.multiple) {
+            if (Array.isArray(data)) {
+                options.data = data;
+                $(this.input).select2(options).val(value).trigger('change');
+            } else {
+                options.ajax = { ...data, delay: 500 };
+                $(this.input).select2(options);
                 if (value) {
-                    value = Array.isArray(value) ? value : [value];
+                    $(this.input).select2('trigger', 'select', { data: value });
                 } else {
-                    value = [];
+                    $(this.input).val(null).trigger('change');
                 }
             }
-            $(this.input).select2(options).val(value).trigger('change');
         } else {
             return $(this.input).val();
         }

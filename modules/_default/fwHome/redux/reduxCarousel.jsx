@@ -9,7 +9,7 @@ const CarouselUpdate = 'Carousel:Update';
 export default function carouselReducer(state = null, data) {
     switch (data.type) {
         case CarouselGetAll:
-            return Object.assign({}, state, { items: data.items });
+            return Object.assign({}, state, { list: data.list });
 
         case CarouselGetPage:
             return Object.assign({}, state, { page: data.page });
@@ -21,9 +21,9 @@ export default function carouselReducer(state = null, data) {
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.carouselId) {
-                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
-                    if (items[i]._id == updatedItem._id) {
-                        state.selectedItem.items.splice(i, 1, updatedItem);
+                for (let i = 0, list = state.selectedItem.list, n = list.length; i < n; i++) {
+                    if (list[i]._id == updatedItem._id) {
+                        state.selectedItem.list.splice(i, 1, updatedItem);
                         break;
                     }
                 }
@@ -44,8 +44,8 @@ export function getAllCarousels(done) {
                 T.notify('Get carousel list failed!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: CarouselGetAll, items: data.items ? data.items : [] });
+                if (done) done(data.list);
+                dispatch({ type: CarouselGetAll, list: data.list || [] });
             }
         }, error => T.notify('Get carousel list failed!', 'danger'));
     }
@@ -69,18 +69,15 @@ export function getCarouselInPage(pageNumber, pageSize, done) {
 }
 
 export function getCarousel(_id, done) {
-    return dispatch => {
-        const url = '/api/carousel/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.item);
-                dispatch({ type: CarouselGet, item: data.item });
-            }
-        }, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
-    }
+    return dispatch => ajaxGetCarousel(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
+            console.error(`GET: ${url}. ${data.error}`);
+        } else {
+            dispatch({ type: CarouselGet, item: data.item });
+            done && done(data.item);
+        }
+    });
 }
 
 export function createCarousel(data, done) {
@@ -114,10 +111,10 @@ export function updateCarousel(_id, changes, done) {
     }
 }
 
-export function deleteCarousel(id) {
+export function deleteCarousel(_id) {
     return dispatch => {
         const url = '/api/carousel';
-        T.delete(url, { id }, data => {
+        T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xoá tập hình ảnh bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
@@ -129,6 +126,7 @@ export function deleteCarousel(id) {
     }
 }
 
+// Item -------------------------------------------------------------------------------------------
 export function createCarouselItem(data, done) {
     return dispatch => {
         const url = '/api/carousel/item';
@@ -209,3 +207,12 @@ export function homeGetCarousel(_id, done) {
         });
     }
 }
+
+export const ajaxSelectCarousel = T.createAjaxAdapter(
+    '/api/carousel/all',
+    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+);
+export function ajaxGetCarousel(_id, done) {
+    const url = '/api/carousel';
+    T.get(url, { _id }, done, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
+};

@@ -2,8 +2,8 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 
-import carousel from './redux/reduxCarousel';
-import content from './redux/reduxContent';
+import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
+import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
 import logo from './redux/reduxLogo';
 import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
@@ -27,10 +27,14 @@ export default {
         T.component['content'] = {
             render: (viewId) => <SectionContent viewId={viewId} />,
             backgroundColor: '#f48fb1',
+            adapter: ajaxSelectContent,
+            getItem: ajaxGetContent,
         };
         T.component['carousel'] = {
             render: (viewId) => <SectionCarousel viewId={viewId} />,
             backgroundColor: '#ef9a9a',
+            adapter: ajaxSelectCarousel,
+            getItem: ajaxGetCarousel,
         };
         T.component['logo'] = {
             render: (viewId) => <SectionLogo viewId={viewId} />,

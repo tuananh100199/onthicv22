@@ -120,3 +120,8 @@ export const ajaxSelectDivision = {
         results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
     })
 }
+
+// export const ajaxSelectDivision = T.createAjaxAdapter(
+//     '/api/division/all',
+//     response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+// );

@@ -2,7 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import contentList from './redux';
-import SectionContent from './sectionContent';
+import SectionContent from './sectionContentList';
 
 export default {
     init: () => {
