@@ -36,26 +36,26 @@ export default {
             adapter: ajaxSelectCarousel,
             getItem: ajaxGetCarousel,
         };
-        T.component['logo'] = {
-            render: (viewId) => <SectionLogo viewId={viewId} />,
-            backgroundColor: '#ef9a9a',
-        };
-        T.component['slogan'] = {
-            render: (viewId) => <SectionSlogan viewId={viewId} />,
-            backgroundColor: '#b2ebf2',
-        };
+        // T.component['logo'] = {
+        //     render: (viewId) => <SectionLogo viewId={viewId} />,
+        //     backgroundColor: '#ef9a9a',
+        // };
+        // T.component['slogan'] = {
+        //     render: (viewId) => <SectionSlogan viewId={viewId} />,
+        //     backgroundColor: '#b2ebf2',
+        // };
         // T.component['staff group'] = {
         //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
         //     backgroundColor: '#e6ee9c',
         // };
-        T.component['statistic'] = {
-            render: (viewId) => <SectionStatistic viewId={viewId} />,
-            backgroundColor: '#b388ff',
-        };
-        T.component['testimony'] = {
-            render: (viewId) => <SectionTestimony viewId={viewId} />,
-            backgroundColor: '#b2dfdb',
-        };
+        // T.component['statistic'] = {
+        //     render: (viewId) => <SectionStatistic viewId={viewId} />,
+        //     backgroundColor: '#b388ff',
+        // };
+        // T.component['testimony'] = {
+        //     render: (viewId) => <SectionTestimony viewId={viewId} />,
+        //     backgroundColor: '#b2dfdb',
+        // };
         T.component['video'] = {
             render: (viewId) => <SectionVideo viewId={viewId} />,
             backgroundColor: '#90caf9',
