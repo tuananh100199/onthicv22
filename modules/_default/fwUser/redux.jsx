@@ -9,6 +9,7 @@ const UserUpdate = 'UserUpdate';
 const GET_STAFFS = 'User:GetStaffs';
 const GET_STAFF_IN_PAGE = 'User:GetStaffPage';
 
+
 export default function userReducer(state = null, data) {
     switch (data.type) {
         case UserGetAll:

@@ -133,16 +133,112 @@ class UserPasswordModal extends AdminModal {
     });
 }
 
+export class RoleFilter extends React.Component {
+    state = {}
+    render() {
+        let { isCourseAdmin, isStaff, isLecturer, isAll } = this.props.filter;
+        const pageNumber = this.props.pageNumber,
+            pageSize = this.props.pageSize;
+        return (
+            <div style={{ display: 'flex' }}>
+                <label>All:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isAll} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: !isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>Quản trị khóa học:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isCourseAdmin} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: !isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>Nhân viên:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isStaff} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: !isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>Giáo viên:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isLecturer} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: !isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+            </div>
+
+        );
+    }
+}
+
 class UserPage extends AdminPage {
     state = { searchText: '', isSearching: false };
+    constructor(props) {
+        super(props);
+        this.state = {
+            roleFilter: (T.cookie('roleFilter') ? T.cookie('roleFilter') :
+                {
+                    isCourseAdmin: false,
+                    isStaff: false,
+                    isLecturer: false,
+                    isAll: true,
+                })
+        }
+    }
+
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
         this.props.getAllRoles();
-        this.props.getUserPage(1);
+        this.props.getUserPage(1, 50, this.state.roleFilter);
         T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
+    }
+
+    setRoleFilter = (roleFilter) => {
+        this.setState({ roleFilter: roleFilter })
+        T.cookie('roleFilter', roleFilter)
     }
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);
@@ -187,7 +283,7 @@ class UserPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Người dùng',
-            header: 'Hello Vinh',
+            header: <RoleFilter getUserPage={this.props.getUserPage} setRoleFilter={this.setRoleFilter} filter={this.state.roleFilter} pageNumber={pageNumber} pageSize={pageSize} />,
             breadcrumb: ['Người dùng'],
             content: <>
                 <div className='tile'>{table}</div>
