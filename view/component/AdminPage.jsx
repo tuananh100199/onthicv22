@@ -149,8 +149,8 @@ export class FormCheckbox extends React.Component {
 export class FormTextBox extends React.Component {
     state = { value: '' };
 
-    value = (text) => {
-        if (text === '' || text) {
+    value = function (text) {
+        if (arguments.length) {
             this.setState({ value: text });
         } else {
             return this.state.value;
@@ -161,7 +161,7 @@ export class FormTextBox extends React.Component {
 
     render() {
         let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props;
-        type = type.toLowerCase(); // type = text | email | password
+        type = type.toLowerCase(); // type = text | number | email | password
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
