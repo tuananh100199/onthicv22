@@ -3,95 +3,7 @@ import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem';
 import ImageBox from 'view/component/ImageBox';
 
-class AddressListSection extends React.Component {
-    state = { items: [] };
-
-    componentDidMount() {
-        this.setState({ items: this.props.items || [] });
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.items && this.props.items && prevProps.items.length != this.props.items.length) {
-            this.setState({ items: this.props.items || [] });
-        }
-    }
-
-    textChanged = (index, value, type) => {
-        const items = this.state.items;
-        items[index][type] = value;
-        this.setState({ items });
-    }
-
-    addAddress = () => {
-        const items = this.state.items;
-        items.push({
-            addressTitle: '',
-            address: '',
-            phoneNumber: '',
-            mobile: '',
-            email: ''
-        });
-
-        this.setState({ items });
-    }
-
-    saveAddress = () => this.props.saveAddress(JSON.stringify(this.state.items));
-
-    render() {
-        return (
-            <div className='tile'>
-                <h3 className='tile-title'>Danh sách địa chỉ</h3>
-                <div className='tile-body'>
-                    {this.state.items.map((item, index) => (
-                        <React.Fragment key={index}>
-                            <h5>Địa Chỉ {index + 1}</h5>
-                            <div className='form-group row'>
-                                <label className='col-2 col-form-label'>Tên địa chỉ</label>
-                                <div className='col-10'>
-                                    <input className='form-control' type='text' placeholder='Tên địa chỉ' value={item.addressTitle.trim()} onChange={e => this.textChanged(index, e.target.value, 'addressTitle')} />
-                                </div>
-                            </div>
-                            <div className='form-group row'>
-                                <label className='col-2 col-form-label'>Địa chỉ</label>
-                                <div className='col-10'>
-                                    <input className='form-control' type='text' placeholder='Địa chỉ' value={item.address.trim()} onChange={e => this.textChanged(index, e.target.value, 'address')} />
-                                </div>
-                            </div>
-                            <div className='form-group row'>
-                                <label className='col-2 col-form-label'>Số điện thoại</label>
-                                <div className='col-10'>
-                                    <input className='form-control' type='text' placeholder='Số điện thoại' value={item.phoneNumber.trim()} onChange={e => this.textChanged(index, e.target.value, 'phoneNumber')} />
-                                </div>
-                            </div>
-                            <div className='form-group row'>
-                                <label className='col-2 col-form-label'>Di động</label>
-                                <div className='col-10'>
-                                    <input className='form-control' type='text' placeholder='Di động' value={item.mobile.trim()} onChange={e => this.textChanged(index, e.target.value, 'mobile')} />
-                                </div>
-                            </div>
-                            <div className='form-group row'>
-                                <label className='col-2 col-form-label'>Email</label>
-                                <div className='col-10'>
-                                    <input className='form-control' type='text' placeholder='Email' value={item.email.trim()} onChange={e => this.textChanged(index, e.target.value, 'email')} />
-                                </div>
-                            </div>
-                        </React.Fragment>
-                    ))}
-                </div>
-                <div className='tile-footer' style={{ textAlign: 'right' }}>
-                    <button className='btn btn-success' type='button' onClick={this.addAddress}>
-                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                    </button>&nbsp;
-                    <button className='btn btn-primary' type='button' onClick={this.saveAddress}>
-                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                    </button>
-                </div>
-            </div>
-        );
-    }
-}
-
-class MultimediaPage extends React.Component {
+class SettingsPage extends React.Component {
     constructor(props) {
         super(props);
         this.address = React.createRef();
@@ -104,8 +16,6 @@ class MultimediaPage extends React.Component {
         this.youtube = React.createRef();
         this.twitter = React.createRef();
         this.instagram = React.createRef();
-        this.latitude = React.createRef();
-        this.longitude = React.createRef();
     }
 
     componentDidMount() {
@@ -122,13 +32,6 @@ class MultimediaPage extends React.Component {
             youtube: $(this.youtube.current).val().trim(),
             twitter: $(this.twitter.current).val().trim(),
             instagram: $(this.instagram.current).val().trim(),
-        });
-    }
-
-    saveMapInfo = () => {
-        this.props.saveSystemState({
-            latitude: $(this.latitude.current).val().trim(),
-            longitude: $(this.longitude.current).val().trim(),
         });
     }
 
@@ -152,8 +55,8 @@ class MultimediaPage extends React.Component {
     }
 
     render() {
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, latitude, longitude, map, footer, contact, subscribe, addressList } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', latitude: '', longitude: '', map: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe, addressList } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg', addressList: '' };
 
         try {
             addressList = JSON.parse(addressList);
@@ -238,48 +141,25 @@ class MultimediaPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='tile-body'>
                                     <div className='form-group'>
-                                        <label className='control-label'>Logo</label>
+                                        <label className='control-label'>Logo công ty</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Background footer</label>
+                                        <label className='control-label'>Hình nền cuối trang web</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Liên hệ</label>
+                                        <label className='control-label'>Hình nền phần Liên hệ</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='contact' image={contact} />
                                     </div>
 
                                     <div className='form-group'>
-                                        <label className='control-label'>Subscriber</label>
+                                        <label className='control-label'>Hình nền phần Đăng ký nhận tin</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='subscribe' image={subscribe} />
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className='tile'>
-                            <h3 className='tile-title'>Bản đồ</h3>
-                            <div className='tile-body'>
-                                <div className='form-group'>
-                                    <label className='control-label'>Vĩ độ</label>
-                                    <input className='form-control' type='number' placeholder='Vĩ độ' ref={this.latitude} defaultValue={latitude} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Kinh độ</label>
-                                    <input className='form-control' type='number' placeholder='Kinh độ' ref={this.longitude} defaultValue={longitude} />
-                                </div>
-                                <div className='form-group'>
-                                    <label className='control-label'>Hình ảnh bản đồ</label>
-                                    <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='map' image={map} />
-                                </div>
-                            </div>
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.saveMapInfo}>
-                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -291,4 +171,4 @@ class MultimediaPage extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system });
 const mapActionsToProps = { saveSystemState };
-export default connect(mapStateToProps, mapActionsToProps)(MultimediaPage);
+export default connect(mapStateToProps, mapActionsToProps)(SettingsPage);

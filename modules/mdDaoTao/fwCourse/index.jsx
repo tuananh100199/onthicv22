@@ -7,8 +7,14 @@ import course from './redux';
 
 export default {
     init: () => {
-        T.component['all courses'] = (viewId) => <SectionCourseList viewId={viewId} />;
-        T.component['last course'] = (viewId) => <SectionCourse viewId={viewId} />;
+        T.component['all courses'] = {
+            render: (viewId) => <SectionCourseList viewId={viewId} />,
+            backgroundColor: '#ef9a9c',
+        };
+        T.component['last course'] = {
+            render: (viewId) => <SectionCourse viewId={viewId} />,
+            backgroundColor: '#ef9a9a',
+        };
     },
     redux: {
         course,

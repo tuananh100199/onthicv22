@@ -6,7 +6,10 @@ import contact from './redux';
 
 export default {
     init: () => {
-        T.component['contact'] = (viewId) => <SectionContact viewId={viewId} />;
+        T.component['contact'] = {
+            render: (viewId) => <SectionContact viewId={viewId} />,
+            backgroundColor: '#c8e6f9',
+        };
     },
     redux: {
         contact,

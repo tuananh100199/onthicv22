@@ -6,7 +6,10 @@ import SectionListView from './sectionListView';
 
 export default {
     init: () => {
-        T.component['all course types'] = (viewId) => <SectionListView viewId={viewId} />;
+        T.component['all course types'] = {
+            render: (viewId) => <SectionListView viewId={viewId} />,
+            backgroundColor: '#fb3553',
+        };
     },
     redux: {
         courseType,

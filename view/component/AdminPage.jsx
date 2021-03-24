@@ -244,6 +244,13 @@ export class FormSelect extends React.Component {
                 options.ajax = { ...data, delay: 500 };
             }
 
+            if (this.props.multiple) {
+                if (value) {
+                    value = Array.isArray(value) ? value : [value];
+                } else {
+                    value = [];
+                }
+            }
             $(this.input).select2(options).val(value).trigger('change');
         } else {
             return $(this.input).val();
@@ -254,7 +261,7 @@ export class FormSelect extends React.Component {
         const { className = '', style = {}, label = '', multiple = false, readOnly = false } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
-                <label>{label}</label>
+                {label ? <label>{label}</label> : null}
                 <label style={{ width: '100%', marginBottom: '0' }}>
                     <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
                         {/* <optgroup label={'Lựa chọn ' + label} /> */}

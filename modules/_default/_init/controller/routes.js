@@ -8,15 +8,14 @@ module.exports = (app) => {
     const menuSettings = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2010: { title: 'Thông tin chung', link: '/user/multimedia', icon: 'fa-gear', backgroundColor: '#0091EA' }
+            2010: { title: 'Thông tin chung', link: '/user/setting', icon: 'fa-gear', backgroundColor: '#0091EA' }
         },
     };
 
     app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, { name: 'system:settings', menu: menuSettings }, { name: 'statistic' },);
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
-    app.get('/user/settings', app.permission.check('system:settings'), app.templates.admin);
-    app.get('/user/multimedia', app.permission.check('system:settings'), app.templates.admin);
+    app.get('/user/setting', app.permission.check('system:settings'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
 
     // System data ----------------------------------------------------------------------------------------------------------------------------------
@@ -24,7 +23,7 @@ module.exports = (app) => {
         data: {
             todayViews: 0,
             allViews: 0,
-            logo: '/img/favicon.jpg',
+            logo: '/img/favicon.png',
             map: '/img/map.png',
             footer: '/img/footer.jpg',
             contact: '/img/contact.jpg',
@@ -33,8 +32,6 @@ module.exports = (app) => {
             youtube: '',
             twitter: '',
             instagram: '',
-            latitude: 10.7744962,
-            longitude: 106.6606518,
             email: app.email.from,
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
@@ -121,13 +118,6 @@ module.exports = (app) => {
             if (req.body.instagram != null || req.body.instagram == '') {
                 changes.instagram = req.body.instagram.trim();
             }
-            if (req.body.latitude != null || req.body.latitude == '') {
-                changes.latitude = req.body.latitude.trim();
-            }
-            if (req.body.longitude != null || req.body.longitude == '') {
-                changes.longitude = req.body.longitude.trim();
-            }
-
             app.model.setting.set(changes, (error) => {
                 if (error) {
                     res.send({ error: 'Update failed!' });
@@ -236,10 +226,7 @@ module.exports = (app) => {
                 };
 
                 const menuComponents = [];
-                getComponent(0, [menu.componentId], menuComponents, () => {
-                    menu.component = menuComponents[0];
-                    res.send(menu.component);
-                });
+                getComponent(0, [menu.componentId], menuComponents, () => res.send(menuComponents[0]));
             } else {
                 res.send({ error: 'Invalid menu!' });
             }

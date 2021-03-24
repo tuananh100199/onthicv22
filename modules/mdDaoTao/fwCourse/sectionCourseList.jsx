@@ -48,7 +48,7 @@ class CourseListView extends React.Component {
             elements_list = [];
         if (userPage) {
             elements_grid = userPage.list.map((item, index) => {
-                let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
+                let { image, title, abstract } = item || { image: '', title: '', abstract: '' };
                 const link = item.link ? linkFormat + item.link : idFormat + item._id;
                 return (
                     <div className='col-lg-4 col-md-6 col-12 team_col ftco-animate' key={index}>

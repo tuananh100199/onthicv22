@@ -6,7 +6,10 @@ import SectionContent from './sectionContent';
 
 export default {
     init: () => {
-        T.component['list contents'] = (viewId) => <SectionContent viewId={viewId} />;
+        T.component['list contents'] = {
+            render: (viewId) => <SectionContent viewId={viewId} />,
+            backgroundColor: '#fb6094',
+        };
     },
     redux: {
         contentList

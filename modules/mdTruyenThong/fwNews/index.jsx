@@ -7,8 +7,14 @@ import news from './redux';
 
 export default {
     init: () => {
-        T.component['all news'] = (viewId) => <SectionNewsList viewId={viewId} />;
-        T.component['last news'] = (viewId) => <SectionNews viewId={viewId} />;
+        T.component['all news'] = {
+            render: (viewId) => <SectionNewsList viewId={viewId} />,
+            backgroundColor: '#82b1ff',
+        };
+        T.component['last news'] = {
+            render: (viewId) => <SectionNews viewId={viewId} />,
+            backgroundColor: '#d7ccc8',
+        };
     },
     redux: {
         news,
