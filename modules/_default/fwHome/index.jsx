@@ -71,7 +71,11 @@ export default {
     },
     routes: [
         {
-            path: '/content/item/:_id',
+            path: '/user/component',
+            component: Loadable({ loading: Loading, loader: () => import('./adminComponentPage') })
+        },
+        {
+            path: '/content/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail') })
         },
         {
@@ -105,10 +109,6 @@ export default {
         {
             path: '/user/list-video/edit/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
-        },
-        {
-            path: '/user/component',
-            component: Loadable({ loading: Loading, loader: () => import('./adminComponentPage') })
         },
         {
             path: '/request-login',

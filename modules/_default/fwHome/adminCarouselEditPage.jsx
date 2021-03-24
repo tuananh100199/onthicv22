@@ -106,14 +106,11 @@ class CarouselItemModal extends React.Component {
 }
 
 class CarouselEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { single: false, active: false };
-        this.modal = React.createRef();
-    }
+    state = { single: false, active: false };
+    modal = React.createRef();
 
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/component', () => {
             $('#crsTitle').focus();
 
             const route = T.routeMatcher('/user/carousel/edit/:carouselId'),
@@ -287,6 +284,6 @@ class CarouselEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, carousel: state.carousel });
+const mapStateToProps = state => ({ system: state.system, component: state.component });
 const mapActionsToProps = { getCarousel, updateCarousel, createCarousel, updateCarouselItem, swapCarouselItem, deleteCarouselItem };
 export default connect(mapStateToProps, mapActionsToProps)(CarouselEditPage);

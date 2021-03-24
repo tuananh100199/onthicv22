@@ -1,16 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentByUser } from './redux/reduxContent';
+import { homeGetContent } from './redux/reduxContent';
 import NewsFeed from 'view/component/NewsFeed';
 
 class ContentDetail extends React.Component {
     state = { _id: null, title: '', active: false, content: '' };
 
     componentDidMount() {
-        const route = T.routeMatcher('/content/item/:contentId'),
+        const route = T.routeMatcher('/content/:_id'),
             params = route.parse(window.location.pathname);
-        this.setState({ _id: params.contentId });
-        this.props.getContentByUser(params.contentId, data => {
+        this.setState({ _id: params._id });
+        this.props.homeGetContent(params.contentId, data => {
             if (data.item) {
                 this.setState(data.item, T.ftcoAnimate);
             }
@@ -24,8 +24,8 @@ class ContentDetail extends React.Component {
         }, 250);
         if (prevProps.location.pathname != window.location.pathname) {
             let url = window.location.pathname,
-                params = T.routeMatcher('/content/item/:contentId').parse(url);
-            this.setState({ _id: params.contentId });
+                params = T.routeMatcher('/content/:_id').parse(url);
+            this.setState({ _id: params._id });
             this.props.getContent(params.contentId, data => data.item && this.setState(data.item));
         }
     }
@@ -52,5 +52,5 @@ class ContentDetail extends React.Component {
 }
 
 const mapStateToProps = state => ({ content: state.content });
-const mapActionsToProps = { getContentByUser };
+const mapActionsToProps = { homeGetContent };
 export default connect(mapStateToProps, mapActionsToProps)(ContentDetail);

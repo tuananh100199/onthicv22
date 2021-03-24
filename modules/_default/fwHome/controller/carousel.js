@@ -3,11 +3,7 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.carousel.getPage(pageNumber, pageSize, {}, (error, page) => {
-            if (error || page == null) {
-                res.send({ error: 'Carousel list are not ready!' })
-            } else {
-                res.send({ page });
-            }
+            res.send({ error: error || page == null ? 'Carousel list are not ready!' : null, page });
         });
     });
 
@@ -68,7 +64,7 @@ module.exports = app => {
     });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/home/carousel/:_id', (req, res) => app.model.carousel.get(req.params._id, (error, carousel) => {
+    app.get('/home/carousel', (req, res) => app.model.carousel.get(req.query._id, (error, carousel) => {
         if (error || carousel == null) {
             res.send({ error: 'Get carousel failed!' });
         } else {

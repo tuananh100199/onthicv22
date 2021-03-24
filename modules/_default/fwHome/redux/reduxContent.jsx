@@ -5,10 +5,10 @@ const ContentGetAll = 'Content:GetAll';
 const ContentUpdate = 'Content:Update';
 const ContentDelete = 'Content:Delete';
 
-export default function contentReducer(state = [], data) {
+export default function contentReducer(state = null, data) {
     switch (data.type) {
         case ContentGetAll:
-            return data.list;
+            return Object.assign({}, state, { list: data.list });
 
         case ContentUpdate:
             state = state.slice();
@@ -20,23 +20,13 @@ export default function contentReducer(state = [], data) {
             }
             return state;
 
-        case ContentDelete:
-            state = state.slice();
-            for (let i = 0; i < state.length; i++) {
-                if (state[i]._id == data._id) {
-                    state.splice(i, 1);
-                    break;
-                }
-            }
-            return state;
-
         default:
             return state;
     }
 }
 
-// Action --------------------------------------------------------------------------------------------------------------
-export function getAllContents(done) {
+// Action -------------------------------------------------------------------------------------------------------------
+export function getContentAll(done) {
     return dispatch => {
         const url = `/api/content/all`;
         T.get(url, data => {
@@ -61,7 +51,7 @@ export function createContent(done) {
                 T.notify('Tạo nội dung bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllContents());
+                dispatch(getContentAll());
                 if (done) done(data);
             }
         }, error => T.notify('Tạo nội dung bị lỗi!', 'danger'));
@@ -77,7 +67,7 @@ export function updateContent(_id, changes) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Nội dung cập nhật thành công!', 'success');
-                dispatch(getAllContents());
+                dispatch(getContentAll());
             }
         }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
     }
@@ -92,7 +82,8 @@ export function deleteContent(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Nội dung được xóa thành công!', 'error', false, 800);
-                dispatch({ type: ContentDelete, _id });
+                dispatch({ type: getContentAll, _id });
+                dispatch(getCarouselAll());
             }
         }, error => T.notify('Xóa nội dung bị lỗi!', 'danger'));
     }
@@ -110,10 +101,11 @@ export function getContent(_id, done) {
     });
 }
 
-export function getContentByUser(id, done) {
+// Home ---------------------------------------------------------------------------------------------------------------
+export function homeGetContent(_id, done) {
     return dispatch => {
-        const url = '/home/content/item/' + id;
-        T.get(url, data => {
+        const url = '/home/content';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -128,8 +120,8 @@ export function getContentByUser(id, done) {
 }
 
 export const ajaxSelectContent = T.createAjaxAdapter(
-    '/api/content/all',
-    response => response && response.list ? response.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : []
+    '/api/content/page/1/20',
+    response => response && response.page && response.page.list ? response.page.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetContent(_id, done) {
