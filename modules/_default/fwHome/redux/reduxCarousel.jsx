@@ -75,7 +75,7 @@ export function getCarousel(_id, done) {
             console.error(`GET: ${url}. ${data.error}`);
         } else {
             dispatch({ type: CarouselGet, item: data.item });
-            done && done(data.item);
+            done && done(data);
         }
     });
 }

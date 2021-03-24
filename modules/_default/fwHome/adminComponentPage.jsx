@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import ContentPage from './adminContentView';
 import CarouselPage from './adminCarouselView';
@@ -10,10 +11,11 @@ import ListVideoPage from './adminListVideoView';
 import ContentListPage from 'modules/_default/fwContentList/adminContentListView';
 import DangKyTuVanPage from 'modules/mdDaoTao/fwDangKyTuVan/adminPage';
 
-export default class ComponentPage extends AdminPage {
+export class ComponentPage extends AdminPage {
     render() {
-        const tabs = [];
-        tabs.push({ key: tabs.length, title: 'Bài viết', component: <ContentPage history={this.props.history} /> });
+        const permission = this.getUserPermission('component'),
+            tabs = [];
+        tabs.push({ key: tabs.length, title: 'Bài viết', component: <ContentPage permission={permission} history={this.props.history} /> });
         // tabs.push({ key: tabs.length, title: 'Danh sách bài viết', component: <ContentListPage history={this.props.history} /> });
         // tabs.push({ key: tabs.length, title: 'Tập hình ảnh', component: <CarouselPage /> });
         // tabs.push({ key: tabs.length, title: 'Video', component: <VideoPage /> });
@@ -31,3 +33,7 @@ export default class ComponentPage extends AdminPage {
         });
     }
 }
+
+const mapStateToProps = state => ({ system: state.system });
+const mapActionsToProps = {};
+export default connect(mapStateToProps, mapActionsToProps)(ComponentPage);

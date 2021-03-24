@@ -11,7 +11,10 @@ module.exports = app => {
             2100: { title: 'Thành phần giao diện', link: '/user/component', icon: 'fa-object-group', backgroundColor: '#00897b' }
         }
     };
-    app.permission.add({ name: 'menu:read', menu: menuMenu }, { name: 'menu:write' }, { name: 'menu:delete' }, { name: 'component:read', menu: menuComponent }, { name: 'component:write' });
+    app.permission.add(
+        { name: 'menu:read', menu: menuMenu }, { name: 'menu:write' }, { name: 'menu:delete' },
+        { name: 'component:read', menu: menuComponent }, { name: 'component:write' }, { name: 'component:delete' },
+    );
 
     app.get('/user/menu/edit/:_id', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/menu', app.permission.check('menu:read'), app.templates.admin);

@@ -33,7 +33,7 @@ class CategoryModal extends AdminModal {
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả (nếu có)' readOnly={this.props.readOnly} />
-            <FormImageBox ref={e => this.imageBox = e} className='form-group' label='Hình đại diện' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
+            <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
         </>,
     });
 }
@@ -70,7 +70,7 @@ class CategorySection extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
-                    <TableCell type='image' style={{ width: '20%' }} content={item.image || '/img/avatar.png'} />
+                    <TableCell type='image' content={item.image || '/img/avatar.png'} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCategory(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),

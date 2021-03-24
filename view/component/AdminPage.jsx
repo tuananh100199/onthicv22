@@ -307,7 +307,7 @@ export class FormImageBox extends React.Component {
     render() {
         let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', image = null, onDelete = null, onSuccess = null } = this.props;
         return (
-            <div className={className} style={style}>
+            <div className={'form-group ' + className} style={style}>
                 <label>{label}&nbsp;</label>
                 {!readOnly && image && onDelete ?
                     <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
