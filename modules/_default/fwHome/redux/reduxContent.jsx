@@ -3,7 +3,6 @@ import T from 'view/js/common';
 // Reducer -------------------------------------------------------------------------------------------------------------
 const ContentGetAll = 'Content:GetAll';
 const ContentUpdate = 'Content:Update';
-const ContentDelete = 'Content:Delete';
 
 export default function contentReducer(state = null, data) {
     switch (data.type) {
@@ -82,8 +81,7 @@ export function deleteContent(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Nội dung được xóa thành công!', 'error', false, 800);
-                dispatch({ type: getContentAll, _id });
-                dispatch(getCarouselAll());
+                dispatch(getContentAll());
             }
         }, error => T.notify('Xóa nội dung bị lỗi!', 'danger'));
     }

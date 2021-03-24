@@ -42,12 +42,17 @@ class VideoModal extends AdminModal {
         title: 'Thông tin video',
         size: 'large',
         body: (<>
-            <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' />
-            <FormEditor ref={e => this.itemEditor = e} label='Nội dung video' />
+
             <div className='row'>
-                <FormTextBox ref={e => this.itemLink = e} className='col-md-8' label='Đường dẫn' />
-                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='VideoImage' image={this.state.image} />
+                <div className='col-md-8'>
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' />
+                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' />
+                </div>
+                <div className='col-md-4'>
+                    <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='VideoImage' image={this.state.image} />
+                </div>
             </div>
+            <FormEditor ref={e => this.itemEditor = e} label='Nội dung video' />
         </>),
     });
 }
