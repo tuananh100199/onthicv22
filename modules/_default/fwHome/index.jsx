@@ -10,7 +10,7 @@ import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
 import statistic from './redux/reduxStatistic';
 import testimony from './redux/reduxTestimony';
-import video from './redux/reduxVideo';
+import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo from './redux/reduxListVideo';
 
 import SectionContent from './sectionContent';
@@ -60,6 +60,12 @@ export default {
         T.component['video'] = {
             render: (viewId) => <SectionVideo viewId={viewId} />,
             backgroundColor: '#90caf9',
+        };
+        T.component['video'] = {
+            render: (viewId) => <SectionVideo viewId={viewId} />,
+            backgroundColor: '#f48fb1',
+            adapter: ajaxSelectVideo,
+            getItem: ajaxGetVideo,
         };
         T.component['list videos'] = {
             render: (viewId) => <SectionListVideo viewId={viewId} />,

@@ -1,24 +1,20 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
-const VideoGetPage = 'Video:GetPage';
 const VideoUpdate = 'Video:Update';
-const VideoGetAll = 'Video:GetAll'
+const VideoGetAll = 'Video:GetAll';
+
 export default function videoReducer(state = {}, data) {
     switch (data.type) {
         case VideoGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case VideoGetPage:
-            return Object.assign({}, state, { page: data.page });
-
         case VideoUpdate:
-            let updatedPage = Object.assign({}, state.page || { list: [] }),
-                updatedItem = data.item;
-            for (let i = 0, n = updatedPage.list.length; i < n; i++) {
-                if (updatedPage.list[i]._id == updatedItem._id) {
-                    updatedPage.list.splice(i, 1, updatedItem);
-                    return Object.assign({}, state, { page: updatedPage });
+            state = state.slice();
+            for (let i = 0; i < state.length; i++) {
+                if (state[i]._id == data.item._id) {
+                    state[i] = data.item;
+                    break;
                 }
             }
             return state;
@@ -29,7 +25,7 @@ export default function videoReducer(state = {}, data) {
 }
 
 // ADMIN --------------------------------------------------------------------------------------------------------------------------------------------
-export function getAllVideos(condition, done) {
+export function getVideoAll(condition, done) {
     return dispatch => {
         const url = '/api/video/all';
         T.get(url, { condition }, data => {
@@ -46,40 +42,22 @@ export function getAllVideos(condition, done) {
     }
 }
 
-T.initCookiePage('adminVideo');
-export function getVideoInPage(pageNumber, pageSize, done) {
-    const page = T.updatePage('adminVideo', pageNumber, pageSize);
-
-    return dispatch => {
-        const url = '/api/video/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách video bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
-                dispatch({ type: VideoGetPage, page: data.page });
-            }
-        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
-    }
-}
-
-export function createVideo(video, done) {
+export function createVideo(data, done) {
     return dispatch => {
         const url = '/api/video';
-        T.post(url, { data: video }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllVideos());
+                dispatch(getVideoAll());
                 if (done) done(data);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
     }
 }
 
-export function updateVideo(_id, changes, done) {
+export function updateVideo(_id, changes) {
     return dispatch => {
         const url = '/api/video';
         T.put(url, { _id, changes }, data => {
@@ -88,26 +66,13 @@ export function updateVideo(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Cập nhật thông tin video thành công!', 'success');
-                dispatch(getAllVideos());
+                dispatch(getVideoAll());
             }
         }, error => T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));
     }
 }
 
-export function swapVideo(_id, isMoveUp, done) {
-    return dispatch => {
-        const url = '/api/video/item/swap/';
-        T.put(url, { _id, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Swap video item failed!', 'danger')
-                console.error('PUT: ' + url + '. ' + data.error);
-            }
-            done && done()
-        }, error => T.notify('Swap video item failed!', 'danger'));
-    }
-}
-
-export function deleteVideo(_id, done) {
+export function deleteVideo(_id) {
     return dispatch => {
         const url = '/api/video';
         T.delete(url, { _id }, data => {
@@ -116,8 +81,7 @@ export function deleteVideo(_id, done) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Video được xóa thành công!', 'error', false, 800);
-                done && done();
-                dispatch(getAllVideos());
+                dispatch(getVideoAll());
             }
         }, error => T.notify('Xóa video bị lỗi!', 'danger'));
     }
@@ -127,23 +91,19 @@ export function changeVideo(video) {
     return { type: VideoUpdate, item: video };
 }
 
-
-// USER ---------------------------------------------------------------------------------------------------------------------------------------------
 export function getVideo(_id, done) {
-    return dispatch => {
-        const url = '/home/video/item/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy video bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                done(data.item);
-            }
-        }, error => T.notify('Lấy video bị lỗi!', 'danger'));
-    }
+    return dispatch => ajaxGetVideo(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy video bị lỗi!', 'danger');
+            console.error(`GET: ${url}. ${data.error}`);
+        } else {
+            dispatch({ type: VideoUpdate, item: data.item });
+            done && done(data);
+        }
+    });
 }
 
-export function getAllVideosByUser(condition, done) {
+export function getVideoAllByUser(condition, done) {
     return dispatch => {
         const url = '/home/video/all';
         T.get(url, { condition }, data => {
@@ -156,3 +116,31 @@ export function getAllVideosByUser(condition, done) {
         }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
     }
 }
+
+// Home ---------------------------------------------------------------------------------------------------------------
+export function homeGetVideo(_id, done) {
+    return dispatch => {
+        const url = '/home/video';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách video bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: VideoUpdate, item: data.item });
+                if (done) done({ item: data.item });
+            }
+        }, error => {
+            console.error('GET: ' + url + '. ' + error);
+        });
+    }
+}
+
+export const ajaxSelectVideo = T.createAjaxAdapter(
+    '/api/video/page/1/20',
+    response => response && response.page && response.page.list ? response.page.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : [],
+);
+
+export function ajaxGetVideo(_id, done) {
+    const url = '/api/video';
+    T.get(url, { _id }, done, error => T.notify('Lấy nội dung bị lỗi!', 'danger'));
+};
