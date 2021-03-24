@@ -15,7 +15,6 @@ class ContentEditPage extends AdminPage {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
                     const { _id, title, abstract, active, content, image = '/img/avatar.jpg' } = data.item;
-                    console.log(data)
                     this.itemTitle.focus();
                     this.itemTitle.value(title);
                     this.itemAbstract.value(abstract);
