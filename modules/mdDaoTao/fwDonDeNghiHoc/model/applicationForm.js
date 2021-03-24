@@ -36,9 +36,13 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition)).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done),
+        get: (condition, done) => (typeof condition == 'object' ?
+            model.findOne(condition) :
+            model.findById(condition)).populate('user', '_id firstname lastname birthday phoneNumber residence identityCard identityDate identityIssuedBy nationality sex regularResidence').exec(done),
 
-        update: (_id, $set, $unset, done) => done ? model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) : model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

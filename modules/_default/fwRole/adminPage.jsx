@@ -1,242 +1,107 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllRoles, updateRole, deleteRole, getRolePage, createRole } from './redux';
+import { getRolePage, createRole, updateRole, deleteRole } from './redux';
 import Pagination from 'view/component/Pagination';
+import { AdminPage, AdminModal, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
-class RoleModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { isAdmin: false };
-        this.modal = React.createRef();
-        this.btnSave = React.createRef();
-    }
-
+class RoleModal extends AdminModal {
+    state = {};
     componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#roleName').focus());
-        }, 250));
+        $(document).ready(() => this.onShown(() => this.itemName.focus()));
     }
 
-    show = (item, isAdmin) => {
-        const { _id, name, description } = item ?
-            item : { _id: null, name: '', permission: [], active: false, };
-        this.setState({ isAdmin, name, description });
-        $(this.btnSave.current).data('id', _id);
-        $('#roleName').val(name);
-        $('#description').val(description);
-        $(this.modal.current).modal('show');
+    onShow = (item) => {
+        const { _id, name, description, permission } = item || { name: '', description: '', permission: [], active: true };
+        this.itemName.value(name);
+        this.itemDescription.value(description);
+        this.itemPermission.value(permission);
+        this.setState({ _id, name, description });
     }
 
-    save = (e) => {
-        e.preventDefault();
-        const _id = $(this.btnSave.current).data('id'),
-            changes = {
-                name: $('#roleName').val().trim(),
-                description: $('#description').val()
-            };
-
+    onSubmit = () => {
+        const changes = {
+            name: this.itemName.value().trim(),
+            description: this.itemDescription.value(),
+            permission: this.itemPermission.value(),
+        };
         if (changes.name == '') {
             T.notify('Tên bị trống!', 'danger');
-            $('#roleName').focus();
+            this.itemName.focus();
         } else {
             if (this.state.name == 'admin') delete changes.name;
-            if (_id) {
-                this.props.updateRole(_id, changes, () => this.props.getPage && this.props.getPage());
+            if (this.state._id) {
+                this.props.update(this.state._id, changes, this.hide);
             } else {
-                this.props.createRole(changes, () => this.props.getPage && this.props.getPage());
+                this.props.create(changes, this.hide);
             }
-            $(this.modal.current).modal('hide');
         }
     }
 
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin vai trò</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label htmlFor='roleName'>Tên vai trò{this.state.name == 'admin' ? ': admin' : ''}</label>
-                                <input className='form-control' id='roleName' type='text' placeholder='Tên vai trò' style={{ display: this.state.name == 'admin' ? 'none' : 'block' }} />
-                            </div>
-                            <div className='form-group'>
-                                <label htmlFor='description'>Thông tin chi tiết</label>
-                                {this.state.name != 'admin' || this.state.isAdmin ?
-                                    <input className='form-control' id='description' type='text' placeholder='Thông tin chi tiết' /> : ': ' + this.state.description}
-                            </div>
-
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            {this.state.name != 'admin' || this.state.isAdmin ?
-                                <button type='submit' className='btn btn-primary' ref={this.btnSave}>
-                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                </button> : ''}
-                        </div>
-                    </div>
-                </form>
-            </div>
-        );
-    }
+    render = () => this.renderModal({
+        title: 'Thông tin vai trò',
+        size: 'large',
+        body: <>
+            <FormTextBox type='text' ref={e => this.itemName = e} label='Tên' readOnly={this.props.readOnly || this.state.name == 'admin'} />
+            <FormTextBox type='text' ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
+            <FormSelect ref={e => this.itemPermission = e} label='Quyền' data={this.props.permissions} multiple={true} readOnly={this.props.readOnly} />
+        </>,
+    });
 }
 
-class Select2 extends React.Component {
-    select = React.createRef();
-
+class RolePage extends AdminPage {
     componentDidMount() {
-        $(document).ready(() => {
-            $(this.select.current).select2({ data: this.props.list }).val(this.props.selectedList).trigger('change');
-            $(this.select.current).on('change', e => {
-                const permission = [];
-                for (let i = 0; i < e.target.selectedOptions.length; i++) {
-                    permission.push(e.target.selectedOptions[i].value);
-                }
-                this.props.update(this.props._id, { permission });
-            })
-        })
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps._id != this.props._id) {
-            $(this.select.current).select2({ data: this.props.list }).val(this.props.selectedList).trigger('change');
-        }
-    }
-
-    render() {
-        return (
-            <select ref={this.select} className='select2-input' multiple={true} defaultValue={[]} style={{ 'width': '100%' }}>
-                <optgroup label='Lựa chọn quyền' />
-            </select>
-        );
-    }
-}
-
-class RolePage extends React.Component {
-    roleModal = React.createRef();
-
-    componentDidMount() {
+        T.ready(() => T.showSearchBox());
         this.props.getRolePage();
-        T.ready();
+        T.onSearch = (searchText) => this.props.getRolePage(undefined, undefined, searchText ? { searchText } : null, () => { });
     }
 
-    createRole = (e) => {
-        e.preventDefault();
-        this.roleModal.current.show(null);
-    };
+    edit = (e, item) => e.preventDefault() || this.roleModal.show(item);
 
-    editRole = (e, item) => {
-        e.preventDefault();
-        let isAdmin = this.props.system.user.roles.reduce((result, item) => result || item.name == 'admin', false);
-        this.roleModal.current.show(item, isAdmin);
-    };
-
-    changeRoleActive = (item) => {
-        this.props.updateRole(item._id, { active: !item.active }, () => this.props.getRolePage());
-    };
-
-    changeRoleDefault = (item) => {
-        if (item.default == false) this.props.updateRole(item._id, { default: true }, () => this.props.getRolePage());
-    };
-
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Xóa vai trò', 'Bạn có chắc bạn muốn xóa vai trò này?', true, isConfirm =>
-            isConfirm && this.props.deleteRole(item._id, () => this.props.getRolePage()));
-    }
+    delete = (e, item) => e.preventDefault() || item.name == 'admin' || T.confirm('Xóa vai trò', 'Bạn có chắc bạn muốn xóa vai trò này?', true, isConfirm =>
+        isConfirm && this.props.deleteRole(item._id, () => this.props.getRolePage()));
 
     render() {
-        const permissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            hasUpdate = permissions.includes('user:write'),
-            hasDelete = permissions.includes('user:delete');
-        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.role && this.props.role.page ?
-            this.props.role.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: null };
-        const permissionList = this.props.role && this.props.role.page ? this.props.role.page.permissionList : null;
+        const permission = this.getUserPermission('role');
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.role && this.props.role.page ? this.props.role.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const permissions = this.props.role && this.props.role.page ? this.props.role.page.permissions : null;
 
-        let table = <p>Không có vai trò!</p>;
-        if (list && list.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: 'auto' }}>Tên</th>
-                            <th style={{ width: '100%', textAlign: 'center' }}>Quyền</th>
-                            <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                            <th style={{ width: 'auto' }} nowrap='true'>Mặc định</th>
-                            {hasUpdate || hasDelete ? <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th> : ''}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td>
-                                    {hasUpdate ? <a href='#' onClick={e => this.editRole(e, item)} style={{ whiteSpace: 'nowrap' }}>{item.name}</a> : item.name}
-                                </td>
-                                <td style={{ padding: 6 }}>
-                                    {hasUpdate && item.name != 'admin' ?
-                                        <Select2 key={index} list={permissionList} selectedList={item.permission} _id={item._id} update={this.props.updateRole} /> :
-                                        permissionList.toString().replaceAll(',', ', ')}
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }}>
-                                    <label>
-                                        <input type='checkbox' checked={item.active} onChange={() => hasUpdate && item.name != 'admin' && this.changeRoleActive(item)} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }}>
-                                    <label>
-                                        <input type='checkbox' checked={item.default} onChange={() => hasUpdate && this.changeRoleDefault(item)} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                {hasUpdate || hasDelete ?
-                                    <td>
-                                        <div className='btn-group'>
-                                            {hasUpdate ?
-                                                <a className='btn btn-primary' href='#' onClick={e => this.editRole(e, item)}>
-                                                    <i className='fa fa-lg fa-edit' />
-                                                </a> : ''}
-                                            {hasDelete && item.name != 'admin' ?
-                                                <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                    <i className='fa fa-lg fa-trash' />
-                                                </a> : ''}
-                                        </div>
-                                    </td> : ''}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        }
+        const table = renderTable({
+            getDataSource: () => this.props.role && this.props.role.page && this.props.role.page.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: 'auto' }}>Tên</th>
+                    <th style={{ width: '100%', textAlign: 'center' }}>Quyền</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Mặc định</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                    <TableCell type='link' content={item.name} onClick={e => this.edit(e, item)} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='text' content={item.permission.toString().replaceAll(',', ', ')} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateRole(item._id, { active })} />
+                    <TableCell type='checkbox' content={item.default} permission={permission} onChanged={checked => this.props.updateRole(item._id, { default: checked })} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}></TableCell>
+                </tr>),
+        });
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa-user' /> Vai trò</h1>
-                </div>
+        return this.renderPage({
+            icon: 'fa fa-users',
+            title: 'Vai trò',
+            breadcrumb: ['Vai trò'],
+            content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='adminRole'
-                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getRolePage} />
-
-                {permissions.includes('role:write') ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.createRole}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>
-                    : ''}
-                <RoleModal ref={this.roleModal} permissionList={permissionList}
-                    updateRole={this.props.updateRole} getPage={this.props.getRolePage} createRole={this.props.createRole} />
-            </main>
-        );
+                <Pagination name='adminRole' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getRolePage} />
+                <RoleModal ref={e => this.roleModal = e} permissions={permissions} readOnly={!permission.write}
+                    getPage={this.props.getRolePage} create={this.props.createRole} update={this.props.updateRole} />
+            </>,
+            onCreate: permission.write ? this.edit : null,
+        });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, role: state.role });
-const mapActionsToProps = { getAllRoles, updateRole, deleteRole, getRolePage, createRole };
+const mapActionsToProps = { getRolePage, createRole, updateRole, deleteRole };
 export default connect(mapStateToProps, mapActionsToProps)(RolePage);

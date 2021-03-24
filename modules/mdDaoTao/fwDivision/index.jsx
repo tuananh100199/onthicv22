@@ -9,11 +9,11 @@ export default {
     routes: [
         {
             path: '/user/division/edit/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDivisionEditPage') }),
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },
         {
             path: '/user/division',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDivisionPage') }),
-        }
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
+        },
     ]
 };

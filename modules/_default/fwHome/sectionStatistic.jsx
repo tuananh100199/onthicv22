@@ -6,8 +6,8 @@ class SectionStatistic extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.statisticId) {
-            this.props.getStatisticByUser(this.props.statisticId, statistic => this.setState({ statistic }));
+        if (this.props.viewId) {
+            this.props.getStatisticByUser(this.props.viewId, statistic => this.setState({ statistic }));
         }
     }
 
@@ -34,8 +34,8 @@ class SectionStatistic extends React.Component {
                 <div className='container-fluid'>
                     <div className='row justify-content-center mb-5 pb-3'>
                         <div className='col-md-7 text-center heading-section heading-section-white ftco-animate'>
-                            <h2 className='mb-4 text'>{T.language.parse(this.state.statistic.title)}</h2>
-                            <span className='subheading text' dangerouslySetInnerHTML={{ __html: T.language.parse(this.state.statistic.description) }} />
+                            <h2 className='mb-4 text'>{this.state.statistic.title}</h2>
+                            <span className='subheading text' dangerouslySetInnerHTML={{ __html: this.state.statistic.description }} />
                         </div>
                     </div>
                     <div className='row justify-content-center'>
@@ -46,7 +46,7 @@ class SectionStatistic extends React.Component {
                                         <div className='block-18 text-center'>
                                             <div className='text'>
                                                 <strong className='number' data-number={item.number}>{item.number}</strong>
-                                                <span>{T.language.parse(item.title)}</span>
+                                                <span>{item.title}</span>
                                             </div>
                                         </div>
                                     </div>

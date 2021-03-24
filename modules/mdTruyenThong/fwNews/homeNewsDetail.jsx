@@ -41,7 +41,6 @@ class NewsDetail extends React.Component {
     }
 
     render() {
-
         const item = this.props.news && this.props.news.userNews ? this.props.news.userNews : null;
         if (item == null) {
             return <p>...</p>;

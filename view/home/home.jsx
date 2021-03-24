@@ -22,20 +22,21 @@ import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwHome from 'modules/_default/fwHome/index';
 import fwMenu from 'modules/_default/fwMenu/index';
 import fwUser from 'modules/_default/fwUser/index';
-import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwContentList from 'modules/_default/fwContentList/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 
-const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwForm, fwNews, fwCourse, fwContentList, fwDivision, fwCourseType];
+window.T = T;
+const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwNews, fwCourse, fwContentList, fwDivision, fwCourseType];
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {},
     addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
+    module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
     module.routes.forEach((route) => {
         if (!route.path.startsWith('/user')) {
@@ -45,7 +46,6 @@ modules.forEach(module => {
 });
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());
-window.T = T;
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {

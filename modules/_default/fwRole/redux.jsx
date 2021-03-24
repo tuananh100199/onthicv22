@@ -70,19 +70,20 @@ export function getAllRoles(done) {
     }
 }
 
-export function getRolePage(pageNumber, pageSize, done) {
+export function getRolePage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminRole', pageNumber, pageSize);
     return dispatch => {
-        const url = '/api/role/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        const url = `/api/role/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition: pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách vai trò bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                if (done) done(data.page);
                 dispatch({ type: RoleGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
     }
 }
 
@@ -135,8 +136,8 @@ export function deleteRole(_id) {
 
 export function getRole(_id, done) {
     return dispatch => {
-        const url = `/api/role/item/${_id}`;
-        T.get(url, data => {
+        const url = `/api/role`;
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin vai trò bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);

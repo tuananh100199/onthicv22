@@ -15,15 +15,37 @@ module.exports = app => {
     app.get('/user/dang-ky-tu-van-list/edit/:_id', app.permission.check('dangKyTuVan:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
-    const emailParams = ['phanHoiDangKyTuVanTitle', 'phanHoiDangKyTuVanText', 'phanHoiDangKyTuVanHtml'];
-    app.get('/api/dang-ky-tu-van-list/email/all', app.permission.check('dangKyTuVan:email'), (req, res) => {
-        app.model.setting.get(...emailParams, result => res.send(result));
+
+    app.get('/api/dang-ky-tu-van-list/all', app.permission.check('dangKyTuVan:read'), (req, res) => {
+        const searchText = req.query.searchText,
+        condition = {};
+        if (searchText) {
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            condition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { phone: value },
+                { email: value },
+            ];
+        }
+        app.model.dangKyTuVanList.getAll(condition, (error, items) => res.send({ error, items }));
     });
 
     app.get('/api/dang-ky-tu-van-list/page/:pageNumber/:pageSize', app.permission.check('dangKyTuVan:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize),
+            searchText = req.query.searchText,
+            condition = {};
+        if(searchText) {
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            condition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { phone: value },
+                { email: value },
+            ];
+        }
+        app.model.dangKyTuVanList.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
         });
@@ -36,72 +58,52 @@ module.exports = app => {
         });
     });
 
-    app.post('/api/dang-ky-tu-van-list/item/response', app.permission.check('dangKyTuVan:write'), (req, res) => {
-        const { _id, content } = req.body;
-        app.model.dangKyTuVanList.get(_id, (error, item) => {
-            if (error || item == null) {
-                res.send({ error: `Hệ thống lỗi!` })
+    app.get('/api/dang-ky-tu-van-list/export', app.permission.check('dangKyTuVan:write'), (req, res) => {
+        app.model.dangKyTuVanList.getAll((error, items) => {
+            if (error) {
+                res.send({ error })
             } else {
-                if (error != null) {
-                    res.send({ error: `Ops! có lỗi xảy ra!` });
-                } else {
-                    app.model.user.get({ email: item.email }, (error, user) => {
-                        if (error != null) {
-                            res.send({ error: `Ops! có lỗi xảy ra!` });
-                        }
-                        if (!user) {
-                            const dataPassword = app.randomPassword(8),
-                                data = {
-                                    email: item.email,
-                                    firstname: item.firstname,
-                                    lastname: item.lastname,
-                                    password: dataPassword
-                                };
-                            app.model.user.create(data, (error, user) => {
-                                res.send({ error, user });
-                                if (user.email) {
-                                    app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                        const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                                            mailTitle = result.emailCreateMemberByAdminTitle,
-                                            mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                            mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
-                                        app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                    });
-                                }
-                            });
-                        }
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Sheet1');
+                let cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'Số điện thoại', bold: true, border: '1234' },
+                    { cell: 'E1', value: 'Email', bold: true, border: '1234' },
+                    { cell: 'F1', value: 'Loại khóa học', bold: true, border: '1234' },
+                    { cell: 'G1', value: 'Loại khóa học tư vấn', bold: true, border: '1234' },
+                ];
+
+                worksheet.columns = [
+                    { header: 'STT', key: 'id', width: 15},
+                    { header: 'Họ', key: 'lastname', width: 20 },
+                    { header: 'Tên', key: 'firstname', width: 20 },
+                    { header: 'Số điện thoại', key: 'phone', width: 20},
+                    { header: 'Email', key: 'email', width: 40 },
+                    { header: 'Loại khóa học', key: 'courseType', width: 20 },
+                    { header: 'Loại khóa học tư vấn', key: 'courseTypeRecommend', width: 20 }
+
+                ];
+                items.forEach((item, index) => {
+                    worksheet.addRow({
+                        id: index + 1,
+                        lastname: item.lastname,
+                        firstname: item.firstname,
+                        phone: item.phone,
+                        email: item.email,
+                        courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký',
+                        courseTypeRecommend: item.courseTypeRecommend ? item.courseTypeRecommend.title : 'Chưa đăng ký'
                     });
-                }
-                app.model.setting.get('emailPhanHoiDangKyTuVanTitle', 'emailPhanHoiDangKyTuVanText', 'emailPhanHoiDangKyTuVanHtml', result => {
-                    const mailTitle = result.emailPhanHoiDangKyTuVanTitle,
-                        mailText = result.emailPhanHoiDangKyTuVanText.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{content}', content),
-                        mailHtml = result.emailPhanHoiDangKyTuVanHtml.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{content}', content);
-                    app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, item.email, [], mailTitle, mailText, mailHtml, null, () => {
-                        item.save(error => res.send({ error }))
-                    }, (error) => {
-                        res.send({ error })
-                    });
-                });
+                })
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, `Đăng ký tư vấn.xlsx`);
             }
-        });
+        })
     });
 
-    app.put('/api/dang-ky-tu-van-list/item/email/email', app.permission.check('dangKyTuVan:email'), (req, res) => {
-        const emailType = req.body.type;
-        const title = emailType + 'Title',
-            text = emailType + 'Text',
-            html = emailType + 'Html',
-            changes = {};
-
-        if (emailParams.indexOf(title) != -1) changes[title] = req.body.email.title;
-        if (emailParams.indexOf(text) != -1) changes[text] = req.body.email.text;
-        if (emailParams.indexOf(html) != -1) changes[html] = req.body.email.html;
-
-        app.model.setting.set(changes, error => res.send({ error }));
+    app.put('/api/dang-ky-tu-van-list/item/', app.permission.check('dangKyTuVan:write'), (req, res) => {
+        const changes = req.body.changes;
+        app.model.dangKyTuVanList.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/dang-ky-tu-van-list/item', app.permission.check('dangKyTuVan:write'), (req, res) => {
@@ -114,7 +116,6 @@ module.exports = app => {
             res.send({ error, item })
             if (item.email) {
                 app.io.emit('dangKyTuVanList-added', item);
-
                 app.model.setting.get('email', 'emailPassword', 'emailDangKyTuVanTitle', 'emailDangKyTuVanText', 'emailDangKyTuVanHtml', result => {
                     let mailSubject = result.emailDangKyTuVanTitle.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                         mailText = result.emailDangKyTuVanText.replaceAll('{name}', item.lastname + ' ' + item.firstname).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),

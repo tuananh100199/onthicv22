@@ -5,12 +5,19 @@ import SectionContact from './sectionContact';
 import contact from './redux';
 
 export default {
+    init: () => {
+        T.component['contact'] = {
+            render: (viewId) => <SectionContact viewId={viewId} />,
+            backgroundColor: '#c8e6f9',
+        };
+    },
     redux: {
         contact,
     },
     routes: [
         {
-            path: '/user/contact', component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
+            path: '/user/contact',
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         }
     ],
     Section: {

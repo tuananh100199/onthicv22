@@ -94,7 +94,7 @@ class ContentListPage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tên danh sách</th>
                             <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh nền</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,7 +107,7 @@ class ContentListPage extends React.Component {
                                 </td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/list-content/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                        <Link to={'/user/list-content/edit/' + item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.includes('component:write') ?
@@ -137,6 +137,6 @@ class ContentListPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contentList: state.contentList, content: state.content });
+const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
 const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
 export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);

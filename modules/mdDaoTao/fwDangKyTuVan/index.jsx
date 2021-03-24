@@ -6,6 +6,12 @@ import dangKyTuVanList from './redux/reduxDangKyTuVanList';
 import dangKyTuVan from './redux/reduxDangKyTuVan';
 
 export default {
+    init: () => {
+        T.component['dangKyTuVan'] = {
+            render: (viewId) => <SectionDangKyTuVan viewId={viewId} />,
+            backgroundColor: '#c8e6f9',
+        };
+    },
     redux: {
         dangKyTuVan, dangKyTuVanList,
     },

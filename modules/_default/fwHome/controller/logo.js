@@ -6,7 +6,7 @@ module.exports = app => {
         app.model.logo.get(req.params.logoId, (error, item) => res.send({ error, item })));
 
     app.post('/api/logo', app.permission.check('component:write'), (req, res) =>
-        app.model.logo.create({ title: req.body.title, items: [] }, (error, item) => res.send({ error, item })));
+        app.model.logo.create(req.body.newData, (error, item) => res.send({ error, item })));
 
     app.put('/api/logo', app.permission.check('component:write'), (req, res) =>
         app.model.logo.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));

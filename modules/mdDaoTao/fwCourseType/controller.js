@@ -25,12 +25,12 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course-type/all', app.permission.check('course-type:read'), (req, res) => {
+    app.get('/api/course-type/all', (req, res) => {
         app.model.courseType.getAll((error, items) => res.send({ error, items }));
     });
 
-    app.get('/api/course-type/edit/:courseTypeId', app.permission.check('course-type:read'), (req, res) => {
-        app.model.courseType.get(req.params.courseTypeId, (error, item) => res.send({ error, item }));
+    app.get('/api/course-type/item/:_id', app.permission.check('course-type:read'), (req, res) => {
+        app.model.courseType.get(req.params._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
@@ -51,16 +51,16 @@ module.exports = (app) => {
     app.get('/home/course-type/all', (req, res) => {
         app.model.courseType.getAll((error, items) => res.send({ error, items }));
     });
+
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/course-type'));
 
     const uploadCourseType = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('course-type:') && files.CourseTypeImage && files.CourseTypeImage.length > 0) {
             console.log('Hook: uploadCourseType => course type image upload');
-            app.uploadComponentImage(req, 'course-type', app.model.courseType.get, fields.userData[0].substring(12), files.CourseTypeImage[0].path, done);
+            app.uploadComponentImage(req, 'course-type', app.model.courseType.get, fields.userData[0].substring('course-type:'.length), files.CourseTypeImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadCourseType', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadCourseType(req, fields, files, params, done), done, 'course-type:write'));
 };
-

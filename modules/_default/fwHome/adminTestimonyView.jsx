@@ -109,8 +109,8 @@ class TestimonyPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '100%' }}>Tên nhóm</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Số lượng</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: 'auto', textAlign: 'right' }} nowrap='true'>Số lượng</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,7 +118,7 @@ class TestimonyPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/testimony/edit/' + testimony._id} data-id={testimony._id}>{T.language.parse(testimony.title, true).vi}</Link>
+                                    <Link to={'/user/testimony/edit/' + testimony._id} data-id={testimony._id}>{testimony.title}</Link>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>{testimony.items.length}</td>
                                 <td>

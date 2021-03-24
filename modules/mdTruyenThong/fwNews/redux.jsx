@@ -274,32 +274,18 @@ export function getDraftNews(_id, done) {
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
-const texts = {
-    vi: {
-        getNewsInPageByUserError: 'Lấy danh sách tin tức bị lỗi!',
-        getNewsByUserError: 'Lấy tin tức bị lỗi!',
-        getNewsFeedError: 'Lấy new feed bị lỗi!',
-    },
-    en: {
-        getNewsInPageByUserError: 'Errors when get news list!',
-        getNewsByUserError: 'Errors when get one news!',
-        getNewsFeedError: 'Errors when get news feed!',
-    }
-};
-const language = T.language(texts);
-
 export function getNewsInPageByUser(pageNumber, pageSize, done) {
     return dispatch => {
         const url = '/news/page/' + pageNumber + '/' + pageSize;
         T.get(url, data => {
             if (data.error) {
-                T.notify(language.getNewsInPageByUserError, 'danger');
+                T.notify('Lấy danh sách tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: NewsGetNewsInPageByUser, page: data.page });
                 done && done()
             }
-        }, error => T.notify(language.getNewsInPageByUserError, 'danger'));
+        }, error => T.notify('Lấy danh sách tin tức bị lỗi!', 'danger'));
     }
 }
 
@@ -308,13 +294,13 @@ export function getNewsByUser(newsId, newsLink, done) {
         const url = newsId ? '/news/item/id/' + newsId : '/news/item/link/' + newsLink;
         T.get(url, data => {
             if (data.error) {
-                T.notify(language.getNewsByUserError, 'danger');
+                T.notify('Lấy tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: NewsGetNewsByUser, item: data.item });
                 done && done(data);
             }
-        }, error => T.notify(language.getNewsByUserError, 'danger'));
+        }, error => T.notify('Lấy tin tức bị lỗi!', 'danger'));
     }
 }
 
@@ -323,13 +309,13 @@ export function getNewsFeed(done) {
         const url = '/news/page/1/' + T.newsFeedPageSize
         T.get(url, data => {
             if (data.error) {
-                T.notify(language.getNewsFeedError, 'danger');
+                T.notify('Lấy new feed bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data.page.list);
                 dispatch({ type: NewsGetNewsFeed, list: data.page.list });
             }
-        }, error => T.notify(language.getNewsFeedError, 'danger'));
+        }, error => T.notify('Lấy new feed bị lỗi!', 'danger'));
     }
 }
 

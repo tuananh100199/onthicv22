@@ -6,8 +6,8 @@ class SectionTestimony extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.testimonyId) {
-            this.props.getTestimonyByUser(this.props.testimonyId, testimony => testimony && this.setState({ testimony }));
+        if (this.props.viewId) {
+            this.props.getTestimonyByUser(this.props.viewId, testimony => testimony && this.setState({ testimony }));
         }
     }
 
@@ -61,7 +61,7 @@ class SectionTestimony extends React.Component {
                 <div className='container'>
                     <div className='row justify-content-center'>
                         <div className='col-md-7 heading-section ftco-animate text-center'>
-                            <h2 className='mb-4'>{T.language.parse(this.state.testimony.title)}</h2>
+                            <h2 className='mb-4'>{this.state.testimony.title}</h2>
                         </div>
                     </div>
                 </div>
@@ -78,9 +78,9 @@ class SectionTestimony extends React.Component {
                                             </span>
                                         </div>
                                         <div className='text'>
-                                            <p className='' dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
-                                            <p className='name'>{T.language.parse(item.fullname)}</p>
-                                            <span className='position'>{T.language.parse(item.jobPosition)}</span>
+                                            <p className='' dangerouslySetInnerHTML={{ __html: item.content }} />
+                                            <p className='name'>{item.fullname}</p>
+                                            <span className='position'>{item.jobPosition}</span>
                                         </div>
                                     </div>
                                 </div>

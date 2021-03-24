@@ -2,22 +2,25 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const SubjectGetPage = 'SubjectGetPage';
 const SubjectGetItem = 'SubjectGetItem';
-const SubjectGetLessonItem = 'SubjectGetLessonItem';
-const SubjectGetQuestionItem = 'SubjectGetQuestionItem';
 
-export default function SubjectReducer(state = null, data) {
+export default function subjectReducer(state = {}, data) {
     switch (data.type) {
         case SubjectGetPage:
             return Object.assign({}, state, { page: data.page });
 
         case SubjectGetItem:
-            return Object.assign({}, state, { subject: data.item });
+            let updatedPage = Object.assign({}, state.page || {}),
+                updatedItem = Object.assign({}, state.item || {}, data.item);
+            if (updatedPage.list) {
+                for (let i = 0, n = updatedPage.list.length; i < n; i++) {
+                    if (updatedPage.list[i]._id == updatedItem._id) {
+                        updatedPage.list.splice(i, 1, updatedItem);
+                        break;
+                    }
+                }
+            }
+            return Object.assign({}, state, { item: updatedItem, page: updatedPage });
 
-        case SubjectGetLessonItem:
-            return Object.assign({}, state, { listLesson: data.lesson });
-
-        case SubjectGetQuestionItem:
-            return Object.assign({}, state, { questions: data.questions });
         default:
             return state;
     }
@@ -43,7 +46,7 @@ export function getSubjectInPage(pageNumber, pageSize, searchText, done) {
 
 export function getSubject(_id, done) {
     return dispatch => {
-        const url = '/api/subject/edit/' + _id;
+        const url = `/api/subject/item/${_id}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
@@ -56,16 +59,16 @@ export function getSubject(_id, done) {
     }
 }
 
-export function createSubject(done) {
+export function createSubject(newData, done) {
     return dispatch => {
         const url = '/api/subject';
-        T.post(url, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getSubjectInPage());
                 if (done) done(data);
+                dispatch(getSubjectInPage());
             }
         }, error => T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
     }
@@ -102,65 +105,50 @@ export function deleteSubject(_id) {
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
     }
 }
-export function getLessonList(subjectId, done) {
+
+export function addSubjectLesson(_subjectId, _subjectLessonId, done) {
     return dispatch => {
-        const url = `/api/lesson/${subjectId}`;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách bài học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                dispatch({ type: SubjectGetLessonItem, lesson: data.item });
-                done && done(data.item);
-            }
-        }, error => {
-            console.error('GET: ' + url + '.', error);
-        });
-    }
-}
-export function addLesson(subjectId, lessonId, done) {
-    return dispatch => {
-        const url = `/api/subject/lesson/add/${subjectId}`;
-        T.post(url, { lessonId }, data => {
+        const url = `/api/subject/lesson`;
+        T.post(url, { _subjectId, _subjectLessonId }, data => {
             if (data.error) {
                 T.notify('Thêm bài học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else if (data.check) {
                 T.notify(data.check, 'danger');
             } else {
-                dispatch(getLessonList(subjectId));
+                dispatch({ type: SubjectGetItem, item: { lessons: data.lessons } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
 
-export function swapLesson(_id, data, done) {
+
+export function swapSubjectLesson(_subjectId, _subjectLessonId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/subject/lesson/swap`;
-        T.put(url, { _id, data }, data => {
+        T.put(url, { _subjectId, _subjectLessonId, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự bài học bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getLessonList(_id));
+                dispatch({ type: SubjectGetItem, item: { lessons: data.lessons } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function deleteLesson(subjectId, lessonId, done) {
+export function deleteSubjectLesson(_subjectId, _subjectLessonId, done) {
     return dispatch => {
-        const url = `/api/subject/lesson/${subjectId}`;
-        T.delete(url, { lessonId }, data => {
+        const url = `/api/subject/lesson`;
+        T.delete(url, { _subjectId, _subjectLessonId }, data => {
             if (data.error) {
                 T.notify('Xóa bài học bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.notify('Xóa bài học thành công!', 'success');
-                dispatch(getLessonList(subjectId));
-                done && done(data.item);
+                dispatch({ type: SubjectGetItem, item: { lessons: data.item.lessons } });
+                done && done();
             }
         }, error => console.error('POST: ' + url + '.', error));
     }
@@ -174,78 +162,63 @@ export const ajaxSelectSubject = {
         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
     })
 }
-// Feedback Question
-export function getQuestionsList(subjectId, done) {
-    return dispatch => {
-        const url = `/api/feedback-question/${subjectId}`;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách câu hỏi bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                dispatch({ type: SubjectGetQuestionItem, questions: data.item });
-                done && done(data.item);
-            }
-        }, error => {
-            console.error('GET: ' + url + '.', error);
-        });
-    }
-}
 
-export function createQuestion(_id, data, done) {
+export function createSubjectQuestion(_subjectId, data, done) {
     return dispatch => {
-        const url = `/api/feedback-question/${_id}`;
-        T.post(url, { data }, data => {
+        const url = `/api/subject/question`;
+        T.post(url, { _subjectId, data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(_id));
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
 
-export function updateQuestion(_id, data, subjectId, done) {
+export function updateSubjectQuestion(_subjectId, _subjectQuestionId, data, done) {
     return dispatch => {
-        const url = '/api/feedback-question';
-        T.put(url, { _id, data }, data => {
+        const url = '/api/subject/question';
+        T.put(url, { _subjectId, _subjectQuestionId, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(subjectId));
+                T.notify('Cập nhật câu hỏi thành công!', 'success');
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function swapQuestion(subjectId, data, done) {
+export function swapSubjectQuestion(_subjectId, _subjectQuestionId, isMoveUp, done) {
     return dispatch => {
-        const url = `/api/feedback-question/swap`;
-        T.put(url, { subjectId, data }, data => {
+        const url = `/api/subject/question/swap`;
+        T.put(url, { _subjectId, _subjectQuestionId, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(subjectId));
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }
 }
 
-export function deleteQuestion(_id, data, subjectId, done) {
+export function deleteSubjectQuestion(_subjectQuestionId, _subjectId, done) {
     return dispatch => {
-        const url = `/api/feedback-question`;
-        T.delete(url, { data, subjectId, _id }, data => {
+        const url = `/api/subject/question`;
+        T.delete(url, { _subjectId, _subjectQuestionId }, data => {
             if (data.error) {
                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                dispatch(getQuestionsList(subjectId));
+                T.notify('Xóa câu hỏi thành công!', 'success');
+                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));

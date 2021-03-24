@@ -1,17 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord } from './redux';
-import { getUserInPage } from 'modules/_default/fwUser/redux';
+import { getUserPage } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
 import Pagination, { OverlayLoading } from 'view/component/Pagination';
 import FileSaver from 'file-saver'
 import Tooltip from 'rc-tooltip';
 
 class AdminDonDeNghiHocPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { searchText: '', isSearching: true };
-    }
+    state = { searchText: '', isSearching: true };
 
     componentDidMount() {
         let url = window.location.pathname,
@@ -69,9 +66,9 @@ class AdminDonDeNghiHocPage extends React.Component {
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '85%' }}>Người dùng</th>
-                        {/* <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hạng</th> */}
-                        <th style={{ width: '15%', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng thái</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                        {/* <th style={{ width: 'auto', textAlign: 'center' }}>Hạng</th> */}
+                        <th style={{ width: '15%', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -146,5 +143,5 @@ class AdminDonDeNghiHocPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system, user: state.user });
-const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserInPage, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
+const mapActionsToProps = { getFormInPage, createForm, updateForm, deleteForm, getUserPage, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDonDeNghiHocPage);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDangKyTuVanItem, updateDangKyTuVan, addDangKyTuVanIntoGroup, updateDangKyTuVanInGroup, removeDangKyTuVanFromGroup, swapDangKyTuVanInGroup } from './redux/reduxDangKyTuVan';
-import { getAllCourseType } from '../fwCourseType/redux';
+import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
 
@@ -18,13 +18,13 @@ class DangKyTuVanStaticModal extends React.Component {
 
     componentDidMount() {
         $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#sttTitle').focus())
+            $(this.modal.current).on('shown.bs.modal', () => $('#statisticTitle').focus())
         }, 250));
     }
 
     show = (selectedItem, index) => {
         let { title, number } = selectedItem ? selectedItem : { title: '', number: 0 };
-        $('#sttViTitle').val(title);
+        $('#statisticTitle').val(title);
         $('#sttEnTitle').val(title);
         $('#sttNumber').val(number);
         $(this.btnSave.current).data('isNewMember', selectedItem == null).data('index', index);
@@ -34,12 +34,11 @@ class DangKyTuVanStaticModal extends React.Component {
     hide = () => {
         $(this.modal.current).modal('hide');
     }
-
     save = (event) => {
         const btnSave = $(this.btnSave.current),
             isNewMember = btnSave.data('isNewMember'),
             index = btnSave.data('index'),
-            title = $('#sttViTitle').val(),
+            title = $('#statisticTitle').val(),
             number = $('#sttNumber').val();
         if (isNewMember) {
             this.props.addDKTV(title, number);
@@ -52,11 +51,11 @@ class DangKyTuVanStaticModal extends React.Component {
     render() {
         return (
             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
+                <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <div className='container-fluid row'>
-                                <h5 className='modal-title col-6'>Thêm thống kê đăng ký tư vấn</h5>
+                                <h5 className='modal-title'>Thêm thống kê đăng ký tư vấn</h5>
                             </div>
                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
                                 <span aria-hidden='true'>&times;</span>
@@ -64,13 +63,13 @@ class DangKyTuVanStaticModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='container-fluid row'>
-                                <div className='col-6'>
+                                <div className='col-12'>
                                     <div className='form-group'>
-                                        <label htmlFor='sttViTitle'>Tên</label><br />
-                                        <input className='form-control' id='sttViTitle' type='text' placeholder='Tên' />
+                                        <label htmlFor='statisticTitle'>Tên</label><br />
+                                        <input className='form-control' id='statisticTitle' type='text' placeholder='Tên' />
                                     </div>
                                 </div>
-                                <div className='col-6'>
+                                <div className='col-12'>
                                     <div className='form-group'>
                                         <label htmlFor='sttNumber'>Số lượng</label><br />
                                         <input className='form-control' id='sttNumber' type='number' placeholder='Số lượng' />
@@ -111,10 +110,8 @@ class DangKyTuVanEditPage extends React.Component {
                     this.props.history.push('/user/dang-ky-tu-van');
                 } else if (data.item) {
                     const title = data.item.title,
-                        content = data.item.description,
-                        courseType = data.item.courseType;
+                        content = data.item.description;
                     $('#title').val(title).focus();
-                    $('#courseType').val(courseType);
                     this.editor.current.html(content);
                     this.props.getAllCourseType(datacType => {
                         if (datacType) {
@@ -181,7 +178,7 @@ class DangKyTuVanEditPage extends React.Component {
                 formTitle: formTitle,
                 description: description,
                 statistic: this.props.dangKyTuVan.item.statistic,
-                courseType: $('#courseType').val(),
+                courseType: courseType,
             };
             if (changes.statistic && changes.statistic.length == 0) changes.statistic = 'empty';
             this.props.updateDangKyTuVan(this.props.dangKyTuVan.item._id, changes);
@@ -199,9 +196,9 @@ class DangKyTuVanEditPage extends React.Component {
                     <thead>
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Tên</th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Số lượng</th>
-                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
+                            <th style={{ width: '50%', textAlign: 'center' }}>Tên</th>
+                            <th style={{ width: '50%', textAlign: 'right' }} nowrap='true'>Số lượng</th>
+                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                         </tr>
                     </thead>
                     <tbody>

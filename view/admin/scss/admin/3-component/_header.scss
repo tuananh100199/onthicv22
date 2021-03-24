@@ -88,9 +88,16 @@
 	margin-right: 15px;
 	padding: 10px 0;
 	@media(max-width: 480px) { display: none; }
+
+	&:focus-within {
+		width: 50%;
+	}
 }
 
+
 .app-search__input {
+	outline: none;
+	width: 100%;
 	border: 0;
 	padding: 5px 10px;
 	padding-right: 30px;

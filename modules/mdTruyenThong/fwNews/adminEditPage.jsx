@@ -33,7 +33,7 @@ class NewsEditPage extends React.Component {
                 this.props.history.push('/user/news/list');
             } else if (data.item) {
                 console.log('data.categories', data.item);
-                let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
+                let categories = data.categories.map(item => ({ id: item.id, text: item.text }));
                 $('#neNewsCategories').select2({ data: categories }).val(data.item.categories).trigger('change');
                 const neNewsStartPost = $('#neNewsStartPost').datetimepicker(T.dateFormat);
                 const neNewsStopPost = $('#neNewsStopPost').datetimepicker(T.dateFormat);
@@ -183,12 +183,14 @@ class NewsEditPage extends React.Component {
                             <h3 className='tile-title'>Link</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>Link mặc định</label><br />
-                                    <a href={linkDefaultNews} style={{ fontWeight: 'bold' }} target='_blank'>{linkDefaultNews}</a>
+                                    <label className='control-label' style={{ display: 'flex' }}>Link mặc định:&nbsp;
+                                        <a href={linkDefaultNews} style={{ fontWeight: 'bold' }} target='_blank'>{linkDefaultNews}</a>
+                                    </label>
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Link truyền thông</label><br />
-                                    <a href='#' ref={this.newsLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                    <label className='control-label' style={{ display: 'flex' }}>Link truyền thông:&nbsp;
+                                        <a href='#' ref={this.newsLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                    </label>
                                     <input className='form-control' id='neNewsLink' type='text' placeholder='Link truyền thông' defaultValue={item.link} readOnly={readOnly}
                                         onChange={this.newsLinkChange} />
                                 </div>

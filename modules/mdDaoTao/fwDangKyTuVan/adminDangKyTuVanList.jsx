@@ -1,129 +1,145 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem } from './redux/reduxDangKyTuVanList';
-import Editor from 'view/component/CkEditor4.jsx';
+import { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, exportDangKyTuVanToExcel } from './redux/reduxDangKyTuVanList';
+import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
+import { AdminPage, AdminModal } from 'view/component/AdminPage';
 
-class AdminDangKyTuVanModal extends React.Component {
+class DangKyTuVanModal extends AdminModal {
     state = {};
     modal = React.createRef();
-    editor = React.createRef();
 
-    show = (item) => {
+    onShow = (item) => {
         this.setState(item);
+        $('#courseTypeRecommend').val(item.courseTypeRecommend);
+        $('#dangKyTuVanresult').val(item.result);
+        if (!item) {
+            T.notify('Lấy đăng ký tư vấn bị lỗi', 'danger');
+            this.props.history.push('/user/dang-ky-tu-van/list');
+        } else {
+            this.props.getAllCourseType(datacType => {
+                if (datacType) {
+                    let courseTypeRecommend = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
+                    $('#courseTypeRecommend').select2({ data: courseTypeRecommend }).val(item.courseTypeRecommend).trigger('change');
+                }
+            });
+        }
         $(this.modal.current).modal('show');
     }
 
-    save = () => {
-        $('#submit-btn').attr('disabled', true);
-        if (!this.editor.current.html()) {
-            T.notify('Nội dung phản hồi bị trống', 'danger');
-        } else {
-            this.props.phanHoiDKTVListItem(this.state._id, this.editor.current.html(), (data) => {
-                if (!data.error) {
-                    T.notify('Gửi phản hồi đăng ký tư vấn thành công!', 'success');
-                }
-                $('#submit-btn').removeAttr('disabled');
-                $(this.modal.current).modal('hide');
-            })
-        }
+    onSubmit = () => {
+        const courseTypeRecommend = $('#courseTypeRecommend').val(),
+            dangKyTuVanresult = $('#dangKyTuVanresult').val();
+        const changes = {
+            courseTypeRecommend: courseTypeRecommend,
+            result: dangKyTuVanresult,
+        };
+        this.props.updateDKTVList(this.state._id, changes, () => {
+            $(this.modal.current).modal('hide');
+        });
     }
-    render() {
-        const { lastname, firstname, email, phone, courseType} = this.state;
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <div className='modal-dialog modal-lg' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin đăng ký tư vấn</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <label>Tên người dùng: <b>{lastname} {firstname}</b></label><br />
-                            <label>Số điện thoại: <b>{phone}</b></label><br />
-                            <label>Loại khóa học: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label><br />
-                            <label>Email: <b>{email ? email : 'Chưa đăng ký'}</b></label><br />
-                            <h6 style={{ marginTop: 20 }}>Phản hồi đăng ký tư vấn</h6>
-                            <div className='form-group'>
-                                <Editor ref={this.editor} height='400px' placeholder='Nội dung' />
-                            </div>
-                        </div>
-                        <form>
-                            <div className='modal-footer'>
-                                <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                                <button type='button' className='btn btn-primary' id='submit-btn' onClick={this.save}>Gửi</button>
-                            </div>
-                        </form>
+
+    render = () => {
+        const { lastname, firstname, email, phone, courseType } = this.state;
+        const renderDataModal = {
+            title: 'Thông tin đăng ký tư vấn',
+            size: 'large',
+            body:
+                <div className='row'>
+                    <div className='form-group col-md-6'>
+                        <label>Tên người đăng ký: <b>{lastname} {firstname}</b></label>
+                    </div>
+                    <div className='form-group col-md-6'>
+                        <label>Loại khóa học đăng ký: <b>{courseType ? courseType.title : 'Chưa đăng ký'}</b></label>
+                    </div>
+                    <div className='form-group col-md-6'>
+                        <label>Email: <b>{email || 'Chưa đăng ký'}</b></label>
+                    </div>
+                    <div className='form-group col-md-6'>
+                        <label>Số điện thoại: <b>{phone}</b></label>
+                    </div>
+
+                    <div className='form-group col-md-12'>
+                        <label htmlFor='courseTypeRecommend'>Loại khóa học tư vấn:&nbsp; </label>
+                        <select id='courseTypeRecommend' >
+                            <optgroup label='Loại' />
+                        </select>
+                    </div>
+                    <div className='form-group col-md-12'>
+                        <label htmlFor='courseTypeRecommend'>Kết quả tư vấn:</label>
+                        <textarea defaultValue='' className='form-control' id='dangKyTuVanresult' placeholder='Kết quả tư vấn' rows={6} />
                     </div>
                 </div>
-            </div>
-        );
+        };
+        return this.renderModal(renderDataModal);
     }
 }
 
-class DKTVListPage extends React.Component {
+class DangKyTuVanPage extends AdminPage {
     modal = React.createRef();
 
     componentDidMount() {
+        T.ready();
         this.props.getDKTVListPage();
-        T.ready('/user/dang-ky-tu-van-list');
+        T.onSearch = (searchText) => this.props.getDKTVListPage(1, 25, searchText);
     }
 
-    showDKTVListItem = (e, DKTVListItemId) => {
+    show = (e, _id) => {
         e.preventDefault();
-        this.props.getDKTVListItem(DKTVListItemId, DKTVListItem => this.modal.current.show(DKTVListItem));
+        this.props.getDKTVListItem(_id, item => this.modal.current.show(item));
     }
-
-    changeRead = (item) => this.props.updateDKTVList(item._id, { read: !item.read });
 
     delete = (e, item) => {
-        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(item._id));
         e.preventDefault();
+        T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm => isConfirm && this.props.deleteDKTVListItem(item._id));
     }
 
     render() {
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.dangKyTuVanList && this.props.dangKyTuVanList.page ?
-            this.props.dangKyTuVanList.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const permission = this.getUserPermission('dangKyTuVan');
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.dangKyTuVanList && this.props.dangKyTuVanList.page ?
+            this.props.dangKyTuVanList.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
         let table = 'Không có đăng ký tư vấn!';
-        if (this.props.dangKyTuVanList && this.props.dangKyTuVanList.page && this.props.dangKyTuVanList.page.list && this.props.dangKyTuVanList.page.list.length > 0) {
+        if (list && list.length > 0) {
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '20%' }}>Họ & Tên</th>
-                            <th style={{ width: '20%' }}>Số điện thoại</th>
-                            <th style={{ width: '30%' }}>Email</th>
-                            <th style={{ width: '30%' }}>Loại khóa học</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: '50%' }} nowrap='true'>Họ & Tên</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
+                            <th style={{ width: '50%' }}>Email</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học tư vấn</th>
+                            {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.dangKyTuVanList.page.list.map((item, index) => (
+                        {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <a href='#' onClick={e => this.showDKTVListItem(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
+                                    <a href='#' onClick={e => this.show(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.lastname + ' ' + item.firstname}</a>
                                     <br />
                                     {new Date(item.createdDate).getText()}
                                 </td>
                                 <td>{item.phone}</td>
                                 <td>{item.email}</td>
-                                <td>{item.courseType? item.courseType.title : 'Chưa đăng ký'}</td>
-                                <td>
+                                <td nowrap='true'>{item.courseType ? item.courseType.title : ''}</td>
+                                <td nowrap='true'>{item.courseTypeRecommend ? item.courseTypeRecommend.title : ''}</td>
+                                {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.showDKTVListItem(e, item._id)}>
-                                            <i className='fa fa-lg fa-envelope-open-o' />
-                                        </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
+                                        {permission.write ?
+                                            <a className='btn btn-primary' href='#' onClick={e => this.show(e, item._id)}>
+                                                <i className='fa fa-lg fa-edit' />
+                                            </a> : null}
+                                        {permission.delete ?
+                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
+                                                <i className='fa fa-lg fa-trash' />
+                                            </a> : null}
                                     </div>
-                                </td>
+                                </td> : null}
                             </tr>
                         ))}
                     </tbody>
@@ -131,20 +147,25 @@ class DKTVListPage extends React.Component {
             );
         }
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa fa-envelope-o' /> Danh sách đăng ký tư vấn</h1>
-                </div>
+        return this.renderPage({
+            icon: 'fa fa fa-envelope-o',
+            title: 'Đăng ký tư vấn',
+            breadcrumb: ['Đăng ký tư vấn'],
+            content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageDKTVList' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDKTVListPage} />
-                <AdminDangKyTuVanModal ref={this.modal} />
-            </main>
-        );
+                {permission.write ?
+                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel'
+                        onClick={() => this.props.exportDangKyTuVanToExcel()}>
+                        <i className='fa fa-file-excel-o' />
+                    </button> : null}
+                <DangKyTuVanModal ref={this.modal} getAllCourseType={this.props.getAllCourseType} updateDKTVList={this.props.updateDKTVList} />
+            </>,
+        });
     }
 }
 
-const mapStateToProps = state => ({ dangKyTuVanList: state.dangKyTuVanList });
-const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem };
-export default connect(mapStateToProps, mapActionsToProps)(DKTVListPage);
+const mapStateToProps = state => ({ system: state.system, dangKyTuVanList: state.dangKyTuVanList });
+const mapActionsToProps = { getDKTVListPage, getDKTVListItem, updateDKTVList, deleteDKTVListItem, getAllCourseType, exportDangKyTuVanToExcel };
+export default connect(mapStateToProps, mapActionsToProps)(DangKyTuVanPage);

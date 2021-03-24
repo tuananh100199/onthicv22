@@ -1,138 +1,76 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem';
-import Editor from 'view/component/CkEditor4';
+import { AdminPage, FormTabs, FormTextBox, FormEditor } from 'view/component/AdminPage';
 
 class EmailItem extends React.Component {
-    title = React.createRef();
-    editor = React.createRef();
-
-    set(title, text, html) {
-        this.title.current.value = title;
-        this.editor.current.html(html);
+    set = (title, text, html) => {
+        this.title.value(title);
+        this.editor.html(html);
     }
 
-    get() {
-        return {
-            title: this.title.current.value,
-            text: this.editor.current.text(),
-            html: this.editor.current.html(),
+    get = () => ({
+        title: this.title.value(),
+        text: this.editor.text(),
+        html: this.editor.html(),
+    });
+
+    render = () => (
+        <div className='tile-body' id={this.props.id}>
+            <FormTextBox ref={e => this.title = e} label='Chủ đề' readOnly={this.props.readOnly} />
+            <FormEditor ref={e => this.editor = e} height='600px' label='Nội dung' smallText={'Parameters: ' + this.props.params} readOnly={this.props.readOnly} />
+        </div>);
+}
+
+class EmailPage extends AdminPage {
+    emailItems = [
+        { title: 'Người dùng mới', id: 'emailRegisterMember', params: '{name}, {url}' },
+        { title: 'Tạo người dùng mới', id: 'emailCreateMemberByAdmin', params: '{name}, {email}, {password}, {url}' },
+        { title: 'Mật khẩu mới', id: 'emailNewPassword', params: '{name}, {email}, {password}' },
+        { title: 'Quên mật khẩu', id: 'emailForgotPassword', params: '{name}, {email}, {url}' },
+        { title: 'Liên hệ', id: 'emailContact', params: '{name}, {subject}, {message}' },
+        { title: 'Từ chối đơn đề nghị học', id: 'emailTuChoiDonDeNghiHoc', params: '{name}, {subject}, {message}' },
+        { title: 'Đăng ký tư vấn', id: 'emailDangKyTuVan', params: '{name}' },
+    ];
+
+    componentDidMount() {
+        T.ready(() => getSystemEmails(data => {
+            this.emailRegisterMember.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
+            this.emailCreateMemberByAdmin.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);
+            this.emailNewPassword.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
+            this.emailForgotPassword.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
+            this.emailContact.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
+            this.emailTuChoiDonDeNghiHoc.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
+            this.emailDangKyTuVan.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
+        }));
+    }
+
+    save = () => {
+        const index = this.tabs.selectedTabIndex();
+        if (0 <= index && index < this.emailItems.length) {
+            const emailType = this.emailItems[index].id,
+                email = this[emailType].get();
+            saveSystemEmails(emailType, email);
         }
     }
 
     render() {
-        const className = this.props.active ? 'tab-pane fade active show' : 'tab-pane fade';
-        return (
-            <div className={className} id={this.props.id}>
-                <div className='tile-body'>
-                    <div className='form-group'>
-                        <label className='control-label'>Chủ đề</label>
-                        <input className='form-control' type='text' defaultValue='' ref={this.title} placeholder='Subject' />
-                    </div>
-                    <div className='form-group'>
-                        <label className='control-label'>HTML</label>
-                        <small className='form-text text-muted'>Parameters: {this.props.params}</small>
-                        <Editor ref={this.editor} placeholder='Content' height={600} />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-}
+        const permission = this.getUserPermission('system', ['email']);
+        const tabs = this.emailItems.map(item => ({
+            title: item.title,
+            component: <EmailItem ref={e => this[item.id] = e} id={item.id} params={item.params} readOnly={!permission.email} />
+        }));
 
-export default class EmailPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.emailRegisterMember = React.createRef();
-        this.emailCreateMemberByAdmin = React.createRef();
-        this.emailNewPassword = React.createRef();
-        this.emailForgotPassword = React.createRef();
-        this.emailContact = React.createRef();
-        this.emailTuChoiDonDeNghiHoc = React.createRef();
-        this.emailDangKyTuVan = React.createRef();
-        this.emailPhanHoiDangKyTuVan = React.createRef();
-    }
-
-    componentDidMount() {
-        T.ready(() => {
-            getSystemEmails(data => {
-                this.emailRegisterMember.current.set(data.emailRegisterMemberTitle, data.emailRegisterMemberText, data.emailRegisterMemberHtml);
-                this.emailCreateMemberByAdmin.current.set(data.emailCreateMemberByAdminTitle, data.emailCreateMemberByAdminText, data.emailCreateMemberByAdminHtml);
-                this.emailNewPassword.current.set(data.emailNewPasswordTitle, data.emailNewPasswordText, data.emailNewPasswordHtml);
-                this.emailForgotPassword.current.set(data.emailForgotPasswordTitle, data.emailForgotPasswordText, data.emailForgotPasswordHtml);
-                this.emailContact.current.set(data.emailContactTitle, data.emailContactText, data.emailContactHtml);
-                this.emailTuChoiDonDeNghiHoc.current.set(data.emailTuChoiDonDeNghiHocTitle, data.emailTuChoiDonDeNghiHocText, data.emailTuChoiDonDeNghiHocHtml);
-                this.emailDangKyTuVan.current.set(data.emailDangKyTuVanTitle, data.emailDangKyTuVanText, data.emailDangKyTuVanHtml);
-                this.emailPhanHoiDangKyTuVan.current.set(data.emailPhanHoiDangKyTuVanTitle, data.emailPhanHoiDangKyTuVanText, data.emailPhanHoiDangKyTuVanHtml);
-            });
+        return this.renderPage({
+            icon: 'fa fa-envelope-o',
+            title: 'Email',
+            breadcrumb: ['Email'],
+            content: <FormTabs ref={e => this.tabs = e} id='emailPageTab' contentClassName='tile' tabs={tabs} />,
+            onSave: permission.email ? this.save : null,
         });
     }
-
-    save = () => {
-        const emailType = $('ul.nav.nav-tabs li.nav-item a.nav-link.active').attr('href').substring(1);
-        const email = this[emailType].current.get();
-        saveSystemEmails(emailType, email);
-    }
-
-    render() {
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa-cog' /> Email</h1>
-                </div>
-                <div className='row'>
-                    <div className='col-12'>
-                        <div className='tile'>
-                            <ul className='nav nav-tabs'>
-                                <li className='nav-item'>
-                                    <a className='nav-link active show' data-toggle='tab' href='#emailRegisterMember'>Người dùng mới</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailCreateMemberByAdmin'>Tạo người dùng mới</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailNewPassword'>Mật khẩu mới</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailForgotPassword'>Quên mật khẩu</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Liên hệ</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Từ chối đơn đề nghị học</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailContact'>Đăng ký tư vấn</a>
-                                </li>
-                                <li className='nav-item'>
-                                    <a className='nav-link' data-toggle='tab' href='#emailTuChoiDonDeNghiHoc'>Phản hồi đăng ký tư vấn</a>
-                                </li>
-                            </ul>
-                            <div className='tab-content' style={{ marginTop: '12px' }}>
-                                <EmailItem ref={this.emailRegisterMember} id='emailRegisterMember' active={true}
-                                    params='{name}, {url}' />
-                                <EmailItem ref={this.emailCreateMemberByAdmin} id='emailCreateMemberByAdmin'
-                                    params='{name}, {email}, {password}, {url}' />
-                                <EmailItem ref={this.emailNewPassword} id='emailNewPassword'
-                                    params='{name}, {email}, {password}' />
-                                <EmailItem ref={this.emailForgotPassword} id='emailForgotPassword'
-                                    params='{name}, {email}, {url}' />
-                                <EmailItem ref={this.emailContact} id='emailContact'
-                                    params='{name}, {subject}, {message}' />
-                                <EmailItem ref={this.emailTuChoiDonDeNghiHoc} id='emailTuChoiDonDeNghiHoc'
-                                    params='{name}, {subject}, {message}' />
-                                <EmailItem ref={this.emailDangKyTuVan} id='emailDangKyTuVan'
-                                    params='{name}' />
-                                <EmailItem ref={this.emailPhanHoiDangKyTuVan} id='emailPhanHoiDangKyTuVan'
-                                    params='{name}' />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.save}>
-                    <i className='fa fa-lg fa-save' />
-                </button>
-            </main>
-        );
-    }
 }
+
+const mapStateToProps = state => ({ system: state.system });
+const mapActionsToProps = {};
+export default connect(mapStateToProps, mapActionsToProps)(EmailPage);

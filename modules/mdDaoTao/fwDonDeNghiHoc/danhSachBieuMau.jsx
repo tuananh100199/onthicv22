@@ -25,7 +25,7 @@ class FormPage extends React.Component {
 
 
     delete = (e, item) => {
-        T.confirm('Xóa form', `Bạn có chắc bạn muốn xóa form <strong>${item.title.viText()}</strong>?`, 'warning', true, isConfirm =>
+        T.confirm('Xóa form', `Bạn có chắc bạn muốn xóa form <strong>${item.title}</strong>?`, 'warning', true, isConfirm =>
             isConfirm && this.props.deleteForm(item._id));
         e.preventDefault();
     };
@@ -51,7 +51,7 @@ class FormPage extends React.Component {
                         <tr key={index}>
                             <td style={{ textAlign: 'right' }}>{(Math.max(pageNumber - 1, 0)) * pageSize + index + 1}</td>
                             <td>
-                                <Link to={'/user/user-form/edit/' + item._id}>{item.title.viText()}</Link>
+                                <Link to={'/user/user-form/edit/' + item._id}>{item.title}</Link>
                             </td>
                             <td style={{ width: '20%', textAlign: 'center' }}>
                                 <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />

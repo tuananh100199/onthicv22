@@ -66,56 +66,34 @@ export default function statisticReducer(state = null, data) {
     }
 }
 
-// Texts -------------------------------------------------------------------------------------------------------------
-const texts = T.language({
-    vi: {
-        getAllStatisticError: 'Lấy danh sách thống kê bị lỗi!',
-        getStatisticError: 'Lấy thống kê bị lỗi!',
-        createStatisticError: 'Tạo thống kê bị lỗi!',
-        updateStatisticError: 'Cập nhật thông tin thống kê bị lỗi!',
-        deleteStatisticError: 'Xóa thống kê bị lỗi!',
-        updateStatisticSuccess: 'Cập nhật thông tin thống kê thành công!',
-        deleteStatisticSuccess: 'Xóa thống kê thành công!'
-    },
-    en: {
-        getAllStatisticError: 'Failed to get list of statistics!',
-        getStatisticError: 'Failed to get statistic!',
-        createStatisticError: 'Failed to create new statistic!',
-        updateStatisticError: 'Failed to update information of statistics!',
-        deleteStatisticError: 'Failed to delete statistic!',
-        updateStatisticSuccess: 'Statistic is updated!',
-        deleteStatisticSuccess: 'Statistic is deleted!'
-    }
-});
-
 // Actions ------------------------------------------------------------------------------------------------------------
 export function getAllStatistics(done) {
     return dispatch => {
         const url = '/api/statistic/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getAllStatisticError, 'danger');
+                T.notify('Lấy danh sách thống kê bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.items);
                 dispatch({ type: StatisticGetAll, items: data.items });
             }
-        }, error => T.notify(texts.getAllStatisticError, 'danger'));
+        }, error => T.notify('Lấy danh sách thống kê bị lỗi!', 'danger'));
     }
 }
 
-export function createStatistic(title, description, background, done) {
+export function createStatistic(newData, done) {
     return dispatch => {
         const url = '/api/statistic';
-        T.post(url, { title, description, background }, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
-                T.notify(texts.createStatisticError, 'danger');
+                T.notify('Tạo thống kê bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllStatistics());
                 if (done) done(data);
             }
-        }, error => T.notify(texts.createStatisticError, 'danger'));
+        }, error => T.notify('Tạo thống kê bị lỗi!', 'danger'));
     }
 }
 
@@ -124,15 +102,15 @@ export function updateStatistic(_id, changes, done) {
         const url = '/api/statistic';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify(texts.updateStatisticError, 'danger');
+                T.notify('Cập nhật thông tin thống kê bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify(texts.updateStatisticSuccess, 'info');
+                T.notify('Cập nhật thông tin thống kê thành công!', 'info');
                 dispatch(getAllStatistics());
                 done && done();
             }
-        }, error => T.notify(texts.updateStatisticError, 'danger'));
+        }, error => T.notify('Cập nhật thông tin thống kê bị lỗi!', 'danger'));
     }
 }
 
@@ -141,13 +119,13 @@ export function deleteStatistic(_id) {
         const url = '/api/statistic';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify(texts.deleteStatisticError, 'danger');
+                T.notify('Xóa thống kê bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert(texts.deleteStatisticSuccess, 'error', false, 800);
+                T.alert('Xóa thống kê thành công!', 'error', false, 800);
                 dispatch(getAllStatistics());
             }
-        }, error => T.notify(texts.deleteStatisticError, 'danger'));
+        }, error => T.notify('Xóa thống kê bị lỗi!', 'danger'));
     }
 }
 
@@ -158,13 +136,13 @@ export function getStatisticItem(_id, done) {
         const url = '/api/statistic/item/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify(texts.getStatisticError, 'danger');
+                T.notify('Lấy thống kê bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done({ item: data.item });
                 dispatch({ type: StatisticUpdate, item: data.item });
             }
-        }, error => T.notify(texts.getStatisticError, 'danger'));
+        }, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
     }
 }
 
@@ -190,11 +168,11 @@ export function getStatisticByUser(_id, done) {
         const url = '/home/statistic/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify(T.getStatisticError, 'danger');
+                T.notify('Lấy thống kê bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify(T.getStatisticError, 'danger'));
+        }, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
     }
 }

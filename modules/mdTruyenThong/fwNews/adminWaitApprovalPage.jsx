@@ -40,7 +40,7 @@ class NewsWaitApprovalPage extends React.Component {
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tiêu đề</th>
                             <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
-                            {viewerType == 2 ? <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Người tạo</th> : null}
+                            {viewerType == 2 ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Người tạo</th> : null}
                             {viewerType == 1 ? <th style={{ width: 'auto' }} nowrap='true'>Được duyệt</th> : null}
                             <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
                         </tr>
@@ -50,9 +50,7 @@ class NewsWaitApprovalPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td>
-                                    <Link to={'/user/news/draft/edit/' + item._id} data-id={item._id}>
-                                        {T.language.parse(item.title)}
-                                    </Link>
+                                    <Link to={'/user/news/draft/edit/' + item._id} data-id={item._id}>{item.title}</Link>
                                 </td>
                                 <td style={{ width: '20%', textAlign: 'center' }}>
                                     <img src={item.image} alt='avatar' style={{ height: '32px' }} />

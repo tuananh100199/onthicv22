@@ -4,8 +4,8 @@ import { getStaffGroupItemByUser } from './redux/reduxStaffGroup';
 
 class SectionStaffGroup extends React.Component {
     componentDidMount() {
-        if (this.props.staffGroupId) {
-            this.props.getStaffGroupItemByUser(this.props.staffGroupId, data => this.setState(data.item));
+        if (this.props.viewId) {
+            this.props.getStaffGroupItemByUser(this.props.viewId, data => this.setState(data.item));
         }
     }
 
@@ -100,16 +100,14 @@ class SectionStaffGroup extends React.Component {
         }
 
         return (
-            <section key={0} className='ftco-section bg-light'>
+            <section className='ftco-section bg-light'>
                 <div className='container'>
                     <div className='row justify-content-center'>
                         <div className='col-md-7 heading-section ftco-animate text-center'>
-                            <h2 className='mb-4'>{T.language.parse(this.state.title)}</h2>
+                            <h2 className='mb-4'>{this.state.title}</h2>
                         </div>
                     </div>
-                    <div className='row'>
-                        {staffs}
-                    </div>
+                    <div className='row'>{staffs}</div>
                 </div>
             </section>
         );

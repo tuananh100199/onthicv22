@@ -1,137 +1,303 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInPage, createUser, updateUser, deleteUser } from './redux';
+import { getUserPage, createUser, updateUser, deleteUser } from './redux';
 import { getAllRoles } from '../fwRole/redux';
 import Pagination from 'view/component/Pagination';
-import { UserPasswordModal, UserModal } from './adminModal';
+import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
-class UserPage extends React.Component {
-    state = { searchText: '', isSearching: false };
-    userModal = React.createRef();
-    passwordModal = React.createRef();
-
+class UserModal extends AdminModal {
+    state = { allRoles: [] };
     componentDidMount() {
-        this.props.getAllRoles();
-        T.ready(() => this.props.getUserInPage(1, 50, {}));
+        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    edit = (e, item) => {
-        e.preventDefault();
-        this.userModal.current.show(item);
-    }
+    onShow = (item) => {
+        if (item == null) item = { _id: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        this.itemFirstname.value(item.firstname);
+        this.itemLastname.value(item.lastname);
+        this.itemBirthday.value(item.birthday)
+        this.itemEmail.value(item.email);
+        this.itemPhoneNumber.value(item.phoneNumber);
+        this.itemActive.value(item.active);
+        this.itemIsCourseAdmin.value(item.isCourseAdmin);
+        this.itemIsStaff.value(item.isStaff);
+        this.itemIsLecturer.value(item.isLecturer);
+        this.itemSex.value(item.sex);
+        this.imageBox.setData(`user:${item._id ? item._id : 'new'}`);
 
-    changePassword = (e, item) => {
-        e.preventDefault();
-        this.passwordModal.current.show(item);
-    }
-
-    changeActive = item => this.props.updateUser(item._id, { active: !item.active })
-
-    delete = (e, item) => {
-        e.preventDefault();
-        T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
-            isConfirm && this.props.deleteUser(item._id));
-    }
-
-    search = (e) => {
-        e.preventDefault();
-        let condition = {},
-            searchText = $('#searchTextBox').val();
-        if (searchText) condition.searchText = searchText;
-
-        this.props.getUserInPage(undefined, undefined, condition, () => {
-            const isSearching = Object.keys(condition).length > 0;
-            this.setState({ searchText, isSearching });
+        const allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
+        this.setState({ _id: item._id, image: item.image, allRoles }, () => {
+            this.itemRoles.value(item.roles.map(item => item._id));
         });
-    };
+    }
 
-    render() {
-        const permissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            hasUpdate = permissions.includes('user:write');
-        const allRoles = this.props.role && this.props.role.items ? this.props.role.items : [];
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
-            this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: null };
-        let table = 'Không có người dùng!';
-        if (list && list.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered table-responsive'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '70%' }}>Tên</th>
-                            <th style={{ width: '30%' }}>Email</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.user.page.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><a href='#' onClick={e => this.edit(e, item)}>{item.lastname + ' ' + item.firstname}</a></td>
-                                <td>{item.email}</td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.png'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td className='toggle' style={{ textAlign: 'center' }}>
-                                    <label>
-                                        <input type='checkbox' checked={item.active} onChange={() => this.changeActive(item, index)} disabled={!hasUpdate} />
-                                        <span className='button-indecator' />
-                                    </label>
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        {hasUpdate ? <a className='btn btn-info' href='#' onClick={e => this.changePassword(e, item)}><i className='fa fa-lg fa-key' /></a> : ''}
-                                        {item.default || !hasUpdate ? null :
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a>}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
+    onSubmit = () => {
+        const changes = {
+            sex: this.itemSex.value(),
+            firstname: this.itemFirstname.value().trim(),
+            lastname: this.itemLastname.value().trim(),
+            email: this.itemEmail.value().trim(),
+            phoneNumber: this.itemPhoneNumber.value().trim(),
+            active: this.itemActive.value(),
+            isCourseAdmin: this.itemIsCourseAdmin.value(),
+            isStaff: this.itemIsStaff.value(),
+            isLecturer: this.itemIsLecturer.value(),
+            roles: this.itemRoles.value(),
+            birthday: this.itemBirthday.value(),
+        };
+        if (changes.firstname == '') {
+            T.notify('Tên người dùng bị trống!', 'danger');
+            this.itemFirstname.focus();
+        } else if (changes.lastname == '') {
+            T.notify('Họ người dùng bị trống!', 'danger');
+            this.itemLastname.focus();
+        } else if (changes.email == '') {
+            T.notify('Email người dùng bị trống!', 'danger');
+            this.itemEmail.focus();
+        } else {
+            if (changes.roles.length == 0) changes.roles = 'empty';
+            if (this.state._id) {
+                this.props.updateUser(this.state._id, changes);
+            } else {
+                this.props.createUser(changes);
+            }
+            this.hide();
         }
+    }
 
+    render = () => {
+        const readOnly = this.props.readOnly;
+        return this.renderModal({
+            title: 'Thông tin người dùng',
+            size: 'large',
+            body: (
+                <div className='row'>
+                    <div className={this.state._id ? 'col-md-8' : 'col-md-12'}>
+                        <div className='row'>
+                            <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} />
+                            <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} />
+                        </div>
+                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
+                    </div>
+                    <FormImageBox ref={e => this.imageBox = e} className='col-md-4' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly} />
+
+                    <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
+                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
+
+                    <FormCheckbox ref={e => this.itemIsCourseAdmin = e} className='col-md-4' label='Quản trị viên khoá học' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsStaff = e} className='col-md-4' label='Nhân viên' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsLecturer = e} className='col-md-4' label='Giáo viên' readOnly={readOnly} />
+
+                    <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemActive = e} className='col-md-12' label='Kích hoạt' readOnly={readOnly} />
+                </div>),
+        });
+    }
+}
+
+class UserPasswordModal extends AdminModal {
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.password1.focus()));
+    }
+
+    onShow = (item) => {
+        this.password1.value('');
+        this.password2.value('');
+        this.data('_id', item._id);
+    }
+
+    onSubmit = () => {
+        const password1 = this.password1.value().trim(),
+            password2 = this.password2.value().trim();
+        if (password1 == '') {
+            T.notify('Mật khẩu bị trống!', 'danger');
+            this.password1.focus();
+        } else if (password2 == '') {
+            T.notify('Vui lòng nhập lại mật khẩu!', 'danger');
+            this.password2.focus();
+        } else if (password1 != password2) {
+            T.notify('Mật khẩu không trùng nhau!', 'danger');
+            this.password1.focus();
+        } else {
+            this.props.updateUser(this.data('_id'), { password: password1 }, error => error || this.hide());
+        }
+    }
+
+    render = () => this.renderModal({
+        title: 'Đổi mật khẩu',
+        body: <>
+            <FormTextBox type='password' ref={e => this.password1 = e} label='Mật khẩu' />
+            <FormTextBox type='password' ref={e => this.password2 = e} label='Nhập lại mật khẩu' />
+        </>,
+    });
+}
+
+export class RoleFilter extends React.Component {
+    state = {}
+    render() {
+        let { isCourseAdmin, isStaff, isLecturer, isAll } = this.props.filter;
+        const pageNumber = this.props.pageNumber,
+            pageSize = this.props.pageSize;
         return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa-users' /> Người dùng</h1>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6 }} onSubmit={e => this.search(e)}>
-                            <input className='app-search__input' id='searchTextBox' type='search' placeholder='Search' />
-                            <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
-                        </form>
-                        {this.state.isSearching ?
-                            <a href='#' onClick={e => $('#searchTextBox').val('') && this.search(e)} style={{ color: 'red', marginRight: 12, marginTop: 6 }}>
-                                <i className='fa fa-trash' />
-                            </a> : null}
-                    </ul>
+            <div style={{ display: 'flex' }}>
+                <label>All:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isAll} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: !isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
                 </div>
+                <label>Quản trị khóa học:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isCourseAdmin} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: !isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>Nhân viên:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isStaff} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: !isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+                <label>Giáo viên:</label>
+                <div className='toggle'>
+                    <label>
+                        <input type='checkbox' checked={isLecturer} onChange={() => {
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: !isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
+                        }} />
+                        <span className='button-indecator' />
+                    </label>
+                </div>
+            </div>
 
-                <div className='tile'>{table}</div>
-                <Pagination name='adminUser' pageCondition={pageCondition}
-                    pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getUserInPage} />
-
-                {hasUpdate ? (
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button>
-                ) : ''}
-
-                <UserModal ref={this.userModal} hasUpdate={hasUpdate} allRoles={allRoles}
-                    updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserInPage} />
-                <UserPasswordModal updateUser={this.props.updateUser} hasUpdate={hasUpdate} ref={this.passwordModal} />
-            </main>
         );
     }
 }
 
+class UserPage extends AdminPage {
+    state = { searchText: '', isSearching: false };
+    constructor(props) {
+        super(props);
+        this.state = {
+            roleFilter: (T.cookie('roleFilter') ? T.cookie('roleFilter') :
+                {
+                    isCourseAdmin: false,
+                    isStaff: false,
+                    isLecturer: false,
+                    isAll: true,
+                })
+        }
+    }
+
+
+    componentDidMount() {
+        T.ready(() => T.showSearchBox());
+        this.props.getAllRoles();
+        this.props.getUserPage(1, 50, this.state.roleFilter);
+        T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
+            this.setState({ searchText, isSearching: searchText != '' });
+        });
+    }
+
+    setRoleFilter = (roleFilter) => {
+        this.setState({ roleFilter: roleFilter })
+        T.cookie('roleFilter', roleFilter)
+    }
+
+    edit = (e, item) => e.preventDefault() || this.userModal.show(item);
+
+    changePassword = (e, item) => e.preventDefault() || this.passwordModal.show(item);
+
+    delete = (e, item) => e.preventDefault() || T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
+        isConfirm && this.props.deleteUser(item._id));
+
+    render() {
+        const permission = this.getUserPermission('user');
+        const allRoles = this.props.role && this.props.role.items ? this.props.role.items : [];
+        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
+            this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: null };
+        const table = renderTable({
+            getDataSource: () => this.props.user && this.props.user.page && this.props.user.page.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '70%' }}>Tên</th>
+                    <th style={{ width: '30%' }}>Email</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={item.email} />
+                    <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateUser(item._id, { active })} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={e => !item.default && this.delete(e, item)}>
+                        {permission.write ?
+                            <a className='btn btn-info' href='#' onClick={e => !item.default && this.changePassword(e, item)}>
+                                <i className='fa fa-lg fa-key' />
+                            </a> : null}
+                    </TableCell>
+                </tr>),
+        });
+
+        return this.renderPage({
+            icon: 'fa fa-users',
+            title: 'Người dùng',
+            header: <RoleFilter getUserPage={this.props.getUserPage} setRoleFilter={this.setRoleFilter} filter={this.state.roleFilter} pageNumber={pageNumber} pageSize={pageSize} />,
+            breadcrumb: ['Người dùng'],
+            content: <>
+                <div className='tile'>{table}</div>
+                <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                    getPage={this.props.getUserPage} />
+                <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles}
+                    updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserPage} />
+                <UserPasswordModal ref={e => this.passwordModal = e} readOnly={!permission.write} updateUser={this.props.updateUser} />
+            </>,
+            onCreate: permission.write ? this.edit : null,
+        });
+    }
+}
+
 const mapStateToProps = state => ({ system: state.system, user: state.user, role: state.role });
-const mapActionsToProps = { getUserInPage, createUser, updateUser, deleteUser, getAllRoles };
+const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, getAllRoles };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);

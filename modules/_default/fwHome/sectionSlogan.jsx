@@ -6,8 +6,8 @@ class SectionSlogan extends React.Component {
     state = {};
 
     componentDidMount() {
-        if (this.props.sloganId) {
-            this.props.getSloganByUser(this.props.sloganId, slogan => slogan && this.setState({ slogan }));
+        if (this.props.viewId) {
+            this.props.getSloganByUser(this.props.viewId, slogan => slogan && this.setState({ slogan }));
         }
     }
 
@@ -20,8 +20,8 @@ class SectionSlogan extends React.Component {
             <div className='media block-6 services d-block text-center'>
                 <img src={item.image} style={{ width: '40%', height: 'auto' }} />
                 <div className='media-body p-2 mt-2'>
-                    <h3 className='heading mb-3'>{T.language.parse(item.title)}</h3>
-                    <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
+                    <h3 className='heading mb-3'>{item.title}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: item.content }} />
                 </div>
             </div>
         );
@@ -37,8 +37,8 @@ class SectionSlogan extends React.Component {
                                 <div className='media block-6 services d-block text-center'>
                                     <img src={item.image} style={{ width: '40%', height: 'auto' }} />
                                     <div className='media-body p-2 mt-2'>
-                                        <h3 className='heading mb-3'>{T.language.parse(item.title)}</h3>
-                                        <p dangerouslySetInnerHTML={{ __html: T.language.parse(item.content) }} />
+                                        <h3 className='heading mb-3'>{item.title}</h3>
+                                        <p dangerouslySetInnerHTML={{ __html: item.content }} />
                                     </div>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateProfile } from '../_init/reduxSystem';
-import Dropdown from 'view/component/Dropdown';
+import { Select } from 'view/component/Input';
 import ImageBox from 'view/component/ImageBox';
 const countryList = require('country-list');
 
@@ -42,7 +42,7 @@ class ProfilePage extends React.Component {
                 $('#identityCard').val(identityCard);
                 $('#identityDate').datepicker('update', identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
-                this.sex.current.setText(sex ? sex : '');
+                this.sex.current.val({ id: sex, text: sex === 'male' ? 'Nam' : 'Nữ' });
                 this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
                 // $(this.quocGia.current).select2({
                 //     data: countryList.getCodes().map(id => ({ id, text: countryList.getName(id) })),
@@ -52,27 +52,22 @@ class ProfilePage extends React.Component {
         });
     }
 
-
     saveCommon = (e) => {
-        const
-            sex = this.sex.current.getSelectedItem(),
-            changesOfUser = {
-                firstname: $('#userFirstname').val(),
-                lastname: $('#userLastname').val(),
-                birthday: $('#birthday').val() ? T.formatDate($('#birthday').val()) : null,
-                // residence: $('#residence').val(),
-                phoneNumber: $('#phoneNumber').val(),
-                // regularResidence: $('#regularResidence').val(),
+        const changesOfUser = {
+            sex: this.sex.current.val(),
+            firstname: $('#userFirstname').val(),
+            lastname: $('#userLastname').val(),
+            birthday: $('#birthday').val() ? T.formatDate($('#birthday').val()) : null,
+            // residence: $('#residence').val(),
+            phoneNumber: $('#phoneNumber').val(),
+            // regularResidence: $('#regularResidence').val(),
 
-                //identity
-                // identityCard: $('#identityCard').val(),
-                // identityDate: $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
-                // identityIssuedBy: $('#identityIssuedBy').val(),
-                // nationality: $(this.quocGia.current).val()
-            };
-        if (T.sexes.indexOf(sex) != -1) {
-            changesOfUser.sex = sex;
-        }
+            //identity
+            // identityCard: $('#identityCard').val(),
+            // identityDate: $('#identityDate').val() ? T.formatDate($('#identityDate').val()) : null,
+            // identityIssuedBy: $('#identityIssuedBy').val(),
+            // nationality: $(this.quocGia.current).val()
+        };
         if (!changesOfUser.lastname) {
             T.notify('Họ và tên lót bị trống', 'danger');
             $('#userLastname').focus();
@@ -132,9 +127,15 @@ class ProfilePage extends React.Component {
                                         Email:&nbsp; <span>{this.props.system.user.email}</span>
                                     </label>
                                 </div>
-                                <div className='form-group col-md-6' style={{ display: 'flex' }}>
-                                    <label className='control-label'>Giới tính:</label>
-                                    <Dropdown ref={this.sex} style={{ marginLeft: '10px' }} text='' items={T.sexes} />
+                                <div className='form-group col-md-4' style={{ display: 'flex' }}>
+                                    <label className='control-label' style={{ whiteSpace: 'nowrap' }} >Giới tính:</label>&nbsp;&nbsp;
+                                    <Select ref={this.sex} displayLabel={false}
+                                        adapter={{
+                                            ajax: true,
+                                            processResults: () => ({
+                                                results: [{ id: "female", text: "Nữ" }, { id: "male", text: "Nam" }]
+                                            })
+                                        }} label='Giới tính' />
                                 </div>
 
                                 <div className='form-group col-md-6'>

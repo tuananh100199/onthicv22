@@ -4,8 +4,9 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
-        lessonVideo: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
-        lessonQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
+        author: String,
+        videos: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
     });
     const model = app.db.model('Lesson', schema);
 
@@ -13,7 +14,6 @@ module.exports = app => {
         create: (data, done) => {
             model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
                 data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-                if (!data.title) data.title = 'Bài học mới';
                 model.create(data, done)
             })
         },
@@ -39,22 +39,13 @@ module.exports = app => {
             done ? model.find(condition).exec(done) : model.find({}).exec(condition)
         },
 
-        get: (condition, option, done) => {
-            const handleGet = (condition, option, done) => {
-                const select = option.select ? option.select : null;
-                const populate = option.populate ? option.populate : false;
-
-                const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
-                if (select) result.select(select);
-                if (populate) result.populate('lessonVideo', 'title link image').populate('lessonQuestion');
-                result.exec(done);
-            };
-
-            if (done) {
-                handleGet(condition, option, done);
-            } else {
-                handleGet(condition, {}, option);
+        get: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
             }
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).populate('videos').populate('questions').exec(done);
         },
 
         update: (_id, $set, $unset, done) => done ?
@@ -74,12 +65,18 @@ module.exports = app => {
             });
         },
 
-        pushLessonVideo: (condition, lessonVideoId, lessonVideoTitle, lessonVideoLink, lessonVideoImage, done) => {
-            model.findOneAndUpdate(condition, { $push: { lessonVideo: { _id: lessonVideoId, title: lessonVideoTitle, link: lessonVideoLink, image: lessonVideoImage } } }, { new: true }).select('_id lessonVideo').populate('lessonVideo').exec(done);
+        addVideo: (_id, videos, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { videos } }, { new: true }).populate('videos').exec(done);
+        },
+        deleteVideo: (_id, _lessonVideoId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { videos: _lessonVideoId } }).populate('videos').exec(done);
         },
 
-        pushLessonQuestion: (condition, lessonQuestionId, lessonQuestionTitle, lessonQuestionDefaultAnswer, lessonQuestionContent, lessonQuestionActive, lessonQuestionTypeValue, done) => {
-            model.findOneAndUpdate(condition, { $push: { lessonQuestion: { _id: lessonQuestionId, title: lessonQuestionTitle, defaultAnswer: lessonQuestionDefaultAnswer, content: lessonQuestionContent, active: lessonQuestionActive, typeValue: lessonQuestionTypeValue } } }, { new: true }).select('_id lessonQuestion').populate('lessonQuestion').exec(done);
+        addQuestion: (_id, questions, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
+        },
+        deleteQuestion: (_id, lessonQuestionId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { questions: lessonQuestionId } }).populate('questions').exec(done);
         },
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),

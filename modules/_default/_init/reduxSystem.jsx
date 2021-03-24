@@ -33,9 +33,7 @@ export function getSystemState(done) {
     return dispatch => {
         const url = `/api/state`;
         T.get(url, data => {
-            if (data) {
-                dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
-            }
+            data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
             if (done) done(data);
         }, error => {
             T.notify('Get system information failed!', 'danger');
@@ -48,9 +46,7 @@ export function getStatistic(done) {
     return dispatch => {
         const url = `/api/statistic`;
         T.get(url, data => {
-            if (data) {
-                dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
-            }
+            data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
             if (done) done(data);
         }, error => {
             T.notify('Get system statistic failed!', 'danger');
@@ -66,9 +62,6 @@ export function login(data, done) {
                 done({ error: res.error ? res.error : '' });
             } else {
                 done({ user: res.user });
-                // if (res.user) {
-                //     window.location = '/user';
-                // }
             }
         }, error => {
             done({ error: 'Login failed!' });

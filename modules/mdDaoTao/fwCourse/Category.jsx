@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAll, createCategory, swapCategory, updateCategory, deleteCategory } from './reduxCategory';
+import { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory } from './reduxCategory';
 import ImageBox from 'view/component/ImageBox';
 
 class CategoryModal extends React.Component {
@@ -20,7 +20,7 @@ class CategoryModal extends React.Component {
     }
 
     show = (item, categoryType, readOnly) => {
-        const { _id, title, image } = item ? item : { _id: null, title: '', image: '/img/avatar.png' };
+        const { _id, title, image } = item || { _id: null, title: '', image: '/img/avatar.png' };
         $('#catName').val(title);
         $(this.btnSave.current).data('id', _id).data('categoryType', categoryType);
 
@@ -61,7 +61,7 @@ class CategoryModal extends React.Component {
                         <div className='modal-body'>
                             <div className='form-group'>
                                 <label htmlFor='catName'>Tên danh mục</label>
-                                <input className='form-control' id='catName' type='text' placeholder='Category name' readOnly={readOnly} />
+                                <input className='form-control' id='catName' type='text' placeholder='Tên danh mục' readOnly={readOnly} />
                             </div>
                             <div className='form-group'>
                                 <label>Hình ảnh</label>
@@ -88,7 +88,7 @@ class Category extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getAll(this.props.type);
+        this.props.getCategoryAll(this.props.type);
     }
 
     create = (e) => {
@@ -129,9 +129,9 @@ class Category extends React.Component {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '80%' }}>Tiêu đề</th>
-                            <th style={{ width: '20%', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
-                            <th style={{ width: 'auto', whiteSpace: 'nowrap' }}>Kích hoạt</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
+                            <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -174,7 +174,7 @@ class Category extends React.Component {
         }
 
         return (
-            <div>
+            <>
                 <div className='tile'>{table}</div>
                 {readOnly ? null :
                     <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
@@ -182,11 +182,11 @@ class Category extends React.Component {
                     </button>
                 }
                 <CategoryModal ref={this.modal} createCategory={this.props.createCategory} updateCategory={this.props.updateCategory} uploadType={this.props.uploadType} />
-            </div>
+            </>
         );
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, category: state.category })
-const mapActionsToProps = { getAll, createCategory, swapCategory, updateCategory, deleteCategory };
+const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory };
 export default connect(mapStateToProps, mapActionsToProps)(Category);

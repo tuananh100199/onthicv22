@@ -62,6 +62,8 @@ class AdminHeader extends React.Component {
     componentDidMount() {
         this.props.getUnreadContacts((_, error) => error && this.setState({ showContact: false }));
 
+        T.showSearchBox = () => this.searchBox.current && $(this.searchBox.current).parent().css('display', 'flex');
+        T.hideSearchBox = () => this.searchBox.current && $(this.searchBox.current).parent().css('display', 'none');
         T.clearSearchBox = () => {
             if (this.searchBox.current) this.searchBox.current.value = '';
         }
@@ -138,10 +140,10 @@ class AdminHeader extends React.Component {
                 <a className='app-sidebar__toggle' href='#' data-toggle='sidebar' aria-label='Hide Sidebar' />
                 <ul className='app-nav'>
                     {isAdmin || isDebug ?
-                        <li className='app-nav__item'>
+                        <li className='app-nav__item' style={{ whiteSpace: 'nowrap' }}>
                             <a href='#' style={{ color: 'white' }} onClick={this.showDebugModal}>Switch user</a>
                         </li> : null}
-                    <li className='app-search'>
+                    <li className='app-search' style={{ display: 'none' }}>
                         <input ref={this.searchBox} className='app-search__input' type='search' placeholder='Tìm kiếm' onKeyUp={e => e.keyCode == 13 && this.search(e)} />
                         <button className='app-search__button' onClick={this.search}><i className='fa fa-search' /></button>
                     </li>

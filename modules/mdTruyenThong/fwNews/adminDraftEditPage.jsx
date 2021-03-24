@@ -17,7 +17,7 @@ class DraftNewsEditPage extends React.Component {
     componentDidMount() {
         T.ready('/user/news/draft', () => {
             this.getData();
-            $('#neNewsViTitle').focus();
+            $('#neNewsTitle').focus();
             $('#neNewsCategories').select2();
             $('#neNewsStartPost').datetimepicker(T.dateFormat);
             $('#neNewsStopPost').datetimepicker(T.dateFormat);
@@ -33,7 +33,7 @@ class DraftNewsEditPage extends React.Component {
                 this.props.history.push('/user/news/draft');
             } else if (data.categories && data.item) {
                 const contentNews = JSON.parse(data.item.documentJson);
-                let categories = data.categories.map(item => ({ id: item.id, text: T.language.parse(item.text) }));
+                let categories = data.categories.map(item => ({ id: item.id, text: item.text }));
                 $('#neNewsCategories').select2({ data: categories }).val(contentNews.categories).trigger('change');
                 const neNewsStartPost = $('#neNewsStartPost').datetimepicker(T.dateFormat);
                 const neNewsStopPost = $('#neNewsStopPost').datetimepicker(T.dateFormat);
@@ -48,12 +48,9 @@ class DraftNewsEditPage extends React.Component {
                 }
                 data.image = data.item.image ? data.item.image : '/image/avatar.jpg';
                 this.imageBox.current.setData('draftNews:' + (data.item._id ? data.item._id : 'new'));
-                let title = T.language.parse(data.item.title, true),
-                    abstract = T.language.parse(contentNews.abstract, true),
-                    content = T.language.parse(contentNews.content, true);
-                $('#neNewsViTitle').val(title.vi); $('#neNewsEnTitle').val(title.en);
-                $('#neNewsViAbstract').val(abstract.vi); $('#neNewsEnAbstract').val(abstract.en);
-                this.viEditor.current.html(content.vi); this.enEditor.current.html(content.en);
+                $('#neNewsTitle').val(data.item.title);
+                $('#neNewsViAbstract').val(contentNews.abstract);
+                this.viEditor.current.html(contentNews.content);
                 this.setState(data);
             } else {
                 this.props.history.push('/user/news/draft');
@@ -80,15 +77,15 @@ class DraftNewsEditPage extends React.Component {
             neNewsStopPost = $('#neNewsStopPost').val(),
             changes = {
                 categories: $('#neNewsCategories').val(),
-                title: JSON.stringify({ vi: $('#neNewsViTitle').val(), en: $('#neNewsEnTitle').val() }),
+                title: $('#neNewsTitle').val(),
                 link: $('#neNewsLink').val().trim(),
-                abstract: JSON.stringify({ vi: $('#neNewsViAbstract').val(), en: $('#neNewsEnAbstract').val() }),
-                content: JSON.stringify({ vi: this.viEditor.current.html(), en: this.enEditor.current.html() }),
+                abstract: $('#neNewsAbstract').val(),
+                content: this.editor.current.html(),
             };
         if (neNewsStartPost) changes.startPost = T.formatDate(neNewsStartPost);
         if (neNewsStopPost) changes.stopPost = T.formatDate(neNewsStopPost);
         let newDraft = {
-            title: JSON.stringify({ vi: $('#neNewsViTitle').val(), en: $('#neNewsEnTitle').val() }),
+            title: $('#neNewsTitle').val(),
             editorId: this.props.system.user._id,
             editorName: this.props.system.user.firstname,
             documentType: 'news',
@@ -107,7 +104,7 @@ class DraftNewsEditPage extends React.Component {
             priority: 1, categories: [], title: '', content: '', image: T.url('/image/avatar.jpg'),
             createdDate: new Date(), active: false, view: 0
         };
-        let title = T.language.parse(item.title, true),
+        let title = item.title,
             linkDefaultNews = T.rootUrl + '/news/item/' + item._id;
 
         const categories = this.props.news && this.props.news.categories ? this.props.news.categories : [];
@@ -115,7 +112,7 @@ class DraftNewsEditPage extends React.Component {
         (this.state.item && this.state.item.categories ? this.state.item.categories : []).forEach(_id => {
             for (let i = 0; i < categories.length; i++) {
                 if (categories[i].id == _id) {
-                    userCategories += ', ' + T.language.parse(categories[i].text);
+                    userCategories += ', ' + categories[i].text;
                     break;
                 }
             }
@@ -125,15 +122,10 @@ class DraftNewsEditPage extends React.Component {
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-file' /> Tin tức: Chỉnh sửa</h1>
-                        <p dangerouslySetInnerHTML={{ __html: title.vi != '' ? 'Tiêu đề: <b>' + title.vi + '</b> - ' + T.dateToText(item.createdDate) : '' }} />
-                    </div>
+                    <h1><i className='fa fa-file' /> Tin tức: {item.title}</h1>
                     <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/news/list'>Danh sách tin tức</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
+                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
+                        <Link to='/user/news/list'>Danh sách tin tức</Link>&nbsp;/&nbsp;Chỉnh sửa
                     </ul>
                 </div>
                 <div className='row'>
@@ -143,22 +135,14 @@ class DraftNewsEditPage extends React.Component {
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label className='control-label'>Tên bài viết</label>
-                                    <input className='form-control' type='text' placeholder='Tên bài viết' id='neNewsViTitle' defaultValue={title.vi} readOnly={readOnly} />
+                                    <input className='form-control' type='text' placeholder='Tên bài viết' id='neNewsTitle' defaultValue={title.vi} readOnly={readOnly} />
                                 </div>
+
                                 <div className='form-group'>
-                                    <label className='control-label'>News title</label>
-                                    <input className='form-control' type='text' placeholder='News title' id='neNewsEnTitle' defaultValue={title.en} readOnly={readOnly} />
+                                    <label className='control-label'>Hình ảnh</label>
+                                    <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='NewsDraftImage' image={this.state.image} readOnly={readOnly} />
                                 </div>
 
-                                <div className='row'>
-                                    <div className='col-md-6'>
-                                        <div className='form-group'>
-                                            <label className='control-label'>Hình ảnh</label>
-                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='NewsDraftImage' image={this.state.image} readOnly={readOnly} />
-                                        </div>
-                                    </div>
-
-                                </div>
                                 <div className='form-group'>
                                     <label className='control-label'>Danh mục bài viết</label>
                                     <select className='form-control' id='neNewsCategories' multiple={true} defaultValue={[]} disabled={readOnly}>
@@ -173,12 +157,14 @@ class DraftNewsEditPage extends React.Component {
                             <h3 className='tile-title'>Link</h3>
                             <div className='tile-body'>
                                 <div className='form-group'>
-                                    <label className='control-label'>Link mặc định</label><br />
-                                    <a href={linkDefaultNews} style={{ fontWeight: 'bold' }} target='_blank'>{linkDefaultNews}</a>
+                                    <label className='control-label' style={{ display: 'flex' }}>Link mặc định:&nbsp;
+                                        <a href={linkDefaultNews} style={{ fontWeight: 'bold' }} target='_blank'>{linkDefaultNews}</a>
+                                    </label>
                                 </div>
                                 <div className='form-group'>
-                                    <label className='control-label'>Link truyền thông</label><br />
-                                    <a href='#' ref={this.newsLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                    <label className='control-label' style={{ display: 'flex' }}>Link truyền thông:&nbsp;
+                                        <a href='#' ref={this.newsLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                    </label>
                                     <input className='form-control' id='neNewsLink' type='text' placeholder='Link truyền thông' defaultValue={item.link} readOnly={readOnly}
                                         onChange={this.newsLinkChange} />
                                 </div>

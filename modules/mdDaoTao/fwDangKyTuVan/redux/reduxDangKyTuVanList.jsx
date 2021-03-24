@@ -10,7 +10,8 @@ const DKTVUpdate = 'DKTVList:Update';
 export default function DKTVListReducer(state = null, data) {
     switch (data.type) {
         case DKTVListGetAll:
-            return Object.assign({}, state, { items: data.items });
+            return Object.assign({}, state, { list: data.items });
+
 
         case DKTVListGetPage:
             return Object.assign({}, state, { page: data.page });
@@ -85,10 +86,10 @@ export default function DKTVListReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getDKTVListAll(done) {
+export function getDKTVListAll(searchText, done) {
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/all';
-        T.get(url, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả đăng ký tư vấn lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -101,11 +102,11 @@ export function getDKTVListAll(done) {
 }
 
 T.initCookiePage('pageDKTVList');
-export function getDKTVListPage(pageNumber, pageSize, done) {
+export function getDKTVListPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageDKTVList', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/dang-ky-tu-van-list/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        T.get(url,{searchText}, data => {
             if (data.error) {
                 T.notify('Lấy danh sách đăng ký tư vấn!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -149,7 +150,7 @@ export function getUnreadDKTVList(done) {
 
 export function updateDKTVList(_id, changes, done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list';
+        const url = '/api/dang-ky-tu-van-list/item/';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger');
@@ -200,15 +201,8 @@ export function createDKTVListItem(dangKyTuVan, done) {
     }
 }
 
-export function phanHoiDKTVListItem(_id, content, done) {
+export function exportDangKyTuVanToExcel(done) {
     return dispatch => {
-        const url = '/api/dang-ky-tu-van-list/item/response';
-        T.post(url, { _id, content }, data => {
-            if (data.error) {
-                T.notify('Thao tác phản hồi bị lỗi!', 'danger');
-                console.error('POST: ' + url + '. ' + data.error);
-            }
-            done && done(data);
-        }, error => T.notify('Gửi mail phản hồi bị lỗi!', 'danger'));
+        T.download(T.url(`/api/dang-ky-tu-van-list/export`));
     }
 }

@@ -14,7 +14,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 
 import { changeCarouselItem } from 'modules/_default/fwHome/redux/reduxCarousel';
 import { changeVideo } from 'modules/_default/fwHome/redux/reduxVideo';
-import { changeCategory } from 'modules/_default/_init/reduxCategory';
+import { changeCategory } from 'modules/_default/fwCategory/redux';
 import { getSystemState, updateSystemState } from 'modules/_default/_init/reduxSystem';
 import { changeUser } from 'modules/_default/fwUser/redux';
 import { addContact, changeContact } from 'modules/mdTruyenThong/fwContact/redux';
@@ -25,6 +25,7 @@ import AdminMenu from 'view/component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import _init from 'modules/_default/_init/index';
+import fwCategory from 'modules/_default/fwCategory/index';
 import fwCluster from 'modules/_default/fwCluster/index';
 import fwUser from 'modules/_default/fwUser/index';
 import fwRole from 'modules/_default/fwRole/index';
@@ -33,7 +34,6 @@ import fwMenu from 'modules/_default/fwMenu/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwEmail from 'modules/_default/fwEmail/index';
-import fwForm from 'modules/_default/fwForm/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwContentList from 'modules/_default/fwContentList/index';
@@ -43,18 +43,21 @@ import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
+import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 
+window.T = T;
 const modules = [
-    _init, fwCluster,
+    _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
-    fwContact, fwSubscribe, fwEmail, fwForm, fwNews,
-    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc,
-]
+    fwContact, fwSubscribe, fwEmail, fwNews,
+    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
+];
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 
 modules.forEach(module => {
+    module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
     module.routes.forEach((route) => {
         if (route.path.startsWith('/user')) {
@@ -65,7 +68,6 @@ modules.forEach(module => {
 
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());
-window.T = T;
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {

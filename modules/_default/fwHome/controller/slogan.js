@@ -1,8 +1,8 @@
 module.exports = app => {
     app.get('/api/slogan/all', app.permission.check('component:read'), (req, res) => app.model.slogan.getAll((error, items) => res.send({ error, items })));
 
-    app.get('/api/slogan/item/:sloganId', app.permission.check('component:read'), (req, res) =>
-        app.model.slogan.get(req.params.sloganId, (error, item) => res.send({ error, item })));
+    app.get('/api/slogan/item/:_id', app.permission.check('component:read'), (req, res) =>
+        app.model.slogan.get(req.params._id, (error, item) => res.send({ error, item })));
 
     app.post('/api/slogan', app.permission.check('component:write'), (req, res) =>
         app.model.slogan.create({ title: req.body.title }, (error, item) => res.send({ error, item })));

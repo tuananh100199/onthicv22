@@ -9,6 +9,7 @@ const UserUpdate = 'UserUpdate';
 const GET_STAFFS = 'User:GetStaffs';
 const GET_STAFF_IN_PAGE = 'User:GetStaffPage';
 
+
 export default function userReducer(state = null, data) {
     switch (data.type) {
         case UserGetAll:
@@ -103,35 +104,27 @@ export function getAllStaffs(done) {
     }
 }
 
-const getPageUrl = (pageNumber, pageSize) => `/api/user/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('adminUser', true);
-export function getUserInPage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminUser', pageNumber, pageSize, pageCondition);
-    if (page.pageCondition && typeof page.pageCondition == 'object') page.pageCondition = JSON.stringify(page.pageCondition);
+export function getUserPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('adminUser', pageNumber, pageSize);
     return dispatch => {
-        ajaxGetUserInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, page => {
-            done && done(page);
-            dispatch({ type: UserGetPage, page });
-        });
+        const url = `/api/user/page/${page.pageNumber}/${page.pageSize}`;
+        T.get(url, { condition: pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: UserGetPage, page: data.page });
+            }
+        }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
     }
-}
-
-export function ajaxGetUserInPage(pageNumber, pageSize, pageCondition, done) {
-    const url = getPageUrl(pageNumber, pageSize);
-    T.get(url, { condition: pageCondition }, data => {
-        if (data.error) {
-            T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
-            console.error('GET: ' + url + '. ' + data.error);
-        } else {
-            if (pageCondition) data.page.pageCondition = pageCondition;
-            done && done(data.page);
-        }
-    }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
 }
 
 export const ajaxSelectUser = {
     ajax: true,
-    url: getPageUrl(1, 20),
+    url: `/api/user/page/1/20`,
     data: params => ({ condition: params.term }),
     processResults: response => ({
         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : []
@@ -201,7 +194,7 @@ export function createUser(user, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 T.notify('Tạo người dùng thành công!', 'success');
-                dispatch(getUserInPage());
+                dispatch(getUserPage());
                 done && done(data.user);
             }
         }, error => T.notify('Tạo người dùng bị lỗi!', 'danger'));
@@ -217,7 +210,7 @@ export function updateUser(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin người dùng thành công!', 'info');
+                T.notify('Cập nhật thông tin người dùng thành công!', 'success');
                 dispatch(changeUser(data.user));
                 done && done();
             }
@@ -233,7 +226,7 @@ export function deleteUser(_id, done) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Người dùng được xóa thành công!', 'error', false, 800);
-                dispatch(getUserInPage());
+                dispatch(getUserPage());
             }
             done && done();
         }, error => T.notify('Xóa người dùng bị lỗi!', 'danger'));

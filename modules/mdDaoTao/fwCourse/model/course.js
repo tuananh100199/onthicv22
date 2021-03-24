@@ -23,15 +23,13 @@ module.exports = app => {
     const model = app.db.model('Course', schema);
 
     app.model.course = {
-        create: (data, done) => {
-            app.model.courseType.get(data.licenseClass, (_, item) =>
-                model.create({
-                    ...data,
-                    abstract: item.shortDescription,
-                    content: item.detailDescription,
-                    subjectList: item.subjectList
-                }, done))
-        },
+        create: (data, done) => app.model.courseType.get(data.licenseClass, (_, item) =>
+            model.create({
+                ...data,
+                abstract: item.shortDescription,
+                content: item.detailDescription,
+                subjectList: item.subjectList
+            }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {

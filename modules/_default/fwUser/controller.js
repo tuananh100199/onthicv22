@@ -1,36 +1,47 @@
 module.exports = app => {
-    const userMenu = {
+    const menu = {
         parentMenu: app.parentMenu.setting,
         menus: {
-            2060: { title: 'Người dùng', link: '/user/user', icon: 'fa-users', backgroundColor: '#2e7d32' },
+            2060: { title: 'Người dùng', link: '/user/member', icon: 'fa-users', backgroundColor: '#2e7d32' },
         },
     };
-    app.permission.add(
-        { name: 'user:read', menu: userMenu },
-        { name: 'user:write', menu: userMenu },
-    );
+    app.permission.add({ name: 'user:read', menu }, { name: 'user:write' }, { name: 'user:delete' });
 
     ['/registered(.htm(l)?)?', '/active-user/:userId', '/forgot-password/:userId/:userToken'].forEach((route) => app.get(route, app.templates.home));
     app.get('/user/profile', app.permission.check(), app.templates.admin);
-    app.get('/user/user', app.permission.check('user:read'), app.templates.admin);
+    app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || '',
+            condition = req.query.condition || {},
             pageCondition = {};
         try {
             if (condition) {
-                const value = { $regex: `.*${condition}.*`, $options: 'i' };
-                pageCondition['$or'] = [
-                    { facebook: value },
-                    { phoneNumber: value },
-                    { organizationId: value },
-                    { email: value },
-                    { firstname: value },
-                    { lastname: value },
-                ];
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition['$or'] = [
+                        { facebook: value },
+                        { phoneNumber: value },
+                        { email: value },
+                        { firstname: value },
+                        { lastname: value },
+                    ];
+                } else if (condition.isAll) {
+                    if (condition.isAll == 'true') {
+                        condition = {}
+                    } else {
+                        if (condition.isCourseAdmin == 'true') pageCondition.isCourseAdmin = true;
+                        if (condition.isStaff == 'true') pageCondition.isStaff = true;
+                        if (condition.isLecturer == 'true') pageCondition.isLecturer = true;
+                        if (condition.isLecturer == 'false' && condition.isCourseAdmin == 'false' && condition.isStaff == 'false') {
+                            pageCondition.isLecturer = pageCondition.isStaff = pageCondition.isCourseAdmin = false;
+                        };
+                    }
+                } else {
+                    pageCondition = condition
+                }
             }
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
@@ -153,7 +164,7 @@ module.exports = app => {
         })
     });
 
-    app.delete('/api/user', app.permission.check('user:write'), (req, res) => {
+    app.delete('/api/user', app.permission.check('user:delete'), (req, res) => {
         app.model.user.delete(req.body._id, error => res.send({ error }));
     });
 

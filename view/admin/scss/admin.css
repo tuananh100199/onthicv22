@@ -13692,6 +13692,7 @@ be a descendant of the grid when it is being dragged.
 }
 
 .app-search__input {
+  outline: none;
   border: 0;
   padding: 5px 10px;
   padding-right: 30px;

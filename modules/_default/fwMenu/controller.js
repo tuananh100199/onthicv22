@@ -11,7 +11,11 @@ module.exports = app => {
             2100: { title: 'Thành phần giao diện', link: '/user/component', icon: 'fa-object-group', backgroundColor: '#00897b' }
         }
     };
-    app.permission.add({ name: 'menu:read', menu: menuMenu }, { name: 'menu:write', menu: menuMenu }, { name: 'menu:delete', menu: menuMenu }, { name: 'component:read', menu: menuComponent }, { name: 'component:write', menu: menuComponent },);
+    app.permission.add(
+        { name: 'menu:read', menu: menuMenu }, { name: 'menu:write' }, { name: 'menu:delete' },
+        { name: 'component:read', menu: menuComponent }, { name: 'component:write' }, { name: 'component:delete' },
+    );
+
     app.get('/user/menu/edit/:_id', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/menu', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
@@ -26,7 +30,6 @@ module.exports = app => {
     app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.buildAppMenus = (menuTree, callback) => {
@@ -48,17 +51,16 @@ module.exports = app => {
 
         if (menuTree) {
             getMenu(0, menuTree, () => {
-                app.state.menus = menus;
+                app.redis.set(app.redis.menusKey, JSON.stringify(menus));
                 callback && callback();
             });
         } else {
             app.model.menu.getAll({}, (error, menuTree) => getMenu(0, menuTree, () => {
-                app.state.menus = menus;
+                app.redis.set(app.redis.menusKey, JSON.stringify(menus));
                 callback && callback();
             }));
         }
     }
-    app.buildAppMenus();
 
     app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => app.model.menu.getAll({}, (error, menuTree) => {
         // app.buildAppMenus(menuTree);
@@ -67,70 +69,70 @@ module.exports = app => {
 
     app.get('/api/menu/:menuId', app.permission.check('menu:read'), (req, res) => app.model.menu.get(req.params.menuId, (error, menu) => {
         if (error || menu == null) {
-            return res.send({ error: 'Lỗi khi lấy menu!' });
-        }
-
-        const menuComponentIds = [],
-            menuComponents = [];
-        const getComponent = (level, index, componentIds, components, done) => {
-            if (index < componentIds.length) {
-                app.model.component.get(componentIds[index], (error, component) => {
-                    if (error || component == null) {
-                        return res.send({ error: 'Lỗi khi lấy thành phần trang!' });
-                    }
-
-                    component = app.clone(component);
-                    component.components = [];
-                    components.push(component);
-
-                    const getNextComponent = (viewName) => {
-                        component.viewName = viewName;
-                        if (component.componentIds) {
-                            getComponent(level + 1, 0, component.componentIds, component.components, () => {
-                                getComponent(level, index + 1, componentIds, components, done);
-                            });
+            res.send({ error: 'Lỗi khi lấy menu!' });
+        } else {
+            const menuComponentIds = [],
+                menuComponents = [];
+            const getComponent = (level, index, componentIds, components, done) => {
+                if (index < componentIds.length) {
+                    app.model.component.get(componentIds[index], (error, component) => {
+                        if (error || component == null) {
+                            res.send({ error: 'Lỗi khi lấy thành phần trang!' });
                         } else {
-                            getComponent(level, index + 1, componentIds, components, done);
+                            component = app.clone(component);
+                            component.components = [];
+                            components.push(component);
+
+                            const getNextComponent = (viewName) => {
+                                component.viewName = viewName;
+                                if (component.componentIds) {
+                                    getComponent(level + 1, 0, component.componentIds, component.components, () => {
+                                        getComponent(level, index + 1, componentIds, components, done);
+                                    });
+                                } else {
+                                    getComponent(level, index + 1, componentIds, components, done);
+                                }
+                            };
+                            if (component.viewType && component.viewId) {
+                                const viewType = component.viewType;
+                                if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list videos', 'list contents', 'dangKyTuVan'].indexOf(viewType) != -1)) {
+                                    app.model[viewType].get(component.viewId, (error, item) =>
+                                        getNextComponent(item ? item.title : '<empty>'));
+                                } else if (component.viewId && viewType == 'staff group') {
+                                    app.model.staffGroup.get(component.viewId, (error, item) =>
+                                        getNextComponent(item ? item.title : '<empty>'));
+                                } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all course types'].indexOf(viewType) != -1) {
+                                    getNextComponent(viewType);
+                                } else {
+                                    getNextComponent('<empty>');
+                                }
+                            } else {
+                                getNextComponent('<empty>');
+                            }
                         }
-                    };
-                    if (component.viewType && component.viewId) {
-                        const viewType = component.viewType;
-                        if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list videos', 'list contents', 'dangKyTuVan'].indexOf(viewType) != -1)) {
-                            app.model[viewType].get(component.viewId, (error, item) =>
-                                getNextComponent(item ? item.title : '<empty>'));
-                        } else if (component.viewId && viewType == 'staff group') {
-                            app.model.staffGroup.get(component.viewId, (error, item) =>
-                                getNextComponent(item ? item.title : '<empty>'));
-                        } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all course types'].indexOf(viewType) != -1) {
-                            getNextComponent(viewType);
-                        } else {
-                            getNextComponent('<empty>');
-                        }
-                    } else {
-                        getNextComponent('<empty>');
-                    }
+                    });
+                } else {
+                    done();
+                }
+            }
+
+            const getAllComponents = () => {
+                menuComponentIds.push(menu.componentId);
+                getComponent(0, 0, menuComponentIds, menuComponents, () => {
+                    menu = app.clone(menu);
+                    menu.component = menuComponents[0];
+                    res.send({ menu });
+                });
+            }
+
+            if (menu.componentId == null || menu.componentId == undefined) {
+                app.model.component.create({ className: 'container', viewType: '<empty>' }, (error, component) => {
+                    menu.componentId = component._id;
+                    menu.save(getAllComponents);
                 });
             } else {
-                done();
+                getAllComponents();
             }
-        }
-
-        const getAllComponents = () => {
-            menuComponentIds.push(menu.componentId);
-            getComponent(0, 0, menuComponentIds, menuComponents, () => {
-                menu = app.clone(menu);
-                menu.component = menuComponents[0];
-                res.send({ menu });
-            });
-        }
-
-        if (menu.componentId == null || menu.componentId == undefined) {
-            app.model.component.create({ className: 'container', viewType: '<empty>' }, (error, component) => {
-                menu.componentId = component._id;
-                menu.save(getAllComponents);
-            });
-        } else {
-            getAllComponents();
         }
     }));
 
@@ -140,19 +142,15 @@ module.exports = app => {
         app.model.menu.create(data, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/menu/build', app.permission.check('menu:write'), (req, res) => {
-        app.buildAppMenus(null, () => {
-            app.worker.refreshState({ menuUpdate: true });
-        });
-        res.send('OK');
-    });
+    // app.put('/api/menu/build', app.permission.check('menu:write'), (req, res) => { //TODO: delete
+    //     app.buildAppMenus(null, () => app.worker.refreshState({ menuUpdate: true }));
+    //     res.send('OK');
+    // });
 
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
         app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
             if (error == null) {
-                app.buildAppMenus(null, () => {
-                    app.worker.refreshState({ menuUpdate: true });
-                });
+                app.buildAppMenus(null, () => app.worker.refreshState({ menuUpdate: true }));
             }
             res.send({ error, item })
         })
@@ -177,27 +175,38 @@ module.exports = app => {
         solve(0);
     });
 
-    app.delete('/api/menu', app.permission.check('menu:write'), (req, res) => app.model.menu.delete(req.body._id, error => res.send({ error })));
+    app.delete('/api/menu', app.permission.check('menu:write'), (req, res) => {
+        app.model.menu.delete(req.body._id, error => res.send({ error }));
+    });
+
+    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
+    app.readyHooks.add('MenuReady', {
+        ready: () => app.redis,
+        run: () => {
+            app.redis.menusKey = app.appName + ':menus';
+            process.env['enableInit'] == 'true' && app.buildAppMenus();
+        },
+    });
 
 
     // Component ------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/menu/component', app.permission.check('component:write'), (req, res) => {
         app.model.component.get(req.body.parentId, (error, parent) => {
             if (error || parent == null) {
-                return res.send({ error: 'Id không chính xác!' });
+                res.send({ error: 'Id không chính xác!' });
+            } else {
+                const data = app.clone(req.body.component);
+                data.componentIds = [];
+                app.model.component.create(data, (error, component) => {
+                    if (error || component == null) {
+                        if (error) console.log(error);
+                        res.send({ error: 'Tạo component bị lỗi!' });
+                    } else {
+                        parent.componentIds.push(component._id);
+                        parent.save(error => res.send({ error, component }));
+                    }
+                });
             }
-
-            const data = app.clone(req.body.component);
-            data.componentIds = [];
-            app.model.component.create(data, (error, component) => {
-                if (error || component == null) {
-                    if (error) console.log(error);
-                    return res.send({ error: 'Tạo component bị lỗi!' });
-                }
-
-                parent.componentIds.push(component._id);
-                parent.save(error => res.send({ error, component }));
-            });
         });
     });
 
@@ -212,12 +221,6 @@ module.exports = app => {
     app.delete('/api/menu/component', app.permission.check('component:write'), (req, res) => {
         app.model.component.delete(req.body._id, (error) => res.send({ error }));
     });
-
-    app.put('/api/menu/build', app.permission.check('component:write'), (req, res) => {
-        app.buildAppMenus();
-        res.send('OK')
-    });
-
 
     app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
         const pageType = req.params.pageType;

@@ -10,22 +10,22 @@ const ContactUpdate = 'ContactUpdate';
 export default function contactReducer(state = null, data) {
     switch (data.type) {
         case ContactGetAll:
-            return Object.assign({}, state, { items: data.items });
+            return Object.assign({}, state, { list: data.list });
 
         case ContactGetPage:
             return Object.assign({}, state, { page: data.page });
 
         case ContactGetUnread:
-            return Object.assign({}, state, { unreads: data.items });
+            return Object.assign({}, state, { unreads: data.list });
 
         case ContactAdd:
             if (state) {
-                let addedItems = Object.assign({}, state.items),
+                let addedList = Object.assign({}, state.list),
                     addedPage = Object.assign({}, state.page),
                     addedUnreads = Object.assign({}, state.unreads),
                     addedItem = data.item;
-                if (addedItems) {
-                    addedItems.splice(0, 0, addedItem);
+                if (addedList) {
+                    addedList.splice(0, 0, addedItem);
                 }
                 if (addedPage && addedPage.pageNumber == 1) {
                     addedPage.list = addedPage.list.slice(0);
@@ -34,21 +34,21 @@ export default function contactReducer(state = null, data) {
                 if (addedItem && addedItem.read == false) {
                     addedUnreads.splice(0, 0, addedItem);
                 }
-                return Object.assign({}, state, { items: addedItems, page: addedPage, unreads: addedUnreads });
+                return Object.assign({}, state, { list: addedList, page: addedPage, unreads: addedUnreads });
             } else {
                 return state;
             }
 
         case ContactUpdate: {
             if (state) {
-                let updatedItems = Object.assign({}, state.items),
+                let updatedList = Object.assign({}, state.list),
                     updatedPage = Object.assign({}, state.page),
                     updatedUnreads = Object.assign({}, state.unreads),
                     updatedItem = data.item;
-                if (updatedItems) {
-                    for (let i = 0, n = updatedItems.length; i < n; i++) {
-                        if (updatedItems[i]._id == updatedItem._id) {
-                            updatedItems.splice(i, 1, updatedItem);
+                if (updatedList) {
+                    for (let i = 0, n = updatedList.length; i < n; i++) {
+                        if (updatedList[i]._id == updatedItem._id) {
+                            updatedList.splice(i, 1, updatedItem);
                             break;
                         }
                     }
@@ -73,7 +73,7 @@ export default function contactReducer(state = null, data) {
                         updatedPage.list.splice(0, 1, updatedItem);
                     }
                 }
-                return Object.assign({}, state, { items: updatedItems, page: updatedPage, unreads: updatedUnreads });
+                return Object.assign({}, state, { list: updatedList, page: updatedPage, unreads: updatedUnreads });
             } else {
                 return state;
             }
@@ -93,8 +93,8 @@ export function getContactAll(done) {
                 T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: ContactGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: ContactGetAll, list: data.list });
             }
         }, error => T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
     }
@@ -140,8 +140,8 @@ export function getUnreadContacts(done) {
                 done && done(null, data.error);
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: ContactGetUnread, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: ContactGetUnread, list: data.list });
             }
         }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
     }

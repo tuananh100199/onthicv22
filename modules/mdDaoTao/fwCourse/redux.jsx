@@ -1,4 +1,5 @@
 import T from 'view/js/common';
+
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseGetCourseInPage = 'Course:GetCourseInPage';
 const CourseGetCourse = 'Course:GetCourse';

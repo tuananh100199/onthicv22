@@ -5,6 +5,7 @@ import { getCourse } from './redux.jsx';
 import CommonInfoPage from './commonInfoPage.jsx';
 import SubjectPage from './subjectPage.jsx';
 // import AdvisorPage from './advisorPage.jsx';
+
 class EditPage extends React.Component {
     state = { item: null };
 
@@ -27,10 +28,7 @@ class EditPage extends React.Component {
             if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= navTabs.children().length) tabIndex = 0;
             navTabs.find('li:nth-child(' + (tabIndex + 1) + ') a').tab('show');
             $('#componentPage').fadeIn();
-
-            $(`a[data-toggle='tab']`).on('shown.bs.tab', e => {
-                T.cookie('componentPageTab', $(e.target).parent().index());
-            });
+            $(`a[data-toggle='tab']`).on('shown.bs.tab', e => T.cookie('componentPageTab', $(e.target).parent().index()));
         });
     }
 
@@ -60,8 +58,6 @@ class EditPage extends React.Component {
                         Không có danh sách cố vấn học tập
                     </div>
                     <div className='tab-pane fade' id='student' />
-
-
                 </div>
             </main>
         );

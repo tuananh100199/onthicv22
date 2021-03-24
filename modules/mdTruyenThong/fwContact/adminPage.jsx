@@ -1,84 +1,63 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getContactPage, getContact, updateContact, deleteContact } from './redux';
+import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 import AdminContactModal from 'view/component/AdminContactModal';
 import Pagination from 'view/component/Pagination';
 
-class ContactPage extends React.Component {
-    modal = React.createRef();
-
+class ContactPage extends AdminPage {
     componentDidMount() {
-        this.props.getContactPage();
         T.ready();
+        this.props.getContactPage();
     }
 
-    showContact = (e, contactId) => {
-        e.preventDefault();
-        this.props.getContact(contactId, contact => this.modal.current.show(contact));
-    }
+    showContact = (e, contactId) => e.preventDefault() || this.props.getContact(contactId, contact => this.modal.show(contact));
 
     changeRead = (item) => this.props.updateContact(item._id, { read: !item.read });
 
-    delete = (e, item) => {
-        T.confirm('Xoá liên hệ', 'Bạn có chắc muốn xoá liên hệ này?', true, isConfirm => isConfirm && this.props.deleteContact(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá liên hệ', 'Bạn có chắc muốn xoá liên hệ này?', true, isConfirm =>
+        isConfirm && this.props.deleteContact(item._id));
 
     render() {
+        const permission = this.getUserPermission('contact');
         const { pageNumber, pageSize, pageTotal, totalItem } = this.props.contact && this.props.contact.page ?
             this.props.contact.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
             unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
-        let table = 'Không có liên hệ!';
-        if (this.props.contact && this.props.contact.page && this.props.contact.page.list && this.props.contact.page.list.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '60%' }}>Chủ đề</th>
-                            <th style={{ width: '40%' }}>Tên & Email</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.contact.page.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td>
-                                    <a href='#' onClick={e => this.showContact(e, item._id)} style={item.read ? readStyle : unreadStyle}>{item.subject}</a>
-                                    <br />
-                                    {new Date(item.createdDate).getText()}
-                                </td>
-                                <td>{item.name}<br />{item.email}</td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.showContact(e, item._id)}>
-                                            <i className='fa fa-lg fa-envelope-open-o' />
-                                        </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        }
+        let table = renderTable({
+            getDataSource: () => this.props.contact && this.props.contact.page && this.props.contact.page.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '60%' }}>Chủ đề</th>
+                    <th style={{ width: '40%' }}>Tên & Email</th>
+                    <th style={{ width: 'auto' }}>Ngày gửi</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                    <TableCell type='link' onClick={e => this.showContact(e, item._id)} style={item.read ? readStyle : unreadStyle} content={item.subject} />
+                    <TableCell type='text' content={<>{item.name}<br />{item.email}</>} />
+                    <TableCell type='date' content={item.createdDate} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete}>
+                        <a className='btn btn-primary' href='#' onClick={e => this.showContact(e, item._id)}>
+                            <i className='fa fa-lg fa-envelope-open-o' />
+                        </a>
+                    </TableCell>
+                </tr>),
+        });
 
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa fa-envelope-o' /> Liên hệ</h1>
-                </div>
+        return this.renderPage({
+            icon: 'fa fa-envelope-o',
+            title: 'Liên hệ',
+            breadcrumb: ['Liên hệ'],
+            content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getContactPage} />
-                <AdminContactModal ref={this.modal} />
-            </main>
-        );
+                <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getContactPage} />
+                <AdminContactModal ref={e => this.modal = e} />
+            </>,
+        });
     }
 }
 

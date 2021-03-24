@@ -215,8 +215,8 @@ class ListVideoEditPage extends React.Component {
                         <tr>
                             <th style={{ width: 'auto' }}>#</th>
                             <th style={{ width: '50%' }}>Tên </th>
-                            <th style={{ width: '50%', textAlign: 'center', whiteSpace: 'nowrap' }}>Link</th>
-                            <th style={{ width: 'auto', textAlign: 'center', whiteSpace: 'nowrap' }}>Hình ảnh</th>
+                            <th style={{ width: '50%', textAlign: 'center' }} nowrap='true'>Link</th>
+                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                             {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>}
                         </tr>
                     </thead>
@@ -263,7 +263,6 @@ class ListVideoEditPage extends React.Component {
             table = <p>Không có danh sách các video!</p>;
         }
 
-        const title = currentVideo && currentVideo.title ? T.language.parse(currentVideo.title, true) : '<Trống>';
         const height = currentVideo.height;
         return (
             <main className='app-content' >
@@ -285,7 +284,7 @@ class ListVideoEditPage extends React.Component {
                                 <div className='col-md-6'>
                                     <div className='form-group mt-3'>
                                         <label className='control-label' htmlFor='listVideoTitle'>Tiêu đề</label>
-                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='listVideoTitle' defaultValue={title} readOnly={readOnly} />
+                                        <input className='form-control' type='text' placeholder='Tiêu đề' id='listVideoTitle' defaultValue={currentVideo.title} readOnly={readOnly} />
                                     </div>
                                 </div>
                                 <div className='col-md-6'>

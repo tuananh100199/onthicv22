@@ -3,15 +3,14 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
-        lesson: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
-        feedbackQuestion: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'FeedbackQuestion' }], default: [] },
+        lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'SubjectQuestion' }], default: [] },
     });
     const model = app.db.model('Subject', schema);
 
     app.model.subject = {
         create: (data, done) => {
-            if (!data.title) data.title = 'Môn học mới';
-            model.create(data, done)
+            model.create(data, done);
         },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -37,22 +36,13 @@ module.exports = app => {
             model.find(condition).sort({ title: 1 }).exec(done);
         },
 
-        get: (condition, option, done) => {
-            const handleGet = (condition, option, done) => {
-                const select = option.select ? option.select : null;
-                const populate = option.populate ? option.populate : false;
-
-                const result = typeof condition == 'object' ? model.findOne(condition) : model.findById(condition);
-                if (select) result.select(select);
-                if (populate) result.populate('lesson', '_id title').populate('feedbackQuestion');
-                result.exec(done);
-            };
-
-            if (done) {
-                handleGet(condition, option, done);
-            } else {
-                handleGet(condition, {}, option);
+        get: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
             }
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).populate('lessons').populate('questions').exec(done);
         },
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
@@ -68,19 +58,20 @@ module.exports = app => {
             }
         }),
 
-        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
-
-
-        addLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $push: { lesson: lessonId } }, { new: true }).select('_id lesson').populate('lesson').exec(done);
+        addLesson: (condition, lessons, done) => {
+            model.findOneAndUpdate(condition, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
         },
 
-        pushFeedbackQuestion: (condition, feedbackQuestionId, feedbackQuestionTitle, feedbackQuestionContent, feedbackQuestionActive, done) => {
-            model.findOneAndUpdate(condition, { $push: { feedbackQuestion: { _id: feedbackQuestionId, title: feedbackQuestionTitle, content: feedbackQuestionContent, active: feedbackQuestionActive } } }, { new: true }).select('_id feedbackQuestion').populate('feedbackQuestion').exec(done);
+        deleteLesson: (_id, _subjectLessonId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }).populate('lessons').exec(done);
         },
 
-        deleteLesson: (condition, lessonId, done) => {
-            model.findOneAndUpdate(condition, { $pull: { lesson: lessonId } }).exec(done);
+        addQuestion: (_id, questions, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
+        },
+
+        deleteQuestion: (_id, subjectQuestionId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { questions: subjectQuestionId } }).populate('questions').exec(done);
         },
     };
 };

@@ -3,30 +3,15 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DivisionGet = 'DivisionGet';
 const DivisionGetAll = 'DivisionGetAll';
-const DivisionUpdate = 'DivisionUpdate';
 
 export default function addressReducer(state = null, data) {
     switch (data.type) {
         case DivisionGetAll:
-            return Object.assign({}, state, { list: data.items });
+            return Object.assign({}, state, { list: data.list });
 
         case DivisionGet: {
             return Object.assign({}, state, { item: data.item });
         }
-
-        case DivisionUpdate:
-            state = Object.assign({}, state);
-            const updatedItem = data.item;
-            if (state && state.selectedItem && state.selectedItem._id == updatedItem.addressId) {
-                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
-                    if (items[i]._id == updatedItem._id) {
-                        state.selectedItem.items.splice(i, 1, updatedItem);
-                        break;
-                    }
-                }
-            }
-            return state;
-
         default:
             return state;
     }
@@ -41,8 +26,8 @@ export function getAllDivisions(searchText, done) {
                 T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: DivisionGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: DivisionGetAll, list: data.list });
             }
         }, error => T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger'));
     }
@@ -119,7 +104,7 @@ export function getAllDivisionByUser(done) {
                 T.notify('Lấy danh sách cơ sở bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: DivisionGetAll, items: data.items });
+                dispatch({ type: DivisionGetAll, list: data.list });
             }
             if (done) done(data);
 
@@ -132,6 +117,11 @@ export const ajaxSelectDivision = {
     url: '/api/division/all',
     data: {},
     processResults: response => ({
-        results: response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : []
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
     })
 }
+
+// export const ajaxSelectDivision = T.createAjaxAdapter(
+//     '/api/division/all',
+//     response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+// );

@@ -8,7 +8,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/user',
+            path: '/user/member',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
         },
         {

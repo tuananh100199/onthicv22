@@ -2,19 +2,20 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc/list' },
+            4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc' },
         },
     };
 
     app.permission.add(
         { name: 'subject:read', menu },
         { name: 'subject:write' },
+        { name: 'subject:delete' },
     );
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
-    app.get('/user/dao-tao/mon-hoc/list', app.permission.check('subject:read'), app.templates.admin);
+    app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/edit/:subjectId', app.templates.admin);
-    app.get('/user/dao-tao/mon-hoc/list-bai-hoc/:subjectId', app.templates.admin);
+    app.get('/user/dao-tao/mon-hoc-bai-hoc/:subjectId', app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -29,12 +30,12 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/subject/edit/:subjectId', app.permission.check('subject:read'), (req, res) => {
+    app.get('/api/subject/item/:subjectId', app.permission.check('subject:read'), (req, res) => {
         app.model.subject.get(req.params.subjectId, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+        app.model.subject.create(req.body.newData, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {
@@ -47,75 +48,113 @@ module.exports = (app) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.get('/api/lesson/:subjectId', (req, res) => {
-        app.model.subject.get(req.params.subjectId, { select: '_id lesson', populate: true }, (error, item) => res.send({ error, item }));
-    });
-
-    app.post('/api/subject/lesson/add/:subjectId', app.permission.check('subject:write'), (req, res) => {
-        const subjectId = req.params.subjectId,
-            lessonId = req.body.lessonId;
-        app.model.subject.get({ _id: subjectId, lesson: { _id: lessonId } }, (error, item) => {
+    app.post('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+        const subjectId = req.body._subjectId,
+            lessonId = req.body._subjectLessonId;
+        app.model.subject.get({ _id: subjectId, lessons: { _id: lessonId } }, (error, item) => {
             if (error) {
                 res.send({ error });
             } else if (item) {
                 res.send({ check: `Môn học đã có bài học này!` });
             } else {
-                app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, item }));
+                app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
             }
         });
     });
 
-    app.delete('/api/subject/lesson/:_id', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.deleteLesson({ _id: req.params._id }, req.body.lessonId, (error, item) => res.send({ error, item }));
-    });
-
-    app.put('/api/subject/lesson/swap', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.update(req.body._id, req.body.data, (error, item) => res.send({ error, item }));
-    });
-
-    app.get('/api/feedback-question/:subjectId', (req, res) => {
-        const subjectId = req.params.subjectId;
-        app.model.subject.get(subjectId, { select: '_id feedbackQuestion', populate: true }, (error, item) => {
-            res.send({ error, item });
+    app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectLessonId } = req.body;
+        app.model.subject.deleteLesson(_subjectId, _subjectLessonId, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
+            }
         });
     });
 
-    app.post('/api/feedback-question/:_id', app.permission.check('subject:write'), (req, res) => {
-        const _id = req.params._id, data = req.body.data;
-        app.model.feedbackQuestion.create(data, (error, question) => {
-            if (error || !question) {
+    app.put('/api/subject/lesson/swap', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectLessonId, isMoveUp } = req.body;
+        app.model.subject.get(_subjectId, (error, item) => {
+            if (error) {
                 res.send({ error });
             } else {
-                app.model.subject.pushFeedbackQuestion({ _id }, question._id, question.title, question.content, question.active, (error, item) => {
-                    res.send({ error, item });
+                for (let index = 0, length = item.lessons.length; index < item.lessons.length; index++) {
+                    const subjectLesson = item.lessons[index];
+                    if (subjectLesson._id == _subjectLessonId) {
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
+                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
+                            item.lessons.splice(index, 1);
+                            item.lessons.splice(newIndex, 0, subjectLesson);
+                            item.save();
+                        }
+                        break;
+                    }
+                }
+                res.send({ lessons: item.lessons });
+            }
+        });
+    });
+
+    app.post('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
+        app.model.subjectQuestion.create(req.body.data, (error, questions) => {
+            if (error || !questions) {
+                res.send({ error });
+            } else {
+                app.model.subject.addQuestion(req.body._subjectId, questions, (error, item) => {
+                    res.send({ error, questions: item && item.questions ? item.questions : [] });
                 });
             }
         });
     });
 
-    app.put('/api/feedback-question', app.permission.check('subject:write'), (req, res) => {
-        const _id = req.body._id, data = req.body.data;
-        app.model.feedbackQuestion.update(_id, data, (error, question) => {
-            res.send({ error, question });
-        });
-    });
-
-    app.put('/api/feedback-question/swap', app.permission.check('subject:write'), (req, res) => {
-        const data = req.body.data, subjectId = req.body.subjectId;
-        app.model.subject.update(subjectId, data, (error, item) => {
-            res.send({ error, item });
-        });
-    });
-
-    app.delete('/api/feedback-question', app.permission.check('subject:write'), (req, res) => {
-        const { data, subjectId, _id } = req.body;
-        if (data.questions && data.questions == 'empty') data.questions = [];
-        app.model.subject.update(subjectId, data, (error, _) => {
+    app.put('/api/subject/question/swap', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectQuestionId, isMoveUp } = req.body;
+        app.model.subject.get(_subjectId, (error, item) => {
             if (error) {
                 res.send({ error });
             } else {
-                app.model.feedbackQuestion.delete(_id, error => res.send({ error }));
+                for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
+                    const questions = item.questions[index];
+                    if (questions._id == _subjectQuestionId) {
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
+                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
+                            item.questions.splice(index, 1);
+                            item.questions.splice(newIndex, 0, questions);
+                            item.save();
+                        }
+                        break;
+                    }
+                }
+                res.send({ questions: item.questions });
             }
         });
     });
+
+    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectQuestionId, data } = req.body;
+        app.model.subjectQuestion.update(_subjectQuestionId, data, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.get(_subjectId, (error, item) => {
+                    res.send({ error, questions: item && item.questions ? item.questions : [] })
+                });
+            }
+        });
+    });
+
+    app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectQuestionId } = req.body;
+        app.model.subjectQuestion.delete(_subjectQuestionId, error => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.deleteQuestion(_subjectId, _subjectQuestionId, (error, item) => {
+                    res.send({ error, questions: item && item.questions ? item.questions : [] });
+                });
+            }
+        });
+    });
+
 };
