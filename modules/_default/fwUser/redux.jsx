@@ -8,7 +8,7 @@ const UserGetPage = 'UserGetPage';
 const UserUpdate = 'UserUpdate';
 const GET_STAFFS = 'User:GetStaffs';
 const GET_STAFF_IN_PAGE = 'User:GetStaffPage';
-const GET_USER_BY_ROLE = 'User:GetUserByRole'
+
 
 export default function userReducer(state = null, data) {
     switch (data.type) {
@@ -20,8 +20,6 @@ export default function userReducer(state = null, data) {
             return Object.assign({}, state, { user: data.user });
         case GET_STAFFS:
             return Object.assign({}, state, { staffs: data.items });
-        case GET_USER_BY_ROLE:
-            return Object.assign({}, state, { role: data.items });
         case UserGetPage:
             return Object.assign({}, state, { page: data.page });
         case GET_STAFF_IN_PAGE:

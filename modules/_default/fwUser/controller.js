@@ -28,7 +28,7 @@ module.exports = app => {
                         { firstname: value },
                         { lastname: value },
                     ];
-                } else {
+                } else if (condition.isAll) {
                     if (condition.isAll == 'true') {
                         condition = {}
                     } else {
@@ -39,6 +39,8 @@ module.exports = app => {
                             pageCondition.isLecturer = pageCondition.isStaff = pageCondition.isCourseAdmin = false;
                         };
                     }
+                } else {
+                    pageCondition = condition
                 }
             }
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
