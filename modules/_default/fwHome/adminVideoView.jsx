@@ -81,8 +81,8 @@ class VideoPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' content={item.title} />
-                    <TableCell type='link' content={item.link} url={'#'} />
+                    <TableCell type='link' content={item.title} onClick={e => this.showVideoModal(e, item)} />
+                    <TableCell type='link' content={item.link} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} />
                     <TableCell content={(
                         <div className='btn-group'>
