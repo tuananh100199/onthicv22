@@ -84,17 +84,7 @@ class VideoPage extends AdminPage {
                     <TableCell type='link' content={item.title} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='link' content={item.link} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            {permission.write ?
-                                <a className='btn btn-primary' href='#' onClick={e => this.showVideoModal(e, item)}>
-                                    <i className='fa fa-lg fa-edit' />
-                                </a> : null}
-                            {permission.delete ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={e => this.showVideoModal(e, item)} onDelete={e => this.deleteVideo(e, item)} />
                 </tr>),
         });
         return <>

@@ -12,6 +12,9 @@ export default function listVideoReducer(state = null, data) {
         case ListVideoGetAll:
             return Object.assign({}, state, { list: data.items });
 
+        // case ListVideoGet:
+        //     return Object.assign({}, state, { selectedItem: data.item });
+
         case ListVideoAddItem:
             if (state && state.item) {
                 state = Object.assign({}, state);
@@ -89,6 +92,7 @@ export function createListVideo(newData, done) {
                 T.notify('Tạo danh sách video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
+                dispatch(getAllListVideo());
                 if (done) done(data);
             }
         }, error => T.notify('Tạo danh sách video bị lỗi!', 'danger'));
@@ -137,11 +141,13 @@ export function getListVideoItem(_id, done) {
                 T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             }
-            if (done) done(data);
+            dispatch({ type: ListVideoGet, item: data.item });
+            done && done(data);
 
         }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
     }
 }
+
 // video... 
 export function addVideoIntoList(title, link, image) {
     return { type: ListVideoAddItem, title, link, image };
