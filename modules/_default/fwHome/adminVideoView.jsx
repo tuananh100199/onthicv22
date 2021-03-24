@@ -81,8 +81,8 @@ class VideoPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/content/edit/' + item._id} />
-                    <TableCell type='link' content={item.link} url={item.link} />
+                    <TableCell type='text' content={item.title} />
+                    <TableCell type='link' content={item.link} url={'#'} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} />
                     <TableCell content={(
                         <div className='btn-group'>
