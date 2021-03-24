@@ -1,208 +1,105 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getVideoInPage, createVideo, updateVideo, deleteVideo, getVideo } from './redux/reduxVideo';
-import ImageBox from 'view/component/ImageBox';
-import Pagination from 'view/component/Pagination';
-import Editor from 'view/component/CkEditor4';
+import { createVideo, updateVideo, deleteVideo, getAllVideos } from './redux/reduxVideo';
+import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable, FormEditor, FormImageBox, AdminPage } from 'view/component/AdminPage';
 
-class VideoModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-        this.modal = React.createRef();
-        this.imageBox = React.createRef();
-        this.editor = React.createRef();
-        this.btnSave = React.createRef();
-    }
-
+class VideoModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#videoTitle').focus());
-        }, 250));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    show = (video) => {
+    onShow = (video) => {
         let { _id, title, link, image, content } = video ? video : { _id: null, title: '', link: '', image: '', content: '' };
-
-        $(this.btnSave.current).data('id', _id);
-        $('#videoTitle').val(title);
-        $('#videoLink').val(link);
-        this.imageBox.current.setData('video:' + (_id ? _id : 'new'));
-        this.editor.current.html(content);
-        this.setState({ image });
-        $(this.modal.current).modal('show');
+        this.itemTitle.value(title);
+        this.itemLink.value(link);
+        this.itemEditor.html(content);
+        this.imageBox.setData('video:' + (_id ? _id : 'new'));
+        this.setState({ _id: _id, image: image });
     }
 
-    save = (event) => {
-        const _id = $(this.btnSave.current).data('id'),
-            changes = {
-                title: $('#videoTitle').val().trim(),
-                link: $('#videoLink').val().trim(),
-                content: this.editor.current.html(),
-            };
-        if (changes.title == '') {
+    onSubmit = () => {
+        const data = {
+            title: this.itemTitle.value().trim(),
+            link: this.itemLink.value().trim(),
+            content: this.itemEditor.html(),
+        };
+        if (data.title == '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
-            $('#videoTitle').focus();
-        } else if (changes.link == '') {
+            this.itemTitle.focus();
+        } else if (data.link == '') {
             T.notify('Link video bị trống!', 'danger');
-            $('#videoLink').focus();
-        } else if (changes.content == '') {
+            this.itemLink.focus();
+        } else if (data.content == '') {
             T.notify('Nội dung video bị trống!', 'danger');
+            this.itemEditor.focus();
         } else {
-            if (_id) {
-                this.props.updateVideo(_id, changes, () => {
-                    $(this.modal.current).modal('hide');
-                });
-            } else { // Create
-                this.props.createVideo(changes, () => {
-                    $(this.modal.current).modal('hide');
-                });
-            }
+            this.state._id ? this.props.updateVideo(this.state._id, data) : this.props.createVideo(data);
+            this.hide();
         }
-        event.preventDefault();
     }
 
-    render() {
-        const readOnly = this.props.readOnly;
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={e => this.save(e)}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thông tin video</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='tab-pane fade show active'>
-                                <div className='form-group'>
-                                    <label htmlFor='videoTitle'>Tiêu đề</label>
-                                    <input className='form-control' id='videoTitle' type='text' placeholder='Tiêu đề video' readOnly={readOnly} />
-                                </div>
-                                <Editor ref={this.editor} placeholder='Nội dung' readOnly={readOnly} />
-                            </div>
-
-                            <div className='row'>
-                                <div className='col-8'>
-                                    <div className='form-group'>
-                                        <label htmlFor='videoLink'>Đường dẫn</label>
-                                        <input className='form-control' id='videoLink' type='text' placeholder='Link' readOnly={readOnly} />
-                                    </div>
-                                </div>
-                                <div className='col-4'>
-                                    <div className='form-group'>
-                                        <label>Hình đại diện</label>
-                                        <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='VideoImage' image={this.state.image} readOnly={readOnly} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary' ref={this.btnSave}>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
+    render = () => this.renderModal({
+        title: 'Thông tin video',
+        size: 'large',
+        body: (<>
+            <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' />
+            <FormEditor ref={e => this.itemEditor = e} label='Nội dung video' />
+            <div className='row'>
+                <FormTextBox ref={e => this.itemLink = e} className='col-md-8' label='Đường dẫn' />
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='VideoImage' image={this.state.image} />
             </div>
-        );
-    }
+        </>),
+    });
 }
 
-class VideoPage extends React.Component {
-    videoModal = React.createRef();
-
+class VideoPage extends AdminPage {
     componentDidMount() {
-        this.props.getVideoInPage();
+        this.props.getAllVideos();
     }
+    showVideoModal = (e, video) => e.preventDefault() || this.modal.show(video);
 
-    create = (e) => {
-        this.videoModal.current.show(null);
-        e.preventDefault();
-    }
-
-    edit = (e, item) => {
-        this.props.getVideo(item._id, video => this.videoModal.current.show(video));
-        e.preventDefault();
-    }
-
-    changeActive = (item) => {
-        this.props.updateVideo(item._id, { active: !item.active });
-    }
-
-    delete = (e, item) => {
-        T.confirm('Video: Xóa video', 'Bạn có chắc bạn muốn xóa video này?', true, isConfirm => isConfirm && this.props.deleteVideo(item._id));
-        e.preventDefault();
-    }
+    deleteVideo = (e, video) => e.preventDefault() || T.confirm('Xóa video', `Bạn có chắc bạn muốn xóa video <strong>${video.title}</strong>?`, true, isConfirm =>
+        isConfirm && this.props.deleteVideo(video._id));
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('component:write');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.video && this.props.video.page ?
-            this.props.video.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        let table = <p key='table'>Không có video!</p>;
-        if (this.props.video && this.props.video.page && this.props.video.page.list && this.props.video.page.list.length > 0) {
-            table = (
-                <table key='table' className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '40%' }}>Tiêu đề</th>
-                            <th style={{ width: '60%' }}>Link</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.video.page.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td>
-                                    <a href='#' onClick={e => this.edit(e, item)}>{item.title}</a>
-                                </td>
-                                <td>
-                                    <a href={item.link} target='_blank'>{item.link}</a>
-                                </td>
-                                <td style={{ textAlign: 'center' }}>
-                                    <img src={item.image ? item.image : '/img/avatar.jpg'} alt='avatar' style={{ height: '32px' }} />
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        {readOnly ? null :
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a>}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        }
-
-        const components = [
-            table,
-            <Pagination key={1} name='adminVideo' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                getPage={this.props.getVideoInPage} />,
-            <VideoModal key={2} createVideo={this.props.createVideo} updateVideo={this.props.updateVideo} ref={this.videoModal} readOnly={readOnly} />
-        ];
-        if (!readOnly) {
-            components.push(
-                <button key={3} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>);
-        }
-        return components;
+        const permission = this.props.permission;
+        const table = renderTable({
+            getDataSource: () => this.props.component.video && this.props.component.video.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '40%' }}>Tiêu đề</th>
+                    <th style={{ width: '60%' }}>Link</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} url={'/user/content/edit/' + item._id} />
+                    <TableCell type='link' content={item.link} url={item.link} />
+                    <TableCell type='image' content={item.image || '/img/avatar.png'} />
+                    <TableCell content={(
+                        <div className='btn-group'>
+                            {permission.write ?
+                                <a className='btn btn-primary' href='#' onClick={e => this.showVideoModal(e, item)}>
+                                    <i className='fa fa-lg fa-edit' />
+                                </a> : null}
+                            {permission.delete ?
+                                <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
+                                    <i className='fa fa-lg fa-trash' />
+                                </a> : null}
+                        </div>)} />
+                </tr>),
+        });
+        return <>
+            {table}
+            <VideoModal ref={e => this.modal = e} updateVideo={this.props.updateVideo} createVideo={this.props.createVideo} readOnly={!permission.write} />
+            {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
+        </>;
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, video: state.video });
-const mapActionsToProps = { getVideoInPage, createVideo, updateVideo, deleteVideo, getVideo };
+const mapStateToProps = state => ({ system: state.system, component: state.component });
+const mapActionsToProps = { createVideo, updateVideo, deleteVideo, getAllVideos };
 export default connect(mapStateToProps, mapActionsToProps)(VideoPage);
