@@ -5,62 +5,54 @@ import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 
 class CarouselItemModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-
-        this.modal = React.createRef();
-        this.imageBox = React.createRef();
-        this.btnSave = React.createRef();
-    }
+    state = {};
+    imageBox = React.createRef();
 
     componentDidMount() {
-        $(this.modal.current).on('shown.bs.modal', () => $('#carouselName').focus());
+        $(this.modal).on('shown.bs.modal', () => $('#carouselName').focus());
     }
 
     show = (item, carouselId) => {
         let { _id, title, image, link, subtitle, description } = item || { _id: null, title: '', image: '/img/avatar.jpg', link: '' };
 
-        $(this.btnSave.current).data('id', _id).data('carouselId', carouselId);
         $('#carouselName').val(title);
         $('#carouselLink').val(link);
         $('#carouselSubTitle').val(subtitle);
         $('#carouselDescription').val(description);
         this.imageBox.current.setData('carouselItem:' + (_id ? _id : 'new'), image);
-        $(this.modal.current).modal('show');
+        $(this.modal).modal('show');
+        this.setState({ _id, carouselId });
     }
 
     save = (e) => {
         e.preventDefault();
-        const _id = $(e.target).data('id'),
-            carouselId = $(e.target).data('carouselId'),
-            changes = {
-                title: $('#carouselName').val().trim(),
-                link: $('#carouselLink').val().trim(),
-                subtitle: $('#carouselSubTitle').val().trim(),
-                description: $('#carouselDescription').val().trim()
-            };
+        const changes = {
+            title: $('#carouselName').val().trim(),
+            link: $('#carouselLink').val().trim(),
+            subtitle: $('#carouselSubTitle').val().trim(),
+            description: $('#carouselDescription').val().trim()
+        };
 
         if (changes.title == '') {
             T.notify('Tên hình ảnh bị trống!', 'danger');
             $('#carouselName').focus();
         } else {
-            if (_id) { // Update
-                this.props.update(_id, changes, error => {
+            if (this.state._id) { // Update
+                this.props.update(this.state._id, changes, error => {
                     if (error == undefined || error == null) {
-                        $(this.modal.current).modal('hide');
+                        $(this.modal).modal('hide');
                     }
                 });
             } else { // Create
-                changes.carouselId = carouselId;
-                this.props.create(changes, () => $(this.modal.current).modal('hide'));
+                changes.carouselId = this.state.carouselId;
+                this.props.create(changes, () => $(this.current).modal('hide'));
             }
         }
     };
 
     render() {
         return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+            <div className='modal' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
                 <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -106,14 +98,11 @@ class CarouselItemModal extends React.Component {
 }
 
 class CarouselEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { single: false, active: false };
-        this.modal = React.createRef();
-    }
+    state = { single: false, active: false };
+    modal = React.createRef();
 
     componentDidMount() {
-        T.ready(() => {
+        T.ready('/user/component', () => {
             $('#crsTitle').focus();
 
             const route = T.routeMatcher('/user/carousel/edit/:carouselId'),
@@ -126,39 +115,23 @@ class CarouselEditPage extends React.Component {
         });
     }
 
-    save = () => {
-        const changes = {
-            title: $('#crsTitle').val(),
-            height: parseInt($('#crsHeight').val()),
-            single: this.state.single,
-            active: this.state.active,
-        };
+    save = () => this.props.updateCarousel(this.state._id, {
+        title: $('#crsTitle').val(),
+        height: parseInt($('#crsHeight').val()),
+        single: this.state.single,
+        active: this.state.active,
+    });
 
-        this.props.updateCarousel(this.state._id, changes);
-    }
+    createItem = (e) => e.preventDefault() || this.modal.show(null, this.state._id);
 
-    createItem = (e) => {
-        this.modal.current.show(null, this.state._id);
-        e.preventDefault();
-    }
+    editItem = (e, item) => e.preventDefault() || this.modal.show(item);
 
-    editItem = (e, item) => {
-        this.modal.current.show(item);
-        e.preventDefault();
-    }
-
-    swapItem = (e, item, isMoveUp) => {
-        this.props.swapCarouselItem(item._id, isMoveUp);
-        e.preventDefault();
-    }
+    swapItem = (e, item, isMoveUp) => e.preventDefault() || this.props.swapCarouselItem(item._id, isMoveUp);
 
     changeItemActive = (item) => this.props.updateCarouselItem(item._id, { active: !item.active });
 
-    deleteItem = (e, item) => {
-        T.confirm('Xóa hình ảnh', 'Bạn có chắc bạn muốn xóa hình ảnh này?', true, isConfirm =>
-            isConfirm && this.props.deleteCarouselItem(item._id));
-        e.preventDefault();
-    }
+    deleteItem = (e, item) => e.preventDefault() || T.confirm('Xóa hình ảnh', 'Bạn có chắc bạn muốn xóa hình ảnh này?', true, isConfirm =>
+        isConfirm && this.props.deleteCarouselItem(item._id));
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
@@ -281,12 +254,12 @@ class CarouselEditPage extends React.Component {
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
-                <CarouselItemModal ref={this.modal} create={this.props.createCarousel} update={this.props.updateCarouselItem} />
+                <CarouselItemModal ref={e => this.modal = e} create={this.props.createCarousel} update={this.props.updateCarouselItem} />
             </main>
         );
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, carousel: state.carousel });
+const mapStateToProps = state => ({ system: state.system, component: state.component });
 const mapActionsToProps = { getCarousel, updateCarousel, createCarousel, updateCarouselItem, swapCarouselItem, deleteCarouselItem };
 export default connect(mapStateToProps, mapActionsToProps)(CarouselEditPage);

@@ -1,5 +1,13 @@
 module.exports = app => {
-    app.get('/content/item/:contentId', app.templates.home);
+    app.get('/content/:_id', app.templates.home);
+
+    app.get('/api/content/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize);
+        app.model.content.getPage(pageNumber, pageSize, {}, (error, page) => {
+            res.send({ error: error || page == null ? 'Content list are not ready!' : null, page });
+        });
+    });
 
     app.get('/api/content/all', app.permission.check('component:read'), (req, res) => {
         app.model.content.getAll((error, list) => res.send({ error, list }));
@@ -21,8 +29,8 @@ module.exports = app => {
         app.model.content.delete(req.body._id, error => res.send({ error }));
     });
 
-    app.get('/home/content/item/:contentId', (req, res) => {
-        app.model.content.get({ _id: req.params.contentId, active: true }, (error, item) => res.send({ error, item }));
+    app.get('/home/content', (req, res) => {
+        app.model.content.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s

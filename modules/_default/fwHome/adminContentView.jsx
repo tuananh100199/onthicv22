@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContents, createContent, updateContent, deleteContent } from './redux/reduxContent';
+import { getContentAll, createContent, updateContent, deleteContent } from './redux/reduxContent';
 import { CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
-class ContentPage extends React.Component {
+class ContentView extends React.Component {
     componentDidMount() {
-        this.props.getAllContents();
+        this.props.getContentAll();
     }
 
     create = (e) => e.preventDefault() || this.props.createContent(data => this.props.history.push('/user/content/edit/' + data.item._id));
@@ -16,7 +16,7 @@ class ContentPage extends React.Component {
     render() {
         const permission = this.props.permission;
         const table = renderTable({
-            getDataSource: () => this.props.component.content,
+            getDataSource: () => this.props.component.content && this.props.component.content.list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -43,5 +43,5 @@ class ContentPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { getAllContents, createContent, updateContent, deleteContent };
-export default connect(mapStateToProps, mapActionsToProps)(ContentPage);
+const mapActionsToProps = { getContentAll, createContent, updateContent, deleteContent };
+export default connect(mapStateToProps, mapActionsToProps)(ContentView);

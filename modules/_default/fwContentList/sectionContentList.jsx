@@ -38,7 +38,7 @@ class SectionContent extends React.Component {
         let itemList = null;
         if (items && items.length) {
             itemList = items.map((item, index) => {
-                const link = '/content/item/' + item._id;
+                const link = '/content/' + item._id;
                 return (
                     <div key={index} className='row ml-0 ftco-animate' style={{ marginBottom: '15px' }}>
                         <div style={{ width: '150px', padding: '15px 15px 30px 0px' }} className={index < items.length - 1 ? 'border-bottom' : ''}>

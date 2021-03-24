@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 
 class ContentEditPage extends AdminPage {
     state = {};
-
     componentDidMount() {
         T.ready('/user/component', () => {
             const route = T.routeMatcher('/user/content/edit/:_id'),
@@ -16,15 +15,14 @@ class ContentEditPage extends AdminPage {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
                     const { _id, title, abstract, active, content, image = '/img/avatar.jpg' } = data.item;
-                    console.log(data)
                     this.itemTitle.focus();
                     this.itemTitle.value(title);
                     this.itemAbstract.value(abstract);
                     this.itemActive.value(active);
                     this.imageBox.setData('content:' + _id, image);
-                    this.setState({ _id, title, image });
-
                     this.editor.html(content);
+
+                    this.setState({ _id, title, image });
                 } else {
                     this.props.history.push('/user/component');
                 }
@@ -32,21 +30,17 @@ class ContentEditPage extends AdminPage {
         });
     }
 
-    save = () => {
-        const changes = {
-            title: this.itemTitle.value().trim(),
-            abstract: this.itemAbstract.value(),
-            content: this.editor.html(),
-            active: this.itemActive.value() ? 1 : 0,
-        };
-
-        this.props.updateContent(this.state._id, changes);
-    }
+    save = () => this.props.updateContent(this.state._id, {
+        title: this.itemTitle.value().trim(),
+        abstract: this.itemAbstract.value(),
+        content: this.editor.html(),
+        active: this.itemActive.value() ? 1 : 0,
+    });
 
     render() {
         const permission = this.getUserPermission('component');
         return this.renderPage({
-            icon: 'fa fa-envelope-o',
+            icon: 'fa fa-edit',
             title: 'Bài viết: ' + (this.state.title || '...'),
             breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Bài viết'],
             content: (
