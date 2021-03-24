@@ -41,6 +41,7 @@ module.exports = app => {
 
 
     app.post('/api/carousel/item', app.permission.check('component:write'), (req, res) => {
+        console.log(req.body.data)
         app.model.carouselItem.create(req.body.data, (error, item) => {
             if (item && req.session.carouselItemImage) {
                 app.adminUploadImage('carouselItem', app.model.carouselItem.get, item._id, req.session.carouselItemImage, req, res);
