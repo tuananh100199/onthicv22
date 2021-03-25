@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getVideoAllByUser } from './redux/reduxVideo';
+// import { getVideoAllByUser } from './redux/reduxVideo';
 import { getListVideoByUser } from './redux/reduxListVideo';
 
 class SectionListVideo extends React.Component {

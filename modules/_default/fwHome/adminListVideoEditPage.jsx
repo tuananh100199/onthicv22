@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListVideoItem, updateListVideo } from './redux/reduxListVideo';
-import { getVideoAll, createVideo, updateVideo, deleteVideo, swapVideo } from './redux/reduxVideo';
+import { getVideoAll, createVideo, updateVideo, deleteVideo } from './redux/reduxVideo';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 
