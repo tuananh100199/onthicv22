@@ -18,8 +18,8 @@ class ListContentModal extends AdminModal {
         } else {
             this.props.create({ title }, data => {
                 if (data.item) {
-                    this.hide;
-                    this.props.history.push('/user/list-contentedit/' + data.item._id);
+                    this.hide();
+                    this.props.history.push('/user/list-content/edit/' + data.item._id);
                 }
             })
         }
@@ -62,7 +62,7 @@ class ListContentView extends React.Component {
 
         return <>
             {table}
-            <ListContentModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createListContent} />
+            <ListContentModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createListContent} history={this.props.history} />
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
         </>;
     }
