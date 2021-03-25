@@ -93,55 +93,8 @@ class StatisticEditPage extends AdminPage {
     deleteItem = (e, item) => e.preventDefault() || T.confirm('Xóa thống kê', 'Bạn có chắc bạn muốn xóa thống kê này?', true, isConfirm =>
         isConfirm && this.props.deleteStatisticItem(item._id));
 
-    // showAddStatisticItemModal = () => {
-    //     this.modal.current.show();
-    // };
-
-    // showEditStatisticItemModal = (e, selectedStatistic, index) => {
-    //     this.modal.current.show(selectedStatistic, index);
-    //     e.preventDefault();
-    // };
-
-    // add = (title, number) => {
-    //     this.props.addStatisticIntoGroup(title, number);
-    //     this.modal.current.hide();
-    // };
-
-    // update = (index, title, number) => {
-    //     this.props.updateStatisticInGroup(index, title, number);
-    //     this.modal.current.hide();
-    // };
-
-    // remove = (e, index) => {
-    //     this.props.removeStatisticFromGroup(index);
-    //     e.preventDefault();
-    // };
-
-    // swap = (e, index, isMoveUp) => {
-    //     this.props.swapStatisticInGroup(index, isMoveUp);
-    //     e.preventDefault();
-    // }
-
-    // save = () => {
-    //     const title = $('#tepTitle').val().trim();
-    //     const description = this.editor.vi.current.html();
-
-    //     if (title === '') {
-    //         T.notify('Tên nhóm thống kê bị trống!', 'danger');
-    //         $('#statisticName').focus();
-    //     } else {
-    //         const changes = {
-    //             title,
-    //             description,
-    //             image: this.state.image,
-    //             items: this.props.statistic.item.items,
-    //         };
-    //         if (changes.items && changes.items.length == 0) changes.items = 'empty';
-    //         this.props.updateStatistic(this.props.statistic.item._id, changes);
-    //     }
-    // };
-
     render() {
+        const items = this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items
         const permission = this.getUserPermission('component');
         const table = renderTable({
             getDataSource: () => this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items,
@@ -187,7 +140,7 @@ class StatisticEditPage extends AdminPage {
                     <h3 className='tile-title'>Danh sách thống kê</h3>
                     <div className='tile-body'>
                         {table}
-                        {permission.write &&
+                        {permission.write && items && (items.length < 12) &&
                             <div style={{ textAlign: 'right' }}>
                                 <button className='btn btn-success' type='button' onClick={this.createItem}>
                                     <i className='fa fa-fw fa-lg fa-plus'></i> Thêm

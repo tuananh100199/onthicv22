@@ -26,10 +26,6 @@ module.exports = app => {
         });
     });
 
-
-    // app.get('/api/statistic/item/:statisticId', app.permission.check('component:read'), (req, res) =>
-    //     app.model.statistic.get(req.params.statisticId, (error, item) => res.send({ error, item })));
-
     app.post('/api/statistic', app.permission.check('component:write'), (req, res) => {
         app.model.statistic.create(req.body.data, (error, statistic) => res.send({ error, statistic }))
     }

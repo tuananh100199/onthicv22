@@ -3,12 +3,6 @@ module.exports = app => {
         title: String,
         description: String,
         active: { type: Boolean, default: false },
-        // image: String,
-        // items: [{
-        //     title: String,
-        //     image: String,
-        //     number: Number,
-        // }]
     });
     const model = app.db.model('Statistic', schema);
 

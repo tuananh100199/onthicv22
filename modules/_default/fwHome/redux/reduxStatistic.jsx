@@ -105,20 +105,6 @@ export function deleteStatistic(_id) {
     }
 }
 
-export function getStatisticByUser(_id, done) {
-    return dispatch => {
-        const url = '/home/statistic/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy thống kê bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.item);
-            }
-        }, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
-    }
-}
-
 // Item -------------------------------------------------------------------------------------------
 export function createStatisticItem(data, done) {
     return dispatch => {

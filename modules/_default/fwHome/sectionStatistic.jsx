@@ -1,40 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatisticByUser } from './redux/reduxStatistic';
+import { homeGetStatistic } from './redux/reduxStatistic';
 
 class SectionStatistic extends React.Component {
     state = {};
 
     componentDidMount() {
         if (this.props.viewId) {
-            this.props.getStatisticByUser(this.props.viewId, statistic => this.setState({ statistic }));
+            this.props.homeGetStatistic(this.props.viewId, statistic => this.setState({ statistic }));
         }
-    }
-
-    componentDidUpdate() {
-        setTimeout(() => {
-            $('.section-counter-class').waypoint(function (direction) {
-                if (direction === 'down' && !$(this.element).hasClass('ftco-animated')) {
-                    const comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
-                    $('.number').each(function () {
-                        const $this = $(this);
-                        $this.animateNumber({ number: $this.data('number'), numberStep: comma_separator_number_step }, 7000);
-                    });
-                }
-            }, { offset: '95%' });
-            T.ftcoAnimate();
-        }, 250);
     }
 
     render() {
         const itemLength = this.state.statistic ? this.state.statistic.items.length : 0,
-            itemClassName = 'col-md-' + (12 / Math.min(itemLength, 4)) + ' d-flex justify-content-center counter-wrap ftco-animate';
+            itemClassName = 'col-md-' + Math.round(12 / itemLength) + ' d-flex justify-content-center counter-wrap ftco-animate';
         return itemLength > 0 ? (
             <section className='ftco-section ftco-counter section-counter-class img' style={{ backgroundImage: 'url(\'' + this.state.statistic.background + '\')' }}>
                 <div className='container-fluid'>
-                    <div className='row justify-content-center mb-5 pb-3'>
-                        <div className='col-md-7 text-center heading-section heading-section-white ftco-animate'>
-                            <h2 className='mb-4 text'>{this.state.statistic.title}</h2>
+                    <div className='justify-content-center'>
+                        <div className='text-center heading-section heading-section-white ftco-animate'>
+                            <h2 className='text'>{this.state.statistic.title}</h2>
                             <span className='subheading text' dangerouslySetInnerHTML={{ __html: this.state.statistic.description }} />
                         </div>
                     </div>
@@ -42,12 +27,10 @@ class SectionStatistic extends React.Component {
                         <div className='col-md-10'>
                             <div className='row justify-content-center'>
                                 {this.state.statistic.items.map((item, index) => (
-                                    <div key={index} className={itemClassName}>
-                                        <div className='block-18 text-center'>
-                                            <div className='text'>
-                                                <strong className='number' data-number={item.number}>{item.number}</strong>
-                                                <span>{item.title}</span>
-                                            </div>
+                                    <div key={index} className={itemClassName} >
+                                        <div className="milestone">
+                                            <div className="milestone_counter">{item.number}</div>
+                                            <div className="milestone_text">{item.title}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -59,6 +42,6 @@ class SectionStatistic extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ statistic: state.statistic });
-const mapActionsToProps = { getStatisticByUser };
+const mapStateToProps = state => ({ system: state.system });
+const mapActionsToProps = { homeGetStatistic };
 export default connect(mapStateToProps, mapActionsToProps)(SectionStatistic);
