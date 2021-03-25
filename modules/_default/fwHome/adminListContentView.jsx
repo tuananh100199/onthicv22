@@ -27,7 +27,7 @@ class ListContentModal extends React.Component {
             T.notify('Tên danh sách bài viết bị trống!', 'danger');
             $('#listContentName').focus();
         } else {
-            this.props.createListContent(newData, data => {
+            this.props.create(newData, data => {
                 if (data.item) {
                     $(this.modal.current).modal('hide');
                     this.props.history.push('/user/list-content/edit/' + data.item._id);
@@ -101,6 +101,7 @@ class ListContentView extends React.Component {
 
         return <>
             {table}
+            <ListContentModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createListContent} />
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
         </>;
     }

@@ -10,8 +10,6 @@ module.exports = app => {
     app.model.listContent = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ title: -1 }).exec(done) : model.find({}).sort({ title: -1 }).exec(condition),
-
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
                 done(error);
@@ -25,6 +23,8 @@ module.exports = app => {
                 });
             }
         }),
+
+        getAll: (condition, done) => done ? model.find(condition).sort({ title: -1 }).exec(done) : model.find({}).sort({ title: -1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
 
