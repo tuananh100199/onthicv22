@@ -1,75 +1,36 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListContentAll, createListContent, deleteListContent } from './redux/reduxListContent';
-import { FormModal, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
-class ListContentModal extends React.Component {
-    modal = React.createRef();
-
+class ListContentModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#listContentName').focus());
-        });
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    show = () => {
-        $('#listContentName').val('');
-        $(this.modal.current).modal('show');
-    }
+    onShow = () => this.itemTitle.value('');
 
-    save = (event) => {
-        const newData = {
-            title: $('#listContentName').val(),
-            items: []
-        };
-
-        if (newData.title == '') {
+    onSubmit = () => {
+        const title = this.itemTitle.value().trim();
+        if (title == '') {
             T.notify('Tên danh sách bài viết bị trống!', 'danger');
-            $('#listContentName').focus();
+            this.itemTitle.focus();
         } else {
-            this.props.create(newData, data => {
+            this.props.create({ title }, data => {
                 if (data.item) {
-                    $(this.modal.current).modal('hide');
-                    this.props.history.push('/user/list-content/edit/' + data.item._id);
+                    this.hide;
+                    this.props.history.push('/user/list-contentedit/' + data.item._id);
                 }
-            });
+            })
         }
-        event.preventDefault();
     }
-
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Danh sách bài viết</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label htmlFor='listContentName'>Tên danh sách bài viết</label>
-                                <input className='form-control' id='listContentName' type='text' placeholder='Nhập tên danh sách bài viết' />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        );
-    }
+    render = () => this.renderModal({
+        title: 'Danh sách bài viết',
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên danh sách bài viết' />
+    });
 }
 
 class ListContentView extends React.Component {
-    modal = React.createRef();
-
     componentDidMount() {
         this.props.getListContentAll();
     }
