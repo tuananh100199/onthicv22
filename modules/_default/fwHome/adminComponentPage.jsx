@@ -8,7 +8,7 @@ import StatisticPage from './adminStatisticView';
 import TestimonyPage from './adminTestimonyView';
 import StaffGroupPage from './adminStaffView';
 import ListVideoPage from './adminListVideoView';
-import ListContentPage from './adminListContentView';
+import ListContentView from './adminListContentView';
 import DangKyTuVanPage from 'modules/mdDaoTao/fwDangKyTuVan/adminPage';
 
 export class ComponentPage extends AdminPage {
@@ -16,7 +16,7 @@ export class ComponentPage extends AdminPage {
         const permission = this.getUserPermission('component'),
             tabs = [];
         tabs.push({ key: tabs.length, title: 'Bài viết', component: <ContentView permission={permission} history={this.props.history} /> });
-        tabs.push({ key: tabs.length, title: 'Danh sách bài viết', component: <ListContentPage history={this.props.history} /> });
+        tabs.push({ key: tabs.length, title: 'Danh sách bài viết', component: <ListContentView permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Tập hình ảnh', component: <CarouselView permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Video', component: <VideoPage permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Tập Video', component: <ListVideoPage permission={permission} history={this.props.history} /> });

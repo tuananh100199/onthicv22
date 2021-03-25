@@ -55,7 +55,7 @@ module.exports = app => {
     const uploadVideo = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('video:') && files.VideoImage && files.VideoImage.length > 0) {
             console.log('Hook: uploadVideo => video image upload');
-            app.uploadComponentImage(req, 'video', app.model.video.get, fields.userData[0].substring(6), files.VideoImage[0].path, done);
+            app.uploadComponentImage(req, 'video', app.model.video.get, fields.userData[0].substring('video:'.length), files.VideoImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadVideo', (req, fields, files, params, done) =>

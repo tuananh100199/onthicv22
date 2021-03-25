@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListContentAll, createListContent, deleteListContent } from './redux/reduxListContent';
-import { Link } from 'react-router-dom';
+import { FormModal, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class ListContentModal extends React.Component {
     modal = React.createRef();
@@ -66,77 +66,46 @@ class ListContentModal extends React.Component {
         );
     }
 }
-class ListContentPage extends React.Component {
+
+class ListContentView extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
         this.props.getListContentAll();
     }
 
-    create = (e) => {
-        this.modal.current.show();
-        e.preventDefault();
-    }
+    create = (e) => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm => isConfirm && this.props.deleteListContent(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm =>
+        isConfirm && this.props.deleteListContent(item._id));
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        let table = null;
-        if (this.props.listContent && this.props.listContent.list && this.props.listContent.list.length > 0) {
-            table = (
-                <table key={0} className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '80%' }}>Tên danh sách</th>
-                            <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh nền</th>
-                            <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.listContent.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td><Link to={'/user/list-content/edit/' + item._id}>{item.title}</Link></td>
-                                <td style={{ width: '20%', textAlign: 'center' }}>
-                                    <img src={item.image || '/img/avatar.jpg'} alt='background' style={{ height: '32px' }} />
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <Link to={'/user/list-content/edit/' + item._id} className='btn btn-primary'>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </Link>
-                                        {currentPermissions.includes('component:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        } else {
-            table = <p key={0}>Không có danh sách các bài viết!</p>;
-        }
+        const permission = this.props.permission;
+        const table = renderTable({
+            getDataSource: () => this.props.component.listContent && this.props.component.listContent.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '80%' }}>Tên danh sách</th>
+                    <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh nền</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} url={'/user/list-content/edit/' + item._id} />
+                    <TableCell type='image' content={item.image || '/img/avatar.png'} style={{ height: '32px' }} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-content/edit/' + item._id} onDelete={this.delete} />
+                </tr>),
+        });
 
-        const result = [table, <ListContentModal key={1} createListContent={this.props.createListContent} ref={this.modal} history={this.props.history} />];
-        if (currentPermissions.includes('component:write')) {
-            result.push(
-                <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>
-            );
-        }
-        return result;
+        return <>
+            {table}
+            {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
+        </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
 const mapActionsToProps = { getListContentAll: getListContentAll, createListContent, deleteListContent };
-export default connect(mapStateToProps, mapActionsToProps)(ListContentPage);
+export default connect(mapStateToProps, mapActionsToProps)(ListContentView);
