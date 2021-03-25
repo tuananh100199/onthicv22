@@ -29,7 +29,7 @@ class ContentView extends React.Component {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/content/edit/' + item._id} />
-                    <TableCell type='image' content={item.image || '/img/avatar.png'} />
+                    <TableCell type='image' content={item.image || '/img/avatar.png'} style={{ height: '32px' }} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateContent(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/content/edit/' + item._id} onDelete={this.delete} />
                 </tr>),

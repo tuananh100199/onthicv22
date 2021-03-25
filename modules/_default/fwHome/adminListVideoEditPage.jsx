@@ -15,8 +15,8 @@ class VideoModal extends AdminModal {
         this.itemTitle.value(title);
         this.itemLink.value(link);
         this.itemEditor.html(content);
-        this.imageBox.setData('video:' + (_id ? _id : 'new'));
-        this.setState({ _id: _id, image: image });
+        this.imageBox.setData('video:' + (_id || 'new'));
+        this.setState({ _id, image });
     }
 
     onSubmit = () => {
@@ -49,9 +49,7 @@ class VideoModal extends AdminModal {
                     <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' />
                     <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' />
                 </div>
-                <div className='col-md-4'>
-                    <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='VideoImage' image={this.state.image} />
-                </div>
+                <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='ListVideoImage' image={this.state.image} className='col-md-4' />
             </div>
             <FormEditor ref={e => this.itemEditor = e} label='Nội dung video' />
         </>
@@ -144,7 +142,7 @@ class ListVideoEditPage extends AdminPage {
     save = () => {
         const changes = {
             title: this.itemTitle.value().trim(),
-            height: this.itemHeight.value().trim(),
+            height: this.itemHeight.value(),
         };
 
         if (changes.title == '') {

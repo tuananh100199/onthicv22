@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentListItem, updateContentList } from './redux';
+import { getListContent, updateListContent } from './redux/reduxListContent';
 import { ajaxSelectContent } from 'modules/_default/fwHome/redux/reduxContent';
 import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
@@ -39,7 +39,7 @@ class ContentModal extends React.Component {
         }
 
         if (this.props.item && this.props.item._id) {
-            this.props.updateContentList(this.props.item._id, { items: listItem }, () => {
+            this.props.updateListContent(this.props.item._id, { items: listItem }, () => {
                 T.notify('Cập nhật danh sách bài viết thành công', 'success');
                 $(this.modal.current).modal('hide');
             });
@@ -89,12 +89,12 @@ class ListContentEditPage extends React.Component {
     componentDidMount() {
         T.ready(() => {
             const route = T.routeMatcher('/user/list-content/edit/:listContentId'), params = route.parse(window.location.pathname);
-            this.props.getContentListItem(params.listContentId, data => {
+            this.props.getListContent(params.listContentId, data => {
                 if (data.item) {
                     const { _id = 'new', title = '', image = '/img/avatar.jpg' } = data.item || {};
                     $('#listContentTitle').val(data.item.title).focus();
                     $('#listContentAbstract').val(data.item.abstract);
-                    this.imageBox.current.setData('contentList:' + _id, image);
+                    this.imageBox.current.setData('listContent:' + _id, image);
                     this.setState({ item: data.item });
                 } else {
                     this.props.history.push('/user/component');
@@ -107,13 +107,13 @@ class ListContentEditPage extends React.Component {
         e.preventDefault();
         T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm => {
             if (isConfirm) {
-                const item = this.props.contentList.item;
+                const item = this.props.listContent.item;
                 let items = item.items || [];
                 const changes = {};
                 items.splice(index, 1);
                 if (items.length == 0) items = 'empty';
                 changes.items = items;
-                this.props.updateContentList(item._id, changes, () => {
+                this.props.updateListContent(item._id, changes, () => {
                     T.alert('Xoá bài viết trong danh sách thành công!', 'error', false, 800);
                 });
             }
@@ -121,7 +121,7 @@ class ListContentEditPage extends React.Component {
     };
 
     swap = (e, index, isMoveUp) => {
-        const item = this.props.contentList.item;
+        const item = this.props.listContent.item;
         let items = item.items || [];
         if (items.length == 1) {
             T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
@@ -136,7 +136,7 @@ class ListContentEditPage extends React.Component {
                     items[index] = temp;
 
                     changes.items = items;
-                    this.props.updateContentList(item._id, changes, () => {
+                    this.props.updateListContent(item._id, changes, () => {
                         T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
                     });
                 }
@@ -150,7 +150,7 @@ class ListContentEditPage extends React.Component {
                     items[index] = temp;
 
                     changes.items = items;
-                    this.props.updateContentList(item._id, changes, () => {
+                    this.props.updateListContent(item._id, changes, () => {
                         T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
                     });
                 }
@@ -175,7 +175,7 @@ class ListContentEditPage extends React.Component {
             T.notify('Tên danh sách bị trống!', 'danger');
             $('#listContentTitle').focus();
         } else {
-            this.props.updateContentList(this.state.item._id, changes, () => {
+            this.props.updateListContent(this.state.item._id, changes, () => {
                 T.notify('Cập nhật danh sách bài viết thành công!', 'success');
             });
         }
@@ -184,7 +184,7 @@ class ListContentEditPage extends React.Component {
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
             readOnly = !currentPermissions.includes('component:write');
-        const item = this.props.contentList && this.props.contentList.item ? this.props.contentList.item : { items: [] };
+        const item = this.props.listContent && this.props.listContent.item ? this.props.listContent.item : { items: [] };
 
         let table = item.items && item.items.length ? (
             <table className='table table-hover table-bordered'>
@@ -248,7 +248,7 @@ class ListContentEditPage extends React.Component {
                         <div className='col-md-3'>
                             <div className='form-group'>
                                 <label className='control-label'>Hình ảnh nền</label>
-                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ContentListImage' readOnly={!currentPermissions.includes('component:write')} />
+                                <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='ListContentImage' readOnly={!currentPermissions.includes('component:write')} />
                             </div>
                         </div>
                     </div>
@@ -271,7 +271,7 @@ class ListContentEditPage extends React.Component {
                         </div>}
                 </div>
 
-                <ContentModal ref={this.modal} updateContentList={this.props.updateContentList} history={this.props.history} item={item} />
+                <ContentModal ref={this.modal} updateListContent={this.props.updateListContent} history={this.props.history} item={item} />
                 <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px' }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>
@@ -279,6 +279,6 @@ class ListContentEditPage extends React.Component {
         );
     }
 }
-const mapStateToProps = state => ({ system: state.system, content: state.content, contentList: state.contentList });
-const mapActionsToProps = { updateContentList, getContentListItem };
+const mapStateToProps = state => ({ system: state.system, content: state.content, component: state.component });
+const mapActionsToProps = { updateListContent, getListContent };
 export default connect(mapStateToProps, mapActionsToProps)(ListContentEditPage);

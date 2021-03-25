@@ -36,7 +36,6 @@ import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
-import fwContentList from 'modules/_default/fwContentList/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwSubject from 'modules/mdDaoTao/fwSubject/index';
@@ -50,7 +49,7 @@ const modules = [
     _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwNews,
-    fwDivision, fwContentList, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
+    fwDivision, fwCourseType, fwCourse, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
 ];
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

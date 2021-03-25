@@ -77,44 +77,42 @@ class SectionListVideo extends React.Component {
     render() {
         let { item, items } = this.state;
         return (
-            <div>
-                <div className='services'>
-                    <div className='container'>
-                        <div className='row'>
-                            <div className='col text-center'>
-                                <div className='section_title_container'>
-                                    {/*<div className='section_subtitle'>This is Dr Pro</div>*/}
-                                    <div className='section_title'><h2>{item.title}</h2></div>
-                                </div>
+            <div className='services'>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col text-center'>
+                            <div className='section_title_container'>
+                                {/*<div className='section_subtitle'>This is Dr Pro</div>*/}
+                                <div className='section_title'><h2>{item.title}</h2></div>
                             </div>
                         </div>
-                        <div className='row services_row'>
-                            {(items || []).map((_item, index) => (
-                                <div key={index} className='col-xl-4 col-md-6 service_col'>
-                                    <div className='service text-center'>
-                                        <div className='service'>
-                                            <div className='d-flex flex-column align-items-center justify-content-center ml-auto mr-auto'>
-                                                <div>
-                                                    <a href={_item.link} className='popup-youtube'>
-                                                        <img src={_item.image} style={{ width: '100%' }} alt={_item.title}/>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className='service_title'>
-                                                <a href={_item.link} className='text-success popup-youtube'>
-                                                    {_item.title}
+                    </div>
+                    <div className='row services_row'>
+                        {(items || []).map((_item, index) => (
+                            <div key={index} className='col-xl-4 col-md-6 service_col'>
+                                <div className='service text-center'>
+                                    <div className='service'>
+                                        <div className='d-flex flex-column align-items-center justify-content-center ml-auto mr-auto'>
+                                            <div>
+                                                <a href={_item.link} className='popup-youtube'>
+                                                    <img src={_item.image} style={{ width: '100%' }} alt={_item.title} />
                                                 </a>
                                             </div>
-                                            
-                                            <div className='service_text'>
-                                                <p dangerouslySetInnerHTML={{ __html: _item.content}} />
-                                            </div>
+                                        </div>
+
+                                        <div className='service_title'>
+                                            <a href={_item.link} className='text-success popup-youtube'>
+                                                {_item.title}
+                                            </a>
+                                        </div>
+
+                                        <div className='service_text'>
+                                            <p dangerouslySetInnerHTML={{ __html: _item.content }} />
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

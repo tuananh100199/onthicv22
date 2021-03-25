@@ -5,6 +5,7 @@ import { combineReducers } from 'redux';
 
 import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
 import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
+import listContent, { ajaxSelectListContent, ajaxGetListContent } from './redux/reduxListContent';
 import logo from './redux/reduxLogo';
 import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
@@ -13,6 +14,7 @@ import testimony from './redux/reduxTestimony';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
 
+import SectionListContent from './sectionListContent';
 import SectionContent from './sectionContent';
 import SectionCarousel from './sectionCarousel';
 import SectionLogo from './sectionLogo';
@@ -26,10 +28,16 @@ import SectionListVideo from './sectionListVideo';
 export default {
     init: () => {
         T.component['content'] = {
-            render: (viewId) => <SectionContent viewId={viewId} />,
+            render: (viewId) => <SectionListContent viewId={viewId} />,
             backgroundColor: '#f48fb1',
             adapter: ajaxSelectContent,
             getItem: ajaxGetContent,
+        };
+        T.component['list contents'] = {
+            render: (viewId) => <SectionListContent viewId={viewId} />,
+            backgroundColor: '#fb6094',
+            adapter: ajaxSelectListContent,
+            getItem: ajaxGetListContent,
         };
         T.component['carousel'] = {
             render: (viewId) => <SectionCarousel viewId={viewId} />,
@@ -73,7 +81,7 @@ export default {
         };
     },
     redux: {
-        component: combineReducers({ carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo })
+        component: combineReducers({ carousel, content, listContent, logo, slogan, staffGroup, statistic, testimony, video, listVideo })
     },
     routes: [
         {
@@ -85,12 +93,16 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail') })
         },
         {
-            path: '/user/carousel/edit/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminCarouselEditPage') })
-        },
-        {
             path: '/user/content/edit/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentEditPage') })
+        },
+        {
+            path: '/user/list-content/edit/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('../fwHome/adminListContentEditPage') })
+        },
+        {
+            path: '/user/carousel/edit/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminCarouselEditPage') })
         },
         {
             path: '/user/slogan/edit/:_id',
@@ -122,6 +134,6 @@ export default {
         },
     ],
     Section: {
-        SectionContent, SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
+        SectionContent, SectionListContent, SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
     }
 };
