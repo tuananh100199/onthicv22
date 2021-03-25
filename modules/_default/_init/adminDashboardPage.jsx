@@ -37,6 +37,7 @@ class DashboardPage extends  AdminPage{
     }
 
     render() {
+        const permission = this.getUserPermission('system', ['settings']);
         const { numberOfUser, numberOfNews, numberOfCourse, todayViews, allViews } = this.props.system ?
             this.props.system : { numberOfUser: 0, numberOfNews: 0, numberOfCourse: 0, todayViews: 0, allViews: 0 };
         return this.renderPage({
@@ -46,13 +47,13 @@ class DashboardPage extends  AdminPage{
             content: (
                 <div className='row'>
                     <div className='col-md-6 col-lg-3'>
-                        <DashboardIcon type='primary' icon='fa-users' title='Nguời dùng' value={numberOfUser} link='/user/member' />
+                        <DashboardIcon type='primary' icon='fa-users' title='Nguời dùng' value={numberOfUser} link='/user/member' readOnly={permission.settings} />
                     </div>
                     <div className='col-md-6 col-lg-3'>
-                        <DashboardIcon type='info' icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news/list' />
+                        <DashboardIcon type='info' icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news/list' readOnly={permission.settings} />
                     </div>
                     <div className='col-md-6 col-lg-3'>
-                        <DashboardIcon type='primary' icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course/list' />
+                        <DashboardIcon type='primary' icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course/list' readOnly={permission.settings} />
                     </div>
                 </div>),
         });
