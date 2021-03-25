@@ -12,9 +12,6 @@ export default function listVideoReducer(state = null, data) {
         case ListVideoGetAll:
             return Object.assign({}, state, { list: data.items });
 
-        // case ListVideoGet:
-        //     return Object.assign({}, state, { selectedItem: data.item });
-
         case ListVideoAddItem:
             if (state && state.item) {
                 state = Object.assign({}, state);
@@ -92,7 +89,6 @@ export function createListVideo(newData, done) {
                 T.notify('Tạo danh sách video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllListVideo());
                 if (done) done(data);
             }
         }, error => T.notify('Tạo danh sách video bị lỗi!', 'danger'));
@@ -141,13 +137,11 @@ export function getListVideoItem(_id, done) {
                 T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             }
-            dispatch({ type: ListVideoGet, item: data.item });
-            done && done(data);
+            if (done) done(data);
 
         }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
     }
 }
-
 // video... 
 export function addVideoIntoList(title, link, image) {
     return { type: ListVideoAddItem, title, link, image };
@@ -239,4 +233,14 @@ export function deleteListVideoItem(_id) {
 
 export function changeListVideoItem(item) {
     return { type: ListVideoUpdate, item };
+}
+
+export const ajaxSelectListVideo = T.createAjaxAdapter(
+    '/api/list-video/all',
+    response => response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : [],
+);
+
+export function ajaxGetListVideo(_id, done) {
+    const url = '/api/list-video/item/' + _id;
+    T.get(url, done, error => T.notify('Lấy list video bị lỗi!', 'danger'));
 }

@@ -1,67 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllListVideo, createListVideo, deleteListVideo } from './redux/reduxListVideo';
-import { Link } from 'react-router-dom';
+import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
-class ListVideoModal extends React.Component {
+class ListVideoModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal).on('shown.bs.modal', () => $('#listVideoName').focus());
+            $(this.modal).on('shown.bs.modal', this.onShown(() => this.listVideoName.focus()));
         });
     }
 
-    show = () => {
-        $('#listVideoName').val('');
-        $(this.modal).modal('show');
+    onShow = () => {
+        this.listVideoName.value('');
     }
 
-    save = (event) => {
+    onSubmit = () => {
         const newData = {
-            title: $('#listVideoName').val().trim()
+            title: this.listVideoName.value().trim()
         };
 
         if (newData.title == '') {
             T.notify('Tên danh sách video bị trống!', 'danger');
-            $('#listVideoName').focus();
+            this.listVideoName.focus();
         } else {
-            this.props.createListVideo(newData, data => {
+            this.props.create(newData, data => {
                 if (data.item) {
-                    $(this.modal).modal('hide');
+                    this.hide()
                     this.props.history.push('/user/list-video/edit/' + data.item._id);
                 }
             });
         }
-        event.preventDefault();
     }
 
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
-                <form className='modal-dialog' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Danh sách video</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label htmlFor='listVideoName'>Tên danh sách video</label>
-                                <input className='form-control' id='listVideoName' type='text' placeholder='Tên danh sách video' />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='submit' className='btn btn-primary'>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        );
-    }
+    render = () => this.renderModal({
+        title: 'Danh sách video',
+        body: <>
+            <FormTextBox ref={e => this.listVideoName = e} label='Tên danh sách video' />
+        </>
+    })
 }
 
 class ListVideoPage extends React.Component {
@@ -80,57 +56,33 @@ class ListVideoPage extends React.Component {
     }
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        let table = null;
-        if (this.props.listVideo && this.props.listVideo.list && this.props.listVideo.list.length > 0) {
-            table = (
-                <table key={0} className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tên danh sách</th>
-                            <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.props.listVideo.list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{index + 1}</td>
-                                <td>
-                                    <Link to={'/user/list-video/edit/' + item._id}>{item.title}</Link>
-                                </td>
-                                <td>
-                                    <div className='btn-group'>
-                                        <Link to={'/user/list-video/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </Link>
-                                        {currentPermissions.includes('component:write') ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        } else {
-            table = <p key={0}>Không có danh sách các video!</p>;
-        }
+        const permission = this.props.permission;
+        let table = renderTable({
+            getDataSource: () => this.props.component.listVideo && this.props.component.listVideo.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên danh sách</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>
+            ),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} url={'/user/list-video/edit/' + item._id} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-video/edit/' + item._id} onDelete={this.delete} />
+                </tr>
+            )
+        })
 
-        const result = [table, <ListVideoModal key={1} createListVideo={this.props.createListVideo} ref={e => this.modal = e} history={this.props.history} />];
-        if (currentPermissions.includes('component:write')) {
-            result.push(
-                <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>
-            );
-        }
-        return result;
+        return <>
+            {table}
+            <ListVideoModal ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />
+            {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
+        </>
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, listVideo: state.listVideo });
+const mapStateToProps = state => ({ system: state.system, component: state.component });
 const mapActionsToProps = { getAllListVideo, createListVideo, deleteListVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoPage);

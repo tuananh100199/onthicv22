@@ -11,7 +11,7 @@ import staffGroup from './redux/reduxStaffGroup';
 import statistic from './redux/reduxStatistic';
 import testimony from './redux/reduxTestimony';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
-import listVideo from './redux/reduxListVideo';
+import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
 
 import SectionContent from './sectionContent';
 import SectionCarousel from './sectionCarousel';
@@ -70,6 +70,8 @@ export default {
         T.component['list videos'] = {
             render: (viewId) => <SectionListVideo viewId={viewId} />,
             backgroundColor: '#ef9a9b',
+            adapter: ajaxSelectListVideo,
+            getItem: ajaxGetListVideo,
         };
     },
     redux: {

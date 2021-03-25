@@ -590,11 +590,19 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     .blog_post_image {
         max-height: 220px;
     }
+
+    .carousel-footer-title {
+        display: none!important;
+    }
 }
 
 @media #{$breakpoint-xs} {
     .blog_post_image {
         max-height: 200px;
+    }
+
+    .carousel-footer-title {
+        display: none!important;
     }
 }
 

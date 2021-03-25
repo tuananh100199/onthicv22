@@ -21,3 +21,5 @@ public/img/*
 .history
 yarn-error.log
 debug.log
+
+*.DS_Store

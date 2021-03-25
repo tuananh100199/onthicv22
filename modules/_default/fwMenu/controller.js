@@ -95,8 +95,11 @@ module.exports = app => {
                             };
                             if (component.viewType && component.viewId) {
                                 const viewType = component.viewType;
-                                if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list videos', 'list contents', 'dangKyTuVan'].indexOf(viewType) != -1)) {
+                                if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list contents', 'dangKyTuVan'].indexOf(viewType) != -1)) {
                                     app.model[viewType].get(component.viewId, (error, item) =>
+                                        getNextComponent(item ? item.title : '<empty>'));
+                                } else if (component.viewId && viewType == 'list videos') {
+                                    app.model.listVideo.get(component.viewId, (error, item) =>
                                         getNextComponent(item ? item.title : '<empty>'));
                                 } else if (component.viewId && viewType == 'staff group') {
                                     app.model.staffGroup.get(component.viewId, (error, item) =>
@@ -305,6 +308,13 @@ module.exports = app => {
             });
         } else if (pageType == 'course') {
             app.model.course.getAll((error, items) => {
+                res.send({
+                    error,
+                    items: items.map(item => ({ _id: item._id, text: item.title }))
+                })
+            });
+        } else if (pageType == 'dangKyTuVan') {
+            app.model.dangKyTuVan.getAll((error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))
