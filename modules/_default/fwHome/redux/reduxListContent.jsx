@@ -1,28 +1,20 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const ContentListGet = 'ContentList:Get';
-const ContentListGetAll = 'ContentList:GetAll';
-const ContentListUpdate = 'ContentList:Update';
+const ListContentGetAll = 'ListContentGetAll';
+const ListContentUpdate = 'ListContentUpdate';
 
-export default function contentListReducer(state = null, data) {
+export default function listContentReducer(state = null, data) {
     switch (data.type) {
-        case ContentListGetAll:
-            return Object.assign({}, state, { list: data.items });
+        case ListContentGetAll:
+            return Object.assign({}, state, { list: data.list });
 
-        case ContentListGet: {
-            return Object.assign({}, state, { item: data.item });
-        }
-
-        case ContentListUpdate:
-            state = Object.assign({}, state);
-            const updatedItem = data.item;
-            if (state && state.selectedItem && state.selectedItem._id == updatedItem.contentListId) {
-                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
-                    if (items[i]._id == updatedItem._id) {
-                        state.selectedItem.items.splice(i, 1, updatedItem);
-                        break;
-                    }
+        case ListContentUpdate:
+            state = state.slice();
+            for (let i = 0; i < state.length; i++) {
+                if (state[i]._id == data.item._id) {
+                    state[i] = data.item;
+                    break;
                 }
             }
             return state;
@@ -33,7 +25,7 @@ export default function contentListReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllContentList(done) {
+export function getListContentAll(done) {
     return dispatch => {
         const url = '/api/list-content/all';
         T.get(url, data => {
@@ -41,30 +33,26 @@ export function getAllContentList(done) {
                 T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: ContentListGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: ListContentGetAll, list: data.list });
             }
         }, error => T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
-export function getContentListItem(_id, done) {
-    return dispatch => {
-        const url = '/api/list-content/item/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                dispatch({ type: ContentListGet, item: data.item });
-            }
-            if (done) done(data);
-
-        }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
-    }
+export function getListContent(_id, done) {
+    return dispatch => ajaxGetListContent(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
+            console.error(`GET: ${url}. ${data.error}`);
+        } else {
+            dispatch({ type: ListContentUpdate, item: data.item });
+            done && done(data);
+        }
+    });
 }
 
-export function createContentList(newData, done) {
+export function createListContent(newData, done) {
     return dispatch => {
         const url = '/api/list-content';
         T.post(url, { newData }, data => {
@@ -73,13 +61,13 @@ export function createContentList(newData, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
-                dispatch(getAllContentList());
+                dispatch(getListContentAll());
             }
         }, error => T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
-export function updateContentList(_id, changes, done) {
+export function updateListContent(_id, changes, done) {
     return dispatch => {
         const url = '/api/list-content';
         T.put(url, { _id, changes }, data => {
@@ -88,15 +76,15 @@ export function updateContentList(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                dispatch({ type: ContentListGet, item: data.item });
-                dispatch(getAllContentList());
+                dispatch({ type: ListContentUpdate, item: data.item });
+                dispatch(getListContentAll());
                 done && done();
             }
         }, error => T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
-export function deleteContentList(_id) {
+export function deleteListContent(_id) {
     return dispatch => {
         const url = '/api/list-content';
         T.delete(url, { _id }, data => {
@@ -105,24 +93,34 @@ export function deleteContentList(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xóa danh sách bài viết thành công!', 'error', false, 800);
-                dispatch(getAllContentList());
+                dispatch(getListContentAll());
             }
         }, error => T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
     }
 }
 
-export function getContentListByUser(_id, done) {
+// Home ---------------------------------------------------------------------------------------------------------------
+export function homeGetListContent(_id, done) {
     return dispatch => {
-        const url = '/list-content/item/' + _id;
-        T.get(url, data => {
+        const url = '/home/list-content';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: ContentListGet, item: data.item });
+                dispatch({ type: ListContentUpdate, item: data.item });
+                done && done(data);
             }
-            if (done) done(data);
-
         }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
     }
 }
+
+export const ajaxSelectListContent = T.createAjaxAdapter(
+    '/api/list-content/page/1/20',
+    response => response && response.page && response.page.list ? response.page.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : [],
+);
+
+export function ajaxGetListContent(_id, done) {
+    const url = '/api/list-content';
+    T.get(url, { _id }, done, error => T.notify('Lấy danh sách nội dung bị lỗi!', 'danger'));
+};

@@ -9,9 +9,9 @@ module.exports = (cluster, isDebug) => {
     const server = app.isDebug ?
         require('http').createServer(app) :
         require('https').createServer({
-            cert: app.fs.readFileSync('/etc/ssl/hiepphat_certificate.crt'),
-            ca: app.fs.readFileSync('/etc/ssl/hiepphat_ca_bundle.crt'),
-            key: app.fs.readFileSync('/etc/ssl/hiepphat_private.key'),
+            cert: app.fs.readFileSync('/etc/ssl/hpo_certificate.crt'),
+            ca: app.fs.readFileSync('/etc/ssl/hpo_ca_bundle.crt'),
+            key: app.fs.readFileSync('/etc/ssl/hpo_private.key'),
         }, app);
 
     if (!app.isDebug && app.fs.existsSync('./asset/config.json')) package = Object.assign({}, package, require('../asset/config.json'));

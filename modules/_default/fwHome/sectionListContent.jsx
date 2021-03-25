@@ -1,19 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContentListByUser } from './redux';
+import { homeGetListContent } from './redux/reduxListContent';
 import { Link } from 'react-router-dom';
 
-class SectionContent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: { items: [] } };
-        this.background = React.createRef();
-    }
+class SectionListContent extends React.Component {
+    state = { item: { items: [] } };
+
 
     componentDidMount() {
         $(document).ready(() => {
             if (this.props.viewId) {
-                this.props.getContentListByUser(this.props.viewId, data => {
+                this.props.homeGetListContent(this.props.viewId, data => {
                     if (data.item) {
                         this.setState({ item: data.item }, () => {
                             T.ftcoAnimate()
@@ -90,6 +87,6 @@ class SectionContent extends React.Component {
         ]
     }
 }
-const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
-const mapActionsToProps = { getContentListByUser };
-export default connect(mapStateToProps, mapActionsToProps)(SectionContent);
+const mapStateToProps = state => ({ system: state.system, component: state.component });
+const mapActionsToProps = { homeGetListContent };
+export default connect(mapStateToProps, mapActionsToProps)(SectionListContent);

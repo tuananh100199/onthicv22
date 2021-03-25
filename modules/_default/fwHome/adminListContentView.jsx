@@ -1,33 +1,33 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllContentList, createContentList, deleteContentList } from './redux';
+import { getListContentAll, createListContent, deleteListContent } from './redux/reduxListContent';
 import { Link } from 'react-router-dom';
 
-class ContentListModal extends React.Component {
+class ListContentModal extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#contentListName').focus());
+            $(this.modal.current).on('shown.bs.modal', () => $('#listContentName').focus());
         });
     }
 
     show = () => {
-        $('#contentListName').val('');
+        $('#listContentName').val('');
         $(this.modal.current).modal('show');
     }
 
     save = (event) => {
         const newData = {
-            title: $('#contentListName').val(),
+            title: $('#listContentName').val(),
             items: []
         };
 
         if (newData.title == '') {
             T.notify('Tên danh sách bài viết bị trống!', 'danger');
-            $('#contentListName').focus();
+            $('#listContentName').focus();
         } else {
-            this.props.createContentList(newData, data => {
+            this.props.createListContent(newData, data => {
                 if (data.item) {
                     $(this.modal.current).modal('hide');
                     this.props.history.push('/user/list-content/edit/' + data.item._id);
@@ -50,8 +50,8 @@ class ContentListModal extends React.Component {
                         </div>
                         <div className='modal-body'>
                             <div className='form-group'>
-                                <label htmlFor='contentListName'>Tên danh sách bài viết</label>
-                                <input className='form-control' id='contentListName' type='text' placeholder='Nhập tên danh sách bài viết' />
+                                <label htmlFor='listContentName'>Tên danh sách bài viết</label>
+                                <input className='form-control' id='listContentName' type='text' placeholder='Nhập tên danh sách bài viết' />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -66,11 +66,11 @@ class ContentListModal extends React.Component {
         );
     }
 }
-class ContentListPage extends React.Component {
+class ListContentPage extends React.Component {
     modal = React.createRef();
 
     componentDidMount() {
-        this.props.getAllContentList();
+        this.props.getListContentAll();
     }
 
     create = (e) => {
@@ -79,14 +79,14 @@ class ContentListPage extends React.Component {
     }
 
     delete = (e, item) => {
-        T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm => isConfirm && this.props.deleteContentList(item._id));
+        T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm => isConfirm && this.props.deleteListContent(item._id));
         e.preventDefault();
     }
 
     render() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         let table = null;
-        if (this.props.contentList && this.props.contentList.list && this.props.contentList.list.length > 0) {
+        if (this.props.listContent && this.props.listContent.list && this.props.listContent.list.length > 0) {
             table = (
                 <table key={0} className='table table-hover table-bordered'>
                     <thead>
@@ -98,7 +98,7 @@ class ContentListPage extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.contentList.list.map((item, index) => (
+                        {this.props.listContent.list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td><Link to={'/user/list-content/edit/' + item._id}>{item.title}</Link></td>
@@ -125,7 +125,7 @@ class ContentListPage extends React.Component {
             table = <p key={0}>Không có danh sách các bài viết!</p>;
         }
 
-        const result = [table, <ContentListModal key={1} createContentList={this.props.createContentList} ref={this.modal} history={this.props.history} />];
+        const result = [table, <ListContentModal key={1} createListContent={this.props.createListContent} ref={this.modal} history={this.props.history} />];
         if (currentPermissions.includes('component:write')) {
             result.push(
                 <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>
@@ -137,6 +137,6 @@ class ContentListPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contentList: state.contentList });
-const mapActionsToProps = { getAllContentList, createContentList, deleteContentList };
-export default connect(mapStateToProps, mapActionsToProps)(ContentListPage);
+const mapStateToProps = state => ({ system: state.system, component: state.component });
+const mapActionsToProps = { getListContentAll: getListContentAll, createListContent, deleteListContent };
+export default connect(mapStateToProps, mapActionsToProps)(ListContentPage);

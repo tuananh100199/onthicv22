@@ -42,6 +42,18 @@ export function getContentAll(done) {
     }
 }
 
+export function getContent(_id, done) {
+    return dispatch => ajaxGetContent(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy nội dung bị lỗi!', 'danger');
+            console.error(`GET: ${url}. ${data.error}`);
+        } else {
+            dispatch({ type: ContentUpdate, item: data.item });
+            done && done(data);
+        }
+    });
+}
+
 export function createContent(done) {
     return dispatch => {
         const url = `/api/content`;
@@ -57,16 +69,18 @@ export function createContent(done) {
     }
 }
 
-export function updateContent(_id, changes) {
+export function updateContent(_id, changes, done) {
     return dispatch => {
         const url = `/api/content`;
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật nội dung bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
+                done && done(data.error);
             } else {
                 T.notify('Nội dung cập nhật thành công!', 'success');
                 dispatch(getContentAll());
+                done && done();
             }
         }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
     }
@@ -87,33 +101,19 @@ export function deleteContent(_id) {
     }
 }
 
-export function getContent(_id, done) {
-    return dispatch => ajaxGetContent(_id, data => {
-        if (data.error || data.item == null) {
-            T.notify('Lấy nội dung bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
-        } else {
-            dispatch({ type: ContentUpdate, item: data.item });
-            done && done(data);
-        }
-    });
-}
-
 // Home ---------------------------------------------------------------------------------------------------------------
 export function homeGetContent(_id, done) {
     return dispatch => {
         const url = '/home/content';
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
+                T.notify('Lấy nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 dispatch({ type: ContentUpdate, item: data.item });
-                if (done) done({ item: data.item });
+                done && done(data);
             }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
+        }, error => T.notify('Lấy nội dung bị lỗi', 'danger'));
     }
 }
 

@@ -297,7 +297,7 @@ module.exports = app => {
                 })
             });
         } else if (pageType == 'list contents') {
-            app.model.contentList.getAll((error, items) => {
+            app.model.listContent.getAll((error, items) => {
                 res.send({
                     error,
                     items: items.map(item => ({ _id: item._id, text: item.title }))
