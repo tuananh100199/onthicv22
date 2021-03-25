@@ -10,7 +10,7 @@ export default function contentReducer(state = null, data) {
             return Object.assign({}, state, { list: data.list });
 
         case ContentUpdate:
-            state = state.slice();
+            state = (state || []).slice();
             for (let i = 0; i < state.length; i++) {
                 if (state[i]._id == data.item._id) {
                     state[i] = data.item;
