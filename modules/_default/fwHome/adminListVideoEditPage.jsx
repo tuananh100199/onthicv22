@@ -171,24 +171,24 @@ class ListVideoEditPage extends React.Component {
         e.preventDefault();
     };
 
-    swap = (e, item, index, isMoveUp, done) => {
-        this.props.swapVideo(item._id, isMoveUp, () => {
-            if (this.state && this.state.item) {
-                let items = this.state.items;
-                const video = items[index];
-                if (isMoveUp && index > 0) {
-                    items.splice(index, 1);
-                    items.splice(index - 1, 0, video);
-                } else if (!isMoveUp && index < items.length - 1) {
-                    items.splice(index, 1);
-                    items.splice(index + 1, 0, video);
-                }
-                this.setState({ items }, done);
-            }
-        })
+    // swap = (e, item, index, isMoveUp, done) => {
+    //     this.props.swapVideo(item._id, isMoveUp, () => {
+    //         if (this.state && this.state.item) {
+    //             let items = this.state.items;
+    //             const video = items[index];
+    //             if (isMoveUp && index > 0) {
+    //                 items.splice(index, 1);
+    //                 items.splice(index - 1, 0, video);
+    //             } else if (!isMoveUp && index < items.length - 1) {
+    //                 items.splice(index, 1);
+    //                 items.splice(index + 1, 0, video);
+    //             }
+    //             this.setState({ items }, done);
+    //         }
+    //     })
 
-        e.preventDefault();
-    };
+    //     e.preventDefault();
+    // };
 
     save = () => {
         const changes = {
@@ -237,12 +237,12 @@ class ListVideoEditPage extends React.Component {
                                     {readOnly ? null :
                                         <td>
                                             <div className='btn-group'>
-                                                <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, true)}>
+                                                {/* <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, true)}>
                                                     <i className='fa fa-lg fa-arrow-up' />
                                                 </a>
                                                 <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, index, false)}>
                                                     <i className='fa fa-lg fa-arrow-down' />
-                                                </a>
+                                                </a> */}
                                                 <a className='btn btn-primary' href='#' onClick={e => this.showEditVideoModal(e, item)}>
                                                     <i className='fa fa-lg fa-edit' />
                                                 </a>
@@ -329,5 +329,5 @@ class ListVideoEditPage extends React.Component {
     }
 }
 const mapStateToProps = state => ({ system: state.system, video: state.video });
-const mapActionsToProps = { getListVideoItem, updateListVideo, getVideoAll, createVideo, updateVideo, deleteVideo, swapVideo };
+const mapActionsToProps = { getListVideoItem, updateListVideo, getVideoAll, createVideo, updateVideo, deleteVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoEditPage);

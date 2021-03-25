@@ -103,19 +103,19 @@ export function getVideo(_id, done) {
     });
 }
 
-// export function getVideoAllByUser(condition, done) {
-//     return dispatch => {
-//         const url = '/home/video/all';
-//         T.get(url, { condition }, data => {
-//             if (data.error) {
-//                 T.notify('Lấy danh sách video bị lỗi!', 'danger');
-//                 console.error('GET: ' + url + '. ' + data.error);
-//             } else {
-//                 if (done) done(data.items);
-//             }
-//         }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
-//     }
-// }
+export function getVideoAllByUser(condition, done) {
+    return dispatch => {
+        const url = '/home/video/all';
+        T.get(url, { condition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách video bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.items);
+            }
+        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
+    }
+}
 
 // Home ---------------------------------------------------------------------------------------------------------------
 export function homeGetVideo(_id, done) {
