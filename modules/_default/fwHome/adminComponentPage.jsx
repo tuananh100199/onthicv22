@@ -20,7 +20,7 @@ export class ComponentPage extends AdminPage {
         tabs.push({ key: tabs.length, title: 'Tập hình ảnh', component: <CarouselView permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Video', component: <VideoPage permission={permission} history={this.props.history} /> });
         tabs.push({ key: tabs.length, title: 'Tập Video', component: <ListVideoPage permission={permission} history={this.props.history} /> });
-        // tabs.push({ key: tabs.length, title: 'Thống kê', component: <StatisticPage history={this.props.history} /> });
+        tabs.push({ key: tabs.length, title: 'Thống kê', component: <StatisticPage history={this.props.history} permission={permission} /> });
         // tabs.push({ key: tabs.length, title: 'Testimony', component: <TestimonyPage /> });
         // tabs.push({ key: tabs.length, title: 'Nhóm nhân viên', component: <StaffGroupPage /> });
         // tabs.push({ key: tabs.length, title: 'Đăng ký tư vấn', component: <DangKyTuVanPage history={this.props.history} /> });

@@ -8,7 +8,7 @@ import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent
 import logo from './redux/reduxLogo';
 import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
-import statistic from './redux/reduxStatistic';
+import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
 import testimony from './redux/reduxTestimony';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
@@ -49,10 +49,6 @@ export default {
         //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
         //     backgroundColor: '#e6ee9c',
         // };
-        // T.component['statistic'] = {
-        //     render: (viewId) => <SectionStatistic viewId={viewId} />,
-        //     backgroundColor: '#b388ff',
-        // };
         // T.component['testimony'] = {
         //     render: (viewId) => <SectionTestimony viewId={viewId} />,
         //     backgroundColor: '#b2dfdb',
@@ -60,12 +56,14 @@ export default {
         T.component['video'] = {
             render: (viewId) => <SectionVideo viewId={viewId} />,
             backgroundColor: '#90caf9',
-        };
-        T.component['video'] = {
-            render: (viewId) => <SectionVideo viewId={viewId} />,
-            backgroundColor: '#f48fb1',
             adapter: ajaxSelectVideo,
             getItem: ajaxGetVideo,
+        };
+        T.component['statistic'] = {
+            render: (viewId) => <SectionStatistic viewId={viewId} />,
+            backgroundColor: '#b388ff',
+            adapter: ajaxSelectStatistic,
+            getItem: ajaxGetStatistic,
         };
         T.component['list videos'] = {
             render: (viewId) => <SectionListVideo viewId={viewId} />,

@@ -2,12 +2,13 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         description: String,
-        image: String,
-        items: [{
-            title: String,
-            image: String,
-            number: Number,
-        }]
+        active: { type: Boolean, default: false },
+        // image: String,
+        // items: [{
+        //     title: String,
+        //     image: String,
+        //     number: Number,
+        // }]
     });
     const model = app.db.model('Statistic', schema);
 
@@ -23,6 +24,20 @@ module.exports = app => {
                 done('Invalid Id!');
             } else {
                 done(null, slogan);
+            }
+        }),
+
+        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+            if (error) {
+                done(error);
+            } else {
+                let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
+                result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
+                const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
+                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                    result.list = list;
+                    done(error, result);
+                });
             }
         }),
 
