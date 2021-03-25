@@ -73,7 +73,7 @@ export function createVideo(video, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getAllVideos());
-                if (done) done(data);
+                if (done) done(data.video);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
     }
@@ -88,6 +88,7 @@ export function updateVideo(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Cập nhật thông tin video thành công!', 'success');
+                done && done(data.video)
                 dispatch(getAllVideos());
             }
         }, error => T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));

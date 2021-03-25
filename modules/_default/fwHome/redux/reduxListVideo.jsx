@@ -234,3 +234,13 @@ export function deleteListVideoItem(_id) {
 export function changeListVideoItem(item) {
     return { type: ListVideoUpdate, item };
 }
+
+export const ajaxSelectListVideo = T.createAjaxAdapter(
+    '/api/list-video/all',
+    response => response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : [],
+);
+
+export function ajaxGetListVideo(_id, done) {
+    const url = '/api/list-video/item/' + _id;
+    T.get(url, done, error => T.notify('Lấy list video bị lỗi!', 'danger'));
+}

@@ -49,7 +49,6 @@ export default class ComponentModal extends AdminModal {
     }
 
     render = () => {
-        console.log('render', this.state.adapter);
         return this.renderModal({
             title: 'Thành phần giao diện',
             body: <>
