@@ -1,9 +1,10 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
+import { combineReducers } from 'redux';
 
-import carousel from './redux/reduxCarousel';
-import content from './redux/reduxContent';
+import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
+import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
 import logo from './redux/reduxLogo';
 import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
@@ -24,22 +25,57 @@ import SectionListVideo from './sectionListVideo';
 
 export default {
     init: () => {
-        T.component['content'] = (viewId) => <SectionContent viewId={viewId} />;
-        T.component['carousel'] = (viewId) => <SectionCarousel viewId={viewId} />;
-        T.component['logo'] = (viewId) => <SectionLogo viewId={viewId} />;
-        T.component['slogan'] = (viewId) => <SectionSlogan viewId={viewId} />;
-        // T.component['carousel'] = (viewId) => <SectionStaffGroup viewId={viewId} />;
-        T.component['statistic'] = (viewId) => <SectionStatistic viewId={viewId} />;
-        T.component['testimony'] = (viewId) => <SectionTestimony viewId={viewId} />;
-        T.component['video'] = (viewId) => <SectionVideo viewId={viewId} />;
-        T.component['list videos'] = (viewId) => <SectionListVideo viewId={viewId} />;
+        T.component['content'] = {
+            render: (viewId) => <SectionContent viewId={viewId} />,
+            backgroundColor: '#f48fb1',
+            adapter: ajaxSelectContent,
+            getItem: ajaxGetContent,
+        };
+        T.component['carousel'] = {
+            render: (viewId) => <SectionCarousel viewId={viewId} />,
+            backgroundColor: '#ef9a9a',
+            adapter: ajaxSelectCarousel,
+            getItem: ajaxGetCarousel,
+        };
+        // T.component['logo'] = {
+        //     render: (viewId) => <SectionLogo viewId={viewId} />,
+        //     backgroundColor: '#ef9a9a',
+        // };
+        // T.component['slogan'] = {
+        //     render: (viewId) => <SectionSlogan viewId={viewId} />,
+        //     backgroundColor: '#b2ebf2',
+        // };
+        // T.component['staff group'] = {
+        //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
+        //     backgroundColor: '#e6ee9c',
+        // };
+        // T.component['statistic'] = {
+        //     render: (viewId) => <SectionStatistic viewId={viewId} />,
+        //     backgroundColor: '#b388ff',
+        // };
+        // T.component['testimony'] = {
+        //     render: (viewId) => <SectionTestimony viewId={viewId} />,
+        //     backgroundColor: '#b2dfdb',
+        // };
+        T.component['video'] = {
+            render: (viewId) => <SectionVideo viewId={viewId} />,
+            backgroundColor: '#90caf9',
+        };
+        T.component['list videos'] = {
+            render: (viewId) => <SectionListVideo viewId={viewId} />,
+            backgroundColor: '#ef9a9b',
+        };
     },
     redux: {
-        carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo
+        component: combineReducers({ carousel, content, logo, slogan, staffGroup, statistic, testimony, video, listVideo })
     },
     routes: [
         {
-            path: '/content/item/:_id',
+            path: '/user/component',
+            component: Loadable({ loading: Loading, loader: () => import('./adminComponentPage') })
+        },
+        {
+            path: '/content/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail') })
         },
         {
@@ -73,10 +109,6 @@ export default {
         {
             path: '/user/list-video/edit/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
-        },
-        {
-            path: '/user/component',
-            component: Loadable({ loading: Loading, loader: () => import('./adminComponentPage') })
         },
         {
             path: '/request-login',

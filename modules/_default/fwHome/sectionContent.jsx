@@ -15,6 +15,6 @@ class sectionContent extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ content: state.content });
+const mapStateToProps = state => ({ component: state.component });
 const mapActionsToProps = { getContent };
 export default connect(mapStateToProps, mapActionsToProps)(sectionContent);

@@ -31,7 +31,6 @@ class EmailPage extends AdminPage {
         { title: 'Liên hệ', id: 'emailContact', params: '{name}, {subject}, {message}' },
         { title: 'Từ chối đơn đề nghị học', id: 'emailTuChoiDonDeNghiHoc', params: '{name}, {subject}, {message}' },
         { title: 'Đăng ký tư vấn', id: 'emailDangKyTuVan', params: '{name}' },
-        // { title: 'Phản hồi đăng ký tư vấn', component: a },
     ];
 
     componentDidMount() {

@@ -20,7 +20,7 @@ class CategoryModal extends React.Component {
     }
 
     show = (item, categoryType, readOnly) => {
-        const { _id, title, image } = item ? item : { _id: null, title: '', image: '/img/avatar.png' };
+        const { _id, title, image } = item || { _id: null, title: '', image: '/img/avatar.png' };
         $('#catName').val(title);
         $(this.btnSave.current).data('id', _id).data('categoryType', categoryType);
 

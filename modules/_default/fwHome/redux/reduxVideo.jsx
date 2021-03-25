@@ -1,10 +1,14 @@
 import T from 'view/js/common';
 
-// Reducer ------------------------------------------------------------------------------------------------------------------------------------------
+// Reducer ------------------------------------------------------------------------------------------------------------
 const VideoGetPage = 'Video:GetPage';
 const VideoUpdate = 'Video:Update';
+const VideoGetAll = 'Video:GetAll'
 export default function videoReducer(state = {}, data) {
     switch (data.type) {
+        case VideoGetAll:
+            return Object.assign({}, state, { list: data.list });
+
         case VideoGetPage:
             return Object.assign({}, state, { page: data.page });
 
@@ -24,7 +28,7 @@ export default function videoReducer(state = {}, data) {
     }
 }
 
-// ADMIN --------------------------------------------------------------------------------------------------------------------------------------------
+// Action -------------------------------------------------------------------------------------------------------------
 export function getAllVideos(condition, done) {
     return dispatch => {
         const url = '/api/video/all';
@@ -33,9 +37,12 @@ export function getAllVideos(condition, done) {
                 T.notify('Lấy danh sách video bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
+                if (done) done(data.list);
+                dispatch({ type: VideoGetAll, list: data.list ? data.list : [] });
             }
-        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
+        }, error => {
+            console.error('GET: ' + url + '. ' + error);
+        });
     }
 }
 
@@ -65,8 +72,8 @@ export function createVideo(video, done) {
                 T.notify('Tạo video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getVideoInPage());
-                if (done) done(data.video);
+                dispatch(getAllVideos());
+                if (done) done(data);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
     }
@@ -80,9 +87,8 @@ export function updateVideo(_id, changes, done) {
                 T.notify('Cập nhật thông tin video bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                T.notify('Cập nhật thông tin video thành công!', 'info');
-                done && done(data.video);
-                dispatch(getVideoInPage());
+                T.notify('Cập nhật thông tin video thành công!', 'success');
+                dispatch(getAllVideos());
             }
         }, error => T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));
     }
@@ -111,7 +117,7 @@ export function deleteVideo(_id, done) {
             } else {
                 T.alert('Video được xóa thành công!', 'error', false, 800);
                 done && done();
-                dispatch(getVideoInPage());
+                dispatch(getAllVideos());
             }
         }, error => T.notify('Xóa video bị lỗi!', 'danger'));
     }
@@ -122,7 +128,7 @@ export function changeVideo(video) {
 }
 
 
-// USER ---------------------------------------------------------------------------------------------------------------------------------------------
+// Home ---------------------------------------------------------------------------------------------------------------
 export function getVideo(_id, done) {
     return dispatch => {
         const url = '/home/video/item/' + _id;

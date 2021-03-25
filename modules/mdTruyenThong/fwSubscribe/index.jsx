@@ -7,7 +7,10 @@ import SectionSubscribe from './sectionSubscribe';
 
 export default {
     init: () => {
-        T.component['subscribe'] = (viewId) => <SectionSubscribe viewId={viewId} />;
+        T.component['subscribe'] = {
+            render: (viewId) => <SectionSubscribe viewId={viewId} />,
+            backgroundColor: '#c8e6c9',
+        };
     },
     redux: {
         subscribe

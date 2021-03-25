@@ -86,58 +86,10 @@ class MenuEditPage extends AdminPage {
 
         const mainStyle = { padding: '0 6px', margin: '6px 0', color: '#000' };
         if (component.viewType) {
-            if (component.viewType == 'carousel') {
-                mainStyle.backgroundColor = '#ef9a9a';
-            } else if (component.viewType == 'content') {
-                mainStyle.backgroundColor = '#f48fb1';
-            } else if (component.viewType == 'event feed') {
-                mainStyle.backgroundColor = '#b39ddb';
-            } else if (component.viewType == 'video') {
-                mainStyle.backgroundColor = '#90caf9';
-            } else if (component.viewType == 'statistic') {
-                mainStyle.backgroundColor = '#b388ff';
-            } else if (component.viewType == 'logo') {
-                mainStyle.backgroundColor = '#ef9a9a';
-            } else if (component.viewType == 'all news') {
-                mainStyle.backgroundColor = '#82b1ff';
-                component.viewName = '';
-            } else if (component.viewType == 'slogan') {
-                mainStyle.backgroundColor = '#b2ebf2';
-            } else if (component.viewType == 'testimony') {
-                mainStyle.backgroundColor = '#b2dfdb';
-            } else if (component.viewType == 'all staffs') {
-                mainStyle.backgroundColor = '#00bcd4';
-                component.viewName = '';
-            } else if (component.viewType == 'contact') {
-                mainStyle.backgroundColor = '#c8e6f9';
-                component.viewName = '';
+            if (T.component[component.viewType]) {
+                mainStyle.backgroundColor = T.component[component.viewType].backgroundColor;
             }
-            else if (component.viewType == 'dangKyTuVan') {
-                mainStyle.backgroundColor = '#c8e6f9';
-            }
-            else if (component.viewType == 'subscribe') {
-                mainStyle.backgroundColor = '#c8e6c9';
-                component.viewName = '';
-            } else if (component.viewType == 'staff group') {
-                mainStyle.backgroundColor = '#e6ee9c';
-            } else if (component.viewType == 'last news') {
-                mainStyle.backgroundColor = '#d7ccc8';
-                component.viewName = '';
-            } else if (component.viewType == 'list video') {
-                mainStyle.backgroundColor = '#ef9a9b';
-            } else if (component.viewType == 'all courses') {
-                mainStyle.backgroundColor = '#ef9a9c';
-                component.viewName = '';
-            } else if (component.viewType == 'last course') {
-                mainStyle.backgroundColor = '#ef9a9a';
-                component.viewName = '';
-            } else if (component.viewType == 'list contents') {
-                mainStyle.backgroundColor = '#fb6094';
-                component.viewName = '';
-            } else if (component.viewType == 'all course types') {
-                mainStyle.backgroundColor = '#fb3553';
-                component.viewName = '';
-            }
+            component.viewName = '';
         }
         let displayText = component.viewType + (component.viewName ? ` - ${component.viewName} ` : '');
         if (component.className.trim() != '') displayText += ' (' + component.className.trim() + ')';

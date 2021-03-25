@@ -18,7 +18,6 @@ module.exports = (app) => {
                 model.create(data, done);
             }
         }),
-        getByName: (name, done) => model.findOne({ name }).exec(done),
 
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),

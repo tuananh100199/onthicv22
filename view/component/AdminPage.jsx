@@ -149,8 +149,8 @@ export class FormCheckbox extends React.Component {
 export class FormTextBox extends React.Component {
     state = { value: '' };
 
-    value = (text) => {
-        if (text === '' || text) {
+    value = function (text) {
+        if (arguments.length) {
             this.setState({ value: text });
         } else {
             return this.state.value;
@@ -161,7 +161,7 @@ export class FormTextBox extends React.Component {
 
     render() {
         let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props;
-        type = type.toLowerCase(); // type = text | email | password
+        type = type.toLowerCase(); // type = text | number | email | password
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
@@ -237,14 +237,23 @@ export class FormSelect extends React.Component {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
             const { data, label } = this.props,
-                options = { placeholder: label, dropdownParent };
-            if (Array.isArray(data)) {
-                options.data = data;
-            } else {
-                options.ajax = { ...data, delay: 500 };
+                options = { placeholder: label, tags: true, dropdownParent };
+            if (this.props.multiple) {
+                value = value ? (Array.isArray(value) ? value : [value]) : [];
             }
 
-            $(this.input).select2(options).val(value).trigger('change');
+            if (Array.isArray(data)) {
+                options.data = data;
+                $(this.input).select2(options).val(value).trigger('change');
+            } else {
+                options.ajax = { ...data, delay: 500 };
+                $(this.input).select2(options);
+                if (value) {
+                    $(this.input).select2('trigger', 'select', { data: value });
+                } else {
+                    $(this.input).val(null).trigger('change');
+                }
+            }
         } else {
             return $(this.input).val();
         }
@@ -254,7 +263,7 @@ export class FormSelect extends React.Component {
         const { className = '', style = {}, label = '', multiple = false, readOnly = false } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
-                <label>{label}</label>
+                {label ? <label>{label}</label> : null}
                 <label style={{ width: '100%', marginBottom: '0' }}>
                     <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
                         {/* <optgroup label={'Lựa chọn ' + label} /> */}
@@ -298,7 +307,7 @@ export class FormImageBox extends React.Component {
     render() {
         let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', image = null, onDelete = null, onSuccess = null } = this.props;
         return (
-            <div className={className} style={style}>
+            <div className={'form-group ' + className} style={style}>
                 <label>{label}&nbsp;</label>
                 {!readOnly && image && onDelete ?
                     <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}

@@ -4,20 +4,15 @@ import { getAllListVideo, createListVideo, deleteListVideo } from './redux/redux
 import { Link } from 'react-router-dom';
 
 class ListVideoModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
-
     componentDidMount() {
         $(document).ready(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#listVideoName').focus());
+            $(this.modal).on('shown.bs.modal', () => $('#listVideoName').focus());
         });
     }
 
     show = () => {
         $('#listVideoName').val('');
-        $(this.modal.current).modal('show');
+        $(this.modal).modal('show');
     }
 
     save = (event) => {
@@ -31,7 +26,7 @@ class ListVideoModal extends React.Component {
         } else {
             this.props.createListVideo(newData, data => {
                 if (data.item) {
-                    $(this.modal.current).modal('hide');
+                    $(this.modal).modal('hide');
                     this.props.history.push('/user/list-video/edit/' + data.item._id);
                 }
             });
@@ -41,7 +36,7 @@ class ListVideoModal extends React.Component {
 
     render() {
         return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
+            <div className='modal' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
                 <form className='modal-dialog' role='document' onSubmit={this.save}>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -70,17 +65,12 @@ class ListVideoModal extends React.Component {
 }
 
 class ListVideoPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.modal = React.createRef();
-    }
-
     componentDidMount() {
         this.props.getAllListVideo();
     }
 
     create = (e) => {
-        this.modal.current.show();
+        this.modal.show();
         e.preventDefault();
     }
 
@@ -129,7 +119,7 @@ class ListVideoPage extends React.Component {
             table = <p key={0}>Không có danh sách các video!</p>;
         }
 
-        const result = [table, <ListVideoModal key={1} createListVideo={this.props.createListVideo} ref={this.modal} history={this.props.history} />];
+        const result = [table, <ListVideoModal key={1} createListVideo={this.props.createListVideo} ref={e => this.modal = e} history={this.props.history} />];
         if (currentPermissions.includes('component:write')) {
             result.push(
                 <button key={2} type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.create}>

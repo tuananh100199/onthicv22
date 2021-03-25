@@ -75,8 +75,7 @@ class MenuPage extends AdminPage {
         </li>);
 
     render() {
-        const permissionMenu = this.getUserPermission('menu'),
-            permissionComponent = this.getUserPermission('component');
+        const permission = { menu: this.getUserPermission('menu'), component: this.getUserPermission('component') };
         return this.renderPage({
             icon: 'fa fa-bars',
             title: 'Menu',
@@ -84,19 +83,15 @@ class MenuPage extends AdminPage {
             content: <>
                 <div className='tile'>
                     <ul id='menuMain' className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                        {(this.props.menu ? this.props.menu : []).map(menu => this.renderMenu(menu, 0, permissionMenu.write, permissionMenu.delete))}
+                        {(this.props.menu ? this.props.menu : []).map(menu => this.renderMenu(menu, 0, permission.menu.write, permission.menu.delete))}
                     </ul>
                 </div>
-                {/* {permissionMenu.write ?
-                    <button type='button' className='btn btn-danger btn-circle' style={{ position: 'fixed', bottom: '10px' }} onClick={this.props.buildMenu}>
-                        <i className='fa fa-lg fa-refresh' />
-                    </button> : null} */}
-                {permissionComponent.read ?
+                {permission.component.read ?
                     <button type='button' className='btn btn-info btn-circle' style={{ position: 'fixed', right: '66px', bottom: '10px' }} onClick={() => this.props.history.push('/user/component')}>
                         <i className='fa fa-lg fa-cogs' />
                     </button> : null}
             </>,
-            onCreate: permissionMenu.write ? this.create : null,
+            onCreate: permission.menu.write ? this.create : null,
         });
     }
 }

@@ -18,7 +18,7 @@ class SectionCourse extends React.Component {
         let course = null;
         if (courseFeed && courseFeed.length) {
             course = courseFeed.map((item, index) => {
-                let { image, title, abstract } = item ? item : { image: '', title: '', abstract: '' };
+                let { image, title, abstract } = item || { image: '', title: '', abstract: '' };
                 const link = item.link ? '/khoa-hoc/' + item.link : '/course/item/' + item._id;
                 return (
                     <div className='col-lg-4 col-md-6 col-12 team_col ftco-animate' key={index}>

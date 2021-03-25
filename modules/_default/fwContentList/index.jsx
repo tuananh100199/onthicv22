@@ -2,11 +2,14 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import contentList from './redux';
-import SectionContent from './sectionContent';
+import SectionContent from './sectionContentList';
 
 export default {
     init: () => {
-        T.component['list contents'] = (viewId) => <SectionContent viewId={viewId} />;
+        T.component['list contents'] = {
+            render: (viewId) => <SectionContent viewId={viewId} />,
+            backgroundColor: '#fb6094',
+        };
     },
     redux: {
         contentList
