@@ -2,17 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem';
 import ImageBox from 'view/component/ImageBox';
-import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, FormTextBox } from 'view/component/AdminPage';
 
 
 class SettingsPage extends AdminPage {
-
+    state = {};
     componentDidMount() {
         T.ready();
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram } = this.props.system ?
         this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
-        this.setState({ logo, footer, contact, subscribe });
-        console.log(this.state);
         this.systemAddress.value(address);
         this.systemEmail.value(email);
         this.systemMobile.value(mobile);
@@ -21,10 +19,6 @@ class SettingsPage extends AdminPage {
         this.systemYoutube.value(youtube);
         this.systemTwitter.value(twitter);
         this.systemInstagram.value(instagram);
-        // this.systemLogo.value(logo);
-        // this.systemFooter.value(footer);
-        // this.systemContact.value(contact);
-        // this.systemSubscribe.value(subscribe);
     }
 
     saveCommonInfo = () => {
@@ -39,7 +33,7 @@ class SettingsPage extends AdminPage {
             instagram: this.systemInstagram.value(),
         });
     }
-
+    
     changePassword = () => {
         const emailPassword1 = this.emailPassword1.value(),
             emailPassword2 = this.emailPassword2.value();
@@ -61,6 +55,8 @@ class SettingsPage extends AdminPage {
 
     render() {
         let readOnly = false;
+        let { logo, footer, contact, subscribe } = this.props.system ?
+        this.props.system : { logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -112,11 +108,9 @@ class SettingsPage extends AdminPage {
                                 <div className='tile-body'>
                                     <div className='form-group'>
                                         <label className='control-label'>Logo công ty</label>
-                                        {/* <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} /> */}
+                                        <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='logo' image={logo} />
                                     </div>
-                                    <FormImageBox ref={e => this.systemLogo = e} className='form-group' label='Logo công ty' uploadType='SettingImage' readOnly={readOnly} />
 
-{/* 
                                     <div className='form-group'>
                                         <label className='control-label'>Hình nền cuối trang web</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='footer' image={footer} />
@@ -130,7 +124,7 @@ class SettingsPage extends AdminPage {
                                     <div className='form-group'>
                                         <label className='control-label'>Hình nền phần Đăng ký nhận tin</label>
                                         <ImageBox postUrl='/user/upload' uploadType='SettingImage' userData='subscribe' image={subscribe} />
-                                    </div> */}
+                                    </div>
                                 </div>
                             </div>
                         </div>
