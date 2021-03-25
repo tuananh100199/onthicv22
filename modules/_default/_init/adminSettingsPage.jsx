@@ -11,8 +11,8 @@ class SettingsPage extends AdminPage {
         T.ready();
         let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
         this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
-        this.setState(systemInfo);
-
+        this.setState({ logo, footer, contact, subscribe });
+        console.log(this.state);
         this.systemAddress.value(address);
         this.systemEmail.value(email);
         this.systemMobile.value(mobile);
@@ -25,7 +25,6 @@ class SettingsPage extends AdminPage {
         // this.systemFooter.value(footer);
         // this.systemContact.value(contact);
         // this.systemSubscribe.value(subscribe);
-        // this.systemFooter.value(footer);
     }
 
     saveCommonInfo = () => {
