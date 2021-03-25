@@ -17,7 +17,7 @@ class SectionStatistic extends React.Component {
         return itemLength > 0 ? (
             <section className='ftco-section ftco-counter section-counter-class' style={{ backgroundImage: 'url(\'' + this.state.statistic.background + '\')' }}>
 
-                <div className='text-center heading-section heading-section-white ftco-animate'>
+                <div className=' heading-section heading-section-white ftco-animate'>
                     <h2 className='text'>{this.state.statistic.title}</h2>
                     <span className='subheading text' dangerouslySetInnerHTML={{ __html: this.state.statistic.description }} />
                 </div>

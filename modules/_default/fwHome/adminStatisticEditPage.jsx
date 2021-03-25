@@ -74,11 +74,13 @@ class StatisticEditPage extends AdminPage {
         });
     }
 
-    save = () => this.props.updateStatistic(this.state._id, {
-        title: this.itemTitle.value(),
-        descriptopn: this.itemDescription.html(),
-        active: this.itemActive.value(),
-    });
+    save = () => {
+        this.props.updateStatistic(this.state._id, {
+            title: this.itemTitle.value(),
+            description: this.itemDescription.html(),
+            active: this.itemActive.value(),
+        })
+    };
 
     createItem = (e) => e.preventDefault() || this.modal.show({ statisticId: this.state._id });
 
