@@ -22,10 +22,10 @@ export function saveSystemState(changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
-                T.notify('Save system information successful!', 'info');
+                T.notify('Lưu thông tin hệ thống thành công!', 'success');
                 dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
             }
-        }, error => T.notify('Save system information failed!', 'danger'));
+        }, error => T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
     }
 }
 
@@ -36,7 +36,7 @@ export function getSystemState(done) {
             data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
             if (done) done(data);
         }, error => {
-            T.notify('Get system information failed!', 'danger');
+            T.notify('Lấy thông tin hệ thống lỗi!', 'danger');
             if (done) done();
         });
     }
@@ -49,7 +49,7 @@ export function getStatistic(done) {
             data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
             if (done) done(data);
         }, error => {
-            T.notify('Get system statistic failed!', 'danger');
+            T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
             if (done) done();
         });
     }
@@ -64,16 +64,16 @@ export function login(data, done) {
                 done({ user: res.user });
             }
         }, error => {
-            done({ error: 'Login failed!' });
+            done({ error: 'Đăng nhập thất bại!' });
         });
     };
 }
 
 export function logout(config) {
     if (config == undefined) config = {};
-    if (config.title == undefined) config.title = 'Logout';
-    if (config.message == undefined) config.message = 'Are you sure want to logout?';
-    if (config.errorMessage == undefined) config.errorMessage = 'Logout failed!';
+    if (config.title == undefined) config.title = 'Đăng xuất';
+    if (config.message == undefined) config.message = 'Bạn có muốn đăng xuất không?';
+    if (config.errorMessage == undefined) config.errorMessage = 'Đăng xuất thất bại!';
     return dispatch => {
         T.confirm(config.title, config.message, true, isConfirm => {
             isConfirm && T.post('/logout', {},
@@ -115,7 +115,7 @@ export function register(data, done) {
         } else {
             done({ user: res.user });
         }
-    }, error => done({ error: 'Register failed!' }));
+    }, error => done({ error: 'Đăng ký lỗi!' }));
 }
 
 export function forgotPassword(email, onSuccess, onError) {
@@ -124,7 +124,7 @@ export function forgotPassword(email, onSuccess, onError) {
 
 
 export function getSystemEmails(done) {
-    T.get('/api/email/all', done, error => T.notify('Get email information failed!', 'danger'));
+    T.get('/api/email/all', done, error => T.notify('Lấy email hệ thống lỗi!', 'danger'));
 }
 
 export function saveSystemEmails(type, email) {
@@ -132,11 +132,11 @@ export function saveSystemEmails(type, email) {
     T.put(url, { type, email }, data => {
         if (data.error) {
             console.error('PUT: ' + url + '.', data.error);
-            T.notify('Save email information failed!', 'danger');
+            T.notify('Lưu thông tin email hệ thống lỗi!', 'danger');
         } else {
-            T.notify('Save email information successful!', 'info');
+            T.notify('Lưu thông tin email hệ thống thành công!', 'success');
         }
-    }, error => T.notify('Save email information failed!', 'danger'));
+    }, error => T.notify('Lưu thông tin email hệ thống lỗi!', 'danger'));
 }
 
 export function updateSystemState(state) {

@@ -199,3 +199,9 @@ export function createContact(contact, done) {
         }, error => T.notify('Gửi liên hệ bị lỗi!', 'danger'));
     }
 }
+
+export function exportContactToExcel(done) {
+    return dispatch => {
+        T.download(T.url(`/api/contact/export`));
+    }
+}
