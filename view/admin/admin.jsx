@@ -43,6 +43,7 @@ import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
+import fwCandidate from 'modules/mdDaoTao/fwCandidate';
 import fwStudent from 'modules/mdDaoTao/fwStudent';
 
 window.T = T;
@@ -50,7 +51,8 @@ const modules = [
     _init, fwCategory, fwCluster,
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwNews,
-    fwDivision, fwCourseType, fwCourse, fwStudent, fwSubject, fwLesson, fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
+    fwDivision, fwCourseType, fwCourse, fwCandidate, fwStudent, fwSubject, fwLesson,
+    fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
 ];
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

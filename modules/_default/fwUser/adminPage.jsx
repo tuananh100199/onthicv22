@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getUserPage, createUser, updateUser, deleteUser } from './redux';
-import { getAllRoles } from 'modules/_default/fwRole/redux';
+import { getRoleAll } from 'modules/_default/fwRole/redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
@@ -14,7 +14,6 @@ class UserModal extends AdminModal {
 
     onShow = (item) => {
         if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
-        console.log(item)
         this.itemFirstname.value(item.firstname);
         this.itemLastname.value(item.lastname);
         this.itemBirthday.value(item.birthday)
@@ -222,7 +221,7 @@ class UserPage extends AdminPage {
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
-        this.props.getAllRoles();
+        this.props.getRoleAll();
         this.props.getUserPage(1, 50, this.state.roleFilter);
         T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
@@ -292,5 +291,5 @@ class UserPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, user: state.user, role: state.role });
-const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, getAllRoles };
+const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, getRoleAll };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);

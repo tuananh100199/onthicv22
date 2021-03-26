@@ -11,14 +11,6 @@ module.exports = (app) => {
         password: String,
         phoneNumber: String,
 
-        nationality: String,                                                                        // Quốc tịch
-        residence: String,                                                                          // Nơi cư trú
-        regularResidence: String,                                                                   // Nơi đăng ký hộ khẩu thường trú
-
-        identityCard: String,                                                                       // CMND, CCCD
-        identityIssuedBy: String,                                                                   // Nơi cấp CMND, CCCD
-        identityDate: Date,                                                                         // Ngày cấp CMND, CCCD
-
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,

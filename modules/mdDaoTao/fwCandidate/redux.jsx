@@ -117,9 +117,9 @@ export function getCandidatePage(pageNumber, pageSize, searchText, done) {
     }
 }
 
-export function getCandidate(subscribeId, done) {
+export function getCandidate(candidateId, done) {
     return dispatch => {
-        const url = '/api/candidate/item/' + subscribeId;
+        const url = '/api/candidate/item/' + candidateId;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy đăng ký nhận tin bị lỗi!', 'danger');
@@ -186,17 +186,18 @@ export function changeCandidate(item) {
     return { type: CandidateUpdate, item };
 }
 
-export function createCandidate(subscribe, done) {
+export function createCandidate(candidate, done) {
     return dispatch => {
         const url = '/api/candidate';
-        T.post(url, { subscribe }, data => {
+        T.post(url, { candidate }, data => {
             if (data.error) {
-                T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger');
+                T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
+                T.notify('Gửi đăng ký tư vấn thành công!', 'danger');
             }
-        }, error => T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger'));
+        }, error => T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
     }
 }
 export function exportCandidateToExcel(done) {

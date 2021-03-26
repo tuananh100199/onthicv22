@@ -18,6 +18,7 @@ module.exports = (app) => {
                 lastname: req.body.lastname.trim(),
                 email: req.body.email.trim(),
                 password: req.body.password,
+                phoneNumber: req.body.phoneNumber.trim(),
                 active: req.body.active !== undefined && req.body.active != null ? req.body.active : false
             };
             app.model.user.create(data, (error, user) => {
