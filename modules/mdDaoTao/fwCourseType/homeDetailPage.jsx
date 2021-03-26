@@ -18,17 +18,17 @@ class HomeCourseTypeDetailPage extends React.Component {
 
         const url = window.location.pathname,
             params = T.routeMatcher('/course-type/:_id').parse(url);
-        if ((this.state.loading == true || prevProps.location.pathname != url) && this.props.courseType && this.props.courseType.items) {
+        if ((this.state.loading == true || prevProps.location.pathname != url) && this.props.courseType && this.props.courseType.list) {
             this.setState({
                 loading: false,
-                item: this.props.courseType.items.find(item => item._id === params._id),
+                item: this.props.courseType.list.find(item => item._id === params._id),
             });
         }
     }
 
     render() {
         const currentItem = this.state.item,
-            rightList = ((this.props.courseType ? this.props.courseType.items : null) || []).map((item, index) => (
+            rightList = ((this.props.courseType ? this.props.courseType.list : null) || []).map((item, index) => (
                 <div key={index} className='ftco-animate' style={{ marginRight: '15px', paddingTop: '15px' }} >
                     <Link to={`/course-type/${item._id}`} className='text-primary'>{item.title}</Link>
                 </div>));

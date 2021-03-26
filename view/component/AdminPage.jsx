@@ -12,7 +12,7 @@ export class TableCell extends React.Component { // type = number | date | link 
         if (display != true) {
             return null;
         } else if (type == 'number') {
-            return <td className={className} style={{ textAlign: 'right', ...style }}>{content}</td>
+            return <td className={className} style={{ textAlign: 'right', ...style }}>{content ? T.numberDisplay(content) : content}</td>
         } else if (type == 'date') {
             return <td className={className} style={{ ...style }}>{new Date(content).getText()}</td>
         } else if (type == 'link') {
@@ -264,11 +264,9 @@ export class FormSelect extends React.Component {
         return (
             <div className={'form-group ' + className} style={style}>
                 {label ? <label>{label}</label> : null}
-                <label style={{ width: '100%', marginBottom: '0' }}>
-                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
-                        {/* <optgroup label={'Lựa chọn ' + label} /> */}
-                    </select>
-                </label>
+                <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
+                    {/* <optgroup label={'Lựa chọn ' + label} /> */}
+                </select>
             </div>
         )
     }

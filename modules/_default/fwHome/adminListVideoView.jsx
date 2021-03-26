@@ -9,7 +9,7 @@ class ListVideoModal extends AdminModal {
             $(this.modal).on('shown.bs.modal', this.onShown(() => this.listVideoName.focus()));
         });
     }
-    
+
     onShow = () => {
         this.listVideoName.value('');
     }
@@ -74,7 +74,7 @@ class ListVideoPage extends React.Component {
                 </tr>
             )
         })
-        
+
         return <>
             {table}
             <ListVideoModal ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />

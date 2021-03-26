@@ -3,7 +3,7 @@ module.exports = (cluster, isDebug) => {
         path = require('path'),
         package = require('../package.json');
     const imageInfoPath = path.dirname(require.main.filename) + '/imageInfo.txt';
-    
+
     const workers = {},
         numWorkers = isDebug ? 2 : require('os').cpus().length;
     for (let i = 0; i < numWorkers; i++) {
@@ -16,7 +16,7 @@ module.exports = (cluster, isDebug) => {
     }
     console.log(` - The ${package.title} is ` + (isDebug ? `debugging on http://localhost:${package.port}` : `running on ${package.rootUrl}`));
     console.log(` - Worker${workers.length >= 2 ? 's' : ''} ${Object.keys(workers)} ${workers.length >= 2 ? 'are' : 'is'} online.`);
-    
+
     const workersChanged = () => {
         const listWorkers = Object.values(workers);
         let items = listWorkers.map(worker => ({
@@ -35,7 +35,7 @@ module.exports = (cluster, isDebug) => {
         });
     }
     workersChanged();
-    
+
     // Listen from WORKER ---------------------------------------------------------------------------------------------
     cluster.on('online', (worker) => {
         worker.on('message', message => {
@@ -54,7 +54,7 @@ module.exports = (cluster, isDebug) => {
                     targetWorker.status = 'resetting';
                     targetWorker.send({ type: message.type });
                 };
-                
+
                 if (message.workerId) {
                     resetWorker(workers[message.workerId]);
                     workersChanged();
@@ -69,10 +69,10 @@ module.exports = (cluster, isDebug) => {
             }
         });
     });
-    
+
     cluster.on('exit', (worker, code, signal) => {
         console.log(` - Worker #${worker.process.pid} died with code: ${code}, and signal: ${signal}. Starting a new worker!`);
-        
+
         const status = workers[worker.process.pid].status;
         delete workers[worker.process.pid];
         if (status == 'resetting' || status == 'running') {
@@ -83,7 +83,7 @@ module.exports = (cluster, isDebug) => {
             worker.createdDate = new Date();
             workers[worker.process.pid] = worker;
         }
-        
+
         workersChanged();
     });
 };

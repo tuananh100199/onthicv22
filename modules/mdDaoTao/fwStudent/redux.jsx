@@ -1,19 +1,19 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const RoleGetAll = 'Role:GetAll';
-const RoleGetPage = 'Role:GetPage';
-const RoleUpdate = 'Role:Update';
+const StudentGetAll = 'StudentGetAll';
+const StudentGetPage = 'StudentGetPage';
+const StudentUpdate = 'StudentUpdate';
 
-export default function roleReducer(state = null, data) {
+export default function studentReducer(state = null, data) {
     switch (data.type) {
-        case RoleGetPage:
+        case StudentGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case RoleGetAll:
+        case StudentGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case RoleUpdate:
+        case StudentUpdate:
             let updatedList = Object.assign({}, state.list),
                 updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -41,111 +41,96 @@ export default function roleReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-T.initCookiePage('adminRole');
-
-export function changeRole(role, done) {
+export function getStudentAll(done) {
     return dispatch => {
-        const url = '/api/debug/change-role';
-        T.post(url, { role: role._id }, data => {
-            if (data.error) {
-                T.notify('Change debug role error!', 'danger');
-            } else {
-                T.cookie('debugRole', role.name);
-                window.location = '/user';
-            }
-        }, () => T.notify('Change debug role error!', 'danger'));
-    }
-}
-
-export function getRoleAll(done) {
-    return dispatch => {
-        const url = '/api/role/all';
+        const url = '/api/student/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy danh sách vai trò bị lỗi!', 'danger');
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 done && done();
-                dispatch({ type: RoleGetAll, list: data.list });
+                dispatch({ type: StudentGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
     }
 }
 
-export function getRolePage(pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('adminRole', pageNumber, pageSize);
+T.initCookiePage('adminStudent');
+export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('adminStudent', pageNumber, pageSize);
     return dispatch => {
-        const url = `/api/role/page/${page.pageNumber}/${page.pageSize}`;
+        const url = `/api/student/page/${page.pageNumber}/${page.pageSize}`;
         T.get(url, { condition: pageCondition }, data => {
             if (data.error) {
-                T.notify('Lấy danh sách vai trò bị lỗi!', 'danger');
+                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
                 if (done) done(data.page);
-                dispatch({ type: RoleGetPage, page: data.page });
+                dispatch({ type: StudentGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
     }
 }
 
-export function createRole(role, done) {
+export function createStudent(student, done) {
     return dispatch => {
-        const url = '/api/role';
-        T.post(url, { role }, data => {
+        const url = '/api/student';
+        T.post(url, { student }, data => {
             if (data.error) {
-                T.notify('Tạo vai trò bị lỗi!', 'danger');
+                T.notify('Tạo học viên bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                dispatch(getRolePage());
+                dispatch(getStudentPage());
                 done && done(data);
             }
-        }, error => T.notify('Tạo vai trò bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo học viên bị lỗi!', 'danger'));
     }
 }
 
-export function updateRole(_id, changes, done) {
+export function updateStudent(_id, changes, done) {
     return dispatch => {
-        const url = '/api/role';
+        const url = '/api/student';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật thông tin vai trò bị lỗi!', 'danger');
+                T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
-                T.notify('Cập nhật thông tin vai trò thành công!', 'info');
-                dispatch(getRolePage());
+                T.notify('Cập nhật thông tin học viên thành công!', 'info');
+                dispatch(getStudentPage());
             }
             done && done(data.error);
-        }, error => T.notify('Cập nhật thông tin vai trò bị lỗi!', 'danger'));
+        }, error => T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
     }
 }
 
-export function deleteRole(_id) {
+export function deleteStudent(_id) {
     return dispatch => {
-        const url = '/api/role';
+        const url = '/api/student';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa vai trò bị lỗi!', 'danger');
+                T.notify('Xóa học viên bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
-                T.alert('Vai trò được xóa thành công!', 'error', false, 800);
-                dispatch(getRolePage());
+                T.alert('Học viên được xóa thành công!', 'error', false, 800);
+                dispatch(getStudentPage());
             }
-        }, error => T.notify('Xóa vai trò bị lỗi!', 'danger'));
+        }, error => T.notify('Xóa học viên bị lỗi!', 'danger'));
     }
 }
 
-export function getRole(_id, done) {
+export function getStudent(_id, done) {
     return dispatch => {
-        const url = `/api/role`;
+        const url = `/api/student`;
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy thông tin vai trò bị lỗi!', 'danger');
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 done && done(data.item);
-                T.alert('Lấy thông tin vai trò thành công!', 'error', false, 800);
+                T.alert('Lấy thông tin học viên thành công!', 'error', false, 800);
             }
-        }, error => T.notify('Lấy thông tin vai trò bị lỗi', 'danger'));
+        }, error => T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
     }
 }

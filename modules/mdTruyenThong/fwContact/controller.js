@@ -35,6 +35,45 @@ module.exports = app => {
         });
     });
 
+    app.get('/api/contact/export', app.permission.check('contact:read'), (req, res) => {
+        app.model.contact.getAll((error, items) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Subscribe');
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Tên', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Email', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'Chủ đề', bold: true, border: '1234' },
+                    { cell: 'E1', value: 'Nội dung', bold: true, border: '1234' },
+                    { cell: 'F1', value: 'Ngày đăng ký', bold: true, border: '1234' },
+                ];
+
+                worksheet.columns = [
+                    { header: 'STT', key: 'id', width: 15 },
+                    { header: 'Tên', key: 'name', width: 15 },
+                    { header: 'Email', key: 'email', width: 40 },
+                    { header: 'Chủ đề', key: 'subject', width: 40 },
+                    { header: 'Nội dung', key: 'message', width: 80 },
+                    { header: 'Ngày đăng ký', key: 'createdDate', width: 30 }
+                ];
+                items.forEach((item, index) => {
+                    worksheet.addRow({
+                        id: index + 1,
+                        name: item.name,
+                        email: item.email,
+                        subject: item.subject,
+                        message: item.message,
+                        createdDate: item.createdDate
+                    });
+                })
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, `Contact.xlsx`);
+            }
+        })
+    });
+
     app.delete('/api/contact', app.permission.check('contact:delete'), (req, res) => {
         app.model.contact.delete(req.body._id, error => res.send({ error }));
     });

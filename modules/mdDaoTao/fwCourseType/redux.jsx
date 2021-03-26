@@ -1,9 +1,9 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const CourseTypeGetPage = 'CourseTypeGetPage';
-const CourseTypeGetOne = 'CourseTypeGetOne';
 const CourseTypeGetAll = 'CourseTypeGetAll';
+const CourseTypeGetPage = 'CourseTypeGetPage';
+const CourseTypeGetItem = 'CourseTypeGetItem';
 
 export default function courseTypeReducer(state = null, data) {
     switch (data.type) {
@@ -12,7 +12,7 @@ export default function courseTypeReducer(state = null, data) {
         case CourseTypeGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case CourseTypeGetOne:
+        case CourseTypeGetItem:
             return Object.assign({}, state, { item: data.item });
         default:
             return state;
@@ -53,18 +53,15 @@ export function getAllCourseType(done) {
 }
 
 export function getCourseType(_id, done) {
-    return dispatch => {
-        const url = `/api/course-type/item/${_id}`;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy loại khóa học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data.item);
-                dispatch({ type: CourseTypeGetOne, item: data.item });
-            }
-        }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
-    }
+    return dispatch => ajaxGetCourseType(_id, data => {
+        if (data.error) {
+            T.notify('Lấy loại khóa học bị lỗi!', 'danger');
+            console.error('GET: ' + url + '.', data.error);
+        } else {
+            if (done) done(data.item);
+            dispatch({ type: CourseTypeGetItem, item: data.item });
+        }
+    });
 }
 
 export function createCourseType(done) {
@@ -91,7 +88,7 @@ export function updateCourseType(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                dispatch({ type: CourseTypeGetOne, item: data.item });
+                dispatch({ type: CourseTypeGetItem, item: data.item });
                 dispatch(getCourseTypeInPage());
                 done && done();
             }
@@ -139,7 +136,7 @@ export function getCourseTypeByUser(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
-                dispatch({ type: CourseTypeGetOne, item: data.item });
+                dispatch({ type: CourseTypeGetItem, item: data.item });
             }
         }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
     }
@@ -147,9 +144,14 @@ export function getCourseTypeByUser(_id, done) {
 
 export const ajaxSelectCourseType = {
     ajax: true,
-    url: '/api/course-type/page/:pageNumber/:pageSize',
+    url: '/api/course-type/all',
     data: {},
     processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
     })
-}
+};
+
+export function ajaxGetCourseType(_id, done) {
+    const url = '/api/course-type';
+    T.get(url, { _id }, done, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+};

@@ -1,64 +1,56 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatisticByUser } from './redux/reduxStatistic';
+import { homeGetStatistic } from './redux/reduxStatistic';
+import CountUp from 'view/js/countUp';
 
-class SectionStatistic extends React.Component {
-    state = {};
+class StatisticNumber extends React.Component {
+    valueElement = React.createRef();
 
     componentDidMount() {
-        if (this.props.viewId) {
-            this.props.getStatisticByUser(this.props.viewId, statistic => this.setState({ statistic }));
-        }
-    }
-
-    componentDidUpdate() {
         setTimeout(() => {
-            $('.section-counter-class').waypoint(function (direction) {
-                if (direction === 'down' && !$(this.element).hasClass('ftco-animated')) {
-                    const comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
-                    $('.number').each(function () {
-                        const $this = $(this);
-                        $this.animateNumber({ number: $this.data('number'), numberStep: comma_separator_number_step }, 7000);
-                    });
-                }
-            }, { offset: '95%' });
-            T.ftcoAnimate();
-        }, 250);
+            const endValue = this.props.value ? parseInt(this.props.value) : 0;
+            new CountUp(this.valueElement.current, 0, endValue, 0, 2, { separator: '.', decimal: ',' }).start();
+        }, 1000);
     }
 
     render() {
-        const itemLength = this.state.statistic ? this.state.statistic.items.length : 0,
-            itemClassName = 'col-md-' + (12 / Math.min(itemLength, 4)) + ' d-flex justify-content-center counter-wrap ftco-animate';
-        return itemLength > 0 ? (
-            <section className='ftco-section ftco-counter section-counter-class img' style={{ backgroundImage: 'url(\'' + this.state.statistic.background + '\')' }}>
-                <div className='container-fluid'>
-                    <div className='row justify-content-center mb-5 pb-3'>
-                        <div className='col-md-7 text-center heading-section heading-section-white ftco-animate'>
-                            <h2 className='mb-4 text'>{this.state.statistic.title}</h2>
-                            <span className='subheading text' dangerouslySetInnerHTML={{ __html: this.state.statistic.description }} />
-                        </div>
-                    </div>
-                    <div className='row justify-content-center'>
-                        <div className='col-md-10'>
-                            <div className='row justify-content-center'>
-                                {this.state.statistic.items.map((item, index) => (
-                                    <div key={index} className={itemClassName}>
-                                        <div className='block-18 text-center'>
-                                            <div className='text'>
-                                                <strong className='number' data-number={item.number}>{item.number}</strong>
-                                                <span>{item.title}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+        return (
+            <div className={this.props.itemClassName} >
+                <div className='text-center milestone'>
+                    <div className='milestone_counter' ref={this.valueElement}></div>
+                    <div className='milestone_text'>{this.props.title}</div>
+                </div>
+            </div>
+        )
+    }
+}
+class SectionStatistic extends React.Component {
+    state = {};
+    componentDidMount() {
+        if (this.props.viewId) {
+            this.props.homeGetStatistic(this.props.viewId, statistic => this.setState(statistic));
+        }
+    }
+
+    render() {
+        const { title, titleVisible, description, items = [] } = this.state;
+        const itemLength = items ? items.length : 0,
+            itemClassName = 'col-md-' + Math.round(12 / itemLength) + ' d-flex justify-content-center counter-wrap ftco-animate';
+        return itemLength ? (
+            <section className='ftco-section ftco-counter section-counter-class pb-5'>
+                <div className=' heading-section heading-section-white ftco-animate'>
+                    {titleVisible ? <h2 className='text'>{title}</h2> : null}
+                    {description ? <span className='subheading text' dangerouslySetInnerHTML={{ __html: description }} /> : null}
+                </div>
+                <div className='row justify-content-center'>
+                    {items.map((item, index) => (
+                        <StatisticNumber key={index} value={item.number} title={item.title} itemClassName={itemClassName} />
+                    ))}
                 </div>
             </section>) : '';
     }
 }
 
-const mapStateToProps = state => ({ statistic: state.statistic });
-const mapActionsToProps = { getStatisticByUser };
+const mapStateToProps = state => ({ system: state.system });
+const mapActionsToProps = { homeGetStatistic };
 export default connect(mapStateToProps, mapActionsToProps)(SectionStatistic);

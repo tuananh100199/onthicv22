@@ -24,8 +24,8 @@ module.exports = app => {
         app.model.division.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/division/item/:_id', app.permission.check('division:read'), (req, res) =>
-        app.model.division.get(req.params._id, (error, item) => res.send({ error, item })));
+    app.get('/api/division', app.permission.check('division:read'), (req, res) =>
+        app.model.division.get(req.query._id, (error, item) => res.send({ error, item })));
 
     app.post('/api/division', app.permission.check('division:write'), (req, res) => {
         app.model.division.create(req.body.newData, (error, item) => res.send({ error, item }));
@@ -39,6 +39,7 @@ module.exports = app => {
         app.model.division.delete(req.body._id, error => res.send({ error }));
     });
 
+    // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/division/all', (req, res) => {
         app.model.division.getAll((error, list) => res.send({ error, list }));
     });

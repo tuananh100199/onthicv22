@@ -53,19 +53,15 @@ module.exports = app => {
         app.model.user.getAll((error, items) => res.send({ error, items }));
     });
 
-    app.get('/api/user/:_id', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
-        app.model.user.get(req.params._id, (error, user) => res.send({ error, user }));
-    });
-
-    //TODO: Quang Sang
-    app.get('/api/user-search/:email', app.permission.check('user:read'), (req, res) => {
-        app.model.user.get({ email: req.params.email }, (error, user) => {
-            res.send({ error, user: user ? app.clone(user, { password: '', token: '', tokenDate: '' }) : null });
-        });
-    });
-
-    app.get('/api/user-email/:email', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
-        app.model.user.get({ email: req.params.email }, (error, user) => res.send({ error, user }));
+    app.get('/api/user', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
+        const { _id, email } = req.query;
+        if (_id) {
+            app.model.user.get({ _id }, (error, user) => res.send({ error, user }));
+        } else if (email) {
+            app.model.user.get({ email }, (error, user) => res.send({ error, user }));
+        } else {
+            res.send({ error: 'Invalid params!' })
+        }
     });
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {

@@ -10,7 +10,7 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/role/all', app.permission.check('role:read'), (req, res) => {
-        app.model.role.getAll('-description', (error, items) => res.send({ error, items }));
+        app.model.role.getAll('-description', (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/role/page/:pageNumber/:pageSize', app.permission.check('role:read'), (req, res) => {

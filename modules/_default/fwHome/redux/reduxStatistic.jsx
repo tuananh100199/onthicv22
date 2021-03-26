@@ -2,64 +2,29 @@ import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const StatisticGetAll = 'Statistic:GetAll';
+const StatisticGet = 'Statistic:Get';
 const StatisticUpdate = 'Statistic:Update';
-const StatisticAddItem = 'Statistic:AddItem';
-const StatisticUpdateItem = 'Statistic:UpdateItem';
-const StatisticRemoveItem = 'Statistic:RemoveItem';
-const StatisticSwapItems = 'Statistic:SwapItems';
 
 export default function statisticReducer(state = null, data) {
     switch (data.type) {
         case StatisticGetAll:
-            return Object.assign({}, state, { list: data.items });
+            return Object.assign({}, state, { list: data.list });
 
-        case StatisticAddItem:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                state.item.items.push({
-                    title: data.title,
-                    number: data.number,
-                });
-            }
-            return state;
-
-        case StatisticUpdateItem:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                if (0 <= data.index && data.index < state.item.items.length) {
-                    state.item.items.splice(data.index, 1, {
-                        title: data.title,
-                        number: data.number,
-                    });
-                }
-            }
-            return state;
-
-        case StatisticRemoveItem:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                if (0 <= data.index && data.index < state.item.items.length) {
-                    state.item.items.splice(data.index, 1);
-                }
-            }
-            return state;
-
-        case StatisticSwapItems:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                const statistic = state.item.items[data.index];
-                if (data.isMoveUp && data.index > 0) {
-                    state.item.items.splice(data.index, 1);
-                    state.item.items.splice(data.index - 1, 0, statistic);
-                } else if (!data.isMoveUp && data.index < state.item.items.length - 1) {
-                    state.item.items.splice(data.index, 1);
-                    state.item.items.splice(data.index + 1, 0, statistic);
-                }
-            }
-            return state;
+        case StatisticGet:
+            return Object.assign({}, state, { selectedItem: data.item });
 
         case StatisticUpdate:
-            return Object.assign({}, state, { item: data.item });
+            state = Object.assign({}, state);
+            const updatedItem = data.item;
+            if (state && state.selectedItem && state.selectedItem._id == updatedItem.statisticId) {
+                for (let i = 0, list = state.selectedItem.list, n = list.length; i < n; i++) {
+                    if (list[i]._id == updatedItem._id) {
+                        state.selectedItem.list.splice(i, 1, updatedItem);
+                        break;
+                    }
+                }
+            }
+            return state;
 
         default:
             return state;
@@ -67,7 +32,7 @@ export default function statisticReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllStatistics(done) {
+export function getStatisticAll(done) {
     return dispatch => {
         const url = '/api/statistic/all';
         T.get(url, data => {
@@ -75,22 +40,34 @@ export function getAllStatistics(done) {
                 T.notify('Lấy danh sách thống kê bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: StatisticGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: StatisticGetAll, list: data.list || [] });
             }
         }, error => T.notify('Lấy danh sách thống kê bị lỗi!', 'danger'));
     }
 }
 
-export function createStatistic(newData, done) {
+export function getStatistic(_id, done) {
+    return dispatch => ajaxGetStatistic(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy thống kê bị lỗi!', 'danger');
+            console.error(`GET: ajaxGetStatistic.`, data.error);
+        } else {
+            dispatch({ type: StatisticGet, item: data.item });
+            done && done(data);
+        }
+    });
+}
+
+export function createStatistic(data, done) {
     return dispatch => {
         const url = '/api/statistic';
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo thống kê bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllStatistics());
+                dispatch(getStatisticAll());
                 if (done) done(data);
             }
         }, error => T.notify('Tạo thống kê bị lỗi!', 'danger'));
@@ -104,10 +81,9 @@ export function updateStatistic(_id, changes, done) {
             if (data.error) {
                 T.notify('Cập nhật thông tin thống kê bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
-                done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin thống kê thành công!', 'info');
-                dispatch(getAllStatistics());
+                dispatch(getStatisticAll());
                 done && done();
             }
         }, error => T.notify('Cập nhật thông tin thống kê bị lỗi!', 'danger'));
@@ -123,56 +99,99 @@ export function deleteStatistic(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xóa thống kê thành công!', 'error', false, 800);
-                dispatch(getAllStatistics());
+                dispatch(getStatisticAll());
             }
         }, error => T.notify('Xóa thống kê bị lỗi!', 'danger'));
     }
 }
 
-
-
-export function getStatisticItem(_id, done) {
+// Item -------------------------------------------------------------------------------------------
+export function createStatisticItem(data, done) {
     return dispatch => {
-        const url = '/api/statistic/item/' + _id;
-        T.get(url, data => {
+        const url = '/api/statistic/item';
+        T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Lấy thống kê bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
+                T.notify('Tạo thống kê bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
             } else {
-                if (done) done({ item: data.item });
-                dispatch({ type: StatisticUpdate, item: data.item });
+                dispatch(getStatistic(data.item.statisticId));
+                if (done) done(data);
             }
-        }, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo thống kê bị lỗi!', 'danger'));
     }
 }
 
-export function addStatisticIntoGroup(title, number) {
-    return { type: StatisticAddItem, title, number };
-}
-
-export function updateStatisticInGroup(index, title, number) {
-    return { type: StatisticUpdateItem, index, title, number };
-}
-
-export function removeStatisticFromGroup(index) {
-    return { type: StatisticRemoveItem, index };
-}
-
-export function swapStatisticInGroup(index, isMoveUp) {
-    return { type: StatisticSwapItems, index, isMoveUp };
-}
-
-
-export function getStatisticByUser(_id, done) {
+export function updateStatisticItem(_id, changes, done) {
     return dispatch => {
-        const url = '/home/statistic/' + _id;
-        T.get(url, data => {
+        const url = '/api/statistic/item';
+        T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Lấy thống kê bị lỗi!', 'danger');
+                T.notify('Cập nhật hình ảnh bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
+            } else {
+                T.notify('Cập nhật hình ảnh thành công!', 'info');
+                dispatch(getStatistic(data.item.statisticId));
+                if (done) done();
+            }
+        }, error => T.notify('Cập nhật hình ảnh bị lỗi!', 'danger'));
+    }
+}
+
+export function swapStatisticItem(_id, isMoveUp) {
+    return dispatch => {
+        const url = '/api/statistic/item/swap/';
+        T.put(url, { _id, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger')
+                console.error('PUT: ' + url + '. ' + data.error);
+            } else {
+                dispatch(getStatistic(data.item1.statisticId));
+            }
+        }, error => T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger'));
+    }
+}
+
+export function deleteStatisticItem(_id) {
+    return dispatch => {
+        const url = '/api/statistic/item';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xoá hình ảnh bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Hình ảnh được xóa thành công!', 'error', false, 800);
+                dispatch(getStatistic(data.statisticId));
+            }
+        }, error => T.notify('Xoá hình ảnh bị lỗi!', 'danger'));
+    }
+}
+
+export function changeStatisticItem(item) {
+    return { type: StatisticUpdate, item };
+}
+
+// Home -------------------------------------------------------------------------------------------
+export function homeGetStatistic(_id, done) {
+    return dispatch => {
+        const url = '/home/statistic';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách hình ảnh bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
             }
-        }, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
+        }, error => {
+            console.error('GET: ' + url + '. ' + error);
+        });
     }
 }
+
+export const ajaxSelectStatistic = T.createAjaxAdapter(
+    '/api/statistic/page/1/20',
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+);
+export function ajaxGetStatistic(_id, done) {
+    const url = '/api/statistic';
+    T.get(url, { _id }, done, error => T.notify('Lấy thông tin thống kê bị lỗi!', 'danger'));
+};

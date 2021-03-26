@@ -1,14 +1,17 @@
 module.exports = app => {
+    app.get('/api/video/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize);
+        app.model.video.getPage(pageNumber, pageSize, {}, (error, page) => res.send({ error, page }));
+    });
+
     app.get('/api/video/all', app.permission.check('component:read'), (req, res) => {
         const condition = req.query.condition || {};
         app.model.video.getAll(condition, (error, list) => res.send({ error, list }))
     });
 
-    app.get('/api/video/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
-        const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || { listVideoId: { $exists: false } };
-        app.model.video.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+    app.get('/api/video', app.permission.check('component:read'), (req, res) => {
+        app.model.video.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/video', app.permission.check('component:write'), (req, res) => app.model.video.create(req.body.data, (error, video) => {
@@ -37,11 +40,13 @@ module.exports = app => {
         app.model.video.swapPriority(req.body._id, isMoveUp, (error, item1, item2) => res.send({ error, item1, item2 }));
     });
 
+
+
     app.delete('/api/video', app.permission.check('component:write'), (req, res) => app.model.video.delete(req.body._id, error => res.send({ error })));
 
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/home/video/item/:_id', (req, res) => app.model.video.get(req.params._id, (error, item) => res.send({ error, item })));
+    app.get('/home/video/', (req, res) => app.model.video.get({ _id: req.query._id }, (error, item) => res.send({ error, item })));
 
     app.get('/home/video/all', (req, res) => {
         const condition = req.query.condition || {};

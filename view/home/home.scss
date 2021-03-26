@@ -615,7 +615,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 .intro {
     width: 100%;
     background: #FFFFFF;
-    padding-top: 89px;
+    padding-top: 60px;
     padding-bottom: 90px;
 }
 
@@ -806,7 +806,7 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     height: 62px;
     background: transparent;
     border: solid 2px #e6ebf1;
-    margin-bottom: 18px;
+    // margin-bottom: 18px;
     padding-left: 25px;
     outline: none;
     font-size: 15px;
@@ -860,5 +860,6 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 }
 
 .select2-container {
-    width: calc((100% - 15px) / 2) !important;
+    // width: calc((100% - 15px) / 2) !important;
+    width: 100% !important;
 }
