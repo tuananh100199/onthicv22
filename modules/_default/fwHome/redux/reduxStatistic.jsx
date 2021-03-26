@@ -51,7 +51,7 @@ export function getStatistic(_id, done) {
     return dispatch => ajaxGetStatistic(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy thống kê bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: ajaxGetStatistic.`, data.error);
         } else {
             dispatch({ type: StatisticGet, item: data.item });
             done && done(data);

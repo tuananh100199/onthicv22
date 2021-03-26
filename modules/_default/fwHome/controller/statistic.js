@@ -62,8 +62,6 @@ module.exports = app => {
         app.model.statisticItem.delete(req.body._id, (error, item) => res.send({ error, statisticId: item.statisticId }));
     });
 
-
-
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/statistic', (req, res) => app.model.statistic.get(req.query._id, (error, statistic) => {
         if (error || statistic == null) {

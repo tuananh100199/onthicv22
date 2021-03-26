@@ -1,10 +1,11 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
+        titleVisible: { type: Boolean, default: true },
         abstract: String,
         image: String,
         content: String,
-        active: { type: Boolean, default: false }
+        active: { type: Boolean, default: false },
     });
     const model = app.db.model('Content', schema);
 

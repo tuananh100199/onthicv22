@@ -12,7 +12,7 @@ export class TableCell extends React.Component { // type = number | date | link 
         if (display != true) {
             return null;
         } else if (type == 'number') {
-            return <td className={className} style={{ textAlign: 'right', ...style }}>{content}</td>
+            return <td className={className} style={{ textAlign: 'right', ...style }}>{content ? T.numberDisplay(content) : content}</td>
         } else if (type == 'date') {
             return <td className={className} style={{ ...style }}>{new Date(content).getText()}</td>
         } else if (type == 'link') {

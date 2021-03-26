@@ -67,6 +67,7 @@ class StatisticEditPage extends AdminPage {
             this.props.getStatistic(params._id, data => {
                 this.itemTitle.value(data.item.title);
                 this.itemDescription.html(data.item.description);
+                this.itemTitleVisible.value(data.item.titleVisible);
                 this.itemActive.value(data.item.active);
                 this.itemTitle.focus();
                 this.setState(data.item);
@@ -78,6 +79,7 @@ class StatisticEditPage extends AdminPage {
         this.props.updateStatistic(this.state._id, {
             title: this.itemTitle.value(),
             description: this.itemDescription.html(),
+            titleVisible: this.itemTitleVisible.value(),
             active: this.itemActive.value(),
         })
     };
@@ -87,10 +89,6 @@ class StatisticEditPage extends AdminPage {
     editItem = (e, item) => e.preventDefault() || this.modal.show(item);
 
     swapItem = (e, item, isMoveUp) => e.preventDefault() || this.props.swapStatisticItem(item._id, isMoveUp);
-
-    imageChanged = (data) => {
-        this.setState({ image: data.image });
-    };
 
     deleteItem = (e, item) => e.preventDefault() || T.confirm('Xóa thống kê', 'Bạn có chắc bạn muốn xóa thống kê này?', true, isConfirm =>
         isConfirm && this.props.deleteStatisticItem(item._id));
@@ -104,14 +102,16 @@ class StatisticEditPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: '80%' }}>Tiêu đề</th>
-                    <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số lượng</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={this.editItem} />
+                    <TableCell type='number' content={item.number} />
                     <TableCell type='image' content={item.image || '/img/avatar.jpg'} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStatisticItem(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swapItem} onEdit={this.editItem} onDelete={this.deleteItem} />
@@ -125,13 +125,14 @@ class StatisticEditPage extends AdminPage {
             content: (<>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>
-                    <div className='tile-body'>
-                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
-                        <FormEditor ref={e => this.itemDescription = e} label='Mô tả' readOnly={!permission.write} />
-                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={!permission.write} />
+                    <div className='tile-body row'>
+                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='col-md-6' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemTitleVisible = e} label='Hiển thị tiêu đề' className='col-md-3' readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' className='col-md-3' readOnly={!permission.write} />
+                        <FormEditor ref={e => this.itemDescription = e} label='Mô tả' className='col-md-12' style={{ height: '400px' }} readOnly={!permission.write} />
                     </div>
                     {permission.write &&
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <div style={{ textAlign: 'right' }}>
                             <button className='btn btn-primary' type='button' onClick={this.save}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>

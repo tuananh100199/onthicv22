@@ -81,7 +81,7 @@ class SectionContact extends React.Component {
                                         <input type='text' className='contact_input' ref={e => this.name = e} placeholder='Tên' />
                                         <input type='email' className='contact_input' ref={e => this.email = e} placeholder='Email' />
                                         <input type='text' className='contact_input w-100' ref={e => this.subject = e} placeholder='Chủ đề' />
-                                        <textarea name='message' className='contact_input w-100' ref={e => this.message = e} cols='30' rows='10' placeholder='Nội dung' />
+                                        <textarea name='message' className='contact_input w-100' style={{ minHeight: '150px', paddingTop: '12px' }} ref={e => this.message = e} placeholder='Nội dung' />
                                     </div>
                                     <button className='button button_1 contact_button trans_200'>gửi tin nhắn</button>
                                 </form>

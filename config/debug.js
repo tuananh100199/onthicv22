@@ -21,9 +21,9 @@ module.exports = app => {
     }
 
     app.post('/api/debug/switch-user', (req, res) => {
-        const userId = req.body.userId, isDebug = app.isDebug || (req.session.user && req.session.user.roles.some(role => role.name == 'admin'));
-        if (userId && isDebug) {
-            app.model.user.get({ _id: userId }, (error, user) => {
+        const _id = req.body._id, isDebug = app.isDebug || (req.session.user && req.session.user.roles.some(role => role.name == 'admin'));
+        if (_id && isDebug) {
+            app.model.user.get({ _id }, (error, user) => {
                 if (error || !user) {
                     res.send({ error: 'System has errors!' });
                 } else {

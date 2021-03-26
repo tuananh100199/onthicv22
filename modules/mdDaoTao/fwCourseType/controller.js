@@ -26,11 +26,11 @@ module.exports = (app) => {
     });
 
     app.get('/api/course-type/all', (req, res) => {
-        app.model.courseType.getAll((error, items) => res.send({ error, items }));
+        app.model.courseType.getAll((error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/course-type/item/:_id', app.permission.check('course-type:read'), (req, res) => {
-        app.model.courseType.get(req.params._id, (error, item) => res.send({ error, item }));
+    app.get('/api/course-type', app.permission.check('course-type:read'), (req, res) => {
+        app.model.courseType.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
@@ -49,7 +49,7 @@ module.exports = (app) => {
 
     // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/course-type/all', (req, res) => {
-        app.model.courseType.getAll((error, items) => res.send({ error, items }));
+        app.model.courseType.getAll((error, list) => res.send({ error, list }));
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------

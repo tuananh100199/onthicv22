@@ -122,67 +122,11 @@ export function getUserPage(pageNumber, pageSize, pageCondition, done) {
     }
 }
 
-export const ajaxSelectUser = {
-    ajax: true,
-    url: `/api/user/page/1/20`,
-    data: params => ({ condition: params.term }),
-    processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : []
-    })
-}
-
-export function getUser(userId, done) {
-    return dispatch => {
-        ajaxGetUser(userId, data => {
-            done && done(data);
-            dispatch({ type: UserGetOne, item: data.user });
-        });
-    }
-}
-
-export function ajaxGetUser(userId, done) {
-    const url = '/api/user/' + userId;
-    T.get(url, data => {
-        if (data.error) {
-            T.notify('Lấy thông tin người dùng bị lỗi!', 'danger');
-            console.error('GET: ' + url + '. ' + data.error);
-        } else {
-            done && done(data);
-        }
-    }, error => {
-        console.error('GET: ' + url + '. ' + error);
+export function getUser(_id, done) {
+    return dispatch => ajaxGetUser(_id, data => {
+        done && done(data);
+        dispatch({ type: UserGetOne, item: data.user });
     });
-}
-
-export function ajaxGetUserByEmail(email, done) {
-    const url = '/api/user-email/' + email;
-    T.get(url, data => {
-        if (data.error) {
-            T.notify('Lấy thông tin người dùng bị lỗi!', 'danger');
-            console.error('GET: ' + url + '. ' + data.error);
-        } else {
-            done && done(data);
-        }
-    }, error => {
-        console.error('GET: ' + url + '. ' + error);
-    });
-}
-
-export function userGetByEmail(email, done) {
-    return dispatch => {
-        const url = '/api/user-search/' + email;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy thông tin người dùng bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                done && done(data.user);
-                dispatch({ type: UserGetOneByEmail, item: data.user });
-            }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
-    }
 }
 
 export function createUser(user, done) {
@@ -217,6 +161,7 @@ export function updateUser(_id, changes, done) {
         }, error => T.notify('Cập nhật thông tin người dùng bị lỗi!', 'danger'));
     }
 }
+
 export function deleteUser(_id, done) {
     return dispatch => {
         const url = '/api/user';
@@ -237,24 +182,6 @@ export function changeUser(user) {
     return { type: UserUpdate, item: user };
 }
 
-
-export function userGetStaff(firstPartOfEmail, done) {
-    return dispatch => {
-        const url = '/api/user/personnel/item/' + firstPartOfEmail;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy thông tin nhân viên bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.item);
-                // dispatch({ type: GET_USERS, items: data.items });
-            }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
-    }
-}
-
 export function userUpdateProfile(changes, done) {
     return dispatch => {
         const url = '/api/user/profile';
@@ -270,16 +197,39 @@ export function userUpdateProfile(changes, done) {
     }
 }
 
-export function switchUser(userId) {
+export function switchUser(_id) {
     return dispatch => {
         const url = `/api/debug/switch-user`;
-        T.post(url, { userId }, data => {
+        T.post(url, { _id }, data => {
             if (data.error) {
                 T.notify(data.error.message, 'danger');
             } else {
-                T.cookie('userId', userId);
+                T.cookie('userId', _id);
                 location.reload();
             }
         }, () => T.notify('Switch user has some errors!', 'danger'));
     }
+}
+
+export const ajaxSelectUser = {
+    ajax: true,
+    url: `/api/user/page/1/20`,
+    data: params => ({ condition: params.term }),
+    processResults: response => ({
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : []
+    })
+}
+
+export function ajaxGetUser(_id, done) {
+    const url = '/api/user/';
+    T.get(url, { _id }, data => {
+        if (data.error) {
+            T.notify('Lấy thông tin người dùng bị lỗi!', 'danger');
+            console.error('GET: ' + url + '. ' + data.error);
+        } else {
+            done && done(data);
+        }
+    }, error => {
+        console.error('GET: ' + url + '. ' + error);
+    });
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getUserPage, createUser, updateUser, deleteUser } from './redux';
-import { getAllRoles } from '../fwRole/redux';
+import { getAllRoles } from 'modules/_default/fwRole/redux';
+import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -12,17 +13,19 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        console.log(item)
         this.itemFirstname.value(item.firstname);
         this.itemLastname.value(item.lastname);
         this.itemBirthday.value(item.birthday)
         this.itemEmail.value(item.email);
         this.itemPhoneNumber.value(item.phoneNumber);
-        this.itemActive.value(item.active);
         this.itemIsCourseAdmin.value(item.isCourseAdmin);
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
         this.itemSex.value(item.sex);
+        this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
+        this.itemActive.value(item.active);
         this.imageBox.setData(`user:${item._id ? item._id : 'new'}`);
 
         const allRoles = this.props.allRoles.map(item => ({ id: item._id, text: item.name }));
@@ -38,12 +41,13 @@ class UserModal extends AdminModal {
             lastname: this.itemLastname.value().trim(),
             email: this.itemEmail.value().trim(),
             phoneNumber: this.itemPhoneNumber.value().trim(),
-            active: this.itemActive.value(),
             isCourseAdmin: this.itemIsCourseAdmin.value(),
             isStaff: this.itemIsStaff.value(),
             isLecturer: this.itemIsLecturer.value(),
             roles: this.itemRoles.value(),
             birthday: this.itemBirthday.value(),
+            division: this.itemDivision.value(),
+            active: this.itemActive.value(),
         };
         if (changes.firstname == '') {
             T.notify('Tên người dùng bị trống!', 'danger');
@@ -90,7 +94,8 @@ class UserModal extends AdminModal {
                     <FormCheckbox ref={e => this.itemIsLecturer = e} className='col-md-4' label='Giáo viên' readOnly={readOnly} />
 
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemActive = e} className='col-md-12' label='Kích hoạt' readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemActive = e} className='col-md-4' label='Kích hoạt' readOnly={readOnly} />
                 </div>),
         });
     }
@@ -211,21 +216,9 @@ export class RoleFilter extends React.Component {
     }
 }
 
+const roleFilter = (T.cookie('roleFilter') ? T.cookie('roleFilter') : { isCourseAdmin: false, isStaff: false, isLecturer: false, isAll: true });
 class UserPage extends AdminPage {
-    state = { searchText: '', isSearching: false };
-    constructor(props) {
-        super(props);
-        this.state = {
-            roleFilter: (T.cookie('roleFilter') ? T.cookie('roleFilter') :
-                {
-                    isCourseAdmin: false,
-                    isStaff: false,
-                    isLecturer: false,
-                    isAll: true,
-                })
-        }
-    }
-
+    state = { searchText: '', isSearching: false, roleFilter };
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
