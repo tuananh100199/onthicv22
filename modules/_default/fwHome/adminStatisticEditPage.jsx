@@ -1,259 +1,163 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatisticItem, updateStatistic, addStatisticIntoGroup, updateStatisticInGroup, removeStatisticFromGroup, swapStatisticInGroup } from './redux/reduxStatistic';
+import { getStatistic, updateStatistic, createStatisticItem, updateStatisticItem, swapStatisticItem, deleteStatisticItem } from './redux/reduxStatistic';
 import { Link } from 'react-router-dom';
-import Editor from 'view/component/CkEditor4';
-import ImageBox from 'view/component/ImageBox';
+import { AdminPage, AdminModal, FormTextBox, FormEditor, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
-class StatisticModal extends React.Component {
+class StatisticItemModal extends AdminModal {
     state = {};
-    modal = React.createRef();
-    editor = React.createRef();
-    btnSave = React.createRef();
-
     componentDidMount() {
-        $(document).ready(() => setTimeout(() => {
-            $(this.modal.current).on('shown.bs.modal', () => $('#sttTitle').focus());
-        }, 250));
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    show = (selectedItem, index) => {
-        let { title, number } = selectedItem ? selectedItem : { title: JSON.stringify({ vi: '', en: '' }), number: 0 };
-        $('#sttTitle').val(title);
-        $('#sttNumber').val(number);
-        $(this.btnSave.current).data('isNewMember', selectedItem == null).data('index', index);
+    onShow = (item) => {
+        let { _id, title, image, number, active, statisticId } = Object.assign({ title: '', number: 0, active: true, image: '/img/avatar.jpg' }, item);
+        this.itemTitle.value(title);
+        this.itemNumber.value(number);
+        this.itemActive.value(active);
+        this.imageBox.setData('statisticItem:' + (_id || 'new'), image);
 
-        $(this.modal.current).modal('show');
-    }
-    hide = () => {
-        $(this.modal.current).modal('hide');
+        this.setState({ _id, statisticId, image });
     }
 
-    save = (event) => {
-        const btnSave = $(this.btnSave.current),
-            isNewMember = btnSave.data('isNewMember'),
-            index = btnSave.data('index'),
-            title = $('#sttTitle').val(),
-            number = $('#sttNumber').val();
-        if (isNewMember) {
-            this.props.addStatistic(JSON.stringify(title), number);
+    onSubmit = (e) => {
+        e.preventDefault();
+        const changes = {
+            title: this.itemTitle.value().trim(),
+            number: this.itemNumber.value(),
+            statisticId: this.state.statisticId,
+            active: this.itemActive.value(),
+        };
+
+        if (changes.title == '') {
+            T.notify('Tên thống kê bị trống!', 'danger');
+            this.itemTitle.focus();
         } else {
-            this.props.updateStatistic(index, JSON.stringify(title), number);
+            if (this.state._id) {
+                this.props.update(this.state._id, changes, this.hide);
+            } else {
+                this.props.create(changes, this.hide);
+            }
         }
-        event.preventDefault();
-    }
+    };
 
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document' onSubmit={this.save}>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thống kê</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label htmlFor='sttTitle'>Tên</label><br />
-                                <input className='form-control' id='sttTitle' type='text' placeholder='Tên' />
-                            </div>
-                            <div className='form-group'>
-                                <label htmlFor='sttNumber'>Số lượng</label><br />
-                                <input className='form-control' id='sttNumber' type='number' placeholder='Số lượng' />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
+    render = () => this.renderModal({
+        title: 'Thống kê',
+        size: 'large',
+        body: <div className='row'>
+            <div className='col-md-8'>
+                <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' readOnly={this.props.readOnly} />
+                <FormTextBox type='number' ref={e => this.itemNumber = e} label='Số lượng' readOnly={this.props.readOnly} />
             </div>
-        );
-    }
+            <div className='col-md-4'>
+                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StatisticItemImage' image={this.state.image} readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
+            </div>
+        </div>,
+    });
 }
 
-class StatisticEditPage extends React.Component {
-    state = { image: '' };
-    modal = React.createRef();
-    editor = { vi: React.createRef(), en: React.createRef() };
-    image = React.createRef();
+class StatisticEditPage extends AdminPage {
+    state = {}
 
     componentDidMount() {
-        T.ready(() => {
-            const route = T.routeMatcher('/user/statistic/edit/:statisticId'),
+        T.ready('/user/component', () => {
+            const route = T.routeMatcher('/user/statistic/edit/:_id'),
                 params = route.parse(window.location.pathname);
-
-            this.props.getStatisticItem(params.statisticId, data => {
-                if (data.error) {
-                    T.notify('Lấy nhóm thống kê bị lỗi!', 'danger');
-                    this.props.history.push('/user/component');
-                } else if (data.item) {
-                    $('#tepTitle').val(data.item.title).focus();
-                    this.image.current.setData('statistic:' + data.item._id, data.item.image ? data.item.image : '');
-                    this.editor.vi.current.html(data.item.description);
-                    this.setState({ image: data.item.image ? data.item.image : '' });
-                } else {
-                    this.props.history.push('/user/component');
-                }
+            this.props.getStatistic(params._id, data => {
+                this.itemTitle.value(data.item.title);
+                this.itemDescription.html(data.item.description);
+                this.itemActive.value(data.item.active);
+                this.itemTitle.focus();
+                this.setState(data.item);
             });
         });
     }
+
+    save = () => {
+        this.props.updateStatistic(this.state._id, {
+            title: this.itemTitle.value(),
+            description: this.itemDescription.html(),
+            active: this.itemActive.value(),
+        })
+    };
+
+    createItem = (e) => e.preventDefault() || this.modal.show({ statisticId: this.state._id });
+
+    editItem = (e, item) => e.preventDefault() || this.modal.show(item);
+
+    swapItem = (e, item, isMoveUp) => e.preventDefault() || this.props.swapStatisticItem(item._id, isMoveUp);
 
     imageChanged = (data) => {
         this.setState({ image: data.image });
     };
 
-    showAddStatisticModal = () => {
-        this.modal.current.show();
-    };
-
-    showEditStatisticModal = (e, selectedStatistic, index) => {
-        this.modal.current.show(selectedStatistic, index);
-        e.preventDefault();
-    };
-
-    add = (title, number) => {
-        this.props.addStatisticIntoGroup(title, number);
-        this.modal.current.hide();
-    };
-
-    update = (index, title, number) => {
-        this.props.updateStatisticInGroup(index, title, number);
-        this.modal.current.hide();
-    };
-
-    remove = (e, index) => {
-        this.props.removeStatisticFromGroup(index);
-        e.preventDefault();
-    };
-
-    swap = (e, index, isMoveUp) => {
-        this.props.swapStatisticInGroup(index, isMoveUp);
-        e.preventDefault();
-    }
-
-    save = () => {
-        const title = $('#tepTitle').val().trim();
-        const description = this.editor.vi.current.html();
-
-        if (title === '') {
-            T.notify('Tên nhóm thống kê bị trống!', 'danger');
-            $('#statisticName').focus();
-        } else {
-            const changes = {
-                title,
-                description,
-                image: this.state.image,
-                items: this.props.statistic.item.items,
-            };
-            if (changes.items && changes.items.length == 0) changes.items = 'empty';
-            this.props.updateStatistic(this.props.statistic.item._id, changes);
-        }
-    };
+    deleteItem = (e, item) => e.preventDefault() || T.confirm('Xóa thống kê', 'Bạn có chắc bạn muốn xóa thống kê này?', true, isConfirm =>
+        isConfirm && this.props.deleteStatisticItem(item._id));
 
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('component:write');
-        let table = null,
-            currentStatistic = this.props.statistic ? this.props.statistic.item : null;
-        if (currentStatistic && currentStatistic.items.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto' }}>#</th>
-                            <th style={{ width: '100%' }}>Tên (Việt Nam)</th>
-                            <th style={{ width: 'auto', textAlign: 'right' }} nowrap='true'>Số lượng</th>
-                            {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentStatistic.items.map((item, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>
-                                    {readOnly ? item.title : <a href='#' onClick={e => this.showEditStatisticModal(e, item, index)}>{item.title}</a>}
-                                </td>
-                                <td style={{ textAlign: 'right' }}>{T.numberDisplay(item.number)}</td>
-                                {readOnly ? null :
-                                    <td>
-                                        <div className='btn-group'>
-                                            <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
-                                                <i className='fa fa-lg fa-arrow-up' />
-                                            </a>
-                                            <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
-                                                <i className='fa fa-lg fa-arrow-down' />
-                                            </a>
-                                            <a className='btn btn-primary' href='#' onClick={e => this.showEditStatisticModal(e, item, index)}>
-                                                <i className='fa fa-lg fa-edit' />
-                                            </a>
-                                            <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a>
-                                        </div>
-                                    </td>
-                                }
-                            </tr>))}
-                    </tbody>
-                </table>
-            );
-        } else {
-            table = <p>Không có thống kê!</p>;
-        }
+        const items = this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items
+        const permission = this.getUserPermission('component');
+        const table = renderTable({
+            getDataSource: () => this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto' }}>#</th>
+                    <th style={{ width: '80%' }}>Tiêu đề</th>
+                    <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} onClick={this.editItem} />
+                    <TableCell type='image' content={item.image || '/img/avatar.jpg'} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStatisticItem(item._id, { active })} />
+                    <TableCell type='buttons' content={item} permission={permission} onSwap={this.swapItem} onEdit={this.editItem} onDelete={this.deleteItem} />
+                </tr>),
+        });
 
-        const title = currentStatistic ? currentStatistic.title : '';
-        return (
-            <main className='app-content' >
-                <div className='app-title'>
-                    <div>
-                        <h1><i className='fa fa-bar-chart' /> Thống kê: {title}</h1>
-                    </div>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>&nbsp;/&nbsp;
-                        <Link to='/user/component'>Thành phần giao diện</Link>&nbsp;/&nbsp;Chỉnh sửa
-                    </ul>
-                </div>
+        return this.renderPage({
+            icon: 'fa fa-picture-o',
+            title: 'Thống kê: ' + (this.state.title || '...'),
+            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Thống kê'],
+            content: (<>
                 <div className='tile'>
+                    <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body'>
-                        <div className='form-group'>
-                            <label className='control-label' htmlFor='tepTitle'>Tiêu đề</label>
-                            <input className='form-control col-6' type='text' placeholder='Tiêu đề' id='tepTitle' defaultValue={title.vi} readOnly={readOnly} />
-                        </div>
-                        <div className='form-group'>
-                            <label htmlFor='tepDescription'>Mô tả</label>
-                            <Editor ref={this.editor.vi} placeholder='Nội dung' id='tepDescription' readOnly={readOnly} /><br />
-                            <label htmlFor='tepBacground'>Ảnh nền</label>
-                        </div>
-                        <div className='form-group'>
-                            <ImageBox ref={this.image} image={this.state.image} id='tepBacground' postUrl='/user/upload' uploadType='StatisticImage' userData='statistic' success={this.imageChanged} readOnly={readOnly} />
-                        </div>
-                        <div className='form-group'>{table}</div>
+                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
+                        <FormEditor ref={e => this.itemDescription = e} label='Mô tả' readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={!permission.write} />
                     </div>
-                    {readOnly ? null :
+                    {permission.write &&
                         <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button className='btn btn-info' type='button' onClick={this.showAddStatisticModal}>
-                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                            </button>&nbsp;
                             <button className='btn btn-primary' type='button' onClick={this.save}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
                         </div>}
                 </div>
-                <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>
 
-                <StatisticModal ref={this.modal} addStatistic={this.add} updateStatistic={this.update} />
-            </main>
-        );
+                <div className='tile'>
+                    <h3 className='tile-title'>Danh sách thống kê</h3>
+                    <div className='tile-body'>
+                        {table}
+                        {permission.write && items && (items.length < 12) &&
+                            <div style={{ textAlign: 'right' }}>
+                                <button className='btn btn-success' type='button' onClick={this.createItem}>
+                                    <i className='fa fa-fw fa-lg fa-plus'></i> Thêm
+                                </button>
+                            </div>}
+                    </div>
+                </div>
+
+                <StatisticItemModal ref={e => this.modal = e} create={this.props.createStatisticItem} update={this.props.updateStatisticItem} readOnly={!permission.write} />
+            </>),
+            backRoute: '/user/component',
+        });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, statistic: state.statistic });
-const mapActionsToProps = { getStatisticItem, updateStatistic, addStatisticIntoGroup, updateStatisticInGroup, removeStatisticFromGroup, swapStatisticInGroup };
+const mapStateToProps = state => ({ system: state.system, component: state.component });
+const mapActionsToProps = { getStatistic, updateStatistic, createStatisticItem, updateStatisticItem, swapStatisticItem, deleteStatisticItem };
 export default connect(mapStateToProps, mapActionsToProps)(StatisticEditPage);

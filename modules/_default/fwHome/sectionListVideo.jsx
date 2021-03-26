@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllVideosByUser } from './redux/reduxVideo';
+import { getVideoAllByUser } from './redux/reduxVideo';
 import { getListVideoByUser } from './redux/reduxListVideo';
 
 class SectionListVideo extends React.Component {
@@ -38,7 +38,7 @@ class SectionListVideo extends React.Component {
                     if (data.error) {
                         console.log('list các video trống')
                     } else if (data.item) {
-                        this.props.getAllVideosByUser({ listVideoId: data.item._id }, (items) => {
+                        this.props.getVideoAllByUser({ listVideoId: data.item._id }, (items) => {
                             if (items) {
                                 this.setState({ item: data.item, items }, () => {
                                     const done = () => {
@@ -121,5 +121,5 @@ class SectionListVideo extends React.Component {
 }
 
 const mapStateToProps = state => ({});
-const mapActionsToProps = { getAllVideosByUser, getListVideoByUser };
+const mapActionsToProps = { getVideoAllByUser, getListVideoByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionListVideo);

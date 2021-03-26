@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createVideo, updateVideo, deleteVideo, getAllVideos } from './redux/reduxVideo';
+import { createVideo, updateVideo, deleteVideo, getVideoAll } from './redux/reduxVideo';
 import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable, FormEditor, FormImageBox, AdminPage } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
@@ -59,7 +59,7 @@ class VideoModal extends AdminModal {
 
 class VideoPage extends AdminPage {
     componentDidMount() {
-        this.props.getAllVideos();
+        this.props.getVideoAll();
     }
     showVideoModal = (e, video) => e.preventDefault() || this.modal.show(video);
 
@@ -84,17 +84,7 @@ class VideoPage extends AdminPage {
                     <TableCell type='link' content={item.title} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='link' content={item.link} onClick={e => this.showVideoModal(e, item)} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            {permission.write ?
-                                <a className='btn btn-primary' href='#' onClick={e => this.showVideoModal(e, item)}>
-                                    <i className='fa fa-lg fa-edit' />
-                                </a> : null}
-                            {permission.delete ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={e => this.showVideoModal(e, item)} onDelete={e => this.deleteVideo(e, item)} />
                 </tr>),
         });
         return <>
@@ -106,5 +96,5 @@ class VideoPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { createVideo, updateVideo, deleteVideo, getAllVideos };
+const mapActionsToProps = { createVideo, updateVideo, deleteVideo, getVideoAll };
 export default connect(mapStateToProps, mapActionsToProps)(VideoPage);
