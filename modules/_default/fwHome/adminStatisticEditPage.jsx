@@ -151,7 +151,6 @@ class StatisticEditPage extends AdminPage {
                             </div>}
                     </div>
                 </div>
-
                 <StatisticItemModal ref={e => this.modal = e} create={this.props.createStatisticItem} update={this.props.updateStatisticItem} readOnly={!permission.write} />
             </>),
             backRoute: '/user/component',
