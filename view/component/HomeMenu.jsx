@@ -154,10 +154,6 @@ class HomeMenu extends React.Component {
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
                                         <div className='button button_1 mr-1 large_btn' > <a href={DKTVLink}>Đăng ký tư vấn</a></div>
-                                        <div className="small-button">
-                                            <li data-toggle='tooltip' title='Số điện thoại'><a href={mobile}><i class="fa fa-phone-square" style={{ color: '#4ca758' }} aria-hidden="true"></i></a></li>
-                                            <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={DKTVLink}><i className="fa fa fa-envelope" style={{ color: 'red' }} aria-hidden="true"></i></a></li>
-                                        </div>
                                         <div className='btn-group m-auto pl-2'>
                                             <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className="fa fa-user-circle-o" aria-hidden="true"></i></a></li>
                                             <li data-toggle='tooltip' title='Đăng xuất'><a href="#" onClick={this.logout} ><i className="fa fa-power-off" style={{ color: 'red' }} aria-hidden="true"></i></a></li>

@@ -44,7 +44,7 @@ export function getSystemState(done) {
 
 export function getStatistic(done) {
     return dispatch => {
-        const url = `/api/statistic`;
+        const url = `/api/statistic/dashboard`;
         T.get(url, data => {
             data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
             if (done) done(data);

@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
+        titleVisible: { type: Boolean, default: true },
         description: String,
         active: { type: Boolean, default: false },
     });

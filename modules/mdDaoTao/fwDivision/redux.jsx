@@ -34,18 +34,15 @@ export function getAllDivisions(searchText, done) {
 }
 
 export function getDivisionItem(_id, done) {
-    return dispatch => {
-        const url = '/api/division/item/' + _id;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy cơ sở bị lỗi', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                dispatch({ type: DivisionGet, item: data.item });
-            }
-            if (done) done(data);
-        }, error => T.notify('Lấy cơ sở bị lỗi', 'danger'));
-    }
+    return dispatch => ajaxGetDivision(_id, data => {
+        if (data.error) {
+            T.notify('Lấy cơ sở bị lỗi', 'danger');
+            console.error('GET: ' + url + '. ' + data.error);
+        } else {
+            dispatch({ type: DivisionGet, item: data.item });
+        }
+        done && done(data);
+    });
 }
 
 export function createDivision(newData, done) {
@@ -112,16 +109,13 @@ export function getAllDivisionByUser(done) {
     }
 }
 
-export const ajaxSelectDivision = {
-    ajax: true,
-    url: '/api/division/all',
-    data: {},
-    processResults: response => ({
-        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
-    })
-}
+// AJAX ---------------------------------------------------------------------------------------------------------------
+export const ajaxSelectDivision = T.createAjaxAdapter(
+    '/api/division/all',
+    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title + (item.isOutside ? ' (cơ sở ngoài)' : '') })) : []
+);
 
-// export const ajaxSelectDivision = T.createAjaxAdapter(
-//     '/api/division/all',
-//     response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
-// );
+export function ajaxGetDivision(_id, done) {
+    const url = '/api/division';
+    T.get(url, { _id }, done, error => T.notify('Lấy cơ sở đào tạo bị lỗi!', 'danger'));
+};

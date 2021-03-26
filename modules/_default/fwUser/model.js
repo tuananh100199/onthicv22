@@ -1,6 +1,6 @@
 module.exports = (app) => {
     const schema = app.db.Schema({
-        division: { type: app.db.Schema.ObjectId, ref: 'Division' },                   // Thuộc đơn vị nào
+        division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Thuộc đơn vị nào
 
         roles: [{ type: app.db.Schema.ObjectId, ref: 'Role', default: [] }],
         firstname: String,
@@ -95,8 +95,9 @@ module.exports = (app) => {
                 }
             }),
 
-        get: (condition, done) =>
-            typeof condition == 'object' ? model.findOne(condition).select('-password -token -tokenDate').populate('roles').exec(done) : model.findById(condition).select('-password -token -tokenDate').populate('roles').exec(done), // condition is _id.
+        get: (condition, done) => typeof condition == 'object' ?
+            model.findOne(condition).select('-password -token -tokenDate').populate('roles').populate('division').exec(done) :
+            model.findById(condition).select('-password -token -tokenDate').populate('roles').populate('division').exec(done), // condition is _id.
 
         getPage: (pageNumber, pageSize, condition, sort, done) =>
             model.countDocuments(condition, (error, totalItem) => {
@@ -108,47 +109,20 @@ module.exports = (app) => {
                 if (error) {
                     done(error);
                 } else {
-                    let result = {
-                        totalItem,
-                        pageSize,
-                        pageTotal: Math.ceil(totalItem / pageSize),
-                    };
-                    result.pageNumber =
-                        pageNumber === -1 ?
-                            result.pageTotal :
-                            Math.min(pageNumber, result.pageTotal);
-                    const skipNumber =
-                        (result.pageNumber > 0 ? result.pageNumber - 1 : 0) *
-                        result.pageSize;
-                    model
-                        .find(condition)
-                        .sort(sort)
-                        .skip(skipNumber)
-                        .limit(result.pageSize)
-                        .populate('roles')
-                        .exec((error, users) => {
-                            result.list = (error ? [] : users).map((user) =>
-                                app.clone(user, {
-                                    password: '',
-                                    default: user.email == app.defaultAdminEmail,
-                                })
-                            );
+                    let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
+                    result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
+                    const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
+                    model.find(condition).select('-password -token -tokenDate').sort(sort).skip(skipNumber).limit(result.pageSize)
+                        .populate('roles').populate('division').exec((error, list) => {
+                            result.list = list || [];
                             done(error, result);
                         });
                 }
             }),
 
-        getAll: (condition, done) =>
-            done ?
-                model
-                    .find(condition)
-                    .sort({ lastname: 1, firstname: 1 })
-                    .select('-password -token -tokenDate')
-                    .exec(done) : model
-                        .find({})
-                        .sort({ lastname: 1, firstname: 1 })
-                        .select('-password -token -tokenDate')
-                        .exec(condition),
+        getAll: (condition, done) => done ?
+            model.find(condition).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(done) :
+            model.find({}).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(condition),
 
         update: (_id, $set, $unset, done) => {
             if (!done) {
@@ -156,12 +130,8 @@ module.exports = (app) => {
                 $unset = {};
             }
             const updateProfile = () => {
-                if ($set.password)
-                    $set.password = app.model.user.hashPassword($set.password);
-                model
-                    .findOneAndUpdate({ _id }, { $set, $unset }, { new: true })
-                    .populate('roles')
-                    .exec(done);
+                if ($set.password) $set.password = app.model.user.hashPassword($set.password);
+                model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('roles').exec(done);
             };
 
             if ($set.email) {

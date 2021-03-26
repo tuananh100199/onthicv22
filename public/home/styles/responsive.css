@@ -54,12 +54,12 @@
 ************/
 
 @media only screen and (max-width: 1280px) {
-    /* .header_social li {
+    .header_social li {
         display: none;
     }
     .header_social .hotline {
         display: none;
-    } */
+    }
     .main_nav ul li:not(:last-child) {
         margin-right: 29px;
     }
@@ -119,11 +119,10 @@
 ************/
 
 @media only screen and (max-width: 991px) {
-    /* .main_nav,
-	.header_social
-	{
-		display: none!important;
-	} */
+    .main_nav,
+    .header_social {
+        display: none!important;
+    }
     .home_slider_dots {
         left: calc((100vw - 690px) / 2);
     }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getContent } from './redux/reduxContent';
 
 class sectionContent extends React.Component {
-    state = { content: {} };
+    state = {};
     componentDidMount() {
         if (this.props.viewId) {
             this.props.getContent(this.props.viewId, data => data && data.item && this.setState(data.item));
@@ -11,7 +11,11 @@ class sectionContent extends React.Component {
     }
 
     render() {
-        return <div style={{ marginTop: '110px' }} dangerouslySetInnerHTML={{ __html: this.state.content }} />;
+        const { title, titleVisible = false, content } = this.state;
+        return <div style={{ marginTop: '60px' }}>
+            {titleVisible ? <h2>{title}</h2> : null}
+            <p dangerouslySetInnerHTML={{ __html: content }} />
+        </div>;
     }
 }
 

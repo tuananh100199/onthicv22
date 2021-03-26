@@ -28,7 +28,7 @@ import SectionListVideo from './sectionListVideo';
 export default {
     init: () => {
         T.component['content'] = {
-            render: (viewId) => <SectionListContent viewId={viewId} />,
+            render: (viewId) => <SectionContent viewId={viewId} />,
             backgroundColor: '#f48fb1',
             adapter: ajaxSelectContent,
             getItem: ajaxGetContent,
