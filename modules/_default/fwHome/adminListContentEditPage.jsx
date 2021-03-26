@@ -53,54 +53,32 @@ class ListContentEditPage extends AdminPage {
             });
         });
     }
-
-    remove = (e, index) => e.preventDefault() || T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm => {
+    edit = (e, [index, item]) => e.preventDefault() || this.modal.show(item, index);
+    remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm => {
         if (isConfirm) {
-            const items = this.props.component.listContent.find(item => item._id == this.state._id).items.map(item => item._id) || [];
+            let itemList = this.props.component.listContent && this.props.component.listContent[0] || {};
+            let items = itemList.items.map(item => item._id) || [];
             items.splice(index, 1);
             if (items.length == 0) items = 'empty';
-            this.props.updateListContent(item._id, { items }, () => {
+            this.props.updateListContent(this.state._id, { items }, () => {
                 T.alert('Xoá bài viết trong danh sách thành công!', 'error', false, 800);
             });
         }
     })
 
-    swapVideo = (e, video, isMoveUp) => e.preventDefault() || this.props.swapLessonVideo(this.state._id, video._id, isMoveUp);
-    swap = (e, index, isMoveUp) => {
-        const items = this.props.component.listContent.find(item => item._id == this.state._id).map(item => item._id) || [];
-        // let items = item.items || [];
-        if (items.length == 1) {
+    swap = (e, [index, item], isMoveUp) => {
+        let itemList = this.props.component.listContent && this.props.component.listContent[0] || {};
+        let items = itemList.items.map(item => item._id) || [];
+        if (items.length == 1 || (index == 0 && isMoveUp) || (index == items.length - 1 && !isMoveUp)) {
             T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
         } else {
-            if (isMoveUp) {
-                if (index == 0) {
-                    T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
-                } else {
-                    const temp = items[index - 1], changes = {};
-
-                    items[index - 1] = items[index];
-                    items[index] = temp;
-
-                    changes.items = items;
-                    this.props.updateListContent(item._id, changes, () => {
-                        T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
-                    });
-                }
-            } else {
-                if (index == items.length - 1) {
-                    T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
-                } else {
-                    const temp = items[index + 1], changes = {};
-
-                    items[index + 1] = items[index];
-                    items[index] = temp;
-
-                    changes.items = items;
-                    this.props.updateListContent(item._id, changes, () => {
-                        T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
-                    });
-                }
-            }
+            const temp = items[isMoveUp ? index - 1 : index - 1];
+            items[isMoveUp ? index - 1 : index - 1] = items[index];
+            items[index] = temp;
+            console.log(items, 's')
+            this.props.updateListContent(this.state._id, { items }, () => {
+                T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
+            });
         }
         e.preventDefault();
     };
@@ -122,8 +100,7 @@ class ListContentEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
-        let item = this.props.component.listContent || [];
-        item = item && item.find(item => item._id === this.state._id);
+        let item = this.props.component.listContent && this.props.component.listContent[0] || {};
         const table = renderTable({
             getDataSource: () => item && item.items || [],
             renderHead: () => (
@@ -136,7 +113,7 @@ class ListContentEditPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={`/user/content/edit/${item._id}`} />
-                    <TableCell type='buttons' content={item} permission={permission} onSwap={e => this.swap(e, index, isMoveUp)} onEdit={() => this.modal.show(item, index)} onDelete={e => this.remove(e, index)} />
+                    <TableCell type='buttons' content={[index, item]} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.remove} />
                 </tr>),
         });
         return this.renderPage({
