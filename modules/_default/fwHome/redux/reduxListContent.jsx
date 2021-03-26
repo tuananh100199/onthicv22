@@ -11,7 +11,6 @@ export default function listContentReducer(state = {}, data) {
 
         case ListContentUpdate:
             state = state && state.list ? state.list.slice() : { list: [] };
-            console.log(state)
             for (let i = 0; i < state.length; i++) {
                 if (state[i]._id == data.item._id) {
                     state[i] = data.item;
@@ -19,8 +18,6 @@ export default function listContentReducer(state = {}, data) {
                 }
             }
             return state;
-
-
         default:
             return state;
     }
@@ -48,11 +45,8 @@ export function getListContent(_id, done) {
             T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
             console.error(`GET: ${url}. ${data.error}`);
         } else {
-            console.log('s')
             dispatch(getListContentAll());
-            console.log(done, 'done')
-            dispatch({ type: ListContentUpdate, item: data.item }); // await
-
+            dispatch({ type: ListContentUpdate, item: data.item });
             done && done(data);
         }
     });
@@ -82,8 +76,8 @@ export function updateListContent(_id, changes, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
                 done && done(data.error);
             } else {
-                dispatch({ type: ListContentUpdate, item: data.item });
                 dispatch(getListContentAll());
+                dispatch({ type: ListContentUpdate, item: data.item });
                 done && done();
             }
         }, error => T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
