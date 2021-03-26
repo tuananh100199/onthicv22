@@ -32,13 +32,17 @@ class ListContentModal extends AdminModal {
 class ListContentEditPage extends AdminPage {
     state = {};
     componentDidMount() {
+        console.log('start')
         T.ready('/user/component', () => {
             const route = T.routeMatcher('/user/list-content/edit/:_id'),
                 params = route.parse(window.location.pathname);
+            console.log('start1')
             this.props.getListContent(params._id, data => {
+                console.log('ts')
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
+                    console.log()
                     const { _id = 'new', title = '', image = '/img/avatar.jpg', abstract } = data.item;
                     this.itemTitle.value(title);
                     this.itemAbstract.value(abstract);
@@ -73,7 +77,13 @@ class ListContentEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
-        const item = this.props.component.listContent && this.props.component.listContent[0] || {};
+        let item;
+        item = this.props.component.listContent ? this.props.component.listContent : [];
+        console.log('item', item)
+        item = item.find(item => item._id === this.state._id)
+        console.log('d', this.props.component.listContent)
+        // item = item.find(item => item._id === this.state._id);
+        console.log('d', item)
         const table = renderTable({
             getDataSource: () => item && item.items || [],
             renderHead: () => (

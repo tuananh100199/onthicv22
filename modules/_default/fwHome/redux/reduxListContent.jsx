@@ -4,13 +4,14 @@ import T from 'view/js/common';
 const ListContentGetAll = 'ListContentGetAll';
 const ListContentUpdate = 'ListContentUpdate';
 
-export default function listContentReducer(state = null, data) {
+export default function listContentReducer(state = {}, data) {
     switch (data.type) {
         case ListContentGetAll:
             return Object.assign({}, state, { list: data.list });
 
         case ListContentUpdate:
             state = state && state.list ? state.list.slice() : { list: [] };
+            console.log(state)
             for (let i = 0; i < state.length; i++) {
                 if (state[i]._id == data.item._id) {
                     state[i] = data.item;
@@ -18,6 +19,7 @@ export default function listContentReducer(state = null, data) {
                 }
             }
             return state;
+
 
         default:
             return state;
@@ -46,7 +48,11 @@ export function getListContent(_id, done) {
             T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
             console.error(`GET: ${url}. ${data.error}`);
         } else {
-            dispatch({ type: ListContentUpdate, item: data.item });
+            console.log('s')
+            dispatch(getListContentAll());
+            console.log(done, 'done')
+            dispatch({ type: ListContentUpdate, item: data.item }); // await
+
             done && done(data);
         }
     });
