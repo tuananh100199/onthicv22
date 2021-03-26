@@ -126,12 +126,6 @@ export function deleteCourse(_id) {
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
-const texts = {
-    getCourseInPageByUserError: 'Lấy danh sách khóa học bị lỗi!',
-    getCourseByUserError: 'Lấy khóa học bị lỗi!',
-    getCourseFeedError: 'Lấy new feed bị lỗi!',
-};
-
 export function getCourseInPageByUser(pageNumber, pageSize, done) {
     return dispatch => {
         const url = '/course/page/' + pageNumber + '/' + pageSize;
