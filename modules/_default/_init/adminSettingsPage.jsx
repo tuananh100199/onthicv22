@@ -2,12 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { saveSystemState } from './reduxSystem';
 import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
+
 class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready();
         let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
-        this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
         this.systemAddress.value(address);
         this.systemEmail.value(email);
         this.systemMobile.value(mobile);
@@ -35,7 +36,7 @@ class SettingsPage extends AdminPage {
             instagram: this.systemInstagram.value(),
         });
     }
-    
+
     changePassword = () => {
         const emailPassword1 = this.emailPassword1.value(),
             emailPassword2 = this.emailPassword2.value();
@@ -51,7 +52,7 @@ class SettingsPage extends AdminPage {
         } else {
             this.props.saveSystemState({ password: emailPassword1 });
             this.emailPassword1.value(''),
-            this.emailPassword2.value('');
+                this.emailPassword2.value('');
         }
     }
 
@@ -63,26 +64,26 @@ class SettingsPage extends AdminPage {
             title: 'Cài đặt hệ thống',
             breadcrumb: ['Thông tin hệ thống'],
             content: <>
-               <div className='row'>
+                <div className='row'>
                     <div className='col-md-6'>
                         <div className='tile'>
                             <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
-                                <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' defaultValue='' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemEmail = e} label='Email' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' defaultValue='' readOnly={readOnly}/>
-                                <FormTextBox ref={e => this.systemFax = e} label='Fax' defaultValue='' readOnly={readOnly}/>
-                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' defaultValue='' readOnly={readOnly}/>
-                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' defaultValue='' readOnly={readOnly}/>
-                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' defaultValue='' readOnly={readOnly}/>
-                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemFax = e} label='Fax' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' defaultValue='' readOnly={readOnly} />
                             </div>
-                            {!readOnly ? 
-                            <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
-                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            {!readOnly ?
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
+                                        <i className='fa fa-fw fa-lg fa-save' /> Lưu
                                 </button>
-                            </div> : null }
+                                </div> : null}
                         </div>
                     </div>
 
@@ -90,29 +91,29 @@ class SettingsPage extends AdminPage {
                         <div className='tile'>
                             <h3 className='tile-title'>Thay đổi mật khẩu</h3>
                             <div className='tile-body'>
-                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' defaultValue='' autoComplete='new-password' readOnly={readOnly}/>
-                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' defaultValue='' autoComplete='new-password' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' defaultValue='' autoComplete='new-password' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' defaultValue='' autoComplete='new-password' readOnly={readOnly} />
                             </div>
-                            {!readOnly ? 
-                            <div className='tile-footer'>
-                                <div className='row'>
-                                    <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                        <button className='btn btn-primary' type='button' onClick={this.changePassword}>
-                                            <i className='fa fa-fw fa-lg fa-check-circle' />Thay đổi mật khẩu
+                            {!readOnly ?
+                                <div className='tile-footer'>
+                                    <div className='row'>
+                                        <div className='col-md-12' style={{ textAlign: 'right' }}>
+                                            <button className='btn btn-primary' type='button' onClick={this.changePassword}>
+                                                <i className='fa fa-fw fa-lg fa-check-circle' />Thay đổi mật khẩu
                                         </button>
+                                        </div>
                                     </div>
-                                </div>
-                            </div> : null }
+                                </div> : null}
                         </div>
 
                         <div className='tile'>
                             <h3 className='tile-title'>Hình ảnh</h3>
                             <div className='tile-body'>
                                 <div className='tile-body'>
-                                    <FormImageBox ref={e => this.systemLogo = e}  label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly}/>
-                                    <FormImageBox ref={e => this.systemFooter = e}  label='Hình nền cuối trang web' uploadType='SettingImage' image={this.state.footer} readOnly={readOnly}/>
-                                    <FormImageBox ref={e => this.systemContact = e}  label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly}/>
-                                    <FormImageBox ref={e => this.systemSubscribe = e}  label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly}/>
+                                    <FormImageBox ref={e => this.systemLogo = e} label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly} />
+                                    <FormImageBox ref={e => this.systemFooter = e} label='Hình nền cuối trang web' uploadType='SettingImage' image={this.state.footer} readOnly={readOnly} />
+                                    <FormImageBox ref={e => this.systemContact = e} label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly} />
+                                    <FormImageBox ref={e => this.systemSubscribe = e} label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly} />
                                 </div>
                             </div>
                         </div>

@@ -43,8 +43,8 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
-                    result.list = error ? [] : items;
+                model.find(condition).sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                    result.list = error ? [] : list;
                     done(error, result);
                 });
             }
@@ -56,9 +56,12 @@ module.exports = app => {
             model.findById(condition).populate('courseType').populate('subjects').exec(done)
             : model.findOne(condition).populate('courseType').populate('subjects').exec(done),
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset),
+        update: (_id, $set, $unset, done) => {
+            $set.modifiedDate = new Date();
+            done ?
+                model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
+                model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset);
+        },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

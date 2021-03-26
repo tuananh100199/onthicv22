@@ -1,8 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import SectionCourseList from './sectionCourseList';
-import SectionCourse from './sectionCourse';
+// import SectionCourseList from './sectionCourseList';
+// import SectionCourse from './sectionCourse';
 import course from './redux';
 
 export default {
@@ -24,16 +24,16 @@ export default {
             path: '/user/course',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
-        // {
-        //     path: '/user/course/:_id',
-        //     component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
-        // },
+        {
+            path: '/user/course/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
+        },
         // {
         //     path: '/course/:_id',
         //     component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail') })
         // },
     ],
     Section: {
-        SectionCourse, SectionCourseList,
+        // SectionCourse, SectionCourseList,
     }
 };
