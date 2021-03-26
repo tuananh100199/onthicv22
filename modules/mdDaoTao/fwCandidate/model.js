@@ -6,7 +6,7 @@ module.exports = app => {
         phone: String,
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         staff: { type: app.db.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
-        state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'ChoKhoa'], default: 'MoiDangKy' },
+        state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'], default: 'MoiDangKy' },
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                    // Ngày cập nhật cuối cùng
     });
