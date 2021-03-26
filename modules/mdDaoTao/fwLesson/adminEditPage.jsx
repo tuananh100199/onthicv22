@@ -90,8 +90,9 @@ class QuestionModal extends AdminModal {
         } else if (data.trueAnswer == null) {
             T.notify('Đáp án bị trống!', 'danger');
         } else {
-            this.state._id ? this.props.update(this.props.lessonId, this.state._id, data) : this.props.create(this.props.lessonId, data);
-            this.hide();
+            this.state._id ?
+                this.props.update(this.props.lessonId, this.state._id, data, this.hide) :
+                this.props.create(this.props.lessonId, data, this.hide);
         }
     }
 
@@ -139,7 +140,7 @@ class adminEditPage extends AdminPage {
     componentDidMount() {
         T.ready(adminPageLink, () => {
             let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/bai-hoc/edit/:_id').parse(url);
+                params = T.routeMatcher('/user/dao-tao/bai-hoc/:_id').parse(url);
             if (params._id) {
                 this.props.getLesson(params._id, data => {
                     if (data.error) {
@@ -200,22 +201,7 @@ class adminEditPage extends AdminPage {
                     <TableCell type='link' content={item.link} url={item.link} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateLessonVideo(this.state._id, item._id, { active })} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, true)}>
-                                <i className='fa fa-lg fa-arrow-up' />
-                            </a> : null}
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapVideo(e, item, false)}>
-                                <i className='fa fa-lg fa-arrow-down' />
-                            </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.showVideoModal(e, item)}>
-                                <i className='fa fa-lg fa-edit' />
-                            </a>
-                            {permission.write ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteVideo(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showVideoModal} onSwap={this.swapVideo} onDelete={this.deleteVideo} />
                 </tr>),
         });
 
@@ -235,22 +221,7 @@ class adminEditPage extends AdminPage {
                     <TableCell type='link' content={item.title} onClick={e => this.showQuestionModal(e, item)} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateLessonQuestion(this.state._id, item._id, { active })} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, true)}>
-                                <i className='fa fa-lg fa-arrow-up' />
-                            </a> : null}
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, false)}>
-                                <i className='fa fa-lg fa-arrow-down' />
-                            </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.showQuestionModal(e, item)}>
-                                <i className='fa fa-lg fa-edit' />
-                            </a>
-                            {permission.write ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteQuestion(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showQuestionModal} onSwap={this.swapQuestion} onDelete={this.deleteQuestion} />
                 </tr>),
         });
 

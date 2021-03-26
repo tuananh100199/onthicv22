@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonPage, createLesson, updateLesson, deleteLesson } from './redux';
-import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class LessonModal extends AdminModal {
     componentDidMount() {
@@ -20,7 +19,7 @@ class LessonModal extends AdminModal {
         } else {
             this.props.createLesson(newData, data => {
                 this.hide();
-                data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/edit/' + data.item._id);
+                data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/' + data.item._id);
             });
         }
     }
@@ -45,40 +44,28 @@ class LessonPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('lesson');
-        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.lesson && this.props.lesson.page ?
-            this.props.lesson.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
-        let table = 'Không có bài học mới!';
-        if (list && list.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Tiêu đề</th>
-                            {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {list.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><Link to={'/user/dao-tao/bai-hoc/edit/' + item._id}>{item.title}</Link></td>
-                                {permission.write || permission.delete ? <td>
-                                    <div className='btn-group'>
-                                        {permission.write ?
-                                            <Link to={'/user/dao-tao/bai-hoc/edit/' + item._id} className='btn btn-primary'>
-                                                <i className='fa fa-lg fa-edit' />
-                                            </Link> : null}
-                                        {permission.delete ?
-                                            <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>
-                                                <i className='fa fa-lg fa-trash' />
-                                            </a> : null}
-                                    </div>
-                                </td> : null}
-                            </tr>))}
-                    </tbody>
-                </table>);
-        }
+        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.lesson && this.props.lesson.page ?
+            this.props.lesson.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+
+        const table = renderTable({
+            getDataSource: () => this.props.lesson && this.props.lesson.page && this.props.lesson.page.list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tiêu đề</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số video</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số câu hỏi</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                    <TableCell type='link' content={item.title} url={'/user/dao-tao/bai-hoc/' + item._id} />
+                    <TableCell type='number' content={item.videos ? item.videos.length : 0} />
+                    <TableCell type='number' content={item.questions ? item.questions.length : 0} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/dao-tao/bai-hoc/' + item._id} onDelete={this.delete} />
+                </tr>),
+        });
 
         return this.renderPage({
             icon: 'fa fa-book',

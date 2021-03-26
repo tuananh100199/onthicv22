@@ -364,7 +364,7 @@ export class AdminModal extends React.Component {
     }
 
     renderModal = ({ title, body, size }) => {
-        const { readOnly } = this.props;
+        const { readOnly = false } = this.props;
         return (
             <div className='modal fade' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
                 <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>

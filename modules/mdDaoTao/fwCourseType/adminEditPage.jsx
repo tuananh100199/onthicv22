@@ -20,9 +20,9 @@ class CourseTypeModal extends AdminModal {
             T.notify('Tên cơ sở bị trống!', 'danger');
             $(this.subjectSelect).focus();
         } else {
-            const subjectList = this.props.item.subjectList.map(item => item._id);
-            subjectList.push(changeItem);
-            this.props.updateCourseType(this.props.item._id, { subjectList }, () => {
+            const subjects = this.props.item.subjects.map(item => item._id);
+            subjects.push(changeItem);
+            this.props.updateCourseType(this.props.item._id, { subjects }, () => {
                 T.notify('Thêm môn học thành công', 'success');
                 this.hide();
             });
@@ -35,7 +35,7 @@ class CourseTypeModal extends AdminModal {
             <Select ref={e => this.subjectSelect = e} displayLabel={true}
                 adapter={{
                     ...ajaxSelectSubject, processResults: response =>
-                        ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjectList.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+                        ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjects.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
                 }} label='Môn học' />
     });
 }
@@ -69,10 +69,10 @@ class CourseTypeEditPage extends AdminPage {
     remove = (e, index) => {
         T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
             if (isConfirm) {
-                let subjectList = this.props.courseType.item.subjectList.map(item => item._id) || [];
-                subjectList.splice(index, 1);
-                if (subjectList.length == 0) subjectList = 'empty';
-                this.props.updateCourseType(this.state._id, { subjectList }, () => {
+                let subjects = this.props.courseType.item.subjects.map(item => item._id) || [];
+                subjects.splice(index, 1);
+                if (subjects.length == 0) subjects = 'empty';
+                this.props.updateCourseType(this.state._id, { subjects }, () => {
                     T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800);
                 });
             }
@@ -93,9 +93,9 @@ class CourseTypeEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('course-type'), readOnly = !permission.write;
-        const item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjectList: [] };
+        const item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjects: [] };
         let table = 'Không có môn học!';
-        if (item.subjectList && item.subjectList.length)
+        if (item.subjects && item.subjects.length)
             table = (
                 <table className='table table-hover table-bordered'>
                     <thead>
@@ -106,7 +106,7 @@ class CourseTypeEditPage extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {item.subjectList.sort((a, b) => a.title.localeCompare(b.title)).map((item, index) => (
+                        {item.subjects.sort((a, b) => a.title.localeCompare(b.title)).map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>

@@ -72,8 +72,8 @@ module.exports = (app) => {
         }),
 
         update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

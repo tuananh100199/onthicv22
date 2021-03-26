@@ -18,12 +18,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/dao-tao/bai-hoc/edit/:_id',
+            path: '/user/dao-tao/bai-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
-        },
-        {
-            path: '/user/dao-tao/bai-hoc/view/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./lessonDetail') })
         },
     ],
 };
