@@ -19,7 +19,7 @@ class StudentPage extends AdminPage {
             title: 'Học viên',
             breadcrumb: ['Học viên'],
             content: <>
-                TODO: Học viên
+                TODO: Học viên (course != null)
             </>,
             // onCreate: permission.write ? this.create : null,
         });
