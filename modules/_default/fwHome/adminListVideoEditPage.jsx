@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListVideoItem, updateListVideo } from './redux/reduxListVideo';
-import { getAllVideos, createVideo, updateVideo, deleteVideo, swapVideo } from './redux/reduxVideo';
+import { getVideoAll, createVideo, updateVideo, deleteVideo, swapVideo } from './redux/reduxVideo';
 import { AdminModal, FormTextBox, TableCell, renderTable, AdminPage, FormEditor, FormImageBox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 
@@ -69,7 +69,7 @@ class ListVideoEditPage extends AdminPage {
                     this.itemTitle.focus();
                     this.itemTitle.value(data.item.title);
                     this.itemHeight.value(data.item.height);
-                    this.props.getAllVideos({ listVideoId: data.item._id }, (items) => {
+                    this.props.getVideoAll({ listVideoId: data.item._id }, (items) => {
                         this.setState({ item: data.item, items });
                     })
                 } else {
@@ -247,5 +247,5 @@ class ListVideoEditPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system, video: state.video });
-const mapActionsToProps = { getListVideoItem, updateListVideo, getAllVideos, createVideo, updateVideo, deleteVideo, swapVideo };
+const mapActionsToProps = { getListVideoItem, updateListVideo, getVideoAll, createVideo, updateVideo, deleteVideo, swapVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoEditPage);
