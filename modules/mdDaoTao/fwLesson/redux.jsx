@@ -47,8 +47,8 @@ export function getLessonPage(pageNumber, pageSize, searchText, done) {
 
 export function getLesson(_id, done) {
     return dispatch => {
-        const url = '/api/lesson/item/' + _id;
-        T.get(url, data => {
+        const url = '/api/lesson';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

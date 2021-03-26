@@ -118,7 +118,7 @@ class AdminEditPage extends AdminPage {
     };
 
     showLessonModal = (e) => e.preventDefault() || this.modalLesson.show();
-    showLesson = (e, lesson) => e.preventDefault() || window.open('/user/dao-tao/bai-hoc/edit/' + lesson._id, '_blank');;
+    showLesson = (e, lesson) => e.preventDefault() || window.open('/user/dao-tao/bai-hoc/' + lesson._id, '_blank');;
     deleteLesson = (e, lesson) => e.preventDefault() || T.confirm('Xóa Bài học', `Bạn có chắc bạn muốn xóa bài học <strong>${lesson.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteSubjectLesson(this.state._id, lesson._id, () => {
             T.alert('Xoá bài học thành công!', 'success', false, 1000)
