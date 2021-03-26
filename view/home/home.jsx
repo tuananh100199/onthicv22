@@ -26,10 +26,10 @@ import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
-import fwStudent from 'modules/mdDaoTao/fwStudent';
+import fwCandidate from 'modules/mdDaoTao/fwCandidate';
 
 window.T = T;
-const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwNews, fwCourse, fwDivision, fwCourseType, fwStudent];
+const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwNews, fwCourse, fwDivision, fwCourseType, fwCandidate];
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

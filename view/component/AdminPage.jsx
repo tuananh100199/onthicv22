@@ -264,11 +264,9 @@ export class FormSelect extends React.Component {
         return (
             <div className={'form-group ' + className} style={style}>
                 {label ? <label>{label}</label> : null}
-                <label style={{ width: '100%', marginBottom: '0' }}>
-                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
-                        {/* <optgroup label={'Lựa chọn ' + label} /> */}
-                    </select>
-                </label>
+                <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
+                    {/* <optgroup label={'Lựa chọn ' + label} /> */}
+                </select>
             </div>
         )
     }
