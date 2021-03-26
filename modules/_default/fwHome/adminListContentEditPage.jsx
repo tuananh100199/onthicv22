@@ -123,7 +123,7 @@ class ListContentEditPage extends AdminPage {
     render() {
         const permission = this.getUserPermission('component');
         let item = this.props.component.listContent || [];
-        item = item.find(item => item._id === this.state._id);
+        item = item && item.find(item => item._id === this.state._id);
         const table = renderTable({
             getDataSource: () => item && item.items || [],
             renderHead: () => (
