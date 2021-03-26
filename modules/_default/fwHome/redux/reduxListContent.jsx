@@ -10,7 +10,8 @@ export default function listContentReducer(state = null, data) {
             return Object.assign({}, state, { list: data.list });
 
         case ListContentUpdate:
-            state = (state || []).slice();
+            state = [];
+            state = state.slice();
             if (state.length) {
                 for (let i = 0; i < state.length; i++) {
                     if (state[i]._id == data.item._id) {
@@ -71,7 +72,8 @@ export function createListContent(newData, done) {
 
 export function updateListContent(_id, changes, done) {
     return dispatch => {
-        const url = 'api/list-content';
+        console.log(changes, 's')
+        const url = `/api/list-content`;
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger');

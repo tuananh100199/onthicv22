@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListContent, updateListContent } from './redux/reduxListContent';
-import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormImageBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
 import { ajaxSelectContent } from 'modules/_default/fwHome/redux/reduxContent';
 import { Link } from 'react-router-dom';
 
@@ -10,14 +10,14 @@ class ListContentModal extends AdminModal {
         $(document).ready(() => this.onShown(() => { }));
     }
 
-    onShow = (item, index) => this.setState({ item, index }, () => item ? this.itemContent.value(item.title) : this.itemContent.value(''));
+    onShow = ([index, item]) => this.setState({ item, index }, () => item ? this.itemContent.value({ id: item._id, text: item.title }) : this.itemContent.value(''));
 
     onSubmit = () => {
-        const content = this.itemContent.value(), items = this.props.item.items;
+        const content = this.itemContent.value(), items = this.props.item.items.map(item => item._id);
         if (content == '') {
             T.notify('Bài viết bị trống!', 'danger');
-            this.itemContent.focus();
         } else {
+            console.log(this.state, 'd')
             this.state.item ? items.splice(this.state.index, 1, content) : items.push(content);
             this.props.update(this.props.item._id, { items }, () => {
                 T.notify('Cập nhật danh sách bài viết thành công', 'success');
@@ -53,35 +53,13 @@ class ListContentEditPage extends AdminPage {
             });
         });
     }
-    edit = (e, [index, item]) => e.preventDefault() || this.modal.show(item, index);
-    remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm => {
-        if (isConfirm) {
-            let itemList = this.props.component.listContent && this.props.component.listContent[0] || {};
-            let items = itemList.items.map(item => item._id) || [];
-            items.splice(index, 1);
-            if (items.length == 0) items = 'empty';
-            this.props.updateListContent(this.state._id, { items }, () => {
-                T.alert('Xoá bài viết trong danh sách thành công!', 'error', false, 800);
-            });
-        }
-    })
-
-    swap = (e, [index, item], isMoveUp) => {
-        let itemList = this.props.component.listContent && this.props.component.listContent[0] || {};
-        let items = itemList.items.map(item => item._id) || [];
-        if (items.length == 1 || (index == 0 && isMoveUp) || (index == items.length - 1 && !isMoveUp)) {
-            T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
-        } else {
-            const temp = items[isMoveUp ? index - 1 : index - 1];
-            items[isMoveUp ? index - 1 : index - 1] = items[index];
-            items[index] = temp;
-            console.log(items, 's')
-            this.props.updateListContent(this.state._id, { items }, () => {
-                T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info');
-            });
-        }
-        e.preventDefault();
-    };
+    edit = (e, [index, item]) => {
+        console.log('inde', [index, item])
+        e.preventDefault() || this.modal.show([index, item]);
+    }
+    remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm =>
+        isConfirm && this.props.updateListContent(this.state._id, index, () => T.alert('Xoá bài viết trong danh sách thành công!', 'error', false, 800)));
+    swap = (e, [index, item], isMoveUp) => e.preventDefault() || this.props.updateListContent(this.state._id, { index, isMoveUp }, () => T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info'));
 
     save = () => {
         const changes = {
