@@ -29,6 +29,7 @@ module.exports = (app) => {
             contact: '/img/contact.jpg',
             subscribe: '/img/subcribe.jpg',
             facebook: 'https://www.facebook.com',
+            fax:'',
             youtube: '',
             twitter: '',
             instagram: '',
