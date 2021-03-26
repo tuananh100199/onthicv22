@@ -18,12 +18,14 @@ module.exports = app => {
         thoiGianThiTotNghiepDuKien: { type: Date, default: Date.now },
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
-        admin: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'User' }], default: [] },    // Quản trị viên khoá học
+        admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khoá học
 
         groups: [{
             supervisor: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
             student: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }], default: [] },
         }],
+
+        lock: { type: Boolean, default: false },
     });
     const model = app.db.model('Course', schema);
 

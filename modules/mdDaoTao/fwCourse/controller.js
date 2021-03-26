@@ -5,7 +5,7 @@ module.exports = (app) => {
             4040: { title: 'Khoá học', link: '/user/course' },
         },
     };
-    app.permission.add({ name: 'course:read', menu }, { name: 'course:write' }, { name: 'course:delete' });
+    app.permission.add({ name: 'course:read', menu }, { name: 'course:write' }, { name: 'course:delete' }, { name: 'course:lock' });
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
@@ -31,10 +31,12 @@ module.exports = (app) => {
     app.put('/api/course', app.permission.check('course:write'), (req, res) => {
         const $set = req.body.changes;
         if ($set && $set.subjects && $set.subjects === 'empty') $set.subjects = [];
+        if ($set && $set.groups && $set.groups === 'empty') $set.groups = [];
+        if ($set && $set.admins && $set.admins === 'empty') $set.admins = [];
         app.model.course.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 
-    app.delete('/api/course', app.permission.check('course:write'), (req, res) => {
+    app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
         app.model.course.delete(req.body._id, (error) => res.send({ error }));
     });
 
