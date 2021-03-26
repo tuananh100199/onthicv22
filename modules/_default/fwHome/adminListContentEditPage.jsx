@@ -30,77 +30,6 @@ class ListContentModal extends AdminModal {
         body: <FormSelect ref={e => this.itemContent = e} label='Bài viết' data={ajaxSelectContent} readOnly={this.props.readOnly} />
     });
 }
-// class ContentModal extends React.Component {
-//     // state = { item: null };
-//     // modal = React.createRef();
-//     // contentSelect = React.createRef();
-
-//     // show = (item = null) => {
-//     //     this.setState({ item }, () => {
-//     //         if (item) {
-//     //             this.contentSelect.current.val({ id: item._id, text: item.title });
-//     //         } else {
-//     //             this.contentSelect.current.val('');
-//     //         }
-//     //         $(this.modal.current).modal('show');
-//     //     });
-//     // }
-
-//     save = (event) => {
-//         const changeItem = this.contentSelect.current.val();
-//         const listItem = this.props.item.items;
-//         if (this.state.item && this.state.item._id) {
-//             // Update
-//             for (index = 0; index < listItem.length; index++) {
-//                 if (this.state.item._id == listItem[index]._id) {
-//                     break;
-//                 }
-//             }
-//             listItem.splice(index, 1, changeItem);
-//         } else {
-//             // Create
-//             listItem.push(changeItem);
-//         }
-
-//         if (this.props.item && this.props.item._id) {
-//             this.props.updateListContent(this.props.item._id, { items: listItem }, () => {
-//                 T.notify('Cập nhật danh sách bài viết thành công', 'success');
-//                 $(this.modal.current).modal('hide');
-//             });
-//         }
-//         event.preventDefault();
-//     }
-
-//     render() {
-//         return (
-//             <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-//                 <div className='modal-dialog' role='document'>
-//                     <div className='modal-content'>
-//                         <div className='modal-header'>
-//                             <h5 className='modal-title'>Bài viết</h5>
-//                             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-//                                 <span aria-hidden='true'>&times;</span>
-//                             </button>
-//                         </div>
-
-//                         <div className='modal-body'>
-//                             <div className='form-group'>
-//                                 <Select ref={this.contentSelect} displayLabel={true} adapter={ajaxSelectContent} label='Bài viết' />
-//                             </div>
-//                         </div>
-
-//                         <div className='modal-footer'>
-//                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-//                             <button type='button' className='btn btn-primary' onClick={this.save}>
-//                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
-//                             </button>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         );
-//     }
-// }
 
 class ListContentEditPage extends AdminPage {
     state = {};
@@ -178,16 +107,14 @@ class ListContentEditPage extends AdminPage {
 
     save = () => {
         const changes = {
-            title: $('#listContentTitle').val(),
-            abstract: $('#listContentAbstract').val(),
-            items: this.state.item.items
+            title: this.itemTitle.value(),
+            abstract: this.itemAbstract.value()
         };
-
         if (changes.title == '') {
             T.notify('Tên danh sách bị trống!', 'danger');
-            $('#listContentTitle').focus();
+            this.itemTitle.focus();
         } else {
-            this.props.updateListContent(this.state.item._id, changes, () => {
+            this.props.updateListContent(this.state._id, changes, () => {
                 T.notify('Cập nhật danh sách bài viết thành công!', 'success');
             });
         }
@@ -195,11 +122,10 @@ class ListContentEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
-        let item = this.props.component.listContent && this.props.component.listContent.find(item => item._id == this.state._id);
-        console.log("sss", this.props.component.listContent)
-        // item = item.items || [];
+        let item = this.props.component.listContent || [];
+        item = item.find(item => item._id === this.state._id);
         const table = renderTable({
-            getDataSource: () => item,
+            getDataSource: () => item && item.items || [],
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -213,31 +139,6 @@ class ListContentEditPage extends AdminPage {
                     <TableCell type='buttons' content={item} permission={permission} onSwap={e => this.swap(e, index, isMoveUp)} onEdit={() => this.modal.show(item, index)} onDelete={e => this.remove(e, index)} />
                 </tr>),
         });
-        // const item = this.props.listContent && this.props.listContent.item ? this.props.listContent.item : { items: [] };
-
-        //             {(item && (item.items || [])).map((item, index) => (
-        //                     {readOnly ? null :
-        //                         <td>
-        //                             <div className='btn-group'>
-        //                                 <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, true)}>
-        //                                     <i className='fa fa-lg fa-arrow-up' />
-        //                                 </a>
-        //                                 <a className='btn btn-success' href='#' onClick={e => this.swap(e, index, false)}>
-        //                                     <i className='fa fa-lg fa-arrow-down' />
-        //                                 </a>
-        //                                 <a href='#' className='btn btn-primary' onClick={e => this.modal.show(item,index)}>
-        //                                     <i className='fa fa-lg fa-edit' />
-        //                                 </a>
-        //                                 <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
-        //                                     <i className='fa fa-lg fa-trash' />
-        //                                 </a>
-        //                             </div>
-        //                         </td>}
-        //                 </tr>
-        //             ))}
-        //         </tbody>
-        //     </table>
-        // ) : <p>Không có bài viết!</p>
         return this.renderPage({
             icon: 'fa fa-bar-chart',
             title: 'Danh sách bài viết: ' + (this.state.title || '...'),
