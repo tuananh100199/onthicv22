@@ -14,10 +14,8 @@ class ListContentModal extends AdminModal {
 
     onSubmit = () => {
         const content = this.itemContent.value(), items = this.props.item.items.map(item => item._id);
-        if (content == '') {
-            T.notify('Bài viết bị trống!', 'danger');
-        } else {
-            console.log(this.state, 'd')
+        if (!content) T.notify('Bài viết bị trống!', 'danger');
+        else {
             this.state.item ? items.splice(this.state.index, 1, content) : items.push(content);
             this.props.update(this.props.item._id, { items }, () => {
                 T.notify('Cập nhật danh sách bài viết thành công', 'success');
@@ -41,22 +39,19 @@ class ListContentEditPage extends AdminPage {
                 if (data.error) {
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    const { _id = 'new', title = '', image = '/img/avatar.jpg', abstract, items } = data.item;
+                    const { _id = 'new', title = '', image = '/img/avatar.jpg', abstract } = data.item;
                     this.itemTitle.value(title);
                     this.itemAbstract.value(abstract);
                     this.imageBox.setData('listContent:' + _id, image);
                     this.itemTitle.focus();
-                    this.setState({ _id, title, image, items });
+                    this.setState({ _id, title, image });
                 } else {
                     this.props.history.push('/user/component');
                 }
             });
         });
     }
-    edit = (e, [index, item]) => {
-        console.log('inde', [index, item])
-        e.preventDefault() || this.modal.show([index, item]);
-    }
+    edit = (e, [index, item]) => e.preventDefault() || this.modal.show([index, item]);
     remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm =>
         isConfirm && this.props.updateListContent(this.state._id, index, () => T.alert('Xoá bài viết trong danh sách thành công!', 'error', false, 800)));
     swap = (e, [index, item], isMoveUp) => e.preventDefault() || this.props.updateListContent(this.state._id, { index, isMoveUp }, () => T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info'));
@@ -78,7 +73,7 @@ class ListContentEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
-        let item = this.props.component.listContent && this.props.component.listContent[0] || {};
+        const item = this.props.component.listContent && this.props.component.listContent[0] || {};
         const table = renderTable({
             getDataSource: () => item && item.items || [],
             renderHead: () => (

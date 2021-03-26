@@ -20,17 +20,15 @@ module.exports = app => {
     });
 
     app.put('/api/list-content', app.permission.check('component:write'), (req, res) => {
-        console.log(req.body)
         if (!isNaN(req.body.changes)) { //remove content from items
-            const index = req.body.changes;
             app.model.listContent.get(req.body._id, (error, item) => {
                 if (error) {
                     res.send({ error });
                 } else {
-                    item.items.splice(index, 1);
+                    item.items.splice(req.body.changes, 1);
                     item.save();
-                    const $set = item;
-                    if (!$set.items.length) {
+                    if (!item.items.length) {
+                        const $set = item;
                         $set.items = [];
                         app.model.listContent.update(req.body._id, $set, undefined)
                     }
@@ -39,18 +37,13 @@ module.exports = app => {
             });
         }
         else if (req.body.changes.index) { //swap content in items
-            console.log('hdhsd', req.body.changes)
             const { index, isMoveUp } = req.body.changes;
-            console.log('h', index, isMoveUp)
             app.model.listContent.get(req.body._id, (error, item) => {
                 if (error) {
                     res.send({ error });
                 } else {
-                    console.log('else', index, isMoveUp)
                     const temp = item.items[index];
-                    console.log('else', temp)
                     const newIndex = parseInt(index) + (isMoveUp == 'true' ? -1 : +1);
-                    console.log('else', newIndex)
                     if (0 <= index && index < item.items.length && 0 <= newIndex && newIndex < item.items.length) {
                         item.items.splice(index, 1);
                         item.items.splice(newIndex, 0, temp);
@@ -60,10 +53,6 @@ module.exports = app => {
                 }
             });
         } else app.model.listContent.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
-        // const $set = req.body.changes; 
-        // console.log("s")
-        // if ($set && $set.items && $set.items === 'empty') $set.items = [];
-        // app.model.listContent.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/list-content', app.permission.check('component:delete'), (req, res) => {

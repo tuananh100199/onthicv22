@@ -72,13 +72,11 @@ export function createListContent(newData, done) {
 
 export function updateListContent(_id, changes, done) {
     return dispatch => {
-        console.log(changes, 's')
         const url = `/api/list-content`;
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
-                console.log('s');
                 done && done(data.error);
             } else {
                 dispatch({ type: ListContentUpdate, item: data.item });
