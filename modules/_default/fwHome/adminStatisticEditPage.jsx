@@ -102,14 +102,16 @@ class StatisticEditPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: '80%' }}>Tiêu đề</th>
-                    <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số lượng</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={this.editItem} />
+                    <TableCell type='number' content={item.number} />
                     <TableCell type='image' content={item.image || '/img/avatar.jpg'} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStatisticItem(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swapItem} onEdit={this.editItem} onDelete={this.deleteItem} />
