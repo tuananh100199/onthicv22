@@ -2,6 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import candidate from './redux';
 import SectionAdvisoryForm from './sectionAdvisoryForm';
 
 export default {
@@ -14,12 +15,13 @@ export default {
         };
     },
     redux: {
+        candidate
     },
     routes: [
-        // {
-        //     path: '/user/candidate',
-        //     component: Loadable({ loading: Loading, loader: () => import('./adminCandidatePage') })
-        // },
+        {
+            path: '/user/candidate',
+            component: Loadable({ loading: Loading, loader: () => import('./adminCandidatePage') })
+        },
         // {
         //     path: '/user/student',
         //     component: Loadable({ loading: Loading, loader: () => import('./adminStudentPage') })
