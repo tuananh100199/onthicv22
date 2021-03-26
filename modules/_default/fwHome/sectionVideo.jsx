@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getVideo } from './redux/reduxVideo';
+import { homeGetVideo } from './redux/reduxVideo';
 
 class SectionVideo extends React.Component {
     state = {};
 
     componentDidMount() {
         if (this.props.viewId) {
-            this.props.getVideo(this.props.viewId, item => {
+            this.props.homeGetVideo(this.props.viewId, item => {
                 if (item) {
                     this.setState({ title: item.title, link: item.link, image: item.image });
                     const done = () => {
@@ -57,5 +57,5 @@ class SectionVideo extends React.Component {
 }
 
 const mapStateToProps = state => ({ component: state.component });
-const mapActionsToProps = { getVideo };
+const mapActionsToProps = { homeGetVideo };
 export default connect(mapStateToProps, mapActionsToProps)(SectionVideo);
