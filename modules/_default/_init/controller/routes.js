@@ -29,7 +29,7 @@ module.exports = (app) => {
             contact: '/img/contact.jpg',
             subscribe: '/img/subcribe.jpg',
             facebook: 'https://www.facebook.com',
-            fax:'',
+            fax: '',
             youtube: '',
             twitter: '',
             instagram: '',
@@ -160,7 +160,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/statistic', app.permission.check('statistic'), (req, res) => {
+    app.get('/api/statistic/dashboard', app.permission.check('statistic'), (req, res) => {
         app.model.user.count({}, (error1, numberOfUser) => {
             if (error1) {
                 res.send({ error1 })

@@ -4,13 +4,13 @@ import T from 'view/js/common';
 const ContentGetAll = 'Content:GetAll';
 const ContentUpdate = 'Content:Update';
 
-export default function contentReducer(state = null, data) {
+export default function contentReducer(state = {}, data) {
     switch (data.type) {
         case ContentGetAll:
             return Object.assign({}, state, { list: data.list });
 
         case ContentUpdate:
-            state = (state || []).slice();
+            state = state && state.list ? state.list.slice() : { list: [] };
             for (let i = 0; i < state.length; i++) {
                 if (state[i]._id == data.item._id) {
                     state[i] = data.item;

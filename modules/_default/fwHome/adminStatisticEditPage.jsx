@@ -67,6 +67,7 @@ class StatisticEditPage extends AdminPage {
             this.props.getStatistic(params._id, data => {
                 this.itemTitle.value(data.item.title);
                 this.itemDescription.html(data.item.description);
+                this.itemTitleVisible.value(data.item.titleVisible);
                 this.itemActive.value(data.item.active);
                 this.itemTitle.focus();
                 this.setState(data.item);
@@ -78,6 +79,7 @@ class StatisticEditPage extends AdminPage {
         this.props.updateStatistic(this.state._id, {
             title: this.itemTitle.value(),
             description: this.itemDescription.html(),
+            titleVisible: this.itemTitleVisible.value(),
             active: this.itemActive.value(),
         })
     };
@@ -87,10 +89,6 @@ class StatisticEditPage extends AdminPage {
     editItem = (e, item) => e.preventDefault() || this.modal.show(item);
 
     swapItem = (e, item, isMoveUp) => e.preventDefault() || this.props.swapStatisticItem(item._id, isMoveUp);
-
-    imageChanged = (data) => {
-        this.setState({ image: data.image });
-    };
 
     deleteItem = (e, item) => e.preventDefault() || T.confirm('Xóa thống kê', 'Bạn có chắc bạn muốn xóa thống kê này?', true, isConfirm =>
         isConfirm && this.props.deleteStatisticItem(item._id));
@@ -125,13 +123,14 @@ class StatisticEditPage extends AdminPage {
             content: (<>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>
-                    <div className='tile-body'>
-                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
-                        <FormEditor ref={e => this.itemDescription = e} label='Mô tả' readOnly={!permission.write} />
-                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={!permission.write} />
+                    <div className='tile-body row'>
+                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='col-md-6' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemTitleVisible = e} label='Hiển thị tiêu đề' className='col-md-3' readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' className='col-md-3' readOnly={!permission.write} />
+                        <FormEditor ref={e => this.itemDescription = e} label='Mô tả' className='col-md-12' style={{ height: '400px' }} readOnly={!permission.write} />
                     </div>
                     {permission.write &&
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <div style={{ textAlign: 'right' }}>
                             <button className='btn btn-primary' type='button' onClick={this.save}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
