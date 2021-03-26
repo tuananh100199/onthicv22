@@ -119,7 +119,7 @@ class ListContentEditPage extends AdminPage {
                     <div className='tile-body'>{table}</div>
                     {permission.write ?
                         <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button className='btn btn-success' type='button' onClick={e => this.modal.show()}>
+                            <button className='btn btn-success' type='button' onClick={e => this.modal.show([])}>
                                 <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                             </button>
                         </div> : null}
