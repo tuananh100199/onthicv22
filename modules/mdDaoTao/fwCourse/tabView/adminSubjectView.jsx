@@ -52,7 +52,7 @@ class AdminSubjectView extends React.Component {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/' + item._id} />
                     <TableCell type='number' content={item.lessons ? item.lessons.length : 0} />
                     <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeSubject(e, index)} />
                 </tr>),
