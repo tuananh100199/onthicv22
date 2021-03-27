@@ -19,15 +19,15 @@ export default class Dropdown extends React.Component {
     getSelectedItem = () => this.state.selectedItem ? this.state.selectedItem : {};
 
     render() {
-        let { className = '', menuStyle = {}, items = [], selectedItem = null } = this.props;
+        let { className = '', style = {}, menuStyle = {}, textStyle = {}, items = [], selectedItem = null } = this.props;
         if (items == null) items = [];
         className += ' dropdown-toggle';
         if (this.state.selectedItem) selectedItem = this.state.selectedItem;
         if (selectedItem == null) selectedItem = { value: '', text: '' };
 
         return (
-            <div className='dropdown' style={{ whiteSpace: 'nowrap', textDecoration: 'none', ...(this.props.style || {}) }}>
-                <a ref={e => this.element = e} className={className} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+            <div className='dropdown' style={{ whiteSpace: 'nowrap', ...style }}>
+                <a ref={e => this.element = e} className={className} style={{ textDecoration: 'none', ...textStyle }} href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                     {typeof selectedItem == 'string' && selectedItem != '' ? selectedItem : (selectedItem.text || this.props.text || this.props.emptyText || '')}
                 </a>
                 <div className='dropdown-menu' style={{ maxHeight: '85vh', overflowY: 'auto', ...menuStyle }}>

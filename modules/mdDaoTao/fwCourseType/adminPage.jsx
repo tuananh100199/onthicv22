@@ -53,5 +53,5 @@ class CourseTypePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { getCourseTypeInPage, createCourseType, updateCourseType, deleteCourseType };
+const mapActionsToProps = { getCourseTypePage, createCourseType, updateCourseType, deleteCourseType };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypePage);
