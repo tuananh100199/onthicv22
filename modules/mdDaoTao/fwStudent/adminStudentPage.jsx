@@ -38,8 +38,8 @@ class StudentPage extends AdminPage {
                     <TableCell type='link' content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.user && item.user.email} />
                     <TableCell type='text' content={T.mobileDisplay(item.user && item.user.phoneNumber)} />
-                    <TableCell type='text' content={item.courseType && item.courseType.title} />
-                    <TableCell type='text' content={item.course && item.course.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.course && item.course.title} />
                     <TableCell type='buttons' content={item} permission={permission} />
                 </tr>),
         });
