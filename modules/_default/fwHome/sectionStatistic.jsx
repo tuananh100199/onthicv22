@@ -35,10 +35,10 @@ class SectionStatistic extends React.Component {
     render() {
         const { title, titleVisible, description, items = [] } = this.state;
         const itemLength = items ? items.length : 0,
-            itemClassName = 'col-md-' + Math.round(12 / itemLength) + ' d-flex justify-content-center counter-wrap ftco-animate';
+            itemClassName = 'col-md-' + Math.round(12 / itemLength) + ' d-flex justify-content-center counter-wrap';
         return itemLength ? (
             <section className='ftco-section ftco-counter section-counter-class pb-5'>
-                <div className=' heading-section heading-section-white ftco-animate'>
+                <div className=' heading-section heading-section-white'>
                     {titleVisible ? <h2 className='text'>{title}</h2> : null}
                     {description ? <span className='subheading text' dangerouslySetInnerHTML={{ __html: description }} /> : null}
                 </div>

@@ -38,7 +38,6 @@ module.exports = app => {
     app.delete('/api/statistic', app.permission.check('component:write'), (req, res) => app.model.statistic.delete(req.body._id, error => res.send({ error })));
 
     app.post('/api/statistic/item', app.permission.check('component:write'), (req, res) => {
-        console.log(req.session)
         app.model.statisticItem.create(req.body.data, (error, item) => {
             if (item && req.session.statisticItemImage) {
                 app.adminUploadImage('statisticItem', app.model.statisticItem.get, item._id, req.session.statisticItemImage, req, res);

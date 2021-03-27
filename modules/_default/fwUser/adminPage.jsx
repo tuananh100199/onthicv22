@@ -14,7 +14,6 @@ class UserModal extends AdminModal {
 
     onShow = (item) => {
         if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
-        console.log(item)
         this.itemFirstname.value(item.firstname);
         this.itemLastname.value(item.lastname);
         this.itemBirthday.value(item.birthday)
