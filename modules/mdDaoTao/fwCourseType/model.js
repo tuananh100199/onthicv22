@@ -42,12 +42,21 @@ module.exports = app => {
         getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition, done).populate('subjects') :
-            model.findOne(condition, done).populate('subjects'),
+            model.findById(condition).populate('subjects', '-detailDescription').exec((error, item) => {
+                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
+                done(error, item)
+            })
+            : model.findOne(condition).populate('subjects', '-detailDescription').exec((error, item) => {
+                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
+                done(error, item)
+            }),
 
         update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjects').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjects').exec($unset),
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjects', '-detailDescription').exec(done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjects', '-detailDescription').exec((error, item) => {
+                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
+                $unset(error, item)
+            }),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
