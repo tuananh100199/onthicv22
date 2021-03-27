@@ -40,12 +40,13 @@ class CourseTypeModal extends AdminModal {
     });
 }
 
+const backRoute = '/user/course-type'
 class CourseTypeEditPage extends AdminPage {
     state = {};
 
     componentDidMount() {
-        T.ready('/user/course-type/list', () => {
-            const route = T.routeMatcher('/user/course-type/edit/:_id'), params = route.parse(window.location.pathname);
+        T.ready(backRoute, () => {
+            const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
                 if (item) {
                     // Custom loop fuction to reduce repeat code when fetching data into initialValue of each FormItem
@@ -60,7 +61,7 @@ class CourseTypeEditPage extends AdminPage {
                     this.itemTitle.focus();
                     this.setState(item);
                 } else {
-                    this.props.history.push('/user/course-type/list');
+                    this.props.history.push(backRoute);
                 }
             });
         });
@@ -164,8 +165,9 @@ class CourseTypeEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học: ' + this.state.title,
-            breadcrumb: [<Link to='/user/course-type/list'>Loại khóa học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link to={backRoute}>Loại khóa học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
+            backRoute: backRoute,
         });
     }
 }

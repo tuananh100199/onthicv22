@@ -105,7 +105,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminCarouselEditPage') })
         },
         {
-            path: '/user/slogan/edit/:_id',
+            path: '/user/slogan/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminSloganEditPage') })
         },
         {
@@ -113,19 +113,19 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminStaffGroupEditPage') })
         },
         {
-            path: '/user/statistic/edit/:_id',
+            path: '/user/statistic/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminStatisticEditPage') })
         },
         {
-            path: '/user/logo/edit/:_id',
+            path: '/user/logo/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminLogoEditPage') })
         },
         {
-            path: '/user/testimony/edit/:_id',
+            path: '/user/testimony/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminTestimonyEditPage') })
         },
         {
-            path: '/user/list-video/edit/:_id',
+            path: '/user/list-video/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
         },
         {

@@ -55,9 +55,9 @@ class StatisticPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/statistic/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/statistic/' + item._id} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStatistic(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/statistic/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/statistic/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 

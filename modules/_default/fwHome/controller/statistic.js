@@ -7,8 +7,9 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/statistic/all', app.permission.check('component:read'), (req, res) =>
-        app.model.statistic.getAll((error, list) => res.send({ error, list })));
+    app.get('/api/statistic/all', app.permission.check('component:read'), (req, res) => {
+        app.model.statistic.getAll((error, list) => res.send({ error, list }));
+    });
 
     app.get('/api/statistic', app.permission.check('component:read'), (req, res) => {
         app.model.statistic.get(req.query._id, (error, statistic) => {
@@ -28,14 +29,16 @@ module.exports = app => {
 
     app.post('/api/statistic', app.permission.check('component:write'), (req, res) => {
         app.model.statistic.create(req.body.data, (error, statistic) => res.send({ error, statistic }))
-    }
-    );
+    });
 
     app.put('/api/statistic', app.permission.check('component:write'), (req, res) => {
         app.model.statistic.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/statistic', app.permission.check('component:write'), (req, res) => app.model.statistic.delete(req.body._id, error => res.send({ error })));
+    app.delete('/api/statistic', app.permission.check('component:delete'), (req, res) => {
+        app.model.statistic.delete(req.body._id, error => res.send({ error }));
+    });
+
 
     app.post('/api/statistic/item', app.permission.check('component:write'), (req, res) => {
         app.model.statisticItem.create(req.body.data, (error, item) => {

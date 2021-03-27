@@ -11,7 +11,7 @@ class CourseTypePage extends AdminPage {
         this.props.getCourseTypeInPage();
     }
 
-    create = e => e.preventDefault() || this.props.createCourseType(data => this.props.history.push('/user/course-type/edit/' + data.item._id));
+    create = e => e.preventDefault() || this.props.createCourseType(data => this.props.history.push('/user/course-type/' + data.item._id));
 
     delete = (e, item) => e.preventDefault() || T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', true, isConfirm =>
         isConfirm && this.props.deleteCourseType(item._id));
@@ -38,7 +38,7 @@ class CourseTypePage extends AdminPage {
                         {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><Link to={'/user/course-type/edit/' + item._id}>{item.title}</Link></td>
+                                <td><Link to={'/user/course-type/' + item._id}>{item.title}</Link></td>
                                 <td className='toggle' style={{ textAlign: 'center' }} >
                                     <label>
                                         <input type='checkbox' checked={item.isPriceDisplayed}
@@ -53,7 +53,7 @@ class CourseTypePage extends AdminPage {
                                 {permission.write || permission.delete ? <td>
                                     <div className='btn-group'>
                                         {permission.write ?
-                                            <Link to={'/user/course-type/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                            <Link to={'/user/course-type/' + item._id} data-id={item._id} className='btn btn-primary'>
                                                 <i className='fa fa-lg fa-edit' />
                                             </Link> : null}
                                         {permission.delete ?

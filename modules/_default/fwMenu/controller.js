@@ -16,18 +16,18 @@ module.exports = app => {
         { name: 'component:read', menu: menuComponent }, { name: 'component:write' }, { name: 'component:delete' },
     );
 
-    app.get('/user/menu/edit/:_id', app.permission.check('menu:read'), app.templates.admin);
+    app.get('/user/menu/:_id', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/menu', app.permission.check('menu:read'), app.templates.admin);
     app.get('/user/component', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/content/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-content/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/carousel/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/statistic/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/slogan/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/logo/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/testimony/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/statistic/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/slogan/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/logo/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/testimony/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/list-video/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/dang-ky-tu-van/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
@@ -62,93 +62,91 @@ module.exports = app => {
         }
     }
 
-    app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => app.model.menu.getAll({}, (error, menuTree) => {
-        // app.buildAppMenus(menuTree);
-        res.send({ error, items: menuTree });
-    }));
+    app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => {
+        app.model.menu.getAll({}, (error, menuTree) => {
+            res.send({ error, items: menuTree });
+        });
+    });
 
-    app.get('/api/menu/:menuId', app.permission.check('menu:read'), (req, res) => app.model.menu.get(req.params.menuId, (error, menu) => {
-        if (error || menu == null) {
-            res.send({ error: 'Lỗi khi lấy menu!' });
-        } else {
-            const menuComponentIds = [],
-                menuComponents = [];
-            const getComponent = (level, index, componentIds, components, done) => {
-                if (index < componentIds.length) {
-                    app.model.component.get(componentIds[index], (error, component) => {
-                        if (error || component == null) {
-                            res.send({ error: 'Lỗi khi lấy thành phần trang!' });
-                        } else {
-                            component = app.clone(component);
-                            component.components = [];
-                            components.push(component);
+    app.get('/api/menu', app.permission.check('menu:read'), (req, res) => {
+        app.model.menu.get(req.query._id, (error, menu) => {
+            if (error || menu == null) {
+                res.send({ error: 'Lỗi khi lấy menu!' });
+            } else {
+                const menuComponentIds = [],
+                    menuComponents = [];
+                const getComponent = (level, index, componentIds, components, done) => {
+                    if (index < componentIds.length) {
+                        app.model.component.get(componentIds[index], (error, component) => {
+                            if (error || component == null) {
+                                res.send({ error: 'Lỗi khi lấy thành phần trang!' });
+                            } else {
+                                component = app.clone(component);
+                                component.components = [];
+                                components.push(component);
 
-                            const getNextComponent = (viewName) => {
-                                component.viewName = viewName;
-                                if (component.componentIds) {
-                                    getComponent(level + 1, 0, component.componentIds, component.components, () => {
+                                const getNextComponent = (viewName) => {
+                                    component.viewName = viewName;
+                                    if (component.componentIds) {
+                                        getComponent(level + 1, 0, component.componentIds, component.components, () => {
+                                            getComponent(level, index + 1, componentIds, components, done);
+                                        });
+                                    } else {
                                         getComponent(level, index + 1, componentIds, components, done);
-                                    });
-                                } else {
-                                    getComponent(level, index + 1, componentIds, components, done);
-                                }
-                            };
-                            if (component.viewType && component.viewId) {
-                                const viewType = component.viewType;
-                                if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list contents', ].indexOf(viewType) != -1)) {
-                                    app.model[viewType].get(component.viewId, (error, item) =>
-                                        getNextComponent(item ? item.title : '<empty>'));
-                                } else if (component.viewId && viewType == 'list videos') {
-                                    app.model.listVideo.get(component.viewId, (error, item) =>
-                                        getNextComponent(item ? item.title : '<empty>'));
-                                } else if (component.viewId && viewType == 'staff group') {
-                                    app.model.staffGroup.get(component.viewId, (error, item) =>
-                                        getNextComponent(item ? item.title : '<empty>'));
-                                } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all course types'].indexOf(viewType) != -1) {
-                                    getNextComponent(viewType);
+                                    }
+                                };
+                                if (component.viewType && component.viewId) {
+                                    const viewType = component.viewType;
+                                    if (component.viewId && (['carousel', 'content', 'testimony', 'video', 'statistic', 'slogan', 'logo', 'list contents'].indexOf(viewType) != -1)) {
+                                        app.model[viewType].get(component.viewId, (error, item) =>
+                                            getNextComponent(item ? item.title : '<empty>'));
+                                    } else if (component.viewId && viewType == 'list videos') {
+                                        app.model.listVideo.get(component.viewId, (error, item) =>
+                                            getNextComponent(item ? item.title : '<empty>'));
+                                    } else if (component.viewId && viewType == 'staff group') {
+                                        app.model.staffGroup.get(component.viewId, (error, item) =>
+                                            getNextComponent(item ? item.title : '<empty>'));
+                                    } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all course types'].indexOf(viewType) != -1) {
+                                        getNextComponent(viewType);
+                                    } else {
+                                        getNextComponent('<empty>');
+                                    }
                                 } else {
                                     getNextComponent('<empty>');
                                 }
-                            } else {
-                                getNextComponent('<empty>');
                             }
-                        }
+                        });
+                    } else {
+                        done();
+                    }
+                }
+
+                const getAllComponents = () => {
+                    menuComponentIds.push(menu.componentId);
+                    getComponent(0, 0, menuComponentIds, menuComponents, () => {
+                        menu = app.clone(menu);
+                        menu.component = menuComponents[0];
+                        res.send({ menu });
+                    });
+                }
+
+                if (menu.componentId == null || menu.componentId == undefined) {
+                    app.model.component.create({ className: 'container', viewType: '<empty>' }, (error, component) => {
+                        menu.componentId = component._id;
+                        menu.save(getAllComponents);
                     });
                 } else {
-                    done();
+                    getAllComponents();
                 }
             }
-
-            const getAllComponents = () => {
-                menuComponentIds.push(menu.componentId);
-                getComponent(0, 0, menuComponentIds, menuComponents, () => {
-                    menu = app.clone(menu);
-                    menu.component = menuComponents[0];
-                    res.send({ menu });
-                });
-            }
-
-            if (menu.componentId == null || menu.componentId == undefined) {
-                app.model.component.create({ className: 'container', viewType: '<empty>' }, (error, component) => {
-                    menu.componentId = component._id;
-                    menu.save(getAllComponents);
-                });
-            } else {
-                getAllComponents();
-            }
-        }
-    }));
+        });
+    });
 
     app.post('/api/menu', app.permission.check('menu:write'), (req, res) => {
         const data = { title: 'Tên menu', link: '#', active: false };
         if (req.body._id) data.parentId = req.body._id;
         app.model.menu.create(data, (error, item) => res.send({ error, item }));
     });
-
-    // app.put('/api/menu/build', app.permission.check('menu:write'), (req, res) => { //TODO: delete
-    //     app.buildAppMenus(null, () => app.worker.refreshState({ menuUpdate: true }));
-    //     res.send('OK');
-    // });
 
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
         app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
@@ -305,7 +303,7 @@ module.exports = app => {
                     items: items.map(item => ({ _id: item._id, text: item.title }))
                 })
             });
-        }else {
+        } else {
             res.send({ error: 'Lỗi!' });
         }
     });
