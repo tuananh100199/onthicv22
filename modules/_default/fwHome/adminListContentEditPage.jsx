@@ -85,7 +85,7 @@ class ListContentEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={`/user/content/edit/${item._id}`} />
+                    <TableCell type='link' content={item.title} url={`/user/content/${item._id}`} />
                     <TableCell type='buttons' content={[index, item]} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.remove} />
                 </tr>),
         });

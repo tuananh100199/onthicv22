@@ -93,7 +93,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail') })
         },
         {
-            path: '/user/content/edit/:_id',
+            path: '/user/content/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentEditPage') })
         },
         {
