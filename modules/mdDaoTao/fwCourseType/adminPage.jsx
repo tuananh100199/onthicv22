@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseTypeInPage, createCourseType, updateCourseType, deleteCourseType } from './redux';
+import { getCourseTypePage, createCourseType, updateCourseType, deleteCourseType } from './redux';
 import { AdminPage, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
 class CourseTypePage extends AdminPage {
     componentDidMount() {
-        this.props.getCourseTypeInPage();
+        this.props.getCourseTypePage();
     }
 
     create = e => e.preventDefault() || this.props.createCourseType(data => this.props.history.push('/user/course-type/' + data.item._id));
@@ -45,7 +45,7 @@ class CourseTypePage extends AdminPage {
             breadcrumb: ['Loại khóa học'],
             content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypeInPage} />
+                <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypePage} />
                 {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
             </>
         });

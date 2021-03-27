@@ -116,11 +116,11 @@ class CourseTypeEditPage extends AdminPage {
                 </div>
                 <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
                 <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-                {permission.write ? <CirclePageButton type='save' onClick={this.save} /> : null}
+                {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
             </>,
             componentSubject = <>
                 {table}
-                {permission.write ? <CirclePageButton style={{}} type='create' onClick={() => this.modal.show()} /> : null}
+                {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
                 <CourseTypeModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateCourseType} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
