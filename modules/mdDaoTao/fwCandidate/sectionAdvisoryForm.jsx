@@ -13,14 +13,13 @@ class SectionAdvisoryForm extends React.Component {
 
             const { lastname, firstname, email, phoneNumber } = this.props.system && this.props.system.user ?
                 this.props.system.user : { lastname: '', firstname: '', email: '', phoneNumber: '' };
-            $('#userFirstname').val(firstname);
             if (this.props.system && this.props.system.user) {
-                //TODO
+                this.phoneNumber.value = phoneNumber;
             } else {
                 this.lastname.value = lastname;
+                this.firstname.value = firstname;
+                this.email.value = email;
             }
-            $('#userEmail').val(email);
-            $('#userPhone').val(phoneNumber);
 
             this.setState({ lastname, firstname, email, phoneNumber });
         });
@@ -28,36 +27,52 @@ class SectionAdvisoryForm extends React.Component {
 
     onSubmit = (e) => {
         e.preventDefault();
-        if (this.firstname.value == '') {
-            T.notify('Họ bị trống!', 'danger');
-            this.firstname.focus();
-        } else if (this.lastname.value == '') {
-            T.notify('Tên bị trống!', 'danger');
-            this.lastname.focus();
-        } else if (this.phone.value == '') {
-            T.notify('Số điện thoại bị trống!', 'danger');
-            this.phone.focus();
-        } else if (this.email.value == '' || !T.validateEmail(this.email.value)) {
-            T.notify('Email không hợp lệ!', 'danger');
-            (this.email).focus();
-        } else {
-            const data = {
-                courseType: this.courseType.value(),
-                firstname: this.firstname.value,
-                lastname: this.lastname.value,
-                email: this.email.value,
-                phone: this.phone.value
-            };
-            this.props.createCandidate(data, () => {
-                this.firstname.value = this.lastname.value = this.email.value = this.phone.value = '';
-                T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
-            });
-        }
+        const user = this.props.system.user;
+        if (!user){
+            if (this.lastname.value == '') {
+                T.notify('Họ bị trống!', 'danger');
+                this.lastname.focus();
+                return;
+            }
+            if (this.firstname.value == '') {
+                T.notify('Tên bị trống!', 'danger');
+                this.firstname.focus();
+                return;
+            }
+            if (this.email.value == '' || !T.validateEmail(this.email.value)) {
+                T.notify('Email không hợp lệ!', 'danger');
+                (this.email).focus();
+                return;
+            }
+            if (this.phoneNumber.value == '') {
+                T.notify('Số điện thoại bị trống!', 'danger');
+                this.phoneNumber.focus();
+                return;
+            }
+         }
+         else{
+            if (this.phoneNumber.value == '') {
+                T.notify('Số điện thoại bị trống!', 'danger');
+                this.phoneNumber.focus();
+                return;
+            }
+         }
+         const data = {
+            courseType: this.courseType.value(),
+            firstname: user ? user.firstname : this.firstname.value,
+            lastname: user ? user.lastname : this.lastname.value,
+            email: user ? user.email : this.email.value,
+            phone: this.phoneNumber.value
+        };
+        this.props.createCandidate(data, () => {
+            !user ? this.firstname.value = this.lastname.value = this.email.value = this.phoneNumber.value = '' : null;
+            T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
+        });
     }
 
     render() {
         const readOnly = this.props.system && this.props.system.user ? true : false;
-        const { lastname, firstname, email, phoneNumber } = this.state;
+        const { lastname, firstname, email } = this.state;
         return (
             <div className='intro'>
                 <div className='intro_col'>
@@ -71,19 +86,22 @@ class SectionAdvisoryForm extends React.Component {
                                         <p style={{ width: '100%' }}>Email: <b>{email}</b></p>
                                         <p style={{ width: '100%' }}>Số điện thoại:</p>
                                         <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
-                                            type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phone = e} required='required' id='userPhone' readOnly={readOnly} />
+                                            type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
+                                        <div className='intro_input w-100 mb-5' style={{ padding: 0, border: 'none' }} >
+                                            <p style={{ width: '100%' }}>Loại khóa học:</p>
+                                            <FormSelect ref={e => this.courseType = e} label='' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} />
+                                        </div>
                                     </div> :
                                     <>
-                                        <input type='text' className='intro_input' placeholder='Họ' ref={e => this.lastname = e} required='required' />
-                                        <input type='text' className='intro_input' placeholder='Tên' ref={e => this.firstname = e} required='required' id='userFirstname' readOnly={readOnly} />
-                                        <input type='text' className='intro_input' ref={e => this.email = e} placeholder='Email' id='userEmail' readOnly={readOnly} />
+                                        <input type='text' className='intro_input' placeholder='Họ' ref={e => this.lastname = e}/>
+                                        <input type='text' className='intro_input' placeholder='Tên' ref={e => this.firstname = e} readOnly={readOnly} />
+                                        <input type='text' className='intro_input' ref={e => this.email = e} placeholder='Email' readOnly={readOnly} />
                                         <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
-                                            type='tel' className='intro_input' placeholder='Số điện thoại' ref={e => this.phone = e} required='required' id='userPhone' readOnly={readOnly} />
+                                            type='tel' className='intro_input' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} readOnly={readOnly} />
+                                        <div className='intro_input w-100 mb-5' style={{ padding: 0, border: 'none' }} >
+                                            <FormSelect ref={e => this.courseType = e} label='' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} />
+                                        </div>
                                     </>}
-
-                                <div className='intro_input w-100' style={{ padding: 0, border: 'none' }} >
-                                    <FormSelect ref={e => this.courseType = e} label='' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} />
-                                </div>
                             </div>
                             <button className='button button_1 intro_button trans_200'>Đăng ký</button>
                         </form>

@@ -115,7 +115,7 @@ class HomeMenu extends React.Component {
             });
         }
 
-        let { logo, user, facebook, youtube, twitter, instagram, mobile, email, DKTVLink } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
+        let { logo, user, facebook, youtube, twitter, instagram, mobile, email, dangKyTuVanLink } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
         facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
         youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
@@ -153,7 +153,7 @@ class HomeMenu extends React.Component {
                                 {user && user._id ?
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
-                                        <div className='button button_1 mr-1 large_btn' > <a href={DKTVLink}>Đăng ký tư vấn</a></div>
+                                        <div className='button button_1 mr-1 large_btn' > <a href={dangKyTuVanLink}>Đăng ký tư vấn</a></div>
                                         <div className='btn-group m-auto pl-2'>
                                             <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className="fa fa-user-circle-o" aria-hidden="true"></i></a></li>
                                             <li data-toggle='tooltip' title='Đăng xuất'><a href="#" onClick={this.logout} ><i className="fa fa-power-off" style={{ color: 'red' }} aria-hidden="true"></i></a></li>
