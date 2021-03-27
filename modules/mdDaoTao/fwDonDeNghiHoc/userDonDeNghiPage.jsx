@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux';
 import { updateProfile } from 'modules/_default/_init/reduxSystem';
-import { getCourseTypeInPage } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCourseTypePage } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import FileSaver from 'file-saver';
 import ImageBox from 'view/component/ImageBox';
@@ -19,7 +19,7 @@ class UserDonDeNghiPage extends React.Component {
         this.imageBox = React.createRef();
     }
     componentDidMount() {
-        this.props.getCourseTypeInPage();
+        this.props.getCourseTypePage();
         T.ready('/user', () => {
             T.tooltip();
             $('#userBirthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
@@ -444,5 +444,5 @@ class UserDonDeNghiPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc, courseType: state.courseType });
-const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm, getCourseTypeInPage };
+const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm, getCourseTypePage };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

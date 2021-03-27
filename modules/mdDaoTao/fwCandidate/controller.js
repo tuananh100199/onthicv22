@@ -27,6 +27,17 @@ module.exports = app => {
         app.model.candidate.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
+        const changes = req.body.changes;
+        changes.staff = req.session.user;
+        if (changes.state) changes.modifiedDate = new Date();
+        app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {
+        app.model.candidate.delete(req.body._id, error => res.send({ error }));
+    });
+
     app.get('/api/candidate/export', app.permission.check('candidate:export'), (req, res) => {
         app.model.candidate.getAll((error, list) => {
             if (error) {
@@ -71,11 +82,6 @@ module.exports = app => {
             }
         })
     });
-
-    app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {
-        app.model.candidate.delete(req.body._id, error => res.send({ error }));
-    });
-
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/candidate', (req, res) => {
