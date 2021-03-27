@@ -113,11 +113,11 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminStaffGroupEditPage') })
         },
         {
-            path: '/user/statistic/edit/:_id',
+            path: '/user/statistic/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminStatisticEditPage') })
         },
         {
-            path: '/user/logo/edit/:_id',
+            path: '/user/logo/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminLogoEditPage') })
         },
         {

@@ -22,9 +22,9 @@ module.exports = app => {
     app.get('/user/content/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-content/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/carousel/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/statistic/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/statistic/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/slogan/edit/:_id', app.permission.check('component:read'), app.templates.admin);
-    app.get('/user/logo/edit/:_id', app.permission.check('component:read'), app.templates.admin);
+    app.get('/user/logo/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/testimony/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/staff-group/edit/:_id', app.permission.check('component:read'), app.templates.admin);
     app.get('/user/list-video/edit/:_id', app.permission.check('component:read'), app.templates.admin);

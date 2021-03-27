@@ -105,7 +105,7 @@ class LogoEditPage extends React.Component {
 
     componentDidMount() {
         T.ready(() => {
-            const route = T.routeMatcher('/user/logo/edit/:logoId'),
+            const route = T.routeMatcher('/user/edit/:logoId'),
                 params = route.parse(window.location.pathname);
 
             this.props.getLogoItem(params.logoId, data => {

@@ -18,7 +18,7 @@ class LogoModal extends AdminModal {
             this.props.createLogo(newData, data => {
                 if (data.item) {
                     this.hide();
-                    this.props.history.push('/user/logo/edit/' + data.item._id);
+                    this.props.history.push('/user/edit/' + data.item._id);
                 }
             });
         }
@@ -53,9 +53,9 @@ class LogoPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/logo/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/edit/' + item._id} />
                     <TableCell type='number' content={item.items.length} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/statistic/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/edit/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 
