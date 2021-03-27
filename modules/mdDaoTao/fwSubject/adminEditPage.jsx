@@ -6,38 +6,23 @@ import {
     createSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion, updateSubjectQuestion,
 } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
-import { Select } from 'view/component/Input';
+import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
 
 class LessonModal extends AdminModal {
-    lessonSelect = React.createRef();
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => { }));
-    }
-
-    onShow = () => {
-        this.lessonSelect.current.val(null);
-    }
+    onShow = () => this.lessonSelect.value(null);
 
     onSubmit = () => {
-        const lessonId = this.lessonSelect.current.val();
+        const lessonId = this.lessonSelect.value();
         this.props.addSubjectLesson(this.props._id, lessonId, () => {
             T.notify('Thêm bài học thành công!', 'success');
             this.hide();
         });
-
     }
 
     render = () => this.renderModal({
         title: 'Thêm bài học',
-        body:
-            <div>
-                <div className='form-group'>
-                    <label>Chọn bài học</label>
-                    <Select ref={this.lessonSelect} displayLabel={false} adapter={ajaxSelectLesson} label='Bài học' />
-                </div>
-            </div>
+        body: <FormSelect ref={e => this.lessonSelect = e} data={ajaxSelectLesson} label='Bài học' />,
     });
 }
 
@@ -62,22 +47,21 @@ class QuestionModal extends AdminModal {
             T.notify('Tên câu hỏi bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            this.state._id ? this.props.update(this.props.subjectId, this.state._id, data) : this.props.create(this.props.subjectId, data);
-            this.hide();
+            this.state._id ?
+                this.props.update(this.props.subjectId, this.state._id, data, this.hide) :
+                this.props.create(this.props.subjectId, data, this.hide);
         }
     }
 
     render = () => {
         const readOnly = this.props.readOnly;
-
         return this.renderModal({
             title: 'Câu hỏi',
             size: 'large',
-            body:
-                <div>
-                    <FormRichTextBox ref={e => this.itemTitle = e} label='Câu hỏi' rows='6' readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsActive = e} label='Kích hoạt' />
-                </div>
+            body: <>
+                <FormRichTextBox ref={e => this.itemTitle = e} label='Câu hỏi' rows='6' readOnly={readOnly} />
+                <FormCheckbox ref={e => this.itemIsActive = e} label='Kích hoạt' readOnly={readOnly} />
+            </>,
         });
     };
 }
@@ -85,7 +69,6 @@ class QuestionModal extends AdminModal {
 const adminPageLink = '/user/dao-tao/mon-hoc';
 class AdminEditPage extends AdminPage {
     state = {};
-
     componentDidMount() {
         T.ready(adminPageLink, () => {
             let url = window.location.pathname,
@@ -99,8 +82,9 @@ class AdminEditPage extends AdminPage {
                     this.itemTitle.value(title);
                     this.itemDescription.value(shortDescription);
                     this.itemEditor.html(detailDescription);
-                    this.setState({ _id, title });
                     this.itemTitle.focus();
+
+                    this.setState({ _id, title });
                 } else {
                     this.props.history.push(adminPageLink);
                 }
@@ -114,16 +98,16 @@ class AdminEditPage extends AdminPage {
             shortDescription: this.itemDescription.value(),
             detailDescription: this.itemEditor.html(),
         };
-        this.props.updateSubject(this.state._id, changes)
+        this.props.updateSubject(this.state._id, changes);
     };
 
+    showLesson = (e, lesson) => e.preventDefault() || window.open('/user/dao-tao/bai-hoc/' + lesson._id, '_blank');
+
     showLessonModal = (e) => e.preventDefault() || this.modalLesson.show();
-    showLesson = (e, lesson) => e.preventDefault() || window.open('/user/dao-tao/bai-hoc/' + lesson._id, '_blank');;
     deleteLesson = (e, lesson) => e.preventDefault() || T.confirm('Xóa Bài học', `Bạn có chắc bạn muốn xóa bài học <strong>${lesson.title}</strong>?`, true, isConfirm =>
-        isConfirm && this.props.deleteSubjectLesson(this.state._id, lesson._id, () => {
-            T.alert('Xoá bài học thành công!', 'success', false, 1000)
-        }))
+        isConfirm && this.props.deleteSubjectLesson(this.state._id, lesson._id));
     swapLesson = (e, lesson, isMoveUp) => e.preventDefault() || this.props.swapSubjectLesson(this.state._id, lesson._id, isMoveUp);
+
     showQuestionModal = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
     deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm =>
         isConfirm && this.props.deleteSubjectQuestion(question._id, this.state._id));
@@ -144,22 +128,7 @@ class AdminEditPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.showLesson(e, item)} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapLesson(e, item, true)}>
-                                <i className='fa fa-lg fa-arrow-up' />
-                            </a> : null}
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapLesson(e, item, false)}>
-                                <i className='fa fa-lg fa-arrow-down' />
-                            </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.showLesson(e, item)}>
-                                <i className='fa fa-lg fa-edit' />
-                            </a>
-                            {permission.write ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteLesson(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showLesson} onSwap={this.swapLesson} onDelete={this.deleteLesson} />
                 </tr>),
         });
 
@@ -177,22 +146,7 @@ class AdminEditPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.showQuestionModal(e, item)} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateSubjectQuestion(this.state._id, item._id, { active })} />
-                    <TableCell content={(
-                        <div className='btn-group'>
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, true)}>
-                                <i className='fa fa-lg fa-arrow-up' />
-                            </a> : null}
-                            {permission.write ? <a className='btn btn-success' href='#' onClick={e => this.swapQuestion(e, item, false)}>
-                                <i className='fa fa-lg fa-arrow-down' />
-                            </a> : null}
-                            <a className='btn btn-primary' href='#' onClick={e => this.showQuestionModal(e, item)}>
-                                <i className='fa fa-lg fa-edit' />
-                            </a>
-                            {permission.write ?
-                                <a className='btn btn-danger' href='#' onClick={e => this.deleteQuestion(e, item)}>
-                                    <i className='fa fa-lg fa-trash' />
-                                </a> : null}
-                        </div>)} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showQuestionModal} onSwap={this.swapQuestion} onDelete={this.deleteQuestion} />
                 </tr>),
         });
 

@@ -20,12 +20,8 @@ export default {
     routes: [
         {
             path: '/user/candidate',
-            component: Loadable({ loading: Loading, loader: () => import('./adminCandidatePage') })
+            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
-        // {
-        //     path: '/user/student',
-        //     component: Loadable({ loading: Loading, loader: () => import('./adminStudentPage') })
-        // },
     ],
     Section: {
         SectionAdvisoryForm

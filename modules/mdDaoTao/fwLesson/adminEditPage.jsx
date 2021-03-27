@@ -36,8 +36,9 @@ class VideoModal extends AdminModal {
             T.notify('Link video bị trống!', 'danger');
             this.itemLink.focus();
         } else {
-            this.state._id ? this.props.update(this.props.lessonId, this.state._id, data) : this.props.create(this.props.lessonId, data);
-            this.hide();
+            this.state._id ?
+                this.props.update(this.props.lessonId, this.state._id, data, this.hide) :
+                this.props.create(this.props.lessonId, data, this.hide);
         }
     }
 
