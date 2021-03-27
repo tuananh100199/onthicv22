@@ -2,13 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { } from './redux';
 import { Link } from 'react-router-dom';
-import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class PreStudentPage extends AdminPage {
     componentDidMount() {
-        this.props.getAllCourseType();
+        this.props.getCourseTypeAll();
         T.ready();
     }
 
@@ -27,5 +27,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { getAllCourseType };
+const mapActionsToProps = { getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

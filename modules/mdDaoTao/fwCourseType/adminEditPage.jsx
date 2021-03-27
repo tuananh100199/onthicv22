@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Select } from 'view/component/Input';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
-import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormTabs } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormTabs, CirclePageButton } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {
     componentDidMount() {
@@ -111,10 +111,8 @@ class CourseTypeEditPage extends AdminPage {
                             <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>
-                                    {permission.write ?
-                                        <Link to={'/user/dao-tao/mon-hoc/' + item._id}>
-                                            {item.title}
-                                        </Link> : item.title}</td>
+                                    {permission.write ? <Link to={'/user/dao-tao/mon-hoc/' + item._id}>{item.title}</Link> : item.title}
+                                </td>
                                 <td>
                                     {permission.delete ?
                                         <a className='btn btn-danger' href='#' onClick={e => this.remove(e, index)}>
@@ -144,20 +142,11 @@ class CourseTypeEditPage extends AdminPage {
 
             <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
             <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
-            <div style={{ textAlign: 'right' }}>
-                <button className='btn btn-primary' type='button' onClick={this.save}>
-                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                </button>
-            </div>
+            {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
         </>;
         const componentSubject = <>
             {table}
-            {readOnly ? null :
-                <div style={{ textAlign: 'right' }}>
-                    <button className='btn btn-success' type='button' onClick={() => this.modal.show()}>
-                        <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                    </button>
-                </div>}
+            {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
             <CourseTypeModal ref={e => this.modal = e} updateCourseType={this.props.updateCourseType} history={this.props.history} item={item} />
         </>;
 

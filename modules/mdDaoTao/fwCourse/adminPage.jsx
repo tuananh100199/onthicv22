@@ -64,7 +64,7 @@ class CoursePage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Tên khóa học</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Khai giảng</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khai giảng</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Quản trị viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cố vấn học tập</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên</th>
@@ -75,7 +75,7 @@ class CoursePage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.name} url={'/user/course/' + item._id} />
-                    <TableCell type='date' content={item.thoiGianKhaiGiang} />
+                    <TableCell type='date' content={item.thoiGianKhaiGiang} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' content={item.admins ? item.admins.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.reduce((a, b) => (a.students ? a.students.length : 0) + (b.students ? b.students.length : 0)) : 0} />

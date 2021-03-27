@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseTypeInPage, createCourseType, updateCourseType, deleteCourseType } from './redux';
+import { getCourseTypePage, createCourseType, updateCourseType, deleteCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
@@ -8,7 +8,7 @@ import Pagination from 'view/component/Pagination';
 class CourseTypePage extends AdminPage {
     componentDidMount() {
         T.ready();
-        this.props.getCourseTypeInPage();
+        this.props.getCourseTypePage();
     }
 
     create = e => e.preventDefault() || this.props.createCourseType(data => this.props.history.push('/user/course-type/' + data.item._id));
@@ -73,7 +73,7 @@ class CourseTypePage extends AdminPage {
             breadcrumb: ['Loại khóa học'],
             content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypeInPage} />
+                <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypePage} />
             </>,
             onCreate: permission.write ? this.create : null,
         });
@@ -81,5 +81,5 @@ class CourseTypePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { getCourseTypeInPage, createCourseType, updateCourseType, deleteCourseType };
+const mapActionsToProps = { getCourseTypePage, createCourseType, updateCourseType, deleteCourseType };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypePage);

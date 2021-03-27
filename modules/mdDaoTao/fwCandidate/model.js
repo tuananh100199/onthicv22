@@ -8,7 +8,7 @@ module.exports = app => {
         staff: { type: app.db.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
         state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'], default: 'MoiDangKy' },
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
-        modifiedDate: { type: Date, default: null },                    // Ngày cập nhật cuối cùng
+        modifiedDate: { type: Date, default: null },                        // Ngày cập nhật cuối cùng
         courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
     });
     const model = app.db.model('Candidate', schema);
@@ -27,7 +27,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('courseType', 'title').populate('user', 'firstname lastname').populate('staff', 'firstname lastname').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
@@ -37,7 +37,9 @@ module.exports = app => {
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done).populate('courseType', 'title'),
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
