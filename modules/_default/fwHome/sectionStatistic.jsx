@@ -30,6 +30,7 @@ class SectionStatistic extends React.Component {
         if (this.props.viewId) {
             this.props.homeGetStatistic(this.props.viewId, statistic => this.setState(statistic));
         }
+        T.ftcoAnimate();
     }
 
     render() {
@@ -37,7 +38,7 @@ class SectionStatistic extends React.Component {
         const itemLength = items ? items.length : 0,
             itemClassName = 'col-md-' + Math.round(12 / itemLength) + ' d-flex justify-content-center counter-wrap';
         return itemLength ? (
-            <section className='ftco-section ftco-counter section-counter-class pb-5'>
+            <section className='pb-5 ftco-animate'>
                 <div className=' heading-section heading-section-white'>
                     {titleVisible ? <h2 className='text'>{title}</h2> : null}
                     {description ? <span className='subheading text' dangerouslySetInnerHTML={{ __html: description }} /> : null}
