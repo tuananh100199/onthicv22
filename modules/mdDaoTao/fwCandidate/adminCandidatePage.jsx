@@ -72,8 +72,8 @@ class CandidatePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-envelope-o',
-            title: 'Candidate',
-            breadcrumb: ['Candidate'],
+            title: 'Đăng ký tư vấn',
+            breadcrumb: ['Đăng ký tư vấn'],
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />

@@ -12,7 +12,7 @@ class sectionContent extends React.Component {
 
     render() {
         const { title, titleVisible = false, content } = this.state;
-        return <div style={{ marginTop: '60px' }}>
+        return <div className='pt-5 pb-5'>
             {titleVisible ? <h2>{title}</h2> : null}
             <p dangerouslySetInnerHTML={{ __html: content }} />
         </div>;

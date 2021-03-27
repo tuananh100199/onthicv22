@@ -85,7 +85,7 @@ class SloganPage extends React.Component {
     }
 
     show = (item) => {
-        this.props.history.push('/user/slogan/edit/' + item._id);
+        this.props.history.push('/user/slogan/' + item._id);
     }
 
     delete = (e, item) => {
@@ -112,12 +112,12 @@ class SloganPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/slogan/edit/' + slogan._id} data-id={slogan._id}>{slogan.title}</Link>
+                                    <Link to={'/user/slogan/' + slogan._id} data-id={slogan._id}>{slogan.title}</Link>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>{slogan.items.length}</td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/slogan/edit/' + slogan._id} data-id={slogan._id} className='btn btn-primary'>
+                                        <Link to={'/user/slogan/' + slogan._id} data-id={slogan._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.contains('component:write') ?

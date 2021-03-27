@@ -26,7 +26,7 @@ class ListVideoModal extends AdminModal {
             this.props.create(newData, data => {
                 if (data.item) {
                     this.hide()
-                    this.props.history.push('/user/list-video/edit/' + data.item._id);
+                    this.props.history.push('/user/list-video/' + data.item._id);
                 }
             });
         }
@@ -69,8 +69,8 @@ class ListVideoPage extends React.Component {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/list-video/edit/' + item._id} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-video/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='link' content={item.title} url={'/user/list-video/' + item._id} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-video/' + item._id} onDelete={this.delete} />
                 </tr>
             )
         })

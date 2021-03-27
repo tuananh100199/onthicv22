@@ -8,7 +8,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/menu/edit/:menuId',
+            path: '/user/menu/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },
         {

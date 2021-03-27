@@ -68,7 +68,7 @@ class App extends React.Component {
                     if (!link.startsWith('http://') && !link.startsWith('https://') && routeMapper[link] == undefined) {
                         addRoute({
                             path: link,
-                            component: Loadable({ loading: Loading, loader: () => import('view/component/MenuPage') })
+                            component: Loadable({ loading: Loading, loader: () => import('modules/_default/fwMenu/MenuPage') })
                         });
                     }
                     if (currentMenu.submenus && currentMenu.submenus.length) {

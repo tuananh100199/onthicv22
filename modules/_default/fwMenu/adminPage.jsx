@@ -13,9 +13,9 @@ class MenuPage extends AdminPage {
         });
     }
 
-    create = (e) => e.preventDefault() || this.props.createMenu(null, data => this.props.history.push('/user/menu/edit/' + data.item._id));
+    create = (e) => e.preventDefault() || this.props.createMenu(null, data => this.props.history.push('/user/menu/' + data.item._id));
 
-    createChild = (e, item) => e.preventDefault() || this.props.createMenu(item._id, data => this.props.history.push('/user/menu/edit/' + data.item._id));
+    createChild = (e, item) => e.preventDefault() || this.props.createMenu(item._id, data => this.props.history.push('/user/menu/' + data.item._id));
 
     updateMenuPriorities = () => {
         const changes = [];
@@ -44,7 +44,7 @@ class MenuPage extends AdminPage {
     renderMenu = (menu, level, hasUpdate, hasDelete) => (
         <li key={menu._id} data-id={menu._id}>
             <div style={{ display: 'inline-flex' }}>
-                <Link to={'/user/menu/edit/' + menu._id} style={{ color: menu.active ? '#009688' : 'gray' }}>
+                <Link to={'/user/menu/' + menu._id} style={{ color: menu.active ? '#009688' : 'gray' }}>
                     {menu.title}
                 </Link>&nbsp;
                 {menu.link ? <p>(<a href={menu.link} target='_blank' style={{ color: 'blue' }}>{menu.link}</a>)</p> : null}
@@ -57,7 +57,7 @@ class MenuPage extends AdminPage {
                     <a href='#' className={menu.active ? 'btn btn-warning' : 'btn btn-secondary'} onClick={e => hasUpdate && this.changeActive(e, menu)}>
                         <i className={'fa fa-lg ' + (menu.active ? 'fa-check' : 'fa-times')} />
                     </a>
-                    <Link to={'/user/menu/edit/' + menu._id} className='btn btn-primary'>
+                    <Link to={'/user/menu/' + menu._id} className='btn btn-primary'>
                         <i className='fa fa-lg fa-edit' />
                     </Link>
                     {hasDelete ?

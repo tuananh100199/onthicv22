@@ -96,9 +96,8 @@ class SloganEditPage extends React.Component {
 
     componentDidMount() {
         T.ready(() => {
-            const route = T.routeMatcher('/user/slogan/edit/:_id'),
+            const route = T.routeMatcher('/user/slogan/:_id'),
                 params = route.parse(window.location.pathname);
-
             this.props.getSloganItem(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy nhóm slogan bị lỗi!', 'danger');

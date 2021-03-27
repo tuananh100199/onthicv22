@@ -16,11 +16,11 @@ export default {
     },
     routes: [
         {
-            path: '/user/course-type/list',
+            path: '/user/course-type',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/course-type/edit/:_id',
+            path: '/user/course-type/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
