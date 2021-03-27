@@ -40,7 +40,6 @@ import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
-import fwDangKyTuVan from 'modules/mdDaoTao/fwDangKyTuVan/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 import fwCandidate from 'modules/mdDaoTao/fwCandidate';
@@ -52,7 +51,7 @@ const modules = [
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwNews,
     fwDivision, fwCourseType, fwCourse, fwCandidate, fwStudent, fwSubject, fwLesson,
-    fwDangKyTuVan, fwDonDeNghiHoc, fwDriveQuestion,
+    fwDonDeNghiHoc, fwDriveQuestion,
 ];
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
