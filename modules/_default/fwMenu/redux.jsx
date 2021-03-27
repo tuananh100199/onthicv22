@@ -89,10 +89,10 @@ export function deleteMenu(_id) {
 }
 
 
-export function getMenu(menuId, done) {
+export function getMenu(_id, done) {
     return dispatch => {
-        const url = `/api/menu/${menuId}`;
-        T.get(url, data => done(data), error => done({ error }));
+        const url = `/api/menu`;
+        T.get(url, { _id }, data => done(data), error => done({ error }));
     }
 }
 
@@ -166,11 +166,3 @@ export function getComponentViews(type, done) {
         }, error => T.notify('Lấy menu bị lỗi!', 'danger'));
     }
 }
-
-// export function buildMenu() {
-//     return dispatch => {
-//         const url = `/api/menu/build`;
-//         T.put(url, () => T.notify('Cập nhật menu thành công!', 'info'),
-//             error => T.notify('Cập nhật menu bị lỗi!', 'danger'));
-//     };
-// }

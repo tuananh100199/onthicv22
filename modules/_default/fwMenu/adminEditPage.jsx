@@ -11,7 +11,7 @@ class MenuEditPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/menu', () => {
-            const route = T.routeMatcher('/user/menu/edit/:menuId'),
+            const route = T.routeMatcher('/user/menu/:menuId'),
                 params = route.parse(window.location.pathname);
             this.menuId = params.menuId;
             this.getData();

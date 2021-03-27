@@ -61,7 +61,7 @@ class ListVideoEditPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/list-video/edit/:listVideoId'), params = route.parse(window.location.pathname);
+            const route = T.routeMatcher('/user/list-video/:listVideoId'), params = route.parse(window.location.pathname);
             this.props.getListVideoItem(params.listVideoId, data => {
                 if (data.error) {
                     this.props.history.push('/user/component');

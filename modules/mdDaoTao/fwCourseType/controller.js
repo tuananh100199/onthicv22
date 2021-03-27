@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4010: { title: 'Loại khóa học', link: '/user/course-type/list' },
+            4010: { title: 'Loại khóa học', link: '/user/course-type' },
         }
     };
 
@@ -12,8 +12,8 @@ module.exports = (app) => {
         { name: 'course-type:delete' },
     );
 
-    app.get('/user/course-type/list', app.permission.check('course-type:read'), app.templates.admin);
-    app.get('/user/course-type/edit/:_id', app.permission.check('course-type:write'), app.templates.admin);
+    app.get('/user/course-type', app.permission.check('course-type:read'), app.templates.admin);
+    app.get('/user/course-type/:_id', app.permission.check('course-type:write'), app.templates.admin);
     app.get('/course-type/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------
