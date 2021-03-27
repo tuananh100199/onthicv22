@@ -34,7 +34,7 @@ class AdminManagerView extends React.Component {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id, admins = [] } = this.props.course.item;
             admins.splice(index, 1);
-            this.props.updateCourse(_id, { admins: admins.length ? admins : 'empty' });
+            this.props.updateCourse(_id, { admins: admins.length ? admins : 'empty' }, () => this.props.getCourse(_id));
         }
     });
 
@@ -42,7 +42,7 @@ class AdminManagerView extends React.Component {
         e.preventDefault();
         const { _id, groups = [] } = this.props.course.item,
             _teacherUserId = this.selectTeacher.value();
-        if (_teacherUserId) {
+        if (_teacherUserId && groups.find(({ teacher, students }) => teacher._id == _teacherUserId) == null) {
             groups.push({ teacher: _teacherUserId });
             this.props.updateCourse(_id, { groups }, () => {
                 this.selectTeacher.value(null);
@@ -54,7 +54,7 @@ class AdminManagerView extends React.Component {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id, groups = [] } = this.props.course.item;
             groups.splice(index, 1);
-            this.props.updateCourse(_id, { admins: groups.length ? groups : 'empty' });
+            this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' }, () => this.props.getCourse(_id));
         }
     });
 
