@@ -5,10 +5,12 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton } from 'view/component/AdminPage';
 import AdminSubjectView from './tabView/adminSubjectView';
+import AdminManagerView from './tabView/adminManagerView';
+import AdminStudentView from './tabView/adminStudentView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
-    state = {};
+    state = { name: '...' };
     componentDidMount() {
         T.ready('/user/course', () => {
             const route = T.routeMatcher('/user/course/:_id'),
@@ -55,14 +57,20 @@ class EditCoursePage extends AdminPage {
             shortDescription: this.shortDescription.value(),
             detailDescription: this.detailDescription.html(),
         };
-        this.props.updateCourse(this.state._id, changes);
+        if (changes.courseFee == null) changes.courseFee = 0;
+        if (changes.name == '') {
+            T.notify('Tên khóa học trống!', 'danger');
+            this.name.focus();
+        } else {
+            this.props.updateCourse(this.state._id, changes);
+        }
     }
 
     render() {
         const permission = this.getUserPermission('course'),
             readOnly = !permission.write;
         const tabInfo = <div className='row'>
-            <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-6' readOnly={readOnly} />
+            <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-6' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
             <FormTextBox ref={e => this.courseFee = e} type='number' label='Học phí' className='col-md-3' readOnly={readOnly} />
 
@@ -85,12 +93,12 @@ class EditCoursePage extends AdminPage {
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permission} /> },
-            { title: 'Cố vấn học tập', component: 'TODO: Cố vấn học tập' },
-            { title: 'Học viên', component: 'TODO: Học viên' },
+            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permission} /> },
+            { title: 'Học viên', component: <AdminStudentView permission={permission} /> },
         ];
         return this.renderPage({
             icon: 'fa fa-file',
-            title: 'Khóa học: ' + (this.state.name || '...'),
+            title: 'Khóa học: ' + (this.state.name),
             breadcrumb: [<Link to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
             content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: previousRoute,

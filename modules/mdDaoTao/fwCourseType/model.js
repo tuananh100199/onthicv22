@@ -11,7 +11,7 @@ module.exports = app => {
     const model = app.db.model('CourseType', schema);
 
     app.model.courseType = {
-        create: (data, done) => model.create({ ...data, title: data.title || 'Loại khoá học mới' }, (error, item) => {
+        create: (data, done) => model.create({ ...data, title: data.title || 'Loại khóa học mới' }, (error, item) => {
             if (error) {
                 done(error);
             } else {

@@ -63,7 +63,7 @@ class CoursePage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên khoá học</th>
+                    <th style={{ width: '100%' }}>Tên khóa học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Khai giảng</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cố vấn học tập</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên</th>
@@ -84,8 +84,8 @@ class CoursePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-file',
-            title: 'Khoá học',
-            breadcrumb: ['Khoá học'],
+            title: 'Khóa học',
+            breadcrumb: ['Khóa học'],
             content: <>
                 <div className='tile'>{table}</div>
                 <CourseModal create={this.props.createCourse} ref={e => this.modal = e} history={this.props.history} readOnly={!permission.write} />

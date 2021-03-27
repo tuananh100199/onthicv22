@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
     getLesson, updateLesson,
-    createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo,
-    createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
+    createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
 } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
@@ -261,7 +260,6 @@ class adminEditPage extends AdminPage {
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = {
     getLesson, updateLesson,
-    createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo,
-    createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
+    createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
 };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

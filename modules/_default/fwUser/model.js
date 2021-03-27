@@ -15,7 +15,7 @@ module.exports = (app) => {
         active: { type: Boolean, default: false },
         createdDate: Date,
 
-        isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khoá học
+        isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khóa học
         isLecturer: { type: Boolean, default: false },                                              // Là giảng viên
         isStaff: { type: Boolean, default: false },                                                 // Là nhân viên
 
