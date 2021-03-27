@@ -21,7 +21,25 @@ module.exports = (app) => {
     });
 
     app.get('/api/course', app.permission.check('course:read'), (req, res) => {
-        app.model.course.get(req.query._id, (error, item) => res.send({ error, item }));
+        app.model.course.get(req.query._id, (error, item) => {
+            if (item) {
+                item = app.clone(item, { teachers: [] });
+                const teacherIds = (item.groups || []).map(item => item.teacher);
+                if (teacherIds.length) {
+                    const condition = {
+                        _id: { '$in': teacherIds },
+                    };
+                    app.model.user.getAll(condition, (error, teachers) => {
+                        item.teachers = teachers;
+                        res.send({ error, item });
+                    });
+                } else {
+                    res.send({ error, item });
+                }
+            } else {
+                res.send({ error, item });
+            }
+        });
     });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {

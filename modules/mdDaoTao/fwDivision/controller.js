@@ -12,7 +12,7 @@ module.exports = app => {
     );
 
     app.get('/user/division', app.permission.check('division:read'), app.templates.admin);
-    app.get('/user/division/edit/:id', app.permission.check('division:write'), app.templates.admin);
+    app.get('/user/division/:id', app.permission.check('division:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/division/all', app.permission.check('division:read'), (req, res) => {

@@ -62,7 +62,11 @@ export function getCourse(_id, done) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                if (data.item) {
+                    if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) => a.firstname.toLowerCase() > b.firstname.toLowerCase() ? +1 : -1);
+                    if (data.item.teachers) data.item.teachers = data.item.teachers.sort((a, b) => a.firstname.toLowerCase() > b.firstname.toLowerCase() ? +1 : -1);
+                }
+                done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
             }
         }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));

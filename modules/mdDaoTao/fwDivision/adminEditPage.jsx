@@ -9,7 +9,7 @@ class DivisionEditPage extends AdminPage {
 
     componentDidMount() {
         T.ready('/user/division', () => {
-            const route = T.routeMatcher('/user/division/edit/:_id'), params = route.parse(window.location.pathname);
+            const route = T.routeMatcher('/user/division/:_id'), params = route.parse(window.location.pathname);
             this.props.getDivisionItem(params._id, data => {
                 if (data.item) {
                     this.setState(data.item);
