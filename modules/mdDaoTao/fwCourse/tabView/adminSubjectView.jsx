@@ -11,9 +11,9 @@ class SubjectModal extends AdminModal {
 
     onSubmit = () => {
         const subjects = this.props.subjects ? [...this.props.subjects].map(item => item._id) : [],
-            subjectId = this.itemSubject.value();
-        if (!subjects.contains(subjectId)) {
-            subjects.push(subjectId);
+            _subjectId = this.itemSubject.value();
+        if (!subjects.contains(_subjectId)) {
+            subjects.push(_subjectId);
             this.props.update(this.props._id, { subjects }, this.hide);
         } else {
             this.hide();
