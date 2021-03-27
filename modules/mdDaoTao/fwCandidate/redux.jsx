@@ -195,7 +195,6 @@ export function createCandidate(candidate, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
-                T.notify('Gửi đăng ký tư vấn thành công!', 'danger');
             }
         }, error => T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
     }

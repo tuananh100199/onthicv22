@@ -55,6 +55,8 @@ class AdminListSubject extends AdminPage {
                         <tr>
                             <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                             <th style={{ width: '100%' }}>Tiêu đề</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Số bài học</th>
+                            <th style={{ width: 'auto' }} nowrap='true'>Số câu hỏi</th>
                             {permission.write || permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                         </tr>
                     </thead>
@@ -63,6 +65,8 @@ class AdminListSubject extends AdminPage {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
                                 <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
+                                <td style={{ textAlign: 'right' }}>{item.lessons ? item.lessons.length : 0}</td>
+                                <td style={{ textAlign: 'right' }}>{item.questions ? item.questions.length : 0}</td>
                                 {permission.write || permission.delete ?
                                     <td>
                                         <div className='btn-group'>

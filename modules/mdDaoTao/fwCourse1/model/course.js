@@ -20,15 +20,15 @@ module.exports = app => {
         licenseClass: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
         subjectList: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }]
     });
-    const model = app.db.model('Course', schema);
+    const model = app.db.model('Course1', schema);
 
-    app.model.course = {
+    app.model.course1 = {
         create: (data, done) => app.model.courseType.get(data.licenseClass, (_, item) =>
             model.create({
                 ...data,
                 abstract: item.shortDescription,
                 content: item.detailDescription,
-                subjectList: item.subjectList
+                subjectList: item.subjects
             }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {

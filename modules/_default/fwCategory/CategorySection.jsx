@@ -18,7 +18,10 @@ class CategoryModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const changes = { title: this.itemTitle.value().trim(), description: this.itemDescription.value().trim() };
+        const changes = {
+            title: this.itemTitle.value().trim(),
+            description: this.itemDescription.value().trim(),
+        };
         if (this.state._id) { // Update
             this.props.update(this.state._id, changes, () => this.hide());
         } else { // Create

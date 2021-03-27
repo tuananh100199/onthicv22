@@ -26,6 +26,7 @@ module.exports = (app) => {
         giayKhamSucKhoe: { type: Boolean, default: false },                                         // Checkbox, đánh dấu có giấy khám sức khoẻ hay chưa có
         giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
+        course: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                                // Khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
@@ -71,9 +72,12 @@ module.exports = (app) => {
             }
         }),
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),
+        update: (_id, $set, $unset, done) => {
+            $set.modifiedDate = new Date();
+            done ?
+                model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
+                model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset);
+        },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

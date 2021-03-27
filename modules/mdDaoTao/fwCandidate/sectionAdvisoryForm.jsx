@@ -32,15 +32,14 @@ class SectionAdvisoryForm extends React.Component {
             (this.email).focus();
         } else {
             const data = {
-                // courseType: this.courseType.value,
+                courseType: this.courseType.value(),
                 firstname: this.firstname.value,
                 lastname: this.lastname.value,
                 email: this.email.value,
                 phone: this.phone.value
             };
-            //TODO
             this.props.createCandidate(data, () => {
-               this.firstname.value = this.lastname.value =  this.email.value = this.phone.value = '';
+                this.firstname.value = this.lastname.value =  this.email.value = this.phone.value = '';
                 T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
             });
         }

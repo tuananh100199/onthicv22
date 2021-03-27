@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4010: { title: 'Loại khoá học', link: '/user/course-type/list' },
+            4010: { title: 'Loại khóa học', link: '/user/course-type/list' },
         }
     };
 
@@ -21,7 +21,7 @@ module.exports = (app) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.courseType.getPage(pageNumber, pageSize, {}, (error, page) => {
-            res.send({ page, error: error ? 'Danh sách loại khoá học không sẵn sàng!' : null });
+            res.send({ page, error: error ? 'Danh sách loại khóa học không sẵn sàng!' : null });
         });
     });
 
@@ -39,7 +39,7 @@ module.exports = (app) => {
 
     app.put('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
         const $set = req.body.changes;
-        if ($set && $set.subjectList && $set.subjectList === 'empty') $set.subjectList = [];
+        if ($set && $set.subjects && $set.subjects === 'empty') $set.subjects = [];
         app.model.courseType.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 

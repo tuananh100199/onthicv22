@@ -19,7 +19,7 @@ class PreStudentPage extends AdminPage {
             title: 'Ứng viên',
             breadcrumb: ['Ứng viên'],
             content: <>
-                TODO: Ứng viên
+                TODO: Ứng viên (course == null). Table hiển thị: Họ và Tên, user.email, user.mobile, courseType
             </>,
             // onCreate: permission.write ? this.create : null,
         });

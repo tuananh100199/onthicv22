@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllDivisions, createDivision, deleteDivision, updateDivision } from './redux';
+import { getDivisionAll, createDivision, deleteDivision, updateDivision } from './redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class DivisionModal extends AdminModal {
@@ -19,7 +19,7 @@ class DivisionModal extends AdminModal {
             this.props.createDivision(newData, data => {
                 if (data.item) {
                     this.hide();
-                    this.props.history.push('/user/division/edit/' + data.item._id);
+                    this.props.history.push('/user/division/' + data.item._id);
                 }
             });
         }
@@ -33,9 +33,9 @@ class DivisionModal extends AdminModal {
 
 class DivisionPage extends AdminPage {
     componentDidMount() {
-        this.props.getAllDivisions();
+        this.props.getDivisionAll();
         T.ready(() => T.showSearchBox());
-        T.onSearch = (searchText) => this.props.getAllDivisions(searchText);
+        T.onSearch = (searchText) => this.props.getDivisionAll(searchText);
     }
 
     create = e => e.preventDefault() || this.modal.show();
@@ -58,10 +58,10 @@ class DivisionPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/division/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/division/' + item._id} />
                     <TableCell type='checkbox' content={item.isOutside} permission={permission} onChanged={isOutside => this.props.updateDivision(item._id, { isOutside }, () => T.notify('Cập nhật cơ sở thành công!', 'success'))} />
                     <TableCell type='image' style={{ width: '20%' }} content={item.image} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/division/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/division/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 
@@ -79,5 +79,5 @@ class DivisionPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.division });
-const mapActionsToProps = { getAllDivisions, createDivision, deleteDivision, updateDivision };
+const mapActionsToProps = { getDivisionAll, createDivision, deleteDivision, updateDivision };
 export default connect(mapStateToProps, mapActionsToProps)(DivisionPage);

@@ -12,7 +12,7 @@ module.exports = app => {
     app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/user/page/:pageNumber/:pageSize', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
+    app.get('/api/user/page/:pageNumber/:pageSize', app.permission.check('user:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},

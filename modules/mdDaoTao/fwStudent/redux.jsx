@@ -41,21 +41,6 @@ export default function studentReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getStudentAll(done) {
-    return dispatch => {
-        const url = '/api/student/all';
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done();
-                dispatch({ type: StudentGetAll, list: data.list });
-            }
-        }, error => T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
-    }
-}
-
 T.initCookiePage('adminStudent');
 export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminStudent', pageNumber, pageSize);

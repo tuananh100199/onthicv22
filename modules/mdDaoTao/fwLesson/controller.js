@@ -8,8 +8,7 @@ module.exports = (app) => {
     app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write' }, { name: 'lesson:delete' });
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/dao-tao/bai-hoc/edit/:_id', app.templates.admin);
-    app.get('/user/dao-tao/bai-hoc/view/:_id', app.templates.admin);
+    app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -24,8 +23,8 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/lesson/item/:_id', app.permission.check('lesson:read'), (req, res) => {
-        app.model.lesson.get(req.params._id, (error, item) => res.send({ error, item }));
+    app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {
+        app.model.lesson.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {

@@ -5,13 +5,13 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         image: String,
-        subjectList: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
+        subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
         isPriceDisplayed: { type: Boolean, default: false }
     });
     const model = app.db.model('CourseType', schema);
 
     app.model.courseType = {
-        create: (data, done) => model.create({ ...data, title: data.title || 'Loại khoá học mới' }, (error, item) => {
+        create: (data, done) => model.create({ ...data, title: data.title || 'Loại khóa học mới' }, (error, item) => {
             if (error) {
                 done(error);
             } else {
@@ -41,11 +41,13 @@ module.exports = app => {
 
         getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
 
-        get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done).populate('subjectList') : model.findOne(condition, done).populate('subjectList'),
+        get: (condition, done) => typeof condition == 'string' ?
+            model.findById(condition, done).populate('subjects') :
+            model.findOne(condition, done).populate('subjects'),
 
         update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjectList').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjectList').exec($unset),
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjects').exec(done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjects').exec($unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

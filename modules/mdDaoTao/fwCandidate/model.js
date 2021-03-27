@@ -10,15 +10,14 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
         modifiedDate: { type: Date, default: Date.now },                    // Ngày cập nhật cuối cùng
         read: { type: Boolean, default: false },
+        courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
     });
     const model = app.db.model('Candidate', schema);
-    //TODO: Tuấn Anh, nhớ sort ngày mới ở trên. 
-    // Trong contrller, khi create, nhớ kiểm tra req.session.user có khác null không? Khác null thì lưu vào thuộc tính user. Còn bằng null thì tạo user, và lưu vào biến user.
- 
+    
     app.model.candidate = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (done) => model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: (done) => model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(done),
 
         getUnread: (done) => model.find({ read: false }).sort({ _id: -1 }).exec(done),
 
@@ -30,7 +29,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
