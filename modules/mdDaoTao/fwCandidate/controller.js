@@ -2,7 +2,7 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.communication,
         menus: {
-            3004: { title: 'Candidate', link: '/user/candidate', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
+            3001: { title: 'Đăng ký tư vấn', link: '/user/candidate', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'candidate:read', menu }, { name: 'candidate:write' }, { name: 'candidate:delete' });
@@ -107,6 +107,7 @@ module.exports = app => {
                                     email: item.email,
                                     firstname: item.firstname,
                                     lastname: item.lastname,
+                                    phoneNumber: item.phone,
                                     password: dataPassword
                                 }; 
                             app.model.user.create(data, (error, user) => {

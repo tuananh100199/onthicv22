@@ -9,7 +9,6 @@ import TestimonyPage from './adminTestimonyView';
 import StaffGroupPage from './adminStaffView';
 import ListVideoPage from './adminListVideoView';
 import ListContentView from './adminListContentView';
-import DangKyTuVanPage from 'modules/mdDaoTao/fwDangKyTuVan/adminPage';
 
 export class ComponentPage extends AdminPage {
     render() {
@@ -23,7 +22,6 @@ export class ComponentPage extends AdminPage {
         tabs.push({ key: tabs.length, title: 'Thống kê', component: <StatisticPage history={this.props.history} permission={permission} /> });
         // tabs.push({ key: tabs.length, title: 'Testimony', component: <TestimonyPage /> });
         // tabs.push({ key: tabs.length, title: 'Nhóm nhân viên', component: <StaffGroupPage /> });
-        // tabs.push({ key: tabs.length, title: 'Đăng ký tư vấn', component: <DangKyTuVanPage history={this.props.history} /> });
 
         return this.renderPage({
             icon: 'fa fa-cogs',
