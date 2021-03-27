@@ -107,7 +107,7 @@ class CourseTypeEditPage extends AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        {item.subjects.sort((a, b) => a.title.localeCompare(b.title)).map((item, index) => (
+                        {item.subjects.map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>
