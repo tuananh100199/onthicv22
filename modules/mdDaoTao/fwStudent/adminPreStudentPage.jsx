@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStudentPage } from './redux';
 import { Link } from 'react-router-dom';
-// import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getAllCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
