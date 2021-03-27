@@ -68,6 +68,8 @@ class EditCoursePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('course'),
+            permissionUser = this.getUserPermission('user'),
+            permissionDivision = this.getUserPermission('division'),
             readOnly = !permission.write;
         const tabInfo = <div className='row'>
             <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-6' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
@@ -93,11 +95,11 @@ class EditCoursePage extends AdminPage {
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permission} /> },
-            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permission} /> },
-            { title: 'Học viên', component: <AdminStudentView permission={permission} /> },
+            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permission} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
+            { title: 'Học viên', component: <AdminStudentView permission={permission} permissionUser={permissionUser} /> },
         ];
         return this.renderPage({
-            icon: 'fa fa-file',
+            icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
             breadcrumb: [<Link to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
             content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,

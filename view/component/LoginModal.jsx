@@ -41,6 +41,7 @@ export default class LoginModal extends React.Component {
         this.txtEmail = React.createRef();
         this.txtPassword = React.createRef();
         this.signUpEmail = React.createRef();
+        this.signUpPhone = React.createRef();
         this.signUpPassword = React.createRef();
         this.errorMessage = React.createRef();
         this.signUpErrorMessage = React.createRef();
@@ -190,9 +191,10 @@ export default class LoginModal extends React.Component {
                 lastname: this.txtFirstname.current.value.trim(),
                 firstname: this.txtLastname.current.value.trim(),
                 email: this.signUpEmail.current.value.trim(),
+                phoneNumber: this.signUpPhone.current.value.trim(),
                 password: this.signUpPassword.current.value
             };
-        if (data.firstname !== '' && data.lastname !== '' && data.email !== '' && data.password !== '') {
+        if (data.firstname !== '' && data.lastname !== '' && data.email !== '' && data.password !== '' && data.phoneNumber !== '') {
             this.props.register(data, result => {
                 errorMessage.html(result.error);
                 if (result.user) {
@@ -273,6 +275,12 @@ export default class LoginModal extends React.Component {
                                                 <input className='input100' type='text' name='email' autoComplete="off" placeholder='Email' ref={this.signUpEmail} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
+                                            </div>
+
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Phone number is required'>
+                                                <input className='input100' type='text' autoComplete="off" placeholder='Số điện thoại' ref={this.signUpPhone} />
+                                                <span className='focus-input100' />
+                                                <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Password is required'>

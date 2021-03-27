@@ -63,8 +63,10 @@ export function getCourse(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (data.item) {
-                    if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) => a.firstname.toLowerCase() > b.firstname.toLowerCase() ? +1 : -1);
-                    if (data.item.teachers) data.item.teachers = data.item.teachers.sort((a, b) => a.firstname.toLowerCase() > b.firstname.toLowerCase() ? +1 : -1);
+                    if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
+                        (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
+                    if (data.item.groups) data.item.groups = data.item.groups.sort((a, b) =>
+                        a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
                 }
                 done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });

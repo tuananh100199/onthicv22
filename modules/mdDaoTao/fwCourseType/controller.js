@@ -29,7 +29,7 @@ module.exports = (app) => {
         app.model.courseType.getAll((error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/course-type', app.permission.check('course-type:read'), (req, res) => {
+    app.get('/api/course-type', (req, res) => {
         app.model.courseType.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 

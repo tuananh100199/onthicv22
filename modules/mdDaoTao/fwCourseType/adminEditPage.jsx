@@ -111,7 +111,7 @@ class CourseTypeEditPage extends AdminPage {
                                 <td>{index + 1}</td>
                                 <td>
                                     {permission.write ?
-                                        <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>
+                                        <Link to={'/user/dao-tao/mon-hoc/' + item._id}>
                                             {item.title}
                                         </Link> : item.title}</td>
                                 <td>

@@ -6,16 +6,11 @@ module.exports = (app) => {
         },
     };
 
-    app.permission.add(
-        { name: 'subject:read', menu },
-        { name: 'subject:write' },
-        { name: 'subject:delete' },
-    );
+    app.permission.add({ name: 'subject:read', menu }, { name: 'subject:write' }, { name: 'subject:delete' });
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
-    app.get('/user/dao-tao/mon-hoc/edit/:subjectId', app.templates.admin);
-
+    app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -30,8 +25,8 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/subject/item/:subjectId', app.permission.check('subject:read'), (req, res) => {
-        app.model.subject.get(req.params.subjectId, (error, item) => res.send({ error, item }));
+    app.get('/api/subject', app.permission.check('subject:read'), (req, res) => {
+        app.model.subject.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
@@ -48,6 +43,7 @@ module.exports = (app) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
+
     app.post('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const subjectId = req.body._subjectId,
             lessonId = req.body._subjectLessonId;
@@ -58,17 +54,6 @@ module.exports = (app) => {
                 res.send({ check: `Môn học đã có bài học này!` });
             } else {
                 app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
-            }
-        });
-    });
-
-    app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _subjectLessonId } = req.body;
-        app.model.subject.deleteLesson(_subjectId, _subjectLessonId, (error) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
             }
         });
     });
@@ -96,6 +81,18 @@ module.exports = (app) => {
         });
     });
 
+    app.delete('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectLessonId } = req.body;
+        app.model.subject.deleteLesson(_subjectId, _subjectLessonId, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.get(_subjectId, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
+
     app.post('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
         app.model.subjectQuestion.create(req.body.data, (error, questions) => {
             if (error || !questions) {
@@ -103,6 +100,19 @@ module.exports = (app) => {
             } else {
                 app.model.subject.addQuestion(req.body._subjectId, questions, (error, item) => {
                     res.send({ error, questions: item && item.questions ? item.questions : [] });
+                });
+            }
+        });
+    });
+
+    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
+        const { _subjectId, _subjectQuestionId, data } = req.body;
+        app.model.subjectQuestion.update(_subjectQuestionId, data, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.subject.get(_subjectId, (error, item) => {
+                    res.send({ error, questions: item && item.questions ? item.questions : [] })
                 });
             }
         });
@@ -131,19 +141,6 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _subjectQuestionId, data } = req.body;
-        app.model.subjectQuestion.update(_subjectQuestionId, data, (error) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.subject.get(_subjectId, (error, item) => {
-                    res.send({ error, questions: item && item.questions ? item.questions : [] })
-                });
-            }
-        });
-    });
-
     app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
         const { _subjectId, _subjectQuestionId } = req.body;
         app.model.subjectQuestion.delete(_subjectQuestionId, error => {
@@ -156,5 +153,4 @@ module.exports = (app) => {
             }
         });
     });
-
 };

@@ -19,7 +19,6 @@ class QuestionModal extends AdminModal {
         this.itemCategories.value(categories);
         this.itemIsImportance.value(importance);
         this.itemIsActive.value(active);
-
         this.setState({ _id, image, answers, trueAnswer });
     }
 

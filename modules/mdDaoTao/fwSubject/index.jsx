@@ -12,7 +12,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/dao-tao/mon-hoc/edit/:subjectId',
+            path: '/user/dao-tao/mon-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
     ],

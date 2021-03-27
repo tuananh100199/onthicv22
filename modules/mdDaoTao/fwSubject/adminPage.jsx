@@ -20,7 +20,7 @@ class SubjectModal extends AdminModal {
         } else {
             this.props.createSubject(newData, data => {
                 this.hide();
-                data && data.item && this.props.history.push('/user/dao-tao/mon-hoc/edit/' + data.item._id);
+                data && data.item && this.props.history.push('/user/dao-tao/mon-hoc/' + data.item._id);
             });
         }
     }
@@ -64,14 +64,14 @@ class AdminListSubject extends AdminPage {
                         {list.map((item, index) => (
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{(pageNumber - 1) * pageSize + index + 1}</td>
-                                <td><Link to={'/user/dao-tao/mon-hoc/edit/' + item._id}>{item.title}</Link></td>
+                                <td><Link to={'/user/dao-tao/mon-hoc/' + item._id}>{item.title}</Link></td>
                                 <td style={{ textAlign: 'right' }}>{item.lessons ? item.lessons.length : 0}</td>
                                 <td style={{ textAlign: 'right' }}>{item.questions ? item.questions.length : 0}</td>
                                 {permission.write || permission.delete ?
                                     <td>
                                         <div className='btn-group'>
                                             {permission.write ?
-                                                <Link to={'/user/dao-tao/mon-hoc/edit/' + item._id} className='btn btn-primary'>
+                                                <Link to={'/user/dao-tao/mon-hoc/' + item._id} className='btn btn-primary'>
                                                     <i className='fa fa-lg fa-edit' />
                                                 </Link> : null}
                                             {permission.delete ?

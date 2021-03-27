@@ -24,7 +24,7 @@ module.exports = app => {
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).sort({ title: -1 }).exec(done) : model.find({}).sort({ title: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate('items', '-content').sort({ title: -1 }).exec(done) : model.find({}).populate('items', '-content').sort({ title: -1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
 

@@ -2,8 +2,8 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4050: { title: 'Danh mục câu hỏi thi', link: '/user/drive-question/category' },
-            4060: { title: 'Câu hỏi thi', link: '/user/drive-question' },
+            4001: { title: 'Danh mục câu hỏi thi', link: '/user/drive-question/category' },
+            4002: { title: 'Câu hỏi thi', link: '/user/drive-question' },
         },
     };
     app.permission.add(

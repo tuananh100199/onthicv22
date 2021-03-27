@@ -5,11 +5,7 @@ module.exports = app => {
             4005: { title: 'Cơ sở đào tạo', link: '/user/division', icon: 'fa fa-university', backgroundColor: 'rgb(106, 90, 205)' }
         }
     };
-    app.permission.add(
-        { name: 'division:read', menu },
-        { name: 'division:write' },
-        { name: 'division:delete' }
-    );
+    app.permission.add({ name: 'division:read', menu }, { name: 'division:write' }, { name: 'division:delete' });
 
     app.get('/user/division', app.permission.check('division:read'), app.templates.admin);
     app.get('/user/division/:id', app.permission.check('division:write'), app.templates.admin);

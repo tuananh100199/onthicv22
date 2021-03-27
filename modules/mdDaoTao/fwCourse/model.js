@@ -19,7 +19,6 @@ module.exports = app => {
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
         admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
-        // teachers: { type: app.db.Schema.Types.ObjectId, ref: 'User' },   // Cố vấn học tập
         groups: [{
             teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
@@ -33,6 +32,7 @@ module.exports = app => {
         create: (data, done) => app.model.courseType.get(data.courseType, (_, item) =>
             model.create({
                 ...data,
+                courseFee: item.price,
                 shortDescription: item.shortDescription,
                 detailDescription: item.detailDescription,
                 subjects: item.subjects
@@ -54,9 +54,10 @@ module.exports = app => {
 
         getAll: done => model.find({}).sort({ name: 1 }).exec(done),
 
-        get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition).populate('courseType').populate('subjects').populate('admins', '-password').exec(done) :
-            model.findOne(condition).populate('courseType').populate('subjects').populate('admins', '-password').exec(done),
+        get: (condition, done) => {
+            const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
+            findTask.populate('courseType').populate('subjects').populate('admins', '-password').populate('groups.teacher', '-password').exec(done);
+        },
 
         update: (_id, $set, $unset, done) => {
             $set.modifiedDate = new Date();

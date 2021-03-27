@@ -21,6 +21,10 @@ export default function addressReducer(state = null, data) {
 export function getDivisionAll(searchText, done) {
     return dispatch => {
         const url = '/api/division/all';
+        if (typeof searchText == 'function') {
+            done = searchText;
+            searchText = '';
+        }
         T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger');
