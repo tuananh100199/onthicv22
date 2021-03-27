@@ -8,12 +8,12 @@ export default {
     },
     routes: [
         {
-            path: '/user/division/edit/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
-        },
-        {
             path: '/user/division',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
+        },
+        {
+            path: '/user/division/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') }),
         },
     ]
 };

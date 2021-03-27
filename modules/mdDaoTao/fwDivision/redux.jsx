@@ -18,7 +18,7 @@ export default function addressReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllDivisions(searchText, done) {
+export function getDivisionAll(searchText, done) {
     return dispatch => {
         const url = '/api/division/all';
         T.get(url, { searchText }, data => {
@@ -54,7 +54,7 @@ export function createDivision(newData, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
-                dispatch(getAllDivisions());
+                dispatch(getDivisionAll());
             }
         }, error => T.notify('Tạo cơ sở bị lỗi!', 'danger'));
     }
@@ -70,7 +70,7 @@ export function updateDivision(_id, changes, done) {
                 done && done(data.error);
             } else {
                 dispatch({ type: DivisionGet, item: data.item });
-                dispatch(getAllDivisions());
+                dispatch(getDivisionAll());
                 done && done();
             }
         }, error => T.notify('Cập nhật cơ sở bị lỗi!', 'danger'));
@@ -86,7 +86,7 @@ export function deleteDivision(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xóa cơ sở thành công!', 'error', false, 800);
-                dispatch(getAllDivisions());
+                dispatch(getDivisionAll());
             }
         }, error => T.notify('Xóa cơ sở bị lỗi!', 'danger'));
     }

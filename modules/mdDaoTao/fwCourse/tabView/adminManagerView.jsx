@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { getDivisionAll } from 'modules/mdDaotao/fwDivision/redux';
 import { getCourse, updateCourse } from '../redux';
 import { ajaxSelectAdmin } from 'modules/_default/fwUser/redux';
 import { FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
@@ -7,6 +8,7 @@ import { FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 class AdminManagerView extends React.Component {
     state = {};
     componentDidMount() {
+        this.props.getDivisionAll();
         $(document).ready(() => {
             this.selectAdmin.value(null);
             this.selectTeacher.value(null);
@@ -38,7 +40,7 @@ class AdminManagerView extends React.Component {
         const { _id, groups = [] } = this.props.course.item,
             _teacherUserId = this.selectTeacher.value();
         if (_teacherUserId) {
-            groups.push({ supervisor: _teacherUserId });
+            groups.push({ teacher: _teacherUserId });
             this.props.updateCourse(_id, { groups }, () => {
                 this.selectTeacher.value(null);
                 this.props.getCourse(_id);
@@ -56,13 +58,12 @@ class AdminManagerView extends React.Component {
     render() {
         const permission = this.props.permission || {},
             item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [], groups: [] };
-        console.log(item)
         const tableAdmin = renderTable({
-            getDataSource: () => item.admins, // && item.admins.sort((a, b) => a.firstname.localeCompare(b.firstname)),
+            getDataSource: () => item.admins,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên quản trị viên</th>
+                    <th style={{ width: '100%' }}>Họ và Tên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở ngoài</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
@@ -76,12 +77,13 @@ class AdminManagerView extends React.Component {
                     <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeAdmin(e, index)} />
                 </tr>),
         });
+
         const tableTeacher = renderTable({
-            getDataSource: () => item.groups, // && item.groups.sort((a, b) => a.firstname.localeCompare(b.firstname)),
+            getDataSource: () => item.teachers && item.teachers.sort((a, b) => a.firstname.toLowerCase() - b.firstname.toLowerCase()),
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên Cố vấn học tập</th>
+                    <th style={{ width: '100%' }}>Họ và Tên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở ngoài</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
@@ -100,9 +102,8 @@ class AdminManagerView extends React.Component {
             <div className='tile-body row'>
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Quản trị viên</h3>
-                    {tableAdmin}
                     {permission.write ?
-                        <div className='tile-footer' style={{ display: 'flex' }}>
+                        <div style={{ display: 'flex' }}>
                             <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectAdmin} style={{ width: '100%' }} />
                             <div style={{ width: 'auto', paddingLeft: 8 }}>
                                 <button className='btn btn-success' type='button' onClick={this.addAdmin}>
@@ -110,13 +111,13 @@ class AdminManagerView extends React.Component {
                                 </button>
                             </div>
                         </div> : null}
+                    {tableAdmin}
                 </div>
 
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Cố vấn học tập</h3>
-                    {tableTeacher}
                     {permission.write ?
-                        <div className='tile-footer' style={{ display: 'flex' }}>
+                        <div style={{ display: 'flex' }}>
                             <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectAdmin} style={{ width: '100%' }} />
                             <div style={{ width: 'auto', paddingLeft: 8 }}>
                                 <button className='btn btn-success' type='button' onClick={this.addTeacher}>
@@ -124,11 +125,12 @@ class AdminManagerView extends React.Component {
                                 </button>
                             </div>
                         </div> : null}
+                    {tableTeacher}
                 </div>
             </div>);
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourse, updateCourse };
+const mapStateToProps = state => ({ system: state.system, division: state.division, course: state.course });
+const mapActionsToProps = { getDivisionAll, getCourse, updateCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminManagerView);

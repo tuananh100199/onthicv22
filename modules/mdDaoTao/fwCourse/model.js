@@ -19,8 +19,9 @@ module.exports = app => {
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
         admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
+        // teachers: { type: app.db.Schema.Types.ObjectId, ref: 'User' },   // Cố vấn học tập
         groups: [{
-            supervisor: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
+            teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
