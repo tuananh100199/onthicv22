@@ -1,27 +1,26 @@
 module.exports = (app) => {
-    const menuCandidate = {
+    const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
             4015: { title: 'Ứng viên', link: '/user/pre-student' },
         }
     };
-    const menu = {
-        parentMenu: app.parentMenu.trainning,
-        menus: {
-            4045: { title: 'Học viên', link: '/user/student' },
-        }
-    };
+    // const menu = {
+    //     parentMenu: app.parentMenu.trainning,
+    //     menus: {
+    //         4045: { title: 'Học viên', link: '/user/student' },
+    //     }
+    // };
 
     app.permission.add(
         { name: 'student:read', menu },
         { name: 'student:write' },
         { name: 'student:delete' },
-        { name: 'student:candidate', menuCandidate },
     );
 
     // app.get('/user/pre-student', app.permission.check('student:candidate'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('student:write'), app.templates.admin);
-    app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
+    // app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
     // app.get('/student/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------
@@ -62,7 +61,7 @@ module.exports = (app) => {
 
     app.put('/api/student', app.permission.check('student:write'), (req, res) => {
         const $set = req.body.changes;
-        if ($set && $set.subjects && $set.subjects === 'empty') $set.subjects = [];
+        // if ($set && $set.subjects && $set.subjects === 'empty') $set.subjects = [];
         app.model.student.update(req.body._id, $set, (error, item) => res.send({ error, item }))
     });
 
@@ -70,14 +69,14 @@ module.exports = (app) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }))
     });
     // Hook upload images ---------------------------------------------------------------------------------------------
-    app.createFolder(app.path.join(app.publicPath, '/img/student'));
+    // app.createFolder(app.path.join(app.publicPath, '/img/student'));
 
-    const uploadstudent = (req, fields, files, params, done) => {
-        if (fields.userData && fields.userData[0].startsWith('student:') && files.studentImage && files.studentImage.length > 0) {
-            console.log('Hook: uploadstudent => course type image upload');
-            app.uploadComponentImage(req, 'student', app.model.student.get, fields.userData[0].substring('student:'.length), files.studentImage[0].path, done);
-        }
-    };
-    app.uploadHooks.add('uploadstudent', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadstudent(req, fields, files, params, done), done, 'student:write'));
+    // const uploadstudent = (req, fields, files, params, done) => {
+    //     if (fields.userData && fields.userData[0].startsWith('student:') && files.studentImage && files.studentImage.length > 0) {
+    //         console.log('Hook: uploadstudent => course type image upload');
+    //         app.uploadComponentImage(req, 'student', app.model.student.get, fields.userData[0].substring('student:'.length), files.studentImage[0].path, done);
+    //     }
+    // };
+    // app.uploadHooks.add('uploadstudent', (req, fields, files, params, done) =>
+    //     app.permission.has(req, () => uploadstudent(req, fields, files, params, done), done, 'student:write'));
 };

@@ -17,7 +17,7 @@ class StudentPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete', 'candidate']);
+        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -35,11 +35,12 @@ class StudentPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
-                    <TableCell type='text' content={item.email} />
-                    <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updatestudent(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={e => !item.default && this.delete(e, item)} />
+                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} />
+                    <TableCell type='text' content={item.user && item.user.email} />
+                    <TableCell type='text' content={T.mobileDisplay(item.user && item.user.phoneNumber)} />
+                    <TableCell type='text' content={item.courseType.title} />
+                    <TableCell type='text' content={item.course.title} />
+                    <TableCell type='buttons' content={item} permission={permission} />
                 </tr>),
         });
         return this.renderPage({
@@ -47,7 +48,6 @@ class StudentPage extends AdminPage {
             title: 'Học viên',
             breadcrumb: ['Học viên'],
             content: <>
-                TODO: Học viên (course != null) Table hiển thị: Họ và Tên, user.email, user.mobile, courseType
                 <div className='tile'>{table}</div>
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getStudentPage} />
