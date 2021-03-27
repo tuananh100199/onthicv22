@@ -4,7 +4,7 @@ import T from 'view/js/common';
 const ListContentGetAll = 'ListContentGetAll';
 const ListContentUpdate = 'ListContentUpdate';
 
-export default function listContentReducer(state = null, data) {
+export default function listContentReducer(state = {}, data) {
     switch (data.type) {
         case ListContentGetAll:
             return Object.assign({}, state, { list: data.list });
@@ -18,7 +18,6 @@ export default function listContentReducer(state = null, data) {
                 }
             }
             return state;
-
         default:
             return state;
     }
@@ -27,16 +26,16 @@ export default function listContentReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 export function getListContentAll(done) {
     return dispatch => {
-        const url = '/api/list-content/all';
+        const url = `/api/list-content/all`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (done) done(data.list);
-                dispatch({ type: ListContentGetAll, list: data.list });
+                dispatch({ type: ListContentGetAll, list: data.list ? data.list : [] });
             }
-        }, error => T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger'));
+        }, error => console.error(`GET: ${url}. ${error}`));
     }
 }
 
@@ -46,6 +45,7 @@ export function getListContent(_id, done) {
             T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
             console.error(`GET: ${url}. ${data.error}`);
         } else {
+            dispatch(getListContentAll());
             dispatch({ type: ListContentUpdate, item: data.item });
             done && done(data);
         }
@@ -54,14 +54,14 @@ export function getListContent(_id, done) {
 
 export function createListContent(newData, done) {
     return dispatch => {
-        const url = '/api/list-content';
+        const url = `/api/list-content`;
         T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo danh sách bài viết bị lỗi!', 'danger');
-                console.error('POST: ' + url + '. ' + data.error);
+                console.error(`POST: ${url}. ${data.error}`);
             } else {
-                if (done) done(data);
                 dispatch(getListContentAll());
+                if (done) done(data);
             }
         }, error => T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
     }
@@ -69,15 +69,15 @@ export function createListContent(newData, done) {
 
 export function updateListContent(_id, changes, done) {
     return dispatch => {
-        const url = '/api/list-content';
+        const url = `/api/list-content`;
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '. ' + data.error);
+                console.error(`PUT: ${url}. ${data.error}`);
                 done && done(data.error);
             } else {
-                dispatch({ type: ListContentUpdate, item: data.item });
                 dispatch(getListContentAll());
+                dispatch({ type: ListContentUpdate, item: data.item });
                 done && done();
             }
         }, error => T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
@@ -86,11 +86,11 @@ export function updateListContent(_id, changes, done) {
 
 export function deleteListContent(_id) {
     return dispatch => {
-        const url = '/api/list-content';
+        const url = `/api/list-content`;
         T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xóa danh sách bài viết bị lỗi!', 'danger');
-                console.error('DELETE: ' + url + '. ' + data.error);
+                console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 T.alert('Xóa danh sách bài viết thành công!', 'error', false, 800);
                 dispatch(getListContentAll());
@@ -106,7 +106,7 @@ export function homeGetListContent(_id, done) {
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách bài viết bị lỗi', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
                 dispatch({ type: ListContentUpdate, item: data.item });
                 done && done(data);

@@ -26,7 +26,7 @@ module.exports = (app) => {
         giayKhamSucKhoe: { type: Boolean, default: false },                                         // Checkbox, đánh dấu có giấy khám sức khoẻ hay chưa có
         giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
-        course: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                                // Khóa học
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                // Khoá học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
