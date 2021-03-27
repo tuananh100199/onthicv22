@@ -14,7 +14,7 @@ class AdminCandidateModal extends AdminModal {
         body: <>
             <label>Họ và tên: <b>{this.state.lastname}&nbsp;{this.state.firstname}</b></label><br />
             <label>Email: <b>{this.state.email}</b></label><br />
-            <label>Số điện thoại: <b>{this.state.phone}</b></label><br />
+            <label>Số điện thoại: <b>{this.state.phoneNumber}</b></label><br />
             <label>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : 'Chưa đăng ký'}</b></label><br />
             <label>Trạng thái: <b>{this.state.state}</b></label><br />
             <label>Ngày đăng ký tư vấn: <b>{new Date(this.state.createdDate).getText()}</b></label><br />
@@ -24,49 +24,43 @@ class AdminCandidateModal extends AdminModal {
 
 class CandidatePage extends AdminPage {
     componentDidMount() {
-        T.ready();
+        T.ready(() => T.showSearchBox());
         this.props.getCandidatePage();
         T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, searchText);
     }
 
-    showCandidate = (e, item) => e.preventDefault() || this.props.getCandidate(item._id, candidate => this.modal.show(candidate));
-
-    changeRead = (item) => this.props.updateCandidate(item._id, { read: !item.read });
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
         isConfirm && this.props.deleteCandidate(item._id));
 
-    exportCandidate = (e) => {
-        this.props.exportCandidateToExcel();
-    }
-
     render() {
-        const permission = this.getUserPermission('candidate');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.candidate && this.props.candidate.page ?
+        const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.candidate && this.props.candidate.page ?
             this.props.candidate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const readStyle = { textDecorationLine: 'none', fontWeight: 'normal', color: 'black' },
-            unreadStyle = { textDecorationLine: 'none', fontWeight: 'bold' };
-        let table = renderTable({
-            getDataSource: () => this.props.candidate && this.props.candidate.page && this.props.candidate.page.list,
+        const table = renderTable({
+            getDataSource: () => list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Họ và tên</th>
-                    <th style={{ width: '40%' }}>Email</th>
-                    <th style={{ width: 'auto' }}>Số điện thoại</th>
-                    <th style={{ width: 'auto' }}>Loại khóa học</th>
-                    <th style={{ width: '20%' }}>Trạng thái</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    <th style={{ width: '50%' }}>Họ và tên</th>
+                    <th style={{ width: '50%' }}>Email</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Thời gian</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
+                    <th style={{ width: 'auto' }}>Trạng thái</th>
+                    {permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' onClick={e => this.showCandidate(e, item)} style={item.read ? readStyle : unreadStyle} content={item.lastname + ' ' + item.firstname} />
-                    <TableCell type='text' content={item.email} />
-                    <TableCell type='number' content={item.phone} />
-                    <TableCell type='text' content={item.courseType? item.courseType.title : ''} />
-                    <TableCell type='text' content={item.state} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showCandidate} onDelete={this.delete} />
+                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} style={item.modifiedDate ? {} : { fontWeight: 'bold', color: '#17a2b8' }} />
+                    <TableCell content={item.email} />
+                    <TableCell content={item.phoneNumber} />
+                    <TableCell type='date' content={item.createdDate} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.courseType ? item.courseType.title : ''} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell content={item.state} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
 
@@ -77,12 +71,9 @@ class CandidatePage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
-                {permission.write ?
-                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel' onClick={e => this.exportCandidate(e)}>
-                        <i className='fa fa-file-excel-o' />
-                    </button> : null}
                 <AdminCandidateModal ref={e => this.modal = e} />
             </>,
+            onExport: permission.export ? this.props.exportCandidateToExcel : null,
         });
     }
 }

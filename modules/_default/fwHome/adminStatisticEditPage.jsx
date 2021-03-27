@@ -121,7 +121,7 @@ class StatisticEditPage extends AdminPage {
             icon: 'fa fa-picture-o',
             title: 'Thống kê: ' + (this.state.title || '...'),
             breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Thống kê'],
-            content: (<>
+            content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body row'>
@@ -151,7 +151,7 @@ class StatisticEditPage extends AdminPage {
                     </div>
                 </div>
                 <StatisticItemModal ref={e => this.modal = e} create={this.props.createStatisticItem} update={this.props.updateStatisticItem} readOnly={!permission.write} />
-            </>),
+            </>,
             backRoute: '/user/component',
         });
     }
