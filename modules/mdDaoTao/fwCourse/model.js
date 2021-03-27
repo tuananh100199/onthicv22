@@ -1,9 +1,9 @@
 module.exports = app => {
     const schema = app.db.Schema({
         name: String,                                                       // Tên lớp
-        shortDescription: String,                                           // Giới thiệu ngắn khoá học
-        detailDescription: String,                                          // Chi tiết khoá học
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khoá học
+        shortDescription: String,                                           // Giới thiệu ngắn khóa học
+        detailDescription: String,                                          // Chi tiết khóa học
+        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
         courseFee: { type: Number, default: 0 },                            // Học phí
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         modifiedDate: { type: Date, default: Date.now },
@@ -18,11 +18,10 @@ module.exports = app => {
         thoiGianThiTotNghiepDuKien: { type: Date, default: Date.now },
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
-        admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khoá học
-
+        admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
         groups: [{
             supervisor: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
-            student: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }], default: [] },
+            student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
         lock: { type: Boolean, default: false },
@@ -45,7 +44,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('admins', '-password').sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });
@@ -55,8 +54,8 @@ module.exports = app => {
         getAll: done => model.find({}).sort({ name: 1 }).exec(done),
 
         get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition).populate('courseType').populate('subjects').exec(done)
-            : model.findOne(condition).populate('courseType').populate('subjects').exec(done),
+            model.findById(condition).populate('courseType').populate('subjects').populate('admins', '-password').exec(done) :
+            model.findOne(condition).populate('courseType').populate('subjects').populate('admins', '-password').exec(done),
 
         update: (_id, $set, $unset, done) => {
             $set.modifiedDate = new Date();

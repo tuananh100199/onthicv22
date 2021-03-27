@@ -216,9 +216,14 @@ export const ajaxSelectUser = {
     url: `/api/user/page/1/20`,
     data: params => ({ condition: params.term }),
     processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : []
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
     })
-}
+};
+
+export const ajaxSelectAdmin = T.createAjaxAdapter(
+    `/api/user/page/1/20`,
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
+);
 
 export function ajaxGetUser(_id, done) {
     const url = '/api/user/';

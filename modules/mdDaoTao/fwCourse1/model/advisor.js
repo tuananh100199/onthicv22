@@ -8,7 +8,7 @@ module.exports = app => {
 
     app.model.advisor = {
         create: (data, done) => {
-            if (!data.title) data.title = 'Khoá học mới';
+            if (!data.title) data.title = 'Khóa học mới';
             model.create(data, (error, item) => {
                 if (error) {
                     done(error);

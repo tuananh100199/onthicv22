@@ -142,14 +142,19 @@ export function getCourseTypeByUser(_id, done) {
     }
 }
 
-export const ajaxSelectCourseType = {
-    ajax: true,
-    url: '/api/course-type/all',
-    data: {},
-    processResults: response => ({
-        results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
-    })
-};
+// export const ajaxSelectCourseType = {
+//     ajax: true,
+//     url: '/api/course-type/all',
+//     data: {},
+//     processResults: response => ({
+//         results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+//     })
+// };
+
+export const ajaxSelectCourseType = T.createAjaxAdapter(
+    '/api/course-type/all',
+    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
+);
 
 export function ajaxGetCourseType(_id, done) {
     const url = '/api/course-type';

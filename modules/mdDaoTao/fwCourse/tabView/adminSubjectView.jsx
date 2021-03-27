@@ -27,17 +27,15 @@ class SubjectModal extends AdminModal {
 }
 
 class AdminSubjectView extends React.Component {
-    state = {};
+    addSubject = e => e.preventDefault() || this.modal.show();
 
-    removeSubject = (e, index) => e.preventDefault() || T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
+    removeSubject = (e, index) => e.preventDefault() || T.confirm('Xoá môn học', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id, subjects = [] } = this.props.course.item;
             subjects.splice(index, 1);
             this.props.updateCourse(_id, { subjects: subjects.length ? subjects : 'empty' });
         }
     });
-
-    addSubject = e => e.preventDefault() || this.modal.show();
 
     render() {
         const permission = this.props.permission || {},
@@ -60,14 +58,15 @@ class AdminSubjectView extends React.Component {
                 </tr>),
         });
 
-        return <>
-            <div className='tile-body'>{table}</div>
-            <SubjectModal ref={e => this.modal = e} update={this.props.updateCourse} _id={item._id} subjects={item.subjects || []} />
-            {permission.write ?
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addSubject}>
-                    <i className='fa fa-lg fa-plus' />
-                </button> : null}
-        </>;
+        return (
+            <div className='tile-body'>
+                {table}
+                <SubjectModal ref={e => this.modal = e} update={this.props.updateCourse} _id={item._id} subjects={item.subjects || []} />
+                {permission.write ?
+                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addSubject}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button> : null}
+            </div>);
     }
 }
 
