@@ -2,11 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { FormSelect } from 'view/component/AdminPage';
+import { createCandidate} from './redux';
 
 class SectionAdvisoryForm extends React.Component {
     componentDidMount() {
         $(document).ready(() => this.props.viewId && ajaxGetCourseType(this.props.viewId, data =>
             this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null)));
+            const { lastname, firstname, email, phoneNumber } = this.props.system && this.props.system.user ?
+            this.props.system.user : { lastname: '', firstname: '', email: '', phoneNumber: '' };
+            $('#userFirstname').val(firstname);  
+            $('#userLastname').val(lastname);
+            $('#userEmail').val(email);
+            $('#userPhone').val(phoneNumber);
     }
 
     onSubmit = (e) => {
@@ -25,27 +32,21 @@ class SectionAdvisoryForm extends React.Component {
             (this.email).focus();
         } else {
             const data = {
-                courseType: this.courseType.value,
+                courseType: this.courseType.value(),
                 firstname: this.firstname.value,
                 lastname: this.lastname.value,
                 email: this.email.value,
                 phone: this.phone.value
             };
-            //TODO
-            // this.props.createDKTVListItem(data, () => {
-            //     this.firstname.value = this.lastname.value = this.email.value = this.phone.value = '';
-            //     T.notify('Bạn đã đăng ký thành công!', 'success', true, 3000);
-            //     this.props.getAllCourseType(datacType => {
-            //         if (datacType) {
-            //             let courseType = datacType ? datacType.map(item => ({ id: item._id, text: item.title })) : null;
-            //             $('#courseType').select2({ placeholder: 'Loại khóa học', data: courseType }).val(courseType.title).trigger('change');
-            //         }
-            //     });
-            // });
+            this.props.createCandidate(data, () => {
+                this.firstname.value = this.lastname.value =  this.email.value = this.phone.value = '';
+                T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
+            });
         }
     }
 
     render() {
+        const readOnly = this.props.system && this.props.system.user ? true : false;
         return (
             <div className='intro'>
                 <div className='intro_col'>
@@ -53,12 +54,11 @@ class SectionAdvisoryForm extends React.Component {
                         <div className='intro_form_title' id='formTitle'>Đăng ký tư vấn</div>
                         <form action='#' className='intro_form' id='intro_form' onSubmit={this.onSubmit}>
                             <div className='d-flex flex-row align-items-start justify-content-between flex-wrap'>
-                                <input type='text' className='intro_input' placeholder='Họ' ref={e => this.lastname = e} required='required' />
-                                <input type='text' className='intro_input' placeholder='Tên' ref={e => this.firstname = e} required='required' />
-
-                                <input type='text' className='intro_input' ref={e => this.email = e} placeholder='Email' />
+                                <input type='text' className='intro_input' placeholder='Họ' ref={e => this.lastname = e} required='required' id='userLastname' readOnly={readOnly}/>
+                                <input type='text' className='intro_input' placeholder='Tên' ref={e => this.firstname = e} required='required' id='userFirstname' readOnly={readOnly}/>
+                                <input type='text' className='intro_input' ref={e => this.email = e} placeholder='Email' id='userEmail' readOnly={readOnly}/>
                                 <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
-                                    type='tel' className='intro_input' placeholder='Số điện thoại' ref={e => this.phone = e} required='required' />
+                                    type='tel' className='intro_input' placeholder='Số điện thoại' ref={e => this.phone = e} required='required' id='userPhone' readOnly={readOnly}/>
 
                                 <div className='intro_input w-100' style={{ padding: 0, border: 'none' }} >
                                     <FormSelect ref={e => this.courseType = e} label='' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} />
@@ -74,5 +74,5 @@ class SectionAdvisoryForm extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = {};
+const mapActionsToProps = { createCandidate };
 export default connect(mapStateToProps, mapActionsToProps)(SectionAdvisoryForm);

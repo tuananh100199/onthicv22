@@ -7,8 +7,8 @@ class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready();
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, DKTVLink, logo, footer, contact, subscribe } = this.props.system ?
+        this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', DKTVLink: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
         this.systemAddress.value(address);
         this.systemEmail.value(email);
         this.systemMobile.value(mobile);
@@ -17,6 +17,7 @@ class SettingsPage extends AdminPage {
         this.systemYoutube.value(youtube);
         this.systemTwitter.value(twitter);
         this.systemInstagram.value(instagram);
+        this.systemDKTVLink.value(DKTVLink);
         this.systemLogo.setData('logo', logo);
         this.systemFooter.setData('footer', footer);
         this.systemContact.setData('contact', contact);
@@ -34,6 +35,7 @@ class SettingsPage extends AdminPage {
             youtube: this.systemYoutube.value(),
             twitter: this.systemTwitter.value(),
             instagram: this.systemInstagram.value(),
+            DKTVLink: this.systemDKTVLink.value(),
         });
     }
 
@@ -71,12 +73,13 @@ class SettingsPage extends AdminPage {
                             <div className='tile-body'>
                                 <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' defaultValue='' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemEmail = e} label='Email' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemFax = e} label='Fax' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemDKTVLink = e} label='Đường dẫn đăng ký tư vấn' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemFax = e} label='Fax' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' defaultValue='' readOnly={readOnly}/>
+                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' defaultValue='' readOnly={readOnly}/>
                             </div>
                             {!readOnly ?
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
