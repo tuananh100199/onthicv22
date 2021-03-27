@@ -78,7 +78,7 @@ class CoursePage extends AdminPage {
                     <TableCell type='date' content={item.thoiGianKhaiGiang} />
                     <TableCell type='number' content={item.admins ? item.admins.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.length : 0} />
-                    <TableCell type='number' content={item.groups ? item.groups.reduce((a, b) => (a.students ? a.students.length : 0) + (b.students ? b.students.length : 0)) : 0} />
+                    <TableCell type='number' content={item.groups ? item.groups.reduce((a, b) => (a.students ? a.students.length : 0) + (b.students ? b.students.length : 0), 0) : 0} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCourse(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />
                 </tr>),
