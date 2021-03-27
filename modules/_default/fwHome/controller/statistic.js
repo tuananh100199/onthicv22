@@ -64,11 +64,11 @@ module.exports = app => {
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/statistic', (req, res) => app.model.statistic.get(req.query._id, (error, statistic) => {
         if (error || statistic == null) {
-            res.send({ error: 'Get statistic failed!' });
+            res.send({ error: 'Lấy thống kê bị lỗi' });
         } else {
             app.model.statisticItem.getAll({ statisticId: statistic._id, active: true }, (error, items) => {
                 if (error || items == null) {
-                    res.send({ error: 'Get statistic failed!' });
+                    res.send({ error: 'Lấy thống kê bị lỗi' });
                 } else {
                     res.send({ item: app.clone(statistic, { items }) });
                 }
