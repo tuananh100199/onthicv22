@@ -3,13 +3,12 @@ module.exports = app => {
         firstname: String,
         lastname: String,
         email: String,
-        phone: String,
+        phoneNumber: String,
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         staff: { type: app.db.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
         state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'], default: 'MoiDangKy' },
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
-        modifiedDate: { type: Date, default: Date.now },                    // Ngày cập nhật cuối cùng
-        read: { type: Boolean, default: false },
+        modifiedDate: { type: Date, default: null },                    // Ngày cập nhật cuối cùng
         courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
     });
     const model = app.db.model('Candidate', schema);
@@ -17,9 +16,9 @@ module.exports = app => {
     app.model.candidate = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (done) => model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(done),
-
-        getUnread: (done) => model.find({ read: false }).sort({ _id: -1 }).exec(done),
+        getAll: (condition, done) => typeof condition == 'function' ?
+            model.find({}).populate('courseType', 'title').sort({ _id: -1 }).exec(condition) :
+            model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -27,7 +26,6 @@ module.exports = app => {
             } else {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
-
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('courseType', 'title').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
@@ -35,8 +33,6 @@ module.exports = app => {
                 });
             }
         }),
-
-        getByActive: (active, done) => model.find({ active }).sort({ _id: -1 }).exec(done),
 
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),

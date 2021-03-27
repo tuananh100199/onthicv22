@@ -1,49 +1,18 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const CandidateGetAll = 'Candidate:GetAll';
-const CandidateGetPage = 'Candidate:GetPage';
-const CandidateGetUnread = 'Candidate:GetUnread';
-const CandidateAdd = 'Candidate:Add';
-const CandidateUpdate = 'Candidate:Update';
+const CandidateGetPage = 'CandidateGetPage';
+const CandidateUpdate = 'CandidateUpdate';
 
 export default function candidateReducer(state = null, data) {
     switch (data.type) {
-        case CandidateGetAll:
-            return Object.assign({}, state, { list: data.list });
-
         case CandidateGetPage:
             return Object.assign({}, state, { page: data.page });
-
-        case CandidateGetUnread:
-            return Object.assign({}, state, { unreads: data.list });
-
-        case CandidateAdd:
-            if (state) {
-                let addedList = Object.assign({}, state.list),
-                    addedPage = Object.assign({}, state.page),
-                    addedUnreads = Object.assign({}, state.unreads),
-                    addedItem = data.item;
-                if (addedList) {
-                    addedList.splice(0, 0, addedItem);
-                }
-                if (addedPage && addedPage.pageNumber == 1) {
-                    addedPage.list = addedPage.list.slice(0);
-                    addedPage.list.splice(0, 0, addedItem);
-                }
-                if (addedItem && addedItem.read == false) {
-                    addedUnreads.splice(0, 0, addedItem);
-                }
-                return Object.assign({}, state, { list: addedList, page: addedPage, unreads: addedUnreads });
-            } else {
-                return state;
-            }
 
         case CandidateUpdate: {
             if (state) {
                 let updatedList = Object.assign({}, state.list),
                     updatedPage = Object.assign({}, state.page),
-                    updatedUnreads = Object.assign({}, state.unreads),
                     updatedItem = data.item;
                 if (updatedList) {
                     for (let i = 0, n = updatedList.length; i < n; i++) {
@@ -61,19 +30,7 @@ export default function candidateReducer(state = null, data) {
                         }
                     }
                 }
-                if (updatedUnreads) {
-                    if (updatedItem.read) {
-                        for (let i = 0, n = updatedUnreads.length; i < n; i++) {
-                            if (updatedUnreads[i]._id == updatedItem._id) {
-                                updatedUnreads.splice(i, 1);
-                                break;
-                            }
-                        }
-                    } else {
-                        updatedPage.list.splice(0, 1, updatedItem);
-                    }
-                }
-                return Object.assign({}, state, { list: updatedList, page: updatedPage, unreads: updatedUnreads });
+                return Object.assign({}, state, { list: updatedList, page: updatedPage });
             } else {
                 return state;
             }
@@ -85,21 +42,6 @@ export default function candidateReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getCandidateAll(done) {
-    return dispatch => {
-        const url = '/api/candidate/all';
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy tất cả đăng ký tư vấn bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.list);
-                dispatch({ type: CandidateGetAll, list: data.list });
-            }
-        }, error => T.notify('Lấy tất cả đăng ký tư vấn bị lỗi!', 'danger'));
-    }
-}
-
 T.initCookiePage('pageCandidate');
 export function getCandidatePage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageCandidate', pageNumber, pageSize);
@@ -117,10 +59,10 @@ export function getCandidatePage(pageNumber, pageSize, searchText, done) {
     }
 }
 
-export function getCandidate(candidateId, done) {
+export function getCandidate(_id, done) {
     return dispatch => {
-        const url = '/api/candidate/item/' + candidateId;
-        T.get(url, data => {
+        const url = '/api/candidate';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -129,21 +71,6 @@ export function getCandidate(candidateId, done) {
                 dispatch({ type: CandidateUpdate, item: data.item });
             }
         }, error => T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger'));
-    }
-}
-
-export function getUnreadCandidates(done) {
-    return dispatch => {
-        const url = '/api/candidate/unread';
-        T.get(url, data => {
-            if (data.error) {
-                done && done(null, data.error);
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.list);
-                dispatch({ type: CandidateGetUnread, list: data.list });
-            }
-        }, error => T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
     }
 }
 
@@ -179,9 +106,6 @@ export function deleteCandidate(_id) {
     }
 }
 
-export function addCandidate(item) {
-    return { type: CandidateAdd, item };
-}
 export function changeCandidate(item) {
     return { type: CandidateUpdate, item };
 }

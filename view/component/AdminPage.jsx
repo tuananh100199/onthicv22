@@ -317,7 +317,7 @@ export class FormImageBox extends React.Component {
 // Page components ----------------------------------------------------------------------------------------------------
 export class CirclePageButton extends React.Component {
     render() {
-        const { type = 'back', style = {}, to = '', onClick = () => { } } = this.props; // type = back | save | create
+        const { type = 'back', style = {}, to = '', onClick = () => { } } = this.props; // type = back | save | create | export
         if (type == 'save') {
             return (
                 <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
@@ -327,6 +327,11 @@ export class CirclePageButton extends React.Component {
             return (
                 <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
                     <i className='fa fa-lg fa-plus' />
+                </button>);
+        } else if (type == 'export') {
+            return (
+                <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
+                    <i className='fa fa-lg fa-file-excel-o' />
                 </button>);
         } else {
             return (
@@ -405,7 +410,7 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderPage = ({ icon, title, header, breadcrumb, content, backRoute, onCreate, onSave }) => {
+    renderPage = ({ icon, title, header, breadcrumb, content, backRoute, onCreate, onSave, onExport }) => {
         if (breadcrumb == null) breadcrumb = [];
         return (
             <main className='app-content'>
@@ -421,6 +426,7 @@ export class AdminPage extends React.Component {
                 {backRoute ? <CirclePageButton type='back' to={backRoute} /> : null}
                 {onCreate ? <CirclePageButton type='create' onClick={onCreate} /> : null}
                 {onSave ? <CirclePageButton type='save' onClick={onSave} /> : null}
+                {onExport ? <CirclePageButton type='export' onClick={onExport} /> : null}
             </main>);
     }
 

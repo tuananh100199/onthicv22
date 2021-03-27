@@ -5,7 +5,7 @@ module.exports = app => {
             3001: { title: 'Đăng ký tư vấn', link: '/user/candidate', icon: 'fa-envelope-o', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add({ name: 'candidate:read', menu }, { name: 'candidate:write' }, { name: 'candidate:delete' });
+    app.permission.add({ name: 'candidate:read', menu }, { name: 'candidate:write' }, { name: 'candidate:delete' }, { name: 'candidate:export' });
 
     app.get('/user/candidate', app.permission.check('candidate:read'), app.templates.admin);
 
@@ -23,17 +23,12 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/candidate/all', app.permission.check('candidate:read'), (req, res) => app.model.candidate.getAll((error, list) => res.send({ error, list })));
+    app.get('/api/candidate', app.permission.check('candidate:read'), (req, res) => {
+        app.model.candidate.get(req.query._id, (error, item) => res.send({ error, item }));
+    });
 
-    app.get('/api/candidate/unread', app.permission.check('candidate:read'), (req, res) => app.model.candidate.getUnread((error, list) => res.send({ error, list })));
-
-    app.get('/api/candidate/item/:_id', app.permission.check('candidate:read'), (req, res) => app.model.candidate.update(req.params._id, { read: true }, (error, item) => {
-        if (item) app.io.emit('candidate-changed', item);
-        res.send({ error, item });
-    }));
-
-    app.get('/api/candidate/export', app.permission.check('candidate:read'), (req, res) => {
-        app.model.candidate.getAll((error, items) => {
+    app.get('/api/candidate/export', app.permission.check('candidate:export'), (req, res) => {
+        app.model.candidate.getAll((error, list) => {
             if (error) {
                 res.send({ error })
             } else {
@@ -54,18 +49,18 @@ module.exports = app => {
                     { header: 'Họ', key: 'lastname', width: 20 },
                     { header: 'Tên', key: 'firstname', width: 20 },
                     { header: 'Email', key: 'email', width: 40 },
-                    { header: 'Số điện thoại', key: 'phone', width: 20 },
+                    { header: 'Số điện thoại', key: 'phoneNumber', width: 20 },
                     { header: 'Loại khóa học', key: 'courseType', width: 20 },
                     { header: 'Trạng thái', key: 'state', width: 30 },
                     { header: 'Ngày đăng ký', key: 'createdDate', width: 30 }
                 ];
-                items.forEach((item, index) => {
+                list.forEach((item, index) => {
                     worksheet.addRow({
                         id: index + 1,
                         lastname: item.lastname,
                         firstname: item.firstname,
                         email: item.email,
-                        phone: item.phone,
+                        phoneNumber: item.phoneNumber,
                         courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký',
                         state: item.state,
                         createdDate: item.createdDate
@@ -86,9 +81,8 @@ module.exports = app => {
     app.post('/api/candidate', (req, res) => {
         app.model.candidate.create(req.body.candidate, (error, item) => {
             if (error) {
-                res.send({ error })
-            } 
-            if (item) {
+                res.send({ error });
+            } else if (item) {
                 app.io.emit('candidate-added', item);
                 app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
                     let mailSubject = result.emailCandidateTitle.replaceAll('{name}', item.firstname + ' ' + item.lastname),
@@ -98,40 +92,39 @@ module.exports = app => {
                 });
 
                 app.model.user.get({ email: item.email }, (error, user) => {
-                    if (error != null) {
+                    if (error) {
                         res.send({ error: `Ops! có lỗi xảy ra!` });
-                    }
-                    if (!user) {
+                    } else if (!user) {
                         const dataPassword = app.randomPassword(8),
                             data = {
-                                    email: item.email,
-                                    firstname: item.firstname,
-                                    lastname: item.lastname,
-                                    phoneNumber: item.phone,
-                                    password: dataPassword
-                                }; 
-                            app.model.user.create(data, (error, user) => {
-                                if (error) {
-                                    res.send({ error })
-                                } 
-                                if (user) {
-                                    app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                        const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                                            mailTitle = result.emailCreateMemberByAdminTitle,
-                                            mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                            mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
-                                        app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                email: item.email,
+                                firstname: item.firstname,
+                                lastname: item.lastname,
+                                phoneNumber: item.phoneNumber,
+                                password: dataPassword
+                            };
+                        app.model.user.create(data, (error, user) => {
+                            if (error) {
+                                res.send({ error })
+                            }
+                            if (user) {
+                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                    const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
+                                        mailTitle = result.emailCreateMemberByAdminTitle,
+                                        mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
+                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
+                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                                 });
                             }
                         });
                     }
+                    res.send({ error, item });
                 });
             }
-            res.send({ error, item });
         });
     });
 };

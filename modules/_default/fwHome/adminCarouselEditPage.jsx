@@ -123,7 +123,7 @@ class CarouselEditPage extends AdminPage {
             icon: 'fa fa-picture-o',
             title: 'Tập hình ảnh: ' + (this.state.title || '...'),
             breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Tập hình ảnh'],
-            content: (<>
+            content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body row'>
@@ -154,7 +154,7 @@ class CarouselEditPage extends AdminPage {
                 </div>
 
                 <CarouselItemModal ref={e => this.modal = e} create={this.props.createCarouselItem} update={this.props.updateCarouselItem} readOnly={!permission.write} />
-            </>),
+            </>,
             backRoute: '/user/component',
         });
     }
