@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDivisionAll } from 'modules/mdDaotao/fwDivision/redux';
+import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { getCourse, updateCourse } from '../redux';
 import { ajaxSelectAdmin } from 'modules/_default/fwUser/redux';
 import { FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
