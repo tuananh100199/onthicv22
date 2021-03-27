@@ -8,7 +8,7 @@ class ContentEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/content/edit/:_id'),
+            const route = T.routeMatcher('/user/content/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getContent(params._id, data => {
                 if (data.error) {
