@@ -24,10 +24,10 @@ class PreStudentPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Họ và Tên</th>
+                    <th style={{ width: '50%' }}>Họ và Tên</th>
                     <th style={{ width: '30%' }}>Email</th>
-                    <th style={{ width: '10%' }}>Di động</th>
-                    <th style={{ width: '10%' }} nowrap='true'>Hạng đăng ký</th>
+                    <th style={{ width: '20%' }}>Di động</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
