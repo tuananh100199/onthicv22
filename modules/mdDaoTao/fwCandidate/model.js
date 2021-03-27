@@ -13,7 +13,7 @@ module.exports = app => {
         courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
     });
     const model = app.db.model('Candidate', schema);
-    
+
     app.model.candidate = {
         create: (data, done) => model.create(data, done),
 
@@ -41,9 +41,7 @@ module.exports = app => {
         get: (condition, done) => typeof condition == 'object' ?
             model.findOne(condition, done) : model.findById(condition, done),
 
-        read: (_id, done) => model.findOneAndUpdate({ _id }, { $set: { read: true } }, { new: true }, done),
-
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done).populate('courseType', 'title'),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

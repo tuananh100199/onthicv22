@@ -27,7 +27,7 @@ module.exports = app => {
 
     app.get('/api/candidate/unread', app.permission.check('candidate:read'), (req, res) => app.model.candidate.getUnread((error, list) => res.send({ error, list })));
 
-    app.get('/api/candidate/item/:_id', app.permission.check('candidate:read'), (req, res) => app.model.candidate.read(req.params._id, (error, item) => {
+    app.get('/api/candidate/item/:_id', app.permission.check('candidate:read'), (req, res) => app.model.candidate.update(req.params._id, { read: true }, (error, item) => {
         if (item) app.io.emit('candidate-changed', item);
         res.send({ error, item });
     }));
