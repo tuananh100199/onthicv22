@@ -27,8 +27,8 @@ class PreStudentPage extends AdminPage {
                     <th style={{ width: '40%' }}>Họ và Tên</th>
                     <th style={{ width: '30%' }}>Email</th>
                     <th style={{ width: '10%' }}>Di động</th>
-                    <th style={{ width: '10%' }}>Hạng đăng ký</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                    <th style={{ width: '10%' }} nowrap='true'>Hạng đăng ký</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -36,7 +36,7 @@ class PreStudentPage extends AdminPage {
                     <TableCell type='link' content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.user && item.user.email} />
                     <TableCell type='text' content={T.mobileDisplay(item.user && item.user.phoneNumber)} />
-                    <TableCell type='text' content={item.courseType.title} />
+                    <TableCell type='text' content={item.courseType && item.courseType.title} />
                     <TableCell type='buttons' content={item} permission={permission} />
                 </tr>),
         });
