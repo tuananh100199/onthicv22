@@ -10,18 +10,33 @@ import Dropdown from 'view/component/Dropdown';
 
 class EmailModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemEmail.focus()));
+        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, email = '', onUpdated }) => {
+    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated }) => {
         this.onUpdated = onUpdated;
+        this.itemFirstname.value(firstname);
+        this.itemLastname.value(lastname);
         this.itemEmail.value(email);
+        this.itemPhoneNumber.value(phoneNumber);
+
         this.setState({ _id });
     }
 
     onSubmit = () => {
-        const email = this.itemEmail.value();
-        if (email == '' || !T.validateEmail(email)) {
+        const data = {
+            firstname: this.itemFirstname.value(),
+            lastname: this.itemLastname.value(),
+            email: this.itemEmail.value(),
+            phoneNumber: this.itemPhoneNumber.value(),
+        };
+        if (data.lastname == '') {
+            T.notify('Họ không được trống!', 'danger');
+            this.itemLastname.focus();
+        } else if (data.firstname == '') {
+            T.notify('Tên không được trống!', 'danger');
+            this.itemFirstname.focus();
+        } else if (data.email == '' || !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else {
@@ -33,8 +48,13 @@ class EmailModal extends AdminModal {
     }
 
     render = () => this.renderModal({
-        title: 'Email',
-        body: <FormTextBox ref={e => this.itemEmail = e} label='Email' />
+        title: 'Đăng ký tư vấn',
+        body: <>
+            <FormTextBox ref={e => this.itemLastname = e} label='Họ' />
+            <FormTextBox ref={e => this.itemFirstname = e} label='Tên' />
+            <FormTextBox ref={e => this.itemEmail = e} type='email' label='Email' />
+            <FormTextBox ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
+        </>
     });
 }
 
@@ -58,7 +78,7 @@ class CandidatePage extends AdminPage {
         T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, searchText);
     }
 
-    editEmail = (e, item) => e.preventDefault() || this.emailModal.show(item);
+    edit = (e, item) => e.preventDefault() || this.emailModal.show(item);
 
     updateCourseType = (item, courseType) => this.props.updateCandidate(item._id, { courseType }, error => {
         //TODO: nếu error thì quay lại lựa chọn cũ
@@ -95,7 +115,7 @@ class CandidatePage extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nhân viên xử lý</th>
-                    {permission.delete ? <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th> : null}
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => {
                 const selectedState = stateMapper[item.state];
@@ -110,18 +130,13 @@ class CandidatePage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                        <TableCell content={item.lastname + ' ' + item.firstname} />
+                        <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
                         <TableCell content={item.email} />
                         <TableCell content={item.phoneNumber} />
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dates} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onDelete={this.delete}>
-                            {permission.write &&
-                                <a className='btn btn-primary' href='#' onClick={e => this.editEmail(e, item)}>
-                                    <i className='fa fa-lg fa-envelope-o' />
-                                </a>}
-                        </TableCell>
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                     </tr>);
             },
         });
