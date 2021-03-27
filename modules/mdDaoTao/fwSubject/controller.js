@@ -15,7 +15,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/edit/:subjectId', app.templates.admin);
-    app.get('/user/dao-tao/mon-hoc-bai-hoc/:subjectId', app.templates.admin);
+
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -44,7 +44,7 @@ module.exports = (app) => {
         app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
     });
 
-    app.delete('/api/subject', app.permission.check('subject:write'), (req, res) => {
+    app.delete('/api/subject', app.permission.check('subject:delete'), (req, res) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
