@@ -2,7 +2,7 @@ module.exports = app => {
     app.get('/api/statistic/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.statistic.getPage(pageNumber, pageSize, {}, (error, page) => {
+        app.model.statistic.getPage(pageNumber, pageSize, { active: true }, (error, page) => {
             res.send({ error: error || page == null ? 'Danh sách thống kê chưa sẵn sàng' : null, page });
         });
     });
