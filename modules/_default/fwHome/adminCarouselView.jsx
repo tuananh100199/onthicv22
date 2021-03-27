@@ -59,11 +59,11 @@ class CarouselView extends React.Component {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/carousel/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/carousel/' + item._id} />
                     <TableCell type='number' content={item.height} />
                     <TableCell type='checkbox' content={item.single} permission={permission} onChanged={single => this.props.updateCarousel(item._id, { single })} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCarousel(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/carousel/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/carousel/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 

@@ -29,11 +29,12 @@ module.exports = app => {
         app.model.content.delete(req.body._id, error => res.send({ error }));
     });
 
+    // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/content', (req, res) => {
         app.model.content.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
     });
 
-    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/content'));
 
     const uploadContent = (req, fields, files, params, done) => {

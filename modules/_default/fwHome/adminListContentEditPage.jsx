@@ -33,7 +33,7 @@ class ListContentEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/list-content/edit/:_id'),
+            const route = T.routeMatcher('/user/list-content/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getListContent(params._id, data => {
                 if (data.error) {
