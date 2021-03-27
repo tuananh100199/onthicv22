@@ -1,5 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        priority: Number,
         title: String,
         shortDescription: String,
         detailDescription: String,
@@ -10,7 +11,10 @@ module.exports = app => {
 
     app.model.subject = {
         create: (data, done) => {
-            model.create(data, done);
+            model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+                data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+                model.create(data, done)
+            })
         },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -45,7 +49,9 @@ module.exports = app => {
             model.findOne(condition).populate('lessons').populate('questions').exec(done);
         },
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        update: (_id, $set, $unset, done) => done ?
+            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
+            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
@@ -58,8 +64,8 @@ module.exports = app => {
             }
         }),
 
-        addLesson: (condition, lessons, done) => {
-            model.findOneAndUpdate(condition, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
+        addLesson: (_id, lessons, done) => {
+            model.findOneAndUpdate(_id, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
         },
 
         deleteLesson: (_id, _subjectLessonId, done) => {
