@@ -93,15 +93,15 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./homeContentDetail') })
         },
         {
-            path: '/user/content/edit/:_id',
+            path: '/user/content/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminContentEditPage') })
         },
         {
-            path: '/user/list-content/edit/:_id',
+            path: '/user/list-content/:_id',
             component: Loadable({ loading: Loading, loader: () => import('../fwHome/adminListContentEditPage') })
         },
         {
-            path: '/user/carousel/edit/:_id',
+            path: '/user/carousel/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminCarouselEditPage') })
         },
         {

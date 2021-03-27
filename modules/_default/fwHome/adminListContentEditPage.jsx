@@ -33,7 +33,7 @@ class ListContentEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/list-content/edit/:_id'),
+            const route = T.routeMatcher('/user/list-content/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getListContent(params._id, data => {
                 if (data.error) {
@@ -85,7 +85,7 @@ class ListContentEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={`/user/content/edit/${item._id}`} />
+                    <TableCell type='link' content={item.title} url={`/user/content/${item._id}`} />
                     <TableCell type='buttons' content={[index, item]} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.remove} />
                 </tr>),
         });

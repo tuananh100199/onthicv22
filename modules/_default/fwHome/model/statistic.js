@@ -12,13 +12,13 @@ module.exports = app => {
 
         getAll: done => model.find({}).sort({ title: -1 }).exec(done),
 
-        get: (_id, done) => model.findById(_id, (error, slogan) => {
+        get: (_id, done) => model.findById(_id, (error, statistic) => {
             if (error) {
                 done(error);
-            } else if (slogan == null) {
+            } else if (statistic == null) {
                 done('Invalid Id!');
             } else {
-                done(null, slogan);
+                done(null, statistic);
             }
         }),
 

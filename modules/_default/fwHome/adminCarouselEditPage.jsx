@@ -67,7 +67,7 @@ class CarouselEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/carousel/edit/:_id'),
+            const route = T.routeMatcher('/user/carousel/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getCarousel(params._id, data => {
                 this.itemTitle.value(data.item.title);

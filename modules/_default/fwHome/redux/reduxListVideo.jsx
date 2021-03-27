@@ -131,8 +131,8 @@ export function deleteListVideo(_id) {
 
 export function getListVideoItem(_id, done) {
     return dispatch => {
-        const url = '/api/list-video/item/' + _id;
-        T.get(url, data => {
+        const url = '/api/list-video';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách video bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -241,6 +241,6 @@ export const ajaxSelectListVideo = T.createAjaxAdapter(
 );
 
 export function ajaxGetListVideo(_id, done) {
-    const url = '/api/list-video/item/' + _id;
-    T.get(url, done, error => T.notify('Lấy list video bị lỗi!', 'danger'));
+    const url = '/api/list-video';
+    T.get(url, { _id }, done, error => T.notify('Lấy list video bị lỗi!', 'danger'));
 }

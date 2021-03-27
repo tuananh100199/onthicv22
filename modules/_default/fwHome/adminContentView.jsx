@@ -8,7 +8,7 @@ class ContentView extends React.Component {
         this.props.getContentAll();
     }
 
-    create = (e) => e.preventDefault() || this.props.createContent(data => this.props.history.push('/user/content/edit/' + data.item._id));
+    create = (e) => e.preventDefault() || this.props.createContent(data => this.props.history.push('/user/content/' + data.item._id));
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa nội dung', 'Bạn có chắc bạn muốn xóa nội dung này?', true, isConfirm =>
         isConfirm && this.props.deleteContent(item._id));
@@ -28,10 +28,10 @@ class ContentView extends React.Component {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/content/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/content/' + item._id} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} style={{ height: '32px' }} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateContent(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/content/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/content/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 

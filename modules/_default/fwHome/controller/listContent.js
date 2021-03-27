@@ -59,11 +59,12 @@ module.exports = app => {
         app.model.listContent.delete(req.body._id, error => res.send({ error }));
     });
 
+    // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/list-content', (req, res) => {
         app.model.listContent.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/listContent'));
     const uploadListContent = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('listContent:') && files.ListContentImage && files.ListContentImage.length > 0) {

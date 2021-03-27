@@ -1,24 +1,23 @@
 module.exports = app => {
-    // app.get('/api/list-video/all', app.permission.check('component:read'), (req, res) => {
     app.get('/api/list-video/all', (req, res) => {
         app.model.listVideo.getAll((error, items) => res.send({ error, items }))
     });
 
-    app.get('/api/list-video/item/:listVideoId', app.permission.check('component:read'), (req, res) =>
-        app.model.listVideo.get(req.params.listVideoId, (error, item) => res.send({ error, item })));
+    app.get('/api/list-video', app.permission.check('component:read'), (req, res) =>
+        app.model.listVideo.get(req.query._id, (error, item) => res.send({ error, item })));
 
     app.post('/api/list-video', app.permission.check('component:write'), (req, res) =>
         app.model.listVideo.create(req.body.newData, (error, item) => res.send({ error, item })));
 
-    app.delete('/api/list-video', app.permission.check('component:write'), (req, res) => app.model.listVideo.delete(req.body._id, error => res.send({ error })));
+    app.put('/api/list-video', app.permission.check('component:write'), (req, res) =>
+        app.model.listVideo.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));
 
-    // item...
+    app.delete('/api/list-video', app.permission.check('component:delete'), (req, res) => app.model.listVideo.delete(req.body._id, error => res.send({ error })));
+
+
     app.post('/api/list-video/item', app.permission.check('component:write'), (req, res) => app.model.listVideo.create(req.body.data, (error, item) => {
         res.send({ error, item });
     }));
-
-    app.put('/api/list-video', app.permission.check('component:write'), (req, res) =>
-        app.model.listVideo.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item })));
 
     app.put('/api/list-video/item/swap', app.permission.check('component:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';

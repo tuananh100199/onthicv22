@@ -19,7 +19,7 @@ class ListContentModal extends AdminModal {
             this.props.create({ title }, data => {
                 if (data.item) {
                     this.hide();
-                    this.props.history.push('/user/list-content/edit/' + data.item._id);
+                    this.props.history.push('/user/list-content/' + data.item._id);
                 }
             })
         }
@@ -54,9 +54,9 @@ class ListContentView extends React.Component {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/list-content/edit/' + item._id} />
+                    <TableCell type='link' content={item.title} url={'/user/list-content/' + item._id} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} style={{ height: '32px' }} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-content/edit/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-content/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
 
