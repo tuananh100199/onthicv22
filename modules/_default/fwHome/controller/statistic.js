@@ -2,7 +2,7 @@ module.exports = app => {
     app.get('/api/statistic/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.statistic.getPage(pageNumber, pageSize, {}, (error, page) => {
+        app.model.statistic.getPage(pageNumber, pageSize, { active: true }, (error, page) => {
             res.send({ error: error || page == null ? 'Danh sách thống kê chưa sẵn sàng' : null, page });
         });
     });
@@ -38,7 +38,6 @@ module.exports = app => {
     app.delete('/api/statistic', app.permission.check('component:write'), (req, res) => app.model.statistic.delete(req.body._id, error => res.send({ error })));
 
     app.post('/api/statistic/item', app.permission.check('component:write'), (req, res) => {
-        console.log(req.session)
         app.model.statisticItem.create(req.body.data, (error, item) => {
             if (item && req.session.statisticItemImage) {
                 app.adminUploadImage('statisticItem', app.model.statisticItem.get, item._id, req.session.statisticItemImage, req, res);
@@ -65,11 +64,11 @@ module.exports = app => {
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/statistic', (req, res) => app.model.statistic.get(req.query._id, (error, statistic) => {
         if (error || statistic == null) {
-            res.send({ error: 'Get statistic failed!' });
+            res.send({ error: 'Lấy thống kê bị lỗi' });
         } else {
             app.model.statisticItem.getAll({ statisticId: statistic._id, active: true }, (error, items) => {
                 if (error || items == null) {
-                    res.send({ error: 'Get statistic failed!' });
+                    res.send({ error: 'Lấy thống kê bị lỗi' });
                 } else {
                     res.send({ item: app.clone(statistic, { items }) });
                 }
