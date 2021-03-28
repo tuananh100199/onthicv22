@@ -15,7 +15,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { changeCarouselItem } from 'modules/_default/fwHome/redux/reduxCarousel';
 import { changeVideo } from 'modules/_default/fwHome/redux/reduxVideo';
 import { changeCategory } from 'modules/_default/fwCategory/redux';
-import { getSystemState, updateSystemState } from 'modules/_default/_init/reduxSystem';
+import { getSystemState, updateSystemState } from 'modules/_default/_init/redux';
 import { changeUser } from 'modules/_default/fwUser/redux';
 import { addContact, changeContact } from 'modules/mdTruyenThong/fwContact/redux';
 import Loadable from 'react-loadable';

@@ -1,7 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import system from './reduxSystem';
+import system from './redux';
 
 export default {
     redux: {

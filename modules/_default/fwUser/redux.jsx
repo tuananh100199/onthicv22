@@ -1,41 +1,31 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const UserGetAll = 'UserGetAll';
-const UserGetOne = 'UserGetOne';
-const UserGetOneByEmail = 'UserGetOneByEmail';
 const UserGetPage = 'UserGetPage';
 const UserUpdate = 'UserUpdate';
-const GET_STAFFS = 'User:GetStaffs';
-const GET_STAFF_IN_PAGE = 'User:GetStaffPage';
-
+const StaffGetAll = 'StaffGetAll';
+const StaffGetPage = 'StaffGetPage';
 
 export default function userReducer(state = null, data) {
     switch (data.type) {
-        case UserGetAll:
-            return Object.assign({}, state, { items: data.items });
-        case UserGetOne:
-            return Object.assign({}, state, { item: data.item });
-        case UserGetOneByEmail:
-            return Object.assign({}, state, { user: data.user });
-        case GET_STAFFS:
-            return Object.assign({}, state, { staffs: data.items });
         case UserGetPage:
             return Object.assign({}, state, { page: data.page });
-        case GET_STAFF_IN_PAGE:
+        case StaffGetAll:
+            return Object.assign({}, state, { staffs: data.list });
+        case StaffGetPage:
             return Object.assign({}, state, { staffPage: data.page });
 
         case UserUpdate:
             if (state) {
-                let updatedItems = Object.assign({}, state.items),
+                let updatedList = Object.assign({}, state.list),
                     updatedStaffs = Object.assign({}, state.staffs),
                     updatedPage = Object.assign({}, state.page),
                     updatedStaffPage = Object.assign({}, state.staffPage),
                     updatedItem = data.item;
-                if (updatedItems) {
-                    for (let i = 0, n = updatedItems.length; i < n; i++) {
-                        if (updatedItems[i]._id == updatedItem._id) {
-                            updatedItems.splice(i, 1, updatedItem);
+                if (updatedList) {
+                    for (let i = 0, n = updatedList.length; i < n; i++) {
+                        if (updatedList[i]._id == updatedItem._id) {
+                            updatedList.splice(i, 1, updatedItem);
                             break;
                         }
                     }
@@ -64,7 +54,7 @@ export default function userReducer(state = null, data) {
                         }
                     }
                 }
-                return Object.assign({}, state, { items: updatedItems, staffs: updatedStaffs, page: updatedPage, staffPage: updatedStaffPage });
+                return Object.assign({}, state, { list: updatedList, staffs: updatedStaffs, page: updatedPage, staffPage: updatedStaffPage });
             } else {
                 return null;
             }
@@ -75,20 +65,6 @@ export default function userReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllUsers(done) {
-    return dispatch => {
-        const url = '/api/user/all';
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách người dùng bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.items);
-                dispatch({ type: UserGetAll, items: data.items });
-            }
-        }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
-    }
-}
 export function getAllStaffs(done) {
     return dispatch => {
         const url = '/api/staff/all';
@@ -97,8 +73,8 @@ export function getAllStaffs(done) {
                 T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: GET_STAFFS, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: StaffGetAll, list: data.list });
             }
         }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
     }
@@ -125,7 +101,7 @@ export function getUserPage(pageNumber, pageSize, pageCondition, done) {
 export function getUser(_id, done) {
     return dispatch => ajaxGetUser(_id, data => {
         done && done(data);
-        dispatch({ type: UserGetOne, item: data.user });
+        // dispatch({ type: UserGetItem, item: data.user });
     });
 }
 

@@ -5,7 +5,7 @@ import ContactModal from './AdminContactModal';
 import { getUnreadContacts, getContact } from 'modules/mdTruyenThong/fwContact/redux';
 import { changeRole } from 'modules/_default/fwRole/redux';
 import { switchUser } from 'modules/_default/fwUser/redux';
-import { updateSystemState, logout } from 'modules/_default/_init/reduxSystem';
+import { updateSystemState, logout } from 'modules/_default/_init/redux';
 import { Select } from './Input';
 import { ajaxSelectUser } from 'modules/_default/fwUser/redux';
 

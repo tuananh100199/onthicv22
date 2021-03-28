@@ -64,10 +64,10 @@ export function getCourseType(_id, done) {
     });
 }
 
-export function createCourseType(done) {
+export function createCourseType(data, done) {
     return dispatch => {
         const url = `/api/course-type`;
-        T.post(url, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);

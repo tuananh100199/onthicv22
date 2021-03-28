@@ -4,7 +4,7 @@ import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import ImageBox from 'view/component/ImageBox';
-import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {
     componentDidMount() {
@@ -54,6 +54,8 @@ class CourseTypeEditPage extends AdminPage {
                             default: formItemRef && formItemRef.value(value);
                         }
                     });
+
+                    this.itemImage.setData('course-type:' + item._id)
                     this.itemTitle.focus();
                     this.setState(item);
                 } else {
@@ -102,10 +104,7 @@ class CourseTypeEditPage extends AdminPage {
             }),
             componentInfo = <>
                 <div className='row'>
-                    <div className='form-group col-md-3 order-md-12'>
-                        <label>Hình đại diện</label>
-                        <ImageBox ref={e => this.itemImage = e} postUrl='/user/upload' uploadType='CourseTypeImage' readOnly={readOnly} />
-                    </div>
+                    <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
                     <div className='col-md-9 order-md-1'>
                         <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
                         <div className='row'>

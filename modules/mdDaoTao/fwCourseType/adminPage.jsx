@@ -1,15 +1,42 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseTypePage, createCourseType, updateCourseType, deleteCourseType } from './redux';
-import { AdminPage, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
+
+class CourseTypeModal extends AdminModal {
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+    }
+
+    onShow = () => this.itemTitle.value('');
+
+    onSubmit = () => {
+        const title = this.itemTitle.value().trim();
+        if (title == '') {
+            T.notify('Tên loại khoá học bị trống!', 'danger');
+            this.itemTitle.focus();
+        } else {
+            this.props.create({ title }, data => {
+                if (data.item) {
+                    this.hide();
+                    this.props.history.push('/user/course-type/' + data.item._id);
+                }
+            })
+        }
+    }
+    render = () => this.renderModal({
+        title: 'Bài viết',
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khoá học' />
+    });
+}
 
 class CourseTypePage extends AdminPage {
     componentDidMount() {
         this.props.getCourseTypePage();
     }
 
-    create = e => e.preventDefault() || this.props.createCourseType(data => this.props.history.push('/user/course-type/' + data.item._id));
+    create = (e) => e.preventDefault() || this.modal.show();
 
     delete = (e, item) => e.preventDefault() || T.confirm('Loại khóa học', 'Bạn có chắc bạn muốn xóa loại khóa học này?', true, isConfirm =>
         isConfirm && this.props.deleteCourseType(item._id));
@@ -23,7 +50,7 @@ class CourseTypePage extends AdminPage {
                 renderHead: () => (
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '80%' }}>Tiêu đề</th>
+                        <th style={{ width: '80%' }}>Tên</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hiển thị giá</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá</th>
                         <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
@@ -45,6 +72,7 @@ class CourseTypePage extends AdminPage {
             breadcrumb: ['Loại khóa học'],
             content: <>
                 <div className='tile'>{table}</div>
+                <CourseTypeModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createCourseType} history={this.props.history} />
                 <Pagination name='pageCourseType' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCourseTypePage} />
                 {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
             </>

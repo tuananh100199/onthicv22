@@ -3,7 +3,7 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const DriveQuestionGet = 'DriveQuestionGet';
 const DriveQuestionGetAll = 'DriveQuestionGetAll';
-const DriveQuestionGetPage = 'DriveQuestion:GetPage';
+const DriveQuestionGetPage = 'DriveQuestionGetPage';
 
 export default function driveQuestionReducer(state = null, data) {
     switch (data.type) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm } from './redux';
-import { updateProfile } from 'modules/_default/_init/reduxSystem';
+import { updateProfile } from 'modules/_default/_init/redux';
 import { getCourseTypePage } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import FileSaver from 'file-saver';

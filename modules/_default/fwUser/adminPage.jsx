@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserPage, createUser, updateUser, deleteUser } from './redux';
+import { getUserPage, createUser, updateUser, deleteUser, changeUser } from './redux';
+import { changeSystemState } from 'modules/_default/_init/redux'
 import { getRoleAll } from 'modules/_default/fwRole/redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
@@ -59,12 +60,22 @@ class UserModal extends AdminModal {
             this.itemEmail.focus();
         } else {
             if (changes.roles.length == 0) changes.roles = 'empty';
-            if (this.state._id) {
-                this.props.updateUser(this.state._id, changes);
-            } else {
-                this.props.createUser(changes);
+            this.state._id ?
+                this.props.update(this.state._id, changes, this.hide) :
+                this.props.create(changes, this.hide);
+        }
+    }
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+            if (item && image && this.props.user && item._id == this.props.user._id) {
+                const user = Object.assign({}, this.props.user, { image });
+                this.props.changeSystemState({ user });
             }
-            this.hide();
         }
     }
 
@@ -82,7 +93,8 @@ class UserModal extends AdminModal {
                         </div>
                         <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
                     </div>
-                    <FormImageBox ref={e => this.imageBox = e} className='col-md-4' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly} />
+                    <FormImageBox ref={e => this.imageBox = e} className='col-md-4' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly}
+                        onSuccess={this.onUploadSuccess} />
 
                     <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
                     <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
@@ -254,9 +266,9 @@ class UserPage extends AdminPage {
         const permission = this.getUserPermission('user');
         const allRoles = this.props.role && this.props.role.items ? this.props.role.items : [];
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
-            this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: null };
+            this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0 };
         const table = renderTable({
-            getDataSource: () => this.props.user && this.props.user.page && this.props.user.page.list,
+            getDataSource: () => list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -291,8 +303,9 @@ class UserPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getUserPage} />
-                <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles}
-                    updateUser={this.props.updateUser} createUser={this.props.createUser} getPage={this.props.getUserPage} />
+                <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles} user={this.props.system ? this.props.system.user : null}
+                    update={this.props.updateUser} create={this.props.createUser} change={this.props.changeUser} getPage={this.props.getUserPage}
+                    changeSystemState={this.props.changeSystemState} />
                 <UserPasswordModal ref={e => this.passwordModal = e} readOnly={!permission.write} updateUser={this.props.updateUser} />
             </>,
             onCreate: permission.write ? this.edit : null,
@@ -301,5 +314,5 @@ class UserPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, user: state.user, role: state.role });
-const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, getRoleAll };
+const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, changeUser, changeSystemState, getRoleAll };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);

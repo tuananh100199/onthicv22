@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateProfile } from '../_init/reduxSystem';
+import { updateProfile } from '../_init/redux';
 import { Select } from 'view/component/Input';
 import ImageBox from 'view/component/ImageBox';
 const countryList = require('country-list');
