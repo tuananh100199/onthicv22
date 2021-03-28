@@ -10,7 +10,6 @@ import logo from './redux/reduxLogo';
 import slogan from './redux/reduxSlogan';
 import staffGroup from './redux/reduxStaffGroup';
 import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
-import testimony from './redux/reduxTestimony';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
 
@@ -21,7 +20,6 @@ import SectionLogo from './sectionLogo';
 import SectionSlogan from './sectionSlogan';
 import SectionStaffGroup from './sectionStaffGroup';
 import SectionStatistic from './sectionStatistic';
-import SectionTestimony from './sectionTestimony';
 import SectionVideo from './sectionVideo';
 import SectionListVideo from './sectionListVideo';
 
@@ -57,10 +55,6 @@ export default {
         //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
         //     backgroundColor: '#e6ee9c',
         // };
-        // T.component['testimony'] = {
-        //     render: (viewId) => <SectionTestimony viewId={viewId} />,
-        //     backgroundColor: '#b2dfdb',
-        // };
         T.component['video'] = {
             render: (viewId) => <SectionVideo viewId={viewId} />,
             backgroundColor: '#90caf9',
@@ -81,7 +75,7 @@ export default {
         };
     },
     redux: {
-        component: combineReducers({ carousel, content, listContent, logo, slogan, staffGroup, statistic, testimony, video, listVideo })
+        component: combineReducers({ carousel, content, listContent, logo, slogan, staffGroup, statistic, video, listVideo })
     },
     routes: [
         {
@@ -121,10 +115,6 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminLogoEditPage') })
         },
         {
-            path: '/user/testimony/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminTestimonyEditPage') })
-        },
-        {
             path: '/user/list-video/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminListVideoEditPage') })
         },
@@ -134,6 +124,6 @@ export default {
         },
     ],
     Section: {
-        SectionContent, SectionListContent, SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionTestimony, SectionVideo, SectionListVideo
+        SectionContent, SectionListContent, SectionCarousel, SectionLogo, SectionSlogan, SectionStaffGroup, SectionStatistic, SectionVideo, SectionListVideo
     }
 };
