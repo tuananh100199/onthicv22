@@ -310,7 +310,7 @@ export class FormImageBox extends React.Component {
                 <label>{label}&nbsp;</label>
                 {!readOnly && image && onDelete ?
                     <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
-                <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} success={data => onSuccess && onSuccess(data.image)} />
+                <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} success={data => onSuccess && onSuccess(data)} />
             </div>);
     }
 }

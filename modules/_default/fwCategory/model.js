@@ -12,25 +12,7 @@ module.exports = app => {
     app.model.category = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
             data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-            model.create(data, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    const destFolder = app.path.join(app.publicPath, '/img/' + data.type + 'Category');
-                    if (!app.fs.existsSync(destFolder)) app.fs.mkdirSync(destFolder);
-
-                    item.image = '/img/' + data.type + 'Category/' + item._id + '.jpg';
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => {
-                        if (error) {
-                            done(error);
-                        } else {
-                            item.save(done);
-                        }
-                    });
-                }
-            });
+            model.create(data, done);
         }),
 
         getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),

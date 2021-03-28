@@ -14,24 +14,9 @@ module.exports = app => {
     app.model.carouselItem = {
         create: (data, done) => model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
             data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-            model.create(data, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    item.image = '/img/carouselItem/' + item._id + '.jpg';
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => {
-                        if (error) {
-                            done(error);
-                        } else {
-                            item.save(done);
-                        }
-                    });
-                }
-            });
+            model.create(data, done);
         }),
-        
+
         getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition, done) : model.findOne(condition, done),

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem } from './redux/reduxCarousel';
+import { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem, changeCarouselItem } from './redux/reduxCarousel';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 
@@ -31,6 +31,7 @@ class CarouselItemModal extends AdminModal {
             description: this.itemDescription.value().trim(),
             carouselId: this.state.carouselId,
             active: this.itemActive.value(),
+            image: this.state.image,
         };
 
         if (changes.title == '') {
@@ -43,7 +44,16 @@ class CarouselItemModal extends AdminModal {
                 this.props.create(changes, this.hide);
             }
         }
-    };
+    }
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+        }
+    }
 
     render = () => this.renderModal({
         title: 'Hình ảnh',
@@ -55,7 +65,8 @@ class CarouselItemModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLink = e} type='link' label='Link liên kết' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
-                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='CarouselItemImage' image={this.state.image} readOnly={this.props.readOnly} />
+                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='CarouselItemImage' image={this.state.image} readOnly={this.props.readOnly}
+                    onSuccess={this.onUploadSuccess} />
                 <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
             </div>
             <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' className='col-md-12' readOnly={this.props.readOnly} />
@@ -153,7 +164,7 @@ class CarouselEditPage extends AdminPage {
                     </div>
                 </div>
 
-                <CarouselItemModal ref={e => this.modal = e} create={this.props.createCarouselItem} update={this.props.updateCarouselItem} readOnly={!permission.write} />
+                <CarouselItemModal ref={e => this.modal = e} create={this.props.createCarouselItem} update={this.props.updateCarouselItem} change={this.props.changeCarouselItem} readOnly={!permission.write} />
             </>,
             backRoute: '/user/component',
         });
@@ -161,5 +172,5 @@ class CarouselEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem };
+const mapActionsToProps = { getCarousel, updateCarousel, createCarouselItem, updateCarouselItem, swapCarouselItem, deleteCarouselItem, changeCarouselItem };
 export default connect(mapStateToProps, mapActionsToProps)(CarouselEditPage);

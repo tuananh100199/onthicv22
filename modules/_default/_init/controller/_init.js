@@ -1,5 +1,5 @@
 module.exports = (app) => {
-    app.createFolder(app.assetPath, app.path.join(app.assetPath, '/upload'));
+    app.createFolder(app.assetPath, app.path.join(app.assetPath, '/upload'), app.path.join(app.assetPath, '/temp'));
 
     // Upload ---------------------------------------------------------------------------------------------------------------------------------------
     app.post('/user/upload', app.permission.check(), (req, res) => {
@@ -16,53 +16,108 @@ module.exports = (app) => {
                 });
             }
         });
-        app.uploadComponentImage = (req, dataName, getItem, dataId, srcPath, sendResponse) => {
-            if (dataId == 'new') {
-                let imageLink = app.path.join('/img/draft', app.path.basename(srcPath)),
-                    sessionPath = app.path.join(app.publicPath, imageLink);
-                app.fs.rename(srcPath, sessionPath, (error) => {
-                    if (error == null) req.session[dataName + 'Image'] = sessionPath;
-                    sendResponse({ error, image: imageLink });
-                });
-            } else {
-                req.session[dataName + 'Image'] = null;
-                if (getItem) {
-                    getItem(dataId, (error, dataItem) => {
-                        if (error || dataItem == null) {
-                            sendResponse({ error: 'Invalid Id!' });
-                        } else {
-                            app.deleteImage(dataItem.image);
-                            dataItem.image = '/img/' + dataName + '/' + dataItem._id + app.path.extname(srcPath);
-                            app.fs.rename(srcPath, app.path.join(app.publicPath, dataItem.image), (error) => {
-                                if (error) {
-                                    sendResponse({ error });
-                                } else {
-                                    dataItem.image += '?t=' + new Date().getTime().toString().slice(-8);
-                                    dataItem.save((error) => {
-                                        if (dataName == 'user') {
-                                            dataItem = app.clone(dataItem, { password: '' });
-                                            if (req.session.user && req.session.user._id == dataItem._id) {
-                                                req.session.user.image = dataItem.image;
-                                            }
-                                        }
+    });
 
-                                        if (error == null) app.io.emit(dataName + '-changed', dataItem);
-                                        sendResponse({ error, item: dataItem, image: dataItem.image, });
-                                    });
-                                }
-                            });
+    app.get('/temp/:dateFolderName/img/:dataFolderName/:imageName', app.permission.check('user:login'), (req, res) => {
+        let { dateFolderName, dataFolderName, imageName } = req.params;
+        dateFolderName = dateFolderName.trim();
+        dataFolderName = dataFolderName.trim();
+        imageName = imageName.trim();
+        const imagePath = app.path.join(app.assetPath, 'temp', dateFolderName, 'img', dataFolderName, imageName);
+        if (app.fs.existsSync(imagePath) && !(dateFolderName.startsWith('../') || dateFolderName.startsWith('./') || dataFolderName.startsWith('../') || dataFolderName.startsWith('./') || imageName.startsWith('../') || imageName.startsWith('./'))) {
+            res.sendFile(imagePath);
+        } else {
+            res.sendFile(app.path.join(app.publicPath, '/img/avatar-default.png'));
+        }
+    });
+
+    app.uploadImage = (dataName, getItem, _id, srcPath, done) => {
+        if (_id == 'new') { // Upload hình ảnh khi chưa có tạo đối tượng trong database
+            const dateFolderName = app.date.getDateFolderName(),
+                image = app.path.join('/temp', dateFolderName, 'img', dataName, app.path.basename(srcPath));
+            app.createFolder(
+                app.path.join(app.assetPath, '/temp', dateFolderName),
+                app.path.join(app.assetPath, '/temp', dateFolderName, 'img'),
+                app.path.join(app.assetPath, '/temp', dateFolderName, 'img', dataName));
+            app.fs.rename(srcPath, app.path.join(app.assetPath, image), (error) => done({ error, image }));
+        } else { // Cập nhật image vào item
+            const image = '/img/' + dataName + '/' + _id + app.path.extname(srcPath),
+                destPath = app.path.join(app.publicPath, image);
+            getItem(_id, (error, item) => {
+                if (error || item == null) {
+                    done({ error: error || 'Invalid Id!' });
+                } else {
+                    if (srcPath.startsWith('/temp/')) {
+                        srcPath = app.path.join(app.assetPath, srcPath);
+                    } else {
+                        app.deleteImage(item.image); // Xoá hình cũ
+                    }
+                    app.fs.rename(srcPath, destPath, (error) => {
+                        if (error) {
+                            done({ error });
+                        } else {
+                            item.image = image + '?t=' + new Date().getTime().toString().slice(-8);
+                            item.save((error) => done({ error, item, image: item.image }));
                         }
                     });
-                } else {
-                    const image = '/img/' + dataName + '/' + dataId + app.path.extname(srcPath);
-                    app.fs.rename(srcPath,
-                        app.path.join(app.publicPath, image),
-                        (error) => sendResponse({ error, image })
-                    );
                 }
+            });
+        }
+    };
+
+
+
+
+
+
+
+
+    app.uploadComponentImage = (req, dataName, getItem, dataId, srcPath, sendResponse) => {
+        if (dataId == 'new') {
+            let imageLink = app.path.join('/img/draft', app.path.basename(srcPath)),
+                sessionPath = app.path.join(app.publicPath, imageLink);
+            app.fs.rename(srcPath, sessionPath, (error) => {
+                if (error == null) req.session[dataName + 'Image'] = sessionPath;
+                sendResponse({ error, image: imageLink });
+            });
+        } else {
+            req.session[dataName + 'Image'] = null;
+            if (getItem) {
+                getItem(dataId, (error, dataItem) => {
+                    if (error || dataItem == null) {
+                        sendResponse({ error: 'Invalid Id!' });
+                    } else {
+                        app.deleteImage(dataItem.image);
+                        dataItem.image = '/img/' + dataName + '/' + dataItem._id + app.path.extname(srcPath);
+                        app.fs.rename(srcPath, app.path.join(app.publicPath, dataItem.image), (error) => {
+                            if (error) {
+                                sendResponse({ error });
+                            } else {
+                                dataItem.image += '?t=' + new Date().getTime().toString().slice(-8);
+                                dataItem.save((error) => {
+                                    if (dataName == 'user') {
+                                        dataItem = app.clone(dataItem, { password: '' });
+                                        if (req.session.user && req.session.user._id == dataItem._id) {
+                                            req.session.user.image = dataItem.image;
+                                        }
+                                    }
+
+                                    if (error == null) app.io.emit(dataName + '-changed', dataItem);
+                                    sendResponse({ error, item: dataItem, image: dataItem.image });
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                const image = '/img/' + dataName + '/' + dataId + app.path.extname(srcPath);
+                app.fs.rename(srcPath,
+                    app.path.join(app.publicPath, image),
+                    (error) => sendResponse({ error, image })
+                );
             }
-        };
-    });
+        }
+    };
 
     app.uploadCkEditorImage = (category, fields, files, params, done) => {
         if (files.upload && files.upload.length > 0 && fields.ckCsrfToken && params.Type == 'File' && params.category == category) {
@@ -101,50 +156,5 @@ module.exports = (app) => {
                 });
             })
         );
-    };
-
-    app.adminUploadImage = (dataName, getItem, dataId, srcPath, req, res) => {
-        if (dataId == 'new') {
-            let imageLink = app.path.join('/img/draft', app.path.basename(srcPath)),
-                sessionPath = app.path.join(app.publicPath, imageLink);
-            app.fs.rename(srcPath, sessionPath, (error) => {
-                if (error == null) req.session[dataName + 'Image'] = sessionPath;
-                res.send({ error, image: imageLink });
-            });
-        } else {
-            req.session[dataName + 'Image'] = null;
-            if (getItem) {
-                getItem(dataId, (error, dataItem) => {
-                    if (error || dataItem == null) {
-                        res.send({ error: 'Invalid Id!' });
-                    } else {
-                        app.deleteImage(dataItem.image);
-                        dataItem.image = '/img/' + dataName + '/' + dataItem._id + app.path.extname(srcPath);
-                        app.fs.rename(srcPath, app.path.join(app.publicPath, dataItem.image), (error) => {
-                            if (error) {
-                                res.send({ error });
-                            } else {
-                                dataItem.image += '?t=' + new Date().getTime().toString().slice(-8);
-                                dataItem.save((error) => {
-                                    if (dataName == 'user') {
-                                        dataItem = app.clone(dataItem, { password: '' });
-                                        if (req.session.user && req.session.user._id == dataItem._id) {
-                                            req.session.user.image = dataItem.image;
-                                        }
-                                    }
-                                    if (error == null) app.io.emit(dataName + '-changed', dataItem);
-                                    res.send({ error, item: dataItem, image: dataItem.image, });
-                                });
-                            }
-                        });
-                    }
-                });
-            } else {
-                const image = '/img/' + dataName + '/' + dataId + app.path.extname(srcPath);
-                app.fs.rename(srcPath, app.path.join(app.publicPath, image), (error) =>
-                    res.send({ error, image })
-                );
-            }
-        }
     };
 };

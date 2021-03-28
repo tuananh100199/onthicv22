@@ -1,6 +1,4 @@
 module.exports = app => {
-    app.get('/content/:_id', app.templates.home);
-
     app.get('/api/content/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
@@ -30,6 +28,8 @@ module.exports = app => {
     });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
+    app.get('/content/:_id', app.templates.home);
+
     app.get('/home/content', (req, res) => {
         app.model.content.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
     });

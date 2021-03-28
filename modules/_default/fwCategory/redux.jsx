@@ -1,19 +1,14 @@
 import T from 'view/js/common';
 
-const CategoryGetAll = 'Category:GetAll';
-const CategoryCreate = 'Category:Create';
-const CategoryUpdate = 'Category:Update';
-const CategoryDelete = 'Category:Delete';
+const CategoryGetAll = 'CategoryGetAll';
+const CategoryChange = 'CategoryChange';
 
 export default function categoryReducer(state = [], data) {
     switch (data.type) {
         case CategoryGetAll:
             return data.items;
 
-        case CategoryCreate:
-            return [data.item].concat(state);
-
-        case CategoryUpdate:
+        case CategoryChange:
             let updateItemState = state.slice();
             for (let i = 0; i < updateItemState.length; i++) {
                 if (updateItemState[i]._id == data.item._id) {
@@ -22,16 +17,6 @@ export default function categoryReducer(state = [], data) {
                 }
             }
             return updateItemState;
-
-        case CategoryDelete:
-            let deleteItemState = state.slice();
-            for (let i = 0; i < deleteItemState.length; i++) {
-                if (deleteItemState[i]._id == data._id) {
-                    deleteItemState.splice(i, 1);
-                    break;
-                }
-            }
-            return deleteItemState;
 
         default:
             return state;
@@ -62,7 +47,7 @@ export function createCategory(data, done) {
                 T.notify('Create category failed!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch({ type: CategoryCreate, item: data.item });
+                dispatch(getCategoryAll(data.item.type));
                 if (done) done(data);
             }
         }, error => T.notify('Create category failed!', 'danger'));
@@ -79,7 +64,7 @@ export function updateCategory(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Update category successful!', 'success');
-                dispatch({ type: CategoryUpdate, item: data.item });
+                dispatch(getCategoryAll(data.item.type));
                 done && done();
             }
         }, error => T.notify('Update category failed!', 'danger'));
@@ -91,7 +76,7 @@ export function swapCategory(_id, isMoveUp, type) {
         const url = '/api/category/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Swap position failed!', 'danger')
+                T.notify('Swap position failed!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 dispatch(getCategoryAll(type));
@@ -100,7 +85,7 @@ export function swapCategory(_id, isMoveUp, type) {
     }
 }
 
-export function deleteCategory(_id) {
+export function deleteCategory(_id, type) {
     return dispatch => {
         const url = '/api/category';
         T.delete(url, { _id }, data => {
@@ -109,12 +94,12 @@ export function deleteCategory(_id) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Delete category successful!', 'error', false, 800);
-                dispatch({ type: CategoryDelete, _id });
+                dispatch(getCategoryAll(type));
             }
         }, error => T.notify('Delete category failed!', 'danger'));
     }
 }
 
 export function changeCategory(category) {
-    return { type: CategoryUpdate, item: category };
+    return { type: CategoryChange, item: category };
 }

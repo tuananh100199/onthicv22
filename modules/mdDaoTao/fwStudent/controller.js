@@ -68,15 +68,4 @@ module.exports = (app) => {
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }))
     });
-    // Hook upload images ---------------------------------------------------------------------------------------------
-    // app.createFolder(app.path.join(app.publicPath, '/img/student'));
-
-    // const uploadstudent = (req, fields, files, params, done) => {
-    //     if (fields.userData && fields.userData[0].startsWith('student:') && files.studentImage && files.studentImage.length > 0) {
-    //         console.log('Hook: uploadstudent => course type image upload');
-    //         app.uploadComponentImage(req, 'student', app.model.student.get, fields.userData[0].substring('student:'.length), files.studentImage[0].path, done);
-    //     }
-    // };
-    // app.uploadHooks.add('uploadstudent', (req, fields, files, params, done) =>
-    //     app.permission.has(req, () => uploadstudent(req, fields, files, params, done), done, 'student:write'));
 };

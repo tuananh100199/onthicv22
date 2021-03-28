@@ -42,11 +42,10 @@ module.exports = app => {
 
     app.post('/api/statistic/item', app.permission.check('component:write'), (req, res) => {
         app.model.statisticItem.create(req.body.data, (error, item) => {
-            if (item && req.session.statisticItemImage) {
-                app.adminUploadImage('statisticItem', app.model.statisticItem.get, item._id, req.session.statisticItemImage, req, res);
-            } else {
-                console.log(error)
+            if (error || (item && item.image == null)) {
                 res.send({ error, item });
+            } else {
+                app.uploadImage('statisticItem', app.model.statisticItem.get, item._id, item.image, data => res.send(data));
             }
         });
     });
@@ -85,7 +84,8 @@ module.exports = app => {
     const uploadStatisticItemImage = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('statisticItem:') && files.StatisticItemImage && files.StatisticItemImage.length > 0) {
             console.log('Hook: uploadStatisticItemImage => statistic image upload');
-            app.uploadComponentImage(req, 'statisticItem', app.model.statisticItem.get, fields.userData[0].substring(14), files.StatisticItemImage[0].path, done);
+            const _id = fields.userData[0].substring('statisticItem:'.length);
+            app.uploadImage('statisticItem', app.model.statisticItem.get, _id, files.StatisticItemImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadStatisticItemImage', (req, fields, files, params, done) =>

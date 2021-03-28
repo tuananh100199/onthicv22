@@ -48,9 +48,9 @@ module.exports = app => {
             model.findOne(condition).populate('videos').populate('questions').exec(done);
         },
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
+        update: (_id, changes, done) => { // changes = {$set, $unset, $push, $pull}
+            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('videos').populate('questions').exec(done);
+        },
 
         delete: (_id, done) => {
             model.findById(_id, (error, item) => {

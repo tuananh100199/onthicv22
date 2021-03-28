@@ -1,9 +1,9 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const StatisticGetAll = 'Statistic:GetAll';
-const StatisticGet = 'Statistic:Get';
-const StatisticUpdate = 'Statistic:Update';
+const StatisticGetAll = 'StatisticGetAll';
+const StatisticGet = 'StatisticGet';
+const StatisticChange = 'StatisticChange';
 
 export default function statisticReducer(state = null, data) {
     switch (data.type) {
@@ -13,13 +13,13 @@ export default function statisticReducer(state = null, data) {
         case StatisticGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case StatisticUpdate:
+        case StatisticChange:
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.statisticId) {
-                for (let i = 0, list = state.selectedItem.list, n = list.length; i < n; i++) {
-                    if (list[i]._id == updatedItem._id) {
-                        state.selectedItem.list.splice(i, 1, updatedItem);
+                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
+                    if (items[i]._id == updatedItem._id) {
+                        state.selectedItem.items.splice(i, 1, updatedItem);
                         break;
                     }
                 }
@@ -167,7 +167,7 @@ export function deleteStatisticItem(_id) {
 }
 
 export function changeStatisticItem(item) {
-    return { type: StatisticUpdate, item };
+    return { type: StatisticChange, item };
 }
 
 // Home -------------------------------------------------------------------------------------------
