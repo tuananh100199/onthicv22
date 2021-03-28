@@ -49,10 +49,10 @@ export function getDivisionItem(_id, done) {
     });
 }
 
-export function createDivision(newData, done) {
+export function createDivision(data, done) {
     return dispatch => {
         const url = '/api/division';
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo cơ sở bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
