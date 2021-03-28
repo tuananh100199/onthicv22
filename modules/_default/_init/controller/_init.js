@@ -65,6 +65,45 @@ module.exports = (app) => {
         }
     };
 
+    app.uploadCkEditorImage = (category, fields, files, params, done) => {
+        if (files.upload && files.upload.length > 0 && fields.ckCsrfToken && params.Type == 'File' && params.category == category) {
+            console.log('Hook: uploadCkEditorImage => ckEditor upload');
+
+            const srcPath = files.upload[0].path;
+            app.jimp.read(srcPath).then((image) => {
+                app.fs.unlinkSync(srcPath);
+                if (image) {
+                    if (image.bitmap.width > 1024) image.resize(1024, app.jimp.AUTO);
+                    const url = `/img/${category}/${app.path.basename(srcPath)}`;
+                    image.write(app.path.join(app.publicPath, url), (error) => {
+                        done({
+                            uploaded: error == null,
+                            url,
+                            error: { message: error ? 'Upload has errors!' : '' },
+                        });
+                    });
+                } else {
+                    done({ uploaded: false, error: 'Upload has errors!' });
+                }
+            });
+        } else {
+            done();
+        }
+    };
+
+    app.uploadImageToBase64 = (srcPath, sendResponse) => {
+        app.jimp.read(srcPath).then((image) =>
+            image.getBuffer(app.jimp.MIME_PNG, (error, buffer) => {
+                app.fs.unlinkSync(srcPath);
+                sendResponse({
+                    uploaded: error == null,
+                    url: 'data:image/png;base64, ' + buffer.toString('base64'),
+                    error: { message: error ? 'Upload image failed!' : '' },
+                });
+            })
+        );
+    };
+
 
 
 
@@ -119,42 +158,16 @@ module.exports = (app) => {
         }
     };
 
-    app.uploadCkEditorImage = (category, fields, files, params, done) => {
-        if (files.upload && files.upload.length > 0 && fields.ckCsrfToken && params.Type == 'File' && params.category == category) {
-            console.log('Hook: uploadCkEditorImage => ckEditor upload');
-
-            const srcPath = files.upload[0].path;
-            app.jimp.read(srcPath).then((image) => {
-                app.fs.unlinkSync(srcPath);
-                if (image) {
-                    if (image.bitmap.width > 1024) image.resize(1024, app.jimp.AUTO);
-                    const url = `/img/${category}/${app.path.basename(srcPath)}`;
-                    image.write(app.path.join(app.publicPath, url), (error) => {
-                        done({
-                            uploaded: error == null,
-                            url,
-                            error: { message: error ? 'Upload has errors!' : '' },
-                        });
-                    });
-                } else {
-                    done({ uploaded: false, error: 'Upload has errors!' });
-                }
-            });
-        } else {
-            done();
-        }
-    };
-
-    app.uploadImageToBase64 = (srcPath, sendResponse) => {
-        app.jimp.read(srcPath).then((image) =>
-            image.getBuffer(app.jimp.MIME_PNG, (error, buffer) => {
-                app.fs.unlinkSync(srcPath);
-                sendResponse({
-                    uploaded: error == null,
-                    url: 'data:image/png;base64, ' + buffer.toString('base64'),
-                    error: { message: error ? 'Upload image failed!' : '' },
-                });
-            })
-        );
-    };
+    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
+    app.readyHooks.add('readyInit', {
+        ready: () => app.model != null && app.model.setting != null && app.state,
+        run: () => {
+            const enableInit = process.env['enableInit'] == 'true';
+            if (enableInit) {
+                app.model.setting.init(app.state.data, () => app.state.refresh())
+            } else {
+                setTimeout(() => { app.state.refresh() }, 200);
+            }
+        },
+    });
 };

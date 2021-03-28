@@ -59,12 +59,10 @@ module.exports = app => {
     }
 
     app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => {
-        app.model.menu.getAll({}, (error, menuTree) => {
-            res.send({ error, items: menuTree });
-        });
+        app.model.menu.getAll({}, (error, menuTree) => res.send({ error, items: menuTree }));
     });
 
-    app.get('/api/menu', app.permission.check('menu:read'), (req, res) => {
+    app.get('/api/menu', app.permission.check('menu:read'), (req, res) => { //TODO: hàm này coi lại nha Tùng
         app.model.menu.get(req.query._id, (error, menu) => {
             if (error || menu == null) {
                 res.send({ error: 'Lỗi khi lấy menu!' });
@@ -207,8 +205,9 @@ module.exports = app => {
         });
     });
 
-    app.put('/api/menu/component', app.permission.check('component:write'), (req, res) =>
-        app.model.component.update(req.body._id, req.body.changes, error => res.send({ error })));
+    app.put('/api/menu/component', app.permission.check('component:write'), (req, res) => {
+        app.model.component.update(req.body._id, req.body.changes, error => res.send({ error }));
+    });
 
     app.put('/api/menu/component/swap', app.permission.check('component:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';
@@ -219,7 +218,7 @@ module.exports = app => {
         app.model.component.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
+    app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => { //TODO: hàm này coi lại nha Tùng
         const pageType = req.params.pageType;
         if (pageType == 'carousel') {
             app.model.carousel.getByActive(true, (error, items) => {

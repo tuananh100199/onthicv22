@@ -58,10 +58,9 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/api/news/default', app.permission.check('news:write'), (req, res) =>
-        app.model.news.create({ title: 'Bài viết', active: false },
-            (error, item) => res.send({ error, item })
-        ));
+    app.post('/api/news/default', app.permission.check('news:write'), (req, res) => {
+        app.model.news.create({ title: 'Bài viết', active: false }, (error, item) => res.send({ error, item }));
+    });
 
     app.delete('/api/news', app.permission.check('news:write'), (req, res) =>
         app.model.news.delete(req.body._id, (error) => res.send({ error }))
@@ -234,7 +233,8 @@ module.exports = (app) => {
             files.NewsImage.length > 0
         ) {
             console.log('Hook: uploadNewsAvatar => news image upload');
-            app.uploadComponentImage(req, 'news', app.model.news.get, fields.userData[0].substring(5), files.NewsImage[0].path, done);
+            const _id = fields.userData[0].substring('news:'.length);
+            app.uploadImage('news', app.model.news.get, _id, files.NewsImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadNewsAvatar', (req, fields, files, params, done) => {
@@ -249,7 +249,8 @@ module.exports = (app) => {
             files.NewsDraftImage.length > 0
         ) {
             console.log('Hook: uploadNewsDraftAvatar => news draft image upload');
-            app.uploadComponentImage(req, 'draftNews', app.model.draft.get, fields.userData[0].substring(10), files.NewsDraftImage[0].path, done);
+            const _id = fields.userData[0].substring('draftNews:'.length);
+            app.uploadImage('draftNews', app.model.draft.get, _id, files.NewsDraftImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadNewsDraftAvatar', (req, fields, files, params, done) => {
