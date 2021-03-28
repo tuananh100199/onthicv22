@@ -69,7 +69,8 @@ module.exports = app => {
     const uploadListContent = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('listContent:') && files.ListContentImage && files.ListContentImage.length > 0) {
             console.log('Hook: uploadListContent image => content list image upload');
-            app.uploadComponentImage(req, 'listContent', app.model.listContent.get, fields.userData[0].substring('listContent:'.length), files.ListContentImage[0].path, done);
+            const _id = fields.userData[0].substring('listContent:'.length);
+            app.uploadImage('listContent', app.model.listContent.get, _id, files.ListContentImage[0].path, done);
         }
     };
 

@@ -1,19 +1,19 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
-const VideoUpdate = 'Video:Update';
-const VideoGetAll = 'Video:GetAll';
+const VideoGetAll = 'VideoGetAll';
+const VideoChange = 'VideoChange';
 
 export default function videoReducer(state = {}, data) {
     switch (data.type) {
         case VideoGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case VideoUpdate:
-            state = state.slice();
-            for (let i = 0; i < state.length; i++) {
-                if (state[i]._id == data.item._id) {
-                    state[i] = data.item;
+        case VideoChange:
+            state = Object.assign({}, state);
+            for (let i = 0; i < state.list.length; i++) {
+                if (state.list[i]._id == data.item._id) {
+                    state.list[i] = data.item;
                     break;
                 }
             }
@@ -102,7 +102,7 @@ export function swapVideo(_id, isMoveUp, done) {
 
 
 export function changeVideo(video) {
-    return { type: VideoUpdate, item: video };
+    return { type: VideoChange, item: video };
 }
 
 export function getVideo(_id, done) {
@@ -111,7 +111,7 @@ export function getVideo(_id, done) {
             T.notify('Lấy video bị lỗi!', 'danger');
             console.error(`GET: ${url}. ${data.error}`);
         } else {
-            dispatch({ type: VideoUpdate, item: data.item });
+            dispatch({ type: VideoChange, item: data.item });
             done && done(data);
         }
     });
@@ -140,7 +140,7 @@ export function homeGetVideo(_id, done) {
                 T.notify('Lấy danh sách video bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: VideoUpdate, item: data.item });
+                dispatch({ type: VideoChange, item: data.item });
                 if (done) done({ item: data.item });
             }
         }, error => {

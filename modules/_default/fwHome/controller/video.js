@@ -14,15 +14,15 @@ module.exports = app => {
         app.model.video.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/video', app.permission.check('component:write'), (req, res) => app.model.video.create(req.body.data, (error, video) => {
-        if (video && req.session.videoImage) {
-            app.uploadComponentImage(req, 'video', app.model.video.get, video._id, req.session.videoImage, response => {
-                res.send({ error: response.error, video });
-            });
-        } else {
-            res.send({ error, video });
-        }
-    }));
+    app.post('/api/video', app.permission.check('component:write'), (req, res) => {
+        app.model.video.create(req.body.data, (error, item) => {
+            if (error || (item && item.image == null)) {
+                res.send({ error, item });
+            } else {
+                app.uploadImage('video', app.model.video.get, item._id, item.image, data => res.send(data));
+            }
+        });
+    });
 
     app.put('/api/video', app.permission.check('component:write'), (req, res) => {
         let data = req.body.changes,
@@ -60,7 +60,8 @@ module.exports = app => {
     const uploadVideo = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('video:') && files.VideoImage && files.VideoImage.length > 0) {
             console.log('Hook: uploadVideo => video image upload');
-            app.uploadComponentImage(req, 'video', app.model.video.get, fields.userData[0].substring('video:'.length), files.VideoImage[0].path, done);
+            const _id = fields.userData[0].substring('video:'.length);
+            app.uploadImage('video', app.model.video.get, _id, files.VideoImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadVideo', (req, fields, files, params, done) =>

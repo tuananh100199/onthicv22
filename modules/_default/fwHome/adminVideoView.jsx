@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createVideo, updateVideo, deleteVideo, getVideoAll } from './redux/reduxVideo';
+import { createVideo, updateVideo, deleteVideo, getVideoAll, changeVideo } from './redux/reduxVideo';
 import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable, FormEditor, FormImageBox, AdminPage } from 'view/component/AdminPage';
 
 class VideoModal extends AdminModal {
@@ -33,27 +33,36 @@ class VideoModal extends AdminModal {
             T.notify('Nội dung video bị trống!', 'danger');
             this.itemEditor.focus();
         } else {
-            this.state._id ? this.props.updateVideo(this.state._id, data) : this.props.createVideo(data);
+            this.state._id ? this.props.update(this.state._id, data) : this.props.create(data);
             this.hide();
+        }
+    }
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
         }
     }
 
     render = () => this.renderModal({
         title: 'Thông tin video',
         size: 'large',
-        body: (<>
-
+        body: <>
             <div className='row'>
                 <div className='col-md-8'>
-                    <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' />
-                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' />
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' readOnly={this.props.readOnly} />
                 </div>
                 <div className='col-md-4'>
-                    <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='VideoImage' image={this.state.image} />
+                    <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='VideoImage' image={this.state.image} readOnly={this.props.readOnly}
+                        onSuccess={this.onUploadSuccess} />
                 </div>
             </div>
             <FormEditor ref={e => this.itemEditor = e} label='Nội dung video' />
-        </>),
+        </>,
     });
 }
 
@@ -89,12 +98,12 @@ class VideoPage extends AdminPage {
         });
         return <>
             {table}
-            <VideoModal ref={e => this.modal = e} updateVideo={this.props.updateVideo} createVideo={this.props.createVideo} readOnly={!permission.write} />
+            <VideoModal ref={e => this.modal = e} update={this.props.updateVideo} create={this.props.createVideo} change={this.props.changeVideo} readOnly={!permission.write} />
             {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { createVideo, updateVideo, deleteVideo, getVideoAll };
+const mapActionsToProps = { createVideo, updateVideo, deleteVideo, getVideoAll, changeVideo };
 export default connect(mapStateToProps, mapActionsToProps)(VideoPage);
