@@ -16,7 +16,7 @@ module.exports = app => {
     });
 
     app.post('/api/list-content', app.permission.check('component:write'), (req, res) => {
-        app.model.listContent.create(req.body.newData, (error, item) => res.send({ error, item }))
+        app.model.listContent.create(req.body.data, (error, item) => res.send({ error, item }))
     });
 
     app.put('/api/list-content', app.permission.check('component:write'), (req, res) => {

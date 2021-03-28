@@ -16,7 +16,7 @@ module.exports = app => {
     });
 
     app.post('/api/content', app.permission.check('component:write'), (req, res) => {
-        app.model.content.create({ title: 'Title', active: 0 }, (error, item) => res.send({ error, item }));
+        app.model.content.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/content', app.permission.check('component:write'), (req, res) => {
@@ -40,7 +40,8 @@ module.exports = app => {
     const uploadContent = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('content:') && files.ContentImage && files.ContentImage.length > 0) {
             console.log('Hook: uploadContent image => content image upload');
-            app.uploadComponentImage(req, 'content', app.model.content.get, fields.userData[0].substring(8), files.ContentImage[0].path, done);
+            const _id = fields.userData[0].substring('content:'.length);
+            app.uploadImage('content', app.model.content.get, _id, files.ContentImage[0].path, done);
         }
     };
 
