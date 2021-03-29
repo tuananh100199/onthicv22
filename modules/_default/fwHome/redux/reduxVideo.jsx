@@ -17,6 +17,7 @@ export default function videoReducer(state = {}, data) {
                     break;
                 }
             }
+            state.list.sort((a, b) => a.title.localeCompare(b.title));
             return state;
 
         default:
@@ -34,7 +35,7 @@ export function getVideoAll(condition, done) {
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.list);
-                dispatch({ type: VideoGetAll, list: data.list ? data.list : [] });
+                dispatch({ type: VideoGetAll, list: data.list || [] });
             }
         }, error => {
             console.error('GET: ' + url + '. ' + error);
@@ -42,6 +43,17 @@ export function getVideoAll(condition, done) {
     }
 }
 
+export function getVideo(_id, done) {
+    return dispatch => ajaxGetVideo(_id, data => {
+        if (data.error || data.item == null) {
+            T.notify('Lấy video bị lỗi!', 'danger');
+            console.error(`GET: ${url}. ${data.error}`);
+        } else {
+            dispatch({ type: VideoChange, item: data.item });
+            done && done(data);
+        }
+    });
+}
 export function createVideo(data, done) {
     return dispatch => {
         const url = '/api/video';
@@ -50,7 +62,7 @@ export function createVideo(data, done) {
                 T.notify('Tạo video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getVideoAll());
+                dispatch({ type: VideoChange, item: data.item });
                 if (done) done(data);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
@@ -66,10 +78,13 @@ export function updateVideo(_id, changes) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Cập nhật thông tin video thành công!', 'success');
-                dispatch(getVideoAll());
+                dispatch({ type: VideoChange, item: data.item });
             }
         }, error => T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));
     }
+}
+export function changeVideo(video) {
+    return { type: VideoChange, item: video };
 }
 
 export function deleteVideo(_id) {
@@ -87,38 +102,9 @@ export function deleteVideo(_id) {
     }
 }
 
-export function swapVideo(_id, isMoveUp, done) {
-    return dispatch => {
-        const url = '/api/video/item/swap/';
-        T.put(url, { _id, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Swap video item failed!', 'danger')
-                console.error('PUT: ' + url + '. ' + data.error);
-            }
-            done && done()
-        }, error => T.notify('Swap video item failed!', 'danger'));
-    }
-}
-
-
-export function changeVideo(video) {
-    return { type: VideoChange, item: video };
-}
-
-export function getVideo(_id, done) {
-    return dispatch => ajaxGetVideo(_id, data => {
-        if (data.error || data.item == null) {
-            T.notify('Lấy video bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
-        } else {
-            dispatch({ type: VideoChange, item: data.item });
-            done && done(data);
-        }
-    });
-}
-
+// Home ---------------------------------------------------------------------------------------------------------------
 export function getVideoAllByUser(condition, done) {
-    return dispatch => {
+    return () => {
         const url = '/home/video/all';
         T.get(url, { condition }, data => {
             if (data.error) {
@@ -130,8 +116,6 @@ export function getVideoAllByUser(condition, done) {
         }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
     }
 }
-
-// Home ---------------------------------------------------------------------------------------------------------------
 export function homeGetVideo(_id, done) {
     return dispatch => {
         const url = '/home/video';
@@ -150,8 +134,8 @@ export function homeGetVideo(_id, done) {
 }
 
 export const ajaxSelectVideo = T.createAjaxAdapter(
-    '/api/video/page/1/20',
-    response => response && response.page && response.page.list ? response.page.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : [],
+    `/api/video/all`,
+    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetVideo(_id, done) {

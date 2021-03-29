@@ -9,18 +9,7 @@ module.exports = app => {
 
     app.model.video = {
         create: (data, done) => model.create(data, done),
-        //     (error, item) => {
-        //     if (error) {
-        //         done(error);
-        //     } else {
-        //         item.image = `/img/video/${item._id}.jpg`;
-        //         const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-        //             destPath = app.path.join(app.publicPath, item.image);
-        //         app.fs.copyFile(srcPath, destPath, error => {
-        //             error ? done(error) : item.save(done);
-        //         });
-        //     }
-        // }),
+
 
         getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
 

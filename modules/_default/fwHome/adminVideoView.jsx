@@ -9,12 +9,12 @@ class VideoModal extends AdminModal {
     }
 
     onShow = (video) => {
-        let { _id, title, link, image, content } = video ? video : { _id: null, title: '', link: '', image: '', content: '' };
+        const { _id, title, link, image, content } = video || { _id: null, title: '', link: '', image: '', content: '' };
         this.itemTitle.value(title);
         this.itemLink.value(link);
         this.itemEditor.html(content);
-        this.imageBox.setData('video:' + (_id ? _id : 'new'));
-        this.setState({ _id: _id, image: image });
+        this.imageBox.setData(`video:${_id || 'new'}`);
+        this.setState({ _id, image });
     }
 
     onSubmit = () => {
@@ -22,6 +22,7 @@ class VideoModal extends AdminModal {
             title: this.itemTitle.value().trim(),
             link: this.itemLink.value().trim(),
             content: this.itemEditor.html(),
+            image: this.state.image,
         };
         if (data.title == '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
@@ -48,20 +49,18 @@ class VideoModal extends AdminModal {
     }
 
     render = () => this.renderModal({
-        title: 'Thông tin video',
+        title: 'Video',
         size: 'large',
         body: <>
-            <div className='row'>
+            <div className='row' >
                 <div className='col-md-8'>
                     <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' readOnly={this.props.readOnly} />
                     <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' readOnly={this.props.readOnly} />
                 </div>
-                <div className='col-md-4'>
-                    <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='VideoImage' image={this.state.image} readOnly={this.props.readOnly}
-                        onSuccess={this.onUploadSuccess} />
-                </div>
+                <FormImageBox className='col-md-4' ref={e => this.imageBox = e} label='Hình đại diện' uploadType='VideoImage' image={this.state.image} readOnly={this.props.readOnly}
+                    onSuccess={this.onUploadSuccess} />
             </div>
-            <FormEditor ref={e => this.itemEditor = e} label='Nội dung video' />
+            <FormEditor ref={e => this.itemEditor = e} label='Mô tả video' />
         </>,
     });
 }
@@ -99,7 +98,7 @@ class VideoPage extends AdminPage {
         return <>
             {table}
             <VideoModal ref={e => this.modal = e} update={this.props.updateVideo} create={this.props.createVideo} change={this.props.changeVideo} readOnly={!permission.write} />
-            {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
+            {permission.write ? <CirclePageButton type='create' onClick={e => e.preventDefault() || this.modal.show()} /> : null}
         </>;
     }
 }
