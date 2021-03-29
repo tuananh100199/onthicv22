@@ -2,13 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
-import { getUser } from '../../_default/fwUser/redux';
-import Pagination from 'view/component/Pagination';
 import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { FormSelect } from 'view/component/AdminPage';
+import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
-
 
 //TODO: state=UngVien thì không cập nhật được => cần confirm trước khi chuyển thành UngVien
 
@@ -17,14 +15,13 @@ class EmailModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated, courseType = '' }) => {
+    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
         this.itemPhoneNumber.value(phoneNumber);
-        ajaxGetCourseType(courseType, data =>
-            this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
+
         this.setState({ _id });
     }
 
@@ -34,7 +31,6 @@ class EmailModal extends AdminModal {
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            courseType : this.courseType.value()
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -46,7 +42,7 @@ class EmailModal extends AdminModal {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else {
-            this.props.update(this.state._id, data , (error) => {
+            this.props.update(this.state._id, { email }, (error) => {
                 if (this.onUpdated) this.onUpdated(error);
                 this.hide();
             });
@@ -61,7 +57,7 @@ class EmailModal extends AdminModal {
             <FormTextBox ref={e => this.itemEmail = e} type='email' label='Email' />
             <FormTextBox ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType}/>
-
+            {/* <FormSelect ref={e => this.state = e} label='Trạng thái' data={states2}/> */}
         </>
     });
 }
@@ -93,16 +89,16 @@ class CandidatePage extends AdminPage {
     });
 
     updateState = (item, state) => {
-        // if (state == 'UngVien') {
-        //     const onUpdated = error => {
-        //         //TODO
-        //     };
-        //     this.emailModal.show({ ...item, onUpdated });
-        // } else {
+        if (state == 'UngVien' && (item.email == '' || item.email == null)) {
+            const onUpdated = error => {
+                //TODO
+            };
+            this.emailModal.show({ ...item, onUpdated });
+        } else {
             this.props.updateCandidate(item._id, { state }, error => {
                 //TODO: nếu error thì quay lại lựa chọn cũ
             });
-        // }
+        }
     }
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
@@ -112,7 +108,6 @@ class CandidatePage extends AdminPage {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.candidate && this.props.candidate.page ?
             this.props.candidate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-            console.log(list)
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -129,8 +124,7 @@ class CandidatePage extends AdminPage {
             renderRow: (item, index) => {
                 const selectedState = stateMapper[item.state];
                 const dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.value)} textStyle={selectedState.style} />;
-                let dropdownCourseType = <Dropdown items={this.state.courseTypes} item={item.courseType ? item.courseType.title : ''}  onSelected={e => this.updateCourseType(item, e.value)} />
-                console.log('dropdownCourseType',dropdownCourseType);
+                const dropdownCourseType = <Dropdown items={this.state.courseTypes} item={item.courseType ? item.courseType.title : ''} onSelected={e => this.updateCourseType(item, e.value)} />
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>
@@ -166,5 +160,5 @@ class CandidatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, candidate: state.candidate });
-const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel, getUser };
+const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);

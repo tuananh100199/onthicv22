@@ -42,10 +42,21 @@ module.exports = app => {
         getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition).populate('subjects', '-detailDescription').exec((error, item) => {
-                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
-                done(error, item)
-            })
+            (condition == '' ?
+                model.findById(condition, (error, item) => {
+                    if (error) {
+                        done(error);
+                    } else if (item == null) {
+                        done('Invalid Id!');
+                    } else {
+                        done(null, item);
+                    }
+                })
+                :
+                model.findById(condition).populate('subjects', '-detailDescription').exec((error, item) => {
+                    item.subjects.sort((a, b) => a.title.localeCompare(b.title));
+                    done(error, item)
+                }))
             : model.findOne(condition).populate('subjects', '-detailDescription').exec((error, item) => {
                 item.subjects.sort((a, b) => a.title.localeCompare(b.title));
                 done(error, item)

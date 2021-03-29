@@ -13,10 +13,8 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = {}, searchText = req.query.searchText;
-        if (searchText) {
-            condition.email = new RegExp(searchText, 'i');
-        }
+        const condition = {state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] }};
+        
         app.model.candidate.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
@@ -75,6 +73,7 @@ module.exports = app => {
 
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
+        console.log('changes', changes);
         changes.staff = req.session.user;
         if(changes.state == 'UngVien') {
             app.model.candidate.get(req.body._id, (error, item) => {
@@ -118,7 +117,12 @@ module.exports = app => {
             })
         }
         if (changes.state) changes.modifiedDate = new Date();
-        app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+        app.model.candidate.update(req.body._id, changes, (error, item) => {
+            console.log('req.body._id', req.body._id);
+            console.log('change-model', changes)
+            console.log('item', item)
+            res.send({ error, item })
+        });
     });
 
     app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {

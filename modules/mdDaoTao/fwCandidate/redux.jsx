@@ -78,6 +78,7 @@ export function updateCandidate(_id, changes, done) {
     return dispatch => {
         const url = '/api/candidate';
         T.put(url, { _id, changes }, data => {
+            console.log('data', data)
             if (data.error) {
                 T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
