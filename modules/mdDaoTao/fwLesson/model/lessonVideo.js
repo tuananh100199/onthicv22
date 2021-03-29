@@ -8,18 +8,7 @@ module.exports = app => {
     const model = app.db.model('LessonVideo', schema);
 
     app.model.lessonVideo = {
-        create: (data, done) => {
-            model.create(data, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    item.image = '/img/lesson-video/' + item._id + '.jpg';
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => error ? done(error) : item.save(done));
-                }
-            });
-        },
+        create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => {
             done ? model.find(condition).exec(done) : model.find({}).exec(condition)
