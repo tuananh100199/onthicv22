@@ -78,12 +78,12 @@ export function updateCandidate(_id, changes, done) {
     return dispatch => {
         const url = '/api/candidate';
         T.put(url, { _id, changes }, data => {
-            console.log('data', data)
             if (data.error) {
                 T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
+                data.item.state == 'UngVien'? T.notify('Đã cập nhật trạng thái ứng viên!', 'success') : null;
                 T.notify('Cập nhật đăng ký tư vấn thành công!', 'info');
                 dispatch(getCandidatePage());
                 done && done();

@@ -73,7 +73,6 @@ module.exports = app => {
 
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
-        console.log('changes', changes);
         changes.staff = req.session.user;
         if(changes.state == 'UngVien') {
             app.model.candidate.get(req.body._id, (error, item) => {
@@ -118,9 +117,6 @@ module.exports = app => {
         }
         if (changes.state) changes.modifiedDate = new Date();
         app.model.candidate.update(req.body._id, changes, (error, item) => {
-            console.log('req.body._id', req.body._id);
-            console.log('change-model', changes)
-            console.log('item', item)
             res.send({ error, item })
         });
     });

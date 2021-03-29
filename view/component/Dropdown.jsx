@@ -9,6 +9,12 @@ export default class Dropdown extends React.Component {
         });
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.item && this.props.item !== prevProps.item) {
+            this.setState({ selectedItem: this.props.item });
+        }
+    }
+    
     select = (selectedItem) => {
         this.setState({ selectedItem }, () => {
             $(this.element).html(selectedItem.text ? selectedItem.text : selectedItem);
