@@ -81,7 +81,7 @@ class StaffGroupPage extends React.Component {
     }
 
     show = (staffGroup) => {
-        this.props.history.push('/user/staff-group/edit/' + staffGroup._id);
+        this.props.history.push('/user/staff-group/' + staffGroup._id);
     }
 
     delete = (e, item) => {
@@ -109,12 +109,12 @@ class StaffGroupPage extends React.Component {
                             <tr key={index}>
                                 <td style={{ textAlign: 'right' }}>{index + 1}</td>
                                 <td>
-                                    <Link to={'/user/staff-group/edit/' + item._id} data-id={item._id}>{item.title}</Link>
+                                    <Link to={'/user/staff-group/' + item._id} data-id={item._id}>{item.title}</Link>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>{item.staff.length}</td>
                                 <td>
                                     <div className='btn-group'>
-                                        <Link to={'/user/staff-group/edit/' + item._id} data-id={item._id} className='btn btn-primary'>
+                                        <Link to={'/user/staff-group/' + item._id} data-id={item._id} className='btn btn-primary'>
                                             <i className='fa fa-lg fa-edit' />
                                         </Link>
                                         {currentPermissions.includes('component:write') ? <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}>

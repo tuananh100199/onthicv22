@@ -42,10 +42,10 @@ module.exports = app => {
 
     app.post('/api/carousel/item', app.permission.check('component:write'), (req, res) => {
         app.model.carouselItem.create(req.body.data, (error, item) => {
-            if (item && req.session.carouselItemImage) {
-                app.adminUploadImage('carouselItem', app.model.carouselItem.get, item._id, req.session.carouselItemImage, req, res);
-            } else {
+            if (error || (item && item.image == null)) {
                 res.send({ error, item });
+            } else {
+                app.uploadImage('carouselItem', app.model.carouselItem.get, item._id, item.image, data => res.send(data));
             }
         });
     });
@@ -85,7 +85,8 @@ module.exports = app => {
     const uploadCarouselItemImage = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('carouselItem:') && files.CarouselItemImage && files.CarouselItemImage.length > 0) {
             console.log('Hook: uploadCarouselItemImage => carousel image upload');
-            app.uploadComponentImage(req, 'carouselItem', app.model.carouselItem.get, fields.userData[0].substring(13), files.CarouselItemImage[0].path, done);
+            const _id = fields.userData[0].substring('carouselItem:'.length);
+            app.uploadImage('carouselItem', app.model.carouselItem.get, _id, files.CarouselItemImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadCarouselItemImage', (req, fields, files, params, done) =>

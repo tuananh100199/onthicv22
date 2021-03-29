@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSystemEmails, saveSystemEmails } from '../_init/reduxSystem';
+import { getSystemEmails, saveSystemEmails } from '../_init/redux';
 import { AdminPage, FormTabs, FormTextBox, FormEditor } from 'view/component/AdminPage';
 
 class EmailItem extends React.Component {

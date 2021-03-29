@@ -80,7 +80,8 @@ module.exports = app => {
     const uploadDriveQuestion = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('driveQuestion:') && files.DriveQuestionImage && files.DriveQuestionImage.length > 0) {
             console.log('Hook: uploadDriveQuestion => drive question image upload');
-            app.uploadComponentImage(req, 'drive-question', app.model.driveQuestion.get, fields.userData[0].substring(14), files.DriveQuestionImage[0].path, done);
+            const _id = fields.userData[0].substring('driveQuestion:'.length);
+            app.uploadImage('drive-question', app.model.driveQuestion.get, _id, files.DriveQuestionImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadDriveQuestion', (req, fields, files, params, done) =>

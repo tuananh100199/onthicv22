@@ -90,7 +90,7 @@ class ListContentEditPage extends AdminPage {
                 </tr>),
         });
         return this.renderPage({
-            icon: 'fa fa-bar-chart',
+            icon: 'fa fa-edit',
             title: 'Danh sách bài viết: ' + (this.state.title || '...'),
             breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Danh sách bài viết'],
             content: <>

@@ -3,7 +3,7 @@ module.exports = app => {
         title: String,
         abstract: String,
         image: String,
-        items: [{ type: app.db.Schema.ObjectId, ref: 'Content' }]
+        items: [{ type: app.db.Schema.ObjectId, ref: 'Content' }],
     });
     const model = app.db.model('ListContent', schema);
 

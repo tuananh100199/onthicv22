@@ -38,13 +38,13 @@ module.exports = app => {
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
 
-        delete: (_id, done) => model.findById(_id, (error, slogan) => {
+        delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);
-            } else if (slogan == null) {
+            } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                slogan.remove(done);
+                item.remove(done);
             }
         }),
     };

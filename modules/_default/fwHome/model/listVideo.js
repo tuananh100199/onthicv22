@@ -1,7 +1,8 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        height: { type: Number, default: 255 }
+        height: { type: Number, default: 255 },
+        items: [{ type: app.db.Schema.ObjectId, ref: 'Video' }],
     });
     const model = app.db.model('ListVideo', schema);
 

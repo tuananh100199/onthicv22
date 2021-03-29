@@ -34,7 +34,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
-        app.model.courseType.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+        app.model.courseType.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
@@ -58,7 +58,8 @@ module.exports = (app) => {
     const uploadCourseType = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('course-type:') && files.CourseTypeImage && files.CourseTypeImage.length > 0) {
             console.log('Hook: uploadCourseType => course type image upload');
-            app.uploadComponentImage(req, 'course-type', app.model.courseType.get, fields.userData[0].substring('course-type:'.length), files.CourseTypeImage[0].path, done);
+            const _id = fields.userData[0].substring('course-type:'.length);
+            app.uploadImage('course-type', app.model.courseType.get, _id, files.CourseTypeImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadCourseType', (req, fields, files, params, done) =>

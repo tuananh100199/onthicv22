@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatistic } from './reduxSystem';
+import { getStatistic } from './redux';
 import CountUp from 'view/js/countUp';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
@@ -30,7 +30,7 @@ class DashboardIcon extends React.Component {
     }
 }
 
-class DashboardPage extends  AdminPage{
+class DashboardPage extends AdminPage {
     componentDidMount() {
         this.props.getStatistic();
         T.ready();

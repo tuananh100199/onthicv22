@@ -1,10 +1,10 @@
 import T from 'view/js/common';
 
-const UPDATE_SYSTEM_STATE = 'system:updateSystemState';
+const SystemUpdateState = 'SystemUpdateState';
 
 export default function systemReducer(state = null, data) {
     switch (data.type) {
-        case UPDATE_SYSTEM_STATE:
+        case SystemUpdateState:
             return Object.assign({}, state, data.state);
 
         default:
@@ -23,7 +23,7 @@ export function saveSystemState(changes, done) {
             } else {
                 if (done) done(data);
                 T.notify('Lưu thông tin hệ thống thành công!', 'success');
-                dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
+                dispatch({ type: SystemUpdateState, state: data });
             }
         }, error => T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
     }
@@ -33,7 +33,7 @@ export function getSystemState(done) {
     return dispatch => {
         const url = `/api/state`;
         T.get(url, data => {
-            data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
+            data && dispatch({ type: SystemUpdateState, state: data });
             if (done) done(data);
         }, error => {
             T.notify('Lấy thông tin hệ thống lỗi!', 'danger');
@@ -46,7 +46,7 @@ export function getStatistic(done) {
     return dispatch => {
         const url = `/api/statistic/dashboard`;
         T.get(url, data => {
-            data && dispatch({ type: UPDATE_SYSTEM_STATE, state: data });
+            data && dispatch({ type: SystemUpdateState, state: data });
             if (done) done(data);
         }, error => {
             T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
@@ -78,7 +78,7 @@ export function logout(config) {
         T.confirm(config.title, config.message, true, isConfirm => {
             isConfirm && T.post('/logout', {},
                 data => {
-                    dispatch({ type: UPDATE_SYSTEM_STATE, state: { user: null } });
+                    dispatch({ type: SystemUpdateState, state: { user: null } });
                     const pathname = window.location.pathname;
                     if (pathname.startsWith('/user')) {
                         window.location = '/';
@@ -100,10 +100,14 @@ export function updateProfile(changes) {
                 T.notify('Cập nhật thông tin cá nhân lỗi!', 'danger');
                 console.error(`PUT: ${url}.`, res.error);
             } else {
-                dispatch({ type: UPDATE_SYSTEM_STATE, state: { user: res.user } });
+                dispatch({ type: SystemUpdateState, state: { user: res.user } });
             }
         }, error => T.notify('Cập nhật thông tin cá nhân lỗi!', 'danger'));
     };
+}
+
+export function changeSystemState(changes) {
+    return { type: SystemUpdateState, state: changes };
 }
 
 
@@ -140,5 +144,5 @@ export function saveSystemEmails(type, email) {
 }
 
 export function updateSystemState(state) {
-    return { type: UPDATE_SYSTEM_STATE, state };
+    return { type: SystemUpdateState, state };
 }

@@ -1,9 +1,9 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const CarouselGetAll = 'Carousel:GetAll';
-const CarouselGet = 'Carousel:Get';
-const CarouselUpdate = 'Carousel:Update';
+const CarouselGetAll = 'CarouselGetAll';
+const CarouselGet = 'CarouselGet';
+const CarouselChange = 'CarouselChange';
 
 export default function carouselReducer(state = null, data) {
     switch (data.type) {
@@ -13,13 +13,13 @@ export default function carouselReducer(state = null, data) {
         case CarouselGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case CarouselUpdate:
+        case CarouselChange:
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.carouselId) {
-                for (let i = 0, list = state.selectedItem.list, n = list.length; i < n; i++) {
-                    if (list[i]._id == updatedItem._id) {
-                        state.selectedItem.list.splice(i, 1, updatedItem);
+                for (let i = 0, items = state.selectedItem.items, n = items.length; i < n; i++) {
+                    if (items[i]._id == updatedItem._id) {
+                        state.selectedItem.items.splice(i, 1, updatedItem);
                         break;
                     }
                 }
@@ -167,7 +167,7 @@ export function deleteCarouselItem(_id) {
 }
 
 export function changeCarouselItem(item) {
-    return { type: CarouselUpdate, item };
+    return { type: CarouselChange, item };
 }
 
 // Home -------------------------------------------------------------------------------------------

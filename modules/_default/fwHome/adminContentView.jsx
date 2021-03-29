@@ -1,14 +1,41 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getContentAll, createContent, updateContent, deleteContent } from './redux/reduxContent';
-import { CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+
+class ContentModal extends AdminModal {
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
+    }
+
+    onShow = () => this.itemTitle.value('');
+
+    onSubmit = () => {
+        const title = this.itemTitle.value().trim();
+        if (title == '') {
+            T.notify('Tên bài viết bị trống!', 'danger');
+            this.itemTitle.focus();
+        } else {
+            this.props.create({ title }, data => {
+                if (data.item) {
+                    this.hide();
+                    this.props.history.push('/user/content/' + data.item._id);
+                }
+            })
+        }
+    }
+    render = () => this.renderModal({
+        title: 'Bài viết',
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên bài viết' />
+    });
+}
 
 class ContentView extends React.Component {
     componentDidMount() {
         this.props.getContentAll();
     }
 
-    create = (e) => e.preventDefault() || this.props.createContent(data => this.props.history.push('/user/content/' + data.item._id));
+    create = (e) => e.preventDefault() || this.modal.show();
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa nội dung', 'Bạn có chắc bạn muốn xóa nội dung này?', true, isConfirm =>
         isConfirm && this.props.deleteContent(item._id));
@@ -37,6 +64,7 @@ class ContentView extends React.Component {
 
         return <>
             {table}
+            <ContentModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createContent} history={this.props.history} />
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
         </>;
     }

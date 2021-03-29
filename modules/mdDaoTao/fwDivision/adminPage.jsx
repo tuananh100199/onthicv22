@@ -11,12 +11,12 @@ class DivisionModal extends AdminModal {
     onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: this.itemTitle.value() };
-        if (newData.title == '') {
+        const data = { title: this.itemTitle.value() };
+        if (data.title == '') {
             T.notify('Tên cơ sở bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            this.props.createDivision(newData, data => {
+            this.props.create(data, data => {
                 if (data.item) {
                     this.hide();
                     this.props.history.push('/user/division/' + data.item._id);
@@ -71,7 +71,7 @@ class DivisionPage extends AdminPage {
             breadcrumb: ['Cơ sở đào tạo'],
             content: <>
                 <div className='tile'>{table}</div>
-                <DivisionModal ref={e => this.modal = e} createDivision={this.props.createDivision} history={this.props.history} readOnly={!permission.write} />
+                <DivisionModal ref={e => this.modal = e} create={this.props.createDivision} history={this.props.history} readOnly={!permission.write} />
             </>,
             onCreate: permission.write ? this.create : null,
         });

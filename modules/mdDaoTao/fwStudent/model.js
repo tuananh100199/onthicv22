@@ -65,7 +65,7 @@ module.exports = (app) => {
                 const result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).sort({ lastname: 1, firstname: 1 }).skip(skipNumber).limit(result.pageSize).populate('user').populate('courseType').populate('course').exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStatistic, updateStatistic, createStatisticItem, updateStatisticItem, swapStatisticItem, deleteStatisticItem } from './redux/reduxStatistic';
+import { getStatistic, updateStatistic, createStatisticItem, updateStatisticItem, swapStatisticItem, deleteStatisticItem, changeStatisticItem } from './redux/reduxStatistic';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormTextBox, FormEditor, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -27,6 +27,7 @@ class StatisticItemModal extends AdminModal {
             number: this.itemNumber.value(),
             statisticId: this.state.statisticId,
             active: this.itemActive.value(),
+            image: this.state.image,
         };
 
         if (changes.title == '') {
@@ -39,7 +40,16 @@ class StatisticItemModal extends AdminModal {
                 this.props.create(changes, this.hide);
             }
         }
-    };
+    }
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+        }
+    }
 
     render = () => this.renderModal({
         title: 'Thống kê',
@@ -50,7 +60,8 @@ class StatisticItemModal extends AdminModal {
                 <FormTextBox type='number' ref={e => this.itemNumber = e} label='Số lượng' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
-                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StatisticItemImage' image={this.state.image} readOnly={this.props.readOnly} />
+                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StatisticItemImage' image={this.state.image} readOnly={this.props.readOnly}
+                    onSuccess={this.onUploadSuccess} />
                 <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
             </div>
         </div>,
@@ -150,7 +161,7 @@ class StatisticEditPage extends AdminPage {
                             </div>}
                     </div>
                 </div>
-                <StatisticItemModal ref={e => this.modal = e} create={this.props.createStatisticItem} update={this.props.updateStatisticItem} readOnly={!permission.write} />
+                <StatisticItemModal ref={e => this.modal = e} create={this.props.createStatisticItem} update={this.props.updateStatisticItem} change={this.props.changeStatisticItem} readOnly={!permission.write} />
             </>,
             backRoute: '/user/component',
         });
@@ -158,5 +169,5 @@ class StatisticEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { getStatistic, updateStatistic, createStatisticItem, updateStatisticItem, swapStatisticItem, deleteStatisticItem };
+const mapActionsToProps = { getStatistic, updateStatistic, createStatisticItem, updateStatisticItem, swapStatisticItem, deleteStatisticItem, changeStatisticItem };
 export default connect(mapStateToProps, mapActionsToProps)(StatisticEditPage);

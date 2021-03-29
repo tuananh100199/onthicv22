@@ -1,8 +1,8 @@
 import T from 'view/js/common';
 
 // Reducer -------------------------------------------------------------------------------------------------------------
-const ContentGetAll = 'Content:GetAll';
-const ContentUpdate = 'Content:Update';
+const ContentGetAll = 'ContentGetAll';
+const ContentUpdate = 'ContentUpdate';
 
 export default function contentReducer(state = {}, data) {
     switch (data.type) {
@@ -54,10 +54,10 @@ export function getContent(_id, done) {
     });
 }
 
-export function createContent(done) {
+export function createContent(data, done) {
     return dispatch => {
         const url = `/api/content`;
-        T.post(url, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo nội dung bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);

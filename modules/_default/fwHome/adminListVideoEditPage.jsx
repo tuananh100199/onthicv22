@@ -84,9 +84,9 @@ class ListVideoEditPage extends AdminPage {
         e.preventDefault();
     }
 
-    add = (newData, done) => {
-        newData.listVideoId = this.state.item._id;
-        this.props.createVideo(newData, newVideo => {
+    add = (data, done) => {
+        data.listVideoId = this.state.item._id;
+        this.props.createVideo(data, newVideo => {
             let items = this.state.items;
             items.push(newVideo);
             this.setState({ items }, done);

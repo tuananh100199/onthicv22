@@ -30,7 +30,7 @@ import fwCandidate from 'modules/mdDaoTao/fwCandidate';
 
 window.T = T;
 const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwNews, fwCourse, fwDivision, fwCourseType, fwCandidate];
-import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/reduxSystem';
+import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
 const reducers = {}, routeMapper = {},

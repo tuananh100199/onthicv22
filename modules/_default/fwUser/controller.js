@@ -50,7 +50,7 @@ module.exports = app => {
     });
 
     app.get('/api/user/all', app.permission.check('user:read'), (_, res) => {
-        app.model.user.getAll((error, items) => res.send({ error, items }));
+        app.model.user.getAll((error, list) => res.send({ error, list }));
     });
 
     app.get('/api/user', app.permission.orCheck('user:read', 'user:login'), (req, res) => {
@@ -223,14 +223,16 @@ module.exports = app => {
     app.uploadHooks.add('uploadYourAvatar', (req, fields, files, params, done) => {
         if (req.session.user && fields.userData && fields.userData[0] == 'profile' && files.ProfileImage && files.ProfileImage.length > 0) {
             console.log('Hook: uploadYourAvatar => your avatar upload');
-            app.uploadComponentImage(req, 'user', app.model.user.get, req.session.user._id, files.ProfileImage[0].path, done);
+            const _id = req.session.user._id;
+            app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, done);
         }
     });
 
     const uploadUserAvatar = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('user:') && files.UserImage && files.UserImage.length > 0) {
             console.log('Hook: uploadUserAvatar => user avatar upload');
-            app.uploadComponentImage(req, 'user', app.model.user.get, fields.userData[0].substring(5), files.UserImage[0].path, done);
+            const _id = fields.userData[0].substring('user:'.length);
+            app.uploadImage('user', app.model.user.get, _id, files.UserImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadUserAvatar', (req, fields, files, params, done) =>

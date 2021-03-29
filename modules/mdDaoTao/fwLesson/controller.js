@@ -36,8 +36,7 @@ module.exports = (app) => {
 
     app.put('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         const changes = req.body.changes;
-        if (changes.categories && changes.categories == 'empty') changes.categories = [];
-        app.model.lesson.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        app.model.lesson.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/lesson', app.permission.check('lesson:delete'), (req, res) => {

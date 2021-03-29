@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { logout } from 'modules/_default/_init/reduxSystem';
+import { logout } from 'modules/_default/_init/redux';
 import { Link } from 'react-router-dom';
 
 class HomeMenu extends React.Component {

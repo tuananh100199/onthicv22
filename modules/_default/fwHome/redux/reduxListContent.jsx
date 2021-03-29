@@ -52,10 +52,10 @@ export function getListContent(_id, done) {
     });
 }
 
-export function createListContent(newData, done) {
+export function createListContent(data, done) {
     return dispatch => {
         const url = `/api/list-content`;
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo danh sách bài viết bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);

@@ -15,7 +15,7 @@ module.exports = app => {
         create: (data, done) => {
             model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
                 data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-                model.create(data, done)
+                model.create(data, done);
             })
         },
 

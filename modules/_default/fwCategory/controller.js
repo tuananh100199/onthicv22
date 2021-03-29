@@ -1,9 +1,5 @@
 module.exports = app => {
-    app.permission.add(
-        { name: 'category:read' },
-        { name: 'category:write' },
-        { name: 'category:delete' },
-    );
+    app.permission.add({ name: 'category:read' }, { name: 'category:write' }, { name: 'category:delete' });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/category/:type', (req, res) => {
@@ -15,14 +11,15 @@ module.exports = app => {
         app.model.category.getAll(condition, (error, items) => res.send({ error, items }));
     });
 
-    app.post('/api/category', app.permission.check('category:write'), (req, res) => app.model.category.create(req.body.data, (error, item) => {
-        const categoryType = item.type + 'CategoryImage';
-        if (item && req.session[categoryType]) {
-            app.adminUploadImage(item.type + 'Category', app.model.category.get, item._id, req.session[categoryType], req, res);
-        } else {
-            res.send({ error, item });
-        }
-    }));
+    app.post('/api/category', app.permission.check('category:write'), (req, res) => {
+        app.model.category.create(req.body.data, (error, item) => {
+            if (error || (item && item.image == null)) {
+                res.send({ error, item });
+            } else {
+                app.uploadImage(item.type + 'Category', app.model.category.get, item._id, item.image, data => res.send(data));
+            }
+        });
+    });
 
     app.put('/api/category', app.permission.check('category:write'), (req, res) => {
         app.model.category.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
@@ -43,10 +40,12 @@ module.exports = app => {
     const uploadCategoryImage = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('newsCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
             console.log('Hook: uploadCategoryImage => news');
-            app.uploadComponentImage(req, 'category', app.model.category.get, fields.userData[0].substring('newsCategoryImage:'.length), files.CategoryImage[0].path, done);
+            const _id = fields.userData[0].substring('newsCategoryImage:'.length);
+            app.uploadImage('newsCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         } else if (fields.userData && fields.userData[0].startsWith('driveQuestionCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
             console.log('Hook: uploadCategoryImage => drive-question');
-            app.uploadComponentImage(req, 'category', app.model.category.get, fields.userData[0].substring('driveQuestionCategoryImage:'.length), files.CategoryImage[0].path, done);
+            const _id = fields.userData[0].substring('driveQuestionCategoryImage:'.length);
+            app.uploadImage('driveQuestionCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 

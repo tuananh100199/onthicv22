@@ -67,21 +67,6 @@ module.exports = (app) => {
         },
     };
 
-    // Count views ----------------------------------------------------------------------------------------------------------------------------------
-    app.schedule('*/1 * * * *', () => {
-        app.redis.mget([`${app.appName}:todayViews`, `${app.appName}:allViews`], (error, result) => {
-            if (error == null && result) {
-                app.state.data.todayViews = Number(result[0]);
-                app.state.data.allViews = Number(result[1]);
-                app.model.setting.set({ todayViews: Number(result[0]), allViews: Number(result[1]) });
-            }
-        });
-    });
-    app.schedule('0 0 * * *', () => {
-        app.redis.set(`${app.appName}:todayViews`, 0);
-        app.model.setting.set({ todayViews: 0 });
-    });
-
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
         const changes = {};
@@ -238,19 +223,6 @@ module.exports = (app) => {
         }).catch(error => res.send({ error }));
     });
 
-
-    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
-    app.readyHooks.add('readyInit', {
-        ready: () => app.model != null && app.model.setting != null && app.state,
-        run: () => {
-            const enableInit = process.env['enableInit'] == 'true';
-            if (enableInit) {
-                app.model.setting.init(app.state.data, () => app.state.refresh())
-            } else {
-                setTimeout(() => { app.state.refresh() }, 200);
-            }
-        },
-    });
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     const uploadSettingImage = (req, fields, files, params, done) => {

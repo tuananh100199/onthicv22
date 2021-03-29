@@ -1,6 +1,5 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        listVideoId: app.db.Schema.ObjectId,
         title: String,
         link: String,
         image: String,
@@ -10,35 +9,7 @@ module.exports = app => {
     const model = app.db.model('Video', schema);
 
     app.model.video = {
-        create: (data, done) => {
-            const finalCreate = (data) => {
-                model.create(data, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else {
-                        item.image = '/img/video/' + item._id + '.jpg';
-                        const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                            destPath = app.path.join(app.publicPath, item.image);
-                        app.fs.copyFile(srcPath, destPath, error => {
-                            if (error) {
-                                done(error);
-                            } else {
-                                item.save(done);
-                            }
-                        });
-                    }
-                });
-            }
-
-            if (data.listVideoId) {
-                model.find({ listVideoId: data.listVideoId }).sort({ priority: -1 }).limit(1).exec((error, items) => {
-                    data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-                    finalCreate(data);
-                })
-            } else {
-                finalCreate(data);
-            }
-        },
+        create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
 

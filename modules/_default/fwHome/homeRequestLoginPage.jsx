@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { forgotPassword, login, register } from '../_init/reduxSystem';
+import { forgotPassword, login, register } from '../_init/redux';
 
 const texts = {
     vi: {

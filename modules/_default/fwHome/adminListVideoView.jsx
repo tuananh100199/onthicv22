@@ -15,15 +15,15 @@ class ListVideoModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const newData = {
+        const data = {
             title: this.listVideoName.value().trim()
         };
 
-        if (newData.title == '') {
+        if (data.title == '') {
             T.notify('Tên danh sách video bị trống!', 'danger');
             this.listVideoName.focus();
         } else {
-            this.props.create(newData, data => {
+            this.props.create(data, data => {
                 if (data.item) {
                     this.hide()
                     this.props.history.push('/user/list-video/' + data.item._id);

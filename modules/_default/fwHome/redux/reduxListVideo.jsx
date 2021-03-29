@@ -81,10 +81,10 @@ export function getAllListVideo(done) {
     }
 }
 
-export function createListVideo(newData, done) {
+export function createListVideo(data, done) {
     return dispatch => {
         const url = '/api/list-video';
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo danh sách video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);

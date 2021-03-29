@@ -92,7 +92,7 @@ class StaffGroupEditPage extends React.Component {
 
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/staff-group/edit/:staffGroupId'),
+            const route = T.routeMatcher('/user/staff-group/:staffGroupId'),
                 params = route.parse(window.location.pathname);
 
             this.props.getStaffGroupItem(params.staffGroupId, data => {

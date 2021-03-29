@@ -8,6 +8,7 @@ yarn.lock
 asset/ssl
 asset/bundle
 asset/db
+asset/temp
 asset/upload/
 asset/upload/*
 asset/download/*

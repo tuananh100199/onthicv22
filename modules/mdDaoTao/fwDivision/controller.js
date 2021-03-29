@@ -24,7 +24,7 @@ module.exports = app => {
         app.model.division.get(req.query._id, (error, item) => res.send({ error, item })));
 
     app.post('/api/division', app.permission.check('division:write'), (req, res) => {
-        app.model.division.create(req.body.newData, (error, item) => res.send({ error, item }));
+        app.model.division.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/division', app.permission.check('division:write'), (req, res) => {
@@ -46,7 +46,8 @@ module.exports = app => {
     const uploadDivision = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('division:') && files.DivisionImage && files.DivisionImage.length > 0) {
             console.log('Hook: uploadDivision => division image upload');
-            app.uploadComponentImage(req, 'division', app.model.division.get, fields.userData[0].substring('division:'.length), files.DivisionImage[0].path, done);
+            const _id = fields.userData[0].substring('division:'.length);
+            app.uploadImage('division', app.model.division.get, _id, files.DivisionImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadDivision', (req, fields, files, params, done) =>

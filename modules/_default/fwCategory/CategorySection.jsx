@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory } from './redux';
+import { getCategoryAll, createCategory, swapCategory, updateCategory, changeCategory, deleteCategory } from './redux';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, CirclePageButton, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class CategoryModal extends AdminModal {
@@ -21,6 +21,7 @@ class CategoryModal extends AdminModal {
         const changes = {
             title: this.itemTitle.value().trim(),
             description: this.itemDescription.value().trim(),
+            image: this.state.image,
         };
         if (this.state._id) { // Update
             this.props.update(this.state._id, changes, () => this.hide());
@@ -31,12 +32,22 @@ class CategoryModal extends AdminModal {
         }
     }
 
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+        }
+    }
+
     render = () => this.renderModal({
         title: 'Danh mục',
         body: <>
             <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục' readOnly={this.props.readOnly} />
             <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả (nếu có)' readOnly={this.props.readOnly} />
-            <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly} />
+            <FormImageBox ref={e => this.imageBox = e} label='Hình đại diện' uploadType='CategoryImage' image={this.state.image} readOnly={this.props.readOnly}
+                onSuccess={this.onUploadSuccess} />
         </>,
     });
 }
@@ -55,7 +66,7 @@ class CategorySection extends AdminPage {
     swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapCategory(item._id, isMoveUp, this.props.type);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá danh mục', 'Bạn có chắc bạn muốn xoá danh mục này?', true, isConfirm =>
-        isConfirm && this.props.deleteCategory(item._id));
+        isConfirm && this.props.deleteCategory(item._id, this.props.type));
 
     render() {
         const permission = this.getUserPermission('category');
@@ -83,11 +94,11 @@ class CategorySection extends AdminPage {
             <div className='tile'>{table}</div>
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
             <CategoryModal ref={e => this.modal = e} readOnly={!permission.write} uploadType={this.props.uploadType} type={this.props.type}
-                create={this.props.createCategory} update={this.props.updateCategory} />
+                create={this.props.createCategory} update={this.props.updateCategory} change={this.props.changeCategory} />
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, category: state.category })
-const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory };
+const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, changeCategory, deleteCategory };
 export default connect(mapStateToProps, mapActionsToProps)(CategorySection);
