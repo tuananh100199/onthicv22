@@ -1,29 +1,38 @@
 module.exports = (app) => {
-    app.buildQuestionManager = (parentGetItem, parentUpdateItem) => ({
-        add: (_parentId, done) => {
-            app.model.question.create(data, (error, item) => {
-                if (error || item == null) {
-                    done(error || 'Hệ thống bị lỗi!');
-                } else if (item.image == null) {
-                    done(null, item);
+    app.buildQuestionManager = (parentModel) => ({
+        create: (_parentId, data, done) => {
+            new Promise((resolve, reject) => {
+                app.model.question.create(data, (error, item) => {
+                    if (error || item == null) {
+                        reject(error || 'Hệ thống bị lỗi!');
+                    } else if (item.image == null) {
+                        resolve(item);
+                    } else {
+                        app.uploadImage('question', app.model.question.get, item._id, item.image, data =>
+                            data.error ? reject(data.error) : resolve(item));
+                    }
+                });
+            }).then(item => {
+                parentModel.update(_parentId, { $push: { questions: item } }, (error) => {
+                    error ? done(error) : parentModel.get(_parentId, (error, item) => done(error, item && item.questions ? item.questions : []));
+                });
+            }).catch(error => done(error));
+        },
+
+        update: (_parentId, _questionId, data, done) => {
+            app.model.question.update(_questionId, data, error => {
+                if (error) {
+                    done(error);
                 } else {
-                    app.uploadImage('question', app.model.question.get, item._id, item.image, data => {
-                        if (data.error) {
-                            done(data.error, item);
-                        } else {
-                            parentUpdateItem(_parentId, { $push: { questions: item } }, (error, item) => {
-                                done(error, item && item.questions ? item.questions : []);
-                            });
-                        }
+                    parentModel.get(_parentId, (error, item) => {
+                        done(error, item && item.questions ? item.questions : []);
                     });
                 }
             });
         },
 
-        update: (_questionId, data, done) => app.model.question.update(_questionId, data, done),
-
         swap: (_parentId, _questionId, isMoveUp, done) => {
-            parentGetItem(_parentId, (error, item) => {
+            parentModel.get(_parentId, (error, item) => {
                 if (error) {
                     done(error);
                 } else {
@@ -49,7 +58,7 @@ module.exports = (app) => {
                 if (error) {
                     done(error);
                 } else {
-                    parentUpdateItem(_parentId, { $pull: { questions: _questionId } }, (error, item) => {
+                    parentModel.update(_parentId, { $pull: { questions: _questionId } }, (error, item) => {
                         done(error, item && item.questions ? item.questions : []);
                     });
                 }
