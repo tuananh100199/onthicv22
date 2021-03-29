@@ -241,7 +241,6 @@ export const ajaxSelectListVideo = T.createAjaxAdapter(
 );
 
 export function ajaxGetListVideo(_id, done) {
-    console.log('id', _id);
     const url = '/api/list-video';
     T.get(url, { _id }, done, error => T.notify('Lấy list video bị lỗi!', 'danger'));
 }

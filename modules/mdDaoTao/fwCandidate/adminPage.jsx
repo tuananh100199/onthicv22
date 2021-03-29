@@ -8,12 +8,14 @@ import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCour
 import { FormSelect } from 'view/component/AdminPage';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
+
 //TODO: state=UngVien thì không cập nhật được => cần confirm trước khi chuyển thành UngVien
 class EmailModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
+
     onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated, courseType = '', state = '' }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
@@ -23,8 +25,10 @@ class EmailModal extends AdminModal {
         ajaxGetCourseType(courseType, data =>
             this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.states.value(state)
-        this.setState({ _id: _id });
+
+        this.setState({ _id });
     }
+
     onSubmit = () => {
         const data = {
             firstname: this.itemFirstname.value(),
@@ -50,6 +54,7 @@ class EmailModal extends AdminModal {
             });
         }
     }
+
     render = () => this.renderModal({
         title: 'Đăng ký tư vấn',
         body: <>
@@ -62,6 +67,7 @@ class EmailModal extends AdminModal {
         </>
     });
 }
+
 const stateMapper = {
     MoiDangKy: { text: 'Mới đăng ký', style: { color: 'black' } },
     DangLienHe: { text: 'Đang liên hệ', style: { color: '#1488DB' } },
@@ -70,6 +76,7 @@ const stateMapper = {
 };
 const states = Object.keys(stateMapper).map(key => ({ value: key, text: stateMapper[key].text }));
 const states_select = Object.keys(stateMapper).map(key => ({ id: key, text: stateMapper[key].text }));
+
 class CandidatePage extends AdminPage {
     state = { courseTypes: [] };
     componentDidMount() {
@@ -81,17 +88,22 @@ class CandidatePage extends AdminPage {
         });
         T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, searchText);
     }
+
     edit = (e, item) => e.preventDefault() || this.emailModal.show(item);
+
     updateCourseType = (item, courseType) => this.props.updateCandidate(item._id, { courseType }, error => {
         //TODO: nếu error thì quay lại lựa chọn cũ
     });
+
     updateState = (item, state) => {
         this.props.updateCandidate(item._id, { state }, error => {
             //TODO: nếu error thì quay lại lựa chọn cũ
         });
     }
+
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
         isConfirm && this.props.deleteCandidate(item._id));
+
     render() {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.candidate && this.props.candidate.page ?
@@ -131,6 +143,7 @@ class CandidatePage extends AdminPage {
                     </tr>);
             },
         });
+
         return this.renderPage({
             icon: 'fa fa-envelope-o',
             title: 'Đăng ký tư vấn',
