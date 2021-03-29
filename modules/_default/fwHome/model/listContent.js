@@ -32,19 +32,14 @@ module.exports = app => {
             model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('items', '-content').exec(done) :
             model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('items', '-content').exec($unset),
 
-        delete: (_id, done) => model.findById(_id, (error, listContent) => {
+        delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);
-            } else if (listContent == null) {
+            } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.model.content.getAll({ listContentId: listContent._id }, (error, items) => {
-                    if (!error && items && items.length) {
-                        items.forEach(item => app.model.content.delete(item._id, () => { }))
-                    }
-                })
-                app.deleteImage(listContent.image);
-                listContent.remove(done);
+                app.deleteImage(item.image);
+                item.remove(done);
             }
         }),
     };
