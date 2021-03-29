@@ -17,14 +17,14 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('items', '-content').sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).populate('items', '-content').sort({ title: -1 }).exec(done) : model.find({}).populate('items', '-content').sort({ title: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate('items', '-content').sort({ title: 1 }).exec(done) : model.find({}).populate('items', '-content').sort({ title: 1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
 

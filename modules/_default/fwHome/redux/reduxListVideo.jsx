@@ -3,48 +3,11 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ListVideoGetAll = 'ListVideo:GetAll';
 const ListVideoUpdate = 'ListVideo:Update';
-const ListVideoAddItem = 'ListVideo:AddItem';
-const ListVideoUpdateItem = 'ListVideo:UpdateItem';
-const ListVideoRemoveItem = 'ListVideo:RemoveItem';
 
 export default function listVideoReducer(state = null, data) {
     switch (data.type) {
         case ListVideoGetAll:
             return Object.assign({}, state, { list: data.items });
-
-        case ListVideoAddItem:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                state.item.items.push({
-                    title: data.title,
-                    link: data.link,
-                    image: data.image,
-                });
-            }
-            return state;
-
-        case ListVideoUpdateItem:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                if (0 <= data.index && data.index < state.item.items.length) {
-                    state.item.items.splice(data.index, 1, {
-                        title: data.title,
-                        link: data.link,
-                        image: data.image,
-                    });
-                }
-            }
-            return state;
-
-        case ListVideoRemoveItem:
-            if (state && state.item) {
-                state = Object.assign({}, state);
-                if (0 <= data.index && data.index < state.item.items.length) {
-                    state.item.items.splice(data.index, 1);
-                }
-            }
-            return state;
-
 
         case ListVideoUpdate:
             state = Object.assign({}, state);
@@ -66,7 +29,7 @@ export default function listVideoReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllListVideo(done) {
+export function getListVideoAll(done) {
     return dispatch => {
         const url = '/api/list-video/all';
         T.get(url, data => {
@@ -105,7 +68,7 @@ export function updateListVideo(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật danh sách video thành công!', 'info');
-                dispatch(getAllListVideo());
+                dispatch(getListVideoAll());
                 done && done();
             }
         }, error => T.notify('Cập nhật danh sách video bị lỗi!', 'danger'));
@@ -121,7 +84,7 @@ export function deleteListVideo(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Xóa danh sách video thành công!', 'error', false, 800);
-                dispatch(getAllListVideo());
+                dispatch(getListVideoAll());
             }
         }, error => T.notify('Xóa danh sách video bị lỗi!', 'danger'));
     }
@@ -179,7 +142,7 @@ export function createListVideoItem(data, done) {
                 T.notify('Create list video item failed!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllListVideo(data.item.listVideoId));
+                dispatch(getListVideoAll(data.item.listVideoId));
                 if (done) done(data);
             }
         }, error => T.notify('Create list video item failed!', 'danger'));
@@ -195,7 +158,7 @@ export function updateListVideoItem(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 T.notify('Update list video item successful!', 'info');
-                dispatch(getAllListVideo(data.item.listVideoId));
+                dispatch(getListVideoAll(data.item.listVideoId));
                 if (done) done();
             }
         }, error => T.notify('Update list video item failed!', 'danger'));
@@ -210,7 +173,7 @@ export function swapListVideoItem(_id, isMoveUp) {
                 T.notify('Swap list video item failed!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
-                dispatch(getAllListVideo(data.item1.listVideoId));
+                dispatch(getListVideoAll(data.item1.listVideoId));
             }
         }, error => T.notify('Swap list video item failed!', 'danger'));
     }
@@ -225,7 +188,7 @@ export function deleteListVideoItem(_id) {
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
                 T.alert('Hình ảnh được xóa thành công!', 'error', false, 800);
-                dispatch(getAllListVideo(data.listVideoId));
+                dispatch(getListVideoAll(data.listVideoId));
             }
         }, error => T.notify('Delete list video item failed!', 'danger'));
     }

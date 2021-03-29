@@ -9,7 +9,7 @@ module.exports = app => {
     app.model.listVideo = {
         create: (data, done) => model.create(data, done),
 
-        getAll: done => model.find({}).sort({ title: -1 }).exec(done),
+        getAll: done => model.find({}).populate('items', '-content').sort({ title: 1 }).exec(done),
 
         get: (_id, done) => model.findById(_id, (error, list) => {
             if (error) {
