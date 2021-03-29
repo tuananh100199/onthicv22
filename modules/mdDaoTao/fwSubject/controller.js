@@ -34,8 +34,6 @@ module.exports = (app) => {
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        const changes = req.body.changes;
-        if (changes.categories && changes.categories == 'empty') changes.categories = [];
         app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
     });
 
