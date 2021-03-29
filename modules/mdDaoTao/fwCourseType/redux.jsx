@@ -157,6 +157,7 @@ export const ajaxSelectCourseType = T.createAjaxAdapter(
 );
 
 export function ajaxGetCourseType(_id, done) {
+    console.log(_id)
     const url = '/api/course-type';
     T.get(url, { _id }, done, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
 };
