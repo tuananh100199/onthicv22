@@ -63,7 +63,7 @@ export default {
         };
     },
     redux: {
-        component: combineReducers({ carousel, content, listContent, staffGroup, statistic, video, listVideo })
+        component: combineReducers({ carousel, content, listContent, staffGroup, statistic, video, listVideo }),
     },
     routes: [
         {

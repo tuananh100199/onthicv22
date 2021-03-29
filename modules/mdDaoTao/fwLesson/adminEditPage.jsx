@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-    getLesson, updateLesson,
+    getLesson, updateLesson, changeLesson,
     createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
 } from './redux';
 import { Link } from 'react-router-dom';
@@ -42,6 +42,16 @@ class VideoModal extends AdminModal {
         }
     }
 
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+            //TODO
+        }
+    }
+
     render = () => this.renderModal({
         title: 'Video mới',
         size: 'large',
@@ -52,7 +62,8 @@ class VideoModal extends AdminModal {
                     <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
                 </div>
-                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='lessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='lessonVideoImage' image={this.state.image} readOnly={this.props.readOnly}
+                    onSuccess={this.onUploadSuccess} />
             </div>),
     });
 }
@@ -237,7 +248,8 @@ class adminEditPage extends AdminPage {
             <div className='tile-body'>
                 {tableVideo}
                 {permission.write ? <CirclePageButton type='create' onClick={this.showVideoModal} /> : null}
-                <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} readOnly={!permission.write} />
+                <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} readOnly={!permission.write}
+                    create={this.props.createLessonVideo} update={this.props.updateLessonVideo} />
             </div>);
 
         const componentQuestion = (
@@ -260,7 +272,7 @@ class adminEditPage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
 const mapActionsToProps = {
-    getLesson, updateLesson,
+    getLesson, updateLesson, changeLesson,
     createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, createLessonQuestion, swapLessonQuestion, deleteLessonQuestion, updateLessonQuestion,
 };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);
