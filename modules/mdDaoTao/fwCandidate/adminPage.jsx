@@ -4,8 +4,11 @@ import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
 import { getUser } from '../../_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
+import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { FormSelect } from 'view/component/AdminPage';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
+
 
 //TODO: state=UngVien thì không cập nhật được => cần confirm trước khi chuyển thành UngVien
 
@@ -14,13 +17,14 @@ class EmailModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated }) => {
+    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated, courseType = '' }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
         this.itemPhoneNumber.value(phoneNumber);
-
+        ajaxGetCourseType(courseType, data =>
+            this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.setState({ _id });
     }
 
@@ -30,6 +34,7 @@ class EmailModal extends AdminModal {
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
+            courseType : this.courseType.value()
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -41,7 +46,7 @@ class EmailModal extends AdminModal {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else {
-            this.props.update(this.state._id, { email }, (error) => {
+            this.props.update(this.state._id, data , (error) => {
                 if (this.onUpdated) this.onUpdated(error);
                 this.hide();
             });
@@ -55,6 +60,8 @@ class EmailModal extends AdminModal {
             <FormTextBox ref={e => this.itemFirstname = e} label='Tên' />
             <FormTextBox ref={e => this.itemEmail = e} type='email' label='Email' />
             <FormTextBox ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
+            <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType}/>
+
         </>
     });
 }
@@ -105,6 +112,7 @@ class CandidatePage extends AdminPage {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.candidate && this.props.candidate.page ?
             this.props.candidate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+            console.log(list)
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -121,7 +129,8 @@ class CandidatePage extends AdminPage {
             renderRow: (item, index) => {
                 const selectedState = stateMapper[item.state];
                 const dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.value)} textStyle={selectedState.style} />;
-                const dropdownCourseType = <Dropdown items={this.state.courseTypes} item={item.courseType ? item.courseType.title : ''} onSelected={e => this.updateCourseType(item, e.value)} />
+                let dropdownCourseType = <Dropdown items={this.state.courseTypes} item={item.courseType ? item.courseType.title : ''}  onSelected={e => this.updateCourseType(item, e.value)} />
+                console.log('dropdownCourseType',dropdownCourseType);
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>
