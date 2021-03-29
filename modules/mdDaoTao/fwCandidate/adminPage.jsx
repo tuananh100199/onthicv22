@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
+import { getUser } from '../../_default/fwUser/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
@@ -85,16 +86,16 @@ class CandidatePage extends AdminPage {
     });
 
     updateState = (item, state) => {
-        if (state == 'UngVien' && (item.email == '' || item.email == null)) {
-            const onUpdated = error => {
-                //TODO
-            };
-            this.emailModal.show({ ...item, onUpdated });
-        } else {
+        // if (state == 'UngVien') {
+        //     const onUpdated = error => {
+        //         //TODO
+        //     };
+        //     this.emailModal.show({ ...item, onUpdated });
+        // } else {
             this.props.updateCandidate(item._id, { state }, error => {
                 //TODO: nếu error thì quay lại lựa chọn cũ
             });
-        }
+        // }
     }
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
@@ -156,5 +157,5 @@ class CandidatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, candidate: state.candidate });
-const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel };
+const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel, getUser };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);
