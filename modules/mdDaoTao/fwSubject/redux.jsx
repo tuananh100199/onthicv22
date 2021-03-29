@@ -27,8 +27,9 @@ export default function subjectReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-T.initCookiePage('pageSubject');
-export function getSubjectInPage(pageNumber, pageSize, searchText, done) {
+const getPageUrl = (pageNumber, pageSize) => `/api/subject/page/${pageNumber}/${pageSize}`;
+T.initCookiePage('pageSubject', true);
+export function getSubjectPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSubject', pageNumber, pageSize);
     return (dispatch) => {
         const url = '/api/subject/page/' + page.pageNumber + '/' + page.pageSize;
@@ -68,7 +69,7 @@ export function createSubject(newData, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
-                dispatch(getSubjectInPage());
+                dispatch(getSubjectPage());
             }
         }, error => T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
     }
@@ -84,7 +85,7 @@ export function updateSubject(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật thông tin môn học thành công!', 'success');
-                dispatch(getSubjectInPage());
+                dispatch(getSubjectPage());
                 done && done();
             }
         }, error => T.notify('Cập nhật thông tin môn học bị lỗi!', 'danger'));
@@ -100,12 +101,22 @@ export function deleteSubject(_id) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Khóa học được xóa thành công!', 'error', false, 800);
-                dispatch(getSubjectInPage());
+                dispatch(getSubjectPage());
             }
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
     }
 }
 
+export const ajaxSelectSubject = {
+    ajax: true,
+    url: getPageUrl(1, 100),
+    data: params => ({ condition: params.term }),
+    processResults: response => ({
+        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+    })
+}
+
+// Subject Lesson -------------------------------------------------------------------------------------------------------
 export function addSubjectLesson(_subjectId, _subjectLessonId, done) {
     return dispatch => {
         const url = `/api/subject/lesson`;
@@ -154,15 +165,7 @@ export function deleteSubjectLesson(_subjectId, _subjectLessonId, done) {
     }
 }
 
-export const ajaxSelectSubject = {
-    ajax: true,
-    url: `/api/subject/page/:pageNumber/:pageSize`,
-    data: {},
-    processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
-    })
-}
-
+// Subject Question ----------------------------------------------------------------------------------------------------
 export function createSubjectQuestion(_subjectId, data, done) {
     return dispatch => {
         const url = `/api/subject/question`;
@@ -209,7 +212,7 @@ export function swapSubjectQuestion(_subjectId, _subjectQuestionId, isMoveUp, do
     }
 }
 
-export function deleteSubjectQuestion(_subjectQuestionId, _subjectId, done) {
+export function deleteSubjectQuestion(_subjectId, _subjectQuestionId, done) {
     return dispatch => {
         const url = `/api/subject/question`;
         T.delete(url, { _subjectId, _subjectQuestionId }, data => {
