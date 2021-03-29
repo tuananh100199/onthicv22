@@ -13,10 +13,8 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = {}, searchText = req.query.searchText;
-        if (searchText) {
-            condition.email = new RegExp(searchText, 'i');
-        }
+        const condition = {state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] }};
+        
         app.model.candidate.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
@@ -25,17 +23,6 @@ module.exports = app => {
 
     app.get('/api/candidate', app.permission.check('candidate:read'), (req, res) => {
         app.model.candidate.get(req.query._id, (error, item) => res.send({ error, item }));
-    });
-
-    app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
-        const changes = req.body.changes;
-        changes.staff = req.session.user;
-        if (changes.state) changes.modifiedDate = new Date();
-        app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
-    });
-
-    app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {
-        app.model.candidate.delete(req.body._id, error => res.send({ error }));
     });
 
     app.get('/api/candidate/export', app.permission.check('candidate:export'), (req, res) => {
@@ -83,12 +70,65 @@ module.exports = app => {
         })
     });
 
+
+    app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
+        const changes = req.body.changes;
+        changes.staff = req.session.user;
+        if(changes.state == 'UngVien') {
+            app.model.candidate.get(req.body._id, (error, item) => {
+                if(error) {
+                    res.send({ error });
+                }
+                if(item.email) {
+                    app.model.user.get({ email: item.email }, (error, user) => {
+                        if (error) {
+                            res.send({ error: `Ops! có lỗi xảy ra!` });
+                        } else if (!user) {
+                            const dataPassword = app.randomPassword(8),
+                                data = {
+                                    email: item.email,
+                                    firstname: item.firstname,
+                                    lastname: item.lastname,
+                                    phoneNumber: item.phoneNumber,
+                                    password: dataPassword
+                                };
+                            app.model.user.create(data, (error, user) => {
+                                if (error) {
+                                    res.send({ error })
+                                }
+                                if (user) {
+                                    app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                        const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
+                                            mailTitle = result.emailCreateMemberByAdminTitle,
+                                            mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
+                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                            mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
+                                        app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            })
+        }
+        if (changes.state) changes.modifiedDate = new Date();
+        app.model.candidate.update(req.body._id, changes, (error, item) => {
+            res.send({ error, item })
+        });
+    });
+
+    app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {
+        app.model.candidate.delete(req.body._id, error => res.send({ error }));
+    });
+
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/candidate', (req, res) => {
         app.model.candidate.create(req.body.candidate, (error, item) => {
-            if (error) {
-                res.send({ error });
-            } else if (item) {
+            if (item) {
                 app.io.emit('candidate-added', item);
                 app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
                     let mailSubject = result.emailCandidateTitle.replaceAll('{name}', item.firstname + ' ' + item.lastname),
@@ -96,41 +136,8 @@ module.exports = app => {
                         mailHtml = result.emailCandidateHtml.replaceAll('{name}', item.firstname + ' ' + item.lastname);
                     app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
                 });
-
-                app.model.user.get({ email: item.email }, (error, user) => {
-                    if (error) {
-                        res.send({ error: `Ops! có lỗi xảy ra!` });
-                    } else if (!user) {
-                        const dataPassword = app.randomPassword(8),
-                            data = {
-                                email: item.email,
-                                firstname: item.firstname,
-                                lastname: item.lastname,
-                                phoneNumber: item.phoneNumber,
-                                password: dataPassword
-                            };
-                        app.model.user.create(data, (error, user) => {
-                            if (error) {
-                                res.send({ error })
-                            }
-                            if (user) {
-                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                    const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                                        mailTitle = result.emailCreateMemberByAdminTitle,
-                                        mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
-                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
-                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                });
-                            }
-                        });
-                    }
-                    res.send({ error, item });
-                });
             }
+            res.send({ error, item });
         });
     });
 };
