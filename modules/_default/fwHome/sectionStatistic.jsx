@@ -10,7 +10,7 @@ class StatisticNumber extends React.Component {
         setTimeout(() => {
             const endValue = this.props.value ? parseInt(this.props.value) : 0;
             new CountUp(this.valueElement.current, 0, endValue, 0, 2, { separator: '.', decimal: ',' }).start();
-        }, 1000);
+        }, 100);
     }
 
     render() {
