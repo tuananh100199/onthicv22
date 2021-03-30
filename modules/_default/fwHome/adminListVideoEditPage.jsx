@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getListVideo, updateListVideo } from './redux/reduxListVideo';
-import { AdminModal, FormTextBox, TableCell, renderTable, AdminPage } from 'view/component/AdminPage';
+import { AdminModal, FormTextBox, TableCell, renderTable, AdminPage, FormSelect } from 'view/component/AdminPage';
 import { ajaxSelectVideo } from 'modules/_default/fwHome/redux/reduxVideo';
 import { Link } from 'react-router-dom';
 
@@ -66,8 +66,7 @@ class ListVideoEditPage extends AdminPage {
             T.notify('Tên danh sách bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            this.props.updateListVideo(this.state.item._id, changes);
-            T.notify('Cập nhật danh sách video thành công!', 'success');
+            this.props.updateListVideo(this.state._id, changes, () => T.notify('Cập nhật danh sách bài viết thành công!', 'success'));
         }
     };
 
