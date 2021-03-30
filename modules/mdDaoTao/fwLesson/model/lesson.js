@@ -1,22 +1,16 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        priority: Number,
         title: String,
         shortDescription: String,
         detailDescription: String,
-        author: String,
+        author: { type: app.db.Schema.ObjectId, ref: 'User' },
         videos: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonQuestion' }], default: [] },
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
     });
     const model = app.db.model('Lesson', schema);
 
     app.model.lesson = {
-        create: (data, done) => {
-            model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
-                data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
-                model.create(data, done)
-            })
-        },
+        create: (data, done) => model.create(data, done),
 
         getPage: (pageNumber, pageSize, condition, done) => {
             model.countDocuments(condition, (error, totalItem) => {

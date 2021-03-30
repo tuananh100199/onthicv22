@@ -114,76 +114,13 @@ module.exports = (app) => {
     });
 
     // Question APIs --------------------------------------------------------------------------------------------------
-    app.post('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
-        const { _lessonId, data } = req.body;
-        app.model.lessonQuestion.create(data, (error, item) => {
-            if (error || item == null) {
-                res.send({ error: error || 'Hệ thống bị lỗi!' });
-            } else if (item.image == null) {
-                res.send({ item });
-            } else {
-                app.uploadImage('lesson-question', app.model.lessonQuestion.get, item._id, item.image, data => {
-                    if (data.error) {
-                        res.send({ error: data.error, item });
-                    } else {
-                        app.model.lesson.addQuestion(_lessonId, item, (error, item) => {
-                            res.send({ error, questions: item && item.questions ? item.questions : [] });
-                        });
-                    }
-                });
-            }
-        });
-    });
-
-    app.put('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
-        const { _lessonId, _lessonQuestionId, data } = req.body;
-        app.model.lessonQuestion.update(_lessonQuestionId, data, (error) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.lesson.get(_lessonId, (error, item) => res.send({ error, questions: item && item.questions ? item.questions : [] }));
-            }
-        });
-    });
-
-    app.put('/api/lesson/question/swap', app.permission.check('lesson:write'), (req, res) => {
-        const { _lessonId, _lessonQuestionId, isMoveUp } = req.body;
-        app.model.lesson.get(_lessonId, (error, item) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
-                    const lessonQuestion = item.questions[index];
-                    if (lessonQuestion._id == _lessonQuestionId) {
-                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
-                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
-                            item.questions.splice(index, 1);
-                            item.questions.splice(newIndex, 0, lessonQuestion);
-                            item.save();
-                        }
-                        break;
-                    }
-                }
-                res.send({ questions: item.questions });
-            }
-        });
-    });
-
-    app.delete('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
-        const { _lessonId, _lessonQuestionId } = req.body;
-        app.model.lessonQuestion.delete(_lessonQuestionId, error => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.lesson.deleteQuestion(_lessonId, _lessonQuestionId, (error, item) => {
-                    res.send({ error, questions: item && item.questions ? item.questions : [] });
-                });
-            }
-        });
+    app.readyHooks.add('createLessonQuestionManager', {
+        ready: () => app.model && app.model.lesson && app.hookQuestion,
+        run: () => app.hookQuestion('lesson', app.model.lesson),
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------
-    app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'), app.path.join(app.publicPath, '/img/lesson-question'));
+    app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'));
 
     const uploadLessonVideo = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('lessonVideoImage:') && files.lessonVideoImage && files.lessonVideoImage.length > 0) {
@@ -194,14 +131,4 @@ module.exports = (app) => {
     };
     app.uploadHooks.add('uploadLessonVideo', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadLessonVideo(fields, files, done), done, 'lesson:write'));
-
-    const uploadLessonQuestion = (fields, files, done) => {
-        if (fields.userData && fields.userData[0].startsWith('lessonQuestionImage:') && files.lessonQuestionImage && files.lessonQuestionImage.length > 0) {
-            console.log('Hook: uploadLessonQuestion =>lesson question image upload');
-            const _id = fields.userData[0].substring('lessonQuestionImage:'.length);
-            app.uploadImage('lesson-question', app.model.lessonQuestion.get, _id, files.lessonQuestionImage[0].path, done);
-        }
-    };
-    app.uploadHooks.add('uploadLessonQuestion', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadLessonQuestion(fields, files, done), done, 'lesson:write'));
 };

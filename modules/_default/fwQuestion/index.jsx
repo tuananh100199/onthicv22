@@ -46,7 +46,7 @@ class QuestionModal extends AdminModal {
             T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {
             image && this.setState({ image });
-            item && this.props.change && this.props.change(item);
+            image && this.state._id && this.props.change && this.props.change({ _questionId: this.state._id, image });
         }
     }
 
@@ -153,6 +153,11 @@ export class QuestionView extends React.Component {
         }
     });
 
+    changeQuestionImage = ({ _questionId, image }) => {
+        const questions = this.props.questions.map(item => item._id == _questionId ? Object.assign({}, item, { image }) : Object.assign({}, item));
+        this.props.changeQuestions && this.props.changeQuestions({ questions });
+    }
+
     render() {
         const { className, permission, questions } = this.props;
         const tableQuestion = renderTable({
@@ -179,7 +184,7 @@ export class QuestionView extends React.Component {
             <div className={className}>
                 {tableQuestion}
                 {permission.write ? <CirclePageButton type='create' onClick={this.showQuestionModal} /> : null}
-                <QuestionModal ref={e => this.modalQuestion = e} create={this.createQuestion} update={this.updateQuestion} readOnly={!permission.write} />
+                <QuestionModal ref={e => this.modalQuestion = e} create={this.createQuestion} update={this.updateQuestion} change={this.changeQuestionImage} readOnly={!permission.write} />
             </div>);
     }
 }

@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
 
-    // APIs -----------------------------------------------------------------------------------------------------------
+    // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
