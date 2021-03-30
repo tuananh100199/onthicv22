@@ -39,23 +39,18 @@ class CourseTypeModal extends AdminModal {
 const backRoute = '/user/course-type'
 class CourseTypeEditPage extends AdminPage {
     state = {};
-
     componentDidMount() {
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
                 if (item) {
-                    // Custom loop fuction to reduce repeat code when fetching data into initialValue of each FormItem
-                    Object.entries(item).forEach(([key, value]) => {
-                        const formItemRef = this[`item${key[0].toUpperCase()}${key.slice(1)}`];
-                        switch (key) {
-                            case 'image': formItemRef.setData('course-type:' + (item._id || 'new'), (value || '/img/avatar.png')); break;
-                            case 'detailDescription': formItemRef.html(value); break;
-                            default: formItemRef && formItemRef.value(value);
-                        }
-                    });
+                    this.itemTitle.value(item.title);
+                    this.itemShortDescription.value(item.shortDescription);
+                    this.itemDetailDescription.html(item.detailDescription);
+                    this.itemPrice.value(item.price);
+                    this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
+                    this.itemImage.setData('course-type:' + item._id);
 
-                    this.itemImage.setData('course-type:' + item._id)
                     this.itemTitle.focus();
                     this.setState(item);
                 } else {
@@ -88,7 +83,7 @@ class CourseTypeEditPage extends AdminPage {
         const permission = this.getUserPermission('course-type'), readOnly = !permission.write,
             item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjects: [] },
             table = renderTable({
-                getDataSource: () => item.subjects,
+                getDataSource: () => item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
                 renderHead: () => (
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -123,6 +118,7 @@ class CourseTypeEditPage extends AdminPage {
                 <CourseTypeModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateCourseType} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
+
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học: ' + this.state.title,

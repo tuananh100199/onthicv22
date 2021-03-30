@@ -72,11 +72,10 @@ module.exports = (app) => {
             }
         }),
 
-        update: (_id, $set, $unset, done) => {
-            $set.modifiedDate = new Date();
-            done ?
-                model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
-                model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset);
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => {
+            changes.modifiedDate = new Date();
+            model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

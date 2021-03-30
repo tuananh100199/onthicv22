@@ -91,8 +91,7 @@ module.exports = app => {
     });
 
     app.put('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => {
-        const $set = req.body.changes;
-        app.model.applicationForm.update(req.body._id, $set, (error, item) => res.send({ error, item }));
+        app.model.applicationForm.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));

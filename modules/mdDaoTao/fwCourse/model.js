@@ -35,7 +35,7 @@ module.exports = app => {
                 courseFee: item.price,
                 shortDescription: item.shortDescription,
                 detailDescription: item.detailDescription,
-                subjects: item.subjects
+                subjects: item.subjects,
             }, done)),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
@@ -56,20 +56,13 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('groups.teacher', '-password').exec((error, item) => {
-                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
-                done(error, item)
-            });
+            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('groups.teacher', '-password').exec(done);
         },
 
-        update: (_id, $set, $unset, done) => {
-            $set.modifiedDate = new Date();
-            done ?
-                model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjects', '-detailDescription').exec(done) :
-                model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjects', '-detailDescription').exec((error, item) => {
-                    item.subjects.sort((a, b) => a.title.localeCompare(b.title));
-                    $unset(error, item)
-                });
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => {
+            changes.modifiedDate = new Date();
+            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('subjects', '-detailDescription').exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

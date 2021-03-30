@@ -43,9 +43,8 @@ module.exports = app => {
             typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
         },
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {

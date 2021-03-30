@@ -41,7 +41,7 @@ class AdminSubjectView extends React.Component {
         const permission = this.props.permission || {},
             item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
         const table = renderTable({
-            getDataSource: () => item && item.subjects,
+            getDataSource: () => item && item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>

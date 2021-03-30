@@ -60,9 +60,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/student', app.permission.check('student:write'), (req, res) => {
-        const $set = req.body.changes;
-        // if ($set && $set.subjects && $set.subjects === 'empty') $set.subjects = [];
-        app.model.student.update(req.body._id, $set, (error, item) => res.send({ error, item }))
+        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {

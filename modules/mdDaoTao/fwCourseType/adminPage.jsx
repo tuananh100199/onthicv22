@@ -52,7 +52,7 @@ class CourseTypePage extends AdminPage {
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '80%' }}>Tên</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hiển thị giá</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá (VND)</th>
                         <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                         <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                     </tr>),
@@ -61,7 +61,7 @@ class CourseTypePage extends AdminPage {
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='link' content={item.title} url={`/user/course-type/${item._id}`} />
                         <TableCell type='checkbox' content={item.isPriceDisplayed} permission={permission} onChanged={isPriceDisplayed => this.props.updateCourseType(item._id, { isPriceDisplayed })} />
-                        <TableCell type='text' style={{ textAlign: 'right' }} content={T.numberDisplay(item.price ? item.price + ' VND' : '')} />
+                        <TableCell type='number' content={item.price} />
                         <TableCell type='image' content={item.image || '/img/avatar.png'} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={() => this.props.history.push('/user/course-type/' + item._id)} onDelete={this.delete} />
                     </tr>),
