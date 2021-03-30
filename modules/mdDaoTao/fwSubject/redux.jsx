@@ -134,7 +134,6 @@ export function addSubjectLesson(_subjectId, _subjectLessonId, done) {
     }
 }
 
-
 export function swapSubjectLesson(_subjectId, _subjectLessonId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/subject/lesson/swap`;
@@ -166,64 +165,6 @@ export function deleteSubjectLesson(_subjectId, _subjectLessonId, done) {
 }
 
 // Subject Question ----------------------------------------------------------------------------------------------------
-export function createSubjectQuestion(_subjectId, data, done) {
-    return dispatch => {
-        const url = `/api/subject/question`;
-        T.post(url, { _subjectId, data }, data => {
-            if (data.error) {
-                T.notify('Tạo câu hỏi bị lỗi!', 'danger');
-                console.error('POST: ' + url + '.', data.error);
-            } else {
-                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
-                done && done();
-            }
-        }, error => console.error('POST: ' + url + '.', error));
-    }
-}
-
-export function updateSubjectQuestion(_subjectId, _questionId, data, done) {
-    return dispatch => {
-        const url = '/api/subject/question';
-        T.put(url, { _subjectId, _questionId, data }, data => {
-            if (data.error) {
-                T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                T.notify('Cập nhật câu hỏi thành công!', 'success');
-                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
-                done && done();
-            }
-        }, error => console.error('PUT: ' + url + '.', error));
-    }
-}
-
-export function swapSubjectQuestion(_subjectId, _questionId, isMoveUp, done) {
-    return dispatch => {
-        const url = `/api/subject/question/swap`;
-        T.put(url, { _subjectId, _questionId, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
-                done && done();
-            }
-        }, error => console.error('PUT: ' + url + '.', error));
-    }
-}
-
-export function deleteSubjectQuestion(_subjectId, _questionId, done) {
-    return dispatch => {
-        const url = `/api/subject/question`;
-        T.delete(url, { _subjectId, _questionId }, data => {
-            if (data.error) {
-                T.notify('Xóa câu hỏi bị lỗi!', 'danger');
-                console.error('DELETE: ' + url + '.', data.error);
-            } else {
-                T.notify('Xóa câu hỏi thành công!', 'success');
-                dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
-                done && done();
-            }
-        }, error => console.error('DELETE: ' + url + '.', error));
-    }
+export function changeSubjectQuestions(data) {
+    return { type: SubjectGetItem, item: { questions: data.questions } };
 }
