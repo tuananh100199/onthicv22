@@ -90,29 +90,8 @@ module.exports = (app) => {
     });
 
     // Question APIs --------------------------------------------------------------------------------------------------
-    let questionManager = null;
     app.readyHooks.add('createSubjectQuestionManager', {
-        ready: () => app.model && app.model.question && app.buildQuestionManager,
-        run: () => questionManager = app.buildQuestionManager(app.model.subject),
-    });
-
-    app.post('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, data } = req.body;
-        questionManager.create(_subjectId, data, (error, questions) => res.send({ error, questions }));
-    });
-
-    app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _questionId, data } = req.body;
-        questionManager.update(_subjectId, _questionId, data, (error, questions) => res.send({ error, questions }));
-    });
-
-    app.put('/api/subject/question/swap', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _questionId, isMoveUp } = req.body;
-        questionManager.swap(_subjectId, _questionId, isMoveUp, (error, questions) => res.send({ error, questions }));
-    });
-
-    app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _questionId } = req.body;
-        questionManager.delete(_subjectId, _questionId, (error, questions) => res.send({ error, questions }));
+        ready: () => app.model && app.model.subject && app.hookQuestion,
+        run: () => app.hookQuestion('subject', app.model.subject),
     });
 };

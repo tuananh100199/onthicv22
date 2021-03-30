@@ -3,7 +3,7 @@ module.exports = app => {
         parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
     };
 
-    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
+    // app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list/:licenseClass', app.permission.check('applicationForm:read'), app.templates.admin);

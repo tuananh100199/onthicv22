@@ -25,4 +25,3 @@
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4040 - Khóa học (/user/course)
-7000. Đơn đề nghị học - sát hạch (/user/don-de-nghi-hoc)

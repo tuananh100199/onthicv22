@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { AdminModal, FormRichTextBox, FormCheckbox, FormImageBox } from 'view/component/AdminPage';
+import { AdminModal, FormRichTextBox, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
-export default class QuestionModal extends AdminModal {
+class QuestionModal extends AdminModal {
     state = { answers: '' };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
@@ -19,7 +19,7 @@ export default class QuestionModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const { create, update, parentId } = this.props,
+        const { create, update } = this.props,
             answers = this.state.answers.split('\n'),
             data = {
                 title: this.itemTitle.value(),
@@ -37,7 +37,7 @@ export default class QuestionModal extends AdminModal {
         } else if (data.trueAnswer == null) {
             T.notify('Đáp án bị trống!', 'danger');
         } else {
-            this.state._id ? update(parentId, this.state._id, data, this.hide) : create(parentId, data, this.hide);
+            this.state._id ? update({ _id: this.state._id }, data, this.hide) : create(data, this.hide);
         }
     }
 
@@ -88,52 +88,98 @@ export default class QuestionModal extends AdminModal {
     };
 }
 
-export function createQuestion(type, _parentId, data, done) {
-    const url = `/api/${type}/question`;
-    T.post(url, { _parentId, data }, data => {
-        if (data.error) {
-            T.notify('Tạo câu hỏi bị lỗi!', 'danger');
-            console.error('POST: ' + url + '.', data.error);
-        } else {
-            done && done(data.item);
-        }
-    }, error => console.error('POST: ' + url + '.', error));
-}
+export class QuestionView extends React.Component {
+    showQuestionModal = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
 
-export function updateQuestion(type, _parentId, _questionId, data, done) {
-    const url = `/api/${type}/question`;
-    T.put(url, { _parentId, _questionId, data }, data => {
-        if (data.error) {
-            T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
-            console.error('PUT: ' + url + '.', data.error);
-        } else {
-            T.notify('Cập nhật câu hỏi thành công!', 'success');
-            done && done();
-        }
-    }, error => console.error('PUT: ' + url + '.', error));
-}
+    createQuestion = (data, done) => {
+        const { type, changeQuestions, parentId: _parentId } = this.props;
+        const url = `/api/question/${type}`;
+        T.post(url, { _parentId, data }, data => {
+            if (data.error) {
+                T.notify('Tạo câu hỏi bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                changeQuestions && changeQuestions(data);
+                done && done();
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    }
 
-export function swapQuestion(type, _parentId, _questionId, isMoveUp, done) {
-    const url = `/api/${type}/question/swap`;
-    T.put(url, { _parentId, _questionId, isMoveUp }, data => {
-        if (data.error) {
-            T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
-            console.error('PUT: ' + url + '.', data.error);
-        } else {
-            done && done();
-        }
-    }, error => console.error('PUT: ' + url + '.', error));
-}
+    updateQuestion = (question, data, done) => {
+        const { type, changeQuestions, parentId: _parentId } = this.props,
+            _questionId = question._id;
+        const url = `/api/question/${type}`;
+        T.put(url, { _parentId, _questionId, data }, data => {
+            if (data.error) {
+                T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                T.notify('Cập nhật câu hỏi thành công!', 'success');
+                changeQuestions && changeQuestions(data);
+                done && done();
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    }
 
-export function deleteQuestion(type, _parentId, _questionId, done) {
-    const url = `/api/${type}/question`;
-    T.delete(url, { _parentId, _questionId }, data => {
-        if (data.error) {
-            T.notify('Xóa câu hỏi bị lỗi!', 'danger');
-            console.error('DELETE: ' + url + '.', data.error);
-        } else {
-            T.notify('Xóa câu hỏi thành công!', 'success');
-            done && done();
+    swapQuestion = (e, question, isMoveUp) => {
+        e.preventDefault();
+        const { type, changeQuestions, parentId: _parentId } = this.props,
+            _questionId = question._id;
+        const url = `/api/question/${type}/swap`;
+        T.put(url, { _parentId, _questionId, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                changeQuestions && changeQuestions(data);
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    }
+
+    deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm => {
+        if (isConfirm) {
+            const { type, changeQuestions, parentId: _parentId } = this.props,
+                _questionId = question._id;
+            const url = `/api/question/${type}`;
+            T.delete(url, { _parentId, _questionId }, data => {
+                if (data.error) {
+                    T.notify('Xóa câu hỏi bị lỗi!', 'danger');
+                    console.error('DELETE: ' + url + '.', data.error);
+                } else {
+                    T.notify('Xóa câu hỏi thành công!', 'success');
+                    changeQuestions && changeQuestions(data);
+                }
+            }, error => console.error('DELETE: ' + url + '.', error));
         }
-    }, error => console.error('DELETE: ' + url + '.', error));
+    });
+
+    render() {
+        const { className, permission, questions } = this.props;
+        const tableQuestion = renderTable({
+            getDataSource: () => questions,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên câu hỏi</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} onClick={e => this.showQuestionModal(e, item)} />
+                    <TableCell type='image' content={item.image} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.updateQuestion(item, { active })} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showQuestionModal} onSwap={this.swapQuestion} onDelete={this.deleteQuestion} />
+                </tr>),
+        });
+
+        return (
+            <div className={className}>
+                {tableQuestion}
+                {permission.write ? <CirclePageButton type='create' onClick={this.showQuestionModal} /> : null}
+                <QuestionModal ref={e => this.modalQuestion = e} create={this.createQuestion} update={this.updateQuestion} readOnly={!permission.write} />
+            </div>);
+    }
 }
