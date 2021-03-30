@@ -10,7 +10,7 @@ import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view
 import Dropdown from 'view/component/Dropdown';
 
 //TODO: state=UngVien thì không cập nhật được => cần confirm trước khi chuyển thành UngVien
-class EmailModal extends AdminModal {
+class CandidateModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
@@ -57,14 +57,15 @@ class EmailModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Đăng ký tư vấn',
-        body: <>
-            <FormTextBox ref={e => this.itemLastname = e} label='Họ' />
-            <FormTextBox ref={e => this.itemFirstname = e} label='Tên' />
-            <FormTextBox ref={e => this.itemEmail = e} type='email' label='Email' />
-            <FormTextBox ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
-            <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
-            <FormSelect ref={e => this.states = e} label='Loại khóa học' data={this.props.states} />
-        </>
+        size: 'large',
+        body: <div className='row'>
+            <FormTextBox className='col-md-6' ref={e => this.itemLastname = e} label='Họ' />
+            <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' />
+            <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} type='email' label='Email' />
+            <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
+            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
+            <FormSelect className='col-md-6' ref={e => this.states = e} label='Loại khóa học' data={this.props.states} />
+        </div>
     });
 }
 
@@ -72,7 +73,7 @@ const stateMapper = {
     MoiDangKy: { text: 'Mới đăng ký', style: { color: 'black' } },
     DangLienHe: { text: 'Đang liên hệ', style: { color: '#1488DB' } },
     Huy: { text: 'Huỷ', style: { color: '#DC3545' } },
-    UngVien: { text: 'Ứng viên', style: { color: '#28A745' } },
+    // UngVien: { text: 'Ứng viên', style: { color: '#28A745' } },
 };
 const states = Object.keys(stateMapper).map(key => ({ value: key, text: stateMapper[key].text }));
 const states_select = Object.keys(stateMapper).map(key => ({ id: key, text: stateMapper[key].text }));
@@ -89,7 +90,7 @@ class CandidatePage extends AdminPage {
         T.onSearch = (searchText) => this.props.getCandidatePage(1, 50, searchText);
     }
 
-    edit = (e, item) => e.preventDefault() || this.emailModal.show(item);
+    edit = (e, item) => e.preventDefault() || this.candidateModal.show(item);
 
     updateCourseType = (item, courseType) => this.props.updateCandidate(item._id, { courseType }, error => {
         //TODO: nếu error thì quay lại lựa chọn cũ
@@ -151,7 +152,7 @@ class CandidatePage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
-                <EmailModal ref={e => this.emailModal = e} update={this.props.updateCandidate} states={states_select} />
+                <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states_select} />
             </>,
             onExport: permission.export ? this.props.exportCandidateToExcel : null,
         });
