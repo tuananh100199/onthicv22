@@ -33,7 +33,8 @@ module.exports = app => {
     });
 
     app.get('/api/candidate/export', app.permission.check('candidate:export'), (req, res) => {
-        app.model.candidate.getAll((error, list) => {
+        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } };
+        app.model.candidate.getAll(condition, (error, list) => {
             if (error) {
                 res.send({ error })
             } else {

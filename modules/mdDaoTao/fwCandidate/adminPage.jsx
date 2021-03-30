@@ -44,6 +44,9 @@ class EmailModal extends AdminModal {
         } else if (data.firstname == '') {
             T.notify('Tên không được trống!', 'danger');
             this.itemFirstname.focus();
+        } else if (data.phoneNumber == '') {
+            T.notify('Số điện thoại không được trống!', 'danger');
+            this.itemPhoneNumber.focus();
         } else if (data.email == '' || !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
