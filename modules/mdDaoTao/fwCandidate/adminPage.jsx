@@ -10,7 +10,7 @@ import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view
 import Dropdown from 'view/component/Dropdown';
 
 //TODO: state=UngVien thì không cập nhật được => cần confirm trước khi chuyển thành UngVien
-class EmailModal extends AdminModal {
+class CandidateModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
@@ -154,7 +154,7 @@ class CandidatePage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
-                <EmailModal ref={e => this.emailModal = e} update={this.props.updateCandidate} states={states_select} />
+                <CandidateModal ref={e => this.emailModal = e} update={this.props.updateCandidate} states={states_select} />
             </>,
             onExport: permission.export ? this.props.exportCandidateToExcel : null,
         });

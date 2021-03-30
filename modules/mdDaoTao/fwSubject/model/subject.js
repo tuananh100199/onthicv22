@@ -43,7 +43,7 @@ module.exports = app => {
             model.findOne(condition).populate('lessons').populate('questions').exec(done);
         },
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done), // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions'), // changes = { $set, $unset, $push, $pull }
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
