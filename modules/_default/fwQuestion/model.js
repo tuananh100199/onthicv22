@@ -1,10 +1,10 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        active: { type: Boolean, default: true },
         title: String,
         image: String,
         answers: { type: String, default: '' },
         trueAnswer: Number,
-        active: { type: Boolean, default: true },
     });
     const model = app.db.model('Question', schema);
 

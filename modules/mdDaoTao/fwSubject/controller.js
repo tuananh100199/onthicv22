@@ -29,7 +29,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.create(req.body.newData, (error, item) => res.send({ error, item }));
+        app.model.subject.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {

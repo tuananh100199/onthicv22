@@ -14,7 +14,8 @@ module.exports = (app) => {
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = {}, searchText = req.query.searchText;
+            condition = {},
+            searchText = req.query.searchText;
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');
         }
@@ -28,9 +29,8 @@ module.exports = (app) => {
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
-        const author = req.session.user._id,
-            data = req.body.newData;
-        data.author = author;
+        const data = req.body.data;
+        data.author = req.session.user._id;
         app.model.lesson.create(data, (error, item) => res.send({ error, item }));
     });
 

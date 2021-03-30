@@ -75,10 +75,10 @@ export function getCourse(_id, done) {
     }
 }
 
-export function createCourse(newData, done) {
+export function createCourse(data, done) {
     return dispatch => {
         const url = '/api/course';
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
