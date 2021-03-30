@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getListVideo, updateListVideo } from './redux/reduxListVideo';
 import { AdminModal, FormTextBox, TableCell, renderTable, AdminPage } from 'view/component/AdminPage';
+import { ajaxSelectVideo } from 'modules/_default/fwHome/redux/reduxVideo';
 import { Link } from 'react-router-dom';
 
 class ListVideoModal extends AdminModal {
@@ -25,7 +26,7 @@ class ListVideoModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Video',
-        body: <FormSelect ref={e => this.itemContent = e} label='Video' data={ajaxSelectContent} readOnly={this.props.readOnly} />
+        body: <FormSelect ref={e => this.itemContent = e} label='Video' data={ajaxSelectVideo} readOnly={this.props.readOnly} />
     });
 }
 

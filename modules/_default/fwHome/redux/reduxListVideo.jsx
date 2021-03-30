@@ -1,13 +1,13 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const ListVideoGetAll = 'ListVideo:GetAll';
-const ListVideoUpdate = 'ListVideo:Update';
+const ListVideoGetAll = 'ListVideoGetAll';
+const ListVideoUpdate = 'ListVideoUpdate';
 
 export default function listVideoReducer(state = {}, data) {
     switch (data.type) {
         case ListVideoGetAll:
-            return Object.assign({}, state, { list: data.items });
+            return Object.assign({}, state, { list: data.list });
 
         case ListVideoUpdate:
             state = state && state.list ? state.list.slice() : { list: [] };
@@ -32,8 +32,8 @@ export function getListVideoAll(done) {
                 T.notify('Lấy tất cả danh sách video bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: ListVideoGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: ListVideoGetAll, list: data.list || [] });
             }
         }, error => console.error(`GET: ${url}. ${data.error}`))
     }

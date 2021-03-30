@@ -62,7 +62,7 @@ class ListVideoPage extends React.Component {
 
         return <>
             {table}
-            <ListVideoModal ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />
+            <ListVideoModal history={this.props.history} ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
         </>
     }
