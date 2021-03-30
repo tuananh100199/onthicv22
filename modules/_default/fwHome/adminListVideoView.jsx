@@ -35,15 +35,10 @@ class ListVideoPage extends React.Component {
         this.props.getListVideoAll();
     }
 
-    create = (e) => {
-        this.modal.show();
-        e.preventDefault();
-    }
+    create = (e) => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        T.confirm('Xóa danh sách video', 'Bạn có chắc bạn muốn xóa danh sách video này?', true, isConfirm => isConfirm && this.props.deleteListVideo(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm =>
+        isConfirm && this.props.deleteListVideo(item._id));
 
     render() {
         const permission = this.props.permission;
@@ -73,6 +68,6 @@ class ListVideoPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, component: state.component });
+const mapStateToProps = state => ({ component: state.component });
 const mapActionsToProps = { getListVideoAll, createListVideo, deleteListVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoPage);
