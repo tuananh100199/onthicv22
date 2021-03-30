@@ -22,7 +22,6 @@ class VideoModal extends AdminModal {
             title: this.itemTitle.value().trim(),
             link: this.itemLink.value().trim(),
             content: this.itemEditor.html(),
-            image: this.state.image,
         };
         if (data.title == '') {
             T.notify('Tiêu đề video bị trống!', 'danger');
@@ -34,7 +33,7 @@ class VideoModal extends AdminModal {
             T.notify('Nội dung video bị trống!', 'danger');
             this.itemEditor.focus();
         } else {
-            this.state._id ? this.props.update(this.state._id, data) : this.props.create(data);
+            this.state._id ? this.props.update(this.state._id, data) : this.props.create({ ...data, image: this.state.image });
             this.hide();
         }
     }

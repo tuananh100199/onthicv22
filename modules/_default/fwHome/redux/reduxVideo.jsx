@@ -62,7 +62,7 @@ export function createVideo(data, done) {
                 T.notify('Tạo video bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: VideoChange, item: data.item });
+                dispatch(getVideoAll());
                 if (done) done(data);
             }
         }, error => T.notify('Tạo video bị lỗi!', 'danger'));
