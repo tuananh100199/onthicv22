@@ -1,59 +1,44 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllListVideo, createListVideo, deleteListVideo } from './redux/reduxListVideo';
+import { getListVideoAll, createListVideo, deleteListVideo } from './redux/reduxListVideo';
 import { AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class ListVideoModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => {
-            $(this.modal).on('shown.bs.modal', this.onShown(() => this.listVideoName.focus()));
-        });
+        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => {
-        this.listVideoName.value('');
-    }
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const data = {
-            title: this.listVideoName.value().trim()
-        };
-
-        if (data.title == '') {
+        const title = this.itemTitle.value().trim();
+        if (title == '') {
             T.notify('Tên danh sách video bị trống!', 'danger');
-            this.listVideoName.focus();
-        } else {
-            this.props.create(data, data => {
-                if (data.item) {
-                    this.hide()
-                    this.props.history.push('/user/list-video/' + data.item._id);
-                }
-            });
-        }
+            this.itemTitle.focus();
+        } else this.props.create({ title }, data => {
+            if (data.item) {
+                this.hide();
+                this.props.history.push('/user/list-video/' + data.item._id);
+            }
+        })
     }
-
     render = () => this.renderModal({
         title: 'Danh sách video',
         body: <>
-            <FormTextBox ref={e => this.listVideoName = e} label='Tên danh sách video' />
+            <FormTextBox ref={e => this.itemTitle = e} label='Tên danh sách video' />
         </>
     })
 }
 
 class ListVideoPage extends React.Component {
     componentDidMount() {
-        this.props.getAllListVideo();
+        this.props.getListVideoAll();
     }
 
-    create = (e) => {
-        this.modal.show();
-        e.preventDefault();
-    }
+    create = (e) => e.preventDefault() || this.modal.show();
 
-    delete = (e, item) => {
-        T.confirm('Xóa danh sách video', 'Bạn có chắc bạn muốn xóa danh sách video này?', true, isConfirm => isConfirm && this.props.deleteListVideo(item._id));
-        e.preventDefault();
-    }
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa danh sách bài viết', 'Bạn có chắc bạn muốn xóa danh sách bài viết này?', true, isConfirm =>
+        isConfirm && this.props.deleteListVideo(item._id));
 
     render() {
         const permission = this.props.permission;
@@ -77,12 +62,12 @@ class ListVideoPage extends React.Component {
 
         return <>
             {table}
-            <ListVideoModal ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />
+            <ListVideoModal history={this.props.history} ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
         </>
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { getAllListVideo, createListVideo, deleteListVideo };
+const mapStateToProps = state => ({ component: state.component });
+const mapActionsToProps = { getListVideoAll, createListVideo, deleteListVideo };
 export default connect(mapStateToProps, mapActionsToProps)(ListVideoPage);
