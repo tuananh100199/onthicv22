@@ -28,6 +28,7 @@ class VideoModal extends AdminModal {
             title: this.itemTitle.value(),
             link: this.itemLink.value(),
             active: this.itemActive.value(),
+            image: this.state.image,
         };
         if (data.title == '') {
             T.notify('Tên video bị trống!', 'danger');
@@ -42,6 +43,15 @@ class VideoModal extends AdminModal {
         }
     }
 
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+        }
+    }
+
     render = () => this.renderModal({
         title: 'Video mới',
         size: 'large',
@@ -52,7 +62,8 @@ class VideoModal extends AdminModal {
                     <FormTextBox ref={e => this.itemLink = e} label='Đường dẫn' readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
                 </div>
-                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='lessonVideoImage' image={this.state.image} readOnly={this.props.readOnly} />
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='lessonVideoImage' image={this.state.image} readOnly={this.props.readOnly}
+                    onSuccess={this.onUploadSuccess} />
             </div>),
     });
 }
@@ -80,6 +91,7 @@ class QuestionModal extends AdminModal {
                 answers: this.state.answers,
                 trueAnswer: this.state.trueAnswer < answers.length ? this.state.trueAnswer : 0,
                 active: this.itemActive.value(),
+                image: this.state.image,
             };
         if (data.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
@@ -93,6 +105,15 @@ class QuestionModal extends AdminModal {
             this.state._id ?
                 this.props.update(this.props.lessonId, this.state._id, data, this.hide) :
                 this.props.create(this.props.lessonId, data, this.hide);
+        }
+    }
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
         }
     }
 
@@ -119,7 +140,7 @@ class QuestionModal extends AdminModal {
             body: <div className='row'>
                 <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' label='Câu hỏi' rows='6' readOnly={readOnly} />
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình minh họa' uploadType='lessonQuestionImage' image={this.state.image}
-                    onDelete={this.deleteImage} onSuccess={image => this.setState({ image })} readOnly={readOnly} />
+                    onDelete={this.state._id ? this.deleteImage : null} onSuccess={this.onUploadSuccess} readOnly={readOnly} />
 
                 <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-12' label='Danh sách câu trả lời' rows='5' onChange={e => this.setState({ answers: e.target.value })} readOnly={readOnly} style={{ display: readOnly ? 'none' : 'block' }} />
                 <div className='col-md-12' style={{ display: readOnly ? 'block' : 'none' }}>
@@ -237,14 +258,16 @@ class adminEditPage extends AdminPage {
             <div className='tile-body'>
                 {tableVideo}
                 {permission.write ? <CirclePageButton type='create' onClick={this.showVideoModal} /> : null}
-                <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} create={this.props.createLessonVideo} update={this.props.updateLessonVideo} readOnly={!permission.write} />
+                <VideoModal lessonId={this.state._id} ref={e => this.modalVideo = e} readOnly={!permission.write}
+                    create={this.props.createLessonVideo} update={this.props.updateLessonVideo} change={() => this.props.getLesson(this.state._id)} />
             </div>);
 
         const componentQuestion = (
             <div className='tile-body'>
                 {tableQuestion}
                 {permission.write ? <CirclePageButton type='create' onClick={this.showQuestionModal} /> : null}
-                <QuestionModal lessonId={this.state._id} ref={e => this.modalQuestion = e} create={this.props.createLessonQuestion} update={this.props.updateLessonQuestion} readOnly={!permission.write} />
+                <QuestionModal lessonId={this.state._id} ref={e => this.modalQuestion = e} readOnly={!permission.write}
+                    create={this.props.createLessonQuestion} update={this.props.updateLessonQuestion} change={() => this.props.getLesson(this.state._id)} />
             </div>);
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];

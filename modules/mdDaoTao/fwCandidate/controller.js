@@ -13,8 +13,15 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = {state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] }};
-        
+        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
+            searchText = req.query.searchText;
+        if (searchText) {
+            const value = new RegExp(searchText, 'i');
+            condition.email = value;
+            condition.firstname = value;
+            condition.lastname = value;
+        }
+
         app.model.candidate.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
             res.send({ error, page });
@@ -74,12 +81,12 @@ module.exports = app => {
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
         changes.staff = req.session.user;
-        if(changes.state == 'UngVien') {
+        if (changes.state == 'UngVien') {
             app.model.candidate.get(req.body._id, (error, item) => {
-                if(error) {
+                if (error) {
                     res.send({ error });
                 }
-                if(item.email) {
+                if (item.email) {
                     app.model.user.get({ email: item.email }, (error, user) => {
                         if (error) {
                             res.send({ error: `Ops! có lỗi xảy ra!` });

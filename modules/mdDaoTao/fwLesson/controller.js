@@ -47,20 +47,21 @@ module.exports = (app) => {
     // Video APIs -----------------------------------------------------------------------------------------------------
     app.post('/api/lesson/video', app.permission.check('lesson:write'), (req, res) => {
         const { _lessonId, data } = req.body;
-        app.model.lessonVideo.create(data, (error, lessonVideo) => {
-            if (error || lessonVideo == null) {
+        app.model.lessonVideo.create(data, (error, item) => {
+            if (error || item == null) {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
+            } else if (item.image == null) {
+                res.send({ item });
             } else {
-                const addVideo = () => app.model.lesson.addVideo(_lessonId, lessonVideo, (error, item) => {
-                    res.send({ error, videos: item && item.videos ? item.videos : [] });
+                app.uploadImage('lesson-video', app.model.lessonVideo.get, item._id, item.image, data => {
+                    if (data.error) {
+                        res.send({ error: data.error, item });
+                    } else {
+                        app.model.lesson.addVideo(_lessonId, item, (error, item) => {
+                            res.send({ error, videos: item && item.videos ? item.videos : [] });
+                        });
+                    }
                 });
-
-                if (req.session['lesson-videoImage']) {
-                    app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, lessonVideo._id, req.session['lesson-videoImage'], response =>
-                        response.error ? res.send({ error: response.error }) : addVideo());
-                } else {
-                    addVideo();
-                }
             }
         });
     });
@@ -115,20 +116,21 @@ module.exports = (app) => {
     // Question APIs --------------------------------------------------------------------------------------------------
     app.post('/api/lesson/question', app.permission.check('lesson:write'), (req, res) => {
         const { _lessonId, data } = req.body;
-        app.model.lessonQuestion.create(data, (error, lessonQuestion) => {
-            if (error || lessonQuestion == null) {
+        app.model.lessonQuestion.create(data, (error, item) => {
+            if (error || item == null) {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
+            } else if (item.image == null) {
+                res.send({ item });
             } else {
-                const addQuestion = () => app.model.lesson.addQuestion(_lessonId, lessonQuestion, (error, item) => {
-                    res.send({ error, questions: item && item.questions ? item.questions : [] });
+                app.uploadImage('lesson-question', app.model.lessonQuestion.get, item._id, item.image, data => {
+                    if (data.error) {
+                        res.send({ error: data.error, item });
+                    } else {
+                        app.model.lesson.addQuestion(_lessonId, item, (error, item) => {
+                            res.send({ error, questions: item && item.questions ? item.questions : [] });
+                        });
+                    }
                 });
-
-                if (req.session['lesson-questionImage']) {
-                    app.uploadComponentImage(req, 'lesson-question', app.model.lessonQuestion.get, lessonQuestion._id, req.session['lesson-questionImage'], response =>
-                        response.error ? res.send({ error: response.error }) : addQuestion());
-                } else {
-                    addQuestion();
-                }
             }
         });
     });
@@ -183,21 +185,23 @@ module.exports = (app) => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'), app.path.join(app.publicPath, '/img/lesson-question'));
 
-    const uploadLessonVideo = (req, fields, files, params, done) => {
+    const uploadLessonVideo = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('lessonVideoImage:') && files.lessonVideoImage && files.lessonVideoImage.length > 0) {
             console.log('Hook: uploadLessonVideo =>lesson video image upload');
-            app.uploadComponentImage(req, 'lesson-video', app.model.lessonVideo.get, fields.userData[0].substring('lessonVideoImage:'.length), files.lessonVideoImage[0].path, done);
+            const _id = fields.userData[0].substring('lessonVideoImage:'.length);
+            app.uploadImage('lesson-video', app.model.lessonVideo.get, _id, files.lessonVideoImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadLessonVideo', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadLessonVideo(req, fields, files, params, done), done, 'lesson:write'));
+        app.permission.has(req, () => uploadLessonVideo(fields, files, done), done, 'lesson:write'));
 
-    const uploadLessonQuestion = (req, fields, files, params, done) => {
+    const uploadLessonQuestion = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('lessonQuestionImage:') && files.lessonQuestionImage && files.lessonQuestionImage.length > 0) {
             console.log('Hook: uploadLessonQuestion =>lesson question image upload');
-            app.uploadComponentImage(req, 'lesson-question', app.model.lessonQuestion.get, fields.userData[0].substring('lessonQuestionImage:'.length), files.lessonQuestionImage[0].path, done);
+            const _id = fields.userData[0].substring('lessonQuestionImage:'.length);
+            app.uploadImage('lesson-question', app.model.lessonQuestion.get, _id, files.lessonQuestionImage[0].path, done);
         }
     };
     app.uploadHooks.add('uploadLessonQuestion', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadLessonQuestion(req, fields, files, params, done), done, 'lesson:write'));
+        app.permission.has(req, () => uploadLessonQuestion(fields, files, done), done, 'lesson:write'));
 };

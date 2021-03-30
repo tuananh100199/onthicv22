@@ -9,22 +9,9 @@ module.exports = app => {
     const model = app.db.model('Question', schema);
 
     app.model.question = {
-        create: (data, done) => {
-            model.create(data, (error, item) => {
-                if (error) {
-                    done(error);
-                } else {
-                    item.image = '/img/question/' + item._id + '.jpg';
-                    const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
-                        destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => error ? done(error) : item.save(done));
-                }
-            });
-        },
+        create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => {
-            done ? model.find(condition).exec(done) : model.find({}).exec(condition);
-        },
+        getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
 
         get: (condition, done) => {
             if (done == undefined) {
@@ -35,9 +22,8 @@ module.exports = app => {
             model.findOne(condition).exec(done);
         },
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
         delete: (_id, done) => model.findOne({ _id }, (error, item) => {
             if (error) {

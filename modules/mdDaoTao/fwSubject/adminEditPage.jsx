@@ -6,6 +6,7 @@ import {
     createSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion, updateSubjectQuestion,
 } from './redux';
 import { Link } from 'react-router-dom';
+import QuestionModal from 'modules/_default/fwQuestion/index';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
 
@@ -24,47 +25,6 @@ class LessonModal extends AdminModal {
         title: 'Thêm bài học',
         body: <FormSelect ref={e => this.lessonSelect = e} data={ajaxSelectLesson} label='Bài học' />,
     });
-}
-
-class QuestionModal extends AdminModal {
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
-    }
-
-    onShow = (question) => {
-        let { _id, title, active } = question ? question : { _id: null, title: '', active: false };
-        this.itemTitle.value(title)
-        this.itemIsActive.value(active);
-
-        this.setState({ _id });
-    }
-
-    onSubmit = () => {
-        const data = {
-            title: this.itemTitle.value(),
-            active: this.itemIsActive.value(),
-        };
-        if (data.title == '') {
-            T.notify('Tên câu hỏi bị trống!', 'danger');
-            this.itemTitle.focus();
-        } else {
-            this.state._id ?
-                this.props.update(this.props.subjectId, this.state._id, data, this.hide) :
-                this.props.create(this.props.subjectId, data, this.hide);
-        }
-    }
-
-    render = () => {
-        const readOnly = this.props.readOnly;
-        return this.renderModal({
-            title: 'Câu hỏi',
-            size: 'large',
-            body: <>
-                <FormRichTextBox ref={e => this.itemTitle = e} label='Câu hỏi' rows='6' readOnly={readOnly} />
-                <FormCheckbox ref={e => this.itemIsActive = e} label='Kích hoạt' readOnly={readOnly} />
-            </>,
-        });
-    };
 }
 
 const adminPageLink = '/user/dao-tao/mon-hoc';
@@ -172,7 +132,8 @@ class AdminEditPage extends AdminPage {
             <div className='tile-body'>
                 {tableQuestion}
                 {permission.write ? <CirclePageButton type='create' onClick={this.showQuestionModal} /> : null}
-                <QuestionModal subjectId={this.state._id} ref={e => this.modalQuestion = e} create={this.props.createSubjectQuestion} update={this.props.updateSubjectQuestion} readOnly={!permission.write} />
+                <QuestionModal parentId={this.state._id} ref={e => this.modalQuestion = e} readOnly={!permission.write}
+                    create={this.props.createSubjectQuestion} update={this.props.updateSubjectQuestion} />
             </div>);
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bài học', component: componentLesson }, { title: 'Câu hỏi', component: componentQuestion }];

@@ -175,16 +175,16 @@ export function createSubjectQuestion(_subjectId, data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch({ type: SubjectGetItem, item: { questions: data.questions } });
-                done && done(data.item);
+                done && done();
             }
         }, error => console.error('POST: ' + url + '.', error));
     }
 }
 
-export function updateSubjectQuestion(_subjectId, _subjectQuestionId, data, done) {
+export function updateSubjectQuestion(_subjectId, _questionId, data, done) {
     return dispatch => {
         const url = '/api/subject/question';
-        T.put(url, { _subjectId, _subjectQuestionId, data }, data => {
+        T.put(url, { _subjectId, _questionId, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -197,10 +197,10 @@ export function updateSubjectQuestion(_subjectId, _subjectQuestionId, data, done
     }
 }
 
-export function swapSubjectQuestion(_subjectId, _subjectQuestionId, isMoveUp, done) {
+export function swapSubjectQuestion(_subjectId, _questionId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/subject/question/swap`;
-        T.put(url, { _subjectId, _subjectQuestionId, isMoveUp }, data => {
+        T.put(url, { _subjectId, _questionId, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -212,10 +212,10 @@ export function swapSubjectQuestion(_subjectId, _subjectQuestionId, isMoveUp, do
     }
 }
 
-export function deleteSubjectQuestion(_subjectId, _subjectQuestionId, done) {
+export function deleteSubjectQuestion(_subjectId, _questionId, done) {
     return dispatch => {
         const url = `/api/subject/question`;
-        T.delete(url, { _subjectId, _subjectQuestionId }, data => {
+        T.delete(url, { _subjectId, _questionId }, data => {
             if (data.error) {
                 T.notify('Xóa câu hỏi bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);

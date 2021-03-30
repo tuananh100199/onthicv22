@@ -5,7 +5,6 @@ module.exports = (app) => {
             4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc' },
         },
     };
-
     app.permission.add({ name: 'subject:read', menu }, { name: 'subject:write' }, { name: 'subject:delete' });
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
@@ -90,65 +89,30 @@ module.exports = (app) => {
         });
     });
 
+    // Question APIs --------------------------------------------------------------------------------------------------
+    let questionManager = null;
+    app.readyHooks.add('createSubjectQuestionManager', {
+        ready: () => app.model && app.model.question && app.buildQuestionManager,
+        run: () => questionManager = app.buildQuestionManager(app.model.subject),
+    });
 
     app.post('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        app.model.subjectQuestion.create(req.body.data, (error, questions) => {
-            if (error || !questions) {
-                res.send({ error });
-            } else {
-                app.model.subject.addQuestion(req.body._subjectId, questions, (error, item) => {
-                    res.send({ error, questions: item && item.questions ? item.questions : [] });
-                });
-            }
-        });
+        const { _subjectId, data } = req.body;
+        questionManager.create(_subjectId, data, (error, questions) => res.send({ error, questions }));
     });
 
     app.put('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _subjectQuestionId, data } = req.body;
-        app.model.subjectQuestion.update(_subjectQuestionId, data, (error) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.subject.get(_subjectId, (error, item) => {
-                    res.send({ error, questions: item && item.questions ? item.questions : [] })
-                });
-            }
-        });
+        const { _subjectId, _questionId, data } = req.body;
+        questionManager.update(_subjectId, _questionId, data, (error, questions) => res.send({ error, questions }));
     });
 
     app.put('/api/subject/question/swap', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _subjectQuestionId, isMoveUp } = req.body;
-        app.model.subject.get(_subjectId, (error, item) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
-                    const questions = item.questions[index];
-                    if (questions._id == _subjectQuestionId) {
-                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
-                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
-                            item.questions.splice(index, 1);
-                            item.questions.splice(newIndex, 0, questions);
-                            item.save();
-                        }
-                        break;
-                    }
-                }
-                res.send({ questions: item.questions });
-            }
-        });
+        const { _subjectId, _questionId, isMoveUp } = req.body;
+        questionManager.swap(_subjectId, _questionId, isMoveUp, (error, questions) => res.send({ error, questions }));
     });
 
     app.delete('/api/subject/question', app.permission.check('subject:write'), (req, res) => {
-        const { _subjectId, _subjectQuestionId } = req.body;
-        app.model.subjectQuestion.delete(_subjectQuestionId, error => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.subject.deleteQuestion(_subjectId, _subjectQuestionId, (error, item) => {
-                    res.send({ error, questions: item && item.questions ? item.questions : [] });
-                });
-            }
-        });
+        const { _subjectId, _questionId } = req.body;
+        questionManager.delete(_subjectId, _questionId, (error, questions) => res.send({ error, questions }));
     });
 };

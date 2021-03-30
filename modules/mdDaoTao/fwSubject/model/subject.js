@@ -4,14 +4,12 @@ module.exports = app => {
         shortDescription: String,
         detailDescription: String,
         lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'SubjectQuestion' }], default: [] },
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
     });
     const model = app.db.model('Subject', schema);
 
     app.model.subject = {
-        create: (data, done) => {
-            model.create(data, done);
-        },
+        create: (data, done) => model.create(data, done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -45,9 +43,7 @@ module.exports = app => {
             model.findOne(condition).populate('lessons').populate('questions').exec(done);
         },
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }, done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }, $unset),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done), // changes = { $set, $unset, $push, $pull }
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
@@ -63,17 +59,8 @@ module.exports = app => {
         addLesson: (_id, lessons, done) => {
             model.findOneAndUpdate(_id, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
         },
-
         deleteLesson: (_id, _subjectLessonId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }).populate('lessons').exec(done);
-        },
-
-        addQuestion: (_id, questions, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
-        },
-
-        deleteQuestion: (_id, subjectQuestionId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { questions: subjectQuestionId } }).populate('questions').exec(done);
         },
     };
 };
