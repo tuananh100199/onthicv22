@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStudentPage } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 
 class PreStudentPage extends AdminPage {
     state = { searchText: '', isSearching: false };
@@ -13,6 +13,10 @@ class PreStudentPage extends AdminPage {
         T.onSearch = (searchText) => this.props.getStudentPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
+    }
+
+    create = () => {
+        alert('Todo')
     }
 
     render() {
@@ -48,8 +52,9 @@ class PreStudentPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getStudentPage} />
+                <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} />
             </>,
-            // onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? this.create : null,
         });
     }
 }

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { updateCourseType, getCourseType } from './redux';
 import { Link } from 'react-router-dom';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
-import ImageBox from 'view/component/ImageBox';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {

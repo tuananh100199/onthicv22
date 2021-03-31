@@ -20,6 +20,8 @@ module.exports = (app) => {
 
     // app.get('/user/pre-student', app.permission.check('student:candidate'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('student:write'), app.templates.admin);
+    app.get('/user/pre-student/import', app.permission.check('student:write'), app.templates.admin);
+
     // app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
     // app.get('/student/:_id', app.templates.home);
 
