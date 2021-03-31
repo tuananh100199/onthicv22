@@ -15,6 +15,10 @@ class PreStudentPage extends AdminPage {
         });
     }
 
+    create = () => {
+        alert('Todo')
+    }
+
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
@@ -48,9 +52,9 @@ class PreStudentPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getStudentPage} />
-                <CirclePageButton type='export' onClick={() => this.props.history.push('/user/pre-student/import')} />
+                <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} />
             </>,
-            // onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? this.create : null,
         });
     }
 }

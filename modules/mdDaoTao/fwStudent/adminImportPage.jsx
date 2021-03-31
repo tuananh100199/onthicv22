@@ -2,6 +2,6 @@ import React from 'react';
 
 export default class ImportPage extends React.Component {
     render() {
-        return (<p>Hello</p>)
+        return (<p>Todo</p>)
     }
 }
