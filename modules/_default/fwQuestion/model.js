@@ -26,18 +26,7 @@ module.exports = app => {
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
         delete: (_id, done) => {
-            if (typeof _id == 'string') {
-                model.findOne({ _id }, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else if (item == null) {
-                        done('Invalid Id!');
-                    } else {
-                        app.deleteImage(item.image);
-                        item.remove(done);
-                    }
-                })
-            } else if (Array.isArray(_id)) {
+            if (Array.isArray(_id)) {
                 _id.map((item, index) => {
                     model.findOne({ _id: item._id }, (error, question) => {
                         if (error) {
@@ -50,6 +39,17 @@ module.exports = app => {
                         }
                     })
                 });
+            } else {
+                model.findOne({ _id }, (error, item) => {
+                    if (error) {
+                        done(error);
+                    } else if (item == null) {
+                        done('Invalid Id!');
+                    } else {
+                        app.deleteImage(item.image);
+                        item.remove(done);
+                    }
+                })
             }
         }
     };
