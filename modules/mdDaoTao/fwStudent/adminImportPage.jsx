@@ -9,7 +9,8 @@ class ImportPage extends AdminPage {
         this.setState(data);
     }
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
+        const permission = this.getUserPermission('student', ['read', 'write', 'delete']),
+            readOnly = !permission.write;
         const table = renderTable({
             getDataSource: () => this.state.data ? this.state.data : [],
             renderHead: () => (
@@ -37,7 +38,7 @@ class ImportPage extends AdminPage {
                 <div className='tile'>
                     <h3 className='tile-title'>Upload danh sách ứng viên</h3>
                     <FormFileBox ref={e => this.fileBox = e} className='col-md-3' label='File excel ứng viên' uploadType='CandidateFile'
-                        onSuccess={this.onUploadSuccess} />
+                        onSuccess={this.onUploadSuccess} readOnly={readOnly} />
                 </div>
 
                 <div className='tile'>
