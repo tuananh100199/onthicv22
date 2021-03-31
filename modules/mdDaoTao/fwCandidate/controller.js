@@ -134,7 +134,6 @@ module.exports = app => {
     app.post('/api/candidate', (req, res) => {
         app.model.candidate.create(req.body.candidate, (error, item) => {
             if (item) {
-                app.io.emit('candidate-added', item);
                 app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
                     let mailSubject = result.emailCandidateTitle.replaceAll('{name}', item.firstname + ' ' + item.lastname),
                         mailText = result.emailCandidateText.replaceAll('{name}', item.firstname + ' ' + item.lastname),
