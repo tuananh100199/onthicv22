@@ -38,9 +38,7 @@ module.exports = app => {
             });
             if (Array.isArray(_id)) {
                 _id.map((item, index) => deleteQuestion(item._id));
-            } else {
-                deleteQuestion(_id);
-            }
+            } else deleteQuestion(_id);
             done();
         }
     };

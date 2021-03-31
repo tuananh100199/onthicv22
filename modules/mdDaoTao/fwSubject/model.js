@@ -45,16 +45,25 @@ module.exports = app => {
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done), // changes = { $set, $unset, $push, $pull }
 
-        delete: (_id, done) => model.findById(_id, (error, item) => {
-            if (error) {
-                done(error);
-            } else if (item == null) {
-                done('Invalid Id!');
-            } else {
-                app.deleteImage(item.image);
-                item.remove(done);
-            }
-        }),
+        delete: (_id, done) => {
+            model.findById(_id, (error, item) => {
+                if (error) {
+                    done(error);
+                } else if (item == null) {
+                    done('Invalid Id!');
+                } else {
+                    app.deleteImage(item.image);
+                    app.model.question.delete(item.questions, error => {
+                        if (error)
+                            done(error);
+                        else {
+                            item.remove(done);
+                        }
+
+                    })
+                }
+            });
+        },
 
         addLesson: (_id, lessons, done) => {
             model.findOneAndUpdate(_id, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
