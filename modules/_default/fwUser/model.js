@@ -116,6 +116,7 @@ module.exports = (app) => {
             model.find(condition).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(done) :
             model.find({}).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(condition),
 
+        // changes = { $set, $unset, $push, $pull }
         update: (_id, $set, $unset, done) => {
             if (!done) {
                 done = $unset;

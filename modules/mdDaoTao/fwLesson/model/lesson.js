@@ -54,7 +54,12 @@ module.exports = app => {
                     done('Invalid Id!');
                 } else {
                     app.deleteImage(item.image);
-                    item.remove(done);
+                    app.model.question.delete(item.questions, error => {
+                        if (error)
+                            done(error);
+                        else
+                            item.remove(done);
+                    })
                 }
             });
         },
