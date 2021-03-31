@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getStudentPage, deleteStudent } from './redux';
 import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, AdminModal, FormTextBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
 
 
 class PreStudenModal extends AdminModal {
@@ -81,7 +81,11 @@ class PreStudentPage extends AdminPage {
     edit = (e, item) => e.preventDefault() || this.preStudenModal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá ứng viên', 'Bạn có chắc muốn xoá ứng viên này?', true, isConfirm =>
-    isConfirm && this.props.deleteStudent(item._id));
+        isConfirm && this.props.deleteStudent(item._id));
+    create = () => {
+        alert('Todo')
+    }
+
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
@@ -104,7 +108,7 @@ class PreStudentPage extends AdminPage {
                     <TableCell type='text' content={item.user && item.user.email} />
                     <TableCell type='text' content={T.mobileDisplay(item.user && item.user.phoneNumber)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}/>
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
         return this.renderPage({
@@ -116,8 +120,9 @@ class PreStudentPage extends AdminPage {
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getStudentPage} />
                 <PreStudenModal ref={e => this.preStudenModal = e} />
+                <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} />
             </>,
-            // onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? this.create : null,
         });
     }
 }

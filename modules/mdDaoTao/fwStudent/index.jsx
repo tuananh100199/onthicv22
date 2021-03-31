@@ -18,6 +18,10 @@ export default {
             path: '/user/student',
             component: Loadable({ loading: Loading, loader: () => import('./adminStudentPage') })
         },
+        {
+            path: '/user/pre-student/import',
+            component: Loadable({ loading: Loading, loader: () => import('./adminImportPage') })
+        },
     ],
     Section: {
     }
