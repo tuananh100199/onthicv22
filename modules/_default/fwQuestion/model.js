@@ -26,31 +26,22 @@ module.exports = app => {
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
         delete: (_id, done) => {
+            let deleteQuestion = _id => model.findOne({ _id }, (error, question) => {
+                if (error) {
+                    done(error);
+                } else if (question == null) {
+                    done('Invalid Id!');
+                } else {
+                    app.deleteImage(question.image);
+                    question.remove();
+                }
+            });
             if (Array.isArray(_id)) {
-                _id.map((item, index) => {
-                    model.findOne({ _id: item._id }, (error, question) => {
-                        if (error) {
-                            done(error);
-                        } else if (question == null) {
-                            done('Invalid Id!');
-                        } else {
-                            app.deleteImage(question.image);
-                            index == _id.length - 1 ? question.remove(done) : question.remove();
-                        }
-                    })
-                });
+                _id.map((item, index) => deleteQuestion(item._id));
             } else {
-                model.findOne({ _id }, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else if (item == null) {
-                        done('Invalid Id!');
-                    } else {
-                        app.deleteImage(item.image);
-                        item.remove(done);
-                    }
-                })
+                deleteQuestion(_id);
             }
+            done();
         }
     };
 };

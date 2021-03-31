@@ -138,8 +138,8 @@ export class QuestionView extends React.Component {
 
     deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm => {
         if (isConfirm) {
-            const { type, changeQuestions, parentId: _parentId } = this.props,
-                _questionId = question._id;
+            const { type, changeQuestions, parentId: _parentId, questions } = this.props,
+                _questionId = questions;
             const url = `/api/question/${type}`;
             T.delete(url, { _parentId, _questionId }, data => {
                 if (data.error) {
