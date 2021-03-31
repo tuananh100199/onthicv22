@@ -9,6 +9,7 @@ class ImportPage extends AdminPage {
         this.setState(data);
     }
     render() {
+        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
         const table = renderTable({
             getDataSource: () => this.state.data ? this.state.data : [],
             renderHead: () => (
@@ -30,14 +31,24 @@ class ImportPage extends AdminPage {
         });
         return this.renderPage({
             icon: 'fa fa-graduation-cap',
-            title: 'Ứng viên',
+            title: 'Ứng viên: ',
             breadcrumb: ['Ứng viên'],
             content: <>
-                <div className='tile'>{table}</div>
-                <FormFileBox ref={e => this.fileBox = e} className='col-md-3' label='File excel ứng viên' uploadType='CandidateFile'
-                    image={''} onDelete={null} onSuccess={this.onUploadSuccess} />
-                <CirclePageButton type='save' style={{ right: '70px' }} onClick={() => alert('todo')} />
+                <div className='tile'>
+                    <h3 className='tile-title'>Upload danh sách ứng viên</h3>
+                    <FormFileBox ref={e => this.fileBox = e} className='col-md-3' label='File excel ứng viên' uploadType='CandidateFile'
+                        onSuccess={this.onUploadSuccess} />
+                </div>
+
+                <div className='tile'>
+                    <h3 className='tile-title'>Danh sách ứng viên</h3>
+                    <div className='tile-body'>
+                        {table}
+                    </div>
+                </div>
+                <CirclePageButton type='save' onClick={() => alert('todo')} />
             </>,
+            backRoute: '/user/pre-student',
         });
     }
 }
