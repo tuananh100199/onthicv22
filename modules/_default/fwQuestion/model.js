@@ -25,21 +25,28 @@ module.exports = app => {
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
-        delete: (_id, done) => {
-            let deleteQuestion = _id => model.findOne({ _id }, (error, question) => {
-                if (error) {
-                    done(error);
-                } else if (question == null) {
-                    done('Invalid Id!');
-                } else {
-                    app.deleteImage(question.image);
-                    question.remove();
-                }
-            });
-            if (Array.isArray(_id)) {
-                _id.map((item, index) => deleteQuestion(item._id));
-            } else deleteQuestion(_id);
-            done();
+        delete: (_ids, done) => {
+            if (!Array.isArray(_ids)) _ids = [_ids];
+            let error = null,
+                solve = (index = 0) => {
+                    if (index < _ids.length) {
+                        model.findOne({ _id: _ids[index] }, (err, question) => {
+                            if (question) {
+                                app.deleteImage(question.image);
+                                question.remove(err => {
+                                    if (err) error = err;
+                                    solve(index + 1);
+                                });
+                            } else {
+                                error = err || 'Invalid Id!';
+                                solve(index + 1);
+                            }
+                        });
+                    } else {
+                        done(error);
+                    }
+                };
+            solve();
         }
     };
 };
