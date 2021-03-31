@@ -192,7 +192,6 @@ export const ajaxSelectStatistic = T.createAjaxAdapter(
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
 );
 export function ajaxGetStatistic(_id, done) {
-    console.log(_id)
     const url = '/api/statistic';
     T.get(url, { _id }, done, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
 };
