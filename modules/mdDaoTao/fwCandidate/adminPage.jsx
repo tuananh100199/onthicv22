@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
-import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 
@@ -76,8 +75,7 @@ const stateMapper = {
     Huy: { text: 'Huỷ', style: { color: '#DC3545' } },
     // UngVien: { text: 'Ứng viên', style: { color: '#28A745' } },
 };
-const states = Object.keys(stateMapper).map(key => ({ id: key, text: stateMapper[key].text }));
-
+const states = Object.entries(stateMapper).map(([key, value]) => ({ id: key, text: value.text }));
 class CandidatePage extends AdminPage {
     state = { courseTypes: [] };
     componentDidMount() {
@@ -121,7 +119,7 @@ class CandidatePage extends AdminPage {
                 </tr>),
             renderRow: (item, index) => {
                 const selectedState = stateMapper[item.state];
-                const dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState.style} />;
+                const dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
                 const dropdownCourseType = <Dropdown items={this.state.courseTypes} item={item.courseType ? item.courseType.title : ''} onSelected={e => this.updateCourseType(item, e.id)} />
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
@@ -135,7 +133,7 @@ class CandidatePage extends AdminPage {
                         <TableCell content={item.email} />
                         <TableCell content={item.phoneNumber} />
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                        <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
+                        <TableCell content={item.state == 'UngVien' ? <span style={{ color: '#28A745' }}>Ứng viên</span> : dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dates} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}>
                             {permission.write && item.email && item.phoneNumber ?

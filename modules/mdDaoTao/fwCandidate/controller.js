@@ -13,7 +13,7 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
+        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'] } },
             searchText = req.query.searchText;
         if (searchText) {
             const value = new RegExp(searchText, 'i');
@@ -24,6 +24,7 @@ module.exports = app => {
 
         app.model.candidate.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
+            console.log(page.list, 's')
             res.send({ error, page });
         });
     });
@@ -88,7 +89,8 @@ module.exports = app => {
                 if (error) {
                     res.send({ error });
                 }
-                if (item.email) {
+                // else if (item.email) {
+                else {
                     app.model.user.get({ email: item.email }, (error, user) => {
                         if (error) {
                             res.send({ error: `Ops! có lỗi xảy ra!` });
@@ -105,7 +107,7 @@ module.exports = app => {
                                 if (error) {
                                     res.send({ error })
                                 }
-                                if (user) {
+                                else if (user) {
                                     app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                                         const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                                             mailTitle = result.emailCreateMemberByAdminTitle,
