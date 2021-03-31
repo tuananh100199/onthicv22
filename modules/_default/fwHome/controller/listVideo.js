@@ -11,12 +11,13 @@ module.exports = app => {
 
     app.put('/api/list-video', app.permission.check('component:write'), (req, res) => {
         //remove content from items , req.body.changes in this case is index:number
-        if (!isNaN(req.body.changes)) app.model.listVideo.get(req.body._id, (error, item) => {
-            item.items.splice(req.body.changes, 1);
-            item.save();
-            res.send({ error, item });
-        });
-        else if (req.body.changes.index) { //swap content in items
+        if (!isNaN(req.body.changes)) {
+            app.model.listVideo.get(req.body._id, (error, item) => {
+                item.items.splice(req.body.changes, 1);
+                item.save();
+                res.send({ error, item });
+            });
+        } else if (req.body.changes.index) { //swap content in items
             const { index, isMoveUp } = req.body.changes;
             app.model.listVideo.get(req.body._id, (error, item) => {
                 const temp = item.items[index];
@@ -28,7 +29,9 @@ module.exports = app => {
                 }
                 res.send({ error, item });
             });
-        } else app.model.listVideo.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        } else {
+            app.model.listVideo.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        }
     });
     app.delete('/api/list-video', app.permission.check('component:delete'), (req, res) => app.model.listVideo.delete(req.body._id, error => res.send({ error })));
 

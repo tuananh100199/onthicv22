@@ -136,9 +136,7 @@ module.exports = app => {
             })
         }
         if (changes.state) changes.modifiedDate = new Date();
-        app.model.candidate.update(req.body._id, changes, (error, item) => {
-            res.send({ error, item })
-        });
+        app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {

@@ -38,9 +38,9 @@ module.exports = (app) => {
     });
 
     app.put('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
-        const $set = req.body.changes;
-        if ($set && $set.subjects && $set.subjects === 'empty') $set.subjects = [];
-        app.model.courseType.update(req.body._id, $set, (error, item) => res.send({ error, item }))
+        const { _id, changes } = req.body;
+        if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+        app.model.courseType.update(_id, changes, (error, item) => res.send({ error, item }))
     });
 
     app.delete('/api/course-type', app.permission.check('course-type:delete'), (req, res) => {

@@ -13,9 +13,8 @@ module.exports = app => {
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('items', '-content').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('items', '-content').exec($unset),
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).populate('items', '-content').exec(done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

@@ -41,33 +41,13 @@ module.exports = app => {
 
         getAll: (condition, done) => done ? model.find(condition).sort({ title: 1 }).exec(done) : model.find({}).sort({ title: 1 }).exec(condition),
 
-        get: (condition, done) => typeof condition == 'string' ?
-            (condition == '' ?
-                model.findById(condition, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else if (item == null) {
-                        done('Invalid Id!');
-                    } else {
-                        done(null, item);
-                    }
-                })
-                :
-                model.findById(condition).populate('subjects', '-detailDescription').exec((error, item) => {
-                    item.subjects.sort((a, b) => a.title.localeCompare(b.title));
-                    done(error, item)
-                }))
-            : model.findOne(condition).populate('subjects', '-detailDescription').exec((error, item) => {
-                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
-                done(error, item)
-            }),
+        get: (condition, done) => {
+            const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
+            findTask.populate('subjects', '-detailDescription').exec(done);
+        },
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('subjects', '-detailDescription').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('subjects', '-detailDescription').exec((error, item) => {
-                item.subjects.sort((a, b) => a.title.localeCompare(b.title));
-                $unset(error, item)
-            }),
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes).populate('subjects', '-detailDescription').exec(done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
