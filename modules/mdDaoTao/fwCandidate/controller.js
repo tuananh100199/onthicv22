@@ -82,6 +82,7 @@ module.exports = app => {
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
         changes.staff = req.session.user;
+        changes.modifiedDate = new Date();
         if (changes.state == 'UngVien') {
             app.model.candidate.get(req.body._id, (error, item) => {
                 if (error) {
@@ -128,14 +129,13 @@ module.exports = app => {
                                 birthday: user.birthday
                             };
                             app.model.student.create(dataStudent, (error) => {
-                                res.send({error})
+                                res.send({ error })
                             });
                         }
                     });
                 }
             })
         }
-        if (changes.state) changes.modifiedDate = new Date();
         app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 

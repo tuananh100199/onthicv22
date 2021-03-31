@@ -99,11 +99,8 @@ class CandidatePage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
         isConfirm && this.props.deleteCandidate(item._id));
 
-    upStudent = (e, item) => {
-        e.preventDefault();
-        T.confirm('Thêm ứng viên ', 'Bạn có chắc muốn thêm ứng viên này?', true, isConfirm =>
-        isConfirm && this.props.updateCandidate(item._id,{state: 'UngVien'}));
-    }
+    upStudent = (e, item) => e.preventDefault() || T.confirm('Thêm ứng viên ', 'Bạn có chắc muốn thêm ứng viên này?', true, isConfirm =>
+        isConfirm && this.props.updateCandidate(item._id, { state: 'UngVien' }));
 
     render() {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
