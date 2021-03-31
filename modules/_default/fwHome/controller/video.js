@@ -25,22 +25,8 @@ module.exports = app => {
     });
 
     app.put('/api/video', app.permission.check('component:write'), (req, res) => {
-        let data = req.body.changes,
-            changes = {};
-        if (data.title && data.title != '') changes.title = data.title;
-        if (data.link && data.link != '') changes.link = data.link;
-        if (data.image && data.image != '') changes.image = data.image;
-        if (data.content && data.content != '') changes.content = data.content;
-
-        app.model.video.update(req.body._id, changes, (error, video) => res.send({ error, video }));
+        app.model.video.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
-
-    app.put('/api/video/item/swap', app.permission.check('component:write'), (req, res) => {
-        const isMoveUp = req.body.isMoveUp.toString() == 'true';
-        app.model.video.swapPriority(req.body._id, isMoveUp, (error, item1, item2) => res.send({ error, item1, item2 }));
-    });
-
-
 
     app.delete('/api/video', app.permission.check('component:write'), (req, res) => app.model.video.delete(req.body._id, error => res.send({ error })));
 

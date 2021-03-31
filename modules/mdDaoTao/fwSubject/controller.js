@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
 
-    // APIs -----------------------------------------------------------------------------------------------------------
+    // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
@@ -29,7 +29,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.create(req.body.newData, (error, item) => res.send({ error, item }));
+        app.model.subject.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {

@@ -60,10 +60,10 @@ export function getSubject(_id, done) {
     }
 }
 
-export function createSubject(newData, done) {
+export function createSubject(data, done) {
     return dispatch => {
         const url = '/api/subject';
-        T.post(url, { newData }, data => {
+        T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo loại khóa học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);

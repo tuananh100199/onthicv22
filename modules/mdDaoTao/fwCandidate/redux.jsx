@@ -83,7 +83,6 @@ export function updateCandidate(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                data.item.state == 'UngVien'? T.notify('Đã cập nhật trạng thái ứng viên!', 'success') : null;
                 T.notify('Cập nhật đăng ký tư vấn thành công!', 'info');
                 dispatch(getCandidatePage());
                 done && done();

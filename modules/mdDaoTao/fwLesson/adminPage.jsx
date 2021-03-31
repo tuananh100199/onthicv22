@@ -12,12 +12,12 @@ class LessonModal extends AdminModal {
     onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: this.itemTitle.value(), };
-        if (newData.title == '') {
+        const data = { title: this.itemTitle.value(), };
+        if (data.title == '') {
             T.notify('Tên bài học bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            this.props.createLesson(newData, data => {
+            this.props.createLesson(data, data => {
                 this.hide();
                 data && data.item && this.props.history.push('/user/dao-tao/bai-hoc/' + data.item._id);
             });

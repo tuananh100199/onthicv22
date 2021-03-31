@@ -93,14 +93,14 @@ module.exports = app => {
                             res.send({ error: `Ops! có lỗi xảy ra!` });
                         } else if (!user) {
                             const dataPassword = app.randomPassword(8),
-                                data = {
+                                dataUser = {
                                     email: item.email,
                                     firstname: item.firstname,
                                     lastname: item.lastname,
                                     phoneNumber: item.phoneNumber,
                                     password: dataPassword
                                 };
-                            app.model.user.create(data, (error, user) => {
+                            app.model.user.create(dataUser, (error, user) => {
                                 if (error) {
                                     res.send({ error })
                                 }
@@ -117,6 +117,18 @@ module.exports = app => {
                                         app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                                     });
                                 }
+                            });
+                        } else {
+                            const dataStudent = {
+                                firstname: item.firstname,
+                                lastname: item.lastname,
+                                courseType: item.courseType,
+                                sex: user.sex ? user.sex : 'male',
+                                image: user.image ? user.image : '/img/avatar.jpg',
+                                birthday: user.birthday
+                            };
+                            app.model.student.create(dataStudent, (error) => {
+                                res.send({error})
                             });
                         }
                     });

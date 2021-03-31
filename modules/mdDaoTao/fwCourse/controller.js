@@ -25,7 +25,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
-        app.model.course.create(req.body.newData || {}, (error, item) => res.send({ error, item }));
+        app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/course', app.permission.check('course:write'), (req, res) => {

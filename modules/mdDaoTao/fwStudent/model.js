@@ -15,8 +15,8 @@ module.exports = (app) => {
         identityCard: String,                                                                       // Số CMND, CCCD
         identityIssuedBy: String,                                                                   // Nơi cấp CMND, CCCD
         identityDate: Date,                                                                         // Ngày cấp CMND, CCCD
-        // identityCardImage1: String,                                                                 // Hình CMND, CCCD mặt trước
-        // identityCardImage2: String,                                                                 // Hình CMND, CCCD mặt sau
+        identityCardImage1: String,                                                                 // Hình CMND, CCCD mặt trước
+        identityCardImage2: String,                                                                 // Hình CMND, CCCD mặt sau
 
         giayPhepLaiXe2BanhSo: String,                                                               // Số giấy phép lái xe 2 bánh
         giayPhepLaiXe2BanhNgay: String,                                                             // Ngày trúng truyển giấy phép lái xe 2 bánh

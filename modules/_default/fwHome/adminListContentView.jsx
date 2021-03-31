@@ -69,5 +69,5 @@ class ListContentView extends React.Component {
 }
 
 const mapStateToProps = state => ({ component: state.component });
-const mapActionsToProps = { getListContentAll: getListContentAll, createListContent, deleteListContent };
+const mapActionsToProps = { getListContentAll, createListContent, deleteListContent };
 export default connect(mapStateToProps, mapActionsToProps)(ListContentView);
