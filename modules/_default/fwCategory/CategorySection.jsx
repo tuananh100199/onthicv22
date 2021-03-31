@@ -27,7 +27,6 @@ class CategoryModal extends AdminModal {
             this.props.update(this.state._id, changes, () => this.hide());
         } else { // Create
             changes.type = this.props.type;
-            changes.active = true;
             this.props.create(changes, () => this.hide());
         }
     }
