@@ -28,8 +28,8 @@ class CourseModal extends AdminModal {
             this.itemCourseType.focus();
         } else {
             this.props.create(data, data => {
-                data.item && this.props.history.push('/user/course/' + data.item._id);
                 this.hide();
+                data.item && this.props.history.push('/user/course/' + data.item._id);
             });
         }
     }

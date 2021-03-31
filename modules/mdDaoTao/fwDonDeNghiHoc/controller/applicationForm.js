@@ -3,7 +3,7 @@ module.exports = app => {
         parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
     };
 
-    app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
+    // app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
     app.get('/user/don-de-nghi-hoc', app.permission.check('applicationForm:read'), app.templates.admin);
     app.get('/user/don-de-nghi-hoc/list/:licenseClass', app.permission.check('applicationForm:read'), app.templates.admin);
@@ -91,8 +91,7 @@ module.exports = app => {
     });
 
     app.put('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => {
-        const $set = req.body.changes;
-        app.model.applicationForm.update(req.body._id, $set, (error, item) => res.send({ error, item }));
+        app.model.applicationForm.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => app.model.applicationForm.delete(req.body._id, error => res.send({ error })));

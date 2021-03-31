@@ -17,34 +17,28 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('items', '-content').sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
             }
         }),
 
-        getAll: (condition, done) => done ? model.find(condition).populate('items', '-content').sort({ title: -1 }).exec(done) : model.find({}).populate('items', '-content').sort({ title: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).populate('items', '-content').sort({ title: 1 }).exec(done) : model.find({}).populate('items', '-content').sort({ title: 1 }).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
 
-        update: (_id, $set, $unset, done) => done ?
-            model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('items', '-content').exec(done) :
-            model.findOneAndUpdate({ _id }, { $set }, { new: true }).populate('items', '-content').exec($unset),
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).populate('items', '-content').exec(done),
 
-        delete: (_id, done) => model.findById(_id, (error, listContent) => {
+        delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);
-            } else if (listContent == null) {
+            } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.model.content.getAll({ listContentId: listContent._id }, (error, items) => {
-                    if (!error && items && items.length) {
-                        items.forEach(item => app.model.content.delete(item._id, () => { }))
-                    }
-                })
-                app.deleteImage(listContent.image);
-                listContent.remove(done);
+                app.deleteImage(item.image);
+                item.remove(done);
             }
         }),
     };

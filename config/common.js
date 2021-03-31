@@ -148,7 +148,7 @@ module.exports = (app, appName) => {
                 if (error) {
                     console.log(' - Error: Cannot generate default Admin User!');
                 } else if (!user) {
-                    const newData = {
+                    const data = {
                         firstname: 'TÙNG',
                         lastname: 'NGUYỄN THANH',
                         email: app.defaultAdminEmail,
@@ -156,7 +156,7 @@ module.exports = (app, appName) => {
                         active: true,
                         roles: [adminRole._id]
                     };
-                    app.model.user.create(newData, (error, newUser) => {
+                    app.model.user.create(data, (error, newUser) => {
                         if (error || !newUser) {
                             console.log(' - Error: Cannot generate default Admin User!', error)
                         } else {

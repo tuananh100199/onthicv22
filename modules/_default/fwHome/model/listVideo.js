@@ -9,32 +9,20 @@ module.exports = app => {
     app.model.listVideo = {
         create: (data, done) => model.create(data, done),
 
-        getAll: done => model.find({}).sort({ title: -1 }).exec(done),
+        getAll: done => model.find({}).populate('items', '-content').sort({ title: 1 }).exec(done),
 
-        get: (_id, done) => model.findById(_id, (error, list) => {
+        get: (condition, done) => typeof condition == 'string' ? model.findById(condition).populate('items', '-content').exec(done) : model.findOne(condition).populate('items', '-content').exec(done),
+
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).populate('items', '-content').exec(done),
+
+        delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
                 done(error);
-            } else if (list == null) {
+            } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                done(null, list);
-            }
-        }),
-
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
-
-        delete: (_id, done) => model.findById(_id, (error, videoList) => {
-            if (error) {
-                done(error);
-            } else if (videoList == null) {
-                done('Invalid Id!');
-            } else {
-                app.model.video.getAll({ listVideoId: videoList._id }, (error, items) => {
-                    if (!error && items && items.length) {
-                        items.forEach(item => app.model.video.delete(item._id, () => { }))
-                    }
-                });
-                videoList.remove(done);
+                item.remove(done);
             }
         }),
     };

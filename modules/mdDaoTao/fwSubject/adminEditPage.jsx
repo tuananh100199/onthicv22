@@ -1,13 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-    getSubject, updateSubject,
-    addSubjectLesson, swapSubjectLesson, deleteSubjectLesson,
-    createSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion, updateSubjectQuestion,
-} from './redux';
-import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { getSubject, updateSubject, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson, changeSubjectQuestions } from './redux';
 import { ajaxSelectLesson } from 'modules/mdDaoTao/fwLesson/redux';
+import { Link } from 'react-router-dom';
+import { QuestionView } from 'modules/_default/fwQuestion/index';
+import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class LessonModal extends AdminModal {
     onShow = () => this.lessonSelect.value(null);
@@ -24,47 +21,6 @@ class LessonModal extends AdminModal {
         title: 'Thêm bài học',
         body: <FormSelect ref={e => this.lessonSelect = e} data={ajaxSelectLesson} label='Bài học' />,
     });
-}
-
-class QuestionModal extends AdminModal {
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
-    }
-
-    onShow = (question) => {
-        let { _id, title, active } = question ? question : { _id: null, title: '', active: false };
-        this.itemTitle.value(title)
-        this.itemIsActive.value(active);
-
-        this.setState({ _id });
-    }
-
-    onSubmit = () => {
-        const data = {
-            title: this.itemTitle.value(),
-            active: this.itemIsActive.value(),
-        };
-        if (data.title == '') {
-            T.notify('Tên câu hỏi bị trống!', 'danger');
-            this.itemTitle.focus();
-        } else {
-            this.state._id ?
-                this.props.update(this.props.subjectId, this.state._id, data, this.hide) :
-                this.props.create(this.props.subjectId, data, this.hide);
-        }
-    }
-
-    render = () => {
-        const readOnly = this.props.readOnly;
-        return this.renderModal({
-            title: 'Câu hỏi',
-            size: 'large',
-            body: <>
-                <FormRichTextBox ref={e => this.itemTitle = e} label='Câu hỏi' rows='6' readOnly={readOnly} />
-                <FormCheckbox ref={e => this.itemIsActive = e} label='Kích hoạt' readOnly={readOnly} />
-            </>,
-        });
-    };
 }
 
 const adminPageLink = '/user/dao-tao/mon-hoc';
@@ -110,11 +66,6 @@ class AdminEditPage extends AdminPage {
         isConfirm && this.props.deleteSubjectLesson(this.state._id, lesson._id));
     swapLesson = (e, lesson, isMoveUp) => e.preventDefault() || this.props.swapSubjectLesson(this.state._id, lesson._id, isMoveUp);
 
-    showQuestionModal = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
-    deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm =>
-        isConfirm && this.props.deleteSubjectQuestion(this.state._id, question._id));
-    swapQuestion = (e, question, isMoveUp) => e.preventDefault() || this.props.swapSubjectQuestion(this.state._id, question._id, isMoveUp);
-
     render() {
         const permission = this.getUserPermission('subject'),
             readOnly = !permission.write;
@@ -135,24 +86,6 @@ class AdminEditPage extends AdminPage {
                 </tr>),
         });
 
-        const tableQuestion = renderTable({
-            getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.questions,
-            renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên câu hỏi</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
-            renderRow: (item, index) => (
-                <tr key={index}>
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} onClick={e => this.showQuestionModal(e, item)} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateSubjectQuestion(this.state._id, item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={this.showQuestionModal} onSwap={this.swapQuestion} onDelete={this.deleteQuestion} />
-                </tr>),
-        });
-
         const componentInfo = (
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên môn học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
@@ -168,12 +101,8 @@ class AdminEditPage extends AdminPage {
                 <LessonModal _id={this.state._id} ref={e => this.modalLesson = e} addSubjectLesson={this.props.addSubjectLesson} readOnly={!permission.write} />
             </div>);
 
-        const componentQuestion = (
-            <div className='tile-body'>
-                {tableQuestion}
-                {permission.write ? <CirclePageButton type='create' onClick={this.showQuestionModal} /> : null}
-                <QuestionModal subjectId={this.state._id} ref={e => this.modalQuestion = e} create={this.props.createSubjectQuestion} update={this.props.updateSubjectQuestion} readOnly={!permission.write} />
-            </div>);
+        const questions = this.props.subject && this.props.subject.item && this.props.subject.item.questions,
+            componentQuestion = <QuestionView type='subject' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeSubjectQuestions} />
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bài học', component: componentLesson }, { title: 'Câu hỏi', component: componentQuestion }];
         return this.renderPage({
@@ -187,8 +116,5 @@ class AdminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = {
-    getSubject, updateSubject, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson,
-    createSubjectQuestion, swapSubjectQuestion, deleteSubjectQuestion, updateSubjectQuestion,
-};
+const mapActionsToProps = { getSubject, updateSubject, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson, changeSubjectQuestions };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);

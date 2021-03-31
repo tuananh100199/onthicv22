@@ -12,12 +12,12 @@ class SubjectModal extends AdminModal {
     onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
-        const newData = { title: this.itemTitle.value(), };
-        if (newData.title == '') {
+        const data = { title: this.itemTitle.value(), };
+        if (data.title == '') {
             T.notify('Tên môn học bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            this.props.createSubject(newData, data => {
+            this.props.createSubject(data, data => {
                 this.hide();
                 data && data.item && this.props.history.push('/user/dao-tao/mon-hoc/' + data.item._id);
             });

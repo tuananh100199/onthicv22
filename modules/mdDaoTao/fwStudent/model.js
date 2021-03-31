@@ -15,8 +15,8 @@ module.exports = (app) => {
         identityCard: String,                                                                       // Số CMND, CCCD
         identityIssuedBy: String,                                                                   // Nơi cấp CMND, CCCD
         identityDate: Date,                                                                         // Ngày cấp CMND, CCCD
-        // identityCardImage1: String,                                                                 // Hình CMND, CCCD mặt trước
-        // identityCardImage2: String,                                                                 // Hình CMND, CCCD mặt sau
+        identityCardImage1: String,                                                                 // Hình CMND, CCCD mặt trước
+        identityCardImage2: String,                                                                 // Hình CMND, CCCD mặt sau
 
         giayPhepLaiXe2BanhSo: String,                                                               // Số giấy phép lái xe 2 bánh
         giayPhepLaiXe2BanhNgay: String,                                                             // Ngày trúng truyển giấy phép lái xe 2 bánh
@@ -72,11 +72,10 @@ module.exports = (app) => {
             }
         }),
 
-        update: (_id, $set, $unset, done) => {
-            $set.modifiedDate = new Date();
-            done ?
-                model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).exec(done) :
-                model.findOneAndUpdate({ _id }, { $set }, { new: true }).exec($unset);
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => {
+            changes.modifiedDate = new Date();
+            model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

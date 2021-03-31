@@ -20,39 +20,28 @@ module.exports = app => {
     });
 
     app.put('/api/list-content', app.permission.check('component:write'), (req, res) => {
-        if (!isNaN(req.body.changes)) { //remove content from items
+        //remove content from items , req.body.changes in this case is index:number
+        if (!isNaN(req.body.changes)) {
             app.model.listContent.get(req.body._id, (error, item) => {
-                if (error) {
-                    res.send({ error });
-                } else {
-                    item.items.splice(req.body.changes, 1);
-                    item.save();
-                    if (!item.items.length) {
-                        const $set = item;
-                        $set.items = [];
-                        app.model.listContent.update(req.body._id, $set, undefined)
-                    }
-                }
-                res.send({ item: item });
+                item.items.splice(req.body.changes, 1);
+                item.save();
+                res.send({ error, item });
             });
-        }
-        else if (req.body.changes.index) { //swap content in items
+        } else if (req.body.changes.index) { //swap content in items
             const { index, isMoveUp } = req.body.changes;
             app.model.listContent.get(req.body._id, (error, item) => {
-                if (error) {
-                    res.send({ error });
-                } else {
-                    const temp = item.items[index];
-                    const newIndex = parseInt(index) + (isMoveUp == 'true' ? -1 : +1);
-                    if (0 <= index && index < item.items.length && 0 <= newIndex && newIndex < item.items.length) {
-                        item.items.splice(index, 1);
-                        item.items.splice(newIndex, 0, temp);
-                        item.save();
-                    }
-                    res.send({ item: item });
+                const temp = item.items[index];
+                const newIndex = parseInt(index) + (isMoveUp == 'true' ? -1 : +1);
+                if (0 <= index && index < item.items.length && 0 <= newIndex && newIndex < item.items.length) {
+                    item.items.splice(index, 1);
+                    item.items.splice(newIndex, 0, temp);
+                    item.save();
                 }
+                res.send({ error, item });
             });
-        } else app.model.listContent.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        } else {
+            app.model.listContent.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        }
     });
 
     app.delete('/api/list-content', app.permission.check('component:delete'), (req, res) => {
