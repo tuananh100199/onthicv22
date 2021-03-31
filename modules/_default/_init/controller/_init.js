@@ -105,6 +105,45 @@ module.exports = (app) => {
         );
     };
 
+    app.uploadExcel = (srcPath, done) => {
+        app.excel.readFile(srcPath, workbook => {
+            app.deleteFile(srcPath);
+            if (workbook) {
+                const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                const handleUpload = (index = 2) => {
+                    const values = worksheet.getRow(index).values;
+                    if (values.length == 0 || index == totalRow + 1) {
+                        done({ data });
+                    } else {
+                        data.push({
+                            numberic: values[1],
+                            firstname: values[2],
+                            lastname: values[3],
+                            email: values[4],
+                            phoneNumber: values[5],
+                            courseType: values[6],
+                            sex: values[7],
+                            birthday: values[8],
+                            nationality: values[9],
+                            residence: values[10],
+                            regularResidence: values[11],
+                            identityCard: values[12],
+                            identityDate: values[13],
+                            licenseNumber: values[14],
+                            licenseDate: values[15],
+                            giaykhamsuckhoe: values[16],//Đổi tên
+                            cogiaykhamsuckhoe: values[17],
+                        });
+                        handleUpload(index + 1);
+                    }
+                };
+                handleUpload();
+            } else {
+                done({ error: 'Error' });
+            }
+        });
+    };
+
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,

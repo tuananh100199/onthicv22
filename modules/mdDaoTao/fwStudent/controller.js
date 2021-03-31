@@ -68,4 +68,13 @@ module.exports = (app) => {
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }))
     });
+
+    app.uploadHooks.add('uploadExcelFile', (req, fields, files, params, done) => {
+        if (files.CandidateFile && files.CandidateFile.length > 0) {
+            console.log('Hook: uploadExcelFile => your excel file upload');
+            app.uploadExcel(files.CandidateFile[0].path, (data) => {
+                done(data)
+            });
+        }
+    });
 };
