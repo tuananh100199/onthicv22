@@ -118,7 +118,7 @@ module.exports = (app) => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
 
-    const uploadSudent = (req, fields, files, params, done) => {
+    const uploadStudent = (req, fields, files, params, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
             console.log('Hook: uploadStudent => student image upload');
             const _id = fields.userData[0].substring('student:'.length);
