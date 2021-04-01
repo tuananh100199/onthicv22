@@ -162,12 +162,19 @@ export class FormTextBox extends React.Component {
     render() {
         let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props;
         type = type.toLowerCase(); // type = text | number | email | password | phone
-        const onKeyPress = e => type != 'phone' || ((!/[0-9]/.test(e.key)) && e.preventDefault());
+        const properties = {
+            type,
+            className: 'form-control',
+            placeholder: label,
+            value: this.state.value,
+            onChange: e => this.setState({ value: e.target.value }) || onChange && onChange(e),
+        };
+        if (type == 'password') properties.autoComplete = 'new-password';
+        if (type == 'phone') properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{T.numberDisplay(this.state.value)}</b></> : ''}
-                <input ref={e => this.input = e} type={type} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value}
-                    onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} onKeyPress={onKeyPress} />
+                <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
                 {smallText ? <small>{smallText}</small> : null}
             </div>);
     };

@@ -212,7 +212,10 @@ module.exports = app => {
         if (req.session.user && fields.userData && fields.userData[0] == 'profile' && files.ProfileImage && files.ProfileImage.length > 0) {
             console.log('Hook: uploadYourAvatar => your avatar upload');
             const _id = req.session.user._id;
-            app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, done);
+            app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, data => {
+                if (data.error == null && data.image) req.session.user.image = data.image;
+                done(data);
+            });
         }
     });
 

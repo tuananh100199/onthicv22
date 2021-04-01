@@ -71,15 +71,15 @@ class SettingsPage extends AdminPage {
                         <div className='tile'>
                             <h3 className='tile-title'>Thông tin chung</h3>
                             <div className='tile-body'>
-                                <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemEmail = e} label='Email' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemDangKyTuVanLink = e} label='Đường dẫn đăng ký tư vấn' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemFax = e} label='Fax' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' defaultValue='' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' defaultValue='' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemEmail = e} label='Email' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemDangKyTuVanLink = e} label='Đường dẫn đăng ký tư vấn' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemFax = e} label='Fax' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemYoutube = e} label='You tube' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' readOnly={readOnly} />
                             </div>
                             {!readOnly ?
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
@@ -94,8 +94,8 @@ class SettingsPage extends AdminPage {
                         <div className='tile'>
                             <h3 className='tile-title'>Thay đổi mật khẩu</h3>
                             <div className='tile-body'>
-                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' defaultValue='' autoComplete='new-password' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' defaultValue='' autoComplete='new-password' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' autoComplete='new-password' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' autoComplete='new-password' readOnly={readOnly} />
                             </div>
                             {!readOnly ?
                                 <div className='tile-footer'>
