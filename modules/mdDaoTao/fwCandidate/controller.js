@@ -13,7 +13,7 @@ module.exports = app => {
     app.get('/api/candidate/page/:pageNumber/:pageSize', app.permission.check('candidate:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'] } },
+        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } },
             searchText = req.query.searchText;
         if (searchText) {
             const value = new RegExp(searchText, 'i');
@@ -77,6 +77,7 @@ module.exports = app => {
             }
         })
     });
+
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
         changes.staff = req.session.user;
@@ -85,7 +86,41 @@ module.exports = app => {
             if (error) {
                 res.send({ error });
             } else if (changes.state == 'UngVien') {
-                const createStudent = (_userId) => { // create Student after create User or get User
+                new Promise((resolve, reject) => { // Tạo user cho candidate
+                    app.model.user.get({ email: item.email }, (error, user) => {
+                        if (error) {
+                            reject('Lỗi khi đọc thông tin người dùng!');
+                        } else if (user) { // Candidate đã là user
+                            resolve(user._id);
+                        } else { // Candidate chưa là user
+                            const dataPassword = app.randomPassword(8),
+                                newUser = {
+                                    email: item.email,
+                                    firstname: item.firstname,
+                                    lastname: item.lastname,
+                                    phoneNumber: item.phoneNumber,
+                                    password: dataPassword
+                                };
+                            app.model.user.create(newUser, (error, user) => {
+                                if (error) {
+                                    reject('Lỗi khi tạo người dùng!');
+                                } else { // Tạo user thành công. Gửi email & password đến người dùng!
+                                    resolve(user._id);
+                                    app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                        const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                            fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                            mailTitle = result.emailCreateMemberByAdminTitle,
+                                            mailText = fillParams(result.emailCreateMemberByAdminText),
+                                            mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                        app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }).then(_userId => { // Tạo student cho candidate
                     item.user = _userId;
                     item.save();
                     const dataStudent = {
@@ -94,43 +129,8 @@ module.exports = app => {
                         lastname: item.lastname,
                         courseType: item.courseType,
                     };
-                    app.model.student.create(dataStudent, (error) => {
-                        res.send({ error, item }) // item from callback of  app.model.candidate.update
-                    });
-                };
-                app.model.user.get({ email: item.email }, (error, user) => {
-                    if (error) {
-                        res.send({ error: `Ops! có lỗi xảy ra!` });
-                    } else if (!user) { // user not => found create new user => create new Student
-                        const dataPassword = app.randomPassword(8),
-                            dataUser = {
-                                email: item.email,
-                                firstname: item.firstname,
-                                lastname: item.lastname,
-                                phoneNumber: item.phoneNumber,
-                                password: dataPassword
-                            };
-                        app.model.user.create(dataUser, (error, user) => {
-                            if (error) {
-                                res.send({ error });
-                            } else { // user already created => send mail to new user => createStudent
-                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                    const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
-                                        replace = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
-                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                        mailTitle = result.emailCreateMemberByAdminTitle,
-                                        mailText = replace(result.emailCreateMemberByAdminText),
-                                        mailHtml = replace(result.emailCreateMemberByAdminHtml);
-                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                });
-                                createStudent(user._id);
-                            }
-                        })
-                    } else { // user found => still create new Student
-                        createStudent(user._id);
-                    }
-                })
+                    app.model.student.create(dataStudent, (error) => res.send({ error, item }));
+                }).catch(error => res.send({ error }));
             } else {
                 res.send({ error, item });
             }

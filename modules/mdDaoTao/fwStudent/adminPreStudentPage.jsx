@@ -56,14 +56,10 @@ class PreStudenModal extends AdminModal {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else {
-            // this.props.update(this.state._id, data, (error) => {
-            //     if (this.onUpdated) this.onUpdated(error);
-            //     this.hide();
-            // });
-            this.state._id ? this.props.update(this.state._id, data) : this.props.create(data);
-            this.hide();
+            this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
     }
+
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');
@@ -101,6 +97,7 @@ class PreStudenModal extends AdminModal {
         });
     }
 }
+
 class PreStudentPage extends AdminPage {
     state = { searchText: '', isSearching: false };
 

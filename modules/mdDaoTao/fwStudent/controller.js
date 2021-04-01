@@ -12,11 +12,7 @@ module.exports = (app) => {
     //     }
     // };
 
-    app.permission.add(
-        { name: 'student:read', menu },
-        { name: 'student:write' },
-        { name: 'student:delete' },
-    );
+    app.permission.add({ name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' });
 
     // app.get('/user/pre-student', app.permission.check('student:candidate'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('student:write'), app.templates.admin);

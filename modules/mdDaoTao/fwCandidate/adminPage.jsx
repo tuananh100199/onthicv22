@@ -6,7 +6,6 @@ import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modul
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 
-//TODO: state=UngVien thì không cập nhật được => cần confirm trước khi chuyển thành UngVien
 class CandidateModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -49,7 +48,7 @@ class CandidateModal extends AdminModal {
             this.itemEmail.focus();
         } else {
             this.props.update(this.state._id, data, (error) => {
-                if (this.onUpdated) this.onUpdated(error);
+                this.onUpdated && this.onUpdated(error);
                 this.hide();
             });
         }
@@ -76,6 +75,7 @@ const stateMapper = {
     // UngVien: { text: 'Ứng viên', style: { color: '#28A745' } },
 };
 const states = Object.entries(stateMapper).map(([key, value]) => ({ id: key, text: value.text }));
+
 class CandidatePage extends AdminPage {
     state = { courseTypes: [] };
     componentDidMount() {
@@ -97,7 +97,7 @@ class CandidatePage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký tư vấn', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
         isConfirm && this.props.deleteCandidate(item._id));
 
-    upStudent = (e, item) => e.preventDefault() || T.confirm('Thêm ứng viên ', 'Bạn có chắc muốn thêm ứng viên này?', true, isConfirm =>
+    upStudent = (e, item, courseTypeText) => e.preventDefault() || T.confirm('Trở thành ứng viên ', `Bạn có chắc muốn ${item.lastname + ' ' + item.firstname} trở thành ứng viên ${courseTypeText}?`, true, isConfirm =>
         isConfirm && this.props.updateCandidate(item._id, { state: 'UngVien' }));
 
     render() {
@@ -118,9 +118,10 @@ class CandidatePage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => {
-                const selectedState = stateMapper[item.state];
-                const dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
-                const dropdownCourseType = <Dropdown items={this.state.courseTypes} item={item.courseType ? item.courseType.title : ''} onSelected={e => this.updateCourseType(item, e.id)} />
+                const selectedState = stateMapper[item.state],
+                    dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
+                const courseTypeText = item.courseType ? item.courseType.title : '',
+                    dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>
@@ -137,7 +138,7 @@ class CandidatePage extends AdminPage {
                         <TableCell content={dates} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete}>
                             {permission.write && item.email && item.phoneNumber ?
-                                <a className='btn btn-warning' href='#' onClick={e => this.upStudent(e, item)} style={{ color: 'white' }}>
+                                <a className='btn btn-warning' href='#' onClick={e => this.upStudent(e, item, courseTypeText)} style={{ color: 'white' }}>
                                     <i className='fa fa-lg fa-paper-plane' />
                                 </a> : null}
                         </TableCell>
