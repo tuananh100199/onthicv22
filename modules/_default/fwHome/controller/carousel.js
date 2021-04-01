@@ -82,7 +82,7 @@ module.exports = app => {
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/carouselItem'));
 
-    const uploadCarouselItemImage = (req, fields, files, params, done) => {
+    const uploadCarouselItemImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('carouselItem:') && files.CarouselItemImage && files.CarouselItemImage.length > 0) {
             console.log('Hook: uploadCarouselItemImage => carousel image upload');
             const _id = fields.userData[0].substring('carouselItem:'.length);
@@ -90,5 +90,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadCarouselItemImage', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadCarouselItemImage(req, fields, files, params, done), done, 'component:write'));
+        app.permission.has(req, () => uploadCarouselItemImage(fields, files, done), done, 'component:write'));
 };

@@ -228,7 +228,7 @@ module.exports = app => {
         }
     });
 
-    const uploadUserAvatar = (req, fields, files, params, done) => {
+    const uploadUserAvatar = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('user:') && files.UserImage && files.UserImage.length > 0) {
             console.log('Hook: uploadUserAvatar => user avatar upload');
             const _id = fields.userData[0].substring('user:'.length);
@@ -236,5 +236,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadUserAvatar', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadUserAvatar(req, fields, files, params, done), done, 'user:write'));
+        app.permission.has(req, () => uploadUserAvatar(fields, files, done), done, 'user:write'));
 };

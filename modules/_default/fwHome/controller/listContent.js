@@ -55,7 +55,7 @@ module.exports = app => {
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/listContent'));
-    const uploadListContent = (req, fields, files, params, done) => {
+    const uploadListContent = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('listContent:') && files.ListContentImage && files.ListContentImage.length > 0) {
             console.log('Hook: uploadListContent image => content list image upload');
             const _id = fields.userData[0].substring('listContent:'.length);
@@ -64,5 +64,5 @@ module.exports = app => {
     };
 
     app.uploadHooks.add('uploadListContent', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadListContent(req, fields, files, params, done), done, 'component:write'));
+        app.permission.has(req, () => uploadListContent(fields, files, done), done, 'component:write'));
 };

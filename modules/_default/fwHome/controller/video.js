@@ -43,7 +43,7 @@ module.exports = app => {
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/video'));
 
-    const uploadVideo = (req, fields, files, params, done) => {
+    const uploadVideo = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('video:') && files.VideoImage && files.VideoImage.length > 0) {
             console.log('Hook: uploadVideo => video image upload');
             const _id = fields.userData[0].substring('video:'.length);
@@ -51,5 +51,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadVideo', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadVideo(req, fields, files, params, done), done, 'component:write'));
+        app.permission.has(req, () => uploadVideo(fields, files, done), done, 'component:write'));
 };

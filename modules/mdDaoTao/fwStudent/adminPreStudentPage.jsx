@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentPage, deleteStudent, updateStudent, createStudent } from './redux';
+import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
@@ -103,8 +103,8 @@ class PreStudentPage extends AdminPage {
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
-        this.props.getStudentPage(1, 50, undefined);
-        T.onSearch = (searchText) => this.props.getStudentPage(undefined, undefined, searchText ? { searchText } : null, () => {
+        this.props.getPreStudentPage(1, 50, undefined);
+        T.onSearch = (searchText) => this.props.getPreStudentPage(undefined, undefined, searchText ? { searchText } : null, () => {
             this.setState({ searchText, isSearching: searchText != '' });
         });
     }
@@ -112,13 +112,13 @@ class PreStudentPage extends AdminPage {
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá ứng viên', 'Bạn có chắc muốn xoá ứng viên này?', true, isConfirm =>
-        isConfirm && this.props.deleteStudent(item._id));
+        isConfirm && this.props.deletePreStudent(item._id));
     create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete', 'import']);
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
-            this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.prePage ?
+            this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list && list.filter(item => item.course == null),
             renderHead: () => (
@@ -147,8 +147,8 @@ class PreStudentPage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getStudentPage} />
-                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createStudent} update={this.props.updateStudent} />
+                    getPage={this.props.getPreStudentPage} />
+                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} />
                 {permission.import ? <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
             </>,
             onCreate: permission.write ? this.create : null,
@@ -157,5 +157,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.student });
-const mapActionsToProps = { getStudentPage, deleteStudent, createStudent, updateStudent };
+const mapActionsToProps = { getPreStudentPage, deletePreStudent, createPreStudent, updatePreStudent };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

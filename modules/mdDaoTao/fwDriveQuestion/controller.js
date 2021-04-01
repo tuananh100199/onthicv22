@@ -77,7 +77,7 @@ module.exports = app => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/drive-question'));
 
-    const uploadDriveQuestion = (req, fields, files, params, done) => {
+    const uploadDriveQuestion = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('driveQuestion:') && files.DriveQuestionImage && files.DriveQuestionImage.length > 0) {
             console.log('Hook: uploadDriveQuestion => drive question image upload');
             const _id = fields.userData[0].substring('driveQuestion:'.length);
@@ -85,5 +85,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadDriveQuestion', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadDriveQuestion(req, fields, files, params, done), done, 'driveQuestion:write'));
+        app.permission.has(req, () => uploadDriveQuestion(fields, files, done), done, 'driveQuestion:write'));
 };

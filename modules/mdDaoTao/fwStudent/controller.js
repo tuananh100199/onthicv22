@@ -66,6 +66,10 @@ module.exports = (app) => {
             condition = req.query.condition || {},
             pageCondition = { course: null };
         try {
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
+                pageCondition.division = req.session.user.division._id;
+            }
+
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition['$or'] = [
@@ -118,7 +122,7 @@ module.exports = (app) => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
 
-    const uploadStudent = (req, fields, files, params, done) => {
+    const uploadStudent = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
             console.log('Hook: uploadStudent => student image upload');
             const _id = fields.userData[0].substring('student:'.length);
@@ -126,5 +130,5 @@ module.exports = (app) => {
         }
     };
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadStudent(req, fields, files, params, done), done, 'student:write'));
+        app.permission.has(req, () => uploadStudent(fields, files, done), done, 'student:write'));
 };
