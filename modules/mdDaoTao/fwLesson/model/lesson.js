@@ -48,18 +48,12 @@ module.exports = app => {
 
         delete: (_id, done) => {
             model.findById(_id, (error, item) => {
-                if (error) {
-                    done(error);
-                } else if (item == null) {
-                    done('Invalid Id!');
-                } else {
+                if (item) {
                     app.deleteImage(item.image);
-                    app.model.question.delete(item.questions, error => {
-                        if (error)
-                            done(error);
-                        else
-                            item.remove(done);
-                    })
+                    app.model.question.delete(item.questions, error => error && console.log(error));
+                    item.remove(done);
+                } else {
+                    done(error || 'Invalid Id!');
                 }
             });
         },
