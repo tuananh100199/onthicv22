@@ -50,6 +50,7 @@ module.exports = app => {
             model.findById(_id, (error, item) => {
                 if (item) {
                     app.deleteImage(item.image);
+                    app.model.lessonVideo.delete(item.videos, error => error && console.log(error));
                     app.model.question.delete(item.questions, error => error && console.log(error));
                     item.remove(done);
                 } else {

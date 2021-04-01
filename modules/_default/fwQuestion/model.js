@@ -26,7 +26,7 @@ module.exports = app => {
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
         delete: (_ids, done) => {
-            if (!Array.isArray(_ids)) _ids = [_ids];
+            if (_ids && !Array.isArray(_ids)) _ids = [_ids];
             let error = null,
                 solve = (index = 0) => {
                     if (index < _ids.length) {
@@ -47,6 +47,6 @@ module.exports = app => {
                     }
                 };
             solve();
-        }
+        },
     };
 };

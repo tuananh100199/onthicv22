@@ -25,23 +25,24 @@ module.exports = (app) => {
     });
 
     app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {
-        app.model.lesson.get(req.query._id, (error, item) => res.send({ error, item }));
+        const { _id } = req.query;
+        app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
-        const data = req.body.data;
+        const { data } = req.body;
         data.author = req.session.user._id;
         app.model.lesson.create(data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
-        const changes = req.body.changes;
-        app.model.lesson.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+        const { _id, changes } = req.body;
+        app.model.lesson.update(_id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/lesson', app.permission.check('lesson:delete'), (req, res) => {
-        //TODO: delete all videos and questions
-        app.model.lesson.delete(req.body._id, (error) => res.send({ error }));
+        const { _id } = req.body;
+        app.model.lesson.delete(_id, (error) => res.send({ error }));
     });
 
     // Video APIs -----------------------------------------------------------------------------------------------------
