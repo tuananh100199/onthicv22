@@ -58,7 +58,13 @@ module.exports = (app) => {
     });
 
     app.post('/api/student', app.permission.check('student:write'), (req, res) => {
-        app.model.student.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+        app.model.student.create(req.body.data, (error, item) => {
+            if (error || (item && item.image == null)) {
+                res.send({ error, item });
+            } else {
+                app.uploadImage('student', app.model.student.get, item._id, item.image, data => res.send(data));
+            }
+        })
     });
 
     app.put('/api/student', app.permission.check('student:write'), (req, res) => {
@@ -68,4 +74,16 @@ module.exports = (app) => {
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }))
     });
+    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    app.createFolder(app.path.join(app.publicPath, '/img/student'));
+
+    const uploadSudent = (req, fields, files, params, done) => {
+        if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
+            console.log('Hook: uploadStudent => student image upload');
+            const _id = fields.userData[0].substring('student:'.length);
+            app.uploadImage('student', app.model.student.get, _id, files.StudentImage[0].path, done);
+        }
+    };
+    app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadStudent(req, fields, files, params, done), done, 'student:write'));
 };

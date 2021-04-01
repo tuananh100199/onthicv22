@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentPage, deleteStudent } from './redux';
-import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getStudentPage, deleteStudent, updateStudent, createStudent } from './redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, CirclePageButton, AdminModal, FormTextBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 
 class PreStudenModal extends AdminModal {
@@ -12,27 +12,36 @@ class PreStudenModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated, courseType = '', state = '' }) => {
-        this.onUpdated = onUpdated;
+    onShow = (item) => {
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', courseType: {}, sex }
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
-        this.itemEmail.value(email);
-        this.itemPhoneNumber.value(phoneNumber);
-        ajaxGetCourseType(courseType, data =>
-            this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
-        this.states.value(state)
+        this.itemBirthday.value(birthday);
+        this.itemEmail.value(user.email || '');
+        this.itemPhoneNumber.value(user.phoneNumber || '');
+        this.itemSex.value(sex);
+        this.itemResidence.value(residence),
+            this.itemRegularResidence.value(regularResidence),
+            this.imageBox.setData(`student:${_id || 'new'}`);
 
-        this.setState({ _id });
+        this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
+
+        this.setState({ _id, image });
     }
 
     onSubmit = () => {
         const data = {
             firstname: this.itemFirstname.value(),
             lastname: this.itemLastname.value(),
+            birthday: this.itemBirthday.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
+            sex: this.itemSex.value(),
+            residence: this.itemResidence.value(),
+            regularResidence: this.itemRegularResidence.value(),
+            image: this.state.image,
+
             courseType: this.courseType.value(),
-            state: this.states.value(),
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -47,25 +56,50 @@ class PreStudenModal extends AdminModal {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else {
-            this.props.update(this.state._id, data, (error) => {
-                if (this.onUpdated) this.onUpdated(error);
-                this.hide();
-            });
+            // this.props.update(this.state._id, data, (error) => {
+            //     if (this.onUpdated) this.onUpdated(error);
+            //     this.hide();
+            // });
+            this.state._id ? this.props.update(this.state._id, data) : this.props.create(data);
+            this.hide();
+        }
+    }
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            // item && this.props.change(item);
         }
     }
 
-    render = () => this.renderModal({
-        title: 'Ứng viên',
-        size: 'large',
-        body: <div className='row'>
-            <FormTextBox className='col-md-6' ref={e => this.itemLastname = e} label='Họ' />
-            <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' />
-            <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} type='email' label='Email' />
-            <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
-            <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
-            <FormSelect className='col-md-6' ref={e => this.states = e} label='Loại khóa học' data={this.props.states} />
-        </div>
-    });
+    render = () => {
+        const readOnly = this.props.readOnly;
+        return this.renderModal({
+            title: 'Ứng viên',
+            size: 'large',
+            body: <div className='row'>
+                <div className='col-md-8'>
+                    <div className='row'>
+                        <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} />
+                        <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} />
+                    </div>
+                    <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
+                </div>
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='StudentImage' image={this.state.image} readOnly={readOnly}
+                    onSuccess={this.onUploadSuccess} />
+
+                <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
+                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
+                <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
+
+                <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} />
+
+                <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
+            </div>
+        });
+    }
 }
 class PreStudentPage extends AdminPage {
     state = { searchText: '', isSearching: false };
@@ -78,13 +112,11 @@ class PreStudentPage extends AdminPage {
         });
     }
 
-    edit = (e, item) => e.preventDefault() || this.preStudenModal.show(item);
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá ứng viên', 'Bạn có chắc muốn xoá ứng viên này?', true, isConfirm =>
         isConfirm && this.props.deleteStudent(item._id));
-    create = () => {
-        alert('Todo')
-    }
+    create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
@@ -119,7 +151,7 @@ class PreStudentPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getStudentPage} />
-                <PreStudenModal ref={e => this.preStudenModal = e} />
+                <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createStudent} update={this.props.updateStudent} />
                 <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} />
             </>,
             onCreate: permission.write ? this.create : null,
@@ -128,5 +160,5 @@ class PreStudentPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.student });
-const mapActionsToProps = { getStudentPage, deleteStudent };
+const mapActionsToProps = { getStudentPage, deleteStudent, createStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(PreStudentPage);

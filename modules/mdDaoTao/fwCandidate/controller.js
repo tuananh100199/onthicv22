@@ -78,66 +78,6 @@ module.exports = app => {
             }
         })
     });
-    // app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
-    //     const changes = req.body.changes;
-    //     changes.staff = req.session.user;
-    //     changes.modifiedDate = new Date();
-    //     if (changes.state == 'UngVien') {
-    //         app.model.candidate.get(req.body._id, (error, item) => {
-    //             if (error) {
-    //                 res.send({ error });
-    //             }
-    //             // else if (item.email) {
-    //             else {
-    //                 app.model.user.get({ email: item.email }, (error, user) => {
-    //                     if (error) {
-    //                         res.send({ error: `Ops! có lỗi xảy ra!` });
-    //                     } else if (!user) {
-    //                         const dataPassword = app.randomPassword(8),
-    //                             dataUser = {
-    //                                 email: item.email,
-    //                                 firstname: item.firstname,
-    //                                 lastname: item.lastname,
-    //                                 phoneNumber: item.phoneNumber,
-    //                                 password: dataPassword
-    //                             };
-    //                         app.model.user.create(dataUser, (error, user) => {
-    //                             if (error) {
-    //                                 res.send({ error })
-    //                             }
-    //                             else if (user) {
-    //                                 app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-    //                                     const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-    //                                         mailTitle = result.emailCreateMemberByAdminTitle,
-    //                                         mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
-    //                                             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-    //                                             .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-    //                                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-    //                                             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-    //                                             .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
-    //                                     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-    //                                 });
-    //                             }
-    //                         });
-    //                     } else {
-    //                         const dataStudent = {
-    //                             firstname: item.firstname,
-    //                             lastname: item.lastname,
-    //                             courseType: item.courseType,
-    //                             sex: user.sex ? user.sex : 'male',
-    //                             image: user.image ? user.image : '/img/avatar.jpg',
-    //                             birthday: user.birthday
-    //                         };
-    //                         app.model.student.create(dataStudent, (error) => {
-    //                             res.send({ error })
-    //                         });
-    //                     }
-    //                 });
-    //             }
-    //         })
-    //     }
-    //     app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
-    // });
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
         changes.staff = req.session.user;
