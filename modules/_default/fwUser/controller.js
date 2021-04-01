@@ -28,21 +28,11 @@ module.exports = app => {
                         { firstname: value },
                         { lastname: value },
                     ];
-                } else if (condition.isAll) {
-                    if (condition.isAll == 'true') {
-                        condition = {}
-                    } else {
-                        if (condition.isCourseAdmin == 'true') pageCondition.isCourseAdmin = true;
-                        if (condition.isStaff == 'true') pageCondition.isStaff = true;
-                        if (condition.isLecturer == 'true') pageCondition.isLecturer = true;
-                        if (condition.isLecturer == 'false' && condition.isCourseAdmin == 'false' && condition.isStaff == 'false') {
-                            pageCondition.isLecturer = pageCondition.isStaff = pageCondition.isCourseAdmin = false;
-                        };
-                    }
-                } else {
-                    pageCondition = condition
                 }
+                if (condition.type == 'isCourseAdmin') pageCondition.isCourseAdmin = true;
+                if (condition.type == 'isLecturer') pageCondition.isLecturer = true;
             }
+            console.log(pageCondition)
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -215,7 +205,6 @@ module.exports = app => {
     // app.post('/get_user_on_mobile', app.getUserOnMobile);
     app.post('/login_on_mobile', app.loginUserOnMobile);
     // app.post('/logout_on_mobile', app.logoutUserOnMobile);
-
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/user'));

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { getCourse, updateCourse } from '../redux';
-import { ajaxSelectAdmin } from 'modules/_default/fwUser/redux';
+import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class AdminManagerView extends React.Component {
@@ -122,7 +122,7 @@ class AdminManagerView extends React.Component {
                     <h3 className='tile-title'>Quản trị viên</h3>
                     {permission.write ?
                         <div style={{ display: 'flex' }}>
-                            <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectAdmin} style={{ width: '100%' }} />
+                            <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType('isCourseAdmin')} style={{ width: '100%' }} />
                             <div style={{ width: 'auto', paddingLeft: 8 }}>
                                 <button className='btn btn-success' type='button' onClick={this.addAdmin}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Quản trị viên
@@ -136,7 +136,7 @@ class AdminManagerView extends React.Component {
                     <h3 className='tile-title'>Cố vấn học tập</h3>
                     {permission.write ?
                         <div style={{ display: 'flex' }}>
-                            <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectAdmin} style={{ width: '100%' }} />
+                            <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
                             <div style={{ width: 'auto', paddingLeft: 8 }}>
                                 <button className='btn btn-success' type='button' onClick={this.addTeacher}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
