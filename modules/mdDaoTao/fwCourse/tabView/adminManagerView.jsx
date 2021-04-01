@@ -9,9 +9,11 @@ class AdminManagerView extends React.Component {
     state = {};
     componentDidMount() {
         this.props.getDivisionAll(list => {
-            this.divisionMapper = {};
-            (list || []).map(item => this.divisionMapper[item._id] = item);
+            const divisionMapper = {};
+            (list || []).map(item => divisionMapper[item._id] = item);
+            this.divisionMapper = divisionMapper;
         });
+
         $(document).ready(() => {
             this.selectAdmin.value(null);
             this.selectTeacher.value(null);
@@ -72,7 +74,7 @@ class AdminManagerView extends React.Component {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => {
-                let division = item.division ? this.divisionMapper[item.division] : null;
+                let division = this.divisionMapper && item.division ? this.divisionMapper[item.division] : null;
                 if (division == null) division = { title: '', isOutsite: false };
                 return (
                     <tr key={index}>
@@ -90,7 +92,7 @@ class AdminManagerView extends React.Component {
         });
 
         const tableTeacher = renderTable({
-            getDataSource: () => item.groups,
+            getDataSource: () => this.divisionMapper && item.groups,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
@@ -120,29 +122,27 @@ class AdminManagerView extends React.Component {
             <div className='tile-body row'>
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Quản trị viên</h3>
-                    {permission.write ?
-                        <div style={{ display: 'flex' }}>
-                            <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType('isCourseAdmin')} style={{ width: '100%' }} />
-                            <div style={{ width: 'auto', paddingLeft: 8 }}>
-                                <button className='btn btn-success' type='button' onClick={this.addAdmin}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Quản trị viên
-                                </button>
-                            </div>
-                        </div> : null}
+                    <div style={{ display: permission.write ? 'flex' : 'none' }}>
+                        <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType('isCourseAdmin')} style={{ width: '100%' }} />
+                        <div style={{ width: 'auto', paddingLeft: 8 }}>
+                            <button className='btn btn-success' type='button' onClick={this.addAdmin}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Quản trị viên
+                            </button>
+                        </div>
+                    </div>
                     {tableAdmin}
                 </div>
 
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Cố vấn học tập</h3>
-                    {permission.write ?
-                        <div style={{ display: 'flex' }}>
-                            <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
-                            <div style={{ width: 'auto', paddingLeft: 8 }}>
-                                <button className='btn btn-success' type='button' onClick={this.addTeacher}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
-                                </button>
-                            </div>
-                        </div> : null}
+                    <div style={{ display: permission.write ? 'flex' : 'none' }}>
+                        <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
+                        <div style={{ width: 'auto', paddingLeft: 8 }}>
+                            <button className='btn btn-success' type='button' onClick={this.addTeacher}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
+                            </button>
+                        </div>
+                    </div>
                     {tableTeacher}
                 </div>
             </div>);
