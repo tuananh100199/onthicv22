@@ -43,7 +43,7 @@ module.exports = app => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/division'));
 
-    const uploadDivision = (req, fields, files, params, done) => {
+    const uploadDivision = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('division:') && files.DivisionImage && files.DivisionImage.length > 0) {
             console.log('Hook: uploadDivision => division image upload');
             const _id = fields.userData[0].substring('division:'.length);
@@ -51,5 +51,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadDivision', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadDivision(req, fields, files, params, done), done, 'division:write'));
+        app.permission.has(req, () => uploadDivision(fields, files, done), done, 'division:write'));
 };

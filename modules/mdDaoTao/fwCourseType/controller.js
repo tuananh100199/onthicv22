@@ -55,7 +55,7 @@ module.exports = (app) => {
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/course-type'));
 
-    const uploadCourseType = (req, fields, files, params, done) => {
+    const uploadCourseType = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('course-type:') && files.CourseTypeImage && files.CourseTypeImage.length > 0) {
             console.log('Hook: uploadCourseType => course type image upload');
             const _id = fields.userData[0].substring('course-type:'.length);
@@ -63,5 +63,5 @@ module.exports = (app) => {
         }
     };
     app.uploadHooks.add('uploadCourseType', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadCourseType(req, fields, files, params, done), done, 'course-type:write'));
+        app.permission.has(req, () => uploadCourseType(fields, files, done), done, 'course-type:write'));
 };

@@ -225,7 +225,7 @@ module.exports = (app) => {
         app.permission.has(req, () => app.uploadCkEditorImage('news', fields, files, params, done), done, 'news:write');
     });
 
-    const uploadNewsAvatar = (req, fields, files, params, done) => {
+    const uploadNewsAvatar = (fields, files, done) => {
         if (
             fields.userData &&
             fields.userData[0].startsWith('news:') &&
@@ -238,10 +238,10 @@ module.exports = (app) => {
         }
     };
     app.uploadHooks.add('uploadNewsAvatar', (req, fields, files, params, done) => {
-        app.permission.has(req, () => uploadNewsAvatar(req, fields, files, params, done), done, 'news:write');
+        app.permission.has(req, () => uploadNewsAvatar(fields, files, done), done, 'news:write');
     });
 
-    const uploadNewsDraftAvatar = (req, fields, files, params, done) => {
+    const uploadNewsDraftAvatar = (fields, files, done) => {
         if (
             fields.userData &&
             fields.userData[0].startsWith('draftNews:') &&
@@ -254,6 +254,6 @@ module.exports = (app) => {
         }
     };
     app.uploadHooks.add('uploadNewsDraftAvatar', (req, fields, files, params, done) => {
-        app.permission.has(req, () => uploadNewsDraftAvatar(req, fields, files, params, done), done, 'news:draft');
+        app.permission.has(req, () => uploadNewsDraftAvatar(fields, files, done), done, 'news:draft');
     });
 };

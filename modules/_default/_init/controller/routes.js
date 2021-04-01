@@ -225,7 +225,7 @@ module.exports = (app) => {
 
 
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
-    const uploadSettingImage = (req, fields, files, params, done) => {
+    const uploadSettingImage = (fields, files, done) => {
         if (files.SettingImage && files.SettingImage.length > 0) {
             console.log('Hook: uploadSettingImage => ' + fields.userData);
             const srcPath = files.SettingImage[0].path;
@@ -305,6 +305,6 @@ module.exports = (app) => {
     };
 
     app.uploadHooks.add('uploadSettingImage', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadSettingImage(req, fields, files, params, done), done, 'system:settings')
+        app.permission.has(req, () => uploadSettingImage(fields, files, done), done, 'system:settings')
     );
 };

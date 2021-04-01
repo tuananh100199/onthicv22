@@ -81,7 +81,7 @@ module.exports = app => {
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
     app.createFolder(app.path.join(app.publicPath, '/img/statisticItem'));
 
-    const uploadStatisticItemImage = (req, fields, files, params, done) => {
+    const uploadStatisticItemImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('statisticItem:') && files.StatisticItemImage && files.StatisticItemImage.length > 0) {
             console.log('Hook: uploadStatisticItemImage => statistic image upload');
             const _id = fields.userData[0].substring('statisticItem:'.length);
@@ -89,5 +89,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadStatisticItemImage', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadStatisticItemImage(req, fields, files, params, done), done, 'component:write'));
+        app.permission.has(req, () => uploadStatisticItemImage(fields, files, done), done, 'component:write'));
 };

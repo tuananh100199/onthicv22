@@ -205,12 +205,18 @@ const T = {
         });
     },
 
-    createAjaxAdapter: (url, parseResponse) => ({
-        ajax: true,
-        url,
-        data: {},
-        processResults: response => ({ results: parseResponse(response) }),
-    }),
+    createAjaxAdapter: (url, parseData, parseResponse) => {
+        if (parseResponse == undefined) {
+            parseResponse = parseData;
+            parseData = {};
+        }
+        return ({
+            ajax: true,
+            url,
+            data: parseData,
+            processResults: response => ({ results: parseResponse(response) }),
+        });
+    },
 };
 
 T.socket = T.debug ? io({ transports: ['websocket'] }) : io.connect(T.rootUrl, { transports: ['websocket'], secure: true });

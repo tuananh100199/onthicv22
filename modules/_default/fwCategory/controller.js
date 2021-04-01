@@ -37,7 +37,7 @@ module.exports = app => {
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/category'));
 
-    const uploadCategoryImage = (req, fields, files, params, done) => {
+    const uploadCategoryImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('newsCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
             console.log('Hook: uploadCategoryImage => news');
             const _id = fields.userData[0].substring('newsCategoryImage:'.length);
@@ -50,5 +50,5 @@ module.exports = app => {
     };
 
     app.uploadHooks.add('uploadCategoryImage', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadCategoryImage(req, fields, files, params, done), done, 'category:write'));
+        app.permission.has(req, () => uploadCategoryImage(fields, files, done), done, 'category:write'));
 };

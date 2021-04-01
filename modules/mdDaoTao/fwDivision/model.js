@@ -7,7 +7,7 @@ module.exports = app => {
         email: String,
         image: String,
         mapURL: String,
-        isOutside: Boolean,
+        isOutside: Boolean,                     // Cơ sở đào tạo ngoài
         shortDescription: String,
         detailDescription: String
     });

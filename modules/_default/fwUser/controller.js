@@ -28,21 +28,11 @@ module.exports = app => {
                         { firstname: value },
                         { lastname: value },
                     ];
-                } else if (condition.isAll) {
-                    if (condition.isAll == 'true') {
-                        condition = {}
-                    } else {
-                        if (condition.isCourseAdmin == 'true') pageCondition.isCourseAdmin = true;
-                        if (condition.isStaff == 'true') pageCondition.isStaff = true;
-                        if (condition.isLecturer == 'true') pageCondition.isLecturer = true;
-                        if (condition.isLecturer == 'false' && condition.isCourseAdmin == 'false' && condition.isStaff == 'false') {
-                            pageCondition.isLecturer = pageCondition.isStaff = pageCondition.isCourseAdmin = false;
-                        };
-                    }
-                } else {
-                    pageCondition = condition
                 }
+                if (condition.type == 'isCourseAdmin') pageCondition.isCourseAdmin = true;
+                if (condition.type == 'isLecturer') pageCondition.isLecturer = true;
             }
+            console.log(pageCondition)
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -216,7 +206,6 @@ module.exports = app => {
     app.post('/login_on_mobile', app.loginUserOnMobile);
     // app.post('/logout_on_mobile', app.logoutUserOnMobile);
 
-
     // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/user'));
 
@@ -228,7 +217,7 @@ module.exports = app => {
         }
     });
 
-    const uploadUserAvatar = (req, fields, files, params, done) => {
+    const uploadUserAvatar = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('user:') && files.UserImage && files.UserImage.length > 0) {
             console.log('Hook: uploadUserAvatar => user avatar upload');
             const _id = fields.userData[0].substring('user:'.length);
@@ -236,5 +225,5 @@ module.exports = app => {
         }
     };
     app.uploadHooks.add('uploadUserAvatar', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadUserAvatar(req, fields, files, params, done), done, 'user:write'));
+        app.permission.has(req, () => uploadUserAvatar(fields, files, done), done, 'user:write'));
 };

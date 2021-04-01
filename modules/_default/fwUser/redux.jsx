@@ -187,17 +187,18 @@ export function switchUser(_id) {
     }
 }
 
-export const ajaxSelectUser = {
-    ajax: true,
-    url: `/api/user/page/1/20`,
-    data: params => ({ condition: params.term }),
-    processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
-    })
-};
+// export const ajaxSelectUser = {
+//     ajax: true,
+//     url: `/api/user/page/1/20`,
+//     data: params => ({ condition: params.term }),
+//     processResults: response => ({
+//         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
+//     })
+// };
 
-export const ajaxSelectAdmin = T.createAjaxAdapter(
+export const ajaxSelectUserType = (type) => T.createAjaxAdapter(
     `/api/user/page/1/20`,
+    params => ({ condition: { type, searchText: params.term } }),
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
 );
 

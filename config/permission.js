@@ -214,10 +214,22 @@ module.exports = app => {
                 // Add login permission => user.active == true => user:login
                 if (user.active) app.permissionHooks.pushUserPermission(user, 'user:login');
 
-                new Promise(resolve => { // Check user is student
-                    //TODO
-                    resolve();
-                }).then(() => {  // Build menu tree
+                new Promise(resolve => { // User is CourseAdmin
+                    if (user.isCourseAdmin) {
+                        app.permissionHooks.pushUserPermission(user, 'courseAdmin:login');
+                        app.permissionHooks.run('courseAdmin', user, null).then(() => resolve());
+                    }
+                }).then(() => new Promise(resolve => { // Check user is Staff
+                    if (user.isStaff) {
+                        app.permissionHooks.pushUserPermission(user, 'staff:login');
+                        app.permissionHooks.run('staff', user, null).then(() => resolve());
+                    }
+                })).then(() => new Promise(resolve => { // Check user is Lecturer
+                    if (user.isLecturer) {
+                        app.permissionHooks.pushUserPermission(user, 'lecturer:login');
+                        app.permissionHooks.run('lecturer', user, null).then(() => resolve());
+                    }
+                })).then(() => {  // Build menu tree
                     user.menu = app.permission.tree();
                     Object.keys(user.menu).forEach(parentMenuIndex => {
                         let flag = true;
@@ -255,13 +267,13 @@ module.exports = app => {
     };
 
     // Permission Hook -------------------------------------------------------------------------------------------------
-    const permissionHookContainer = { student: {}, staff: {} };
+    const permissionHookContainer = { courseAdmin: {}, staff: {}, lecturer: {} };
     app.permissionHooks = {
         add: (type, name, hook) => {
             if (permissionHookContainer[type]) {
                 permissionHookContainer[type][name] = hook;
             } else {
-                console.log('Invalid hook type!')
+                console.log(`Invalid hook type (${type})!`);
             }
         },
         remove: (type, name) => {
