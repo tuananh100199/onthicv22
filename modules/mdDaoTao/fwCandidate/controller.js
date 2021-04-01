@@ -24,7 +24,6 @@ module.exports = app => {
 
         app.model.candidate.getPage(pageNumber, pageSize, condition, (error, page) => {
             page.list = page.list.map(item => app.clone(item, { message: '' }));
-            console.log(page.list, 's')
             res.send({ error, page });
         });
     });
