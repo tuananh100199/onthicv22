@@ -165,7 +165,7 @@ export class FormTextBox extends React.Component {
         const onKeyPress = e => type != 'phone' || ((!/[0-9]/.test(e.key)) && e.preventDefault());
         return (
             <div className={'form-group ' + (className || '')}>
-                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
+                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{T.numberDisplay(this.state.value)}</b></> : ''}
                 <input ref={e => this.input = e} type={type} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} onKeyPress={onKeyPress} />
                 {smallText ? <small>{smallText}</small> : null}
@@ -229,6 +229,7 @@ export class FormEditor extends React.Component {
 }
 
 export class FormSelect extends React.Component {
+    state = { valueText: '' };
     componentDidMount() {
         $(this.input).select2();
         $(this.input).on('select2:select', e => this.props.onChange && this.props.onChange(e.params.data));
@@ -241,6 +242,9 @@ export class FormSelect extends React.Component {
                 options = { placeholder: label, tags: true, dropdownParent };
             if (this.props.multiple) {
                 value = value ? (Array.isArray(value) ? value : [value]) : [];
+                // this.setState({ valueText: value.join(', ') }); // TODO: readonly value
+            } else {
+                this.setState({ valueText: value && value.text ? value.text : value });
             }
 
             if (Array.isArray(data)) {
@@ -264,10 +268,12 @@ export class FormSelect extends React.Component {
         const { className = '', style = {}, label = '', multiple = false, readOnly = false } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
-                {label ? <label>{label}</label> : null}
-                <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
-                    {/* <optgroup label={'Lựa chọn ' + label} /> */}
-                </select>
+                {label ? <label>{label}{readOnly ? ':' : ''}</label> : null} {readOnly ? <b>{this.state.valueText}</b> : ''}
+                <div style={{ width: '100%', display: readOnly ? 'none' : 'block' }}>
+                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
+                        {/* <optgroup label={'Lựa chọn ' + label} /> */}
+                    </select>
+                </div>
             </div>
         )
     }
@@ -295,7 +301,7 @@ export class FormDatePicker extends React.Component {
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
-                <input ref={e => this.input = e} className='form-control' type='text' placeholder={label} readOnly={readOnly} />
+                <input ref={e => this.input = e} className='form-control' type='text' placeholder={label} style={{ display: readOnly ? 'none' : 'block' }} />
             </div>);
     }
 }

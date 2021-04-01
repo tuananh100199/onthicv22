@@ -20,11 +20,12 @@ class DebugModal extends AdminModal {
 }
 
 class AdminHeader extends React.Component {
-    state = { showContact: true };
+    state = { showContact: false };
 
     componentDidMount() {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        if (currentPermissions.contains('contact:read')) this.props.getUnreadContacts((_, error) => error && this.setState({ showContact: false }));
+        const showContact = currentPermissions.contains('contact:read');
+        if (showContact) this.props.getUnreadContacts((_, error) => error && this.setState({ showContact: true }));
 
         T.showSearchBox = () => this.searchBox && $(this.searchBox).parent().css('display', 'flex');
         T.hideSearchBox = () => this.searchBox && $(this.searchBox).parent().css('display', 'none');
@@ -80,6 +81,7 @@ class AdminHeader extends React.Component {
     }
 
     render() {
+        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const isDebug = this.props.system && this.props.system.isDebug,
             isAdmin = this.props.system && this.props.system.user && this.props.system.user.roles.some(role => role.name == 'admin');
 
@@ -96,7 +98,7 @@ class AdminHeader extends React.Component {
                         <input ref={e => this.searchBox = e} className='app-search__input' type='search' placeholder='Tìm kiếm' onKeyUp={e => e.keyCode == 13 && this.search(e)} />
                         <button className='app-search__button' onClick={this.search}><i className='fa fa-search' /></button>
                     </li>
-                    {this.state.showContact ? this.renderContact() : null}
+                    {this.state.showContact ? this.renderContact(currentPermissions) : null}
                     <li>
                         <Link className='app-nav__item' to='/user'>
                             <i className='fa fa-user fa-lg' />

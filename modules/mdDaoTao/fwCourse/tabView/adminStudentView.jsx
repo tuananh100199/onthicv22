@@ -12,7 +12,7 @@ class AdminStudentView extends React.Component {
 
         return (
             <div className='tile-body'>
-                Học viên
+                TODO: Học viên
             </div>);
     }
 }

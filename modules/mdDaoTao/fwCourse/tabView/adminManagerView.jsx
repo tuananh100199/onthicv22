@@ -68,14 +68,13 @@ class AdminManagerView extends React.Component {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }}>Họ và Tên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở ngoài</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    <th style={{ width: '60%' }}>Họ và Tên</th>
+                    <th style={{ width: '40%' }} nowrap='true'>Cơ sở đào tạo</th>
+                    {permission.write && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => {
-                let division = this.divisionMapper && item.division ? this.divisionMapper[item.division] : null;
-                if (division == null) division = { title: '', isOutsite: false };
+                let division = this.divisionMapper && item.division ? this.divisionMapper[item.division] : null,
+                    divisionText = division ? `${division.title} ${division.isOutside ? '(CS ngoài)' : ''}` : '';
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
@@ -83,10 +82,14 @@ class AdminManagerView extends React.Component {
                             <TableCell type='link' content={item.lastname + ' ' + item.firstname} url={item._id ? '/user/member?user=' + item._id : ''} /> :
                             <TableCell content={item.lastname + ' ' + item.firstname} />}
                         {permissionDivision.read ?
-                            <TableCell type='link' content={division.title} url={division._id ? '/user/division/' + division._id : ''} /> :
-                            <TableCell content={division.title} />}
-                        <TableCell content={division.isOutside ? 'X' : ''} style={{ textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeAdmin(e, index)} />
+                            <TableCell type='link' content={divisionText} url={division && division._id ? '/user/division/' + division._id : ''} /> :
+                            <TableCell content={divisionText} />}
+                        {permission.write ?
+                            <td>
+                                <div className='btn-group'>
+                                    <a className='btn btn-danger' href='#' onClick={e => this.removeAdmin(e, index)}><i className='fa fa-lg fa-trash' /></a>
+                                </div>
+                            </td> : null}
                     </tr>);
             },
         });
@@ -96,24 +99,27 @@ class AdminManagerView extends React.Component {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }}>Họ và Tên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở ngoài</th>
+                    <th style={{ width: '60%' }}>Họ và Tên</th>
+                    <th style={{ width: '40%' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => {
                 const teacher = item.teacher || { lastname: 'Không có thông tin!' };
-                let division = teacher.division ? this.divisionMapper[teacher.division] : null;
-                if (division == null) division = { title: '', isOutsite: false };
+                let division = teacher.division ? this.divisionMapper[teacher.division] : null,
+                    divisionText = division ? `${division.title} ${division.isOutside ? '(CS ngoài)' : ''}` : '';
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell content={teacher.lastname + ' ' + teacher.firstname} />
                         {permissionDivision.read ?
-                            <TableCell type='link' content={division.title} url={division._id ? '/user/division/' + division._id : ''} /> :
-                            <TableCell content={division.title} />}
-                        <TableCell content={division.isOutside ? 'X' : ''} style={{ textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeTeacher(e, index)} />
+                            <TableCell type='link' content={divisionText} url={division && division._id ? '/user/division/' + division._id : ''} /> :
+                            <TableCell content={divisionText} />}
+                        {permission.write ?
+                            <td>
+                                <div className='btn-group'>
+                                    <a className='btn btn-danger' href='#' onClick={e => this.removeTeacher(e, index)}><i className='fa fa-lg fa-trash' /></a>
+                                </div>
+                            </td> : null}
                     </tr>);
             },
         });
