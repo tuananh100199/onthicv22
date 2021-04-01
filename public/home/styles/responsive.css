@@ -53,18 +53,6 @@
 3. 1280px
 ************/
 
-@media only screen and (max-width: 1280px) {
-    .header_social li {
-        display: none;
-    }
-    .header_social .hotline {
-        display: none;
-    }
-    .main_nav ul li:not(:last-child) {
-        margin-right: 29px;
-    }
-}
-
 
 /************
 4. 1199px
