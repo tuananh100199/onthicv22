@@ -11,7 +11,7 @@ module.exports = app => {
         app.model.content.getAll((error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/content', app.permission.check('component:read'), (req, res) => {
+    app.get('/api/content', (req, res) => {
         app.model.content.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 

@@ -79,7 +79,9 @@ class CourseTypeEditPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('course-type'), readOnly = !permission.write,
+        const permissionSubject = this.getUserPermission('subject'),
+            permissionCourseType = this.getUserPermission('course-type'),
+            readOnly = !permissionCourseType.write,
             item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjects: [] },
             table = renderTable({
                 getDataSource: () => item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
@@ -87,13 +89,13 @@ class CourseTypeEditPage extends AdminPage {
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '100%' }}>Tên môn học</th>
-                        <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
+                        {readOnly ? null : <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
                     </tr>),
                 renderRow: (item, index) => (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
-                        <TableCell type='link' content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
-                        <TableCell type='buttons' content={index} permission={permission} onDelete={this.remove} />
+                        <TableCell type={permissionSubject.read ? 'link' : 'text'} content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
+                        {readOnly ? null : <TableCell type='buttons' content={index} permission={permissionCourseType} onDelete={this.remove} />}
                     </tr>),
             }),
             componentInfo = <>
@@ -114,7 +116,7 @@ class CourseTypeEditPage extends AdminPage {
             componentSubject = <>
                 {table}
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <CourseTypeModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateCourseType} item={item} />
+                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} update={this.props.updateCourseType} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
 

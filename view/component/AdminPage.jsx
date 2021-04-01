@@ -404,6 +404,8 @@ export class AdminPage extends React.Component {
         T.onSearch = null;
     }
 
+    getCurrentPermissions = () => this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+
     getUserPermission = (prefix, listPermissions = ['read', 'write', 'delete']) => {
         const permission = {},
             currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];

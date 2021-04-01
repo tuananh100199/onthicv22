@@ -32,7 +32,6 @@ module.exports = app => {
                 if (condition.type == 'isCourseAdmin') pageCondition.isCourseAdmin = true;
                 if (condition.type == 'isLecturer') pageCondition.isLecturer = true;
             }
-            console.log(pageCondition)
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });

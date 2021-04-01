@@ -13,7 +13,7 @@ module.exports = (app) => {
     );
 
     app.get('/user/course-type', app.permission.check('course-type:read'), app.templates.admin);
-    app.get('/user/course-type/:_id', app.permission.check('course-type:write'), app.templates.admin);
+    app.get('/user/course-type/:_id', app.permission.check('course-type:read'), app.templates.admin);
     app.get('/course-type/:_id', app.templates.home);
 
     // APIs ------------------------------------------------------------------------------------------------------------
@@ -51,6 +51,12 @@ module.exports = (app) => {
     app.get('/home/course-type/all', (req, res) => {
         app.model.courseType.getAll((error, list) => res.send({ error, list }));
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'courseType', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'course-type:read');
+        resolve();
+    }));
 
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/course-type'));
