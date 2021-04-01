@@ -26,6 +26,7 @@ module.exports = (app) => {
         giayKhamSucKhoe: { type: Boolean, default: false },                                         // Checkbox, đánh dấu có giấy khám sức khoẻ hay chưa có
         giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
+        division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khoá học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
@@ -40,23 +41,13 @@ module.exports = (app) => {
         modifiedDate: { type: Date, default: Date.now },                                            // Ngày cập nhật cuối cùng
     });
 
+    // Không được phép viết hàm getAll cho model student
     const model = app.db.model('Student', schema);
     app.model.student = {
         create: (data, done) => model.create(data, done),
 
-        get: (condition, done) => typeof condition == 'object' ?
-            model.findOne(condition, done) : model.findById(condition, done),
-
-        getAll: (condition, selector, done) => {
-            if (typeof condition == 'function') {
-                model.find({}).sort({ name: 1 }).exec(condition);
-            } else if (selector && typeof selector == 'function') {
-                done = selector;
-                typeof condition == 'object' ? model.find(condition).sort({ name: 1 }).exec(done) : model.find({}, condition).sort({ name: 1 }).exec(done);
-            } else if (done && typeof done == 'function') {
-                model.find(condition, selector).sort({ name: 1 }).exec(done);
-            }
-        },
+        get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
+            .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -65,10 +56,11 @@ module.exports = (app) => {
                 const result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ lastname: 1, firstname: 1 }).skip(skipNumber).limit(result.pageSize).populate('user').populate('courseType').populate('course').exec((error, list) => {
-                    result.list = list;
-                    done(error, result);
-                });
+                model.find(condition).sort({ modifiedDate: 1, lastname: 1, firstname: 1 }).skip(skipNumber).limit(result.pageSize)
+                    .populate('user', '-password').populate('division').populate('courseType').populate('course').exec((error, list) => {
+                        result.list = list;
+                        done(error, result);
+                    });
             }
         }),
 

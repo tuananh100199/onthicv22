@@ -5,7 +5,7 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
-
+//TODO: thêm cơ sở đào tạo
 class PreStudenModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -13,22 +13,22 @@ class PreStudenModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', courseType: {}, sex }
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' }
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
         this.itemSex.value(sex);
-        this.itemResidence.value(residence),
-            this.itemRegularResidence.value(regularResidence),
-            this.imageBox.setData(`student:${_id || 'new'}`);
-
+        this.itemResidence.value(residence);
         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
+        this.itemRegularResidence.value(regularResidence);
+        this.imageBox.setData(`student:${_id || 'new'}`);
 
         this.setState({ _id, image });
     }
 
+    //TODO: kiểm tra loại khoá học không được trống
     onSubmit = () => {
         const data = {
             firstname: this.itemFirstname.value(),
@@ -116,7 +116,7 @@ class PreStudentPage extends AdminPage {
     create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']);
+        const permission = this.getUserPermission('student', ['read', 'write', 'delete', 'import']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
             this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -124,19 +124,19 @@ class PreStudentPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '50%' }}>Họ và Tên</th>
-                    <th style={{ width: '30%' }}>Email</th>
-                    <th style={{ width: '20%' }}>Di động</th>
+                    <th style={{ width: '100%' }}>Họ và Tên</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên hệ</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} />
-                    <TableCell type='text' content={item.user && item.user.email} />
-                    <TableCell type='text' content={T.mobileDisplay(item.user && item.user.phoneNumber)} />
+                    <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
+                    <TableCell type='text' content={item.user ? <label>{item.user.email}<br />{T.mobileDisplay(item.user.phoneNumber)}</label> : ''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
@@ -149,7 +149,7 @@ class PreStudentPage extends AdminPage {
                 <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getStudentPage} />
                 <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createStudent} update={this.props.updateStudent} />
-                <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} />
+                {permission.import ? <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
             </>,
             onCreate: permission.write ? this.create : null,
         });

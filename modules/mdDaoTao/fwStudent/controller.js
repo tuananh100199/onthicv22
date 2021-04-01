@@ -2,27 +2,29 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4015: { title: 'Ứng viên', link: '/user/pre-student' },
+            4040: { title: 'Ứng viên', link: '/user/pre-student' },
         }
     };
     // const menu = {
     //     parentMenu: app.parentMenu.trainning,
     //     menus: {
-    //         4045: { title: 'Học viên', link: '/user/student' },
+    //         4041: { title: 'Học viên', link: '/user/student' },
     //     }
     // };
 
-    app.permission.add({ name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' });
+    app.permission.add(
+        { name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' },
+        { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
+    );
 
-    // app.get('/user/pre-student', app.permission.check('student:candidate'), app.templates.admin);
     app.get('/user/pre-student', app.permission.check('student:write'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('student:write'), app.templates.admin);
 
     // app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
     // app.get('/student/:_id', app.templates.home);
 
-    // APIs ------------------------------------------------------------------------------------------------------------
-    app.get('/api/student/page/:pageNumber/:pageSize', (req, res) => {
+    // Student APIs ---------------------------------------------------------------------------------------------------
+    app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
@@ -45,32 +47,75 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/student/all', (req, res) => {
-        app.model.student.getAll((error, list) => res.send({ error, list }));
-    });
-
     app.get('/api/student', app.permission.check('student:read'), (req, res) => {
         app.model.student.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/student', app.permission.check('student:write'), (req, res) => {
-        app.model.student.create(req.body.data, (error, item) => {
-            if (error || (item && item.image == null)) {
+    app.put('/api/student', app.permission.check('student:write'), (req, res) => {
+        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+
+    app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
+        app.model.student.delete(req.body._id, (error) => res.send({ error }));
+    });
+
+    // Pre-student APIs -----------------------------------------------------------------------------------------------
+    app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.condition || {},
+            pageCondition = { course: null };
+        try {
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition['$or'] = [
+                    { phoneNumber: value },
+                    { email: value },
+                    { firstname: value },
+                    { lastname: value },
+                ];
+            }
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
+    app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
+        let data = req.body.data;
+        delete data.course; // Không được gán khoá học cho pre-student
+        if (data.division == null) data.division = req.session.user.division;
+        app.model.student.create(data, (error, item) => {
+            if (error || item == null || item.image == null) {
                 res.send({ error, item });
             } else {
                 app.uploadImage('student', app.model.student.get, item._id, item.image, data => res.send(data));
             }
-        })
+        });
     });
 
-    app.put('/api/student', app.permission.check('student:write'), (req, res) => {
-        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+    app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
+        let { _id, changes } = req.body;
+        delete changes.course; // Không được gán khoá học cho pre-student
+        app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
     });
 
-    app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
-        app.model.student.delete(req.body._id, (error) => res.send({ error }))
+    app.delete('/api/pre-student', app.permission.check('pre-student:delete'), (req, res) => {
+        const { _id } = req.body;
+        app.model.student.get(_id, (error, student) => {
+            if (student) {
+                if (student.course) {
+                    res.send({ error: 'Bạn không được quyền xoá học viên!' });
+                } else {
+                    app.model.student.delete(_id, (error) => res.send({ error }));
+                }
+            } else {
+                res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không tồn tại!' });
+            }
+        });
     });
-    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+
+    // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
 
     const uploadSudent = (req, fields, files, params, done) => {
