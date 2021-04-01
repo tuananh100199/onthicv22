@@ -33,7 +33,8 @@ module.exports = app => {
     });
 
     app.get('/api/candidate/export', app.permission.check('candidate:export'), (req, res) => {
-        app.model.candidate.getAll((error, list) => {
+        const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } };
+        app.model.candidate.getAll(condition, (error, list) => {
             if (error) {
                 res.send({ error })
             } else {
@@ -77,53 +78,63 @@ module.exports = app => {
         })
     });
 
-
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
         const changes = req.body.changes;
         changes.staff = req.session.user;
-        if (changes.state == 'UngVien') {
-            app.model.candidate.get(req.body._id, (error, item) => {
-                if (error) {
-                    res.send({ error });
-                }
-                if (item.email) {
+        changes.modifiedDate = new Date();
+        app.model.candidate.update(req.body._id, changes, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else if (changes.state == 'UngVien') {
+                new Promise((resolve, reject) => { // Tạo user cho candidate
                     app.model.user.get({ email: item.email }, (error, user) => {
                         if (error) {
-                            res.send({ error: `Ops! có lỗi xảy ra!` });
-                        } else if (!user) {
+                            reject('Lỗi khi đọc thông tin người dùng!');
+                        } else if (user) { // Candidate đã là user
+                            resolve(user._id);
+                        } else { // Candidate chưa là user
                             const dataPassword = app.randomPassword(8),
-                                data = {
+                                newUser = {
                                     email: item.email,
                                     firstname: item.firstname,
                                     lastname: item.lastname,
                                     phoneNumber: item.phoneNumber,
                                     password: dataPassword
                                 };
-                            app.model.user.create(data, (error, user) => {
+                            app.model.user.create(newUser, (error, user) => {
                                 if (error) {
-                                    res.send({ error })
-                                }
-                                if (user) {
+                                    reject('Lỗi khi tạo người dùng!');
+                                } else { // Tạo user thành công. Gửi email & password đến người dùng!
+                                    resolve(user._id);
                                     app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                        const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                                            mailTitle = result.emailCreateMemberByAdminTitle,
-                                            mailText = result.emailCreateMemberByAdminText.replaceAll('{lastname}', user.firstname + ' ' + user.lastname)
+                                        const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                            fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
                                                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
                                                 .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                            mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url);
+                                            mailTitle = result.emailCreateMemberByAdminTitle,
+                                            mailText = fillParams(result.emailCreateMemberByAdminText),
+                                            mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
                                         app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                                     });
                                 }
                             });
                         }
                     });
-                }
-            })
-        }
-        if (changes.state) changes.modifiedDate = new Date();
-        app.model.candidate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+                }).then(_userId => { // Tạo student cho candidate
+                    item.user = _userId;
+                    item.save();
+                    const dataStudent = {
+                        user: _userId,
+                        firstname: item.firstname,
+                        lastname: item.lastname,
+                        courseType: item.courseType,
+                    };
+                    app.model.student.create(dataStudent, (error) => res.send({ error, item }));
+                }).catch(error => res.send({ error }));
+            } else {
+                res.send({ error, item });
+            }
+        });
     });
 
     app.delete('/api/candidate', app.permission.check('candidate:delete'), (req, res) => {

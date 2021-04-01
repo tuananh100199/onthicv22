@@ -33,7 +33,7 @@ module.exports = (app) => {
             youtube: '',
             twitter: '',
             instagram: '',
-            DKTVLink: '',
+            dangKyTuVanLink: '',
             email: app.email.from,
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
@@ -105,8 +105,8 @@ module.exports = (app) => {
             if (req.body.instagram != null || req.body.instagram == '') {
                 changes.instagram = req.body.instagram.trim();
             }
-            if (req.body.DKTVLink != null || req.body.DKTVLink == '') {
-                changes.DKTVLink = req.body.DKTVLink.trim();
+            if (req.body.dangKyTuVanLink != null || req.body.dangKyTuVanLink == '') {
+                changes.dangKyTuVanLink = req.body.dangKyTuVanLink.trim();
             }
             app.model.setting.set(changes, (error) => {
                 if (error) {

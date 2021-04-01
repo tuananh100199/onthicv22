@@ -2,7 +2,7 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4040: { title: 'Khóa học', link: '/user/course' },
+            4045: { title: 'Khóa học', link: '/user/course' },
         },
     };
     app.permission.add({ name: 'course:read', menu }, { name: 'course:write' }, { name: 'course:delete' }, { name: 'course:lock' });

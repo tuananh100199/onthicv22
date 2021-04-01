@@ -148,13 +148,18 @@ class HomeMenu extends React.Component {
                         </div>
                     </nav>
                     <div className='header_extra d-flex flex-row align-items-center justify-content-end ml-auto'>
-                        <div className='social header_social'>
+                        <div className='social'>
                             <ul className='d-flex flex-row align-items-center justify-content-start'>
                                 {user && user._id ?
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
                                         <div className='button button_1 mr-1 large_btn' > <a href={dangKyTuVanLink}>Đăng ký tư vấn</a></div>
-                                        <div className='btn-group m-auto pl-2'>
+
+                                        <div className='btn-group m-auto pl-2 small_btn' >
+                                            <li data-toggle='tooltip' title='Số điện thoại'><a href='#'><i className='fa fa-phone' style={{ color: '#4CA758' }}/></a></li>
+                                            <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={dangKyTuVanLink} ><i className="fa fa-envelope-o" style={{ color: 'red' }} aria-hidden="true"></i></a></li>
+                                        </div>
+                                        <div className='btn-group m-auto pl-2' >
                                             <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className="fa fa-user-circle-o" aria-hidden="true"></i></a></li>
                                             <li data-toggle='tooltip' title='Đăng xuất'><a href="#" onClick={this.logout} ><i className="fa fa-power-off" style={{ color: 'red' }} aria-hidden="true"></i></a></li>
                                         </div>

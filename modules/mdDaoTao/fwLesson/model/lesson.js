@@ -65,13 +65,6 @@ module.exports = app => {
             model.findOneAndUpdate({ _id }, { $pull: { videos: _lessonVideoId } }).populate('videos').exec(done);
         },
 
-        addQuestion: (_id, questions, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { questions } }, { new: true }).populate('questions').exec(done);
-        },
-        deleteQuestion: (_id, lessonQuestionId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { questions: lessonQuestionId } }).populate('questions').exec(done);
-        },
-
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

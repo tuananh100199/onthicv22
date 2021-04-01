@@ -861,3 +861,27 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     // width: calc((100% - 15px) / 2) !important;
     width: 100% !important;
 }
+
+@media only screen and (max-width: 991px) {
+    .social {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1280px) {
+    .social .large_btn {
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 1281px) {
+    .social .small_btn {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    .main_nav ul li:not(:last-child) {
+        margin-right: 29px;
+    }
+}
