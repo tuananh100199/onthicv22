@@ -90,7 +90,7 @@ class PreStudenModal extends AdminModal {
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='PreStudentImage' image={this.state.image} readOnly={readOnly}
                     onSuccess={this.onUploadSuccess} />
 
-                <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={this.state._id ? true : readOnly} />
+                <FormTextBox type='phone' ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={this.state._id ? true : readOnly} />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
