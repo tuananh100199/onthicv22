@@ -87,7 +87,7 @@ class AdminHeader extends React.Component {
 
         return <>
             <header className='app-header' >
-                <Link className='app-header__logo' to='/user'>Hiệp Phát</Link>
+                <a className='app-header__logo' href='/'>Hiệp Phát</a>
                 <a className='app-sidebar__toggle' href='#' data-toggle='sidebar' aria-label='Hide Sidebar' />
                 <ul className='app-nav'>
                     {isAdmin || isDebug ?
