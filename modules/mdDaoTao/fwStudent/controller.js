@@ -87,7 +87,6 @@ module.exports = (app) => {
 
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let data = req.body.student;
-        console.log('data', data);
         delete data.course; // Không được gán khoá học cho pre-student
         if (data.division == null) data.division = req.session.user.division;
         new Promise((resolve, reject) => { // Tạo user cho candidate
