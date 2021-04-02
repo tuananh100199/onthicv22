@@ -40,7 +40,7 @@ module.exports = (app) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
-
+    // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.post('/api/subject/lesson', app.permission.check('subject:write'), (req, res) => {
         const subjectId = req.body._subjectId,
             lessonId = req.body._subjectLessonId;
@@ -89,9 +89,15 @@ module.exports = (app) => {
         });
     });
 
-    // Question APIs --------------------------------------------------------------------------------------------------
+    // Hook readyHooks ------------------------------------------------------------------------------------------------
     app.readyHooks.add('createSubjectQuestionManager', {
         ready: () => app.model && app.model.subject && app.hookQuestion,
         run: () => app.hookQuestion('subject', app.model.subject),
     });
+
+    // Hook permissionHooks  ------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'subject:read');
+        resolve();
+    }));
 };

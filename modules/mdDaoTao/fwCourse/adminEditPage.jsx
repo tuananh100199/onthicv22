@@ -67,7 +67,8 @@ class EditCoursePage extends AdminPage {
     }
 
     render() {
-        const currentPermissions = this.getCurrentPermissions(),
+        const currentUser = this.props.system ? this.props.system.user : null,
+            currentPermissions = this.getCurrentPermissions(),
             permissionCourse = this.getUserPermission('course'),
             permissionUser = this.getUserPermission('user'),
             permissionDivision = this.getUserPermission('division'),
@@ -96,7 +97,7 @@ class EditCoursePage extends AdminPage {
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
-            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permissionCourse} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
+            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
             { title: 'Học viên', component: <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} /> },
         ];
 

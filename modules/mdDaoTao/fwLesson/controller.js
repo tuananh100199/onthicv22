@@ -114,11 +114,17 @@ module.exports = (app) => {
         });
     });
 
-    // Question APIs --------------------------------------------------------------------------------------------------
+    // Hook readyHooks  -----------------------------------------------------------------------------------------------
     app.readyHooks.add('createLessonQuestionManager', {
         ready: () => app.model && app.model.lesson && app.hookQuestion,
         run: () => app.hookQuestion('lesson', app.model.lesson),
     });
+
+    // Hook permissionHooks  ------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'lession', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'lesson:read');
+        resolve();
+    }));
 
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/lesson-video'));

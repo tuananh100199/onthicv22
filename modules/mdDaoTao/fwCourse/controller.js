@@ -14,21 +14,42 @@ module.exports = (app) => {
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.course.getPage(pageNumber, pageSize, {}, (error, page) => {
+            pageSize = parseInt(req.params.pageSize),
+            pageCondition = {};
+        if (req.session.user.division && req.session.user.division.isOutside) {
+            pageCondition.admins = req.session.user._id;
+            pageCondition.active = true;
+        }
+        app.model.course.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
         });
     });
 
     app.get('/api/course', app.permission.check('course:read'), (req, res) => {
-        app.model.course.get(req.query._id, (error, item) => res.send({ error, item }));
+        const { _id } = req.query;
+        app.model.course.get({ _id, admins: req.session.user._id }, (error, item) => {
+            if (item && req.session.user.division && req.session.user.division.isOutside) {
+                // Với user là isCourseAdmin thuộc cơ sở ngoài: ẩn đi các lecturer, student thuộc cơ sở của họ
+                app.model.division.getAll({ isOutside: true }, (error, divisions) => {
+                    const isOusideDivisions = [];
+                    (divisions || []).forEach(division => division.isOutside && isOusideDivisions.push(division._id.toString()));
+
+                    const groups = (item.groups || []).filter(group => group.teacher && group.teacher.division && isOusideDivisions.includes(group.teacher.division.toString()));
+                    res.send({ error, item: app.clone(item, { groups }) });
+                });
+            } else {
+                res.send({ error, item });
+            }
+        });
     });
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/course', app.permission.check('course:write'), (req, res) => {
+    //TODO: Với user là isCourseAdmin thuộc cơ sở ngoài: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
+    // req.session.user.division.isOutside
+    app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
         const changes = req.body.changes;
         if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
         if (changes && changes.groups && changes.groups === 'empty') changes.groups = [];
