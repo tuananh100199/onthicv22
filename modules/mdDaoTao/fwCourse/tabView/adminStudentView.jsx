@@ -4,11 +4,11 @@ import { getPreStudentAll } from 'modules/mdDaoTao/fwStudent/redux';
 import { FormTextBox } from 'view/component/AdminPage';
 
 //TODO: Tuấn Anh lấy courseType từ course hiện tại để truyền vào this.props.getPreStudentAll
+// xuất ra box mỗi box là 1 group, họ tên của teacher col-md-6
 class AdminStudentView extends React.Component {
     state = {};
     componentDidMount() {
-        this.props.getPreStudentAll({});
-        T.ready();
+        this.props.getPreStudentAll({courseType: this.props.courseType});
     }
 
     render() {
