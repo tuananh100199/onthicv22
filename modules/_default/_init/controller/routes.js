@@ -182,7 +182,7 @@ module.exports = (app) => {
                         if (pathname.length > 1 && pathname.endsWith('/'))
                             pathname = pathname.substring(0, pathname.length - 1);
                         if (!pathname) pathname = '/';
-                        const menu = (menus ? JSON.parse(menus) : app.state.menus)[pathname]; // TODO: const menu = JSON.parse(menus)[pathname];
+                        const menu = JSON.parse(menus)[pathname];
                         menu ? resolve(menu) : reject('Invalid link!');
                     } else {
                         reject('Invalid link!')

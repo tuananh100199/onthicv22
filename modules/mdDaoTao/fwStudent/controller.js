@@ -145,7 +145,7 @@ module.exports = (app) => {
         students.forEach(student => {
             student.division = division;
             delete student.course;
-            app.model.student.create(student)
+            app.model.student.create(student);
         });
         res.end();
     });
@@ -162,6 +162,8 @@ module.exports = (app) => {
             if (student) {
                 if (student.course) {
                     res.send({ error: 'Bạn không được quyền xoá học viên!' });
+                } else if (req.session.user.division && req.session.user.division.isOutside && student.user && req.session.user.division._id != student.user._id) {
+                    res.send({ error: 'Bạn không được quyền xoá học viên không thuộc cơ sở của bạn!' });
                 } else {
                     app.model.student.delete(_id, (error) => res.send({ error }));
                 }

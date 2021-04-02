@@ -29,8 +29,8 @@ module.exports = (app) => {
     app.get('/api/course', app.permission.check('course:read'), (req, res) => {
         const { _id } = req.query;
         app.model.course.get({ _id, admins: req.session.user._id }, (error, item) => {
-            if (item && req.session.user.division && req.session.user.division.isOutside) {
-                // Với user là isCourseAdmin thuộc cơ sở ngoài: ẩn đi các lecturer, student thuộc cơ sở của họ
+            if (item && req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) {
+                // Với user là isCourseAdmin + isOutside: ẩn đi các lecturer, student thuộc cơ sở của họ
                 app.model.division.getAll({ isOutside: true }, (error, divisions) => {
                     const isOusideDivisions = [];
                     (divisions || []).forEach(division => division.isOutside && isOusideDivisions.push(division._id.toString()));
@@ -48,13 +48,18 @@ module.exports = (app) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
-    //TODO: Với user là isCourseAdmin thuộc cơ sở ngoài: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
-    // req.session.user.division.isOutside
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
-        const changes = req.body.changes;
-        if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-        if (changes && changes.groups && changes.groups === 'empty') changes.groups = [];
-        if (changes && changes.admins && changes.admins === 'empty') changes.admins = [];
+        let changes = req.body.changes || {};
+        if (req.session.user && req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) {
+            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+            const groups = changes.groups == null || changes.groups === 'empty' ? [] : changes.groups;
+            //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
+            changes = { groups };
+        } else {
+            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+            if (changes.groups && changes.groups === 'empty') changes.groups = [];
+            if (changes.admins && changes.admins === 'empty') changes.admins = [];
+        }
         app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }))
     });
 
