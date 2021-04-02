@@ -40,7 +40,7 @@ class EditCoursePage extends AdminPage {
 
                         this.setState(data.item);
                     } else {
-                        // this.props.history.push(previousRoute);
+                        this.props.history.push(previousRoute);
                     }
                 });
             } else {
