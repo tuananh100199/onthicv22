@@ -173,19 +173,18 @@ module.exports = (app) => {
     });
 
     // Get All Student Have Course Null--------------------------------------------------------------------------------
-     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
-            condition = { course: null },
-            searchText = req.query.searchText;
-            if (searchText) {
-                const value = { $regex: `.*${searchText}.*`, $options: 'i' };
-                condition['$or'] = [
-                    { firstname: value },
-                    { lastname: value },
-                ];
-            }
-        app.model.student.getAll(condition, (error, list) => {
-            res.send({ error, list })
-        });
+    app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
+        const condition = { course: null },
+            { searchText, courseType } = req.query;
+        if (searchText) {
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            condition['$or'] = [
+                { firstname: value },
+                { lastname: value },
+                { email: value },
+            ];
+        }
+        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
 

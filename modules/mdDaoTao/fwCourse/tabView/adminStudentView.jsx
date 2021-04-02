@@ -1,30 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPreStudentAll } from '../../fwStudent/redux';
+import { getPreStudentAll } from 'modules/mdDaoTao/fwStudent/redux';
+import { FormTextBox } from 'view/component/AdminPage';
+
+//TODO: Tuấn Anh lấy courseType từ course hiện tại để truyền vào this.props.getPreStudentAll
 class AdminStudentView extends React.Component {
     state = {};
     componentDidMount() {
-        this.props.getPreStudentAll();
-        T.ready(() => T.showSearchBox());
-        T.onSearch = (searchText) => this.props.getPreStudentAll(searchText);
+        this.props.getPreStudentAll({});
+        T.ready();
     }
-
-    search = (e) => e.preventDefault() || T.onSearch && T.onSearch(this.searchBox.value);
 
     render() {
         const list = this.props.student && this.props.student.list ? this.props.student.list : [];
         return (
-            <div className='col-md-6 tile'>
-                <ul style={{ width: '100%', paddingLeft: 20, margin: 0, listStyle: 'none'}}>
-                    <form style={{ position: 'relative', border: '1px solid #ddd', marginRight: 6, marginBottom: 10 }} onSubmit={e => this.search(e)}>
-                        <input ref={e => this.searchBox = e} className='app-search__input' id='searchTextBox' type='search' placeholder='Tìm kiếm học viên' />
-                        <a href='#' style={{ position: 'absolute', top: 6, right: 9 }} onClick={e => this.search(e)}><i className='fa fa-search' /></a>
-                    </form>
-                    {list.map((item, index) => (
-                        <div key={index}>
-                            <li>{index + 1}. {item.lastname} {item.firstname}</li>
-                        </div>
-                    ))}
+            <div className='col-md-6' style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value })} />
+                <ul style={{ width: '100%', paddingLeft: 20, margin: 0, listStyle: 'decimal' }}>
+                    {list.map((item, index) => <li key={index}>{item.lastname} {item.firstname}</li>)}
                 </ul>
             </div>);
     }

@@ -10,7 +10,7 @@ export default function studentReducer(state = null, data) {
     switch (data.type) {
         case PreStudentGetAll:
             return Object.assign({}, state, { list: data.list });
-            
+
         case StudentGetPage:
             return Object.assign({}, state, { page: data.page });
 
@@ -183,14 +183,10 @@ export function importPreStudent(students, division, done) {
 }
 
 // Get All PreStudent ------------------------------------------------------------------------------------------
-export function getPreStudentAll(searchText, done) {
+export function getPreStudentAll(condition, done) {
     return dispatch => {
         const url = '/api/course/preStudent/all';
-        if (typeof searchText == 'function') {
-            done = searchText;
-            searchText = '';
-        }
-        T.get(url, { searchText }, data => {
+        T.get(url, condition, data => {
             if (data.error) {
                 T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
