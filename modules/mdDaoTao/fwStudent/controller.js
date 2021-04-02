@@ -89,13 +89,61 @@ module.exports = (app) => {
         let data = req.body.student;
         delete data.course; // Không được gán khoá học cho pre-student
         if (data.division == null) data.division = req.session.user.division;
-        app.model.student.create(data, (error, item) => {
-            if (error || item == null || item.image == null) {
-                res.send({ error, item });
-            } else {
-                app.uploadImage('student', app.model.student.get, item._id, item.image, data => res.send(data));
-            }
-        });
+        console.log('data', data)
+        new Promise((resolve, reject) => { // Tạo user cho pre
+            app.model.user.get({ email: data.email }, (error, user) => {
+                if (error) {
+                    console.log('sa')
+                    reject('Lỗi khi đọc thông tin người dùng!');
+                } else if (user) {
+                    console.log('safgfgfg')
+                    user.phoneNumber = data.phoneNumber;
+                    user.save(); // pre đã là user
+                    resolve(user._id);
+                } else { // pre chưa là user
+                    const dataPassword = app.randomPassword(8),
+                        newUser = {
+                            email: data.email,
+                            firstname: data.firstname,
+                            lastname: data.lastname,
+                            phoneNumber: data.phoneNumber,
+                            password: dataPassword
+                        };
+                    app.model.user.create(newUser, (error, user) => {
+                        if (error) {
+                            reject('Lỗi khi tạo người dùng!');
+                        } else { // Tạo user thành công. Gửi email & password đến người dùng!
+                            resolve(user._id);
+                            app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                    fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                        .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                        .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                    mailTitle = result.emailCreateMemberByAdminTitle,
+                                    mailText = fillParams(result.emailCreateMemberByAdminText),
+                                    mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                            });
+                        }
+                    });
+                }
+            });
+        }).then(_userId => { // Tạo student cho candidate
+            console.log('userid', _userId)
+            data.user = _userId;
+            delete data.email;
+            delete data.phoneNumber;
+            console.log('data', data)
+            // assign user field of prestudent by id of user
+            app.model.student.create(data, (error, item) => {
+                if (error || item == null || item.image == null) {
+                    console.log('error create')
+                    res.send({ error, item });
+                } else {
+                    app.uploadImage('student', app.model.student.get, item._id, item.image, data => res.send(data));
+                }
+            });
+        }).catch(error => res.send({ error }));
     });
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
@@ -106,7 +154,7 @@ module.exports = (app) => {
             delete student.course;
             app.model.student.create(student);
         });
-        res.end();
+        res.send();
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {

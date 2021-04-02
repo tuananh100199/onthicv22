@@ -19,7 +19,7 @@ class PreStudenModal extends AdminModal {
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
-        this.itemSex.value(sex);
+        // this.itemSex.value(sex == 'male' ? 'Nam' : 'Nữ');
         this.itemResidence.value(residence);
         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.division.value(division ? { id: division._id, text: division.title } : null);
@@ -36,13 +36,14 @@ class PreStudenModal extends AdminModal {
             birthday: this.itemBirthday.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            sex: this.itemSex.value(),
+            // sex: this.itemSex.value() == 'Nam' ? 'male' : 'female',
             residence: this.itemResidence.value(),
             regularResidence: this.itemRegularResidence.value(),
             image: this.state.image,
             division: this.division.value(),
             courseType: this.courseType.value(),
         };
+        console.log('image', data.image)
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
             this.itemLastname.focus();
@@ -55,7 +56,7 @@ class PreStudenModal extends AdminModal {
         } else if (data.email == '' || !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
-        } else if (data.courseType == '') {
+        } else if (!data.courseType) {
             T.notify('Loại khoá học không được trống!', 'danger');
             this.courseType.focus();
         } else {
@@ -89,13 +90,13 @@ class PreStudenModal extends AdminModal {
 
                 <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
-                <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
+                {/* <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} /> */}
 
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} />
 
-                <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
-                <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
+                <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
             </div>
         });
     }
