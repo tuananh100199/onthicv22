@@ -109,16 +109,57 @@ module.exports = (app) => {
             delete student.id;
             delete student.email
             app.model.student.create(student, (error, item) => {
-                if (error || item == null) {
+                if (error || item == null || item.image == null) {
                     res.send({ error, item });
+                } else {
+                    new Promise((resolve, reject) => { // Tạo user
+                        app.model.user.get({ email: item.email }, (error, user) => {
+                            if (error) {
+                                reject('Lỗi khi đọc thông tin người dùng!');
+                            } else if (user) { // Đã là user
+                                resolve(user._id);
+                            } else { // Chưa là user
+                                const dataPassword = app.randomPassword(8),
+                                    newUser = {
+                                        email: item.email,
+                                        firstname: item.firstname,
+                                        lastname: item.lastname,
+                                        phoneNumber: item.phoneNumber,
+                                        password: dataPassword
+                                    };
+                                app.model.user.create(newUser, (error, user) => {
+                                    if (error) {
+                                        reject('Lỗi khi tạo người dùng!');
+                                    } else { // Tạo user thành công. Gửi email & password đến người dùng!
+                                        resolve(user._id);
+                                        app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                            const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                                fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                                    .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                    .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                                mailTitle = result.emailCreateMemberByAdminTitle,
+                                                mailText = fillParams(result.emailCreateMemberByAdminText),
+                                                mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                            app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }).then(_userId => { // Tạo student cho candidate
+                        item.user = _userId;
+                        item.save();
+                        const dataStudent = {
+                            user: _userId,
+                            firstname: item.firstname,
+                            lastname: item.lastname,
+                            courseType: item.courseType,
+                        };
+                        app.model.student.create(dataStudent, (error) => res.send({ error, item }));
+                    }).catch(error => res.send({ error }));
                 }
             })
         });
-        res.send({ item })
-        // .map((student, index) => {
-        //     
-        // })
-        // res.send({ item })
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
