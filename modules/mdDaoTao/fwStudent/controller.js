@@ -86,7 +86,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
-        let data = req.body.data;
+        let data = req.body.student;
         delete data.course; // Không được gán khoá học cho pre-student
         if (data.division == null) data.division = req.session.user.division;
         app.model.student.create(data, (error, item) => {
@@ -106,19 +106,10 @@ module.exports = (app) => {
         students.forEach(student => {
             student.division = division;
             delete student.course;
-            delete student.id;
-            delete student.email
-            app.model.student.create(student, (error, item) => {
-                if (error || item == null) {
-                    res.send({ error, item });
-                }
-            })
+            delete student;
+            app.model.student.create(student)
         });
-        res.send({ item })
-        // .map((student, index) => {
-        //     
-        // })
-        // res.send({ item })
+        res.end();
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
