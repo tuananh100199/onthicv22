@@ -1,22 +1,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourse } from '../redux';
-import { AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
-
+import { getPreStudentAll } from '../redux';
 class AdminStudentView extends React.Component {
     state = {};
+    componentDidMount() {
+        this.props.getPreStudentAll();
+    }
 
     render() {
-        const permission = this.props.permission || {},
-            item = this.props.course && this.props.course.item ? this.props.course.item : { groups: [] };
+        const list = this.props.course && this.props.course.list ? this.props.course.list : [];
 
         return (
-            <div className='tile-body'>
-                TODO: Học viên
+            <div>
+                <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                {list.map((item, index) => (
+                    <div key={index}>
+                        <li>{index + 1} {item.lastname} {item.firstname}</li>
+                    </div>
+                ))}
+                </ul>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourse, updateCourse };
+const mapActionsToProps = { getPreStudentAll };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);

@@ -1,4 +1,3 @@
-//lấy all student có course = null
 module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
@@ -86,5 +85,15 @@ module.exports = (app) => {
         app.model.course.get({ _id: req.params.courseId, active: true }, (error, item) => res.send({ error, item }));
     });
 
-    // Get All Student có Course null  --------------------------------------------------------------------------------
+    // Get All Student Have Course Null--------------------------------------------------------------------------------
+    app.get('/api/course/preStudent/all', (req, res) => {
+        const condition = {course : null},
+            searchText = req.query.searchText;
+        if (searchText) {
+            condition.title = new RegExp(searchText, 'i');
+        }
+        app.model.student.getAll(condition, (error, list) => {
+            res.send({ error, list })
+    });
+    });
 };
