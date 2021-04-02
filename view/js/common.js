@@ -128,7 +128,7 @@ const T = {
 
     dateToText: (date, format) => dateformat(date, format ? format : 'dd/mm/yyyy HH:MM:ss'),
     numberDisplay: number => number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
-    mobileDisplay: mobile => mobile ? mobile.toString().replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3') : '',
+    mobileDisplay: mobile => mobile ? (mobile.length == 10 ? mobile.toString().replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3') : mobile.toString().replace(/(\d{3})(\d{4})(\d{4})/, '($1) $2 $3')) : '',
 
     // Libraries ----------------------------------------------------------------------------------
     routeMatcher: routeMatcherLib.routeMatcher,
