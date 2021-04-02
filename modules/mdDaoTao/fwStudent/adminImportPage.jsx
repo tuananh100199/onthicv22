@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { AdminPage, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import { importPreStudent } from './redux';
-
+import { Link } from 'react-router-dom';
+import { AdminPage, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 
 class EditModal extends AdminModal {
     state = {};
@@ -143,6 +143,7 @@ class EditModal extends AdminModal {
             </div>),
     });
 }
+
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
     state = {};
@@ -160,12 +161,13 @@ class ImportPage extends AdminPage {
             )
         }))
     }
-    delete = (e, item) =>
-        e.preventDefault() || T.confirm('Xóa thông tin ứng viên', `Bạn có chắc bạn muốn xóa thông tin ứng viên <strong>${item.firstname + ' ' + item.lastname}</strong>?`, true, isConfirm =>
-            isConfirm && this.setState(prevState => ({
-                data: prevState.data.filter(data => data.id !== item.id)
-            }))
-        );
+
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa thông tin ứng viên', `Bạn có chắc bạn muốn xóa thông tin ứng viên <strong>${item.firstname + ' ' + item.lastname}</strong>?`, true, isConfirm =>
+        isConfirm && this.setState(prevState => ({
+            data: prevState.data.filter(data => data.id !== item.id)
+        }))
+    );
+
     save = () => {
         if (!this.itemDivision.value()) {
             T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
@@ -180,6 +182,7 @@ class ImportPage extends AdminPage {
             })
         }
     }
+
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']),
             readOnly = !permission.write;
@@ -230,6 +233,7 @@ class ImportPage extends AdminPage {
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.showEditModal} onDelete={this.delete} />
                 </tr>),
         });
+
         const filebox = (
             <div className='tile'>
                 <h3 className='tile-title'>Upload danh sách ứng viên</h3>
@@ -254,8 +258,8 @@ class ImportPage extends AdminPage {
         );
         return this.renderPage({
             icon: 'fa fa-graduation-cap',
-            title: 'Ứng viên: ',
-            breadcrumb: ['Ứng viên'],
+            title: 'Nhập ứng viên bằng Excel',
+            breadcrumb: [<Link to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
                 {filebox}
                 {this.state.data && this.state.data.length ? list : null}
