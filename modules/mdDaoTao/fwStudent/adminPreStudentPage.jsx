@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
@@ -42,6 +43,7 @@ class PreStudenModal extends AdminModal {
             image: this.state.image,
             division: this.division.value(),
             courseType: this.courseType.value(),
+            division: this.itemDivision.value(),
         };
         console.log('image', data.image)
         if (data.lastname == '') {
@@ -92,8 +94,8 @@ class PreStudenModal extends AdminModal {
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
                 {/* <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} /> */}
 
-                <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} />
-                <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
+                <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
 
                 <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />

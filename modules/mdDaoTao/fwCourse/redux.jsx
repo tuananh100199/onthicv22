@@ -4,9 +4,13 @@ import T from 'view/js/common';
 const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetPageByUser = 'CourseGetPageByUser';
+const PreStudentGetAll = 'PreStudentGetAll';
 
 export default function courseReducer(state = null, data) {
     switch (data.type) {
+        case PreStudentGetAll:
+            return Object.assign({}, state, { list: data.list });
+
         case CourseGetPage:
             return Object.assign({}, state, { page: data.page });
 
@@ -164,5 +168,24 @@ export function getCourseFeed(done) {
                 done && done(data.page.list);
             }
         }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    }
+}
+// Get All PreStudent ------------------------------------------------------------------------------------------
+export function getPreStudentAll(searchText, done) {
+    return dispatch => {
+        const url = '/api/course/preStudent/all';
+        if (typeof searchText == 'function') {
+            done = searchText;
+            searchText = '';
+        }
+        T.get(url, { searchText }, data => {
+            if (data.error) {
+                T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data.list);
+                dispatch({ type: PreStudentGetAll, list: data.list });
+            }
+        }, error => T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
     }
 }
