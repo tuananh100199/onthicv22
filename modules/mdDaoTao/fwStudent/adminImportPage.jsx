@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AdminPage, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
-import { Link } from 'react-router-dom';
+import { importPreStudent } from './redux';
+
 
 class EditModal extends AdminModal {
     state = {};
@@ -25,11 +26,11 @@ class EditModal extends AdminModal {
             identityCard,
             identityIssuedBy,
             identityDate,
-            licenseNumber,
-            licenseDate,
-            licenseIssuedBy,
-            giaykhamsuckhoe,
-            cogiaykhamsuckhoe } = item ||
+            giayPhepLaiXe2BanhSo,
+            giayPhepLaiXe2BanhNgay,
+            giayPhepLaiXe2BanhNoiCap,
+            giayKhamSucKhoe,
+            giayKhamSucKhoeNgayKham } = item ||
             {
                 firstname: '',
                 lastname: '',
@@ -44,11 +45,11 @@ class EditModal extends AdminModal {
                 identityCard: '',
                 identityIssuedBy: '',
                 identityDate: '',
-                licenseNumber: '',
-                licenseDate: '',
-                licenseIssuedBy: '',
-                giaykhamsuckhoe: '',
-                cogiaykhamsuckhoe: ''
+                giayPhepLaiXe2BanhSo: '',
+                giayPhepLaiXe2BanhNgay: '',
+                giayPhepLaiXe2BanhNoiCap: '',
+                giayKhamSucKhoe: '',
+                giayKhamSucKhoeNgayKham: ''
             };
         this.setState({ num: id })
         this.itemFirstname.value(firstname);
@@ -64,11 +65,11 @@ class EditModal extends AdminModal {
         this.itemIdentityCard.value(identityCard);
         this.itemIdentityIssuedBy.value(identityIssuedBy);
         this.itemIdentityDate.value(identityDate);
-        this.itemLincenseNumber.value(licenseNumber);
-        this.itemLincenseDate.value(licenseDate);
-        this.itemLincenseIssuedBy.value(licenseIssuedBy);
-        this.itemGiayKhamSucKhoe.value(giaykhamsuckhoe);
-        this.itemCoGiayKhamSucKhoe.value(cogiaykhamsuckhoe);
+        this.itemLincenseNumber.value(giayPhepLaiXe2BanhSo);
+        this.itemLincenseDate.value(giayPhepLaiXe2BanhNgay);
+        this.itemLincenseIssuedBy.value(giayPhepLaiXe2BanhNoiCap);
+        this.itemgiayKhamSucKhoe.value(giayKhamSucKhoe);
+        this.itemgiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham);
     }
 
     onSubmit = () => {
@@ -87,11 +88,11 @@ class EditModal extends AdminModal {
             identityCard: this.itemIdentityCard.value(),
             identityIssuedBy: this.itemIdentityIssuedBy.value(),
             identityDate: this.itemIdentityDate.value(),
-            licenseNumber: this.itemLincenseNumber.value(),
-            licenseDate: this.itemLincenseDate.value(),
-            licenseIssuedBy: this.itemLincenseIssuedBy.value(),
-            giaykhamsuckhoe: this.itemGiayKhamSucKhoe.value(),
-            cogiaykhamsuckhoe: this.itemCoGiayKhamSucKhoe.value(),
+            giayPhepLaiXe2BanhSo: this.itemLincenseNumber.value(),
+            giayPhepLaiXe2BanhNgay: this.itemLincenseDate.value(),
+            giayPhepLaiXe2BanhNoiCap: this.itemLincenseIssuedBy.value(),
+            giayKhamSucKhoe: this.itemgiayKhamSucKhoe.value(),
+            giayKhamSucKhoeNgayKham: this.itemgiayKhamSucKhoeNgayKham.value(),
         };
         if (data.firstname == '') {
             T.notify('Tên ứng viên bị trống!', 'danger');
@@ -136,8 +137,8 @@ class EditModal extends AdminModal {
                     <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
                     <FormTextBox ref={e => this.itemLincenseDate = e} label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
                     <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemGiayKhamSucKhoe = e} label='Đã có giấy phép lái xe' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemCoGiayKhamSucKhoe = e} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemgiayKhamSucKhoe = e} label='Đã có giấy phép lái xe' readOnly={this.props.readOnly} />
+                    <FormTextBox ref={e => this.itemgiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
                 </div>
             </div>),
     });
@@ -166,7 +167,7 @@ class ImportPage extends AdminPage {
             }))
         );
     save = () => {
-        console.log(this.itemDivision.value())
+        this.props.importPreStudent(this.state.data, this.itemDivision.value())
     }
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']),
@@ -210,11 +211,11 @@ class ImportPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityIssuedBy} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityDate} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.licenseNumber} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.licenseDate} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.licenseIssuedBy} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giaykhamsuckhoe} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.cogiaykhamsuckhoe} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhSo} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNgay} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNoiCap} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayKhamSucKhoe} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayKhamSucKhoeNgayKham} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.showEditModal} onDelete={this.delete} />
                 </tr>),
         });
@@ -223,10 +224,7 @@ class ImportPage extends AdminPage {
                 <h3 className='tile-title'>Upload danh sách ứng viên</h3>
                 <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                {/* <Link to={'./public/download/Candidate.xlsx'}>
-                    Nhấn vào đây để tải xuống file mẫu
-                </Link> */}
-                <a href='/download/Candidate.xlsx'>Nhấn vào đây để tải xuống file mẫu</a>
+                <a href='/download/Candidate.xlsx' style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
             </div>
         );
         const list = (
@@ -256,4 +254,5 @@ class ImportPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-export default connect(mapStateToProps)(ImportPage);
+const mapActionsToProps = { importPreStudent }
+export default connect(mapStateToProps, mapActionsToProps)(ImportPage);

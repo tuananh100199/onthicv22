@@ -161,3 +161,18 @@ export function deletePreStudent(_id) {
         }, error => T.notify('Xóa học viên bị lỗi!', 'danger'));
     }
 }
+
+export function importPreStudent(students, division, done) {
+    return dispatch => {
+        const url = '/api/pre-student/import';
+        T.post(url, { students, division }, data => {
+            if (data.error) {
+                T.notify('Tạo học viên bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                dispatch(getPreStudentPage());
+                done && done(data);
+            }
+        }, error => T.notify('Tạo học viên bị lỗi!', 'danger'));
+    }
+}

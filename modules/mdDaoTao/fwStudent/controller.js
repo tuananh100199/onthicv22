@@ -98,6 +98,29 @@ module.exports = (app) => {
         });
     });
 
+
+
+    app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
+        let students = req.body.students,
+            division = req.body.division;
+        students.forEach(student => {
+            student.division = division;
+            delete student.course;
+            delete student.id;
+            delete student.email
+            app.model.student.create(student, (error, item) => {
+                if (error || item == null) {
+                    res.send({ error, item });
+                }
+            })
+        });
+        res.send({ item })
+        // .map((student, index) => {
+        //     
+        // })
+        // res.send({ item })
+    });
+
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let { _id, changes } = req.body;
         delete changes.course; // Không được gán khoá học cho pre-student
@@ -147,11 +170,11 @@ module.exports = (app) => {
                                 identityCard: values[12],
                                 identityIssuedBy: values[13],
                                 identityDate: values[14],
-                                licenseNumber: values[15],
-                                licenseDate: values[16],
-                                licenseIssuedBy: values[17],
-                                giaykhamsuckhoe: values[18],//Đổi tên
-                                cogiaykhamsuckhoe: values[19],
+                                giayPhepLaiXe2BanhSo: values[15],
+                                giayPhepLaiXe2BanhNgay: values[16],
+                                giayPhepLaiXe2BanhNoiCap: values[17],
+                                giayKhamSucKhoe: values[18],//Đổi tên
+                                giayKhamSucKhoeNgayKham: values[19],
                             });
                             handleUpload(index + 1);
                         }
