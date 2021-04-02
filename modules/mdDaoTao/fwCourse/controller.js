@@ -1,3 +1,4 @@
+//lấy all student có course = null
 module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
@@ -79,4 +80,6 @@ module.exports = (app) => {
     app.get('/course/item/id/:courseId', (req, res) => {
         app.model.course.get({ _id: req.params.courseId, active: true }, (error, item) => res.send({ error, item }));
     });
+
+    // Get All Student có Course null  --------------------------------------------------------------------------------
 };
