@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
@@ -20,12 +19,12 @@ class PreStudenModal extends AdminModal {
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
-        // this.itemSex.value(sex == 'male' ? 'Nam' : 'Nữ');
+        this.itemSex.value(sex == 'male' ? { id: 'male', text: 'Nam' } : { id: 'female', text: 'Nữ' });
         this.itemResidence.value(residence);
-        this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
-        this.division.value(division ? { id: division._id, text: division.title } : null);
+        this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
+        this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemRegularResidence.value(regularResidence);
-        this.imageBox.setData(`student:${_id || 'new'}`);
+        this.imageBox.setData(`pre-student:${_id || 'new'}`);
 
         this.setState({ _id, image });
     }
@@ -37,15 +36,13 @@ class PreStudenModal extends AdminModal {
             birthday: this.itemBirthday.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            // sex: this.itemSex.value() == 'Nam' ? 'male' : 'female',
+            sex: !this.itemSex.value() ? 'male' : this.itemSex.value(),
             residence: this.itemResidence.value(),
             regularResidence: this.itemRegularResidence.value(),
             image: this.state.image,
-            division: this.division.value(),
-            courseType: this.courseType.value(),
+            courseType: this.itemCourseType.value(),
             division: this.itemDivision.value(),
         };
-        console.log('image', data.image)
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
             this.itemLastname.focus();
@@ -60,7 +57,10 @@ class PreStudenModal extends AdminModal {
             this.itemEmail.focus();
         } else if (!data.courseType) {
             T.notify('Loại khoá học không được trống!', 'danger');
-            this.courseType.focus();
+            this.itemCourseType.focus();
+        } else if (!data.division) {
+            T.notify('Cơ sở đào tạo không được trống!', 'danger');
+            this.itemDivision.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
@@ -87,18 +87,17 @@ class PreStudenModal extends AdminModal {
                     </div>
                     <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
                 </div>
-                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='StudentImage' image={this.state.image} readOnly={readOnly}
+                <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='PreStudentImage' image={this.state.image} readOnly={readOnly}
                     onSuccess={this.onUploadSuccess} />
 
                 <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
-                {/* <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} /> */}
+                <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
 
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
-
-                <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
             </div>
         });
     }

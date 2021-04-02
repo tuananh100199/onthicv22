@@ -5,12 +5,6 @@ module.exports = (app) => {
             4040: { title: 'Ứng viên', link: '/user/pre-student' },
         }
     };
-    // const menu = {
-    //     parentMenu: app.parentMenu.trainning,
-    //     menus: {
-    //         4041: { title: 'Học viên', link: '/user/student' },
-    //     }
-    // };
 
     app.permission.add(
         { name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' },
@@ -19,9 +13,6 @@ module.exports = (app) => {
 
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
-
-    // app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
-    // app.get('/student/:_id', app.templates.home);
 
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
@@ -88,17 +79,12 @@ module.exports = (app) => {
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let data = req.body.student;
         delete data.course; // Không được gán khoá học cho pre-student
-        if (data.division == null) data.division = req.session.user.division;
-        console.log('data', data)
+        // if (data.division == null) data.division = req.session.user.division;
         new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ email: data.email }, (error, user) => {
                 if (error) {
-                    console.log('sa')
                     reject('Lỗi khi đọc thông tin người dùng!');
                 } else if (user) {
-                    console.log('safgfgfg')
-                    user.phoneNumber = data.phoneNumber;
-                    user.save(); // pre đã là user
                     resolve(user._id);
                 } else { // pre chưa là user
                     const dataPassword = app.randomPassword(8),
@@ -129,18 +115,16 @@ module.exports = (app) => {
                 }
             });
         }).then(_userId => { // Tạo student cho candidate
-            console.log('userid', _userId)
-            data.user = _userId;
+            data.user = _userId;   // assign id of user to user field of prestudent
             delete data.email;
             delete data.phoneNumber;
-            console.log('data', data)
-            // assign user field of prestudent by id of user
             app.model.student.create(data, (error, item) => {
                 if (error || item == null || item.image == null) {
-                    console.log('error create')
                     res.send({ error, item });
                 } else {
-                    app.uploadImage('student', app.model.student.get, item._id, item.image, data => res.send(data));
+                    app.uploadImage('pre-student', app.model.student.get, item._id, item.image, data => {
+                        res.send(data)
+                    });
                 }
             });
         }).catch(error => res.send({ error }));
@@ -191,6 +175,7 @@ module.exports = (app) => {
 
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
+    app.createFolder(app.path.join(app.publicPath, '/img/pre-student'));
 
     const uploadStudentImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
@@ -201,6 +186,16 @@ module.exports = (app) => {
     };
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
+
+    const uploadPreStudentImage = (fields, files, done) => {
+        if (fields.userData && fields.userData[0].startsWith('pre-student:') && files.PreStudentImage && files.PreStudentImage.length > 0) {
+            console.log('Hook: uploadPreStudent => pre-student image upload');
+            const _id = fields.userData[0].substring('pre-student:'.length);
+            app.uploadImage('pre-student', app.model.student.get, _id, files.PreStudentImage[0].path, done);
+        }
+    };
+    app.uploadHooks.add('uploadPreStudentImage', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadPreStudentImage(fields, files, done), done, 'pre-student:write'));
 
     // Hook upload pre-students ---------------------------------------------------------------------------------------
     const uploadPreStudentExcelFile = (fields, files, done) => {
