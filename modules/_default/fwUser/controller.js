@@ -22,7 +22,6 @@ module.exports = app => {
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition['$or'] = [
-                        { facebook: value },
                         { phoneNumber: value },
                         { email: value },
                         { firstname: value },
@@ -32,6 +31,7 @@ module.exports = app => {
                 if (condition.type == 'isCourseAdmin') pageCondition.isCourseAdmin = true;
                 if (condition.type == 'isLecturer') pageCondition.isLecturer = true;
             }
+            if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
