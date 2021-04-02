@@ -14,6 +14,7 @@ class PreStudenModal extends AdminModal {
 
     onShow = (item) => {
         const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' }
+        console.log(item, user)
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemBirthday.value(birthday);

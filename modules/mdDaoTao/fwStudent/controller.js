@@ -98,8 +98,6 @@ module.exports = (app) => {
         });
     });
 
-
-
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
         let students = req.body.students,
             division = req.body.division;
@@ -132,60 +130,19 @@ module.exports = (app) => {
         });
     });
 
-    app.uploadHooks.add('uploadExcelFile', (req, fields, files, params, done) => {
-        if (files.CandidateFile && files.CandidateFile.length > 0) {
-            console.log('Hook: uploadExcelFile => your excel file upload');
-            const srcPath = files.CandidateFile[0].path;
-            app.excel.readFile(srcPath, workbook => {
-                app.deleteFile(srcPath);
-                if (workbook) {
-                    const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
-                    const handleUpload = (index = 2) => {
-                        const values = worksheet.getRow(index).values;
-                        if (values.length == 0 || index == totalRow + 1) {
-                            done({ data });
-                        } else {
-                            data.push({
-                                id: index - 1,
-                                firstname: values[2],
-                                lastname: values[3],
-                                email: values[4],
-                                phoneNumber: values[5],
-                                courseType: values[6],
-                                sex: values[7],
-                                birthday: values[8],
-                                nationality: values[9],
-                                residence: values[10],
-                                regularResidence: values[11],
-                                identityCard: values[12],
-                                identityIssuedBy: values[13],
-                                identityDate: values[14],
-                                giayPhepLaiXe2BanhSo: values[15],
-                                giayPhepLaiXe2BanhNgay: values[16],
-                                giayPhepLaiXe2BanhNoiCap: values[17],
-                                giayKhamSucKhoe: values[18],//Đổi tên
-                                giayKhamSucKhoeNgayKham: values[19],
-                            });
-                            handleUpload(index + 1);
-                        }
-                    };
-                    handleUpload();
-                } else {
-                    done({ error: 'Error' });
-                }
-            });
-        }
-    });
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete', 'pre-student:import');
+        app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
+
+        // Quản lý khoá học nội bộ (isOutSide=true) thì được import danh sách ứng viên bằng file Excel
+        if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'pre-student:import');
         resolve();
     }));
 
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
 
-    const uploadStudent = (fields, files, done) => {
+    const uploadStudentImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
             console.log('Hook: uploadStudent => student image upload');
             const _id = fields.userData[0].substring('student:'.length);
@@ -193,5 +150,54 @@ module.exports = (app) => {
         }
     };
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
-        app.permission.has(req, () => uploadStudent(fields, files, done), done, 'student:write'));
+        app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
+
+    // Hook upload pre-students ---------------------------------------------------------------------------------------
+    const uploadPreStudentExcelFile = (fields, files, done) => {
+        const srcPath = files.CandidateFile[0].path;
+        app.excel.readFile(srcPath, workbook => {
+            app.deleteFile(srcPath);
+            if (workbook) {
+                const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                const handleUpload = (index = 2) => {
+                    const values = worksheet.getRow(index).values;
+                    if (values.length == 0 || index == totalRow + 1) {
+                        done({ data });
+                    } else {
+                        data.push({
+                            id: index - 1,
+                            firstname: values[2],
+                            lastname: values[3],
+                            email: values[4],
+                            phoneNumber: values[5],
+                            courseType: values[6],
+                            sex: values[7],
+                            birthday: values[8],
+                            nationality: values[9],
+                            residence: values[10],
+                            regularResidence: values[11],
+                            identityCard: values[12],
+                            identityIssuedBy: values[13],
+                            identityDate: values[14],
+                            giayPhepLaiXe2BanhSo: values[15],
+                            giayPhepLaiXe2BanhNgay: values[16],
+                            giayPhepLaiXe2BanhNoiCap: values[17],
+                            giayKhamSucKhoe: values[18],
+                            giayKhamSucKhoeNgayKham: values[19],
+                        });
+                        handleUpload(index + 1);
+                    }
+                };
+                handleUpload();
+            } else {
+                done({ error: 'Error' });
+            }
+        });
+    };
+    app.uploadHooks.add('uploadPreStudentExcelFile', (req, fields, files, params, done) => {
+        if (files.CandidateFile && files.CandidateFile.length > 0) {
+            console.log('Hook: uploadPreStudentExcelFile => your excel file upload');
+            uploadPreStudentExcelFile(fields, files, done);
+        }
+    });
 };

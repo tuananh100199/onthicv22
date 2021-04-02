@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getStudentPage } from './redux';
-import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
