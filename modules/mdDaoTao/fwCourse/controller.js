@@ -27,7 +27,7 @@ module.exports = (app) => {
 
     app.get('/api/course', app.permission.check('course:read'), (req, res) => {
         const { _id } = req.query;
-        app.model.course.get({ _id, admins: req.session.user._id }, (error, item) => {
+        app.model.course.get(_id, (error, item) => {
             if (item && req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) {
                 // Với user là isCourseAdmin + isOutside: ẩn đi các lecturer, student thuộc cơ sở của họ
                 app.model.division.getAll({ isOutside: true }, (error, divisions) => {
@@ -87,7 +87,7 @@ module.exports = (app) => {
 
     // Get All Student Have Course Null--------------------------------------------------------------------------------
     app.get('/api/course/preStudent/all', (req, res) => {
-        const condition = {course : null},
+        const condition = { course: null },
             searchText = req.query.searchText;
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');
