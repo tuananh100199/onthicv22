@@ -106,7 +106,6 @@ module.exports = (app) => {
         students.forEach(student => {
             student.division = division;
             delete student.course;
-            delete student;
             app.model.student.create(student)
         });
         res.end();
