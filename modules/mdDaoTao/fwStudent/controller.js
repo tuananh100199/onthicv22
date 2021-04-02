@@ -172,6 +172,23 @@ module.exports = (app) => {
         });
     });
 
+    // Get All Student Have Course Null--------------------------------------------------------------------------------
+     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
+            condition = { course: null },
+            searchText = req.query.searchText;
+            if (searchText) {
+                const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+                condition['$or'] = [
+                    { firstname: value },
+                    { lastname: value },
+                ];
+            }
+        app.model.student.getAll(condition, (error, list) => {
+            res.send({ error, list })
+        });
+    });
+
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');

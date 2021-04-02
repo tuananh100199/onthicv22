@@ -84,16 +84,4 @@ module.exports = (app) => {
     app.get('/course/item/id/:courseId', (req, res) => {
         app.model.course.get({ _id: req.params.courseId, active: true }, (error, item) => res.send({ error, item }));
     });
-
-    // Get All Student Have Course Null--------------------------------------------------------------------------------
-    app.get('/api/course/preStudent/all', (req, res) => {
-        const condition = { course: null },
-            searchText = req.query.searchText;
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
-        }
-        app.model.student.getAll(condition, (error, list) => {
-            res.send({ error, list })
-        });
-    });
 };
