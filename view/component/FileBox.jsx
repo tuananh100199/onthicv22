@@ -137,7 +137,7 @@ export default class FileBox extends React.Component {
                 <small className='form-text text-primary' style={{ textAlign: 'center' }}>
                     {this.props.description ? this.props.description : 'Nhấp hoặc kéo tập tin thả vào ô phía trên!'}
                 </small >
-                <input {...fileAttrs} name={this.props.uploadType} onChange={this.onSelectFileChanged} style={{ display: 'none' }} ref={this.uploadInput}/>
+                <input {...fileAttrs} name={this.props.uploadType} onChange={this.onSelectFileChanged} style={{ display: 'none' }} ref={this.uploadInput} />
             </div>
         );
     }

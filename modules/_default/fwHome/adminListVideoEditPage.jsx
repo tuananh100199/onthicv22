@@ -114,7 +114,7 @@ class ListVideoEditPage extends AdminPage {
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
                                 <button className='btn btn-success' type='button' onClick={e => this.modal.show([])}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                            </button>
+                                </button>
                             </div> : null}
                     </div>
                     <ListVideoModal ref={e => this.modal = e} update={this.props.updateListVideo} item={item} readOnly={!permission.write} />
