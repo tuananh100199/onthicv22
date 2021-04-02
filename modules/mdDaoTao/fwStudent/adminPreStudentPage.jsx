@@ -121,7 +121,9 @@ class PreStudentPage extends AdminPage {
     create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
-        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']);
+        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
+            permissionUser = this.getUserPermission('user', ['read']);
+        console.log(permissionUser, 'd')
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -139,7 +141,7 @@ class PreStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    <TableCell type='text' content={item.user ? <label>{item.user.email}<br />{T.mobileDisplay(item.user.phoneNumber)}</label> : ''} />
+                    <TableCell type='text' content={<label>{permissionUser.read ? <a href={`/user/member?user=${item.user._id}`}>{item.user.email}</a> : item.user.email}<br />{T.mobileDisplay(item.user.phoneNumber)}</label>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
