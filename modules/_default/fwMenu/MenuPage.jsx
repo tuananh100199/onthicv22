@@ -18,7 +18,7 @@ export default class MenuPage extends React.Component {
             let item = ins[index],
                 itemView = null,
                 itemStyle = {};
-            if (item.style) { //TODO: bugs
+            if (item.style) { //TODO: bugs nè Sang
                 let [key, value] = item.style.split(':');
                 key = key.trim();
                 value = value.trim();
