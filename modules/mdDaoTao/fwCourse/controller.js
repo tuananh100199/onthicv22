@@ -94,6 +94,6 @@ module.exports = (app) => {
         }
         app.model.student.getAll(condition, (error, list) => {
             res.send({ error, list })
-    });
+        });
     });
 };

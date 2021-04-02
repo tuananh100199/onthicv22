@@ -5,6 +5,8 @@ class AdminStudentView extends React.Component {
     state = {};
     componentDidMount() {
         this.props.getPreStudentAll();
+        T.ready(() => T.showSearchBox());
+        T.onSearch = (searchText) => this.props.getPreStudentAll(searchText);
     }
 
     render() {
