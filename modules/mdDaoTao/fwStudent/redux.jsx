@@ -170,6 +170,7 @@ export function importPreStudent(students, division, done) {
                 T.notify('Tạo học viên bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
+                T.notify('Tạo học viên thành công!', 'success');
                 dispatch(getPreStudentPage());
                 done && done(data);
             }

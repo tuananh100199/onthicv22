@@ -48,6 +48,10 @@ module.exports = (app) => {
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
+            
+        getAll: (condition, done) => typeof condition == 'function' ?
+            model.find({}).sort({ lastname: 1, firstname: 1 }).exec(condition) :
+            model.find(condition).sort({ lastname: 1, firstname: 1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
