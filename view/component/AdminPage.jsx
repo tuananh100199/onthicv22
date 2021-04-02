@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
+import FileBox from 'view/component/FileBox';
 import Editor from 'view/component/CkEditor4';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -324,6 +325,21 @@ export class FormImageBox extends React.Component {
                 {!readOnly && image && onDelete ?
                     <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
                 <ImageBox ref={e => this.imageBox = e} postUrl={postUrl} uploadType={uploadType} image={image} readOnly={readOnly} success={data => onSuccess && onSuccess(data)} />
+            </div>);
+    }
+}
+
+export class FormFileBox extends React.Component {
+    setData = data => this.fileBox.setData(data);
+
+    render() {
+        let { label = '', className = '', style = {}, readOnly = false, postUrl = '/user/upload', uploadType = '', onDelete = null, onSuccess = null } = this.props;
+        return (
+            <div className={'form-group ' + className} style={style}>
+                <label>{label}&nbsp;</label>
+                {!readOnly && onDelete ?
+                    <a href='#' className='text-danger' onClick={onDelete}><i className='fa fa-fw fa-lg fa-trash' /></a> : null}
+                <FileBox ref={e => this.fileBox = e} postUrl={postUrl} uploadType={uploadType} readOnly={readOnly} success={data => onSuccess && onSuccess(data)} />
             </div>);
     }
 }

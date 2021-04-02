@@ -86,7 +86,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
-        let data = req.body.data;
+        let data = req.body.student;
         delete data.course; // Không được gán khoá học cho pre-student
         if (data.division == null) data.division = req.session.user.division;
         app.model.student.create(data, (error, item) => {
@@ -96,6 +96,19 @@ module.exports = (app) => {
                 app.uploadImage('student', app.model.student.get, item._id, item.image, data => res.send(data));
             }
         });
+    });
+
+
+
+    app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
+        let students = req.body.students,
+            division = req.body.division;
+        students.forEach(student => {
+            student.division = division;
+            delete student.course;
+            app.model.student.create(student)
+        });
+        res.end();
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
@@ -119,6 +132,50 @@ module.exports = (app) => {
         });
     });
 
+    app.uploadHooks.add('uploadExcelFile', (req, fields, files, params, done) => {
+        if (files.CandidateFile && files.CandidateFile.length > 0) {
+            console.log('Hook: uploadExcelFile => your excel file upload');
+            const srcPath = files.CandidateFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                    const handleUpload = (index = 2) => {
+                        const values = worksheet.getRow(index).values;
+                        if (values.length == 0 || index == totalRow + 1) {
+                            done({ data });
+                        } else {
+                            data.push({
+                                id: index - 1,
+                                firstname: values[2],
+                                lastname: values[3],
+                                email: values[4],
+                                phoneNumber: values[5],
+                                courseType: values[6],
+                                sex: values[7],
+                                birthday: values[8],
+                                nationality: values[9],
+                                residence: values[10],
+                                regularResidence: values[11],
+                                identityCard: values[12],
+                                identityIssuedBy: values[13],
+                                identityDate: values[14],
+                                giayPhepLaiXe2BanhSo: values[15],
+                                giayPhepLaiXe2BanhNgay: values[16],
+                                giayPhepLaiXe2BanhNoiCap: values[17],
+                                giayKhamSucKhoe: values[18],//Đổi tên
+                                giayKhamSucKhoeNgayKham: values[19],
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Error' });
+                }
+            });
+        }
+    });
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete', 'pre-student:import');
