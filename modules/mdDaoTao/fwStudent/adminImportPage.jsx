@@ -167,7 +167,18 @@ class ImportPage extends AdminPage {
             }))
         );
     save = () => {
-        this.props.importPreStudent(this.state.data, this.itemDivision.value())
+        if (!this.itemDivision.value()) {
+            T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
+            this.itemFirstname.focus();
+        } else {
+            this.props.importPreStudent(this.state.data, this.itemDivision.value(), data => {
+                if (data.error) {
+                    T.notify('Import ứng viên bị lỗi!', 'danger');
+                } else {
+                    this.props.history.push('/user/pre-student');
+                }
+            })
+        }
     }
     render() {
         const permission = this.getUserPermission('student', ['read', 'write', 'delete']),
