@@ -32,7 +32,7 @@ module.exports = (app) => {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
-        auth: (email, password, done) => model.findOne({ email }).populate('roles').exec((error, user) =>
+        auth: (email, password, done) => model.findOne({ email }).populate('roles').populate('division').exec((error, user) =>
             done(error == null && user != null && user.equalPassword(password) ? user : null)),
 
         create: (data, done) =>
@@ -87,11 +87,10 @@ module.exports = (app) => {
                 }
             }),
 
-        get: (condition, done) => typeof condition == 'object' ?
-            model.findOne(condition).select('-password -token -tokenDate').populate('roles').populate('division').exec(done) :
-            model.findById(condition).select('-password -token -tokenDate').populate('roles').populate('division').exec(done), // condition is _id.
+        get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
+            .select('-password -token -tokenDate').populate('roles').populate('division').exec(done),
 
-        getPage: (pageNumber, pageSize, condition, sort, done) =>
+        getPage: (pageNumber, pageSize, condition, sort, done) => {
             model.countDocuments(condition, (error, totalItem) => {
                 if (done == undefined) {
                     done = sort;
@@ -110,11 +109,16 @@ module.exports = (app) => {
                             done(error, result);
                         });
                 }
-            }),
+            })
+        },
 
-        getAll: (condition, done) => done ?
-            model.find(condition).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(done) :
-            model.find({}).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(condition),
+        getAll: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            model.find(condition).sort({ lastname: 1, firstname: 1 }).select('-password -token -tokenDate').populate('roles').populate('division').exec(done);
+        },
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, $set, $unset, done) => {
@@ -142,19 +146,18 @@ module.exports = (app) => {
             }
         },
 
-        delete: (_id, done) =>
-            model.findById(_id, (error, item) => {
-                if (error) {
-                    done(error);
-                } else if (item == null) {
-                    done('Invalid Id!');
-                } else if (item.email == app.defaultAdminEmail) {
-                    done('Cannot delete default admin menu!');
-                } else {
-                    app.deleteImage(item.image);
-                    item.remove(done);
-                }
-            }),
+        delete: (_id, done) => model.findById(_id, (error, item) => {
+            if (error) {
+                done(error);
+            } else if (item == null) {
+                done('Invalid Id!');
+            } else if (item.email == app.defaultAdminEmail) {
+                done('Cannot delete default admin menu!');
+            } else {
+                app.deleteImage(item.image);
+                item.remove(done);
+            }
+        }),
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

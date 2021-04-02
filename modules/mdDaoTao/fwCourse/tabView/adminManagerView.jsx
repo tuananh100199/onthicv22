@@ -63,6 +63,8 @@ class AdminManagerView extends React.Component {
     render() {
         const { permission, permissionUser, permissionDivision } = this.props,
             item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [], groups: [] };
+        const permissionTeacherWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
+
         const tableAdmin = renderTable({
             getDataSource: () => item.admins,
             renderHead: () => (
@@ -114,12 +116,11 @@ class AdminManagerView extends React.Component {
                         {permissionDivision.read ?
                             <TableCell type='link' content={divisionText} url={division && division._id ? '/user/division/' + division._id : ''} /> :
                             <TableCell content={divisionText} />}
-                        {permission.write ?
-                            <td>
-                                <div className='btn-group'>
-                                    <a className='btn btn-danger' href='#' onClick={e => this.removeTeacher(e, index)}><i className='fa fa-lg fa-trash' /></a>
-                                </div>
-                            </td> : null}
+                        <td>
+                            <div className='btn-group'>
+                                <a className='btn btn-danger' href='#' onClick={e => this.removeTeacher(e, index)}><i className='fa fa-lg fa-trash' /></a>
+                            </div>
+                        </td>
                     </tr>);
             },
         });
@@ -141,7 +142,7 @@ class AdminManagerView extends React.Component {
 
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Cố vấn học tập</h3>
-                    <div style={{ display: permission.write ? 'flex' : 'none' }}>
+                    <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
                         <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
                         <div style={{ width: 'auto', paddingLeft: 8 }}>
                             <button className='btn btn-success' type='button' onClick={this.addTeacher}>

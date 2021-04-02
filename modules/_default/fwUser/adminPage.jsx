@@ -272,9 +272,10 @@ class UserPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '70%' }}>Tên</th>
+                    <th style={{ width: '40%' }}>Tên</th>
                     <th style={{ width: '30%' }}>Email</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: '30%' }}>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -284,6 +285,7 @@ class UserPage extends AdminPage {
                     <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={item.email} />
                     <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
+                    <TableCell type='text' content={item.division ? `${item.division.title} ${item.division.isOutside ? '(ngoài)' : ''}` : ''} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateUser(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={e => !item.default && this.delete(e, item)}>
                         {permission.write ?
