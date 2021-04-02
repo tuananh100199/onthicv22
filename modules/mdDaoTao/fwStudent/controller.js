@@ -1,3 +1,6 @@
+//TODO: Tâm sửa:
+// 1. Trang Ứng viên => table => cột Thông tin liên hệ => dòng email: nếu có quyền user:read thì email này là <Link>, ngược lại là text bình thường. <Link> có to=/user/member?user=_id
+// 2. Trang Ứng viên => mở cửa số thông tin của một ứng viên nhưng không gán giới tính
 module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
@@ -5,7 +8,6 @@ module.exports = (app) => {
             4040: { title: 'Ứng viên', link: '/user/pre-student' },
         }
     };
-
     app.permission.add(
         { name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },

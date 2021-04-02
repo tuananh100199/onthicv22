@@ -94,8 +94,8 @@ class SettingsPage extends AdminPage {
                         <div className='tile'>
                             <h3 className='tile-title'>Thay đổi mật khẩu</h3>
                             <div className='tile-body'>
-                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' autoComplete='new-password' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' autoComplete='new-password' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' type='password' readOnly={readOnly} />
+                                <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' type='password' readOnly={readOnly} />
                             </div>
                             {!readOnly ?
                                 <div className='tile-footer'>

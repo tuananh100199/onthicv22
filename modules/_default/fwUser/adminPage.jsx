@@ -234,14 +234,11 @@ class UserPage extends AdminPage {
     componentDidMount() {
         T.ready(() => T.showSearchBox());
         this.props.getRoleAll();
-        this.props.getUserPage(1, null, this.state.roleFilter, () => {
+        this.props.getUserPage(1, null, this.state.roleFilter, (page) => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('user')) {
                 const _userId = urlParams.get('user');
-                console.log(this.props.user)
-                if (this.props.user && this.props.user.page && this.props.user.page.list) {
-                    this.props.user.page.list.forEach(user => user._id == _userId && this.userModal.show(user));
-                }
+                page && page.list && page.list.forEach(user => user._id == _userId && this.userModal.show(user));
             }
         });
 
