@@ -67,10 +67,11 @@ class EditCoursePage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('course'),
+        const currentPermissions = this.getCurrentPermissions(),
+            permissionCourse = this.getUserPermission('course'),
             permissionUser = this.getUserPermission('user'),
             permissionDivision = this.getUserPermission('division'),
-            readOnly = !permission.write;
+            readOnly = !permissionCourse.write;
         const tabInfo = <div className='row'>
             <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-6' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
@@ -89,15 +90,16 @@ class EditCoursePage extends AdminPage {
             <FormRichTextBox ref={e => this.shortDescription = e} label='Giới thiệu ngắn khóa học' className='col-md-12' readOnly={readOnly} />
             <FormEditor ref={e => this.detailDescription = e} label='Giới thiệu chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
 
-            {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+            {permissionCourse.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
         </div>;
 
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
-            { title: 'Môn học', component: <AdminSubjectView permission={permission} /> },
-            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permission} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
-            { title: 'Học viên', component: <AdminStudentView permission={permission} permissionUser={permissionUser} /> },
+            { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
+            { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permissionCourse} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
+            { title: 'Học viên', component: <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} /> },
         ];
+
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),

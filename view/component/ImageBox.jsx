@@ -15,12 +15,8 @@ const UploadBoxStyle = {
 };
 
 export default class ImageBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { isUploading: false, userData: null, image: null };
-        this.box = React.createRef();
-        this.uploadInput = React.createRef();
-    }
+    state = { isUploading: false, userData: null, image: null };
+    uploadInput = React.createRef();
 
     setData = (userData, image) => this.setState({ userData, image });
 
@@ -30,7 +26,7 @@ export default class ImageBox extends React.Component {
         event.preventDefault();
         const readOnly = this.props.readOnly ? this.props.readOnly : false;
         if (!readOnly) {
-            $(this.box.current).css('background-color', '#FFF');
+            $(this.box).css('background-color', '#FFF');
 
             if (event.dataTransfer.items) {
                 if (event.dataTransfer.items.length > 0) {
@@ -49,32 +45,18 @@ export default class ImageBox extends React.Component {
         }
     };
 
-    onClick = (event) => {
-        event.preventDefault();
-        const readOnly = this.props.readOnly ? this.props.readOnly : false;
-        if (!readOnly) {
-            $(this.uploadInput.current).click();
-        }
-    };
+    onClick = (event) => event.preventDefault() || (!this.props.readOnly && $(this.uploadInput).click());
 
-    onDragOver = (event) => {
-        event.preventDefault();
-    };
+    onDragOver = (event) => event.preventDefault();
 
-    onDragEnter = (event) => {
-        event.preventDefault();
-        const readOnly = this.props.readOnly ? this.props.readOnly : false;
-        if (!readOnly) {
-            $(this.box.current).css({ 'background-color': '#009688', 'background-image': '' });
-        }
-    };
+    onDragEnter = (event) => event.preventDefault() || (!this.props.readOnly && $(this.box).css({ 'background-color': '#009688', 'background-image': '' }));
 
     onDragLeave = (event) => {
         event.preventDefault();
         const readOnly = this.props.readOnly ? this.props.readOnly : false;
         if (!readOnly) {
             const backgroundImage = 'url(' + (this.state.image ? this.state.image : this.props.image) + ')';
-            $(this.box.current).css({ 'background-color': '#FFF', 'background-image': backgroundImage });
+            $(this.box).css({ 'background-color': '#FFF', 'background-image': backgroundImage });
         }
     };
 
@@ -89,7 +71,7 @@ export default class ImageBox extends React.Component {
     onUploadFile = (file) => {
         this.setState({ isUploading: true });
 
-        const box = $(this.box.current),
+        const box = $(this.box),
             userData = this.state.userData ? this.state.userData : this.props.userData,
             updateUploadPercent = percent => {
                 if (this.props.onPercent) this.props.onPercent(percent);
@@ -149,13 +131,14 @@ export default class ImageBox extends React.Component {
             boxStyle = Object.assign({}, UploadBoxStyle, { backgroundImage });
         return (
             <div style={this.props.style} className={this.props.className}>
-                <div ref={this.box} id={this.props.uploadType} style={boxStyle}
+                <div ref={e => this.box = e} id={this.props.uploadType} style={boxStyle}
                     onDrop={this.onDrop} onClick={this.onClick}
                     onDragOver={this.onDragOver} onDragEnter={this.onDragEnter} onDragLeave={this.onDragLeave} />
-                <small className='form-text text-primary' style={{ textAlign: 'center' }}>
-                    {this.props.description ? this.props.description : 'Nhấp hoặc kéo hình ảnh thả vào ô phía trên!'}
-                </small >
-                <input type='file' name={this.props.uploadType} accept='image/*' onChange={this.onSelectFileChanged} style={{ display: 'none' }} ref={this.uploadInput} />
+                {this.props.readOnly ? null :
+                    <small className='form-text text-primary' style={{ textAlign: 'center' }}>
+                        {this.props.description ? this.props.description : 'Nhấp hoặc kéo hình ảnh thả vào ô phía trên!'}
+                    </small >}
+                <input type='file' name={this.props.uploadType} accept='image/*' onChange={this.onSelectFileChanged} style={{ display: 'none' }} ref={e => this.uploadInput = e} />
             </div>
         );
     }

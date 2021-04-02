@@ -9,9 +9,11 @@ class AdminManagerView extends React.Component {
     state = {};
     componentDidMount() {
         this.props.getDivisionAll(list => {
-            this.divisionMapper = {};
-            (list || []).map(item => this.divisionMapper[item._id] = item);
+            const divisionMapper = {};
+            (list || []).map(item => divisionMapper[item._id] = item);
+            this.divisionMapper = divisionMapper;
         });
+
         $(document).ready(() => {
             this.selectAdmin.value(null);
             this.selectTeacher.value(null);
@@ -66,14 +68,13 @@ class AdminManagerView extends React.Component {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }}>Họ và Tên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở ngoài</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    <th style={{ width: '60%' }}>Họ và Tên</th>
+                    <th style={{ width: '40%' }} nowrap='true'>Cơ sở đào tạo</th>
+                    {permission.write && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => {
-                let division = item.division ? this.divisionMapper[item.division] : null;
-                if (division == null) division = { title: '', isOutsite: false };
+                let division = this.divisionMapper && item.division ? this.divisionMapper[item.division] : null,
+                    divisionText = division ? `${division.title} ${division.isOutside ? '(CS ngoài)' : ''}` : '';
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
@@ -81,37 +82,44 @@ class AdminManagerView extends React.Component {
                             <TableCell type='link' content={item.lastname + ' ' + item.firstname} url={item._id ? '/user/member?user=' + item._id : ''} /> :
                             <TableCell content={item.lastname + ' ' + item.firstname} />}
                         {permissionDivision.read ?
-                            <TableCell type='link' content={division.title} url={division._id ? '/user/division/' + division._id : ''} /> :
-                            <TableCell content={division.title} />}
-                        <TableCell content={division.isOutside ? 'X' : ''} style={{ textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeAdmin(e, index)} />
+                            <TableCell type='link' content={divisionText} url={division && division._id ? '/user/division/' + division._id : ''} /> :
+                            <TableCell content={divisionText} />}
+                        {permission.write ?
+                            <td>
+                                <div className='btn-group'>
+                                    <a className='btn btn-danger' href='#' onClick={e => this.removeAdmin(e, index)}><i className='fa fa-lg fa-trash' /></a>
+                                </div>
+                            </td> : null}
                     </tr>);
             },
         });
 
         const tableTeacher = renderTable({
-            getDataSource: () => item.groups,
+            getDataSource: () => this.divisionMapper && item.groups,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '100%' }}>Họ và Tên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở ngoài</th>
+                    <th style={{ width: '60%' }}>Họ và Tên</th>
+                    <th style={{ width: '40%' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => {
                 const teacher = item.teacher || { lastname: 'Không có thông tin!' };
-                let division = teacher.division ? this.divisionMapper[teacher.division] : null;
-                if (division == null) division = { title: '', isOutsite: false };
+                let division = teacher.division ? this.divisionMapper[teacher.division] : null,
+                    divisionText = division ? `${division.title} ${division.isOutside ? '(CS ngoài)' : ''}` : '';
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell content={teacher.lastname + ' ' + teacher.firstname} />
                         {permissionDivision.read ?
-                            <TableCell type='link' content={division.title} url={division._id ? '/user/division/' + division._id : ''} /> :
-                            <TableCell content={division.title} />}
-                        <TableCell content={division.isOutside ? 'X' : ''} style={{ textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeTeacher(e, index)} />
+                            <TableCell type='link' content={divisionText} url={division && division._id ? '/user/division/' + division._id : ''} /> :
+                            <TableCell content={divisionText} />}
+                        {permission.write ?
+                            <td>
+                                <div className='btn-group'>
+                                    <a className='btn btn-danger' href='#' onClick={e => this.removeTeacher(e, index)}><i className='fa fa-lg fa-trash' /></a>
+                                </div>
+                            </td> : null}
                     </tr>);
             },
         });
@@ -120,29 +128,27 @@ class AdminManagerView extends React.Component {
             <div className='tile-body row'>
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Quản trị viên</h3>
-                    {permission.write ?
-                        <div style={{ display: 'flex' }}>
-                            <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType('isCourseAdmin')} style={{ width: '100%' }} />
-                            <div style={{ width: 'auto', paddingLeft: 8 }}>
-                                <button className='btn btn-success' type='button' onClick={this.addAdmin}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Quản trị viên
-                                </button>
-                            </div>
-                        </div> : null}
+                    <div style={{ display: permission.write ? 'flex' : 'none' }}>
+                        <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType('isCourseAdmin')} style={{ width: '100%' }} />
+                        <div style={{ width: 'auto', paddingLeft: 8 }}>
+                            <button className='btn btn-success' type='button' onClick={this.addAdmin}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Quản trị viên
+                            </button>
+                        </div>
+                    </div>
                     {tableAdmin}
                 </div>
 
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Cố vấn học tập</h3>
-                    {permission.write ?
-                        <div style={{ display: 'flex' }}>
-                            <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
-                            <div style={{ width: 'auto', paddingLeft: 8 }}>
-                                <button className='btn btn-success' type='button' onClick={this.addTeacher}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
-                                </button>
-                            </div>
-                        </div> : null}
+                    <div style={{ display: permission.write ? 'flex' : 'none' }}>
+                        <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
+                        <div style={{ width: 'auto', paddingLeft: 8 }}>
+                            <button className='btn btn-success' type='button' onClick={this.addTeacher}>
+                                <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
+                            </button>
+                        </div>
+                    </div>
                     {tableTeacher}
                 </div>
             </div>);

@@ -11,7 +11,7 @@ module.exports = app => {
     app.get('/user/division/:id', app.permission.check('division:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
-    app.get('/api/division/all', app.permission.check('division:read'), (req, res) => {
+    app.get('/api/division/all', (req, res) => {
         const condition = {},
             searchText = req.query.searchText;
         if (searchText) {

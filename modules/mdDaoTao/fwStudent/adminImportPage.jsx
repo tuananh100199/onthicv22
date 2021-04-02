@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AdminPage, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
+import { Link } from 'react-router-dom';
 
 class EditModal extends AdminModal {
     state = {};
@@ -177,8 +178,8 @@ class ImportPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '50%' }}>Họ và Tên</th>
                     <th style={{ width: '30%' }}>Email</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại di động</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} >Loại khóa học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true' >Loại khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giới tính</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Quốc tịch</th>
@@ -197,9 +198,9 @@ class ImportPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' content={item.firstname + ' ' + item.lastname} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.firstname + ' ' + item.lastname} />
                     <TableCell type='text' content={item.email} />
-                    <TableCell type='text' content={T.mobileDisplay(item.phoneNumber)} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.mobileDisplay(item.phoneNumber)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.sex} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.birthday, 'dd/mm/yyyy')} />
@@ -222,7 +223,10 @@ class ImportPage extends AdminPage {
                 <h3 className='tile-title'>Upload danh sách ứng viên</h3>
                 <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-
+                {/* <Link to={'./public/download/Candidate.xlsx'}>
+                    Nhấn vào đây để tải xuống file mẫu
+                </Link> */}
+                <a href='/download/Candidate.xlsx'>Nhấn vào đây để tải xuống file mẫu</a>
             </div>
         );
         const list = (

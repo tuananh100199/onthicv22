@@ -17,8 +17,8 @@ module.exports = (app) => {
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
     );
 
-    app.get('/user/pre-student', app.permission.check('student:write'), app.templates.admin);
-    app.get('/user/pre-student/import', app.permission.check('student:write'), app.templates.admin);
+    app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
+    app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
 
     // app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
     // app.get('/student/:_id', app.templates.home);
@@ -163,6 +163,12 @@ module.exports = (app) => {
             });
         }
     });
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete', 'pre-student:import');
+        resolve();
+    }));
+
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
 

@@ -12,7 +12,7 @@ module.exports = app => {
     app.get('/user/member', app.permission.check('user:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/user/page/:pageNumber/:pageSize', app.permission.check('user:read'), (req, res) => {
+    app.get('/api/user/page/:pageNumber/:pageSize', (req, res, next) => app.isDebug ? next() : app.permission.check('user:read')(req, res, next), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
@@ -32,7 +32,6 @@ module.exports = app => {
                 if (condition.type == 'isCourseAdmin') pageCondition.isCourseAdmin = true;
                 if (condition.type == 'isLecturer') pageCondition.isLecturer = true;
             }
-            console.log(pageCondition)
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -213,7 +212,10 @@ module.exports = app => {
         if (req.session.user && fields.userData && fields.userData[0] == 'profile' && files.ProfileImage && files.ProfileImage.length > 0) {
             console.log('Hook: uploadYourAvatar => your avatar upload');
             const _id = req.session.user._id;
-            app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, done);
+            app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, data => {
+                if (data.error == null && data.image) req.session.user.image = data.image;
+                done(data);
+            });
         }
     });
 

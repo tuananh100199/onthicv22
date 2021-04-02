@@ -47,14 +47,19 @@ class AdminSubjectView extends React.Component {
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: '100%' }}>Tên môn học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số bài học</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    {permission.write && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/' + item._id} />
                     <TableCell type='number' content={item.lessons ? item.lessons.length : 0} />
-                    <TableCell type='buttons' content={item} permission={permission} onDelete={e => this.removeSubject(e, index)} />
+                    {permission.write ?
+                        <td>
+                            <div className='btn-group'>
+                                <a className='btn btn-danger' href='#' onClick={e => this.removeSubject(e, index)}><i className='fa fa-lg fa-trash' /></a>
+                            </div>
+                        </td> : null}
                 </tr>),
         });
 

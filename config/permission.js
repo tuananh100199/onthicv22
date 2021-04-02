@@ -217,17 +217,23 @@ module.exports = app => {
                 new Promise(resolve => { // User is CourseAdmin
                     if (user.isCourseAdmin) {
                         app.permissionHooks.pushUserPermission(user, 'courseAdmin:login');
-                        app.permissionHooks.run('courseAdmin', user, null).then(() => resolve());
+                        app.permissionHooks.run('courseAdmin', user, null).then(resolve);
+                    } else {
+                        resolve();
                     }
                 }).then(() => new Promise(resolve => { // Check user is Staff
                     if (user.isStaff) {
                         app.permissionHooks.pushUserPermission(user, 'staff:login');
-                        app.permissionHooks.run('staff', user, null).then(() => resolve());
+                        app.permissionHooks.run('staff', user, null).then(resolve);
+                    } else {
+                        resolve();
                     }
                 })).then(() => new Promise(resolve => { // Check user is Lecturer
                     if (user.isLecturer) {
                         app.permissionHooks.pushUserPermission(user, 'lecturer:login');
-                        app.permissionHooks.run('lecturer', user, null).then(() => resolve());
+                        app.permissionHooks.run('lecturer', user, null).then(resolve);
+                    } else {
+                        resolve();
                     }
                 })).then(() => {  // Build menu tree
                     user.menu = app.permission.tree();

@@ -196,6 +196,11 @@ export function switchUser(_id) {
 //     })
 // };
 
+export const ajaxSelectUser = T.createAjaxAdapter(
+    `/api/user/page/1/20`,
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
+);
+
 export const ajaxSelectUserType = (type) => T.createAjaxAdapter(
     `/api/user/page/1/20`,
     params => ({ condition: { type, searchText: params.term } }),
