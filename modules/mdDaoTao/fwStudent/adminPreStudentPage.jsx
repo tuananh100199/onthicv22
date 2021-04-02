@@ -4,8 +4,8 @@ import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 
-//TODO: thêm cơ sở đào tạo
 class PreStudenModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -13,8 +13,7 @@ class PreStudenModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' }
-        console.log(item, user)
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' }
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemBirthday.value(birthday);
@@ -23,13 +22,13 @@ class PreStudenModal extends AdminModal {
         this.itemSex.value(sex);
         this.itemResidence.value(residence);
         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
+        this.division.value(division ? { id: division._id, text: division.title } : null);
         this.itemRegularResidence.value(regularResidence);
         this.imageBox.setData(`student:${_id || 'new'}`);
 
         this.setState({ _id, image });
     }
 
-    //TODO: kiểm tra loại khoá học không được trống
     onSubmit = () => {
         const data = {
             firstname: this.itemFirstname.value(),
@@ -41,7 +40,7 @@ class PreStudenModal extends AdminModal {
             residence: this.itemResidence.value(),
             regularResidence: this.itemRegularResidence.value(),
             image: this.state.image,
-
+            division: this.division.value(),
             courseType: this.courseType.value(),
         };
         if (data.lastname == '') {
@@ -56,6 +55,9 @@ class PreStudenModal extends AdminModal {
         } else if (data.email == '' || !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
+        } else if (data.courseType == '') {
+            T.notify('Loại khoá học không được trống!', 'danger');
+            this.courseType.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
@@ -66,7 +68,6 @@ class PreStudenModal extends AdminModal {
             T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {
             image && this.setState({ image });
-            // item && this.props.change(item);
         }
     }
 
@@ -94,6 +95,7 @@ class PreStudenModal extends AdminModal {
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} />
 
                 <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
+                <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
             </div>
         });
     }
@@ -147,7 +149,7 @@ class PreStudentPage extends AdminPage {
             breadcrumb: ['Ứng viên'],
             content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                <Pagination name='adminPreStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getPreStudentPage} />
                 <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} />
                 {permission.import ? <CirclePageButton type='export' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
