@@ -19,7 +19,7 @@ class PreStudenModal extends AdminModal {
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
-        this.itemSex.value(sex == 'male' ? { id: 'male', text: 'Nam' } : { id: 'female', text: 'Nữ' });
+        this.itemSex.value(sex ? sex : 'male');
         this.itemResidence.value(residence);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
@@ -36,7 +36,7 @@ class PreStudenModal extends AdminModal {
             birthday: this.itemBirthday.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            sex: !this.itemSex.value() ? 'male' : this.itemSex.value(),
+            sex: this.itemSex.value(),
             residence: this.itemResidence.value(),
             regularResidence: this.itemRegularResidence.value(),
             image: this.state.image,
