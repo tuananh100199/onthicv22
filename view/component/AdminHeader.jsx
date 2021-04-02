@@ -7,7 +7,7 @@ import { changeRole } from 'modules/_default/fwRole/redux';
 import { switchUser } from 'modules/_default/fwUser/redux';
 import { updateSystemState, logout } from 'modules/_default/_init/redux';
 import { Select } from './Input';
-import { ajaxSelectUser } from 'modules/_default/fwUser/redux';
+// import { ajaxSelectUser } from 'modules/_default/fwUser/redux';
 
 class DebugModal extends React.Component {
     modal = React.createRef();
