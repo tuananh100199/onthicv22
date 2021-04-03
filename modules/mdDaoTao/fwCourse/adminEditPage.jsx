@@ -94,7 +94,6 @@ class EditCoursePage extends AdminPage {
             {permissionCourse.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
         </div>;
         const tabs = [
-            
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
             { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
