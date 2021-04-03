@@ -56,7 +56,7 @@ class PreStudenModal extends AdminModal {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else if (!data.courseType) {
-            T.notify('Loại khoá học không được trống!', 'danger');
+            T.notify('Hạng đăng ký không được trống!', 'danger');
             this.itemCourseType.focus();
         } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
@@ -93,7 +93,7 @@ class PreStudenModal extends AdminModal {
                 <FormTextBox type='phone' ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={this.state._id ? true : readOnly} />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
 
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />

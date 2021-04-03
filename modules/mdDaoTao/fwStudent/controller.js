@@ -78,7 +78,6 @@ module.exports = (app) => {
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let data = req.body.student;
         delete data.course; // Không được gán khoá học cho pre-student
-        // if (data.division == null) data.division = req.session.user.division;
         new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ email: data.email }, (error, user) => {
                 if (error) {
@@ -113,7 +112,7 @@ module.exports = (app) => {
                     });
                 }
             });
-        }).then(_userId => { // Tạo student cho candidate
+        }).then(_userId => { // Tạo student 
             data.user = _userId;   // assign id of user to user field of prestudent
             delete data.email;
             delete data.phoneNumber;
@@ -188,9 +187,9 @@ module.exports = (app) => {
         resolve();
     }));
 
-    // Hook upload images ---------------------------------------------------------------------------------------------
+    // Hook upload images student ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
-    app.createFolder(app.path.join(app.publicPath, '/img/pre-student'));
+
 
     const uploadStudentImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
@@ -201,7 +200,8 @@ module.exports = (app) => {
     };
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
-
+    // Hook upload images pre-student ---------------------------------------------------------------------------------------------
+    app.createFolder(app.path.join(app.publicPath, '/img/pre-student'));
     const uploadPreStudentImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('pre-student:') && files.PreStudentImage && files.PreStudentImage.length > 0) {
             console.log('Hook: uploadPreStudent => pre-student image upload');
@@ -212,7 +212,7 @@ module.exports = (app) => {
     app.uploadHooks.add('uploadPreStudentImage', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadPreStudentImage(fields, files, done), done, 'pre-student:write'));
 
-    // Hook upload pre-students ---------------------------------------------------------------------------------------
+    // Hook upload pre-students excel---------------------------------------------------------------------------------------
     const uploadPreStudentExcelFile = (fields, files, done) => {
         const srcPath = files.CandidateFile[0].path;
         app.excel.readFile(srcPath, workbook => {
