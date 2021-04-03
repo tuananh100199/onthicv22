@@ -1,5 +1,8 @@
 //TODO: Tâm sửa:
 // 1. Trang Ứng viên => table => cột Thông tin liên hệ => dòng email: nếu có quyền user:read thì email này là <Link>, ngược lại là text bình thường. <Link> có to=/user/member?user=_id
+
+const { TRUE, FALSE } = require("node-sass");
+
 // 2. Trang Ứng viên => mở cửa số thông tin của một ứng viên nhưng không gán giới tính
 module.exports = (app) => {
     const menu = {
@@ -11,6 +14,7 @@ module.exports = (app) => {
     app.permission.add(
         { name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
+        { name: 'pre-student:template' },
     );
 
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
@@ -221,42 +225,43 @@ module.exports = (app) => {
         app.excel.readFile(srcPath, workbook => {
             app.deleteFile(srcPath);
             if (workbook) {
-                const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
-                const handleUpload = (index = 2) => {
+                const data = [];
+                const handleUpload = (index, worksheet, totalRow, item, data) => {
                     const values = worksheet.getRow(index).values;
                     if (values.length == 0 || index == totalRow + 1) {
-                        done({ data });
+                        data.push(item)
                     } else {
-                        data.push({
-                            id: index - 1,
+                        item.push({
                             firstname: values[2],
                             lastname: values[3],
                             email: values[4],
                             phoneNumber: values[5],
-                            courseType: values[6],
-                            sex: values[7],
-                            birthday: values[8],
-                            nationality: values[9],
-                            residence: values[10],
-                            regularResidence: values[11],
-                            identityCard: values[12],
-                            identityIssuedBy: values[13],
-                            identityDate: values[14],
-                            giayPhepLaiXe2BanhSo: values[15],
-                            giayPhepLaiXe2BanhNgay: values[16],
-                            giayPhepLaiXe2BanhNoiCap: values[17],
-                            giayKhamSucKhoe: values[18],
-                            giayKhamSucKhoeNgayKham: values[19],
+                            sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
+                            birthday: values[7],
+                            nationality: values[8],
+                            residence: values[9],
+                            regularResidence: values[10],
+                            identityCard: values[11],
+                            identityIssuedBy: values[12],
+                            identityDate: values[13],
+                            giayPhepLaiXe2BanhSo: values[14],
+                            giayPhepLaiXe2BanhNgay: values[15],
+                            giayPhepLaiXe2BanhNoiCap: values[16],
+                            giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
+                            giayKhamSucKhoeNgayKham: values[18],
                         });
-                        handleUpload(index + 1);
+                        handleUpload(index + 1, worksheet, totalRow, item, data);
                     }
                 };
-                handleUpload();
-            } else {
-                done({ error: 'Error' });
-            }
+                workbook.worksheets.map((worksheet) => {
+                    handleUpload(2, worksheet, worksheet.lastRow.number, [], data)
+                });
+                if (data.length > 0) done({ data });
+                else done({ error: 'Error' });
+            } else done({ error: 'Error' });
         });
     };
+
     app.uploadHooks.add('uploadPreStudentExcelFile', (req, fields, files, params, done) => {
         if (files.CandidateFile && files.CandidateFile.length > 0) {
             console.log('Hook: uploadPreStudentExcelFile => your excel file upload');
