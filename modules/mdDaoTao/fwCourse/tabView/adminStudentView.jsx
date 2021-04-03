@@ -29,7 +29,10 @@ class AdminStudentView extends React.Component {
                     {groups.map((item, index) =>
                     <div key={index} style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12, marginBottom: 10}}>
                         <ul style={{ width: '100%', paddingLeft: 20, margin: 0, listStyle: 'none' }}>
+                            {item.teacher ? 
                             <li>{index + 1}. {item.teacher.lastname} {item.teacher.firstname}</li>
+                            : 'Không tìm thấy thông tin giáo viên'
+                            }       
                         </ul>
                     </div>)}
                 </div>
