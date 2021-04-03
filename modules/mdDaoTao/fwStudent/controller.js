@@ -268,4 +268,19 @@ module.exports = (app) => {
             uploadPreStudentExcelFile(fields, files, done);
         }
     });
+    // Hook upload template pre-students ---------------------------------------------------------------------------------------
+    const uploadPreStudentTemplateFile = (fields, files, done) => {
+        const srcPath = files.CandidateTemplateFile[0].path;
+        app.deleteFile(app.path.join(app.publicPath, 'download/candidate.xlsx'));
+        app.fs.rename(srcPath, app.path.join(app.publicPath, 'download/candidate.xlsx'), (error) => {
+            done({ error })
+        });
+    };
+
+    app.uploadHooks.add('uploadPreStudentTemplateFile', (req, fields, files, params, done) => {
+        if (files.CandidateTemplateFile && files.CandidateTemplateFile.length > 0) {
+            console.log('Hook: uploadPreStudentTemplateFile => your excel template file upload');
+            uploadPreStudentTemplateFile(fields, files, done);
+        }
+    });
 };

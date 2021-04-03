@@ -142,15 +142,16 @@ class EditModal extends AdminModal {
 class UpdateTemplateModal extends AdminModal {
     state = {};
     fileBox = React.createRef();
-    onShow = () => { }
 
-    onSubmit = () => { }
+    onUploadSuccess = () => {
+        this.hide();
+    }
 
     render = () => this.renderModal({
         title: 'Upload file excel mẫu',
         size: 'large',
         body: (
-            <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile' />
+            <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateTemplateFile' onSuccess={this.onUploadSuccess} />
         ),
     });
 }
@@ -268,8 +269,8 @@ class ImportPage extends AdminPage {
                 <h3 className='tile-title'>Upload danh sách ứng viên</h3>
                 <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                <a href='/download/Candidate.xlsx' style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-                {permission.template ? <a href='#' onClick={this.showUpdateTemplateModal} style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Upload file mẫu</a> : null}
+                <a href='/download/candidate.xlsx' style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+                {permission.template ? <a href='#' onClick={this.showUpdateTemplateModal} style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-upload' /> Upload file mẫu</a> : null}
                 <UpdateTemplateModal ref={e => this.templateModalEdit = e} />
             </div>
         );
