@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, FormDatePicker, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 
 class EditModal extends AdminModal {
     state = {};
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemFirstname.focus()));
+        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
     onShow = (item) => {
@@ -94,20 +94,20 @@ class EditModal extends AdminModal {
             giayKhamSucKhoe: this.itemgiayKhamSucKhoe.value(),
             giayKhamSucKhoeNgayKham: this.itemgiayKhamSucKhoeNgayKham.value(),
         };
-        if (data.firstname == '') {
-            T.notify('Tên ứng viên bị trống!', 'danger');
-            this.itemFirstname.focus();
-        } else if (data.lastname == '') {
-            T.notify('Tên ứng viên bị trống!', 'danger');
+        if (data.lastname == '') {
+            T.notify('Họ không được trống!', 'danger');
             this.itemLastname.focus();
-        } else if (data.email == '') {
-            T.notify('Email ứng viên bị trống!', 'danger');
-            this.itemEmail.focus();
+        } else if (data.firstname == '') {
+            T.notify('Tên không được trống!', 'danger');
+            this.itemFirstname.focus();
         } else if (data.phoneNumber == '') {
-            T.notify('Số điện thoại ứng viên bị trống!', 'danger');
+            T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (data.courseType == '') {
-            T.notify('Hạng đăng ký của ứng viên bị trống!', 'danger');
+        } else if (data.email == '' || !T.validateEmail(data.email)) {
+            T.notify('Email không hợp lệ!', 'danger');
+            this.itemEmail.focus();
+        } else if (!data.courseType) {
+            T.notify('Hạng đăng ký không được trống!', 'danger');
             this.itemCourseType.focus();
         } else {
             this.props.edit(this.state.num, data)
@@ -115,33 +115,36 @@ class EditModal extends AdminModal {
         }
     }
 
-    render = () => this.renderModal({
-        title: 'Chỉnh sửa ứng viên',
-        size: 'large',
-        body: (
-            <div className='row'>
-                <div className='col-md-8'>
-                    <FormTextBox ref={e => this.itemFirstname = e} label='Họ ứng viên' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemLastname = e} label='Tên ứng viên' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemCourseType = e} label='Hạng đăng ký' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemSex = e} label='Giới tính' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemBirthday = e} label='Năm sinh' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemNationality = e} label='Quốc tịch' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemResidence = e} label='Nơi cư trú' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemRegularResidence = e} label='Nơi đăng ký hộ khẩu thường trú' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemIdentityCard = e} label='Số CMND,CCCD' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemIdentityDate = e} label='Ngày cấp' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemLincenseDate = e} label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemgiayKhamSucKhoe = e} label='Đã có giấy phép lái xe' readOnly={this.props.readOnly} />
-                    <FormTextBox ref={e => this.itemgiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
-                </div>
-            </div>),
-    });
+    render = () => {
+        const readOnly = this.props.readOnly;
+        return this.renderModal({
+            title: 'Chỉnh sửa ứng viên',
+            size: 'large',
+            body: (
+                <div className='row'>
+                    <div className='col-md-8'>
+                        <FormTextBox ref={e => this.itemFirstname = e} label='Họ ứng viên' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemLastname = e} label='Tên ứng viên' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemCourseType = e} label='Hạng đăng ký' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemSex = e} label='Giới tính' readOnly={readOnly} />
+                        <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemNationality = e} label='Quốc tịch' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemResidence = e} label='Nơi cư trú' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemRegularResidence = e} label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemIdentityCard = e} label='Số CMND,CCCD' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemIdentityDate = e} label='Ngày cấp' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemLincenseDate = e} label='Ngày trúng tuyển' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemgiayKhamSucKhoe = e} label='Đã có giấy phép lái xe' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.itemgiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={readOnly} />
+                    </div>
+                </div>),
+        });
+    }
 }
 
 class ImportPage extends AdminPage {
@@ -224,7 +227,7 @@ class ImportPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.regularResidence} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityIssuedBy} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityDate} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.identityDate, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhSo} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNgay} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNoiCap} />
@@ -252,7 +255,7 @@ class ImportPage extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <EditModal ref={e => this.modalEdit = e} readOnly={!permission.write} edit={this.edit} />
+                <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
                 <CirclePageButton type='save' onClick={this.save} />
             </div>
         );

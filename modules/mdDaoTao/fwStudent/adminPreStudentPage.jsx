@@ -19,7 +19,7 @@ class PreStudenModal extends AdminModal {
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
-        this.itemSex.value(sex == 'male' ? { id: 'male', text: 'Nam' } : { id: 'female', text: 'Nữ' });
+        this.itemSex.value(sex ? sex : 'male');
         this.itemResidence.value(residence);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
@@ -36,7 +36,7 @@ class PreStudenModal extends AdminModal {
             birthday: this.itemBirthday.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            sex: !this.itemSex.value() ? 'male' : this.itemSex.value(),
+            sex: this.itemSex.value(),
             residence: this.itemResidence.value(),
             regularResidence: this.itemRegularResidence.value(),
             image: this.state.image,
@@ -56,7 +56,7 @@ class PreStudenModal extends AdminModal {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else if (!data.courseType) {
-            T.notify('Loại khoá học không được trống!', 'danger');
+            T.notify('Hạng đăng ký không được trống!', 'danger');
             this.itemCourseType.focus();
         } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
@@ -85,15 +85,15 @@ class PreStudenModal extends AdminModal {
                         <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} />
                         <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} />
                     </div>
-                    <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
+                    <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={this.state._id ? true : readOnly} type='email' />
                 </div>
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='PreStudentImage' image={this.state.image} readOnly={readOnly}
                     onSuccess={this.onUploadSuccess} />
 
-                <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={readOnly} />
+                <FormTextBox type='phone' ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={this.state._id ? true : readOnly} />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
-                <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={readOnly} />
+                <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
 
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
@@ -121,7 +121,8 @@ class PreStudentPage extends AdminPage {
     create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
-        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']);
+        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
+            permissionUser = this.getUserPermission('user', ['read']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -139,7 +140,7 @@ class PreStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    <TableCell type='text' content={item.user ? <label>{item.user.email}<br />{T.mobileDisplay(item.user.phoneNumber)}</label> : ''} />
+                    <TableCell type='text' content={<label>{permissionUser.read ? <a href={`/user/member?user=${item.user._id}`}>{item.user.email}</a> : item.user.email}<br />{T.mobileDisplay(item.user.phoneNumber)}</label>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />

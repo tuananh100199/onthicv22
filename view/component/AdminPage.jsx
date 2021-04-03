@@ -174,7 +174,7 @@ export class FormTextBox extends React.Component {
         if (type == 'phone') properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
         return (
             <div className={'form-group ' + (className || '')}>
-                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{T.numberDisplay(this.state.value)}</b></> : ''}
+                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{type == 'phone' ? T.mobileDisplay(this.state.value) : T.numberDisplay(this.state.value)}</b></> : ''}
                 <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
                 {smallText ? <small>{smallText}</small> : null}
             </div>);
@@ -243,7 +243,7 @@ export class FormSelect extends React.Component {
         $(this.input).on('select2:select', e => this.props.onChange && this.props.onChange(e.params.data));
     }
 
-    focus = () => $(this.input).focus();
+    focus = () => $(this.input).select2('open');
 
     value = function (value) {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];

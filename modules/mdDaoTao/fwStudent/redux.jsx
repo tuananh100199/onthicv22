@@ -125,7 +125,6 @@ export function createPreStudent(student, done) {
         const url = '/api/pre-student';
         T.post(url, { student }, data => {
             if (data.error) {
-                console.log('error', data.error)
                 T.notify('Tạo học viên bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
