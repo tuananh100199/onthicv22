@@ -227,7 +227,7 @@ class ImportPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.regularResidence} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityIssuedBy} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityDate} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.identityDate, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhSo} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNgay} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNoiCap} />
