@@ -35,7 +35,7 @@ export function getListVideoAll(done) {
                 if (done) done(data.list);
                 dispatch({ type: ListVideoGetAll, list: data.list || [] });
             }
-        }, error => console.error(`GET: ${url}. ${data.error}`))
+        }, error => console.error(`GET: ${url}. ${error}`))
     }
 }
 
