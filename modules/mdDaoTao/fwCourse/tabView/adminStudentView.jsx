@@ -28,8 +28,8 @@ class AdminStudentView extends React.Component {
                 <div className="col-md-6">
                     {groups.map((item, index) =>
                     <div key={index} style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12, marginBottom: 10}}>
-                        <ul style={{ width: '100%', paddingLeft: 20, margin: 0, listStyle: 'decimal' }}>
-                            <li>{item.teacher.lastname} {item.teacher.firstname}</li>
+                        <ul style={{ width: '100%', paddingLeft: 20, margin: 0, listStyle: 'none' }}>
+                            <li>{index + 1}. {item.teacher.lastname} {item.teacher.firstname}</li>
                         </ul>
                     </div>)}
                 </div>
