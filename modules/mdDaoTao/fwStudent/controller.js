@@ -164,8 +164,8 @@ module.exports = (app) => {
 
     // Get All Student Have Course Null--------------------------------------------------------------------------------
     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
-        const condition = { course: null },
-            { searchText, courseType } = req.query;
+        const { searchText, courseType } = req.query,
+        condition = { course: null, courseType };
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition['$or'] = [
