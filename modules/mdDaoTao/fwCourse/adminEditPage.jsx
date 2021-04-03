@@ -93,7 +93,6 @@ class EditCoursePage extends AdminPage {
 
             {permissionCourse.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
         </div>;
-console.log(this.state.courseType);
         const tabs = [
             
             { title: 'Thông tin chung', component: tabInfo },

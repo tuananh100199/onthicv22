@@ -176,7 +176,6 @@ module.exports = (app) => {
     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
         const { searchText, courseType } = req.query,
         condition = { course: null, courseType };
-        console.log('condition', condition);
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition['$or'] = [
