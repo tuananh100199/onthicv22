@@ -1,3 +1,6 @@
+//TODO: Tâm sửa:
+// 1. Trang Ứng viên => table => cột Thông tin liên hệ => dòng email: nếu có quyền user:read thì email này là <Link>, ngược lại là text bình thường. <Link> có to=/user/member?user=_id
+// 2. Trang Ứng viên => mở cửa số thông tin của một ứng viên nhưng không gán giới tính
 module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
@@ -5,13 +8,6 @@ module.exports = (app) => {
             4040: { title: 'Ứng viên', link: '/user/pre-student' },
         }
     };
-    // const menu = {
-    //     parentMenu: app.parentMenu.trainning,
-    //     menus: {
-    //         4041: { title: 'Học viên', link: '/user/student' },
-    //     }
-    // };
-
     app.permission.add(
         { name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
@@ -19,9 +15,6 @@ module.exports = (app) => {
 
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
     app.get('/user/pre-student/import', app.permission.check('pre-student:import'), app.templates.admin);
-
-    // app.get('/user/student/', app.permission.check('student:read'), app.templates.admin);
-    // app.get('/student/:_id', app.templates.home);
 
     // Student APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
@@ -88,14 +81,14 @@ module.exports = (app) => {
     app.post('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let data = req.body.student;
         delete data.course; // Không được gán khoá học cho pre-student
-        if (data.division == null) data.division = req.session.user.division;
-        new Promise((resolve, reject) => { // Tạo user cho candidate
+        // if (data.division == null) data.division = req.session.user.division;
+        new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ email: data.email }, (error, user) => {
                 if (error) {
                     reject('Lỗi khi đọc thông tin người dùng!');
-                } else if (user) { // Candidate đã là user
+                } else if (user) {
                     resolve(user._id);
-                } else { // Candidate chưa là user
+                } else { // pre chưa là user
                     const dataPassword = app.randomPassword(8),
                         newUser = {
                             email: data.email,
@@ -124,18 +117,19 @@ module.exports = (app) => {
                 }
             });
         }).then(_userId => { // Tạo student cho candidate
-            item.user = _userId;
-            item.save();
-            const dataStudent = {
-                user: _userId,
-                firstname: item.firstname,
-                lastname: item.lastname,
-                courseType: item.courseType,
-                division: item.division,
-            };
-            app.model.student.create(dataStudent, (error) => res.send({ error, item }));
+            data.user = _userId;   // assign id of user to user field of prestudent
+            delete data.email;
+            delete data.phoneNumber;
+            app.model.student.create(data, (error, item) => {
+                if (error || item == null || item.image == null) {
+                    res.send({ error, item });
+                } else {
+                    app.uploadImage('pre-student', app.model.student.get, item._id, item.image, data => {
+                        res.send(data)
+                    });
+                }
+            });
         }).catch(error => res.send({ error }));
-
     });
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
@@ -146,7 +140,7 @@ module.exports = (app) => {
             delete student.course;
             app.model.student.create(student);
         });
-        res.end();
+        res.send();
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
@@ -199,6 +193,7 @@ module.exports = (app) => {
 
     // Hook upload images ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
+    app.createFolder(app.path.join(app.publicPath, '/img/pre-student'));
 
     const uploadStudentImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
@@ -209,6 +204,16 @@ module.exports = (app) => {
     };
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
+
+    const uploadPreStudentImage = (fields, files, done) => {
+        if (fields.userData && fields.userData[0].startsWith('pre-student:') && files.PreStudentImage && files.PreStudentImage.length > 0) {
+            console.log('Hook: uploadPreStudent => pre-student image upload');
+            const _id = fields.userData[0].substring('pre-student:'.length);
+            app.uploadImage('pre-student', app.model.student.get, _id, files.PreStudentImage[0].path, done);
+        }
+    };
+    app.uploadHooks.add('uploadPreStudentImage', (req, fields, files, params, done) =>
+        app.permission.has(req, () => uploadPreStudentImage(fields, files, done), done, 'pre-student:write'));
 
     // Hook upload pre-students ---------------------------------------------------------------------------------------
     const uploadPreStudentExcelFile = (fields, files, done) => {

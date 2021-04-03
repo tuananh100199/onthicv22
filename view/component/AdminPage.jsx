@@ -243,6 +243,8 @@ export class FormSelect extends React.Component {
         $(this.input).on('select2:select', e => this.props.onChange && this.props.onChange(e.params.data));
     }
 
+    focus = () => $(this.input).focus();
+
     value = function (value) {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
