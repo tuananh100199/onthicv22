@@ -4,7 +4,7 @@ module.exports = app => {
     app.get('/api/statistic/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
-        app.model.statistic.getPage(pageNumber, pageSize, { active: true }, (error, page) => {
+        app.model.statistic.getPage(pageNumber, pageSize, {}, (error, page) => {
             res.send({ error: error || page == null ? 'Danh sách thống kê chưa sẵn sàng' : null, page });
         });
     });
@@ -70,7 +70,7 @@ module.exports = app => {
         if (error || statistic == null) {
             res.send({ error: 'Lấy thống kê bị lỗi' });
         } else {
-            app.model.statisticItem.getAll({ statisticId: statistic._id, active: true }, (error, items) => {
+            app.model.statisticItem.getAll({ statisticId: statistic._id }, (error, items) => {
                 if (error || items == null) {
                     res.send({ error: 'Lấy thống kê bị lỗi' });
                 } else {
