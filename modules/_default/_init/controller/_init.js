@@ -19,7 +19,6 @@ module.exports = (app) => {
         });
     });
 
-    //TODO: dọn rác /temp/:dateFolderName cách 1 ngày
     app.get('/temp/:dateFolderName/img/:dataFolderName/:imageName', app.permission.check('user:login'), (req, res) => {
         let { dateFolderName, dataFolderName, imageName } = req.params;
         dateFolderName = dateFolderName.trim();
@@ -110,8 +109,7 @@ module.exports = (app) => {
     app.readyHooks.add('readyInit', {
         ready: () => app.model != null && app.model.setting != null && app.state,
         run: () => {
-            const enableInit = process.env['enableInit'] == 'true';
-            if (enableInit) {
+            if (app.configWorker) {
                 app.model.setting.init(app.state.data, () => app.state.refresh())
             } else {
                 setTimeout(() => { app.state.refresh() }, 200);

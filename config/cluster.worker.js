@@ -6,6 +6,7 @@ module.exports = (cluster, isDebug) => {
     app.isDebug = isDebug;
     app.fs = require('fs');
     app.path = require('path');
+    app.configWorker = process.env['enableInit'] == 'true';
     const server = app.isDebug ?
         require('http').createServer(app) :
         require('https').createServer({
