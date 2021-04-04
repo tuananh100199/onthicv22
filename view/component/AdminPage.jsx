@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import ImageBox from 'view/component/ImageBox';
 import FileBox from 'view/component/FileBox';
 import Editor from 'view/component/CkEditor4';
+import Datetime from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, alt = '', display = true } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -23,8 +25,8 @@ export class TableCell extends React.Component { // type = number | date | link 
                 return <td className={className} style={{ ...style }}><a href='#' onClick={onClick}>{content}</a></td>;
             } else {
                 return url.startsWith('http://') || url.startsWith('https://') ?
-                    <td className={className} style={{ textAlign: 'left', ...style }}><a href={url} target='_blank'>{content}</a></td> :
-                    <td className={className} style={{ textAlign: 'left', ...style }}><Link to={url}>{content}</Link></td>
+                    <td className={className} style={{ textAlign: 'left', ...style }}><a href={url} target='_blank' style={contentStyle}>{content}</a></td> :
+                    <td className={className} style={{ textAlign: 'left', ...style }}><Link to={url} style={contentStyle}>{content}</Link></td>
             }
         } else if (type == 'image') {
             return content ?
@@ -161,7 +163,8 @@ export class FormTextBox extends React.Component {
     focus = () => this.input.focus();
 
     render() {
-        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props;
+        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null } = this.props,
+            readOnlyText = this.state.value;
         type = type.toLowerCase(); // type = text | number | email | password | phone
         const properties = {
             type,
@@ -171,10 +174,17 @@ export class FormTextBox extends React.Component {
             onChange: e => this.setState({ value: e.target.value }) || onChange && onChange(e),
         };
         if (type == 'password') properties.autoComplete = 'new-password';
-        if (type == 'phone') properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
+        if (type == 'phone') {
+            if (readOnlyText) readOnlyText = T.mobileDisplay(readOnlyText);
+            properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
+        }
+        if (type == 'number') {
+            readOnlyText = readOnlyText ? T.numberDisplay(readOnlyText) : 0;
+            properties.onKeyPress = e => ((!/[0-9]/.test(e.key)) && e.preventDefault());
+        }
         return (
             <div className={'form-group ' + (className || '')}>
-                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{type == 'phone' ? T.mobileDisplay(this.state.value) : T.numberDisplay(this.state.value)}</b></> : ''}
+                <label onClick={e => this.input.focus()}>{label}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
                 <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
                 {smallText ? <small>{smallText}</small> : null}
             </div>);
@@ -275,10 +285,10 @@ export class FormSelect extends React.Component {
     }
 
     render = () => {
-        const { className = '', style = {}, label = '', multiple = false, readOnly = false } = this.props;
+        const { className = '', style = {}, labelStyle = {}, label = '', multiple = false, readOnly = false } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
-                {label ? <label>{label}{readOnly ? ':' : ''}</label> : null} {readOnly ? <b>{this.state.valueText}</b> : ''}
+                {label ? <label style={labelStyle}>{label}{readOnly ? ':' : ''}</label> : null} {readOnly ? <b>{this.state.valueText}</b> : ''}
                 <div style={{ width: '100%', display: readOnly ? 'none' : 'block' }}>
                     <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
                         {/* <optgroup label={'Lựa chọn ' + label} /> */}
@@ -290,28 +300,22 @@ export class FormSelect extends React.Component {
 }
 
 export class FormDatePicker extends React.Component {
-    state = { value: '' };
-    componentDidMount() {
-        $(document).ready(() => $(this.input).datepicker({ format: 'dd/mm/yyyy', autoclose: true }));
-    }
-
+    state = {};
     value = function (date) {
         if (arguments.length) {
-            date = date ? T.dateToText(date, 'dd/mm/yyyy') : '';
-            this.setState({ value: date });
-            $(this.input).val(date);
+            this.setState({ value: new Date(date) });
         } else {
-            date = $(this.input).val();
-            return date ? T.formatDate(date) : null;
+            return this.state.value;
         }
     }
 
     render() {
-        let { label = '', className = '', readOnly = false } = this.props;
+        let { label = '', type = 'date', className = '', readOnly = false } = this.props; // type = date || time
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
-                <input ref={e => this.input = e} className='form-control' type='text' placeholder={label} style={{ display: readOnly ? 'none' : 'block' }} />
+                <Datetime ref={e => this.input = e} timeFormat={type == 'time'} dateFormat='DD/MM/YYYY' inputProps={{ placeholder: label }} value={this.state.value}
+                    onChange={e => this.setState({ value: new Date(e) })} />
             </div>);
     }
 }

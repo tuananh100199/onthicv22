@@ -3,7 +3,6 @@ module.exports = app => {
         title: String,
         height: Number,
         single: { type: Boolean, default: true },
-        active: { type: Boolean, default: false },
     });
     const model = app.db.model('Carousel', schema);
 
@@ -25,8 +24,6 @@ module.exports = app => {
                 });
             }
         }),
-
-        getByActive: (active, done) => model.find({ active }).sort({ title: -1 }).exec(done),
 
         get: (_id, done) => model.findById(_id, done),
 

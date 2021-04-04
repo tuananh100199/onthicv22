@@ -84,7 +84,6 @@ class CarouselEditPage extends AdminPage {
                 this.itemTitle.value(data.item.title);
                 this.itemHeight.value(data.item.height);
                 this.itemSingle.value(data.item.single);
-                this.itemActive.value(data.item.active);
 
                 this.itemTitle.focus();
                 this.setState(data.item);
@@ -96,7 +95,6 @@ class CarouselEditPage extends AdminPage {
         title: this.itemTitle.value(),
         height: parseInt(this.itemHeight.value()),
         single: this.itemSingle.value(),
-        active: this.itemActive.value(),
     });
 
     createItem = (e) => e.preventDefault() || this.modal.show({ carouselId: this.state._id });
@@ -141,7 +139,6 @@ class CarouselEditPage extends AdminPage {
                         <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='col-md-6' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
                         <FormTextBox ref={e => this.itemHeight = e} label='Chiều cao' className='col-md-6' readOnly={!permission.write} />
                         <FormCheckbox ref={e => this.itemSingle = e} label='Đơn ảnh' className='col-md-6' readOnly={!permission.write} />
-                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' className='col-md-6' readOnly={!permission.write} />
                     </div>
                     {permission.write &&
                         <div className='tile-footer' style={{ textAlign: 'right' }}>

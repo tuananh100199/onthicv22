@@ -49,7 +49,6 @@ class ContentView extends React.Component {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '80%' }}>Tên</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -57,7 +56,6 @@ class ContentView extends React.Component {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/content/' + item._id} />
                     <TableCell type='image' content={item.image || '/img/avatar.png'} style={{ height: '32px' }} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateContent(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/content/' + item._id} onDelete={this.delete} />
                 </tr>),
         });

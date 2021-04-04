@@ -58,11 +58,8 @@ module.exports = (app) => {
                         }
                     });
                 }
-                if (option && option.menuUpdate) {
-                    app.buildAppMenus(null, () => done && done());
-                } else {
-                    done && done()
-                }
+
+                done && done();
             });
         },
     };

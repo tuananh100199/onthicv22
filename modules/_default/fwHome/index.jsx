@@ -23,18 +23,21 @@ export default {
     init: () => {
         T.component['content'] = {
             render: (viewId) => <SectionContent viewId={viewId} />,
+            text: 'Bài viết',
             backgroundColor: '#f48fb1',
             adapter: ajaxSelectContent,
             getItem: ajaxGetContent,
         };
         T.component['list contents'] = {
             render: (viewId) => <SectionListContent viewId={viewId} />,
+            text: 'Danh sách bài viết',
             backgroundColor: '#fb6094',
             adapter: ajaxSelectListContent,
             getItem: ajaxGetListContent,
         };
         T.component['carousel'] = {
             render: (viewId) => <SectionCarousel viewId={viewId} />,
+            text: 'Tập hình ảnh',
             backgroundColor: '#ef9a9a',
             adapter: ajaxSelectCarousel,
             getItem: ajaxGetCarousel,
@@ -43,20 +46,23 @@ export default {
         //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
         //     backgroundColor: '#e6ee9c',
         // };
-        T.component['video'] = {
-            render: (viewId) => <SectionVideo viewId={viewId} />,
-            backgroundColor: '#90caf9',
-            adapter: ajaxSelectVideo,
-            getItem: ajaxGetVideo,
-        };
         T.component['statistic'] = {
             render: (viewId) => <SectionStatistic viewId={viewId} />,
+            text: 'Thống kê',
             backgroundColor: '#b388ff',
             adapter: ajaxSelectStatistic,
             getItem: ajaxGetStatistic,
         };
+        T.component['video'] = {
+            render: (viewId) => <SectionVideo viewId={viewId} />,
+            text: 'Video',
+            backgroundColor: '#90caf9',
+            adapter: ajaxSelectVideo,
+            getItem: ajaxGetVideo,
+        };
         T.component['list videos'] = {
             render: (viewId) => <SectionListVideo viewId={viewId} />,
+            text: 'Danh sách video',
             backgroundColor: '#ef9a9b',
             adapter: ajaxSelectListVideo,
             getItem: ajaxGetListVideo,

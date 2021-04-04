@@ -9,6 +9,7 @@ export default {
     init: () => {
         T.component['subscribe'] = {
             render: (viewId) => <SectionSubscribe viewId={viewId} />,
+            text: 'Đăng ký nhận tin',
             backgroundColor: '#c8e6c9',
         };
     },

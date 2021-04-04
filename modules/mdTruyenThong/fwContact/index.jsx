@@ -8,6 +8,7 @@ export default {
     init: () => {
         T.component['contact'] = {
             render: (viewId) => <SectionContact viewId={viewId} />,
+            text: 'Liên hệ',
             backgroundColor: '#c8e6f9',
         };
     },

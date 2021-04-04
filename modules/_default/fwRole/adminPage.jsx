@@ -51,8 +51,8 @@ class RoleModal extends AdminModal {
 class RolePage extends AdminPage {
     componentDidMount() {
         T.ready(() => T.showSearchBox());
-        this.props.getRolePage();
         T.onSearch = (searchText) => this.props.getRolePage(undefined, undefined, searchText ? { searchText } : null, () => { });
+        this.props.getRolePage();
     }
 
     edit = (e, item) => e.preventDefault() || this.roleModal.show(item);

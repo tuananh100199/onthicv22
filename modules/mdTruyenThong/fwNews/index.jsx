@@ -9,10 +9,12 @@ export default {
     init: () => {
         T.component['all news'] = {
             render: (viewId) => <SectionNewsList viewId={viewId} />,
+            text: 'Tất cả bài viết',
             backgroundColor: '#82b1ff',
         };
         T.component['last news'] = {
             render: (viewId) => <SectionNews viewId={viewId} />,
+            text: 'Bài viết mới nhất',
             backgroundColor: '#d7ccc8',
         };
     },
@@ -21,27 +23,19 @@ export default {
     },
     routes: [
         {
-            path: '/user/news/category',
+            path: '/user/category/news',
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') })
         },
         {
-            path: '/user/news/list',
+            path: '/user/news',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/news/edit/:newsId',
+            path: '/user/news/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/user/news/draft/edit/:draftId',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDraftEditPage') })
-        },
-        {
-            path: '/user/news/draft',
-            component: Loadable({ loading: Loading, loader: () => import('./adminWaitApprovalPage') })
-        },
-        {
-            path: '/news/item/:newsId',
+            path: '/news/:newsId',
             component: Loadable({ loading: Loading, loader: () => import('./homeNewsDetail') })
         },
         {

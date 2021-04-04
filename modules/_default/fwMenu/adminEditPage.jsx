@@ -2,8 +2,67 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateMenu, getMenu, createComponent, updateComponent, swapComponent, deleteComponent, getComponentViews } from './redux';
 import { Link } from 'react-router-dom';
-import ComponentModal from './componentModal';
-import { AdminPage, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, FormSelect, FormCheckbox } from 'view/component/AdminPage';
+
+class ComponentModal extends AdminModal {
+    state = { viewType: '<empty>', adapter: null };
+    componentDidMount() {
+        $(document).ready(() => this.onShown(() => this.itemClassname.focus()));
+        this.componentTypes = Object.keys(T.component).sort().map(key => ({ id: key, text: (T.component[key] && T.component[key].text) || key }));
+    }
+
+    onShow = ({ parentId, component }) => {
+        const { _id, className, style, viewId, viewType } = component || { _id: null, className: '', style: '', viewId: null, viewType: '<empty>' };
+        this.itemClassname.value(className);
+        this.itemStyle.value(style);
+        this.itemViewTyle.value(viewType || '<empty>');
+
+        this.setState({ _id, parentId, viewId: viewId || '' }, () => viewType && this.viewTypeChanged(viewType));
+    }
+
+    viewTypeChanged = (selectedType) => {
+        const selectedComponent = T.component[selectedType];
+        if (selectedComponent && selectedComponent.adapter && selectedComponent.getItem) {
+            this.setState({ adapter: selectedComponent.adapter }, () => {
+                selectedComponent.getItem(this.state.viewId, data => {
+                    this.itemViewItem.value(data && data.item ? { id: this.state.viewId, text: data.item.title } : null);
+                });
+            });
+        } else {
+            this.setState({ adapter: null });
+        }
+    }
+
+    onSubmit = () => {
+        const { _id, parentId, viewId } = this.state,
+            data = {
+                viewType: this.itemViewTyle.value(),
+                className: this.itemClassname.value().trim(),
+                style: this.itemStyle.value(),
+            };
+        if (data.style) data.style = data.style.trim();
+        if (viewId) data.viewId = viewId;
+
+        if (_id) {
+            this.props.onUpdate(_id, data, () => this.hide());
+        } else {
+            if (_id) data._id = _id;
+            this.props.onCreate(parentId, data, () => this.hide());
+        }
+    }
+
+    render = () => this.renderModal({
+        title: 'Thành phần giao diện',
+        body: <>
+            <FormTextBox ref={e => this.itemClassname = e} label='Classname' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: marginTop: 50px' readOnly={this.props.readOnly} />
+            <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={this.componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
+
+            <FormSelect ref={e => this.itemViewItem = e} label='Tên thành phần' data={this.state.adapter} onChange={data => this.setState({ viewId: data.id })} readOnly={this.props.readOnly}
+                style={{ display: this.state.adapter ? 'block' : 'none' }} />
+        </>,
+    });
+}
 
 class MenuEditPage extends AdminPage {
     state = { _id: null, priority: 1, title: '', link: '', view: 0, items: [], active: false };
@@ -21,7 +80,7 @@ class MenuEditPage extends AdminPage {
     getData = () => {
         this.props.getMenu(this.menuId, data => {
             if (data.error) {
-                T.notify('Lấy tin tức bị lỗi!', 'danger');
+                T.notify('Lấy thông tin menu bị lỗi!', 'danger');
                 this.props.history.push('/user/menu');
             } else if (data.menu) {
                 this.setState(data.menu);
@@ -52,53 +111,40 @@ class MenuEditPage extends AdminPage {
         isConfirm && this.props.deleteComponent(component._id, () => this.getData()));
 
     renderComponents = (hasUpdate, level, components) => components.map((component, index) => {
-        const buttons = [];
-        if (hasUpdate) {
-            buttons.push(
-                <a key={0} className='btn btn-info' href='#' onClick={e => this.showComponent(e, component._id, null)}>
-                    <i className='fa fa-lg fa-plus' />
-                </a>);
-
-            if (level > 0) {
-                buttons.push(
-                    <a key={1} className='btn btn-success' href='#' onClick={e => this.swapComponent(e, component, true)}>
-                        <i className='fa fa-lg fa-arrow-up' />
-                    </a>);
-                buttons.push(
-                    <a key={2} className='btn btn-success' href='#' onClick={e => this.swapComponent(e, component, false)}>
-                        <i className='fa fa-lg fa-arrow-down' />
-                    </a>);
-            }
-
-            buttons.push(
-                <a key={3} className='btn btn-primary' href='#' onClick={e => this.showComponent(e, null, component)}>
-                    <i className='fa fa-lg fa-edit' />
-                </a>);
-
-            if (level > 0) {
-                buttons.push(
-                    <a key={4} className='btn btn-danger' href='#' onClick={e => this.deleteComponent(e, component)}>
-                        <i className='fa fa-lg fa-trash' />
-                    </a>
-                );
-            }
+        let displayText = '<empty>',
+            mainStyle = { padding: '0 6px', margin: '6px 0', color: '#000' },
+            componentClassName = component.className.trim();
+        if (component.viewType && T.component[component.viewType]) {
+            const { text, backgroundColor } = T.component[component.viewType];
+            displayText = text || component.viewType;
+            mainStyle.backgroundColor = backgroundColor;
         }
-
-        const mainStyle = { padding: '0 6px', margin: '6px 0', color: '#000' };
-        if (component.viewType) {
-            if (T.component[component.viewType]) {
-                mainStyle.backgroundColor = T.component[component.viewType].backgroundColor;
-            }
-            component.viewName = '';
-        }
-        let displayText = component.viewType + (component.viewName ? ` - ${component.viewName} ` : '');
-        if (component.className.trim() != '') displayText += ' (' + component.className.trim() + ')';
+        displayText += (component.viewName && component.viewName !== '<empty>' ? `: ${component.viewName} ` : '') + (componentClassName ? ` (${componentClassName})` : '');
 
         return (
             <div key={index} data-level={level} className={'component ' + component.className} style={mainStyle}>
                 <p style={{ width: '100%' }}>{displayText}</p>
                 {component.components && component.components.length > 0 ? this.renderComponents(hasUpdate, level + 1, component.components) : ''}
-                <div className='btn-group btn-group-sm control'>{buttons}</div>
+                {hasUpdate ?
+                    <div className='btn-group btn-group-sm control'>
+                        <a className='btn btn-info' href='#' onClick={e => this.showComponent(e, component._id, null)}>
+                            <i className='fa fa-lg fa-plus' />
+                        </a>
+                        {level ?
+                            <a className='btn btn-success' href='#' onClick={e => this.swapComponent(e, component, true)}>
+                                <i className='fa fa-lg fa-arrow-up' />
+                            </a> : null}
+                        {level ? <a className='btn btn-success' href='#' onClick={e => this.swapComponent(e, component, false)}>
+                            <i className='fa fa-lg fa-arrow-down' />
+                        </a> : null}
+                        <a className='btn btn-primary' href='#' onClick={e => this.showComponent(e, null, component)}>
+                            <i className='fa fa-lg fa-edit' />
+                        </a>
+                        {level ?
+                            <a className='btn btn-danger' href='#' onClick={e => this.deleteComponent(e, component)}>
+                                <i className='fa fa-lg fa-trash' />
+                            </a> : null}
+                    </div> : null}
             </div>
         );
     });

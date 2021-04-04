@@ -1,4 +1,6 @@
 module.exports = app => {
+    app.componentModel['staff group'] = app.model.staffGroup;
+
     app.get('/api/staff-group/all', app.permission.check('component:read'), (req, res) =>
         app.model.staffGroup.getAll((error, list) => res.send({ error, list })));
 
