@@ -9,10 +9,12 @@ export default {
     init: () => {
         T.component['all news'] = {
             render: (viewId) => <SectionNewsList viewId={viewId} />,
+            text: 'Tất cả bài viết',
             backgroundColor: '#82b1ff',
         };
         T.component['last news'] = {
             render: (viewId) => <SectionNews viewId={viewId} />,
+            text: 'Bài viết mới nhất',
             backgroundColor: '#d7ccc8',
         };
     },

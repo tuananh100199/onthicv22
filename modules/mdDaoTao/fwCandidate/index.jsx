@@ -9,6 +9,7 @@ export default {
     init: () => {
         T.component['advisory form'] = {
             render: (viewId) => <SectionAdvisoryForm viewId={viewId} />,
+            text: 'Form đăng ký tư vấn',
             backgroundColor: '#fb3993',
             adapter: ajaxSelectCourseType,
             getItem: ajaxGetCourseType,
