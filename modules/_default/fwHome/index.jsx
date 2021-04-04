@@ -6,7 +6,7 @@ import { combineReducers } from 'redux';
 import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
 import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
 import listContent, { ajaxSelectListContent, ajaxGetListContent } from './redux/reduxListContent';
-import staffGroup from './redux/reduxStaffGroup';
+import staffGroup, { ajaxGetStaffGroup } from './redux/reduxStaffGroup';
 import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
@@ -42,10 +42,6 @@ export default {
             adapter: ajaxSelectCarousel,
             getItem: ajaxGetCarousel,
         };
-        // T.component['staff group'] = {
-        //     render: (viewId) => <SectionStaffGroup viewId={viewId} />,
-        //     backgroundColor: '#e6ee9c',
-        // };
         T.component['statistic'] = {
             render: (viewId) => <SectionStatistic viewId={viewId} />,
             text: 'Thống kê',
@@ -66,6 +62,12 @@ export default {
             backgroundColor: '#ef9a9b',
             adapter: ajaxSelectListVideo,
             getItem: ajaxGetListVideo,
+        };
+        T.component['staff group'] = {
+            render: (viewId) => <SectionStaffGroup viewId={viewId} />,
+            text: 'Nhóm nhân viên',
+            backgroundColor: '#e6ee9c',
+            getItem: ajaxGetStaffGroup,
         };
     },
     redux: {
