@@ -124,7 +124,7 @@ export function createDraftNewsDefault(done) {
             abstract: JSON.stringify({ vi: '', en: '' }),
             content: JSON.stringify({ vi: '', en: '' }),
         }, passValue = {
-            title: '{\"vi\":\"Bản nháp\",\"en\":\"Draft\"}',
+            title: 'Bản nháp',
             editorId: state.system.user._id,
             documentType: 'news',
             documentJson: JSON.stringify(docData),

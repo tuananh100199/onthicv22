@@ -145,7 +145,7 @@ class SubMenusPage extends React.Component {
             <main className='app-content'>
                 <div className='app-title'>
                     <div>
-                        <h1><i className={'fa ' + this.props.headerIcon} /> {this.props.customTitle ? this.props.customTitle : parentMenu ? parentMenu.title : ""}</h1>
+                        <h1><i className={'fa ' + this.props.headerIcon} /> {this.props.customTitle ? this.props.customTitle : parentMenu ? parentMenu.title : ''}</h1>
                         <p dangerouslySetInnerHTML={{ __html: this.props.customBelowTitle ? `Hạng : ${this.props.customBelowTitle}` : '' }} />
                     </div>
                     <ul className='app-breadcrumb breadcrumb'>
