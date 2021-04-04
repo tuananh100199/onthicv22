@@ -4,12 +4,10 @@ import { homeGetStatistic } from './redux/reduxStatistic';
 import CountUp from 'view/js/countUp';
 
 class StatisticNumber extends React.Component {
-    valueElement = React.createRef();
-
     componentDidMount() {
         setTimeout(() => {
             const endValue = this.props.value ? parseInt(this.props.value) : 0;
-            new CountUp(this.valueElement.current, 0, endValue, 0, 2, { separator: '.', decimal: ',' }).start();
+            new CountUp(this.valueElement, 0, endValue, 0, 2, { separator: '.', decimal: ',' }).start();
         }, 100);
     }
 
@@ -17,7 +15,7 @@ class StatisticNumber extends React.Component {
         return (
             <div className={this.props.itemClassName} >
                 <div className='text-center milestone'>
-                    <div className='milestone_counter' ref={this.valueElement}></div>
+                    <div className='milestone_counter' ref={e => this.valueElement = e}></div>
                     <div className='milestone_text'>{this.props.title}</div>
                 </div>
             </div>

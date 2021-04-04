@@ -6,14 +6,7 @@ import ImageBox from 'view/component/ImageBox';
 import Editor from 'view/component/CkEditor4';
 
 class NewsEditPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { item: null };
-        this.newsLink = React.createRef();
-        this.imageBox = React.createRef();
-        this.viEditor = React.createRef();
-    }
-
+    state = { item: null };
     componentDidMount() {
         T.ready('/user/news/list', () => {
             this.getData();
@@ -41,15 +34,15 @@ class NewsEditPage extends React.Component {
                 if (data.item.stopPost)
                     neNewsStopPost.val(T.dateToText(data.item.stopPost, 'dd/mm/yyyy HH:MM')).datetimepicker('update');
                 if (data.item.link) {
-                    $(this.newsLink.current).html(T.rootUrl + '/tintuc/' + data.item.link).attr('href', '/tintuc/' + data.item.link);
+                    $(this.newsLink).html(T.rootUrl + '/tintuc/' + data.item.link).attr('href', '/tintuc/' + data.item.link);
                 } else {
-                    $(this.newsLink.current).html('').attr('');
+                    $(this.newsLink).html('');
                 }
                 data.image = data.item.image ? data.item.image : '/img/avatar.jpg';
-                this.imageBox.current.setData('news:' + (data.item._id ? data.item._id : 'new'));
+                this.imageBox.setData('news:' + (data.item._id ? data.item._id : 'new'));
                 $('#neNewsViTitle').val(data.item.title);
                 $('#neNewsViAbstract').val(data.item.abstract);
-                this.viEditor.current.html(data.item.content);
+                this.editor.html(data.item.content);
                 this.setState(data);
             } else {
                 this.props.history.push('/user/news/list');
@@ -67,9 +60,9 @@ class NewsEditPage extends React.Component {
 
     newsLinkChange = (e) => {
         if (e.target.value) {
-            $(this.newsLink.current).html(T.rootUrl + '/tintuc/' + e.target.value).attr('href', '/tintuc/' + e.target.value);
+            $(this.newsLink).html(T.rootUrl + '/tintuc/' + e.target.value).attr('href', '/tintuc/' + e.target.value);
         } else {
-            $(this.newsLink.current).html('').attr('href', '#');
+            $(this.newsLink).html('').attr('href', '#');
         }
     }
 
@@ -82,7 +75,7 @@ class NewsEditPage extends React.Component {
                 link: $('#neNewsLink').val().trim(),
                 active: this.state.item.active,
                 abstract: $('#neNewsViAbstract').val(),
-                content: this.viEditor.current.html()
+                content: this.editor.html()
             };
         if (neNewsStartPost) changes.startPost = T.formatDate(neNewsStartPost);
         if (neNewsStopPost) changes.stopPost = T.formatDate(neNewsStopPost);
@@ -150,7 +143,7 @@ class NewsEditPage extends React.Component {
                                     <div className='col-md-6'>
                                         <div className='form-group'>
                                             <label className='control-label'>Hình ảnh</label>
-                                            <ImageBox ref={this.imageBox} postUrl='/user/upload' uploadType='NewsImage' image={this.state.image} readOnly={!currentPermissions.includes('news:write')} />
+                                            <ImageBox ref={e => this.imageBox = e} postUrl='/user/upload' uploadType='NewsImage' image={this.state.image} readOnly={!currentPermissions.includes('news:write')} />
                                         </div>
                                     </div>
                                     <div className='col-md-6'>
@@ -188,7 +181,7 @@ class NewsEditPage extends React.Component {
                                 </div>
                                 <div className='form-group'>
                                     <label className='control-label' style={{ display: 'flex' }}>Link truyền thông:&nbsp;
-                                        <a href='#' ref={this.newsLink} style={{ fontWeight: 'bold' }} target='_blank' />
+                                        <a href='#' ref={e => this.newsLink = e} style={{ fontWeight: 'bold' }} target='_blank' />
                                     </label>
                                     <input className='form-control' id='neNewsLink' type='text' placeholder='Link truyền thông' defaultValue={item.link} readOnly={readOnly}
                                         onChange={this.newsLinkChange} />
@@ -230,7 +223,7 @@ class NewsEditPage extends React.Component {
                                     style={{ minHeight: '100px', marginBottom: '12px' }} />
 
                                 <label className='control-label'>Nội dung bài viết</label>
-                                <Editor ref={this.viEditor} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=news' readOnly={readOnly} />
+                                <Editor ref={e => this.editor = e} height='400px' placeholder='Nội dung bài biết' uploadUrl='/user/upload?category=news' readOnly={readOnly} />
                             </div>
                         </div>
                     </div>
