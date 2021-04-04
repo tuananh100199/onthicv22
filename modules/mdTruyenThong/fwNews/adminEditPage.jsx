@@ -26,7 +26,7 @@ class NewsEditPage extends AdminPage {
                     this.itemImage.setData('news:' + _id);
 
                     const newsCategories = data.categories.map(item => ({ id: item.id, text: item.text }));
-                    this.setState({ _id, title, link, image, categories: newsCategories }, () => this.itemCategories.value(categories));
+                    this.setState({ _id, title, link, image, categories: newsCategories }, () => this.itemCategories.value(categories.map(item => item._id)));
 
                     this.itemTitle.focus();
                 } else {
@@ -41,7 +41,7 @@ class NewsEditPage extends AdminPage {
         title: this.itemTitle.value(),
         categories: this.itemCategories.value(),
         active: this.itemActive.value(),
-        link: this.itemLink.value().trim(),
+        link: this.itemLink.value(),
         abstract: this.itemAbstract.value(),
         content: this.itemContent.html(),
         startPost: this.itemStartPost.value(),

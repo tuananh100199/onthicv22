@@ -3,7 +3,6 @@ T.initCookiePage('pageNews');
 
 // Reducer ------------------------------------------------------------------------------------------------------------
 const NewsGetNewsPage = 'NewsGetNewsPage';
-const NewsGetNews = 'NewsGetNews';
 const NewsGetNewsPageByUser = 'NewsGetNewsPageByUser';
 const NewsGetNewsByUser = 'NewsGetNewsByUser';
 const NewsGetNewsFeed = 'NewsGetNewsFeed';
@@ -12,8 +11,6 @@ export default function newsReducer(state = null, data) {
     switch (data.type) {
         case NewsGetNewsPage:
             return Object.assign({}, state, { page: data.page });
-        case NewsGetNews:
-            return Object.assign({}, state, { news: data.item, categories: data.categories });
 
         case NewsGetNewsPageByUser:
             if (state == null || state.userCondition != data.condition) {
@@ -95,7 +92,7 @@ export function updateNews(_id, changes, done) {
 
 export function swapNews(_id, isMoveUp) {
     return dispatch => {
-        const url = '/api/news/swap/';
+        const url = '/api/news/swap';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự tin tức bị lỗi!', 'danger');
@@ -124,7 +121,7 @@ export function deleteNews(_id) {
 }
 
 export function getNews(_id, done) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         const url = '/api/news';
         T.get(url, { _id }, data => {
             if (data.error) {

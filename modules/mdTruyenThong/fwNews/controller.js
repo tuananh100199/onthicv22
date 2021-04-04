@@ -45,12 +45,12 @@ module.exports = (app) => {
     });
 
     app.put('/api/news', app.permission.check('news:write'), (req, res) => {
-        const changes = { $set: {}, $unset: {} };
-        if (req.body.changes.startPost == 'Invalid Date') {
+        const changes = { $set: req.body.changes, $unset: {} };
+        if (changes['$set'].startPost == 'Invalid Date') {
             changes['$unset'].startPost = 1;
             delete changes['$set'].startPost
         }
-        if (req.body.changes.stopPost == 'Invalid Date') {
+        if (changes['$set'].stopPost == 'Invalid Date') {
             changes['$unset'].stopPost = 1;
             delete changes['$set'].stopPost
         }
