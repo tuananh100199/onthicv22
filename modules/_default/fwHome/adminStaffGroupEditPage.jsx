@@ -204,7 +204,7 @@ class StaffGroupEditPage extends React.Component {
         return (
             <main className='app-content' >
                 <div className='app-title'>
-                    <h1><i className='fa fa-group' /> Nhóm nhân viên: {title.vi}</h1>
+                    <h1><i className='fa fa-group' /> Nhóm nhân viên: DOING TASK</h1>
                     <ul className='app-breadcrumb breadcrumb'>
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         &nbsp;/&nbsp;
