@@ -1,8 +1,11 @@
 module.exports = app => {
+    app.componentModel['list contents'] = app.model.listContent;
+
     app.get('/api/list-content/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.listContent.getPage(pageNumber, pageSize, {}, (error, page) => {
+            console.log('page', page)
             res.send({ error: error || page == null ? 'Content list are not ready!' : null, page });
         });
     });

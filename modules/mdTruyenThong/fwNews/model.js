@@ -66,8 +66,8 @@ module.exports = app => {
             }
         }),
 
-        get: (_id, done) => model.findById(_id, done),
-        getByLink: (link, done) => model.findOne({ link }, done),
+        get: (condition, done) => typeof condition == 'string' ?
+            model.findById(condition, done) : model.findOne(condition, done),
 
         read: (condition, done) => model.find(condition).populate('categories').exec((error, items) => {
             if (error) {

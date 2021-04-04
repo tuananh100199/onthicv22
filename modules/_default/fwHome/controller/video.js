@@ -1,4 +1,6 @@
 module.exports = app => {
+    app.componentModel['video'] = app.model.video;
+
     app.get('/api/video/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);

@@ -62,24 +62,32 @@ module.exports = app => {
         app.model.menu.getAll({}, (error, menuTree) => res.send({ error, items: menuTree }));
     });
 
-    app.get('/api/menu', app.permission.check('menu:read'), (req, res) => { //TODO: hàm này coi lại nha Tùng
-        app.model.menu.get(req.query._id, (error, menu) => {
+    app.get('/api/menu', app.permission.check('menu:read'), (req, res) => {
+        const { _id } = req.query;
+        app.model.menu.get(_id, (error, menu) => {
             if (error || menu == null) {
                 res.send({ error: 'Lỗi khi lấy menu!' });
             } else {
-                const menuComponentIds = [],
-                    menuComponents = [];
                 const getComponent = (level, index, componentIds, components, done) => {
                     if (index < componentIds.length) {
                         app.model.component.get(componentIds[index], (error, component) => {
                             if (error || component == null) {
-                                res.send({ error: 'Lỗi khi lấy thành phần trang!' });
+                                res.send({ error: 'Lỗi khi lấy component!' });
                             } else {
                                 component = app.clone(component);
                                 component.components = [];
                                 components.push(component);
 
-                                const getNextComponent = (viewName) => {
+                                new Promise(resolve => {
+                                    const componentModel = component.viewType && component.viewId ? app.componentModel[component.viewType] : null;
+                                    if (componentModel == null) {
+                                        resolve('<empty>');
+                                    } else if (componentModel.get) {
+                                        componentModel.get(component.viewId, (_, item) => resolve(item ? item.title : '<empty>'));
+                                    } else {
+                                        resolve(component.viewType);
+                                    }
+                                }).then((viewName) => {
                                     component.viewName = viewName;
                                     if (component.componentIds) {
                                         getComponent(level + 1, 0, component.componentIds, component.components, () => {
@@ -88,26 +96,7 @@ module.exports = app => {
                                     } else {
                                         getComponent(level, index + 1, componentIds, components, done);
                                     }
-                                };
-                                if (component.viewType && component.viewId) {
-                                    const viewType = component.viewType;
-                                    if (component.viewId && (['carousel', 'content', 'video', 'statistic', 'list contents'].indexOf(viewType) != -1)) {
-                                        app.model[viewType].get(component.viewId, (error, item) =>
-                                            getNextComponent(item ? item.title : '<empty>'));
-                                    } else if (component.viewId && viewType == 'list videos') {
-                                        app.model.listVideo.get(component.viewId, (error, item) =>
-                                            getNextComponent(item ? item.title : '<empty>'));
-                                    } else if (component.viewId && viewType == 'staff group') {
-                                        app.model.staffGroup.get(component.viewId, (error, item) =>
-                                            getNextComponent(item ? item.title : '<empty>'));
-                                    } else if (['all news', 'last news', 'subscribe', 'all staffs', 'all courses', 'last course', 'all course types'].indexOf(viewType) != -1) {
-                                        getNextComponent(viewType);
-                                    } else {
-                                        getNextComponent('<empty>');
-                                    }
-                                } else {
-                                    getNextComponent('<empty>');
-                                }
+                                });
                             }
                         });
                     } else {
@@ -115,23 +104,29 @@ module.exports = app => {
                     }
                 }
 
-                const getAllComponents = () => {
+                const menuComponentIds = [],
+                    menuComponents = [];
+                new Promise((resolve) => {
+                    if (menu.componentId == null || menu.componentId == undefined) {
+                        app.model.component.create({ className: 'container', viewType: '<empty>' }, (error, component) => {
+                            if (component) {
+                                menu.componentId = component._id;
+                                menu.save(resolve);
+                            } else {
+                                res.send({ error: 'Tạo component bị lỗi!' });
+                            }
+                        });
+                    } else {
+                        resolve();
+                    }
+                }).then(() => {
                     menuComponentIds.push(menu.componentId);
                     getComponent(0, 0, menuComponentIds, menuComponents, () => {
                         menu = app.clone(menu);
                         menu.component = menuComponents[0];
                         res.send({ menu });
                     });
-                }
-
-                if (menu.componentId == null || menu.componentId == undefined) {
-                    app.model.component.create({ className: 'container', viewType: '<empty>' }, (error, component) => {
-                        menu.componentId = component._id;
-                        menu.save(getAllComponents);
-                    });
-                } else {
-                    getAllComponents();
-                }
+                });
             }
         });
     });
@@ -144,9 +139,7 @@ module.exports = app => {
 
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
         app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
-            if (error == null) {
-                app.buildAppMenus(null, () => app.worker.refreshState({ menuUpdate: true }));
-            }
+            if (error == null) app.buildAppMenus();
             res.send({ error, item })
         })
     );
@@ -183,7 +176,6 @@ module.exports = app => {
         },
     });
 
-
     // Component ------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/menu/component', app.permission.check('component:write'), (req, res) => {
         app.model.component.get(req.body.parentId, (error, parent) => {
@@ -218,65 +210,13 @@ module.exports = app => {
         app.model.component.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => { //TODO: hàm này coi lại nha Tùng
-        const pageType = req.params.pageType;
-        if (pageType == 'carousel') {
-            app.model.carousel.getByActive(true, (error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } else if (pageType == 'staff group') {
-            app.model.staffGroup.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } else if (pageType == 'video') {
-            app.model.video.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        }
-        else if (pageType == 'content') {
-            app.model.content.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } else if (pageType == 'statistic') {
-            app.model.statistic.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } else if (pageType == 'list videos') {
-            app.model.listVideo.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } else if (pageType == 'list contents') {
-            app.model.listContent.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
-        } else if (pageType == 'course') {
-            app.model.course.getAll((error, items) => {
-                res.send({
-                    error,
-                    items: items.map(item => ({ _id: item._id, text: item.title }))
-                })
-            });
+    app.get('/api/menu/component/type/:pageType', app.permission.check('component:read'), (req, res) => {
+        const componentModel = app.componentModel[req.params.pageType];
+        if (componentModel && componentModel.getAll) {
+            componentModel.getAll((error, items) => res.send({
+                error,
+                items: items.map(item => ({ _id: item._id, text: item.title }))
+            }));
         } else {
             res.send({ error: 'Lỗi!' });
         }

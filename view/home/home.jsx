@@ -49,18 +49,16 @@ store.dispatch(getSystemState());
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {
-    loader = React.createRef();
     loginModal = React.createRef();
     state = { routes: [], isMatch: true };
-
     componentDidMount() {
         const done = () => {
-            if ($(this.loader.current).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
+            if ($(this.loader).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
                 const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
                 handlePaddingFooter()
                 setTimeout(handlePaddingFooter, 250)
                 $(window).on('resize', handlePaddingFooter);
-                this.loader.current.isShown() && this.loader.current.hide();
+                this.loader.isShown() && this.loader.hide();
                 let menuList = [...this.props.system.menus];
                 while (menuList.length) {
                     const currentMenu = menuList.pop();
@@ -92,7 +90,7 @@ class App extends React.Component {
         if (this.props.system && this.props.system.user) {
             this.props.logout();
         } else {
-            this.loginModal.current.showLogin();
+            this.loginModal.showLogin();
         }
     };
 
@@ -108,9 +106,9 @@ class App extends React.Component {
                         </Switch>
                         <div id='paddingFooterSection' style={{ marginTop: '15px' }} />
                         <HomeFooter />
-                        <LoginModal ref={this.loginModal} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
+                        <LoginModal ref={e => this.loginModal = e} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />
-                        <Loader ref={this.loader} />
+                        <Loader ref={e => this.loader = e} />
                     </React.Fragment> :
                     <React.Fragment>
                         <Switch>

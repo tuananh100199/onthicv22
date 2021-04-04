@@ -1,4 +1,6 @@
 module.exports = app => {
+    app.componentModel['content'] = app.model.content;
+
     app.get('/api/content/page/:pageNumber/:pageSize', app.permission.check('component:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);

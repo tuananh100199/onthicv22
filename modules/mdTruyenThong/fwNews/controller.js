@@ -206,7 +206,7 @@ module.exports = (app) => {
         app.model.news.readByLink(req.params.newsLink, (error, item) => readNews(req, res, error, item));
     });
     app.put('/news/item/check-link', (req, res) => {
-        app.model.news.getByLink(req.body.link, (error, item) => {
+        app.model.news.get({ link: req.body.link }, (error, item) => {
             res.send({
                 error: error ? 'Lỗi hệ thống' : item == null || item._id == req.body._id ? null : 'Link không hợp lệ',
             });

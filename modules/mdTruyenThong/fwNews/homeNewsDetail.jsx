@@ -5,19 +5,15 @@ import NewsFeed from 'view/component/NewsFeed';
 
 class NewsDetail extends React.Component {
     state = {};
-    background = React.createRef();
-
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
-        this.props.getNewsByUser(params.id, params.link, () => {
-            $(this.background.current).parallax();
-        });
+        this.props.getNewsByUser(params.id, params.link, () => $(this.background).parallax());
     }
 
     componentWillUnmount() {
-        $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
+        $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy');
     }
 
     componentDidUpdate(prevProps) {
@@ -25,16 +21,15 @@ class NewsDetail extends React.Component {
             T.ftcoAnimate();
             $('html, body').stop().animate({ scrollTop: 0 }, 500, 'swing');
         }, 250);
+
         if (prevProps.location.pathname != window.location.pathname) {
             let url = window.location.pathname,
                 params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
             this.setState({ _id: params.id, link: params.link });
-            $('.parallax-mirror').length != 0 && $(this.background.current).parallax('destroy');
+            $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy');
             this.props.getNewsByUser(params.id, params.link, (data) => {
                 if (data.item) {
-                    $(this.background.current).parallax({
-                        imageSrc: data.item.image
-                    });
+                    $(this.background).parallax({ imageSrc: data.item.image });
                 }
             });
         }
@@ -50,9 +45,9 @@ class NewsDetail extends React.Component {
                     <span><small>{item.title}</small></span>
                 </div>
             );
-            return [
-                <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>
-                    <div ref={this.background} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={item ? item.image : '/img/avatar.jpg'} data-speed='0.8' />
+            return <>
+                <div className='home-contact d-flex flex-column align-items-start justify-content-end'>
+                    <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={item ? item.image : '/img/avatar.jpg'} data-speed='0.8' />
                     <div className='home_overlay'><img src='/img/home_overlay.png' alt='' /></div>
                     <div className='home_container'>
                         <div className='container'>
@@ -68,8 +63,8 @@ class NewsDetail extends React.Component {
                             </div>
                         </div>
                     </div>
-                </div>,
-                <div key={1} className='contact'>
+                </div>
+                <div className='contact'>
                     <div className='container-fluid'>
                         <div className='row'>
                             <div className='col-xl-8 col-lg-6 col-12'>
@@ -87,7 +82,7 @@ class NewsDetail extends React.Component {
                         </div>
                     </div>
                 </div>
-            ];
+            </>;
         }
     }
 }

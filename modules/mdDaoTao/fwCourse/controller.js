@@ -1,4 +1,6 @@
 module.exports = (app) => {
+    app.componentModel['course'] = app.model.course;
+
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {

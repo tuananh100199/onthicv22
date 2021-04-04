@@ -21,7 +21,7 @@ class MenuEditPage extends AdminPage {
     getData = () => {
         this.props.getMenu(this.menuId, data => {
             if (data.error) {
-                T.notify('Lấy tin tức bị lỗi!', 'danger');
+                T.notify('Lấy thông tin menu bị lỗi!', 'danger');
                 this.props.history.push('/user/menu');
             } else if (data.menu) {
                 this.setState(data.menu);
