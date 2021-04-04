@@ -8,7 +8,6 @@ class ComponentModal extends AdminModal {
     state = { viewType: '<empty>', adapter: null };
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemClassname.focus()));
-        console.log(Object.keys(T.component).sort())
         this.componentTypes = Object.keys(T.component).sort().map(key => ({ id: key, text: (T.component[key] && T.component[key].text) || key }));
     }
 
@@ -39,8 +38,9 @@ class ComponentModal extends AdminModal {
             data = {
                 viewType: this.itemViewTyle.value(),
                 className: this.itemClassname.value().trim(),
-                style: this.itemStyle.value().trim(),
+                style: this.itemStyle.value(),
             };
+        if (data.style) data.style = data.style.trim();
         if (viewId) data.viewId = viewId;
 
         if (_id) {
@@ -51,19 +51,17 @@ class ComponentModal extends AdminModal {
         }
     }
 
-    render = () => {
-        return this.renderModal({
-            title: 'Thành phần giao diện',
-            body: <>
-                <FormTextBox ref={e => this.itemClassname = e} label='Classname' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: marginTop: 50px' readOnly={this.props.readOnly} />
-                <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={this.componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
+    render = () => this.renderModal({
+        title: 'Thành phần giao diện',
+        body: <>
+            <FormTextBox ref={e => this.itemClassname = e} label='Classname' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: marginTop: 50px' readOnly={this.props.readOnly} />
+            <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={this.componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
 
-                <FormSelect ref={e => this.itemViewItem = e} label='Tên thành phần' data={this.state.adapter} onChange={data => this.setState({ viewId: data.id })} readOnly={this.props.readOnly}
-                    style={{ display: this.state.adapter ? 'block' : 'none' }} />
-            </>,
-        });
-    }
+            <FormSelect ref={e => this.itemViewItem = e} label='Tên thành phần' data={this.state.adapter} onChange={data => this.setState({ viewId: data.id })} readOnly={this.props.readOnly}
+                style={{ display: this.state.adapter ? 'block' : 'none' }} />
+        </>,
+    });
 }
 
 class MenuEditPage extends AdminPage {

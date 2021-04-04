@@ -25,13 +25,7 @@ module.exports = app => {
                     item.image = '/img/news/' + item._id + '.jpg';
                     const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                         destPath = app.path.join(app.publicPath, item.image);
-                    app.fs.copyFile(srcPath, destPath, error => {
-                        if (error) {
-                            done(error);
-                        } else {
-                            item.save(done);
-                        }
-                    });
+                    app.fs.copyFile(srcPath, destPath, error => error ? done(error) : item.save(done));
                 }
             });
         }),
@@ -43,49 +37,27 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-
-                model.find(condition).sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
-                    result.list = (error ? [] : items).map(item => app.clone(item, { content: '' }));
+                model.find(condition).select('-content').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                    result.list = list || [];
                     done(error, result);
                 });
-            }
-        }),
-
-        getAll: done => model.find({}).sort({ priority: -1 }).exec(done),
-
-        getAllActive: done => model.find({ active: true }).sort({ priority: -1 }).exec((error, items) => {
-            if (error) {
-                done(error);
-            } else {
-                let news = items.map(item => {
-                    item = JSON.parse(JSON.stringify(item));
-                    item.content = '';
-                    return item;
-                });
-                done(null, news);
             }
         }),
 
         get: (condition, done) => typeof condition == 'string' ?
             model.findById(condition, done) : model.findOne(condition, done),
 
-        read: (condition, done) => model.find(condition).populate('categories').exec((error, items) => {
-            if (error) {
-                done(error);
-            } else if (items == null || items.length != 1) {
-                done('Invalid Id!');
+        read: (condition, done) => model.findOne(condition).populate('categories').exec((error, item) => {
+            if (error || item == null) {
+                done(error || 'Invalid Id!');
             } else {
-                items[0].view++;
-                items[0].save((error, item) => {
-                    app.io.emit('news:item-view-changed', item._id, item.view);
-                    done(error, item);
-                });
+                item.view++;
+                item.save(done);
+                // app.io.emit('news:item-view-changed', item._id, item.view);
             }
         }),
-        readById: (_id, done) => app.model.news.read({ _id, active: true }, done),
-        readByLink: (link, done) => app.model.news.read({ link, active: true }, done),
 
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, { $set: changes }, { new: true }, done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {

@@ -47,7 +47,7 @@ class DashboardPage extends AdminPage {
                         <DashboardIcon type='primary' icon='fa-users' title='Nguời dùng' value={numberOfUser} link='/user/member' readOnly={permission.settings} />
                     </div>
                     <div className='col-md-6 col-lg-3'>
-                        <DashboardIcon type='info' icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news/list' readOnly={permission.settings} />
+                        <DashboardIcon type='info' icon='fa-file' title='Tin tức' value={numberOfNews} link='/user/news' readOnly={permission.settings} />
                     </div>
                     <div className='col-md-6 col-lg-3'>
                         <DashboardIcon type='primary' icon='fa-book' title='Khóa học' value={numberOfCourse} link='/user/course/list' readOnly={permission.settings} />

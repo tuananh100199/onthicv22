@@ -27,20 +27,12 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') })
         },
         {
-            path: '/user/news/list',
+            path: '/user/news',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/news/edit/:newsId',
+            path: '/user/news/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
-        },
-        {
-            path: '/user/news/draft/edit/:draftId',
-            component: Loadable({ loading: Loading, loader: () => import('./adminDraftEditPage') })
-        },
-        {
-            path: '/user/news/draft',
-            component: Loadable({ loading: Loading, loader: () => import('./adminWaitApprovalPage') })
         },
         {
             path: '/news/item/:newsId',
