@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStaffGroupItem, updateStaffGroup, addStaffIntoGroup, updateStaffInGroup, removeStaffFromGroup, swapStaffInGroup } from './redux/reduxStaffGroup';
+import { getStaffGroup, updateStaffGroup } from './redux/reduxStaffGroup';
 import { getAllStaffs } from '../fwUser/redux';
 import { Link } from 'react-router-dom';
 import Editor from 'view/component/CkEditor4';
@@ -95,7 +95,7 @@ class StaffGroupEditPage extends React.Component {
             const route = T.routeMatcher('/user/staff-group/:staffGroupId'),
                 params = route.parse(window.location.pathname);
 
-            this.props.getStaffGroupItem(params.staffGroupId, data => {
+            this.props.getStaffGroup(params.staffGroupId, data => {
                 if (data.error) {
                     T.notify('Lấy nhóm nhân viên bị lỗi!', 'danger');
                     this.props.history.push('/user/component');
@@ -123,20 +123,20 @@ class StaffGroupEditPage extends React.Component {
     };
 
     add = (userId, content) => {
-        this.props.addStaffIntoGroup(userId, content, () => this.modal.current.hide());
+        // this.props.addStaffIntoGroup(userId, content, () => this.modal.current.hide());
     };
 
     update = (index, userId, content) => {
-        this.props.updateStaffInGroup(index, userId, content, () => this.modal.current.hide());
+        // this.props.updateStaffInGroup(index, userId, content, () => this.modal.current.hide());
     };
 
     remove = (e, user) => {
-        this.props.removeStaffFromGroup(user._id);
+        // this.props.removeStaffFromGroup(user._id);
         e.preventDefault();
     };
 
     swap = (e, user, isMoveUp) => {
-        this.props.swapStaffInGroup(user._id, isMoveUp);
+        // this.props.swapStaffInGroup(user._id, isMoveUp);
         e.preventDefault();
     };
 
@@ -240,6 +240,6 @@ class StaffGroupEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, staffGroup: state.staffGroup, user: state.user });
-const mapActionsToProps = { getStaffGroupItem, updateStaffGroup, addStaffIntoGroup, updateStaffInGroup, removeStaffFromGroup, swapStaffInGroup, getAllStaffs };
+const mapStateToProps = state => ({ system: state.system, component: state.component, user: state.user });
+const mapActionsToProps = { getStaffGroup, updateStaffGroup, getAllStaffs };
 export default connect(mapStateToProps, mapActionsToProps)(StaffGroupEditPage);

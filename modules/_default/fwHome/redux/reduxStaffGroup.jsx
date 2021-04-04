@@ -61,7 +61,7 @@ export function createStaffGroup(data, done) {
                 T.notify('Tạo nhóm nhân viên bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                dispatch(getAllStaffGroups());
+                dispatch(getStaffGroupAll());
                 if (done) done(data);
             }
         }, error => console.error(`POST: ${url}. ${error}`))
@@ -77,7 +77,7 @@ export function updateStaffGroup(_id, changes, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
                 done && done(data.error);
             } else {
-                dispatch(getAllStaffGroups());
+                dispatch(getStaffGroupAll());
                 dispatch({ type: StaffGroupUpdate, item: data.item });
                 done && done();
             }
