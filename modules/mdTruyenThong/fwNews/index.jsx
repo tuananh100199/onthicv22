@@ -23,7 +23,7 @@ export default {
     },
     routes: [
         {
-            path: '/user/news/category',
+            path: '/user/category/news',
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') })
         },
         {
@@ -35,7 +35,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/news/item/:newsId',
+            path: '/news/:newsId',
             component: Loadable({ loading: Loading, loader: () => import('./homeNewsDetail') })
         },
         {

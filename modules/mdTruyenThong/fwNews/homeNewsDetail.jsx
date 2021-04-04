@@ -7,7 +7,7 @@ class NewsDetail extends React.Component {
     state = {};
     componentDidMount() {
         let url = window.location.pathname,
-            params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
+            params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/:id').parse(url);
         this.setState({ _id: params.id, link: params.link });
         this.props.getNewsByUser(params.id, params.link, () => $(this.background).parallax());
     }
@@ -24,7 +24,7 @@ class NewsDetail extends React.Component {
 
         if (prevProps.location.pathname != window.location.pathname) {
             let url = window.location.pathname,
-                params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/item/:id').parse(url);
+                params = T.routeMatcher(url.startsWith('/tintuc/') ? '/tintuc/:link' : '/news/:id').parse(url);
             this.setState({ _id: params.id, link: params.link });
             $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy');
             this.props.getNewsByUser(params.id, params.link, (data) => {

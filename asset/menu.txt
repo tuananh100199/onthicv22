@@ -13,7 +13,7 @@
 	3002 - Liên hệ (/user/contact)
 	3003 - Đăng ký nhận tin (/user/subscribe)
 3100. Tin tức (undefined)
-	3101 - Danh mục tin tức (/user/news/category)
+	3101 - Danh mục tin tức (/user/category/news)
 	3102 - Tin tức (/user/news)
 4000. Đào tạo (undefined)
 	4001 - Danh mục câu hỏi thi (/user/drive-question/category)

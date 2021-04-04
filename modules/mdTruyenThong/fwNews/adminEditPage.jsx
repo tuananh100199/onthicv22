@@ -26,7 +26,7 @@ class NewsEditPage extends AdminPage {
                     this.itemImage.setData('news:' + _id);
 
                     const newsCategories = data.categories.map(item => ({ id: item.id, text: item.text }));
-                    this.setState({ _id, title, image, categories: newsCategories }, () => this.itemCategories.value(categories));
+                    this.setState({ _id, title, link, image, categories: newsCategories }, () => this.itemCategories.value(categories));
 
                     this.itemTitle.focus();
                 } else {
@@ -52,7 +52,8 @@ class NewsEditPage extends AdminPage {
         const permission = this.getUserPermission('news'),
             readOnly = !permission.write;
         const { _id, title } = this.state,
-            linkDefaultNews = T.rootUrl + '/news/item/' + _id;
+            linkDefaultNews = T.rootUrl + '/news/' + _id;
+
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Tin tức: ' + title,
@@ -90,7 +91,7 @@ class NewsEditPage extends AdminPage {
                             </div>
                             {readOnly ? '' :
                                 <div className='tile-footer'>
-                                    <button className='btn btn-danger' type='button' onClick={() => this.props.checkLink(item._id, this.itemLink.value().trim())}>
+                                    <button className='btn btn-danger' type='button' onClick={() => this.props.checkLink(_id, this.itemLink.value().trim())}>
                                         <i className='fa fa-fw fa-lg fa-check-circle' />Kiểm tra link
                                     </button>
                                 </div>}

@@ -63,7 +63,7 @@ export function getNewsPage(pageNumber, pageSize, done) {
 
 export function createNews(done) {
     return dispatch => {
-        const url = '/api/news/default';
+        const url = '/api/news';
         T.post(url, data => {
             if (data.error) {
                 T.notify('Tạo tin tức bị lỗi!', 'danger');
@@ -125,9 +125,8 @@ export function deleteNews(_id) {
 
 export function getNews(_id, done) {
     return (dispatch, getState) => {
-        const url = '/api/news/item/' + _id;
-        const state = getState();
-        T.get(url, data => {
+        const url = '/api/news';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -138,10 +137,24 @@ export function getNews(_id, done) {
     }
 }
 
+export function checkLink(_id, link) {
+    return dispatch => {
+        const url = '/api/news/check-link';
+        T.put(url, { _id, link }, data => {
+            if (data.error) {
+                T.notify('Link không hợp lệ!', 'danger');
+                console.error('PUT: ' + url + '.', error);
+            } else {
+                T.notify('Link hợp lệ!', 'success');
+            }
+        }, error => T.notify('Kiểm tra Link bị lỗi!', 'danger'));
+    }
+}
+
 // Actions (user) -----------------------------------------------------------------------------------------------------
 export function getNewsPageByUser(pageNumber, pageSize, done) {
     return dispatch => {
-        const url = '/news/page/' + pageNumber + '/' + pageSize;
+        const url = '/home/news/page/' + pageNumber + '/' + pageSize;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách tin tức bị lỗi!', 'danger');
@@ -154,10 +167,10 @@ export function getNewsPageByUser(pageNumber, pageSize, done) {
     }
 }
 
-export function getNewsByUser(newsId, newsLink, done) {
+export function getNewsByUser(_id, link, done) {
     return dispatch => {
-        const url = newsId ? '/news/item/id/' + newsId : '/news/item/link/' + newsLink;
-        T.get(url, data => {
+        const url = '/home/news/item';
+        T.get(url, { _id, link }, data => {
             if (data.error) {
                 T.notify('Lấy tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -171,7 +184,7 @@ export function getNewsByUser(newsId, newsLink, done) {
 
 export function getNewsFeed(done) {
     return dispatch => {
-        const url = '/news/page/1/' + T.newsFeedPageSize
+        const url = '/home/news/page/1/' + T.newsFeedPageSize
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy new feed bị lỗi!', 'danger');
@@ -181,19 +194,5 @@ export function getNewsFeed(done) {
                 dispatch({ type: NewsGetNewsFeed, list: data.page.list });
             }
         }, error => T.notify('Lấy new feed bị lỗi!', 'danger'));
-    }
-}
-
-export function checkLink(_id, link) {
-    return dispatch => {
-        const url = '/news/item/check-link';
-        T.put(url, { _id, link }, data => {
-            if (data.error) {
-                T.notify('Link không hợp lệ!', 'danger');
-                console.error('PUT: ' + url + '.', error);
-            } else {
-                T.notify('Link hợp lệ!', 'success');
-            }
-        }, error => T.notify('Kiểm tra Link bị lỗi!', 'danger'));
     }
 }

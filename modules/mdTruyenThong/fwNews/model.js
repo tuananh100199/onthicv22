@@ -44,18 +44,10 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition, done) : model.findOne(condition, done),
-
-        read: (condition, done) => model.findOne(condition).populate('categories').exec((error, item) => {
-            if (error || item == null) {
-                done(error || 'Invalid Id!');
-            } else {
-                item.view++;
-                item.save(done);
-                // app.io.emit('news:item-view-changed', item._id, item.view);
-            }
-        }),
+        get: (condition, done) => {
+            const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
+            findTask.populate('categories').exec(done);
+        },
 
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
 

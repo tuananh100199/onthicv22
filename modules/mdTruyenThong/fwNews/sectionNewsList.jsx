@@ -4,7 +4,7 @@ import { getNewsPageByUser } from './redux';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
 
-const linkFormat = '/tintuc/', idFormat = '/news/item/';
+const linkFormat = '/tintuc/', idFormat = '/news/';
 
 class SectionNewsList extends React.Component {
     state = {};
