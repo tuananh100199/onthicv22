@@ -74,7 +74,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "sass-loader": "^10.1.0",
-    "socket.io-client": "^3.0.1",
+    "socket.io-client": "^4.0.1",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
     "webpack": "^5.10.0",
@@ -116,12 +116,14 @@
     "passport-google-oauth": "^2.0.0",
     "pizzip": "^3.0.6",
     "pug": "^3.0.0",
+    "react-datetime": "^3.0.4",
     "react-select": "^3.1.0",
     "react-swipeable-views": "^0.13.9",
     "redis": "^3.0.2",
     "serve-favicon": "^2.5.0",
-    "socket.io": "^3.0.5",
-    "socket.io-redis": "^6.0.1",
+    "socket.io": "^4.0.1",
+    "socket.io-parser": "^4.0.4",
+    "socket.io-redis": "^6.1.0",
     "xlsx": "^0.16.8"
   }
 }

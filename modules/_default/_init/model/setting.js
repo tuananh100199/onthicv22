@@ -63,8 +63,8 @@ module.exports = (app) => {
                             });
                         }
                     });
-                } else if (done) {
-                    done();
+                } else {
+                    done && done();
                 }
             };
             solveAnItem(0);

@@ -5,7 +5,6 @@ module.exports = app => {
         abstract: String,
         image: String,
         content: String,
-        active: { type: Boolean, default: false },
     });
     const model = app.db.model('Content', schema);
 

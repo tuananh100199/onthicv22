@@ -9,7 +9,7 @@ import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormT
 class EditModal extends AdminModal {
     state = {};
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemFirstname.focus()));
+        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
     onShow = (item) => {
@@ -52,7 +52,7 @@ class EditModal extends AdminModal {
                 giayKhamSucKhoe: '',
                 giayKhamSucKhoeNgayKham: ''
             };
-        this.setState({ studentId: id, courseType: courseType })
+        this.setState({ id: id, courseType: courseType })
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
@@ -74,7 +74,7 @@ class EditModal extends AdminModal {
 
     onSubmit = () => {
         const data = {
-            numberic: this.state.num,
+            id: this.state.id,
             firstname: this.itemFirstname.value(),
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
@@ -94,20 +94,17 @@ class EditModal extends AdminModal {
             giayKhamSucKhoe: this.itemGiayKhamSucKhoe.value(),
             giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoeNgayKham.value(),
         };
-        if (data.firstname == '') {
-            T.notify('Tên ứng viên bị trống!', 'danger');
-            this.itemFirstname.focus();
-        } else if (data.lastname == '') {
-            T.notify('Tên ứng viên bị trống!', 'danger');
+        if (data.lastname == '') {
+            T.notify('Họ không được trống!', 'danger');
             this.itemLastname.focus();
-        } else if (data.email == '') {
-            T.notify('Email ứng viên bị trống!', 'danger');
-            this.itemEmail.focus();
+        } else if (data.firstname == '') {
+            T.notify('Tên không được trống!', 'danger');
+            this.itemFirstname.focus();
         } else if (data.phoneNumber == '') {
-            T.notify('Số điện thoại ứng viên bị trống!', 'danger');
+            T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
         } else {
-            this.props.edit(this.state.studentId, data)
+            this.props.edit(this.state.id, data)
             this.hide();
         }
     }
@@ -169,15 +166,13 @@ class ImportPage extends AdminPage {
         let total = [];
         if (listStudent.data) {
             listStudent.data.map((students, index) => {
-                students.map((student) => (
+                students.map((student) => {
                     student.courseType = this.state.courseTypes[index]
-                ))
+                    student.id = this.state.courseTypes[index].text + index
+                })
                 total = total.concat(students)
             });
         }
-        total.map((item, index) => (
-            item.id = index
-        ))
         this.setState({ total });
         this.itemDivision.value(null)
     }
@@ -284,7 +279,7 @@ class ImportPage extends AdminPage {
                         {table}
                     </div>
                 </div>
-                <EditModal ref={e => this.modalEdit = e} readOnly={!permission.write} edit={this.edit} />
+                <EditModal ref={e => this.modalEdit = e} readOnly={readOnly} edit={this.edit} />
                 <CirclePageButton type='save' onClick={this.save} />
             </div>
         );

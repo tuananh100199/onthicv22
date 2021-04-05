@@ -18,135 +18,86 @@ module.exports = (app) => {
     app.get('/user/setting', app.permission.check('system:settings'), app.templates.admin);
     ['/index.htm(l)?', '/404.htm(l)?', '/request-permissions(/:roleId?)', '/request-login'].forEach((route) => app.get(route, app.templates.home));
 
-    // System data ----------------------------------------------------------------------------------------------------------------------------------
-    app.state = {
-        data: {
-            todayViews: 0,
-            allViews: 0,
-            logo: '/img/favicon.png',
-            map: '/img/map.png',
-            footer: '/img/footer.jpg',
-            contact: '/img/contact.jpg',
-            subscribe: '/img/subcribe.jpg',
-            facebook: 'https://www.facebook.com',
-            fax: '',
-            youtube: '',
-            twitter: '',
-            instagram: '',
-            dangKyTuVanLink: '',
-            email: app.email.from,
-            emailPassword: app.email.password,
-            mobile: '(08) 2214 6555',
-            address: '',
-        },
-
-        refresh: (option, done) => {
-            if (typeof option == 'function') {
-                done = option;
-                option = {};
-            }
-            const keys = Object.keys(app.state.data);
-            app.model.setting.get(...keys, result => {
-                if (result) {
-                    keys.forEach(key => {
-                        if (result[key] != undefined) {
-                            if (key == 'todayViews' || key == 'allViews') {
-                                app.state.data[key] = Number(result[key]);
-                            } else {
-                                app.state.data[key] = result[key];
-                            }
-                        }
-                    });
-                }
-                if (option && option.menuUpdate) {
-                    app.buildAppMenus(null, () => done && done());
-                } else {
-                    done && done()
-                }
-            });
-        },
-    };
-
     // API ------------------------------------------------------------------------------------------------------------------------------------------
-    app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        const changes = {};
-        if (req.body.password) {
-            changes.emailPassword = req.body.password;
-            app.model.setting.set(changes, (error) => {
-                if (error) {
-                    res.send({ error: 'Update email password failed!' });
-                } else {
-                    app.model.setting.set({ emailPassword: req.body.password });
-                    res.send(app.state.data);
-                }
-            });
-        } else {
-            if (req.body.address != null || req.body.address == '') {
-                changes.address = req.body.address.trim();
-            }
-            if (req.body.email && req.body.email != '') {
-                changes.email = req.body.email.trim();
-            }
-            if (req.body.mobile != null || req.body.mobile == '') {
-                changes.mobile = req.body.mobile.trim();
-            }
-            if (req.body.fax != null || req.body.fax == '') {
-                changes.fax = req.body.fax.trim();
-            }
-            if (req.body.facebook != null || req.body.facebook == '') {
-                changes.facebook = req.body.facebook.trim();
-            }
-            if (req.body.youtube != null || req.body.youtube == '') {
-                changes.youtube = req.body.youtube.trim();
-            }
-            if (req.body.twitter != null || req.body.twitter == '') {
-                changes.twitter = req.body.twitter.trim();
-            }
-            if (req.body.instagram != null || req.body.instagram == '') {
-                changes.instagram = req.body.instagram.trim();
-            }
-            if (req.body.dangKyTuVanLink != null || req.body.dangKyTuVanLink == '') {
-                changes.dangKyTuVanLink = req.body.dangKyTuVanLink.trim();
-            }
-            app.model.setting.set(changes, (error) => {
-                if (error) {
-                    res.send({ error: 'Update failed!' });
-                } else {
-                    app.model.setting.set(changes, () => {
-                        app.worker && app.worker.refreshState();
-                        app.state.refresh(() => res.send(app.state.data));
-                    });
-                }
-            });
-        }
-    });
-
-    app.get('/api/state', (req, res) => {
-        const data = app.clone(app.state.data);
-        delete data.emailPassword;
-
-        if (app.isDebug) data.isDebug = true;
-        if (req.session.user) data.user = req.session.user;
-
-        app.model.menu.getAll({ active: true }, (error, menus) => {
-            if (menus) {
-                data.menus = menus.slice();
-                data.menus.forEach((menu) => {
-                    menu.content = '';
-                    if (menu.submenus) {
-                        menu.submenus.forEach((submenu) => (submenu.content = ''));
+    const prefixKey = `${app.appName}:state:`;
+    const getStateData = (done) => {
+        app.redis.keys(prefixKey + '*', (error, keys) => {
+            if (error) {
+                done('Errors occur when read Redis keys!');
+            } else {
+                app.redis.mget(keys, (error, values) => {
+                    if (error) {
+                        done('Errors occur when read Redis values!');
+                    } else {
+                        const state = {};
+                        keys.forEach((key, index) => {
+                            if (index < values.length) state[key.substring(prefixKey.length)] = values[index];
+                        });
+                        done(null, state);
                     }
                 });
             }
-            if (app.isDebug) {
-                app.model.role.getAll((error, roles) => {
-                    data.roles = roles || [];
-                    res.send(data);
-                });
+        });
+    }
+
+    app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
+        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram, dangKyTuVanLink } = req.body;
+        if (emailPassword) {
+            app.model.setting.set({ emailPassword }, error => {
+                if (error) {
+                    res.send({ error: 'Update email password failed!' });
+                } else {
+                    getStateData((error, data) => error ? res.send({ error }) : res.send(data));
+                }
+            });
+        } else {
+            const changes = [];
+            if (email && email.trim()) changes.push(prefixKey + 'email', email.trim());
+            if (address || address == '') changes.push(prefixKey + 'address', address.trim() || '');
+            if (mobile || mobile == '') changes.push(prefixKey + 'mobile', mobile.trim() || '');
+            if (fax || fax == '') changes.push(prefixKey + 'fax', fax.trim() || '');
+            if (facebook || facebook == '') changes.push(prefixKey + 'facebook', facebook.trim() || '');
+            if (youtube || youtube == '') changes.push(prefixKey + 'youtube', youtube.trim() || '');
+            if (twitter || twitter == '') changes.push(prefixKey + 'twitter', twitter.trim() || '');
+            if (instagram || instagram == '') changes.push(prefixKey + 'instagram', instagram.trim() || '');
+            if (dangKyTuVanLink || dangKyTuVanLink == '') changes.push(prefixKey + 'dangKyTuVanLink', dangKyTuVanLink.trim() || '');
+
+            app.redis.mset(...changes, error => console.log('error', error) || getStateData((error, data) => error ? res.send({ error }) : res.send(data)));
+        }
+
+        //TODO: email
+    });
+
+    app.get('/api/state', (req, res) => {
+        getStateData((error, data) => {
+            if (error) {
+                res.send({ error });
             } else {
-                res.send(data);
+                if (app.isDebug) data.isDebug = true;
+                if (req.session.user) data.user = req.session.user;
+
+                app.model.menu.getAll({ active: true }, (error, menus) => {
+                    if (menus) {
+                        data.menus = menus.slice();
+                        data.menus.forEach((menu) => {
+                            menu.content = '';
+                            if (menu.submenus) {
+                                menu.submenus.forEach((submenu) => (submenu.content = ''));
+                            }
+                        });
+                    }
+                    if (app.isDebug) {
+                        app.model.role.getAll((error, roles) => {
+                            data.roles = roles || [];
+                            res.send(data);
+                        });
+                    } else {
+                        res.send(data);
+                    }
+                });
             }
         });
+
     });
 
     app.get('/api/statistic/dashboard', app.permission.check('statistic'), (req, res) => {
@@ -224,7 +175,7 @@ module.exports = (app) => {
     });
 
 
-    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------s
+    // Hook upload images ---------------------------------------------------------------------------------------------------------------------------
     const uploadSettingImage = (fields, files, done) => {
         if (files.SettingImage && files.SettingImage.length > 0) {
             console.log('Hook: uploadSettingImage => ' + fields.userData);

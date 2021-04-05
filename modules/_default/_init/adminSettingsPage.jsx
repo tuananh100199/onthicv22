@@ -52,7 +52,7 @@ class SettingsPage extends AdminPage {
             T.notify('Mật khẩu mới không giống nhau!', 'danger');
             this.emailPassword1.focus();
         } else {
-            this.props.saveSystemState({ password: emailPassword1 });
+            this.props.saveSystemState({ emailPassword: emailPassword1 });
             this.emailPassword1.value(''),
                 this.emailPassword2.value('');
         }

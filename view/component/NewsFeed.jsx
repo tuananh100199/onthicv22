@@ -15,7 +15,7 @@ class NewsFeed extends React.Component {
         let news = null;
         if (newsFeed && newsFeed.length) {
             news = newsFeed.map((item, index) => {
-                const link = item.link ? '/tintuc/' + item.link : '/news/item/' + item._id;
+                const link = item.link ? '/tintuc/' + item.link : '/news/' + item._id;
                 return (
                     <div key={index} className='row ml-0 ftco-animate'>
                         <div style={{ width: '150px', padding: '15px 15px 15px 0px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>

@@ -36,8 +36,8 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => typeof condition == 'object' ?
-            model.findOne(condition, done) : model.findById(condition, done),
+        get: (condition, done) => typeof condition == 'string' ?
+            model.findById(condition, done) : model.findOne(condition, done),
 
         read: (_id, done) => model.findOneAndUpdate({ _id }, { $set: { read: true } }, { new: true }, done),
 

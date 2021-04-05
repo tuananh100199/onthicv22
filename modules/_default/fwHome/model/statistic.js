@@ -3,7 +3,6 @@ module.exports = app => {
         title: String,
         titleVisible: { type: Boolean, default: true },
         description: String,
-        active: { type: Boolean, default: false },
     });
     const model = app.db.model('Statistic', schema);
 

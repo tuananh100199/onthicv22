@@ -10,7 +10,7 @@ module.exports = (app) => {
     };
 
     app.registerUser = (req, res) => {
-        if (req.session.user != null) {
+        if (req.session.user) {
             res.send({ error: 'You are logged in!' });
         } else {
             let data = {
@@ -43,7 +43,7 @@ module.exports = (app) => {
     };
 
     app.loginUser = (req, res) => {
-        if (req.session.user != null) {
+        if (req.session.user) {
             res.send({ error: 'You are logged in!' });
         } else {
             let email = req.body.email.trim(), password = req.body.password;

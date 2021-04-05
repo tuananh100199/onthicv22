@@ -8,31 +8,24 @@ import countryList from 'country-list';
 import Tooltip from 'rc-tooltip';
 
 class DenyModal extends React.Component {
-    modal = React.createRef();
-    editor = React.createRef();
-
-    show = () => {
-        $(this.modal.current).modal('show')
-    }
+    show = () => $(this.modal).modal('show');
 
     save = () => {
         $('#submit-btn').attr('disabled', true);
-        if (!this.editor.current.html()) {
+        if (!this.editor.html()) {
             T.notify('Nội dung từ chối bị trống', 'danger');
         } else {
-            this.props.denyApplicationForm(this.props.item._id, this.editor.current.html(), (data) => {
-                if (!data.error) {
-                    T.notify('Từ chối duyệt hồ sơ thành công!', 'success');
-                }
+            this.props.denyApplicationForm(this.props.item._id, this.editor.html(), (data) => {
+                if (!data.error) T.notify('Từ chối duyệt hồ sơ thành công!', 'success');
                 $('#submit-btn').removeAttr('disabled');
-                $(this.modal.current).modal('hide');
+                $(this.modal).modal('hide');
             })
         }
     }
 
     render() {
         return (
-            <div ref={this.modal} className='modal' tabIndex='-1' role='dialog'>
+            <div ref={e => this.modal = e} className='modal' tabIndex='-1' role='dialog'>
                 <div className='modal-dialog modal-lg'>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -44,7 +37,7 @@ class DenyModal extends React.Component {
                         <div className='modal-body'>
                             <div className='form-group'>
                                 <label>Nội dung từ chối</label>
-                                <Editor ref={this.editor} height='400px' />
+                                <Editor ref={e => this.editor = e} height='400px' />
                             </div>
                         </div>
                         <div className='modal-footer'>
@@ -172,7 +165,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                 {item.status == 'waiting' ?
                     <div>
                         <Tooltip placement='bottom' overlay='Từ chối đơn'>
-                            <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.current.show() }}
+                            <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.show() }}
                                 style={{ position: 'fixed', right: '70px', bottom: '10px' }}>
                                 <i className='fa fa-user-times' />
                             </button>
@@ -186,7 +179,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                     </div>
                     : <p></p>
                 }
-                <DenyModal ref={this.denyModal} item={item} denyApplicationForm={this.props.denyApplicationForm} />
+                <DenyModal ref={e => this.denyModal = e} item={item} denyApplicationForm={this.props.denyApplicationForm} />
             </main>
         );
     }

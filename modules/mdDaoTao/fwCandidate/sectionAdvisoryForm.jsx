@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { FormSelect } from 'view/component/AdminPage';
 import { createCandidate } from './redux';
-import T from 'view/js/common';
 
 class SectionAdvisoryForm extends React.Component {
     state = {};
@@ -54,7 +53,7 @@ class SectionAdvisoryForm extends React.Component {
     }
 
     render() {
-        const readOnly = this.props.system && this.props.system.user != null;
+        const readOnly = this.props.system && this.props.system.user;
         const { lastname, firstname, email } = this.state;
         return (
             <div className='intro'>
@@ -84,9 +83,9 @@ class SectionAdvisoryForm extends React.Component {
                                     <input onKeyPress={e => (!/[0-9]/.test(e.key)) && e.preventDefault()}
                                         type='tel' className='intro_input w-100' placeholder='Số điện thoại' ref={e => this.phoneNumber = e} />
                                 </p>
-                                <p className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0 }}>Loại khóa học:
-                                    <FormSelect ref={e => this.courseType = e} label='' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} />
-                                </p>
+                                <div className='mb-5' style={{ width: '100%', padding: '0 8px', margin: 0 }}>
+                                    <FormSelect ref={e => this.courseType = e} label='Loại khóa học:' data={ajaxSelectCourseType} style={{ margin: 0, width: '100% !important' }} labelStyle={{ color: '#828282' }} />
+                                </div>
                             </div>
                             <button className='button button_1 intro_button trans_200'>Đăng ký</button>
                         </form>

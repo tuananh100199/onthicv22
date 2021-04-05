@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getNewsInPageByUser } from './redux';
+import { getNewsPageByUser } from './redux';
 import { Link } from 'react-router-dom';
 import inView from 'in-view';
 
-const linkFormat = '/tintuc/', idFormat = '/news/item/';
+const linkFormat = '/tintuc/', idFormat = '/news/';
 
 class SectionNewsList extends React.Component {
     state = {};
@@ -20,15 +20,15 @@ class SectionNewsList extends React.Component {
     ready = () => {
         inView('.listViewLoading').on('enter', () => {
             let userPage = this.props.news.userPage;
-            if (!this.loading && this.props.getNewsInPageByUser && userPage && userPage.pageNumber < userPage.pageTotal) {
+            if (!this.loading && this.props.getNewsPageByUser && userPage && userPage.pageNumber < userPage.pageTotal) {
                 this.loading = true;
-                this.props.getNewsInPageByUser(userPage.pageNumber + 1, T.defaultUserPageSize, () => this.loading = false);
+                this.props.getNewsPageByUser(userPage.pageNumber + 1, T.defaultUserPageSize, () => this.loading = false);
             }
         });
     }
 
     componentDidMount() {
-        this.props.getNewsInPageByUser(1, T.defaultUserPageSize, () => this.loading = false);
+        this.props.getNewsPageByUser(1, T.defaultUserPageSize, () => this.loading = false);
     }
 
     setViewMode = (e, viewMode) => {
@@ -89,5 +89,5 @@ class SectionNewsList extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, news: state.news });
-const mapActionsToProps = { getNewsInPageByUser };
+const mapActionsToProps = { getNewsPageByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionNewsList);

@@ -78,7 +78,6 @@ class StatisticEditPage extends AdminPage {
                 this.itemTitle.value(data.item.title);
                 this.itemDescription.html(data.item.description);
                 this.itemTitleVisible.value(data.item.titleVisible);
-                this.itemActive.value(data.item.active);
                 this.itemTitle.focus();
                 this.setState(data.item);
             });
@@ -90,7 +89,6 @@ class StatisticEditPage extends AdminPage {
             title: this.itemTitle.value(),
             description: this.itemDescription.html(),
             titleVisible: this.itemTitleVisible.value(),
-            active: this.itemActive.value(),
         })
     };
 
@@ -136,9 +134,8 @@ class StatisticEditPage extends AdminPage {
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body row'>
-                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='col-md-6' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
-                        <FormCheckbox ref={e => this.itemTitleVisible = e} label='Hiển thị tiêu đề' className='col-md-3' readOnly={!permission.write} />
-                        <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' className='col-md-3' readOnly={!permission.write} />
+                        <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='col-md-8' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
+                        <FormCheckbox ref={e => this.itemTitleVisible = e} label='Hiển thị tiêu đề' className='col-md-4' readOnly={!permission.write} />
                         <FormEditor ref={e => this.itemDescription = e} label='Mô tả' className='col-md-12' style={{ height: '400px' }} readOnly={!permission.write} />
                     </div>
                     {permission.write &&

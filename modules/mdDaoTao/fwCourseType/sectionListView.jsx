@@ -4,20 +4,21 @@ import { getAllCourseTypeByUser } from './redux';
 import { Link } from 'react-router-dom';
 
 class SectionListView extends React.Component {
+    state = {};
     componentDidMount() {
-        this.props.getAllCourseTypeByUser();
+        this.props.getAllCourseTypeByUser(list => this.setState({ list }));
     }
 
     render() {
-        const list = this.props.courseType && this.props.courseType ? this.props.courseType.list : null;
+        const list = this.state.list || [];
         return (
-            <div style={{ marginTop: '30px' }}>
+            <>
                 <div className='service_col text-center'>
-                    <div><h2>Loại khóa học</h2></div>
+                    <h2>Loại khóa học</h2>
                 </div>
                 <div className='row'>
                     {list ? list.map((item, index) => (
-                        <div key={index} className='col-xl-4 col-md-6 service_col'>
+                        <div key={index} className='col-md-4 service_col'>
                             <div className='text-center'>
                                 <img style={{ borderRadius: '50%' }} src={item.image} height={100} width={100} alt='' />
                                 <div className='service_title'><Link to={'/course-type/' + item._id}>{item.title}</Link></div>
@@ -28,7 +29,7 @@ class SectionListView extends React.Component {
                             </div>
                         </div>)) : null}
                 </div>
-            </div>);
+            </>);
     }
 }
 

@@ -117,7 +117,7 @@ export function homeGetListContent(_id, done) {
 
 export const ajaxSelectListContent = T.createAjaxAdapter(
     '/api/list-content/page/1/20',
-    response => response && response.page && response.page.list ? response.page.list.filter(item => item.active === true).map(item => ({ id: item._id, text: item.title })) : [],
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetListContent(_id, done) {

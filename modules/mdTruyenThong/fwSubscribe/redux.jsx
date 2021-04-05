@@ -117,53 +117,6 @@ export function getSubscribePage(pageNumber, pageSize, searchText, done) {
     }
 }
 
-export function getSubscribe(subscribeId, done) {
-    return dispatch => {
-        const url = '/api/subscribe/item/' + subscribeId;
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy đăng ký nhận tin bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.item);
-                dispatch({ type: SubscribeUpdate, item: data.item });
-            }
-        }, error => T.notify('Lấy đăng ký nhận tin bị lỗi!', 'danger'));
-    }
-}
-
-export function getUnreadSubscribes(done) {
-    return dispatch => {
-        const url = '/api/subscribe/unread';
-        T.get(url, data => {
-            if (data.error) {
-                done && done(null, data.error);
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.list);
-                dispatch({ type: SubscribeGetUnread, list: data.list });
-            }
-        }, error => T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
-    }
-}
-
-export function updateSubscribe(_id, changes, done) {
-    return dispatch => {
-        const url = '/api/subscribe';
-        T.put(url, { _id, changes }, data => {
-            if (data.error) {
-                T.notify('Cập nhật đăng ký nhận tin bị lỗi', 'danger');
-                console.error('PUT: ' + url + '. ' + data.error);
-                done && done(data.error);
-            } else {
-                T.notify('Cập nhật đăng ký nhận tin thành công!', 'info');
-                dispatch(getSubscribePage());
-                done && done();
-            }
-        }, error => T.notify('Cập nhật đăng ký nhận tin bị lỗi', 'danger'));
-    }
-}
-
 export function deleteSubscribe(_id) {
     return dispatch => {
         const url = '/api/subscribe';

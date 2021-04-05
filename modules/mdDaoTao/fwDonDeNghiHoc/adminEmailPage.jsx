@@ -4,22 +4,16 @@ import Editor from 'view/component/CkEditor4';
 import { Link } from 'react-router-dom';
 
 class EmailItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.title = React.createRef();
-        this.editor = React.createRef();
-    }
-
     set(title, text, html) {
-        this.title.current.value = title;
-        this.editor.current.html(html);
+        this.title.value = title;
+        this.editor.html(html);
     }
 
     get() {
         return {
-            title: this.title.current.value,
-            text: this.editor.current.text(),
-            html: this.editor.current.html(),
+            title: this.title.value,
+            text: this.editor.text(),
+            html: this.editor.html(),
         }
     }
 
@@ -30,12 +24,12 @@ class EmailItem extends React.Component {
                 <div className='tile-body'>
                     <div className='form-group'>
                         <label className='control-label'>Subject</label>
-                        <input className='form-control' type='text' defaultValue='' ref={this.title} placeholder='Subject' />
+                        <input className='form-control' type='text' defaultValue='' ref={e => this.title = e} placeholder='Subject' />
                     </div>
                     <div className='form-group'>
                         <label className='control-label'>HTML</label>
                         <small className='form-text text-muted'>Parameters: {this.props.params}</small>
-                        <Editor ref={this.editor} placeholder='Content' height={600} />
+                        <Editor ref={e => this.editor = e} placeholder='Content' height={600} />
                     </div>
                 </div>
             </div>

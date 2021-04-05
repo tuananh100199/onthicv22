@@ -12,7 +12,7 @@ function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
     return (
-        <Typography component="div" role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`}
+        <Typography component='div' role='tabpanel' hidden={value !== index} id={`full-width-tabpanel-${index}`}
             aria-labelledby={`full-width-tab-${index}`} {...other}>
             <Box p={3}>{children}</Box>
         </Typography>
@@ -213,9 +213,9 @@ export default class LoginModal extends React.Component {
                 <div className='modal-dialog ' role='document'>
                     <div className='modal-content d-flex justify-content-center'>
                         <div className=''>
-                            <AppBar position="static" color="transparent">
-                                <Tabs value={this.state.value} onChange={this.handleChange} indicatorColor="primary" textColor="primary"
-                                    variant="fullWidth" aria-label="full width tabs example">
+                            <AppBar position='static' color='transparent'>
+                                <Tabs value={this.state.value} onChange={this.handleChange} indicatorColor='primary' textColor='primary'
+                                    variant='fullWidth' aria-label='full width tabs example'>
                                     <Tab label='Đăng nhập' {...a11yProps(0)} />
                                     <Tab label='Đăng ký' {...a11yProps(1)} />
                                 </Tabs>
@@ -243,15 +243,11 @@ export default class LoginModal extends React.Component {
                                             <p ref={this.errorMessage} className='text-danger text-center'>&nbsp;</p>
 
                                             <div className='container-login100-form-btn' style={{ padding: '0' }}>
-                                                <button className='login100-form-btn' type='submit'>
-                                                    Đăng nhập
-                                                </button>
+                                                <button className='login100-form-btn' type='submit'>Đăng nhập</button>
                                             </div>
 
                                             <div className='text-center p-t-12'>
-                                                <a className='txt2' href='#' onClick={this.onForgotPasswordClick}>
-                                                    Quên mật khẩu
-                                                </a>
+                                                <a className='txt2' href='#' onClick={this.onForgotPasswordClick}>Quên mật khẩu</a>
                                             </div>
                                         </form>
                                     </div>
@@ -260,31 +256,31 @@ export default class LoginModal extends React.Component {
                                     <div className='wrap-login100 align-self-center'>
                                         <form className='login100-form validate-form signUp-validate-form' onSubmit={this.onSignUp}>
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Firstname is required'>
-                                                <input className='input100' type='text' autoComplete="off" placeholder='Tên' ref={this.txtFirstname} />
+                                                <input className='input100' type='text' autoComplete='off' placeholder='Tên' ref={this.txtFirstname} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Lastname is required'>
-                                                <input className='input100' type='text' autoComplete="off" placeholder='Họ' ref={this.txtLastname} />
+                                                <input className='input100' type='text' autoComplete='off' placeholder='Họ' ref={this.txtLastname} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Valid email is required: ex@org.com'>
-                                                <input className='input100' type='text' name='email' autoComplete="off" placeholder='Email' ref={this.signUpEmail} />
+                                                <input className='input100' type='text' name='email' autoComplete='off' placeholder='Email' ref={this.signUpEmail} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Phone number is required'>
-                                                <input className='input100' type='text' autoComplete="off" placeholder='Số điện thoại' ref={this.signUpPhone} />
+                                                <input className='input100' type='text' autoComplete='off' placeholder='Số điện thoại' ref={this.signUpPhone} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Password is required'>
-                                                <input className='input100' type='password' autoComplete="off" placeholder='Mật khẩu' ref={this.signUpPassword} />
+                                                <input className='input100' type='password' autoComplete='off' placeholder='Mật khẩu' ref={this.signUpPassword} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-lock' aria-hidden='true' /></span>
                                             </div>
