@@ -1,10 +1,4 @@
 module.exports = (app) => {
-    const menuDashboard = {
-        parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' }
-    };
-    const menuProfile = {
-        parentMenu: app.parentMenu.user,
-    };
     const menuSettings = {
         parentMenu: app.parentMenu.setting,
         menus: {
@@ -12,7 +6,12 @@ module.exports = (app) => {
         },
     };
 
-    app.permission.add({ name: 'dashboard:standard', menu: menuDashboard }, { name: 'user:login', menu: menuProfile }, { name: 'system:settings', menu: menuSettings }, { name: 'statistic' },);
+    app.permission.add(
+        { name: 'dashboard:standard', menu: { parentMenu: { index: 100, title: 'Dashboard', icon: 'fa-dashboard', link: '/user/dashboard' } } },
+        { name: 'user:login', menu: { parentMenu: app.parentMenu.user } },
+        { name: 'system:settings', menu: menuSettings },
+        { name: 'statistic:read' },
+    );
 
     app.get('/user/dashboard', app.permission.check('dashboard:standard'), app.templates.admin);
     app.get('/user/setting', app.permission.check('system:settings'), app.templates.admin);
@@ -52,7 +51,8 @@ module.exports = (app) => {
             });
         } else {
             const changes = [];
-            if (email && email.trim()) changes.push(prefixKey + 'email', email.trim());
+            email = email ? email.trim() : '';
+            if (email) changes.push(prefixKey + 'email', email.trim());
             if (address || address == '') changes.push(prefixKey + 'address', address.trim() || '');
             if (mobile || mobile == '') changes.push(prefixKey + 'mobile', mobile.trim() || '');
             if (fax || fax == '') changes.push(prefixKey + 'fax', fax.trim() || '');
@@ -100,18 +100,18 @@ module.exports = (app) => {
 
     });
 
-    app.get('/api/statistic/dashboard', app.permission.check('statistic'), (req, res) => {
-        app.model.user.count({}, (error1, numberOfUser) => {
-            if (error1) {
-                res.send({ error1 })
+    app.get('/api/statistic/dashboard', app.permission.check('statistic:read'), (req, res) => {
+        app.model.user.count({}, (error, numberOfUser) => {
+            if (error) {
+                res.send({ error })
             } else {
-                app.model.news.count({}, (error2, numberOfNews) => {
-                    if (error2) {
-                        res.send({ error2 })
+                app.model.news.count({}, (error, numberOfNews) => {
+                    if (error) {
+                        res.send({ error })
                     } else {
-                        app.model.course.count({}, (error3, numberOfCourse) => {
-                            if (error3) {
-                                res.send({ error3 })
+                        app.model.course.count({}, (error, numberOfCourse) => {
+                            if (error) {
+                                res.send({ error })
                             } else {
                                 res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0 });
                             }
