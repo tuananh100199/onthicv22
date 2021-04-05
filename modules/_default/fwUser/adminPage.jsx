@@ -265,7 +265,7 @@ class UserPage extends AdminPage {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
             this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0 };
         const table = renderTable({
-            getDataSource: () => list,
+            getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -299,7 +299,7 @@ class UserPage extends AdminPage {
             header: <RoleFilter getUserPage={this.props.getUserPage} setRoleFilter={this.setRoleFilter} filter={this.state.roleFilter} pageNumber={pageNumber} pageSize={pageSize} />,
             breadcrumb: ['Người dùng'],
             content: <>
-                <div className='tile'>{table}</div>
+                <div className='tile-table-fix-head'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getUserPage} />
                 <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles} user={this.props.system ? this.props.system.user : null}

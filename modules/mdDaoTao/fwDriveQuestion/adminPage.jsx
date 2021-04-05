@@ -104,10 +104,10 @@ class AdminQuestionPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('driveQuestion');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.driveQuestion && this.props.driveQuestion.page ?
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.driveQuestion && this.props.driveQuestion.page ?
             this.props.driveQuestion.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const table = renderTable({
-            getDataSource: () => this.props.driveQuestion && this.props.driveQuestion.page && this.props.driveQuestion.page.list,
+            getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

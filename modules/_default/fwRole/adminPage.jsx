@@ -62,11 +62,11 @@ class RolePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('role');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.role && this.props.role.page ? this.props.role.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.role && this.props.role.page ? this.props.role.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const permissions = this.props.role && this.props.role.page ? this.props.role.page.permissions : null;
 
         const table = renderTable({
-            getDataSource: () => this.props.role && this.props.role.page && this.props.role.page.list,
+            getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

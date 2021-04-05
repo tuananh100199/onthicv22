@@ -70,7 +70,7 @@ class CategorySection extends AdminPage {
     render() {
         const permission = this.getUserPermission('category');
         const table = renderTable({
-            getDataSource: () => this.props.category,
+            getDataSource: () => this.props.category, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

@@ -105,7 +105,7 @@ class CandidatePage extends AdminPage {
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.candidate && this.props.candidate.page ?
             this.props.candidate.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const table = renderTable({
-            getDataSource: () => list,
+            getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
