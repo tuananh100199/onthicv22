@@ -130,10 +130,12 @@ class EditModal extends AdminModal {
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
     state = {};
-
+    componentDidMount() {
+        T.ready('/user/pre-student');
+    }
     onUploadSuccess = (data) => {
         this.setState(data);
-        this.itemDivision.value(null)
+        this.itemDivision.value(null);
         this.itemCourseType.value(null)
     }
 
@@ -141,9 +143,7 @@ class ImportPage extends AdminPage {
 
     edit = (studentId, changes) => {
         this.setState(prevState => ({
-            data: prevState.data.map(
-                data => data.id === studentId ? changes : data
-            )
+            data: prevState.data.map(data => data.id === studentId ? changes : data)
         }))
     }
 
