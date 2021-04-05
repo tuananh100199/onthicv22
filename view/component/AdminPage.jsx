@@ -84,7 +84,14 @@ export function renderTable({ style = {}, className = '', getDataSource = () => 
                 <tbody>{list.map(renderRow)}</tbody>
             </table>
         );
-        return stickyHead ? <div className='tile-table-fix-head'>{table}</div> : table;
+
+        const properties = {};
+        if (stickyHead) {
+            properties.className = 'tile-table-fix-head';
+        } else {
+            properties.style = { marginBottom: 8 };
+        }
+        return <div {...properties}>{table}</div>;
     } else {
         return emptyTable;
     }

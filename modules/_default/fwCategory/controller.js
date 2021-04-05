@@ -13,7 +13,7 @@ module.exports = app => {
 
     app.post('/api/category', app.permission.check('category:write'), (req, res) => {
         app.model.category.create(req.body.data, (error, item) => {
-            if (error || (item && item.image == null)) {
+            if (error || item == null || item.image == null) {
                 res.send({ error, item });
             } else {
                 app.uploadImage(item.type + 'Category', app.model.category.get, item._id, item.image, data => res.send(data));

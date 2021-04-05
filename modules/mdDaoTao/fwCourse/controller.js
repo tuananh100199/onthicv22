@@ -68,14 +68,8 @@ module.exports = (app) => {
         app.model.course.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    // Hook permissionHooks -------------------------------------------------------------------------------------------
-    app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read');
-        resolve();
-    }));
-
     // Home -----------------------------------------------------------------------------------------------------------
-    app.get('/course/page/:pageNumber/:pageSize', (req, res) => {
+    app.get('/home/course/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.course.getPage(pageNumber, pageSize, { active: true }, (error, page) => {
@@ -83,7 +77,14 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/course/item/id/:courseId', (req, res) => {
-        app.model.course.get({ _id: req.params.courseId, active: true }, (error, item) => res.send({ error, item }));
+    app.get('/home/course', (req, res) => {
+        app.model.course.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
     });
+
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'course:read');
+        resolve();
+    }));
 };

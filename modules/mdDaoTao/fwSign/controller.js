@@ -6,11 +6,7 @@ module.exports = app => {
             4004: { title: 'Biển báo', link: '/user/sign' },
         },
     };
-    app.permission.add(
-        { name: 'sign:read', menu },
-        { name: 'sign:write' },
-        { name: 'sign:delete' }
-    );
+    app.permission.add({ name: 'sign:read', menu }, { name: 'sign:write' }, { name: 'sign:delete' });
 
     app.get('/user/sign/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/sign', app.permission.check('sign:read'), app.templates.admin);
@@ -41,12 +37,18 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/sign/item/:_id', app.permission.check('sign:read'), (req, res) => {
-        app.model.sign.get(req.params._id, (error, item) => res.send({ error, item }));
+    app.get('/api/sign', app.permission.check('sign:read'), (req, res) => {
+        app.model.sign.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/sign', app.permission.check('sign:write'), (req, res) => {
-        app.model.sign.create(req.body.data, (error, item) => res.send({ error, item }));
+        app.model.sign.create(req.body.data, (error, item) => {
+            if (error || item == null || item.image == null) {
+                res.send({ error, item });
+            } else {
+                app.uploadImage('sign', app.model.sign.get, item._id, item.image, data => res.send(data));
+            }
+        });
     });
 
     app.put('/api/sign', app.permission.check('sign:write'), (req, res) => {
@@ -75,7 +77,7 @@ module.exports = app => {
     });
 
     // Hook upload images ---------------------------------------------------------------------------------------------
-    app.createFolder(app.path.join(app.publicPath, '/img/sign'));
+    app.createFolder(app.path.join(app.publicPath, '/img/sign'), app.path.join(app.publicPath, '/img/signCategory'));
 
     const uploadSign = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('sign:') && files.SignImage && files.SignImage.length > 0) {

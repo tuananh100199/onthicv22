@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
-import { getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage } from './redux';
+import { getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormCheckbox, FormRichTextBox, FormImageBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -12,7 +12,7 @@ class QuestionModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id, title, active, image, answers, trueAnswer, importance, categories } = item || { title: '', active: true, image: '', answers: '', trueAnswer: 0, importance: false, categories: [] };
+        let { _id, title, active, image, answers, trueAnswer, importance, categories } = item || { title: '', active: true, answers: '', trueAnswer: 0, importance: false, categories: [] };
         this.itemTitle.value(title);
         this.itemImage.setData(`driveQuestion:${_id || 'new'}`);
         this.itemAnswers.value(answers);
@@ -31,6 +31,7 @@ class QuestionModal extends AdminModal {
                 categories: this.itemCategories.value(),
                 active: this.itemIsActive.value(),
                 importance: this.itemIsImportance.value(),
+                image: this.state.image,
             };
         if (data.title == '') {
             T.notify('Tên câu hỏi bị trống!', 'danger');
@@ -43,6 +44,15 @@ class QuestionModal extends AdminModal {
         } else {
             this.state._id ? this.props.update(this.state._id, data) : this.props.create(data);
             this.hide();
+        }
+    }
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
         }
     }
 
@@ -69,7 +79,7 @@ class QuestionModal extends AdminModal {
             body: <div className='row'>
                 <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' label='Câu hỏi' rows='6' readOnly={readOnly} />
                 <FormImageBox ref={e => this.itemImage = e} className='col-md-4' label='Hình minh họa' uploadType='DriveQuestionImage' image={this.state.image}
-                    onDelete={this.deleteImage} onSuccess={image => this.setState({ image })} readOnly={readOnly} />
+                    onDelete={this.deleteImage} onSuccess={this.onUploadSuccess} readOnly={readOnly} />
 
                 <FormRichTextBox ref={e => this.itemAnswers = e} className='col-md-12' label='Danh sách câu trả lời' rows='5' onChange={e => this.setState({ answers: e.target.value })} readOnly={readOnly} style={{ display: readOnly ? 'none' : 'block' }} />
                 <div className='col-md-12' style={{ display: readOnly ? 'block' : 'none' }}>
@@ -137,7 +147,7 @@ class AdminQuestionPage extends AdminPage {
                 <Pagination name='pageDriveQuestion' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getDriveQuestionPage} />
                 <QuestionModal ref={e => this.modal = e} questionTypes={this.state.questionTypes} readOnly={!permission.write}
-                    create={this.props.createDriveQuestion} update={this.props.updateDriveQuestion} deleteImage={this.props.deleteDriveQuestionImage} />
+                    create={this.props.createDriveQuestion} update={this.props.updateDriveQuestion} change={this.props.changeDriveQuestion} deleteImage={this.props.deleteDriveQuestionImage} />
             </>,
             onCreate: permission.write ? this.edit : null,
         });
@@ -145,5 +155,5 @@ class AdminQuestionPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveQuestion: state.driveQuestion, category: state.category });
-const mapActionsToProps = { getCategoryAll, getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage };
+const mapActionsToProps = { getCategoryAll, getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);
