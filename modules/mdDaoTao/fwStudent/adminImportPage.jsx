@@ -97,7 +97,8 @@ class EditModal extends AdminModal {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
         } else {
-            this.props.edit(this.state.id, data)
+            this.props.edit(this.state.id, data);
+            T.notify('Cập nhật thông tin bài học thành công!', 'success');
             this.hide();
         }
     }
