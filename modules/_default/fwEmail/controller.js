@@ -38,7 +38,7 @@ module.exports = app => {
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('emailInit', {
-        ready: () => app.model != null && app.model.setting != null && app.state,
+        ready: () => app.model && app.model.setting,
         run: () => app.model.setting.init({
             emailRegisterMemberTitle: 'Hiệp Phát: Chào mừng thành viên mới!',
             emailRegisterMemberText: 'Chào {name}, Trung tâm hiệp phát xin hân hạnh chào mừng bạn. Trước khi bạn có thể đăng nhập, Hãy nhấn vào {url} để kích hoạt tài khoản của bạn. Trân trọng, Mọi thông tin tham khảo vui lòng truy cập trang web: ' + app.rootUrl + '',

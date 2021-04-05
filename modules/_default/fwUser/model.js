@@ -33,7 +33,7 @@ module.exports = (app) => {
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
         auth: (email, password, done) => model.findOne({ email }).populate('roles').populate('division').exec((error, user) =>
-            done(error == null && user != null && user.equalPassword(password) ? user : null)),
+            done(error == null && user && user.equalPassword(password) ? user : null)),
 
         create: (data, done) =>
             app.model.user.get({ email: data.email }, (error, user) => {

@@ -72,16 +72,17 @@ module.exports = app => {
                     if (error || user == null) {
                         res.send({ error: `Id người dùng không hợp lệ!` });
                     } else {
-                        app.model.setting.get('rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml', result => {
-                            const mailTitle = result.rejectDonDeNghiHocTitle,
-                                mailText = result.rejectDonDeNghiHocText.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
-                                mailHtml = result.rejectDonDeNghiHocHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason);
-                            app.email.sendEmail(app.state.data.email, app.state.data.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
+                        app.model.setting.get('email', 'emailPassword', 'rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml', result => {
+                            const fillParams = str => str.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
+                                mailTitle = fillParams(result.rejectDonDeNghiHocTitle),
+                                mailText = fillParams(result.rejectDonDeNghiHocText),
+                                mailHtml = fillParams(result.rejectDonDeNghiHocHtml);
+                            app.email.sendEmail(result.email, result.emailPassword, user.email, [], mailTitle, mailText, mailHtml, null, () => {
                                 item.reason = reason;
                                 item.status = 'reject';
-                                item.save(error => res.send({ error }))
+                                item.save(error => res.send({ error }));
                             }, (error) => {
-                                res.send({ error })
+                                res.send({ error });
                             });
                         });
                     }

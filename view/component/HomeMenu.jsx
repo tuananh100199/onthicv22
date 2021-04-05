@@ -9,7 +9,7 @@ class HomeMenu extends React.Component {
 
     componentDidMount() {
         const done = () => {
-            if ($.fn.classyNav && this.nav.current != null && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
+            if ($.fn.classyNav && this.nav.current && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
                 this.setState({ link: window.location.pathname }, () => {
                     $(this.nav.current).classyNav();
                 })
