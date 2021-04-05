@@ -1,34 +1,35 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStaffGroup, updateStaffGroup } from './redux/reduxStaffGroup';
+import { getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff } from './redux/reduxStaffGroup';
 import { getAllStaffs } from '../fwUser/redux';
 import { Link } from 'react-router-dom';
-import Editor from 'view/component/CkEditor4';
+import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 import Select from 'react-select';
 
-class StaffModal extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { staffs: [], selectedStaff: null };
-
-        this.modal = React.createRef();
-        this.editor = React.createRef();
-        this.btnSave = React.createRef();
-    }
+class StaffModal extends AdminModal {
+    state = { staffs: [], selectedStaff: null };
 
     componentDidMount() {
-        $(document).ready(() => {
-            setTimeout(() => $(this.modal.current).on('shown.bs.modal', () => $('#sgaName').focus()), 250);
-        });
+        $(document).ready(() => this.onShown(() => $(this.itemUser).select2('open')));
+    }
+
+    onShow = (item) => {
+        let { _id, image, active, description, user } = Object.assign({ active: true, description: '' }, item);
+        this.itemUser.value({ id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` });
+        this.itemDescription.value(description);
+        this.itemActive.value(active);
+        this.imageBox.setData(`staff:${_id || 'new'}`);
+
+        this.setState({ _id, carouselId, image });
     }
 
     show = (staffs, selectedStaff, index) => {
         const value = selectedStaff ? { value: selectedStaff.user._id, label: selectedStaff.user.firstname + ' ' + selectedStaff.user.lastname } : null;
         this.setState({ selectedStaff: value, staffs });
         this.editor.current.html(selectedStaff ? selectedStaff.content : '');
-        $(this.btnSave.current).data('isNewMember', selectedStaff == null).data('index', index);
+        // $(this.btnSave.current).data('isNewMember', selectedStaff == null).data('index', index);
 
-        $(this.modal.current).modal('show');
+        // $(this.modal.current).modal('show');
     };
 
     hide = () => $(this.modal.current).modal('hide');
@@ -87,7 +88,6 @@ class StaffModal extends React.Component {
 }
 
 class StaffGroupEditPage extends React.Component {
-    modal = React.createRef();
     staffGroupId = null;
 
     componentDidMount() {
