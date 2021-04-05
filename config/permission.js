@@ -315,7 +315,7 @@ module.exports = app => {
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('permissionInit', {
-        ready: () => app.model != null && app.model.role != null,
+        ready: () => app.model && app.model.role,
         run: () => app.isDebug && app.permission.getTreeMenuText(),
     });
 };

@@ -53,7 +53,7 @@ class SectionAdvisoryForm extends React.Component {
     }
 
     render() {
-        const readOnly = this.props.system && this.props.system.user != null;
+        const readOnly = this.props.system && this.props.system.user;
         const { lastname, firstname, email } = this.state;
         return (
             <div className='intro'>

@@ -55,7 +55,7 @@ export function createCluster(done) {
 
 export function resetCluster(id, done) {
     return dispatch => {
-        if (id != null) {
+        if (id) {
             if (typeof id == 'function') {
                 done = id;
                 id = null;

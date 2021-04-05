@@ -47,7 +47,7 @@ module.exports = (cluster, isDebug) => {
     app.createTemplate('home', 'admin');
     app.loadModules();
     app.readyHooks.add('setupAdmin', {
-        ready: () => app.model != null && app.model.user != null,
+        ready: () => app.model && app.model.user,
         run: () => process.env['enableInit'] == 'true' && app.setupAdmin(),
     });
 
@@ -62,8 +62,6 @@ module.exports = (cluster, isDebug) => {
 
     // Worker ---------------------------------------------------------------------------------------------------------
     app.worker = {
-        refreshState: (option) => process.send({ type: 'refreshState', workerId: process.pid, option }),
-
         create: () => process.send({ type: 'createWorker' }),
         reset: (workerId) => process.send({ type: 'resetWorker', workerId }),
         shutdown: (workerId) => process.send({ type: 'shutdownWorker', workerId }),
@@ -71,9 +69,7 @@ module.exports = (cluster, isDebug) => {
 
     // Listen from MASTER ---------------------------------------------------------------------------------------------
     process.on('message', message => {
-        if (message.type == 'refreshState') {
-            app.state.refresh(message.option);
-        } else if (message.type == 'workersChanged') {
+        if (message.type == 'workersChanged') {
             app.io.emit('workers-changed', message.workers);
             app.worker.items = message.workers;
         } else if (message.type == 'resetWorker') {

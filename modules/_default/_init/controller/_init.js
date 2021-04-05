@@ -105,14 +105,65 @@ module.exports = (app) => {
         );
     };
 
+    // System data ----------------------------------------------------------------------------------------------------------------------------------
+    // TODO: đưa state vào Redis
+    app.state = {
+        data: {
+            todayViews: 0,
+            allViews: 0,
+            logo: '/img/favicon.png',
+            map: '/img/map.png',
+            footer: '/img/footer.jpg',
+            contact: '/img/contact.jpg',
+            subscribe: '/img/subcribe.jpg',
+            facebook: 'https://www.facebook.com',
+            fax: '',
+            youtube: '',
+            twitter: '',
+            instagram: '',
+            dangKyTuVanLink: '',
+            email: app.email.from,
+            emailPassword: app.email.password,
+            mobile: '(08) 2214 6555',
+            address: '',
+        },
+    };
+
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
+    const initSystemData = {
+        todayViews: 0,
+        allViews: 0,
+        logo: '/img/favicon.png',
+        map: '/img/map.png',
+        footer: '/img/footer.jpg',
+        contact: '/img/contact.jpg',
+        subscribe: '/img/subcribe.jpg',
+        facebook: 'https://www.facebook.com',
+        fax: '',
+        youtube: '',
+        twitter: '',
+        instagram: '',
+        dangKyTuVanLink: '',
+        email: app.email.from,
+        emailPassword: app.email.password,
+        mobile: '(08) 2214 6555',
+        address: '',
+    };
     app.readyHooks.add('readyInit', {
-        ready: () => app.model != null && app.model.setting != null && app.state,
+        ready: () => app.redis,
         run: () => {
             if (app.configWorker) {
-                app.model.setting.init(app.state.data, () => app.state.refresh())
-            } else {
-                setTimeout(() => { app.state.refresh() }, 200);
+                app.redis.keys(`${app.appName}:state:*`, (error, keys) => {
+                    if (keys) {
+                        Object.keys(initSystemData).forEach(key => {
+                            const redisKey = `${app.appName}:state:${key}`,
+                                index = keys.indexOf(redisKey);
+                            index == -1 && app.redis.set(redisKey, initSystemData[key]);
+                        });
+                    } else {
+                        console.error('readyInit: Errors occur when read Redis keys!', error);
+                    }
+                });
             }
         },
     });
