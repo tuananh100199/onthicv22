@@ -62,7 +62,7 @@ class StaffGroupPage extends React.Component {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/staff-group/' + item._id} />
-                    <TableCell type='number' content={item.staffs.length} />
+                    <TableCell type='number' content={item.numberOfStaff} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStaffGroup(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/staff-group/' + item._id} onDelete={this.delete} />
                 </tr>

@@ -2,7 +2,26 @@ module.exports = app => {
     app.componentModel['staff group'] = app.model.staffGroup;
 
     app.get('/api/staff-group/all', app.permission.check('component:read'), (req, res) =>
-        app.model.staffGroup.getAll((error, list) => res.send({ error, list })));
+        app.model.staffGroup.getAll((error, list) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                loop: {
+                    list.forEach(item => {
+                        app.model.staff.count({ staffGroupId: item._id }, (error, numberOfStaff) => {
+                            if (error) {
+                                res.send({ error });
+                                break loop;
+                            } else {
+                                item.numberOfStaff = numberOfStaff;
+                                item.save();
+                            }
+                        })
+                    });
+                    res.send({ list });
+                }
+            }
+        }));
 
     app.get('/api/staff-group/', app.permission.check('component:read'), (req, res) =>
         app.model.staffGroup.get(req.query._id, (error, item) => res.send({ error, item })));

@@ -2,6 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         title: String,
         active: { type: Boolean, default: false },
+        numberOfStaff: { type: Number, default: 0 },
     });
     const model = app.db.model('StaffGroup', schema);
 
