@@ -42,6 +42,7 @@ import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
+import fwSign from 'modules/mdDaoTao/fwSign/index';
 import fwCandidate from 'modules/mdDaoTao/fwCandidate';
 import fwStudent from 'modules/mdDaoTao/fwStudent';
 
@@ -51,7 +52,7 @@ const modules = [
     fwUser, fwRole, fwHome, fwMenu,
     fwContact, fwSubscribe, fwEmail, fwNews,
     fwDivision, fwCourseType, fwCourse, fwCandidate, fwStudent, fwSubject, fwLesson,
-    fwDonDeNghiHoc, fwDriveQuestion,
+    fwDonDeNghiHoc, fwDriveQuestion, fwSign,
 ];
 
 // Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------

@@ -18,6 +18,8 @@
 4000. Đào tạo (undefined)
 	4001 - Danh mục câu hỏi thi (/user/drive-question/category)
 	4002 - Câu hỏi thi (/user/drive-question)
+	4003 - Danh mục biển báo (/user/sign/category)
+	4004 - Biển báo (/user/sign)
 	4005 - Cơ sở đào tạo (/user/division)
 	4010 - Loại khóa học (/user/course-type)
 	4020 - Môn học (/user/dao-tao/mon-hoc)
