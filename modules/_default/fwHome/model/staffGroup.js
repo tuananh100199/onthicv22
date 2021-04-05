@@ -1,17 +1,23 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        staff: [{
+        active: { type: Boolean, default: false },
+        staffs: [{
             user: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
-            content: String,
+            active: { type: Boolean, default: false },
+            description: String,
+            image: String
         }]
     });
     const model = app.db.model('StaffGroup', schema);
 
     app.model.staffGroup = {
+
         create: (data, done) => model.create(data, done),
 
-        getAll: done => model.find({}).sort({ _id: -1 }).exec(done),
+        getAll: (condition, done) => done ?
+            model.find(condition).sort({ title: 1 }).exec(done) :
+            model.find({}).sort({ title: 1 }).exec(condition),
 
         get: (_id, done) => model.findById(_id, (error, group) => {
             if (error) {

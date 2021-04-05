@@ -10,7 +10,7 @@ class CategoryModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, description, image } = item || { _id: '', title: '', description: '', image: '/img/avatar.png' };
+        const { _id, title, description, image } = item || { _id: '', title: '', description: '' };
         this.itemTitle.value(title);
         this.itemDescription.value(description);
         this.imageBox.setData(`${this.props.uploadType}:${_id || 'new'}`);
@@ -70,7 +70,7 @@ class CategorySection extends AdminPage {
     render() {
         const permission = this.getUserPermission('category');
         const table = renderTable({
-            getDataSource: () => this.props.category,
+            getDataSource: () => this.props.category, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -83,7 +83,7 @@ class CategorySection extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
-                    <TableCell type='image' content={item.image || '/img/avatar.png'} />
+                    <TableCell type='image' content={item.image || '/img/avatar.jpg'} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCategory(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),

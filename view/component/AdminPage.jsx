@@ -64,7 +64,8 @@ export class TableCell extends React.Component { // type = number | date | link 
     }
 }
 
-export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', renderHead = () => null, renderRow = (item, index) => null }) {
+export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false,
+    renderHead = () => null, renderRow = (item, index) => null }) {
     const list = getDataSource();
     if (list == null) {
         return (
@@ -77,11 +78,13 @@ export function renderTable({ style = {}, className = '', getDataSource = () => 
                 <h3 className='l-text'>{loadingText}</h3>
             </div>);
     } else if (list.length) {
-        return (
-            <table className={'table table-hover table-bordered ' + className} style={style}>
-                <thead>{renderHead()}</thead>
+        const table = (
+            <table className={'table table-hover table-bordered table-responsive ' + className} style={{ margin: 0, ...style }}>
+                <thead className='thead-dark'>{renderHead()}</thead>
                 <tbody>{list.map(renderRow)}</tbody>
-            </table>);
+            </table>
+        );
+        return stickyHead ? <div className='tile-table-fix-head'>{table}</div> : table;
     } else {
         return emptyTable;
     }

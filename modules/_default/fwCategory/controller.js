@@ -46,6 +46,10 @@ module.exports = app => {
             console.log('Hook: uploadCategoryImage => drive-question');
             const _id = fields.userData[0].substring('driveQuestionCategoryImage:'.length);
             app.uploadImage('driveQuestionCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('signCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => sign');
+            const _id = fields.userData[0].substring('signCategoryImage:'.length);
+            app.uploadImage('signCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 

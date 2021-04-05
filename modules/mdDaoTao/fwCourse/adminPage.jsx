@@ -56,10 +56,10 @@ class CoursePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('course');
-        const { pageNumber, pageSize, pageTotal, totalItem } = this.props.course && this.props.course.page ?
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.course && this.props.course.page ?
             this.props.course.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const table = renderTable({
-            getDataSource: () => this.props.course && this.props.course.page && this.props.course.page.list,
+            getDataSource: () => list, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
