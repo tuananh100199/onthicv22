@@ -1,11 +1,12 @@
 module.exports = app => {
     const schema = app.db.Schema({
-        active: { type: Boolean, default: true },                                  // Có thể dài, nên dùng FormRichTextBox
-        title: String,
-        name: String,
+        active: { type: Boolean, default: true },     
+        code: String,                             
+        title: String,           
         image: String,
         priority: { type: Number, default: 0 },
-        categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],            // Phân loại câu hỏi, xử lý giống news
+        description: String,
+        categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],           
     });
     const model = app.db.model('Sign', schema);
 
