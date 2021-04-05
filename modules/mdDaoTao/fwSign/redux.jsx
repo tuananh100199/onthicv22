@@ -72,7 +72,7 @@ export function getSignPage(pageNumber, pageSize, searchText, done) {
     }
 }
 
-export function getSignItem(_id, done) {
+export function getSign(_id, done) {
     return dispatch => {
         const url = '/api/sign';
         T.get(url, { _id }, data => {
