@@ -6,20 +6,20 @@ module.exports = app => {
             if (error) {
                 res.send({ error });
             } else {
-                loop: {
-                    list.forEach(item => {
-                        app.model.staff.count({ staffGroupId: item._id }, (error, numberOfStaff) => {
-                            if (error) {
-                                res.send({ error });
-                                break loop;
-                            } else {
-                                item.numberOfStaff = numberOfStaff;
-                                item.save();
-                            }
-                        })
+                let isError = false;
+                for (const item of list) {
+                    if (isError) break;
+                    app.model.staff.count({ staffGroupId: item._id }, (error, numberOfStaff) => {
+                        if (error) {
+                            res.send({ error });
+                            isError = true;
+                        } else {
+                            item.numberOfStaff = numberOfStaff;
+                            item.save();
+                        }
                     });
-                    res.send({ list });
                 }
+                if (!isError) res.send({ list });
             }
         }));
 
