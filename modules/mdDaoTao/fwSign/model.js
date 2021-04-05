@@ -4,8 +4,6 @@ module.exports = app => {
         title: String,
         name: String,
         image: String,
-        answers: { type: String, default: '' },                                     // Dùng FormRichTextBox => mỗi câu là 1 dòng
-        trueAnswer: { type: Number, default: 0 },                                   // Ghi là 1 thì dòng 1 của answers là đúng. Hiển thị: nếu answers có 3 dòng thì phải hiện Đáp án 1, Đáp án 2, Đáp án 3
         priority: { type: Number, default: 0 },
         categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],            // Phân loại câu hỏi, xử lý giống news
     });
