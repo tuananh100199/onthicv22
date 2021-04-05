@@ -89,7 +89,7 @@ export function renderTable({ style = {}, className = '', getDataSource = () => 
         if (stickyHead) {
             properties.className = 'tile-table-fix-head';
         } else {
-            properties.style = { marginBottom: 12 };
+            properties.style = { marginBottom: 8 };
         }
         return <div {...properties}>{table}</div>;
     } else {
