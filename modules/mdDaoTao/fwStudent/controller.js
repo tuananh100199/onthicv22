@@ -131,27 +131,24 @@ module.exports = (app) => {
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
         let students = req.body.students;
-        students.forEach((student, index, array) => {
-            new Promise((resolve, reject) => { // Tạo user cho pre
-                app.model.user.get({ email: student.email }, (error, user) => {
-                    if (error) {
-                        reject('Lỗi khi đọc thông tin người dùng!');
-                    } else if (user) {
-                        resolve(user._id);
-                    } else { // pre chưa là user
-                        const dataPassword = app.randomPassword(8),
-                            newUser = {
-                                email: student.email,
-                                firstname: student.firstname,
-                                lastname: student.lastname,
-                                phoneNumber: student.phoneNumber,
-                                password: dataPassword
-                            };
-                        app.model.user.create(newUser, (error, user) => {
-                            if (error) {
-                                reject('Lỗi khi tạo người dùng!');
-                            } else { // Tạo user thành công. Gửi email & password đến người dùng!
-                                resolve(user._id);
+        let err = null;
+        if (students && students.length) {
+            const handleCreateStudent = (index = 0) => {
+                if (index == students.length) {
+                    res.send({ error: err });
+                } else {
+                    const student = students[index];
+                    const dataPassword = app.randomPassword(8),
+                        newUser = {
+                            ...student,
+                            password: dataPassword,
+                        };
+                    app.model.user.create(newUser, (error, user) => {
+                        if (error && !user) {
+                            err = error;
+                            handleCreateStudent(index + 1);
+                        } else { // pre chưa là user
+                            if (!error && user) {
                                 app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                                     const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
                                         fillParams = (student) => student.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
@@ -163,19 +160,20 @@ module.exports = (app) => {
                                     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                                 });
                             }
-                        });
-                    }
-                });
-            }).then(_userId => { // Tạo student 
-                student.user = _userId;   // assign id of user to user field of prestudent
-                student.division = req.body.division;
-                student.courseType = req.body.courseType
-                delete student.email;
-                delete student.phoneNumber;
-                app.model.student.create(student)
-                if (index + 1 == array.length) res.end();
-            })
-        });
+                            student.user = user._id;   // assign id of user to user field of prestudent
+                            student.division = req.body.division;
+                            student.courseType = req.body.courseType
+                            app.model.student.create(student, () => {
+                                handleCreateStudent(index + 1);
+                            })
+                        }
+                    });
+                }
+            }
+            handleCreateStudent();
+        } else {
+            res.send({ error: 'Danh sách ứng viên trống!' })
+        }
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {

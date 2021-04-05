@@ -8,10 +8,6 @@ import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormT
 
 class EditModal extends AdminModal {
     state = {};
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
-    }
-
     onShow = (item) => {
         let { id,
             firstname,
@@ -176,7 +172,7 @@ class ImportPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import', 'template']),
+        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
         const table = renderTable({
             getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
@@ -226,19 +222,23 @@ class ImportPage extends AdminPage {
 
         const filebox = (
             <div className='tile'>
-                <h3 className='tile-title'>Upload danh sách ứng viên</h3>
-                <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile'
+                <h3 className='tile-title'>Import danh sách ứng viên</h3>
+                <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                <a href='/download/candidate.xlsx' style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-            </div>
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <button className='btn btn-primary' type='button' onClick={this.save}>
+                        <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+                    </button>
+                </div>
+            </div >
         );
         const list = (
             <div>
                 <div className='tile'>
                     <h3 className='tile-title'>Chọn cơ sở</h3>
-                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' data={ajaxSelectDivision} readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
                     <h3 className='tile-title'>Chọn loại khóa học</h3>
-                    <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' data={ajaxSelectCourseType} readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
                     <h3 className='tile-title'>Danh sách ứng viên</h3>
                     <div className='tile-body' style={{ overflowX: 'auto' }}>
                         {table}
@@ -253,7 +253,7 @@ class ImportPage extends AdminPage {
             title: 'Nhập ứng viên bằng Excel',
             breadcrumb: [<Link to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
-                {permission.import ? filebox : null}
+                {filebox}
                 {this.state.data && this.state.data.length ? list : null}
             </>,
             backRoute: '/user/pre-student',
