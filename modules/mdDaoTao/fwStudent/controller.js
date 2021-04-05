@@ -8,7 +8,6 @@ module.exports = (app) => {
     app.permission.add(
         { name: 'student:read', menu }, { name: 'student:write' }, { name: 'student:delete' }, { name: 'student:import' },
         { name: 'pre-student:read', menu }, { name: 'pre-student:write' }, { name: 'pre-student:delete' }, { name: 'pre-student:import' },
-        { name: 'pre-student:template' },
     );
 
     app.get('/user/pre-student', app.permission.check('pre-student:read'), app.templates.admin);
