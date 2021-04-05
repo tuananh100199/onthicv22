@@ -41,12 +41,18 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/drive-question/item/:_id', app.permission.check('driveQuestion:read'), (req, res) => {
-        app.model.driveQuestion.get(req.params._id, (error, item) => res.send({ error, item }));
+    app.get('/api/drive-question', app.permission.check('driveQuestion:read'), (req, res) => {
+        app.model.driveQuestion.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {
-        app.model.driveQuestion.create(req.body.data, (error, item) => res.send({ error, item }));
+        app.model.driveQuestion.create(req.body.data, (error, item) => {
+            if (error || item == null || item.image == null) {
+                res.send({ error, item });
+            } else {
+                app.uploadImage('drive-question', app.model.driveQuestion.get, item._id, item.image, data => res.send(data));
+            }
+        });
     });
 
     app.put('/api/drive-question', app.permission.check('driveQuestion:write'), (req, res) => {

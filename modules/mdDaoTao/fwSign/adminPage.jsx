@@ -1,23 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
-import { getSignPage, createSign, updateSign, swapSign, deleteSign, deleteSignImage } from './redux';
+import { getSignPage, createSign, updateSign, swapSign, deleteSign, deleteSignImage, changeSign } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormCheckbox, FormTextBox, FormRichTextBox, FormImageBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+
 class SignModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemCode.focus()));
     }
 
     onShow = (item) => {
-        let { _id, code, title, description, active, image, categories } = item || { code: '', title: '', description: '', active: true, image: '/img/avatar.jpg', categories: [] };
+        let { _id, code, title, description, active, image, categories } = item || { code: '', title: '', description: '', active: true, categories: [] };
         this.itemCode.value(code);
         this.itemTitle.value(title);
         this.itemDescription.value(description);
         this.itemImage.setData(`sign:${_id || 'new'}`);
         this.itemCategories.value(categories);
         this.itemIsActive.value(active);
-        
+
         this.setState({ _id, image });
     }
 
@@ -28,10 +29,11 @@ class SignModal extends AdminModal {
             description: this.itemDescription.value(),
             categories: this.itemCategories.value(),
             active: this.itemIsActive.value(),
+            image: this.state.image,
         };
         if (data.code == '') {
-                T.notify('Mã biển báo bị trống!', 'danger');
-                this.itemCode.focus();
+            T.notify('Mã biển báo bị trống!', 'danger');
+            this.itemCode.focus();
         } else if (data.title == '') {
             T.notify('Tên biển báo bị trống!', 'danger');
             this.itemTitle.focus();
@@ -39,13 +41,21 @@ class SignModal extends AdminModal {
             T.notify('Loại biển báo bị trống!', 'danger');
             this.itemCategories.focus();
         } else {
-            this.state._id ? this.props.update(this.state._id, data) : this.props.create(data);
-            this.hide();
+            this.state._id ? this.props.update(this.state._id, data, this.hide) : this.props.create(data, this.hide);
         }
     }
 
     deleteImage = () => T.confirm('Xoá hình minh họa', 'Bạn có chắc bạn muốn xoá hình minh họa này?', true, isConfirm =>
         isConfirm && this.props.deleteImage(this.state._id, () => this.setState({ image: null })));
+
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
+        } else {
+            image && this.setState({ image });
+            item && this.props.change(item);
+        }
+    }
 
     render = () => {
         const readOnly = this.props.readOnly;
@@ -53,11 +63,11 @@ class SignModal extends AdminModal {
             title: 'Biển báo mới',
             size: 'large',
             body: <div className='row'>
-                <FormTextBox ref={e => this.itemCode = e} className='col-md-12' label='Mã biển báo'readOnly={readOnly} />
+                <FormTextBox ref={e => this.itemCode = e} className='col-md-12' label='Mã biển báo' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' label='Tên biển báo' rows='5' readOnly={readOnly} />
                 <FormImageBox ref={e => this.itemImage = e} className='col-md-4' label='Hình minh họa' uploadType='SignImage' image={this.state.image}
-                    onDelete={this.deleteImage} onSuccess={image => this.setState({ image })} readOnly={readOnly} />
-                <FormRichTextBox ref={e => this.itemDescription = e} className='col-md-12' label='Mô tả' rows='5' readOnly={readOnly}  readOnly={readOnly} />
+                    onDelete={this.deleteImage} onSuccess={this.onUploadSuccess} readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} className='col-md-12' label='Mô tả' rows='5' readOnly={readOnly} readOnly={readOnly} />
                 <FormSelect ref={e => this.itemCategories = e} className='col-md-12' data={this.props.signTypes} label='Loại biển báo' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
             </div>
@@ -113,7 +123,7 @@ class AdminQuestionPage extends AdminPage {
                 <Pagination name='pageSign' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getSignPage} />
                 <SignModal ref={e => this.modal = e} signTypes={this.state.signTypes} readOnly={!permission.write}
-                    create={this.props.createSign} update={this.props.updateSign} deleteImage={this.props.deleteSignImage} />
+                    create={this.props.createSign} update={this.props.updateSign} change={this.props.changeSign} deleteImage={this.props.deleteSignImage} />
             </>,
             onCreate: permission.write ? this.edit : null,
         });
@@ -121,5 +131,5 @@ class AdminQuestionPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, sign: state.sign, category: state.category });
-const mapActionsToProps = { getCategoryAll, getSignPage, createSign, updateSign, swapSign, deleteSign, deleteSignImage };
+const mapActionsToProps = { getCategoryAll, getSignPage, createSign, updateSign, swapSign, deleteSign, deleteSignImage, changeSign };
 export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);

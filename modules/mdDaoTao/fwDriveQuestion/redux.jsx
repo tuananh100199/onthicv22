@@ -13,9 +13,27 @@ export default function driveQuestionReducer(state = null, data) {
         case DriveQuestionGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case DriveQuestionGet: {
-            return Object.assign({}, state, { item: data.item });
-        }
+        case DriveQuestionGet:
+            let updatedList = Object.assign({}, state.list),
+                updatedPage = Object.assign({}, state.page),
+                updatedItem = data.item;
+            if (updatedList) {
+                for (let i = 0, n = updatedList.length; i < n; i++) {
+                    if (updatedList[i]._id == updatedItem._id) {
+                        updatedList.splice(i, 1, updatedItem);
+                        break;
+                    }
+                }
+            }
+            if (updatedPage.list) {
+                for (let i = 0, n = updatedPage.list.length; i < n; i++) {
+                    if (updatedPage.list[i]._id == updatedItem._id) {
+                        updatedPage.list.splice(i, 1, updatedItem);
+                        break;
+                    }
+                }
+            }
+            return Object.assign({}, state, { item: data.item, list: updatedList, page: updatedPage });
 
         default:
             return state;
@@ -56,8 +74,8 @@ export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
 
 export function getDriveQuestionItem(_id, done) {
     return dispatch => {
-        const url = '/api/drive-question/item/' + _id;
-        T.get(url, data => {
+        const url = '/api/drive-question';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy câu hỏi thi bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -68,6 +86,12 @@ export function getDriveQuestionItem(_id, done) {
         }, error => T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
     }
 }
+
+export function changeDriveQuestion(driveQuestion) {
+    return { type: DriveQuestionGet, item: driveQuestion };
+}
+
+// Questions APIs -----------------------------------------------------------------------------------------------------
 
 export function createDriveQuestion(data, done) {
     return dispatch => {

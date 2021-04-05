@@ -126,7 +126,7 @@ export function deleteCourse(_id) {
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getCoursePageByUser(pageNumber, pageSize, done) {
     return dispatch => {
-        const url = '/course/page/' + pageNumber + '/' + pageSize;
+        const url = `/home/course/page/${pageNumber}/${pageSize}`;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
@@ -139,10 +139,10 @@ export function getCoursePageByUser(pageNumber, pageSize, done) {
     }
 }
 
-export function getCourseByUser(courseId, courseLink, done) {
+export function getCourseByUser(_id, done) {
     return dispatch => {
-        const url = courseId ? '/course/item/id/' + courseId : '/course/item/link/' + courseLink;
-        T.get(url, data => {
+        const url = '/home/course';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -155,7 +155,7 @@ export function getCourseByUser(courseId, courseLink, done) {
 
 export function getCourseFeed(done) {
     return dispatch => {
-        const url = '/course/page/1/' + T.courseFeedPageSize;
+        const url = '/home/course/page/1/' + T.courseFeedPageSize;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');

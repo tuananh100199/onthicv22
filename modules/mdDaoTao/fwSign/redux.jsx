@@ -13,9 +13,27 @@ export default function signReducer(state = null, data) {
         case SignGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case SignGet: {
-            return Object.assign({}, state, { item: data.item });
-        }
+        case SignGet:
+            let updatedList = Object.assign({}, state.list),
+                updatedPage = Object.assign({}, state.page),
+                updatedItem = data.item;
+            if (updatedList) {
+                for (let i = 0, n = updatedList.length; i < n; i++) {
+                    if (updatedList[i]._id == updatedItem._id) {
+                        updatedList.splice(i, 1, updatedItem);
+                        break;
+                    }
+                }
+            }
+            if (updatedPage.list) {
+                for (let i = 0, n = updatedPage.list.length; i < n; i++) {
+                    if (updatedPage.list[i]._id == updatedItem._id) {
+                        updatedPage.list.splice(i, 1, updatedItem);
+                        break;
+                    }
+                }
+            }
+            return Object.assign({}, state, { item: data.item, list: updatedList, page: updatedPage });
 
         default:
             return state;
@@ -56,8 +74,8 @@ export function getSignPage(pageNumber, pageSize, searchText, done) {
 
 export function getSignItem(_id, done) {
     return dispatch => {
-        const url = '/api/sign/item/' + _id;
-        T.get(url, data => {
+        const url = '/api/sign';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy biển báo bị lỗi', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -149,4 +167,8 @@ export function deleteSignImage(_id, done) {
             }
         }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
     }
+}
+
+export function changeSign(sign) {
+    return { type: SignGet, item: sign };
 }
