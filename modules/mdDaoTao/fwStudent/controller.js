@@ -130,14 +130,52 @@ module.exports = (app) => {
     });
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
-        let students = req.body.students,
-            division = req.body.division;
-        students.forEach(student => {
-            student.division = division;
-            delete student.course;
-            app.model.student.create(student);
+        let students = req.body.students;
+        students.forEach((student, index, array) => {
+            new Promise((resolve, reject) => { // Tạo user cho pre
+                app.model.user.get({ email: student.email }, (error, user) => {
+                    if (error) {
+                        reject('Lỗi khi đọc thông tin người dùng!');
+                    } else if (user) {
+                        resolve(user._id);
+                    } else { // pre chưa là user
+                        const dataPassword = app.randomPassword(8),
+                            newUser = {
+                                email: student.email,
+                                firstname: student.firstname,
+                                lastname: student.lastname,
+                                phoneNumber: student.phoneNumber,
+                                password: dataPassword
+                            };
+                        app.model.user.create(newUser, (error, user) => {
+                            if (error) {
+                                reject('Lỗi khi tạo người dùng!');
+                            } else { // Tạo user thành công. Gửi email & password đến người dùng!
+                                resolve(user._id);
+                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                    const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                        fillParams = (student) => student.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                        mailTitle = result.emailCreateMemberByAdminTitle,
+                                        mailText = fillParams(result.emailCreateMemberByAdminText),
+                                        mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                });
+                            }
+                        });
+                    }
+                });
+            }).then(_userId => { // Tạo student 
+                student.user = _userId;   // assign id of user to user field of prestudent
+                student.division = req.body.division;
+                student.courseType = req.body.courseType
+                delete student.email;
+                delete student.phoneNumber;
+                app.model.student.create(student)
+                if (index + 1 == array.length) res.end();
+            })
         });
-        res.send();
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
@@ -214,67 +252,47 @@ module.exports = (app) => {
         app.permission.has(req, () => uploadPreStudentImage(fields, files, done), done, 'pre-student:write'));
 
     // Hook upload pre-students excel---------------------------------------------------------------------------------------
-    const uploadPreStudentExcelFile = (fields, files, done) => {
-        const srcPath = files.CandidateFile[0].path;
-        app.excel.readFile(srcPath, workbook => {
-            app.deleteFile(srcPath);
-            if (workbook) {
-                const data = [];
-                const handleUpload = (index, worksheet, totalRow, item, data) => {
-                    const values = worksheet.getRow(index).values;
-                    if (values.length == 0 || index == totalRow + 1) {
-                        data.push(item)
-                    } else {
-                        item.push({
-                            firstname: values[2],
-                            lastname: values[3],
-                            email: values[4],
-                            phoneNumber: values[5],
-                            sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
-                            birthday: values[7],
-                            nationality: values[8],
-                            residence: values[9],
-                            regularResidence: values[10],
-                            identityCard: values[11],
-                            identityIssuedBy: values[12],
-                            identityDate: values[13],
-                            giayPhepLaiXe2BanhSo: values[14],
-                            giayPhepLaiXe2BanhNgay: values[15],
-                            giayPhepLaiXe2BanhNoiCap: values[16],
-                            giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
-                            giayKhamSucKhoeNgayKham: values[18],
-                        });
-                        handleUpload(index + 1, worksheet, totalRow, item, data);
-                    }
-                };
-                workbook.worksheets.map((worksheet) => {
-                    handleUpload(2, worksheet, worksheet.lastRow.number, [], data)
-                });
-                if (data.length > 0) done({ data });
-                else done({ error: 'Error' });
-            } else done({ error: 'Error' });
-        });
-    };
-
-    app.uploadHooks.add('uploadPreStudentExcelFile', (req, fields, files, params, done) => {
+    app.uploadHooks.add('uploadExcelFile', (req, fields, files, params, done) => {
         if (files.CandidateFile && files.CandidateFile.length > 0) {
-            console.log('Hook: uploadPreStudentExcelFile => your excel file upload');
-            uploadPreStudentExcelFile(fields, files, done);
-        }
-    });
-    // Hook upload template pre-students ---------------------------------------------------------------------------------------
-    const uploadPreStudentTemplateFile = (fields, files, done) => {
-        const srcPath = files.CandidateTemplateFile[0].path;
-        app.deleteFile(app.path.join(app.publicPath, 'download/candidate.xlsx'));
-        app.fs.rename(srcPath, app.path.join(app.publicPath, 'download/candidate.xlsx'), (error) => {
-            done({ error })
-        });
-    };
-
-    app.uploadHooks.add('uploadPreStudentTemplateFile', (req, fields, files, params, done) => {
-        if (files.CandidateTemplateFile && files.CandidateTemplateFile.length > 0) {
-            console.log('Hook: uploadPreStudentTemplateFile => your excel template file upload');
-            uploadPreStudentTemplateFile(fields, files, done);
+            console.log('Hook: uploadExcelFile => your excel file upload');
+            const srcPath = files.CandidateFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                    const handleUpload = (index = 2) => {
+                        const values = worksheet.getRow(index).values;
+                        if (values.length == 0 || index == totalRow + 1) {
+                            done({ data });
+                        } else {
+                            data.push({
+                                id: index - 1,
+                                lastname: values[2],
+                                firstname: values[3],
+                                email: values[4],
+                                phoneNumber: values[5],
+                                sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
+                                birthday: values[7],
+                                nationality: values[8],
+                                residence: values[9],
+                                regularResidence: values[10],
+                                identityCard: values[11],
+                                identityIssuedBy: values[12],
+                                identityDate: values[13],
+                                giayPhepLaiXe2BanhSo: values[14],
+                                giayPhepLaiXe2BanhNgay: values[15],
+                                giayPhepLaiXe2BanhNoiCap: values[16],
+                                giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
+                                giayKhamSucKhoeNgayKham: values[18],
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Error' });
+                }
+            });
         }
     });
 };

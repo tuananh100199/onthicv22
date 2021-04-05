@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
-import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
@@ -18,7 +18,6 @@ class EditModal extends AdminModal {
             lastname,
             email,
             phoneNumber,
-            courseType,
             sex,
             birthday,
             nationality,
@@ -38,7 +37,6 @@ class EditModal extends AdminModal {
                 email: '',
                 phoneNumber: '',
                 sex: '',
-                courseTypes: {},
                 birthday: '',
                 nationality: '',
                 residence: '',
@@ -52,7 +50,7 @@ class EditModal extends AdminModal {
                 giayKhamSucKhoe: '',
                 giayKhamSucKhoeNgayKham: ''
             };
-        this.setState({ id: id, courseType: courseType })
+        this.setState({ id: id })
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
@@ -79,7 +77,6 @@ class EditModal extends AdminModal {
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            courseType: this.state.courseType,
             sex: this.itemSex.value(),
             birthday: this.itemBirthday.value(),
             nationality: this.itemNationality.value(),
@@ -114,8 +111,8 @@ class EditModal extends AdminModal {
         size: 'large',
         body: (
             <div className='row'>
-                <FormTextBox ref={e => this.itemFirstname = e} label='Họ ứng viên' className='col-md-8' readOnly={this.props.readOnly} />
-                <FormTextBox ref={e => this.itemLastname = e} label='Tên ứng viên' className='col-md-4' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLastname = e} label='Họ ứng viên' className='col-md-8' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemFirstname = e} label='Tên ứng viên' className='col-md-4' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemEmail = e} label='Email' className='col-md-6' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' className='col-md-6' readOnly={this.props.readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
@@ -129,59 +126,26 @@ class EditModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' className='col-md-4' readOnly={this.props.readOnly} />
                 <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' className='col-md-4' readOnly={this.props.readOnly} />
-                {/* <FormTextBox ref={e => this.itemgiayKhamSucKhoe = e} label='Đã có giấy phép lái xe' className='col-md-6' readOnly={this.props.readOnly} /> */}
                 <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-6' label='Đã có giấy phép lái xe' readOnly={this.props.readOnly} />
                 <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className='col-md-6' label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
             </div>),
     });
 }
-
-class UpdateTemplateModal extends AdminModal {
-    state = {};
-    fileBox = React.createRef();
-
-    onUploadSuccess = () => {
-        this.hide();
-    }
-
-    render = () => this.renderModal({
-        title: 'Upload file excel mẫu',
-        size: 'large',
-        body: (
-            <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateTemplateFile' onSuccess={this.onUploadSuccess} />
-        ),
-    });
-}
-
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
     state = {};
-    componentDidMount() {
-        this.props.getCourseTypeAll(list => {
-            const courseTypes = list.map(item => ({ _id: item._id, text: item.title }));
-            this.setState({ courseTypes });
-        });
-    }
-    onUploadSuccess = (listStudent) => {
-        let total = [];
-        if (listStudent.data) {
-            listStudent.data.map((students, index) => {
-                students.map((student) => {
-                    student.courseType = this.state.courseTypes[index]
-                    student.id = this.state.courseTypes[index].text + index
-                })
-                total = total.concat(students)
-            });
-        }
-        this.setState({ total });
+
+    onUploadSuccess = (data) => {
+        this.setState(data);
         this.itemDivision.value(null)
+        this.itemCourseType.value(null)
     }
 
     showEditModal = (e, item) => e.preventDefault() || this.modalEdit.show(item);
-    showUpdateTemplateModal = (e, item) => e.preventDefault() || this.templateModalEdit.show(item);
+
     edit = (studentId, changes) => {
         this.setState(prevState => ({
-            total: prevState.total.map(
+            data: prevState.data.map(
                 data => data.id === studentId ? changes : data
             )
         }))
@@ -189,7 +153,7 @@ class ImportPage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa thông tin ứng viên', `Bạn có chắc bạn muốn xóa thông tin ứng viên <strong>${item.firstname + ' ' + item.lastname}</strong>?`, true, isConfirm =>
         isConfirm && this.setState(prevState => ({
-            total: prevState.total.filter(data => data.id !== item.id)
+            data: prevState.data.filter(data => data.id !== item.id)
         }))
     );
 
@@ -197,8 +161,11 @@ class ImportPage extends AdminPage {
         if (!this.itemDivision.value()) {
             T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
             this.itemDivision.focus();
+        } else if (!this.itemCourseType.value()) {
+            T.notify('Chưa chọn loại khóa học!', 'danger');
+            this.itemCourseType.focus();
         } else {
-            this.props.importPreStudent(this.state.total, this.itemDivision.value(), data => {
+            this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
                 if (data.error) {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
@@ -212,7 +179,7 @@ class ImportPage extends AdminPage {
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import', 'template']),
             readOnly = !permission.write;
         const table = renderTable({
-            getDataSource: () => this.state.total && this.state.total.length > 0 ? this.state.total : [],
+            getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -220,7 +187,6 @@ class ImportPage extends AdminPage {
                     <th style={{ width: '30%' }}>Email</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giới tính</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Quốc tịch</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi cư trú</th>
@@ -238,11 +204,10 @@ class ImportPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.firstname + ' ' + item.lastname} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.email} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.mobileDisplay(item.phoneNumber)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.sex.toLowerCase().trim() == 'male' ? 'Nam' : 'Nữ'} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType ? item.courseType.text : ''} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.birthday, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.nationality} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.residence} />
@@ -265,8 +230,6 @@ class ImportPage extends AdminPage {
                 <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
                 <a href='/download/candidate.xlsx' style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-                {permission.template ? <a href='#' onClick={this.showUpdateTemplateModal} style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-upload' /> Upload file mẫu</a> : null}
-                <UpdateTemplateModal ref={e => this.templateModalEdit = e} />
             </div>
         );
         const list = (
@@ -274,6 +237,8 @@ class ImportPage extends AdminPage {
                 <div className='tile'>
                     <h3 className='tile-title'>Chọn cơ sở</h3>
                     <FormSelect ref={e => this.itemDivision = e} className='col-md-4' data={ajaxSelectDivision} readOnly={readOnly} />
+                    <h3 className='tile-title'>Chọn loại khóa học</h3>
+                    <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' data={ajaxSelectCourseType} readOnly={readOnly} />
                     <h3 className='tile-title'>Danh sách ứng viên</h3>
                     <div className='tile-body' style={{ overflowX: 'auto' }}>
                         {table}
@@ -289,12 +254,12 @@ class ImportPage extends AdminPage {
             breadcrumb: [<Link to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
                 {permission.import ? filebox : null}
-                {this.state.total && this.state.total.length ? list : null}
+                {this.state.data && this.state.data.length ? list : null}
             </>,
             backRoute: '/user/pre-student',
         });
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importPreStudent, getCourseTypeAll }
+const mapActionsToProps = { importPreStudent }
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);
