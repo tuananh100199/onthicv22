@@ -1,5 +1,4 @@
 module.exports = (app) => {
-    app.componentModel = {};
     app.createFolder(app.assetPath, app.path.join(app.assetPath, '/upload'), app.path.join(app.assetPath, '/temp'));
 
     // Upload ---------------------------------------------------------------------------------------------------------------------------------------

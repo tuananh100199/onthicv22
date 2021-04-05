@@ -1,4 +1,5 @@
 module.exports = (app, http, config) => {
+    app.componentModel = {};
     app.url = require('url');
 
     // Protect your app from some well-known web vulnerabilities by setting HTTP headers appropriately
