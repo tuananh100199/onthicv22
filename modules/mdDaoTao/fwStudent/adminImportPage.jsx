@@ -184,7 +184,7 @@ class ImportPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '50%' }}>Họ và Tên</th>
-                    <th style={{ width: '30%' }}>Email</th>
+                    <th style={{ width: '50%' }}>Email</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giới tính</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
