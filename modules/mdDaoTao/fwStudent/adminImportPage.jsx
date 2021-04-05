@@ -96,6 +96,9 @@ class EditModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
+        } else if (data.email == '') {
+            T.notify('Địa chỉ email không được trống!', 'danger');
+            this.itemPhoneNumber.focus();
         } else {
             this.props.edit(this.state.id, data);
             T.notify('Cập nhật thông tin bài học thành công!', 'success');
