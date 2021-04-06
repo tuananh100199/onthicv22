@@ -86,6 +86,7 @@ export function updateStaffGroup(_id, changes, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
                 done && done(data.error);
             } else {
+                T.notify('Cập nhật thông tin nhóm nhân viên thành công!', 'info');
                 dispatch(getStaffGroupAll());
                 // dispatch({ type: StaffGroupUpdate, item: data.item });
                 done && done();
