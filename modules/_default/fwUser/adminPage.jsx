@@ -14,7 +14,7 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false, birthday: null };
+        if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false, birthday: '' };
         this.itemFirstname.value(item.firstname);
         this.itemLastname.value(item.lastname);
         this.itemBirthday.value(item.birthday);
@@ -254,7 +254,7 @@ class UserPage extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);
 
-    create = (e) => e.preventDefault() || this.userModal.show();
+    // create = (e) => e.preventDefault() || this.userModal.show();
 
     changePassword = (e, item) => e.preventDefault() || this.passwordModal.show(item);
 
@@ -309,7 +309,7 @@ class UserPage extends AdminPage {
                     changeSystemState={this.props.changeSystemState} />
                 <UserPasswordModal ref={e => this.passwordModal = e} readOnly={!permission.write} updateUser={this.props.updateUser} />
             </>,
-            onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? e => e.preventDefault() || this.userModal.show() : null,
         });
     }
 }
