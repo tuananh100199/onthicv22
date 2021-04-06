@@ -132,46 +132,41 @@ class StaffGroupEditPage extends AdminPage {
                 </tr>),
         });
 
-        const title = currentStaffGroup ? currentStaffGroup.title : '';
-        return (
-            <main className='app-content' >
-                <div className='app-title'>
-                    <h1><i className='fa fa-group' /> Nhóm nhân viên: DOING TASK</h1>
-                    <ul className='app-breadcrumb breadcrumb'>
-                        <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
-                        &nbsp;/&nbsp;
-                        <Link to='/user/component'>Thành phần giao diện</Link>
-                        &nbsp;/&nbsp;Chỉnh sửa
-                    </ul>
-                </div>
+        return this.renderPage({
+            icon: 'fa fa-group',
+            title: 'Nhóm nhân viên: ' + (this.state.title || '...'),
+            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Nhóm nhân viên'],
+            content: <>
                 <div className='tile'>
-                    <div className='tile-body'>
-                        <div className='form-group'>
-                            <label className='control-label'>Tiêu đề</label>
-                            <input className='form-control' type='text' placeholder='Tiêu đề' id='stfTitle' defaultValue={title.vi} readOnly={readOnly} />
-                        </div>
-                        <div className='form-group'>{table}</div>
-                    </div>
-                    {readOnly ? null :
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button className='btn btn-info' type='button' onClick={this.showAddStaffModal}>
-                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm
-                            </button>&nbsp;
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='tile-body' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
+                    {permission.write &&
+                        <div style={{ textAlign: 'right' }}>
                             <button className='btn btn-primary' type='button' onClick={this.save}>
                                 <i className='fa fa-fw fa-lg fa-save' /> Lưu
                             </button>
                         </div>}
                 </div>
-                <Link to='/user/component' className='btn btn-secondary btn-circle' style={{ position: 'fixed', lefft: '10px', bottom: '10px' }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>
 
-                <StaffModal ref={this.modal} addStaff={this.add} updateStaff={this.update} />
-            </main>
-        );
+                <div className='tile'>
+                    <h3 className='tile-title'>Danh sách nhân viên</h3>
+                    <div className='tile-body'>
+                        {table}
+                        {permission.write &&
+                            <div style={{ textAlign: 'right' }}>
+                                <button className='btn btn-success' type='button' onClick={this.create}>
+                                    <i className='fa fa-fw fa-lg fa-plus'></i> Thêm
+                                </button>
+                            </div>}
+                    </div>
+                </div>
+
+                <StaffModal ref={e => this.modal = e} create={this.props.createStaff} update={this.props.updateStaff} change={this.props.changeStaff} readOnly={!permission.write} />
+            </>,
+            backRoute: '/user/component',
+        });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, component: state.component, user: state.user });
+const mapStateToProps = state => ({ system: state.system, component: state.component });
 const mapActionsToProps = { getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff };
 export default connect(mapStateToProps, mapActionsToProps)(StaffGroupEditPage);
