@@ -1,204 +1,136 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff } from './redux/reduxStaffGroup';
-import { getAllStaffs } from '../fwUser/redux';
+import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
-import Select from 'react-select';
+import { AdminPage, FormSelect, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
 class StaffModal extends AdminModal {
-    state = { staffs: [], selectedStaff: null };
+    state = {};
 
     componentDidMount() {
         $(document).ready(() => this.onShown(() => $(this.itemUser).select2('open')));
     }
 
     onShow = (item) => {
-        let { _id, image, active, description, user } = Object.assign({ active: true, description: '' }, item);
+        let { _id, image, active, description, user, staffGroupId } = Object.assign({ active: true, description: '' }, item);
         this.itemUser.value({ id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` });
         this.itemDescription.value(description);
         this.itemActive.value(active);
         this.imageBox.setData(`staff:${_id || 'new'}`);
 
-        this.setState({ _id, carouselId, image });
+        this.setState({ _id, staffGroupId, image });
     }
 
-    show = (staffs, selectedStaff, index) => {
-        const value = selectedStaff ? { value: selectedStaff.user._id, label: selectedStaff.user.firstname + ' ' + selectedStaff.user.lastname } : null;
-        this.setState({ selectedStaff: value, staffs });
-        this.editor.current.html(selectedStaff ? selectedStaff.content : '');
-        // $(this.btnSave.current).data('isNewMember', selectedStaff == null).data('index', index);
-
-        // $(this.modal.current).modal('show');
-    };
-
-    hide = () => $(this.modal.current).modal('hide');
-
-    onSelectStaff = (selectedStaff) => this.setState({ selectedStaff });
-
-    save = (event) => {
-        if (this.state.selectedStaff) {
-            const btnSave = $(this.btnSave.current),
-                isNewMember = btnSave.data('isNewMember'),
-                index = btnSave.data('index'),
-                userId = this.state.selectedStaff.value;
-            if (isNewMember) {
-                this.props.addStaff(userId, this.editor.current.html());
-            } else {
-                this.props.updateStaff(index, userId, this.editor.current.html());
-            }
+    onUploadSuccess = ({ error, item, image }) => {
+        if (error) {
+            T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {
-            T.notify('Tên nhân viên bị trống!', 'danger');
+            image && this.setState({ image });
+            item && this.props.change(item);
         }
-        event.preventDefault();
-    };
-
-    render() {
-        return (
-            <div className='modal' tabIndex='-1' role='dialog' ref={this.modal}>
-                <form className='modal-dialog modal-lg' role='document'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h5 className='modal-title'>Thêm nhân viên vào nhóm</h5>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-                                <span aria-hidden='true'>&times;</span>
-                            </button>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='form-group'>
-                                <label htmlFor='sgaName'>Tên nhân viên</label><br />
-                                <Select options={this.state.staffs} isClearable={true} onChange={this.onSelectStaff} value={this.state.selectedStaff} />
-                            </div>
-                            <div className='form-group'>
-                                <label htmlFor='sgaContent'>Nội dung</label>
-                                <Editor ref={this.editor} placeholder='Nội dung' />
-                            </div>
-                        </div>
-                        <div className='modal-footer'>
-                            <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
-                            <button type='button' className='btn btn-primary' ref={this.btnSave} onClick={this.save}>
-                                <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        );
     }
+
+    onSubmit = (e) => {
+        e.preventDefault();
+        const changes = {
+            user: this.itemUser.value(),
+            description: this.itemDescription.value().trim(),
+            staffGroupId: this.state.staffGroupId,
+            active: this.itemActive.value(),
+            image: this.state.image,
+        };
+
+        if (!changes.user) {
+            T.notify('Tên nhân viên bị trống!', 'danger');
+            $(this.itemUser).select2('open');
+        } else {
+            this.state._id ? this.props.update(this.state._id, changes, this.hide()) : this.props.create(changes, this.hide());
+        }
+    }
+
+    render = () => this.renderModal({
+        title: 'Nhân viên',
+        size: 'large',
+        body: <div className='row'>
+            <div className='col-md-8'>
+                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType({ $or: ['isCourseAdmin', 'isLecturer', 'isStaff'] })} readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
+            </div>
+            <div className='col-md-4'>
+                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}
+                    onSuccess={this.onUploadSuccess} />
+                <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
+            </div>
+        </div>,
+    });
 }
 
-class StaffGroupEditPage extends React.Component {
-    staffGroupId = null;
+class StaffGroupEditPage extends AdminPage {
+    state = {};
 
     componentDidMount() {
         T.ready('/user/component', () => {
-            const route = T.routeMatcher('/user/staff-group/:staffGroupId'),
+            const route = T.routeMatcher('/user/staff-group/:_id'),
                 params = route.parse(window.location.pathname);
 
-            this.props.getStaffGroup(params.staffGroupId, data => {
+            this.props.getStaffGroup(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy nhóm nhân viên bị lỗi!', 'danger');
                     this.props.history.push('/user/component');
                 } else if (data.item) {
-                    this.staffGroupId = params.staffGroupId;
-                    $('#stfTitle').val(data.item.title).focus();
+                    this.itemTitle.value(data.item.title);
+                    this.itemTitle.focus();
+                    this.setState(data.item);
                 } else {
                     this.props.history.push('/user/component');
                 }
             });
-
-            this.props.getAllStaffs();
         });
     }
 
-    showAddStaffModal = () => {
-        let staffs = this.props.user.staffs.map(item => ({ value: item._id, label: item.firstname + ' ' + item.lastname }));
-        this.modal.current.show(staffs);
-    };
-
-    showEditStaffModal = (e, selectedStaff, index) => {
-        let staffs = this.props.user.staffs.map(item => ({ value: item._id, label: item.firstname + ' ' + item.lastname }));
-        this.modal.current.show(staffs, selectedStaff, index);
-        e.preventDefault();
-    };
-
-    add = (userId, content) => {
-        // this.props.addStaffIntoGroup(userId, content, () => this.modal.current.hide());
-    };
-
-    update = (index, userId, content) => {
-        // this.props.updateStaffInGroup(index, userId, content, () => this.modal.current.hide());
-    };
-
-    remove = (e, user) => {
-        // this.props.removeStaffFromGroup(user._id);
-        e.preventDefault();
-    };
-
-    swap = (e, user, isMoveUp) => {
-        // this.props.swapStaffInGroup(user._id, isMoveUp);
-        e.preventDefault();
-    };
-
     save = () => {
         const changes = {
-            title: $('#stfTitle').val(),
-            staff: this.props.staffGroup.item.staff,
+            title: this.itemTitle.value().trim(),
         };
-        if (changes.staff && changes.staff.length == 0) changes.staff = 'empty';
-        this.props.updateStaffGroup(this.props.staffGroup.item._id, changes);
+        if (changes.title == '') {
+            T.notify('Tên nhóm nhân viên bị trống!', 'danger');
+            this.itemTitle.focus();
+        } else {
+            this.props.updateStaffGroup(this.state._id, changes);
+        }
     };
 
+    create = (e) => e.preventDefault() || this.modal.show({ staffGroupId: this.state._id });
+
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
+    swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapStaff(item._id, isMoveUp);
+
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa nhân viên', 'Bạn có chắc bạn muốn xóa nhân viên này?', true, isConfirm =>
+        isConfirm && this.props.deleteStaff(item._id));
+
     render() {
-        const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [],
-            readOnly = !currentPermissions.includes('component:write');
-        let table = null,
-            currentStaffGroup = this.props.staffGroup && this.props.staffGroup.item ? this.props.staffGroup.item : null;
-        if (currentStaffGroup && currentStaffGroup.staff.length > 0) {
-            table = (
-                <table className='table table-hover table-bordered'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                            <th style={{ width: '100%' }}>Nhân viên</th>
-                            {currentPermissions.includes('component:write') ? <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th> : null}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentStaffGroup.staff.map((item, index) => (
-                            <tr key={index}>
-                                <td style={{ width: 'auto', textAlign: 'right' }}>{index + 1}</td>
-                                <td>
-                                    {readOnly ?
-                                        <a>{item.user.firstname + ' ' + item.user.lastname}</a> :
-                                        <a href='#' onClick={e => this.showEditStaffModal(e, item, index)}>
-                                            {item.user.firstname + ' ' + item.user.lastname}
-                                        </a>}
-                                </td>
-                                {!readOnly ? <td>
-                                    <div className='btn-group'>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, true)}>
-                                            <i className='fa fa-lg fa-arrow-up' />
-                                        </a>
-                                        <a className='btn btn-success' href='#' onClick={e => this.swap(e, item, false)}>
-                                            <i className='fa fa-lg fa-arrow-down' />
-                                        </a>
-                                        <a className='btn btn-primary' href='#' onClick={e => this.showEditStaffModal(e, item, index)}>
-                                            <i className='fa fa-lg fa-edit' />
-                                        </a>
-                                        <a className='btn btn-danger' href='#' onClick={e => this.remove(e, item)}>
-                                            <i className='fa fa-lg fa-trash' />
-                                        </a>
-                                    </div>
-                                </td> : null}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            );
-        } else {
-            table = <p>Không có nhân viên!</p>;
-        }
+        const permission = this.getUserPermission('component');
+        const table = renderTable({
+            getDataSource: () => this.props.component.staffGroup && this.props.component.staffGroup.selectedItem && this.props.component.staffGroup.selectedItem.items,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto' }}>#</th>
+                    <th style={{ width: '80%' }}>Nhân viên</th>
+                    <th style={{ width: '20%', textAlign: 'center' }}>Hình ảnh</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.user.lastname + ' ' + item.user.firstname} onClick={this.edit} />
+                    <TableCell type='image' content={item.image || item.user.image} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStaff(item._id, { active })} />
+                    <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
+                </tr>),
+        });
 
         const title = currentStaffGroup ? currentStaffGroup.title : '';
         return (
@@ -241,5 +173,5 @@ class StaffGroupEditPage extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component, user: state.user });
-const mapActionsToProps = { getStaffGroup, updateStaffGroup, getAllStaffs };
+const mapActionsToProps = { getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff };
 export default connect(mapStateToProps, mapActionsToProps)(StaffGroupEditPage);
