@@ -28,8 +28,22 @@ module.exports = app => {
                         { lastname: value },
                     ];
                 }
-                if (condition.type == 'isCourseAdmin') pageCondition.isCourseAdmin = true;
-                if (condition.type == 'isLecturer') pageCondition.isLecturer = true;
+                if (condition.type) {
+                    const isType = (type) => condition.type.includes(type);
+                    pageCondition['$or'] = [
+                        { isCourseAdmin: isType('isCourseAdmin') },
+                        { isLecturer: isType('isLecturer') },
+                        { isStaff: isType('isStaff') },
+                    ];
+                    // pageCondition['$or'] = [
+                    //     { isCourseAdmin: true },
+                    //     { isLecturer: true },
+                    //     { isStaff: true },
+                    // ];
+                    // if (condition.type.includes('isCourseAdmin')) pageCondition.isCourseAdmin = true;
+                    // if (condition.type.includes('isLecturer')) pageCondition.isLecturer = true;
+                    // if (condition.type.includes('isStaff')) pageCondition.isStaff = true;
+                }
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
