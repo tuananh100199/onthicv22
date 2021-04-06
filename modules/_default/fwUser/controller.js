@@ -95,6 +95,7 @@ module.exports = app => {
                         }
 
                         const password = changes.password;
+                        changes.division = changes.division || req.session.user.division;
                         app.model.user.update(req.body._id, changes, (error, user) => {
                             if (error) {
                                 res.send({ error });
