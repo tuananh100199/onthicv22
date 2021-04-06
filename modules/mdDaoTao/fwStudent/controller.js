@@ -280,7 +280,7 @@ module.exports = (app) => {
                                 giayPhepLaiXe2BanhNgay: values[15],
                                 giayPhepLaiXe2BanhNoiCap: values[16],
                                 giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
-                                giayKhamSucKhoeNgayKham: values[18],
+                                giayKhamSucKhoeNgayKham: values[17].toLowerCase().trim() == 'có' ? values[18] : null,
                             });
                             handleUpload(index + 1);
                         }
