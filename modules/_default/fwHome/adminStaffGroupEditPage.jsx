@@ -9,13 +9,13 @@ class StaffModal extends AdminModal {
     state = {};
 
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => $(this.itemUser).select2('open')));
+        $(document).ready(() => this.onShown(() => { }));
     }
 
     onShow = (item) => {
-        let { _id, image, active, description, user, staffGroupId } = Object.assign({ active: true, description: '' }, item);
-        this.itemUser.value({ id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` });
+        const { _id, image, active, description, user, staffGroupId } = item || { _id: null, active: true, description: '' }
         this.itemDescription.value(description);
+        this.itemUser.value(user ? { id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` } : null);
         this.itemActive.value(active);
         this.imageBox.setData(`staff:${_id || 'new'}`);
 
@@ -43,7 +43,7 @@ class StaffModal extends AdminModal {
 
         if (!changes.user) {
             T.notify('Tên nhân viên bị trống!', 'danger');
-            $(this.itemUser).select2('open');
+            this.itemUser.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, changes, this.hide()) : this.props.create(changes, this.hide());
         }

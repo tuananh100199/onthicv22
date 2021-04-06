@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStaffGroupByUser } from './redux/reduxStaffGroup';
+import { homeGetStaffGroup } from './redux/reduxStaffGroup';
 
 class SectionStaffGroup extends React.Component {
     componentDidMount() {
         if (this.props.viewId) {
-            this.props.getStaffGroupByUser(this.props.viewId, data => this.setState(data.item));
+            this.props.homeGetStaffGroup(this.props.viewId, data => this.setState(data.item));
         }
     }
 
@@ -115,5 +115,5 @@ class SectionStaffGroup extends React.Component {
 }
 
 const mapStateToProps = state => ({ component: state.component });
-const mapActionsToProps = { getStaffGroupByUser };
+const mapActionsToProps = { homeGetStaffGroup };
 export default connect(mapStateToProps, mapActionsToProps)(SectionStaffGroup);
