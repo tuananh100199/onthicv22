@@ -149,8 +149,9 @@ export function swapStaff(_id, isMoveUp) {
             if (data.error) {
                 T.notify('Thay đổi thứ tự nhân viên bị lỗi!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
-            } else {
-                dispatch(getStaffGroup(data.item.staffGroupId));
+            } else if (data.item1) {
+                T.notify('Thay đổi thứ tự nhân viên thành công!', 'info')
+                dispatch(getStaffGroup(data.item1.staffGroupId));
             }
         }, error => T.notify('Thay đổi thứ tự nhân viên bị lỗi!', 'danger'));
     }
