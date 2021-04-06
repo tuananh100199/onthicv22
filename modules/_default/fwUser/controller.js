@@ -19,6 +19,7 @@ module.exports = app => {
             pageCondition = {};
         try {
             if (condition) {
+                pageCondition['$or'] = [];
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition['$or'] = [
@@ -29,20 +30,9 @@ module.exports = app => {
                     ];
                 }
                 if (condition.type) {
-                    const isType = (type) => condition.type.includes(type);
-                    pageCondition['$or'] = [
-                        { isCourseAdmin: isType('isCourseAdmin') },
-                        { isLecturer: isType('isLecturer') },
-                        { isStaff: isType('isStaff') },
-                    ];
-                    // pageCondition['$or'] = [
-                    //     { isCourseAdmin: true },
-                    //     { isLecturer: true },
-                    //     { isStaff: true },
-                    // ];
-                    // if (condition.type.includes('isCourseAdmin')) pageCondition.isCourseAdmin = true;
-                    // if (condition.type.includes('isLecturer')) pageCondition.isLecturer = true;
-                    // if (condition.type.includes('isStaff')) pageCondition.isStaff = true;
+                    condition.type.forEach((item) => {
+                        pageCondition['$or'].push(JSON.parse(`{ "${item}":true}`));
+                    })
                 }
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
