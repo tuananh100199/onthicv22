@@ -1,6 +1,7 @@
 module.exports = app => {
     app.componentModel['staff group'] = app.model.staffGroup;
 
+    /// API StaffGroup
     app.get('/api/staff-group/all', app.permission.check('component:read'), (req, res) =>
         app.model.staffGroup.getAll((error, list) => {
             if (error) {
@@ -95,7 +96,7 @@ module.exports = app => {
     });
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/home/staffGroup', (req, res) => app.model.staffGroup.get(req.query._id, (error, staffGroup) => {
+    app.get('/home/staff-group', (req, res) => app.model.staffGroup.get(req.query._id, (error, staffGroup) => {
         if (error || staffGroup == null) {
             res.send({ error: 'Get staffGroup failed!' });
         } else {
