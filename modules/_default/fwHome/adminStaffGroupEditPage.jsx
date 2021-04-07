@@ -101,7 +101,7 @@ class StaffGroupEditPage extends AdminPage {
         }
     };
 
-    create = (e) => this.props.component.staffGroup.selectedItem.items.length == 4 ? e.preventDefault() : this.modal.show({ staffGroupId: this.state._id });
+    create = (e) => e.preventDefault() || this.modal.show({ staffGroupId: this.state._id });
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
@@ -112,8 +112,9 @@ class StaffGroupEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
+        const list = this.props.component.staffGroup && this.props.component.staffGroup.selectedItem && this.props.component.staffGroup.selectedItem.items
         const table = renderTable({
-            getDataSource: () => this.props.component.staffGroup && this.props.component.staffGroup.selectedItem && this.props.component.staffGroup.selectedItem.items,
+            getDataSource: () => list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>
@@ -153,7 +154,7 @@ class StaffGroupEditPage extends AdminPage {
                     <div className='tile-body'>
                         {table}
                         {permission.write &&
-                            <div style={{ textAlign: 'right' }}>
+                            <div style={{ display: list && list.length == 4 && 'none', textAlign: 'right' }}>
                                 <button className='btn btn-success' type='button' onClick={this.create}>
                                     <i className='fa fa-fw fa-lg fa-plus'></i> Thêm
                                 </button>
