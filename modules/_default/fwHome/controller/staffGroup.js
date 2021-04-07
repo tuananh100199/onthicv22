@@ -73,6 +73,18 @@ module.exports = app => {
         app.model.staff.delete(req.body._id, (error, item) => res.send({ error, staffGroupId: item.staffGroupId }));
     });
 
+    app.delete('/api/staff/image', app.permission.check('component:write'), (req, res) => {
+        app.model.staff.get(req.body._id, (error, item) => {
+            if (item) {
+                app.deleteImage(item.image);
+                item.image = null;
+                item.save(error => res.send({ error, item }));
+            } else {
+                res.send({ error: error || 'Id không hợp lệ!' });
+            }
+        });
+    });
+
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/home/staff-group', (req, res) => app.model.staffGroup.get(req.query._id, (error, staffGroup) => {
         if (error || staffGroup == null) {

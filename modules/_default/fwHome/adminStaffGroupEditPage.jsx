@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff } from './redux/reduxStaffGroup';
+import { getStaffGroup, deleteStaffImage, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff } from './redux/reduxStaffGroup';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormSelect, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
@@ -9,7 +9,11 @@ class StaffModal extends AdminModal {
     state = {};
 
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => { }));
+        $(document).ready(() => this.onShown(() => {
+            // $(".modal").on("hidden.bs.modal", function () {
+            //     $(".modal-body1").html("");
+            // });
+        }));
     }
 
     onShow = (item) => {
@@ -30,6 +34,8 @@ class StaffModal extends AdminModal {
             item && this.props.change(item);
         }
     }
+    deleteImage = () => T.confirm('Xoá hình', 'Bạn có chắc bạn muốn xoá hình này?', true, isConfirm =>
+        isConfirm && this.props.deleteImage && this.props.deleteImage(this.state._id, () => this.setState({ image: null })));
 
     onSubmit = (e) => {
         e.preventDefault();
@@ -59,7 +65,7 @@ class StaffModal extends AdminModal {
             </div>
             <div className='col-md-4'>
                 <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}
-                    onSuccess={this.onUploadSuccess} />
+                    onSuccess={this.onUploadSuccess} onDelete={this.state._id ? this.deleteImage : null} />
                 <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
             </div>
         </div>,
@@ -162,7 +168,7 @@ class StaffGroupEditPage extends AdminPage {
                     </div>
                 </div>
 
-                <StaffModal ref={e => this.modal = e} create={this.props.createStaff} update={this.props.updateStaff} change={this.props.changeStaff} readOnly={!permission.write} />
+                <StaffModal ref={e => this.modal = e} deleteImage={this.props.deleteStaffImage} create={this.props.createStaff} update={this.props.updateStaff} change={this.props.changeStaff} readOnly={!permission.write} />
             </>,
             backRoute: '/user/component',
         });
@@ -170,5 +176,5 @@ class StaffGroupEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, component: state.component });
-const mapActionsToProps = { getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff };
+const mapActionsToProps = { deleteStaffImage, getStaffGroup, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff };
 export default connect(mapStateToProps, mapActionsToProps)(StaffGroupEditPage);

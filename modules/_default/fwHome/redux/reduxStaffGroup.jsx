@@ -172,6 +172,22 @@ export function deleteStaff(_id) {
     }
 }
 
+export function deleteStaffImage(_id, done) {
+    return dispatch => {
+        const url = '/api/staff/image';
+        T.delete(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Xóa hình minh họa bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '. ' + data.error);
+            } else {
+                T.alert('Xóa hình minh họa thành công!', 'error', false, 800);
+                dispatch(getStaffGroup(data.item.staffGroupId));
+                done && done();
+            }
+        }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
+    }
+}
+
 export function changeStaff(item) {
     return { type: StaffGroupChange, item };
 }
