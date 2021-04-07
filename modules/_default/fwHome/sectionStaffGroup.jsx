@@ -106,15 +106,41 @@ class SectionStaffGroup extends React.Component {
             </div>
             <div className='row'>
                 {this.state.items ? this.state.items.map((staff, index) => (
-                    <div key={index} className='col-md-3 service_col' style={{ margin: 'auto' }}>
+                    <div key={index} className="col-md-6 col-lg-3 ftco-animate" style={{ margin: 'auto' }}>
                         <div className='text-center'>
                             <img style={{}} src={staff.image || staff.user.image} height={100} alt='' />
                             <div className='service_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
                             <div className='service_text'>
-                                <p>{staff.description}</p>
+                                <blockquote>
+                                    <p>&ldquo;{staff.description}&rdquo;</p>
+                                </blockquote>
                             </div>
                         </div>
                     </div>)) : null}
+                {/* {this.state.items ? this.state.items.map((staff, index) => (
+                    <div className="col-md-6 col-lg-3 ftco-animate">
+                        <div className="block-2">
+                            <div className="flipper">
+                                <div className="front" style={{ backgroundImage: staff.image || staff.user.image }}>
+                                    <div className="box">
+                                        <h2>{staff.user.lastname + ' ' + staff.user.firstname}</h2>
+                                    </div>
+                                </div>
+                                <div className="back">
+
+                                    <blockquote>
+                                        <p>&ldquo;{staff.description}&rdquo;</p>
+                                    </blockquote>
+                                    <div className="author d-flex">
+                                        <div className="image mr-3 align-self-center">
+                                            <div className="img" style={{ backgroundImage: staff.image || staff.user.image }}></div>
+                                        </div>
+                                        <div className="name align-self-center">{staff.user.lastname + ' ' + staff.user.firstname}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>)) : null} */}
             </div>
             {/* <div className='row'>{staffs}</div> */}
         </>
