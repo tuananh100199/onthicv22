@@ -27,18 +27,19 @@ class StaffModal extends AdminModal {
             T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {
             image && this.setState({ image });
+            // console.log(this.state.image)
             item && this.props.change(item);
         }
     }
     deleteImage = () => T.confirm('Xoá hình', 'Bạn có chắc bạn muốn xoá hình này?', true, isConfirm =>
         isConfirm && this.props.deleteImage && this.props.deleteImage(this.state._id, () => this.setState({ image: null })));
 
-    onChange = (value) => {
-        ajaxGetUser(value.id, data => {
-            this.setState({ image: data.user.image })
-            this.imageBox.setData(`user:${data.user._id}`)
-        })
-    }
+    // onChange = (value) => {
+    //     ajaxGetUser(value.id, data => {
+    //         this.setState({ image: data.user.image })
+    //         this.imageBox.setData(`user:${data.user._id}`)
+    //     })
+    // }
     onSubmit = (e) => {
         e.preventDefault();
         const changes = {
@@ -46,7 +47,8 @@ class StaffModal extends AdminModal {
             description: this.itemDescription.value().trim(),
             staffGroupId: this.state.staffGroupId,
             active: this.itemActive.value(),
-            image: this.state.image.includes(`user`) ? undefined : this.state.image,
+            image: this.state.image
+            // image: this.state.image.includes(`user`) ? undefined : this.state.image,
         };
 
         if (!changes.user) {
@@ -63,7 +65,7 @@ class StaffModal extends AdminModal {
         body: <div className='row'>
             <div className='col-md-8'>
                 <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'])} readOnly={this.props.readOnly}
-                    onChange={this.onChange}
+                // onChange={this.onChange}
                 />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
             </div>
