@@ -14,10 +14,10 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        if (item == null) item = { _id: null, division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false, birthday: '' };
         this.itemFirstname.value(item.firstname);
         this.itemLastname.value(item.lastname);
-        this.itemBirthday.value(item.birthday)
+        this.itemBirthday.value(item.birthday);
         this.itemEmail.value(item.email);
         this.itemPhoneNumber.value(item.phoneNumber);
         this.itemIsCourseAdmin.value(item.isCourseAdmin);
@@ -254,6 +254,8 @@ class UserPage extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);
 
+    // create = (e) => e.preventDefault() || this.userModal.show();
+
     changePassword = (e, item) => e.preventDefault() || this.passwordModal.show(item);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
@@ -307,7 +309,7 @@ class UserPage extends AdminPage {
                     changeSystemState={this.props.changeSystemState} />
                 <UserPasswordModal ref={e => this.passwordModal = e} readOnly={!permission.write} updateUser={this.props.updateUser} />
             </>,
-            onCreate: permission.write ? this.edit : null,
+            onCreate: permission.write ? e => e.preventDefault() || this.userModal.show() : null,
         });
     }
 }
