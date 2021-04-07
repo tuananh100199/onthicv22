@@ -129,14 +129,50 @@ module.exports = (app) => {
     });
 
     app.post('/api/pre-student/import', app.permission.check('pre-student:write'), (req, res) => {
-        let students = req.body.students,
-            division = req.body.division;
-        students.forEach(student => {
-            student.division = division;
-            delete student.course;
-            app.model.student.create(student);
-        });
-        res.send();
+        let students = req.body.students;
+        let err = null;
+        if (students && students.length) {
+            const handleCreateStudent = (index = 0) => {
+                if (index == students.length) {
+                    res.send({ error: err });
+                } else {
+                    const student = students[index];
+                    const dataPassword = app.randomPassword(8),
+                        newUser = {
+                            ...student,
+                            password: dataPassword,
+                        };
+                    app.model.user.create(newUser, (error, user) => {
+                        if (error && !user) {
+                            err = error;
+                            handleCreateStudent(index + 1);
+                        } else { // pre chưa là user
+                            if (!error && user) {
+                                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                    const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                        fillParams = (student) => student.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                            .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                        mailTitle = result.emailCreateMemberByAdminTitle,
+                                        mailText = fillParams(result.emailCreateMemberByAdminText),
+                                        mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                });
+                            }
+                            student.user = user._id;   // assign id of user to user field of prestudent
+                            student.division = req.body.division;
+                            student.courseType = req.body.courseType
+                            app.model.student.create(student, () => {
+                                handleCreateStudent(index + 1);
+                            })
+                        }
+                    });
+                }
+            }
+            handleCreateStudent();
+        } else {
+            res.send({ error: 'Danh sách ứng viên trống!' })
+        }
     });
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
@@ -165,7 +201,7 @@ module.exports = (app) => {
     // Get All Student Have Course Null--------------------------------------------------------------------------------
     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
         const { searchText, courseType } = req.query,
-        condition = { course: null, courseType };
+            condition = { course: null, courseType };
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition['$or'] = [
@@ -213,51 +249,47 @@ module.exports = (app) => {
         app.permission.has(req, () => uploadPreStudentImage(fields, files, done), done, 'pre-student:write'));
 
     // Hook upload pre-students excel---------------------------------------------------------------------------------------
-    const uploadPreStudentExcelFile = (fields, files, done) => {
-        const srcPath = files.CandidateFile[0].path;
-        app.excel.readFile(srcPath, workbook => {
-            app.deleteFile(srcPath);
-            if (workbook) {
-                const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
-                const handleUpload = (index = 2) => {
-                    const values = worksheet.getRow(index).values;
-                    if (values.length == 0 || index == totalRow + 1) {
-                        done({ data });
-                    } else {
-                        data.push({
-                            id: index - 1,
-                            firstname: values[2],
-                            lastname: values[3],
-                            email: values[4],
-                            phoneNumber: values[5],
-                            courseType: values[6],
-                            sex: values[7],
-                            birthday: values[8],
-                            nationality: values[9],
-                            residence: values[10],
-                            regularResidence: values[11],
-                            identityCard: values[12],
-                            identityIssuedBy: values[13],
-                            identityDate: values[14],
-                            giayPhepLaiXe2BanhSo: values[15],
-                            giayPhepLaiXe2BanhNgay: values[16],
-                            giayPhepLaiXe2BanhNoiCap: values[17],
-                            giayKhamSucKhoe: values[18],
-                            giayKhamSucKhoeNgayKham: values[19],
-                        });
-                        handleUpload(index + 1);
-                    }
-                };
-                handleUpload();
-            } else {
-                done({ error: 'Error' });
-            }
-        });
-    };
-    app.uploadHooks.add('uploadPreStudentExcelFile', (req, fields, files, params, done) => {
+    app.uploadHooks.add('uploadExcelFile', (req, fields, files, params, done) => {
         if (files.CandidateFile && files.CandidateFile.length > 0) {
-            console.log('Hook: uploadPreStudentExcelFile => your excel file upload');
-            uploadPreStudentExcelFile(fields, files, done);
+            console.log('Hook: uploadExcelFile => your excel file upload');
+            const srcPath = files.CandidateFile[0].path;
+            app.excel.readFile(srcPath, workbook => {
+                app.deleteFile(srcPath);
+                if (workbook) {
+                    const worksheet = workbook.getWorksheet(1), data = [], totalRow = worksheet.lastRow.number;
+                    const handleUpload = (index = 2) => {
+                        const values = worksheet.getRow(index).values;
+                        if (values.length == 0 || index == totalRow + 1) {
+                            done({ data });
+                        } else {
+                            data.push({
+                                id: index - 1,
+                                lastname: values[2],
+                                firstname: values[3],
+                                email: values[4],
+                                phoneNumber: values[5],
+                                sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
+                                birthday: values[7],
+                                nationality: values[8],
+                                residence: values[9],
+                                regularResidence: values[10],
+                                identityCard: values[11],
+                                identityIssuedBy: values[12],
+                                identityDate: values[13],
+                                giayPhepLaiXe2BanhSo: values[14],
+                                giayPhepLaiXe2BanhNgay: values[15],
+                                giayPhepLaiXe2BanhNoiCap: values[16],
+                                giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
+                                giayKhamSucKhoeNgayKham: values[17].toLowerCase().trim() == 'có' ? values[18] : null,
+                            });
+                            handleUpload(index + 1);
+                        }
+                    };
+                    handleUpload();
+                } else {
+                    done({ error: 'Error' });
+                }
+            });
         }
     });
 };

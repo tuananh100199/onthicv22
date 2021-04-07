@@ -47,7 +47,7 @@ module.exports = (app) => {
                 if (error || item == null) {
                     done({ error: error || 'Invalid Id!' });
                 } else {
-                    if (srcPath.startsWith('/temp/')) {
+                    if (srcPath.startsWith('/temp/') || srcPath.startsWith('\\temp\\')) {
                         srcPath = app.path.join(app.assetPath, srcPath);
                     } else {
                         app.deleteImage(item.image); // Xoá hình cũ
