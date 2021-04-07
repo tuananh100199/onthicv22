@@ -81,17 +81,24 @@ module.exports = (app) => {
         pageSize = parseInt(pageSize);
         const condition = {
             active: true,
-            $or: [
-                { startPost: null },
-                { startPost: { $exists: false } },
-                { startPost: { $lte: today } },
-            ],
-            $or: [
-                { stopPost: null },
-                { stopPost: { $exists: false } },
-                { stopPost: { $gte: today } },
-            ],
+            $and: [
+                {
+                    $or: [
+                        { stopPost: null },
+                        { stopPost: { $exists: false } },
+                        { stopPost: { $gte: today } },
+                    ],
+                },
+                {
+                    $or: [
+                        { startPost: null },
+                        { startPost: { $exists: false } },
+                        { startPost: { $lte: today } },
+                    ],
+                }
+            ]
         };
+        console.log(condition)
         if (categoryType) condition.categories = categoryType;
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     };
