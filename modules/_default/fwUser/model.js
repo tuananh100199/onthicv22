@@ -53,7 +53,7 @@ module.exports = (app) => {
                             done && done(error);
                         } else {
                             user.image = '/img/user/' + user._id + '.jpg';
-                            const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                            const srcPath = app.path.join(app.publicPath, '/img/avatar-default.png'),
                                 destPath = app.path.join(app.publicPath, user.image);
                             app.fs.copyFileSync(srcPath, destPath);
                             if (user.roles == null || user.roles.length == 0) {
