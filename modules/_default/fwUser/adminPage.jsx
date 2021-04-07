@@ -261,7 +261,7 @@ class UserPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('user');
-        const allRoles = this.props.role && this.props.role.items ? this.props.role.items : [];
+        const allRoles = this.props.role && this.props.role.list ? this.props.role.list : [];
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.user && this.props.user.page ?
             this.props.user.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0 };
         const table = renderTable({
