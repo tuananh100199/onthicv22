@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDriveTestPage, createDriveTest, updateDriveTest, deleteDriveTest } from './redux';
+import { getDriveTestPage, createDriveTest, updateDriveTest, swapDriveTest, deleteDriveTest } from './redux';
 import { ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
@@ -51,6 +51,8 @@ class DriveTestPage extends AdminPage {
 
     create = e => e.preventDefault() || this.modal.show();
 
+    swap = (e, _questionId, isMoveUp) => e.preventDefault() || this.props.swapDriveTest(_questionId, isMoveUp);
+
     delete = (e, item) => e.preventDefault() || T.confirm('Bộ đề thi', 'Bạn có chắc bạn muốn xóa bộ đề thi này?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteDriveTest(item._id));
 
@@ -74,7 +76,7 @@ class DriveTestPage extends AdminPage {
                     <TableCell type='link' content={item.title} url={'/user/drive-test/' + item._id} />
                     <TableCell type='text' content={item.courseType ? item.courseType.title : 'Không có loại khóa học'}/>
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateDriveTest(item._id, { active })} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/drive-test/' + item._id} onDelete={this.delete} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/drive-test/' + item._id} onSwap={this.swap} onDelete={this.delete} />
                 </tr>),
         });
 
@@ -93,5 +95,5 @@ class DriveTestPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { getDriveTestPage, createDriveTest, updateDriveTest, deleteDriveTest };
+const mapActionsToProps = { getDriveTestPage, createDriveTest, updateDriveTest, deleteDriveTest, swapDriveTest };
 export default connect(mapStateToProps, mapActionsToProps)(DriveTestPage);

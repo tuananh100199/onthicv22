@@ -15,6 +15,7 @@ export default function driveTestReducer(state = null, data) {
 
         case DriveTestGet:
             return Object.assign({}, state, { item: data.item });
+            
         default:
             return state;
     }
@@ -93,7 +94,6 @@ export function updateDriveTest(_id, changes, done) {
     return dispatch => {
         const url = '/api/drive-test';
         T.put(url, { _id, changes }, data => {
-            console.log('data', data);
             if (data.error) {
                 T.notify('Cập nhật bộ đề thi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
@@ -123,6 +123,21 @@ export function swapDriveTest(_id, isMoveUp, done) {
         }, error => T.notify('Thay đổi thứ tự bộ đề thi bị lỗi!', 'danger'));
     }
 }
+export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
+    return dispatch => {
+        const url = `/api/drive-test/question/swap`;
+        T.put(url, { _driveTestId, _questionId, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                T.notify('Thay đổi thứ tự câu hỏi thi thành công!', 'success');
+                dispatch({ type: DriveTestGet, item: data.item });
+                done && done(); 
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    }
+}
 
 export function deleteDriveTest(_id, done) {
     return dispatch => {
@@ -139,20 +154,3 @@ export function deleteDriveTest(_id, done) {
         }, error => T.notify('Xóa bộ đề thi bị lỗi!', 'danger'));
     }
 }
-
-export function deleteDriveTestImage(_id, done) {
-    return dispatch => {
-        const url = '/api/drive-test/image';
-        T.delete(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Xóa hình minh họa bị lỗi!', 'danger');
-                console.error('DELETE: ' + url + '. ' + data.error);
-            } else {
-                T.alert('Xóa hình minh họa thành công!', 'error', false, 800);
-                dispatch(getDriveTestPage());
-                done && done();
-            }
-        }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
-    }
-}
-

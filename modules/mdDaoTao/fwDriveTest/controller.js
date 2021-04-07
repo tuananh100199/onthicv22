@@ -57,12 +57,35 @@ module.exports = app => {
     });
 
     app.put('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
-        app.model.driveTest.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes, {questions: req.body.changes.questions=='empty' ? [] : req.body.changes.questions}), (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/drive-test/swap', app.permission.check('driveTest:write'), (req, res) => {
         const isMoveUp = req.body.isMoveUp.toString() == 'true';
         app.model.driveTest.swapPriority(req.body._id, isMoveUp, (error) => res.send({ error }));
+    });
+
+    app.put('/api/drive-test/question/swap', app.permission.check('driveTest:write'), (req, res) => {
+        const { _driveTestId, _questionId, isMoveUp } = req.body;
+        app.model.driveTest.get(_driveTestId, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
+                    const questionTest = item.questions[index];
+                    if (questionTest._id == _questionId) {
+                        const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
+                        if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
+                            item.questions.splice(index, 1);
+                            item.questions.splice(newIndex, 0, questionTest);
+                            item.save();
+                        }
+                        break;
+                    }
+                }
+                res.send({ item: item });
+            }
+        });
     });
 
     app.delete('/api/drive-test', app.permission.check('driveTest:delete'), (req, res) => {
