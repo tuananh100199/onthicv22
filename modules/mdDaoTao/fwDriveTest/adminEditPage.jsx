@@ -89,7 +89,7 @@ class DriveTestEditPage extends AdminPage {
             readOnly = !permission.write,
             item = this.props.driveTest && this.props.driveTest.item ? this.props.driveTest.item : { title: '', questions: [] },
             table = renderTable({
-                getDataSource: () => item.questions,
+                getDataSource: () => item.questions ? item.questions : [],
                 renderHead: () => (
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -117,7 +117,7 @@ class DriveTestEditPage extends AdminPage {
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
                     <DriveTestModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
                 </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'bộ đề thi', component: componentQuestion }];
+            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
         return this.renderPage({
             icon: 'fa fa-file',
