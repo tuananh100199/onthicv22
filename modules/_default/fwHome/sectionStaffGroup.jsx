@@ -105,7 +105,7 @@ class SectionStaffGroup extends React.Component {
                 <h2>{this.state.title}</h2>
             </div>
             <div className='row'>
-                {this.state.items ? this.state.items.map((staff, index) => (
+                {/* {this.state.items ? this.state.items.map((staff, index) => (
                     <div key={index} className="col-md-6 col-lg-3 ftco-animate" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                         <div className='text-center'>
                             <img style={{}} src={staff.image || staff.user.image} height={200} alt='' />
@@ -114,6 +114,20 @@ class SectionStaffGroup extends React.Component {
                                 <blockquote>
                                     <p>&ldquo;{staff.description}&rdquo;</p>
                                 </blockquote>
+                            </div>
+                        </div>
+                    </div>)) : null} */}
+                {this.state.items ? this.state.items.map((staff, index) => (
+                    <div key={index} class="col-md-6 col-lg-3 team_col ftco-animate" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                        <div className="team_item text-center d-flex flex-column aling-items-center justify-content">
+                            <div className="team_image"><img style={{}} src={staff.image || staff.user.image} alt='' /></div>
+                            <div className="team_content text-center">
+                                <div className='service_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
+                                <div className="team_text">
+                                    <blockquote>
+                                        <p>&ldquo;{staff.description}&rdquo;</p>
+                                    </blockquote>
+                                </div>
                             </div>
                         </div>
                     </div>)) : null}
