@@ -21,6 +21,7 @@
 	4003 - Danh mục biển báo (/user/sign/category)
 	4004 - Biển báo (/user/sign)
 	4005 - Cơ sở đào tạo (/user/division)
+	4006 - Bộ đề thi (/user/drive-test)
 	4010 - Loại khóa học (/user/course-type)
 	4020 - Môn học (/user/dao-tao/mon-hoc)
 	4030 - Bài học (/user/dao-tao/bai-hoc)

@@ -6,7 +6,7 @@ import { combineReducers } from 'redux';
 import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
 import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
 import listContent, { ajaxSelectListContent, ajaxGetListContent } from './redux/reduxListContent';
-import staffGroup, { ajaxGetStaffGroup } from './redux/reduxStaffGroup';
+import staffGroup, { ajaxGetStaffGroup, ajaxSelectStaffGroup } from './redux/reduxStaffGroup';
 import statistic, { ajaxSelectStatistic, ajaxGetStatistic } from './redux/reduxStatistic';
 import video, { ajaxSelectVideo, ajaxGetVideo } from './redux/reduxVideo';
 import listVideo, { ajaxSelectListVideo, ajaxGetListVideo } from './redux/reduxListVideo';
@@ -67,6 +67,7 @@ export default {
             render: (viewId) => <SectionStaffGroup viewId={viewId} />,
             text: 'Nhóm nhân viên',
             backgroundColor: '#e6ee9c',
+            adapter: ajaxSelectStaffGroup,
             getItem: ajaxGetStaffGroup,
         };
     },

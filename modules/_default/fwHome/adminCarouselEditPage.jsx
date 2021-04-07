@@ -11,13 +11,13 @@ class CarouselItemModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id, title, image, link, subtitle, active, description, carouselId } = Object.assign({ title: '', subtitle: '', active: true, image: '/img/avatar.jpg', link: '', description: '' }, item);
+        let { _id, title, image, link, subtitle, active, description, carouselId } = Object.assign({ title: '', subtitle: '', active: true, link: '', description: '' }, item);
         this.itemName.value(title);
         this.itemSubtitle.value(subtitle);
         this.itemLink.value(link);
         this.itemDescription.value(description);
         this.itemActive.value(active);
-        this.imageBox.setData('carouselItem:' + (_id || 'new'), image);
+        this.imageBox.setData(`carouselItem:${_id || 'new'}`);
 
         this.setState({ _id, carouselId, image });
     }
