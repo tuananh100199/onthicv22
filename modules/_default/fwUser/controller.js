@@ -33,7 +33,7 @@ module.exports = app => {
                     condition.type.forEach((item) => {
                         pageCondition['$or'].push(JSON.parse(`{ "${item}":true}`));
                     })
-                }
+                } else pageCondition = {};
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));

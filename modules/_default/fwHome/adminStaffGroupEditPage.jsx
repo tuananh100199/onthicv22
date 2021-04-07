@@ -13,10 +13,10 @@ class StaffModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, image, active, description, user, staffGroupId } = item || { _id: null }
+        const { _id, image, active, description, user, staffGroupId } = item || { _id: null, active: true }
         this.itemDescription.value(description || '');
         this.itemUser.value(user ? { id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` } : null);
-        this.itemActive.value(active || '');
+        this.itemActive.value(active);
         this.imageBox.setData(`staff:${_id || 'new'}`);
 
         this.setState({ _id, staffGroupId, user, image });
@@ -35,7 +35,8 @@ class StaffModal extends AdminModal {
 
     onChange = (value) => {
         ajaxGetUser(value.id, data => {
-            this.setState({ image: data.user.image }, (data) => this.imageBox.setData(`user:${data && data.user && data.user._id}`))
+            this.setState({ image: data.user.image })
+            this.imageBox.setData(`user:${data.user._id}`)
         })
     }
     onSubmit = (e) => {
@@ -45,7 +46,7 @@ class StaffModal extends AdminModal {
             description: this.itemDescription.value().trim(),
             staffGroupId: this.state.staffGroupId,
             active: this.itemActive.value(),
-            image: this.state.image,
+            image: this.state.image.includes(`user`) ? undefined : this.state.image,
         };
 
         if (!changes.user) {
@@ -61,7 +62,9 @@ class StaffModal extends AdminModal {
         size: 'large',
         body: <div className='row'>
             <div className='col-md-8'>
-                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'])} readOnly={this.props.readOnly} onChange={this.onChange} />
+                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'])} readOnly={this.props.readOnly}
+                    onChange={this.onChange}
+                />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>

@@ -100,29 +100,24 @@ class SectionStaffGroup extends React.Component {
         //     }
         // }
 
-        return (
-            <section className='ftco-section bg-light'>
-                <div className='container'>
-                    <div className='row justify-content-center'>
-                        <div className='col-md-7 heading-section ftco-animate text-center'>
-                            <h2 className='mb-4'>{this.state.title}</h2>
+        return (<>
+            <div className='service_col text-center'>
+                <h2>{this.state.title}</h2>
+            </div>
+            <div className='row'>
+                {this.state.items ? this.state.items.map((staff, index) => (
+                    <div key={index} className='col-md-3 service_col' style={{ margin: 'auto' }}>
+                        <div className='text-center'>
+                            <img style={{}} src={staff.image || staff.user.image} height={100} alt='' />
+                            <div className='service_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
+                            <div className='service_text'>
+                                <p>{staff.description}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className='row'>
-                        {this.state.items ? this.state.items.map((staff, index) => (
-                            <div key={index} className='col-md-4 service_col'>
-                                <div className='text-center'>
-                                    <img style={{}} src={staff.image || staff.user.image} height={400} width={300} alt='' />
-                                    <div className='service_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
-                                    <div className='service_text'>
-                                        <p>{staff.description}</p>
-                                    </div>
-                                </div>
-                            </div>)) : null}
-                    </div>
-                    {/* <div className='row'>{staffs}</div> */}
-                </div>
-            </section>
+                    </div>)) : null}
+            </div>
+            {/* <div className='row'>{staffs}</div> */}
+        </>
         );
     }
 }
