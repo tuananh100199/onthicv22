@@ -101,7 +101,7 @@ class StaffGroupEditPage extends AdminPage {
         }
     };
 
-    create = (e) => e.preventDefault() || this.modal.show({ staffGroupId: this.state._id });
+    create = (e) => this.props.component.staffGroup.selectedItem.items.length == 4 ? e.preventDefault() : this.modal.show({ staffGroupId: this.state._id });
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
@@ -149,6 +149,7 @@ class StaffGroupEditPage extends AdminPage {
 
                 <div className='tile'>
                     <h3 className='tile-title'>Danh sách nhân viên</h3>
+                    <div>Tối đa 4 người</div>
                     <div className='tile-body'>
                         {table}
                         {permission.write &&
