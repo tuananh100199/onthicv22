@@ -177,14 +177,14 @@ export function deleteStaffImage(_id, done) {
         const url = '/api/staff/image';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa hình minh họa bị lỗi!', 'danger');
+                T.notify('Xóa hình bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Xóa hình minh họa thành công!', 'error', false, 800);
+                T.alert('Xóa hình thành công!', 'error', false, 800);
                 dispatch(getStaffGroup(data.item.staffGroupId));
                 done && done();
             }
-        }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
+        }, error => T.notify('Xóa hình bị lỗi!', 'danger'));
     }
 }
 

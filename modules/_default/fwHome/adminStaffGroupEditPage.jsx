@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getStaffGroup, deleteStaffImage, updateStaffGroup, createStaff, updateStaff, swapStaff, deleteStaff, changeStaff } from './redux/reduxStaffGroup';
-import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
+import { ajaxSelectUserType, ajaxGetUser } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormSelect, AdminModal, FormTextBox, FormRichTextBox, FormCheckbox, FormImageBox, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -9,21 +9,17 @@ class StaffModal extends AdminModal {
     state = {};
 
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => {
-            // $(".modal").on("hidden.bs.modal", function () {
-            //     $(".modal-body1").html("");
-            // });
-        }));
+        $(document).ready(() => this.onShown(() => { }));
     }
 
     onShow = (item) => {
-        const { _id, image, active, description, user, staffGroupId } = item || { _id: null, active: true, description: '' }
-        this.itemDescription.value(description);
+        const { _id, image, active, description, user, staffGroupId } = item || { _id: null }
+        this.itemDescription.value(description || '');
         this.itemUser.value(user ? { id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` } : null);
-        this.itemActive.value(active);
+        this.itemActive.value(active || '');
         this.imageBox.setData(`staff:${_id || 'new'}`);
 
-        this.setState({ _id, staffGroupId, image });
+        this.setState({ _id, staffGroupId, user, image });
     }
 
     onUploadSuccess = ({ error, item, image }) => {
@@ -37,6 +33,11 @@ class StaffModal extends AdminModal {
     deleteImage = () => T.confirm('Xoá hình', 'Bạn có chắc bạn muốn xoá hình này?', true, isConfirm =>
         isConfirm && this.props.deleteImage && this.props.deleteImage(this.state._id, () => this.setState({ image: null })));
 
+    onChange = (value) => {
+        ajaxGetUser(value.id, data => {
+            this.setState({ image: data.user.image }, (data) => this.imageBox.setData(`user:${data && data.user && data.user._id}`))
+        })
+    }
     onSubmit = (e) => {
         e.preventDefault();
         const changes = {
@@ -60,7 +61,7 @@ class StaffModal extends AdminModal {
         size: 'large',
         body: <div className='row'>
             <div className='col-md-8'>
-                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'])} readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemUser = e} label='Tên nhân viên' data={ajaxSelectUserType(['isCourseAdmin', 'isLecturer', 'isStaff'])} readOnly={this.props.readOnly} onChange={this.onChange} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
