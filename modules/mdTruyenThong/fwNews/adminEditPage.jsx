@@ -37,22 +37,39 @@ class NewsEditPage extends AdminPage {
         });
     }
 
-    save = () => this.props.updateNews(this.state._id, {
-        title: this.itemTitle.value(),
-        categories: this.itemCategories.value(),
-        active: this.itemActive.value(),
-        link: this.itemLink.value(),
-        abstract: this.itemAbstract.value(),
-        content: this.itemContent.html(),
-        startPost: this.itemStartPost.value(),
-        stopPost: this.itemStopPost.value(),
-    });
+    save = () => {
+        const newData = {
+            title: this.itemTitle.value(),
+            categories: this.itemCategories.value(),
+            active: this.itemActive.value(),
+            link: this.itemLink.value(),
+            abstract: this.itemAbstract.value(),
+            content: this.itemContent.html(),
+            startPost: this.itemStartPost.value(),
+            stopPost: this.itemStopPost.value(),
+        };
+        if (newData.title == '') {
+            T.notify('Tên tin tức bị trống!', 'danger');
+            this.itemTitle.focus();
+        } else {
+            this.state.link ?
+                this.props.checkLink(this.state._id, this.itemLink.value().trim(), error => {
+                    if (error) {
+                        T.notify('Link không hợp lệ!', 'danger');
+                        this.itemLink.focus();
+                    } else {
+                        this.props.updateNews(this.state._id, newData)
+                    }
+                }) :
+                this.props.updateNews(this.state._id, newData)
+        }
+    }
 
     render() {
         const permission = this.getUserPermission('news'),
             readOnly = !permission.write;
         const { _id, title } = this.state,
-            linkDefaultNews = T.rootUrl + '/news/' + _id;
+            linkDefaultNews = T.rootUrl + '/tintuc/' + _id;
 
         return this.renderPage({
             icon: 'fa fa-file',
@@ -89,9 +106,15 @@ class NewsEditPage extends AdminPage {
                                 <FormTextBox type='text' ref={e => this.itemLink = e} label='Link truyền thông' onChange={e => this.setState({ link: e.target.value })} readOnly={readOnly} />
                                 {this.state.link ? <>URL: <a href={T.rootUrl + '/tintuc/' + this.state.link} style={{ fontWeight: 'bold' }} target='_blank'>{T.rootUrl + '/tintuc/' + this.state.link}</a></> : ''}
                             </div>
-                            {readOnly ? '' :
+                            {readOnly || !this.state.link ? '' :
                                 <div className='tile-footer'>
-                                    <button className='btn btn-danger' type='button' onClick={() => this.props.checkLink(_id, this.itemLink.value().trim())}>
+                                    <button className='btn btn-danger' type='button' onClick={() => this.props.checkLink(_id, this.itemLink.value().trim(), error => {
+                                        if (error) {
+                                            T.notify('Link không hợp lệ!', 'danger');
+                                        } else {
+                                            T.notify('Link hợp lệ!', 'success');
+                                        }
+                                    })}>
                                         <i className='fa fa-fw fa-lg fa-check-circle' />Kiểm tra link
                                     </button>
                                 </div>}

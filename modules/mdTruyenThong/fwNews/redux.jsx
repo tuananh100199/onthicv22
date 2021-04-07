@@ -134,15 +134,15 @@ export function getNews(_id, done) {
     }
 }
 
-export function checkLink(_id, link) {
+export function checkLink(_id, link, done) {
     return dispatch => {
         const url = '/api/news/check-link';
         T.put(url, { _id, link }, data => {
             if (data.error) {
-                T.notify('Link không hợp lệ!', 'danger');
-                console.error('PUT: ' + url + '.', error);
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
             } else {
-                T.notify('Link hợp lệ!', 'success');
+                done && done();
             }
         }, error => T.notify('Kiểm tra Link bị lỗi!', 'danger'));
     }
