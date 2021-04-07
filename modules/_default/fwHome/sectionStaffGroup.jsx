@@ -106,7 +106,7 @@ class SectionStaffGroup extends React.Component {
             </div>
             <div className='row'>
                 {this.state.items ? this.state.items.map((staff, index) => (
-                    <div key={index} className="col-md-6 col-lg-3 ftco-animate" style={{ margin: 'auto' }}>
+                    <div key={index} className="col-md-6 col-lg-3 ftco-animate" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                         <div className='text-center'>
                             <img style={{}} src={staff.image || staff.user.image} height={100} alt='' />
                             <div className='service_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
