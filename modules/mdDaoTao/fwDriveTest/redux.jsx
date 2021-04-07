@@ -62,7 +62,7 @@ export function getDriveTestItem(_id, done) {
             } else {
                 dispatch({ type: DriveTestGet, item: data.item });
             }
-            if (done) done(data);
+            if (done) done(data.item);
         }, error => T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
     }
 }
@@ -93,6 +93,7 @@ export function updateDriveTest(_id, changes, done) {
     return dispatch => {
         const url = '/api/drive-test';
         T.put(url, { _id, changes }, data => {
+            console.log('data', data);
             if (data.error) {
                 T.notify('Cập nhật bộ đề thi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);

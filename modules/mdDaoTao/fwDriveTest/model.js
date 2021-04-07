@@ -5,6 +5,7 @@ module.exports = app => {
         priority: { type: Number, default: 0 },
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
         questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },          // Phân loại câu hỏi, xử lý giống news
+        description: String,
     });
     const model = app.db.model('DriveTest', schema);
 
@@ -37,11 +38,11 @@ module.exports = app => {
 
 
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').populate('questions', 'title').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
+            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').populate('courseType', 'title').populate('questions', 'title categories').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions', 'title categories'),
 
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {

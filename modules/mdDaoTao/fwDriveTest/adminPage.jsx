@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDriveTestPage, createDriveTest, updateDriveTest, deleteDriveTest } from './redux/reduxDriveTest';
+import { getDriveTestPage, createDriveTest, updateDriveTest, deleteDriveTest } from './redux';
 import { ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
@@ -21,9 +21,9 @@ class DriveTestModal extends AdminModal {
             courseType: this.itemCourseType.value(),
         };
         if (data.title == '') {
-            T.notify('Tên khóa học bị trống!', 'danger');
+            T.notify('Tên bộ đề thi bị trống!', 'danger');
             this.itemTitle.focus();
-        } if (data.licenseClass == '') {
+        } if (!data.courseType) {
             T.notify('Loại khóa học bị trống!', 'danger');
             this.itemCourseType.focus();
         } else {

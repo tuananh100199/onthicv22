@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateDriveTest, getDriveTestItem } from './redux/reduxDriveTest';
+import { updateDriveTest, getDriveTestItem } from './redux';
 import { Link } from 'react-router-dom';
-import { ajaxSelectDriveQuestion} from './redux/redux';
-import { AdminPage, CirclePageButton, AdminModal, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
+import { ajaxSelectDriveQuestion} from '../fwDriveQuestion/redux';
+import { ajaxSelectCourseType } from '../fwCourseType/redux';
+import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class DriveTestModal extends AdminModal {
     componentDidMount() {
@@ -14,7 +15,7 @@ class DriveTestModal extends AdminModal {
 
     onSubmit = () => {
         const _questionId = this.questionSelect.value();
-        if (!_questionId) T.notify('Tên cơ sở bị trống!', 'danger');
+        if (!_questionId) T.notify('Tên câu hỏi thi bị trống!', 'danger');
         else {
             const questions = this.props.item.questions.map(item => item._id);
             questions.push(_questionId);
@@ -43,7 +44,12 @@ class DriveTestEditPage extends AdminPage {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getDriveTestItem(params._id, item => {
                 if (item) {
-                    this.setState(item.item);
+                    this.itemTitle.value(item.title);
+                    this.itemCourseType.value(item.courseType ? item.courseType.title : null);
+                    this.itemDescription.value(item.description);
+
+                    this.itemTitle.focus();
+                    this.setState(item);
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -55,14 +61,23 @@ class DriveTestEditPage extends AdminPage {
         if (isConfirm) {
             let questions = this.props.driveTest.item.questions.map(item => item._id);
             questions.splice(index, 1);
-            this.props.updateDriveTest(this.state._id, { questions: questions.length ? questions : 'empty' }, () => T.alert('Xoá câu hỏi thi khỏi bộ câu hỏi thi thành công!', 'error', false, 800));
+            this.props.updateDriveTest(this.state._id, { questions: questions.length ? questions : [] }, () => T.alert('Xoá câu hỏi thi khỏi bộ câu hỏi thi thành công!', 'error', false, 800));
         }
     })
 
     save = () => {
         const changes = {
+            title: this.itemTitle.value(),
+            courseType: this.itemCourseType.value(),
+            description: this.itemDescription.value().trim(),
         };
-        this.props.updateDriveTest(this.state._id, changes, () => T.notify('Cập nhật bộ câu hỏi thi thành công!', 'success'))
+        if (changes.title == '') {
+            T.notify('Tên bộ đề thi bị trống!', 'danger');
+            this.itemTitle.focus();
+        } else {
+            this.props.updateDriveTest(this.state._id, changes, () => T.notify('Cập nhật bộ câu hỏi thi thành công!', 'success'))
+        }
+        
     }
 
     render() {
@@ -74,27 +89,40 @@ class DriveTestEditPage extends AdminPage {
                 renderHead: () => (
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Tên câu hỏi thi</th>
+                        <th style={{ width: '70%' }}>Tên câu hỏi thi</th>
+                        <th style={{ width: '30%' }}>Loại câu hỏi</th>
                         {readOnly ? null : <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
                     </tr>),
                 renderRow: (item, index) => (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
-                        <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
+                        <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
+                        <TableCell type='text' content={item.questions && item.questions[index] ? item.questions[index].categories : 'Không có loại'} />
                         {readOnly ? null : <TableCell type='buttons' content={index} permission={permission} onDelete={this.remove} />}
                     </tr>),
-            });
+            }),
+            componentInfo = <>
+            <div className='row'>
+                <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên bộ đề thi' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                <FormSelect  className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+
+            </div>
+            <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả'  rows='6' readOnly={readOnly} />
+            {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
+        </>,
+         componentQuestion = <>
+                {table}
+                {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
+                <DriveTestModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} />
+            </>,
+            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ câu hỏi thi', component: componentQuestion }];
 
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Bộ đề thi: ' + this.state.title,
             size: 'large',
             breadcrumb: [<Link to={backRoute}>Bộ đề thi</Link>, 'Chỉnh sửa'],
-            content: <>
-                        <div className='tile'>{table}</div>
-                        {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                        <DriveTestModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} />
-                    </>,
+            content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: backRoute,
         });
     }
