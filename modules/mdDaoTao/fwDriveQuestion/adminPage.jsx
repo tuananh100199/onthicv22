@@ -104,7 +104,7 @@ class AdminQuestionPage extends AdminPage {
         this.props.getCategoryAll('drive-question', null, (items) =>
             this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
         this.props.getDriveQuestionPage(1);
-        T.onSearch = (searchText) => this.props.getDriveQuestionPage(1, undefined, searchText);
+        T.onSearch = (searchText) => this.props.getDriveQuestionPage(1, 50, searchText);
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
