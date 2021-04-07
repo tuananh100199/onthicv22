@@ -15,7 +15,7 @@ class NewsEditPage extends AdminPage {
                 if (data.item && data.categories) {
                     const { _id, title, image, link, startPost, stopPost, categories, abstract, content, createdDate, view, active } = data.item;
                     this.itemTitle.value(title);
-                    this.itemLink.value(link);
+                    this.itemLink.value(link ? link : '');
                     this.itemView.value(view);
                     this.itemActive.value(active);
                     this.itemCreatedDate.value(createdDate ? T.dateToText(createdDate) : '');
