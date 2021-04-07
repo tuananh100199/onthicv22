@@ -192,6 +192,11 @@ export function homeGetStaffGroup(_id, done) {
     }
 }
 
+export const ajaxSelectStaffGroup = T.createAjaxAdapter(
+    `/api/staff-group/all`,
+    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
+);
+
 export function ajaxGetStaffGroup(_id, done) {
     const url = `/api/staff-group`;
     T.get(url, { _id }, done, error => T.notify('Lấy  nhóm nhân viên bị lỗi!', 'danger'));
