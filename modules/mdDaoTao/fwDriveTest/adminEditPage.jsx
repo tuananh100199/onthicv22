@@ -9,10 +9,8 @@ import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, 
 class DriveTestModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => { 
-            this.props.getAllDriveQuestions();
             this.questionSelect.value(null);
         }));
-        
     }
 
     onShow = () => this.questionSelect.value('');
@@ -32,13 +30,11 @@ class DriveTestModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Câu hỏi thi',
         body:
-            // <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' 
-            //     data={{
-            //     ...ajaxSelectDriveQuestion, processResults: response => 
-            //         ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-            // }} readOnly={this.props.readOnly} />
-            <FormSelect ref={e => this.questionSelect = e} label='Chọn câu hỏi thi'  data={ajaxSelectDriveQuestion} style={{ width: '100%' }} />
-
+            <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' 
+                data={{
+                ...ajaxSelectDriveQuestion, processResults: response => 
+                    ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+            }} readOnly={this.props.readOnly} />
     });
 }
 
@@ -68,9 +64,10 @@ class DriveTestEditPage extends AdminPage {
         if (isConfirm) {
             let questions = this.props.driveTest.item.questions.map(item => item._id);
             questions.splice(index, 1);
-            this.props.updateDriveTest(this.state._id, { questions: questions.length ? questions : 'empty' }, () => T.alert('Xoá câu hỏi thi khỏi bộ câu hỏi thi thành công!', 'error', false, 800));
+            this.props.updateDriveTest(this.state._id, { questions: questions.length ? questions : 'empty' }, () => T.alert('Xoá câu hỏi thi khỏi bộ đề thi thành công!', 'error', false, 800));
         }
     })
+
     swap = (e, question, isMoveUp) => e.preventDefault() || this.props.swapQuestions(this.state._id, question._id, isMoveUp);
 
     save = () => {
@@ -87,7 +84,6 @@ class DriveTestEditPage extends AdminPage {
         } 
     }
 
-
     render() {
         const permission = this.getUserPermission('driveTest'),
             readOnly = !permission.write,
@@ -98,7 +94,7 @@ class DriveTestEditPage extends AdminPage {
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '100%' }}>Tên câu hỏi thi</th>
-                        {readOnly ? null : <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
+                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center'  }} nowrap='true'>Thao tác</th>}
                     </tr>),
                 renderRow: (item, index) => (
                     <tr key={index}>
@@ -121,7 +117,7 @@ class DriveTestEditPage extends AdminPage {
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
                     <DriveTestModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
                 </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ câu hỏi thi', component: componentQuestion }];
+            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'bộ đề thi', component: componentQuestion }];
 
         return this.renderPage({
             icon: 'fa fa-file',

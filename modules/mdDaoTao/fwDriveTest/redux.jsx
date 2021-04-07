@@ -123,21 +123,6 @@ export function swapDriveTest(_id, isMoveUp, done) {
         }, error => T.notify('Thay đổi thứ tự bộ đề thi bị lỗi!', 'danger'));
     }
 }
-export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
-    return dispatch => {
-        const url = `/api/drive-test/question/swap`;
-        T.put(url, { _driveTestId, _questionId, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                T.notify('Thay đổi thứ tự câu hỏi thi thành công!', 'success');
-                dispatch({ type: DriveTestGet, item: data.item });
-                done && done(); 
-            }
-        }, error => console.error('PUT: ' + url + '.', error));
-    }
-}
 
 export function deleteDriveTest(_id, done) {
     return dispatch => {
@@ -152,5 +137,23 @@ export function deleteDriveTest(_id, done) {
                 done && done();
             }
         }, error => T.notify('Xóa bộ đề thi bị lỗi!', 'danger'));
+    }
+}
+
+//Questions-------------------------------
+
+export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
+    return dispatch => {
+        const url = `/api/drive-test/question/swap`;
+        T.put(url, { _driveTestId, _questionId, isMoveUp }, data => {
+            if (data.error) {
+                T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                T.notify('Thay đổi thứ tự câu hỏi thi thành công!', 'success');
+                dispatch({ type: DriveTestGet, item: data.item });
+                done && done(); 
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
     }
 }

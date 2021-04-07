@@ -1,10 +1,10 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        active: { type: Boolean, default: true },                                  // Có thể dài, nên dùng FormRichTextBox
+        active: { type: Boolean, default: true },                               
         priority: { type: Number, default: 0 },
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },          // Phân loại câu hỏi, xử lý giống news
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },   
         description: String,
     });
     const model = app.db.model('DriveTest', schema);
@@ -26,7 +26,7 @@ module.exports = app => {
                     result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                     const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                    model.find(condition).populate('courseType', 'title').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                    model.find(condition).populate('courseType', 'title').populate('questions').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);
                     });
@@ -38,7 +38,7 @@ module.exports = app => {
 
 
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').populate('courseType', 'title').populate('questions', 'title categories').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
+            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').populate('courseType', 'title').populate('questions').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
         },
 
         // changes = { $set, $unset, $push, $pull }
