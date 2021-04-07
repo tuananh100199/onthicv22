@@ -161,15 +161,14 @@ export class RoleFilter extends React.Component {
                 <div className='toggle'>
                     <label>
                         <input type='checkbox' checked={isAll} onChange={() => {
-                            // const changes = {
-                            //     isCourseAdmin: isCourseAdmin,
-                            //     isStaff: isStaff,
-                            //     isLecturer: isLecturer,
-                            //     isAll: !isAll
-                            // }
-                            this.props.getUserPage(pageNumber, pageSize)
-                            // this.props.setRoleFilter(changes)
-                            this.props.setRoleFilter({ type: ['all'] })
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: !isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -178,14 +177,14 @@ export class RoleFilter extends React.Component {
                 <div className='toggle'>
                     <label>
                         <input type='checkbox' checked={isCourseAdmin} onChange={() => {
-                            // const changes = {
-                            //     isCourseAdmin: !isCourseAdmin,
-                            //     isStaff: isStaff,
-                            //     isLecturer: isLecturer,
-                            //     isAll: isAll
-                            // }
-                            this.props.getUserPage(pageNumber, pageSize, { type: ['isCourseAdmin'] })
-                            this.props.setRoleFilter({ type: ['isCourseAdmin'] })
+                            const changes = {
+                                isCourseAdmin: !isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -194,15 +193,14 @@ export class RoleFilter extends React.Component {
                 <div className='toggle'>
                     <label>
                         <input type='checkbox' checked={isStaff} onChange={() => {
-                            // const changes = {
-                            //     isCourseAdmin: isCourseAdmin,
-                            //     isStaff: !isStaff,
-                            //     isLecturer: isLecturer,
-                            //     isAll: isAll
-                            // }
-                            this.props.getUserPage(pageNumber, pageSize, { type: ['isStaff'] })
-                            // this.props.setRoleFilter(changes)
-                            this.props.setRoleFilter({ type: ['isStaff'] })
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: !isStaff,
+                                isLecturer: isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -211,15 +209,14 @@ export class RoleFilter extends React.Component {
                 <div className='toggle'>
                     <label>
                         <input type='checkbox' checked={isLecturer} onChange={() => {
-                            // const changes = {
-                            //     isCourseAdmin: isCourseAdmin,
-                            //     isStaff: isStaff,
-                            //     isLecturer: !isLecturer,
-                            //     isAll: isAll
-                            // }
-                            this.props.getUserPage(pageNumber, pageSize, { type: ['isLecturer'] })
-                            this.props.setRoleFilter({ type: ['isLecturer'] })
-                            // this.props.setRoleFilter(changes)
+                            const changes = {
+                                isCourseAdmin: isCourseAdmin,
+                                isStaff: isStaff,
+                                isLecturer: !isLecturer,
+                                isAll: isAll
+                            }
+                            this.props.getUserPage(pageNumber, pageSize, changes)
+                            this.props.setRoleFilter(changes)
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -230,16 +227,14 @@ export class RoleFilter extends React.Component {
     }
 }
 
-// const roleFilter = (T.cookie('roleFilter') ? T.cookie('roleFilter') : { isCourseAdmin: false, isStaff: false, isLecturer: false, isAll: true });
-const roleFilter = (T.cookie('roleFilter') ? T.cookie('roleFilter') : { type: ['all'] });
+const roleFilter = (T.cookie('roleFilter') ? T.cookie('roleFilter') : { isCourseAdmin: false, isStaff: false, isLecturer: false, isAll: true });
 class UserPage extends AdminPage {
     state = { searchText: '', isSearching: false, roleFilter };
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
         this.props.getRoleAll();
-        this.props.getUserPage(1, null, this.state.roleFilter.type == 'all' ? {} : this.state.roleFilter, (page) => {
-
+        this.props.getUserPage(1, null, this.state.roleFilter, (page) => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('user')) {
                 const _userId = urlParams.get('user');
@@ -258,6 +253,8 @@ class UserPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);
+
+    // create = (e) => e.preventDefault() || this.userModal.show();
 
     changePassword = (e, item) => e.preventDefault() || this.passwordModal.show(item);
 
