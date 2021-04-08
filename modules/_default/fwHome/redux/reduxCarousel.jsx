@@ -144,7 +144,7 @@ export function swapCarouselItem(_id, isMoveUp) {
             if (data.error) {
                 T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger')
                 console.error('PUT: ' + url + '. ' + data.error);
-            } else {
+            } else if (data.item1) {
                 dispatch(getCarousel(data.item1.carouselId));
             }
         }, error => T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger'));
