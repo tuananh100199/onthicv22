@@ -128,7 +128,7 @@ class StaffGroupEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.user.lastname + ' ' + item.user.firstname} onClick={this.edit} />
+                    <TableCell type='link' content={item.user.lastname + ' ' + item.user.firstname} onClick={e => this.edit(e, item)} />
                     <TableCell type='image' content={item.image || item.user.image} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStaff(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />
