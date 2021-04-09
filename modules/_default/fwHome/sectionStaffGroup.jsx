@@ -23,7 +23,7 @@ class SectionStaffGroup extends React.Component {
                 {this.state.items ? this.state.items.map((staff, index) => (
                     <div key={index} className="col-md-6 col-lg-3 team_col ftco-animate" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                         <div className="team_item text-center d-flex flex-column aling-items-center justify-content">
-                            <div className="team_image"><img style={{}} src={staff.image || staff.user.image} alt='' /></div>
+                            <div className="team_image" style={{ height: 300 }}><img src={staff.image || staff.user.image} alt='' /></div>
                             <div className="team_content text-center">
                                 <div className='team_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
                                 <div className="team_text">

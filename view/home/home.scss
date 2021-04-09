@@ -551,6 +551,19 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+@media screen and (max-width: 800px) {
+  .team_image {
+    width: 100%;
+    height: auto !important;
+  }
+}
+.team_image {
+    width: 100%;
+    overflow: hidden;
+}
+.team_image img{
+     object-fit: cover;
+}
 
 //Dots
 .home_slider_custom_dot {

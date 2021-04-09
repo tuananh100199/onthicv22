@@ -60,7 +60,7 @@ class StaffModal extends AdminModal {
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
-                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}
+                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền (Tỉ lệ 3:4)' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}
                     onSuccess={this.onUploadSuccess} onDelete={this.state._id ? this.deleteImage : null} />
                 <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
             </div>
