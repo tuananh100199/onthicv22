@@ -8,9 +8,7 @@ class StaffGroupModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => {
-        this.itemTitle.value('');
-    }
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
         const data = {
@@ -31,9 +29,7 @@ class StaffGroupModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Nhóm nhân viên',
-        body: <>
-            <FormTextBox ref={e => this.itemTitle = e} label='Tên nhóm nhân viên' />
-        </>
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên nhóm nhân viên' />,
     })
 }
 
@@ -70,7 +66,7 @@ class StaffGroupPage extends React.Component {
         })
         return <>
             {table}
-            <StaffGroupModal key={1} ref={e => this.modal = e} create={this.props.createStaffGroup} readOnly={!permission.write} history={this.props.history} />,
+            <StaffGroupModal ref={e => this.modal = e} create={this.props.createStaffGroup} readOnly={!permission.write} history={this.props.history} />
             {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
         </>;
     }
