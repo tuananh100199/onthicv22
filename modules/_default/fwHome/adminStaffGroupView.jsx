@@ -68,7 +68,7 @@ class StaffGroupPage extends React.Component {
             {table}
             <StaffGroupModal ref={e => this.modal = e} create={this.props.createStaffGroup} readOnly={!permission.write} history={this.props.history} />
             {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
-        </>;
+        </>
     }
 }
 
