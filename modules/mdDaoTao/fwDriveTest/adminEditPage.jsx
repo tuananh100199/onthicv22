@@ -6,7 +6,7 @@ import { ajaxSelectDriveQuestion, getAllDriveQuestions} from '../fwDriveQuestion
 import { ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
-class DriveTestModal extends AdminModal {
+class QuestionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => { 
             this.questionSelect.value(null);
@@ -114,7 +114,7 @@ class DriveTestEditPage extends AdminPage {
             componentQuestion = <>
                     {table}
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                    <DriveTestModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
+                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
                 </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 

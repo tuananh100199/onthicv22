@@ -47,17 +47,11 @@ module.exports = app => {
     });
 
     app.post('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
-        app.model.driveTest.create(req.body.data, (error, item) => {
-            if (error || item == null || item.image == null) {
-                res.send({ error, item });
-            } else {
-                app.uploadImage('drive-question', app.model.driveTest.get, item._id, item.image, data => res.send(data));
-            }
-        });
+        app.model.driveTest.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
-        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes,req.body.changes.questions&& {questions: req.body.changes && req.body.changes.questions && req.body.changes.questions == 'empty' ? [] : req.body.changes.questions}), (error, item) => res.send({ error, item }));
+        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes, req.body.changes.questions && {questions: req.body.changes && req.body.changes.questions && req.body.changes.questions == 'empty' ? [] : req.body.changes.questions}), (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/drive-test/swap', app.permission.check('driveTest:write'), (req, res) => {
