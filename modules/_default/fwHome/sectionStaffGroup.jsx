@@ -101,7 +101,7 @@ class SectionStaffGroup extends React.Component {
         // }
 
         return (<>
-            <div className='service_col text-center'>
+            <div className='team text-center'>
                 <h2>{this.state.title}</h2>
             </div>
             <div className='row'>
@@ -122,7 +122,7 @@ class SectionStaffGroup extends React.Component {
                         <div className="team_item text-center d-flex flex-column aling-items-center justify-content">
                             <div className="team_image"><img style={{}} src={staff.image || staff.user.image} alt='' /></div>
                             <div className="team_content text-center">
-                                <div className='service_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
+                                <div className='team_title'>{staff.user.lastname + ' ' + staff.user.firstname}</div>
                                 <div className="team_text">
                                     <blockquote>
                                         <p>&ldquo;{staff.description}&rdquo;</p>
