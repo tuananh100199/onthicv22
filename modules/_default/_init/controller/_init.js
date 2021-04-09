@@ -47,7 +47,7 @@ module.exports = (app) => {
                 if (error || item == null) {
                     done({ error: error || 'Invalid Id!' });
                 } else {
-                    if (srcPath.startsWith('/temp/')) {
+                    if (srcPath.startsWith('/temp/') || srcPath.startsWith('\\temp\\')) {
                         srcPath = app.path.join(app.assetPath, srcPath);
                     } else {
                         app.deleteImage(item.image); // Xoá hình cũ
@@ -107,6 +107,21 @@ module.exports = (app) => {
     // System data ----------------------------------------------------------------------------------------------------------------------------------
     // TODO: đưa state vào Redis
     app.state = {
+        get: (key, done) => app.redis.get(key, done),
+        set: (...params) => {
+            const n = params.length;
+            if (n >= 2) {
+                let done = null;
+                if (n % 2) {
+                    done = params[n - 1];
+                    params.pop();
+                }
+
+            }
+            // app.redis.set(key, value, done);
+            console.log(params);
+        },
+
         data: {
             todayViews: 0,
             allViews: 0,
@@ -148,6 +163,7 @@ module.exports = (app) => {
         mobile: '(08) 2214 6555',
         address: '',
     };
+
     app.readyHooks.add('readyInit', {
         ready: () => app.redis,
         run: () => {

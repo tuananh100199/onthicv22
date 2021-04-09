@@ -130,7 +130,7 @@ class AdminManagerView extends React.Component {
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Quản trị viên</h3>
                     <div style={{ display: permission.write ? 'flex' : 'none' }}>
-                        <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType('isCourseAdmin')} style={{ width: '100%' }} />
+                        <FormSelect ref={e => this.selectAdmin = e} data={ajaxSelectUserType(['isCourseAdmin'])} style={{ width: '100%' }} />
                         <div style={{ width: 'auto', paddingLeft: 8 }}>
                             <button className='btn btn-success' type='button' onClick={this.addAdmin}>
                                 <i className='fa fa-fw fa-lg fa-plus' /> Quản trị viên
@@ -143,7 +143,7 @@ class AdminManagerView extends React.Component {
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Cố vấn học tập</h3>
                     <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
-                        <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType('isLecturer')} style={{ width: '100%' }} />
+                        <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
                         <div style={{ width: 'auto', paddingLeft: 8 }}>
                             <button className='btn btn-success' type='button' onClick={this.addTeacher}>
                                 <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập

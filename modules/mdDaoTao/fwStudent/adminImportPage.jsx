@@ -1,23 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { importPreStudent } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormDatePicker, AdminModal, FormFileBox, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormFileBox, FormCheckbox, FormDatePicker, FormTextBox, FormSelect, TableCell, renderTable, CirclePageButton } from 'view/component/AdminPage';
 
 class EditModal extends AdminModal {
     state = {};
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
-    }
-
     onShow = (item) => {
         let { id,
             firstname,
             lastname,
             email,
             phoneNumber,
-            courseType,
             sex,
             birthday,
             nationality,
@@ -36,7 +32,6 @@ class EditModal extends AdminModal {
                 lastname: '',
                 email: '',
                 phoneNumber: '',
-                courseType: '',
                 sex: '',
                 birthday: '',
                 nationality: '',
@@ -51,12 +46,11 @@ class EditModal extends AdminModal {
                 giayKhamSucKhoe: '',
                 giayKhamSucKhoeNgayKham: ''
             };
-        this.setState({ num: id })
+        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'd-none' })
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
         this.itemPhoneNumber.value(phoneNumber);
-        this.itemCourseType.value(courseType);
         this.itemSex.value(sex);
         this.itemBirthday.value(birthday);
         this.itemNationality.value(nationality);
@@ -68,18 +62,21 @@ class EditModal extends AdminModal {
         this.itemLincenseNumber.value(giayPhepLaiXe2BanhSo);
         this.itemLincenseDate.value(giayPhepLaiXe2BanhNgay);
         this.itemLincenseIssuedBy.value(giayPhepLaiXe2BanhNoiCap);
-        this.itemgiayKhamSucKhoe.value(giayKhamSucKhoe);
-        this.itemgiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham);
+        this.itemGiayKhamSucKhoe.value(giayKhamSucKhoe);
+        this.itemGiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham);
+    }
+
+    isChecked = (checked) => {
+        this.setState({ className: checked ? 'col-md-6' : 'd-none' })
     }
 
     onSubmit = () => {
         const data = {
-            numberic: this.state.num,
+            id: this.state.id,
             firstname: this.itemFirstname.value(),
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
-            courseType: this.itemCourseType.value(),
             sex: this.itemSex.value(),
             birthday: this.itemBirthday.value(),
             nationality: this.itemNationality.value(),
@@ -91,8 +88,8 @@ class EditModal extends AdminModal {
             giayPhepLaiXe2BanhSo: this.itemLincenseNumber.value(),
             giayPhepLaiXe2BanhNgay: this.itemLincenseDate.value(),
             giayPhepLaiXe2BanhNoiCap: this.itemLincenseIssuedBy.value(),
-            giayKhamSucKhoe: this.itemgiayKhamSucKhoe.value(),
-            giayKhamSucKhoeNgayKham: this.itemgiayKhamSucKhoeNgayKham.value(),
+            giayKhamSucKhoe: this.itemGiayKhamSucKhoe.value(),
+            giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoe.value() ? this.itemGiayKhamSucKhoeNgayKham.value() : null,
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -103,65 +100,61 @@ class EditModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (data.email == '' || !T.validateEmail(data.email)) {
-            T.notify('Email không hợp lệ!', 'danger');
+        } else if (data.email == '') {
+            T.notify('Địa chỉ email không được trống!', 'danger');
             this.itemEmail.focus();
-        } else if (!data.courseType) {
-            T.notify('Hạng đăng ký không được trống!', 'danger');
-            this.itemCourseType.focus();
+        } else if (data.giayKhamSucKhoeNgayKham == 'Invalid Date') {
+            T.notify('Ngày khám sức khỏe không chính xác!', 'danger');
+            this.itemGiayKhamSucKhoeNgayKham.focus();
         } else {
-            this.props.edit(this.state.num, data)
+            this.props.edit(this.state.id, data);
+            T.notify('Cập nhật thông tin bài học thành công!', 'success');
             this.hide();
         }
     }
 
-    render = () => {
-        const readOnly = this.props.readOnly;
-        return this.renderModal({
-            title: 'Chỉnh sửa ứng viên',
-            size: 'large',
-            body: (
-                <div className='row'>
-                    <div className='col-md-8'>
-                        <FormTextBox ref={e => this.itemFirstname = e} label='Họ ứng viên' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemLastname = e} label='Tên ứng viên' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemCourseType = e} label='Hạng đăng ký' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemSex = e} label='Giới tính' readOnly={readOnly} />
-                        <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemNationality = e} label='Quốc tịch' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemResidence = e} label='Nơi cư trú' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemRegularResidence = e} label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemIdentityCard = e} label='Số CMND,CCCD' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemIdentityDate = e} label='Ngày cấp' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemLincenseDate = e} label='Ngày trúng tuyển' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemgiayKhamSucKhoe = e} label='Đã có giấy phép lái xe' readOnly={readOnly} />
-                        <FormTextBox ref={e => this.itemgiayKhamSucKhoeNgayKham = e} label='Ngày khám sức khỏe' readOnly={readOnly} />
-                    </div>
-                </div>),
-        });
-    }
+    render = () => this.renderModal({
+        title: 'Chỉnh sửa ứng viên',
+        size: 'large',
+        body: (
+            <div className='row'>
+                <FormTextBox ref={e => this.itemLastname = e} label='Họ ứng viên' className='col-md-8' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemFirstname = e} label='Tên ứng viên' className='col-md-4' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemEmail = e} label='Email' className='col-md-6' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemPhoneNumber = e} label='Số điện thoại' className='col-md-6' readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.itemSex = e} className='col-md-3' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={this.props.readOnly} />
+                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-3' label='Năm sinh' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemNationality = e} label='Quốc tịch' className='col-md-6' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemResidence = e} label='Nơi cư trú' className='col-md-6' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemRegularResidence = e} label='Nơi đăng ký hộ khẩu thường trú' className='col-md-6' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemIdentityCard = e} label='Số CMND,CCCD' className='col-md-4' readOnly={this.props.readOnly} />
+                <FormDatePicker ref={e => this.itemIdentityDate = e} className='col-md-4' label='Ngày cấp' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemIdentityIssuedBy = e} label='Nơi cấp' className='col-md-4' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' className='col-md-4' readOnly={this.props.readOnly} />
+                <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' className='col-md-4' readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-6' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
+                <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+            </div>),
+    });
 }
-
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
     state = {};
-
+    componentDidMount() {
+        T.ready('/user/pre-student');
+    }
     onUploadSuccess = (data) => {
         this.setState(data);
-        this.itemDivision.value(null)
+        this.itemDivision.value(null);
+        this.itemCourseType.value(null)
     }
 
     showEditModal = (e, item) => e.preventDefault() || this.modalEdit.show(item);
-    edit = (num, changes) => {
+
+    edit = (studentId, changes) => {
         this.setState(prevState => ({
-            data: prevState.data.map(
-                data => data.id === num ? changes : data
-            )
+            data: prevState.data.map(data => data.id === studentId ? changes : data)
         }))
     }
 
@@ -174,9 +167,12 @@ class ImportPage extends AdminPage {
     save = () => {
         if (!this.itemDivision.value()) {
             T.notify('Chưa chọn cơ sở đào tạo!', 'danger');
-            this.itemFirstname.focus();
+            this.itemDivision.focus();
+        } else if (!this.itemCourseType.value()) {
+            T.notify('Chưa chọn loại khóa học!', 'danger');
+            this.itemCourseType.focus();
         } else {
-            this.props.importPreStudent(this.state.data, this.itemDivision.value(), data => {
+            this.props.importPreStudent(this.state.data, this.itemDivision.value(), this.itemCourseType.value(), data => {
                 if (data.error) {
                     T.notify('Import ứng viên bị lỗi!', 'danger');
                 } else {
@@ -187,7 +183,7 @@ class ImportPage extends AdminPage {
     }
 
     render() {
-        const permission = this.getUserPermission('student', ['read', 'write', 'delete']),
+        const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
             readOnly = !permission.write;
         const table = renderTable({
             getDataSource: () => this.state.data && this.state.data.length > 0 ? this.state.data : [],
@@ -195,61 +191,65 @@ class ImportPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '50%' }}>Họ và Tên</th>
-                    <th style={{ width: '30%' }}>Email</th>
+                    <th style={{ width: '50%' }}>Email</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true' >Loại khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giới tính</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Quốc tịch</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Quốc tịch</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi cư trú</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi đăng ký hộ khẩu thường trú</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi đăng ký hộ khẩu thường trú</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số CMND, CCCD</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi cấp CMND, CCCD</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi cấp CMND, CCCD</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày cấp CMND, CCCD</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giấy phép lái xe 2 bánh</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày trúng truyển giấy phép lái xe 2 bánh</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'> Nơi cấp giấy phép lái xe 2 bánh</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Đã có giấy khám sức khoẻ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày khám sức khoẻ</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày khám sức khoẻ</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.firstname + ' ' + item.lastname} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.email} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.mobileDisplay(item.phoneNumber)} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.sex} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.sex.toLowerCase().trim() == 'male' ? 'Nam' : 'Nữ'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.birthday, 'dd/mm/yyyy')} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.nationality} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.nationality} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.residence} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.regularResidence} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.regularResidence} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityIssuedBy} />
+                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityIssuedBy} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.identityDate, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhSo} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNgay} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.giayPhepLaiXe2BanhNgay, 'dd/mm/yyyy')} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNoiCap} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayKhamSucKhoe} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayKhamSucKhoeNgayKham} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayKhamSucKhoe ? 'Có' : 'Không'} />
+                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.giayKhamSucKhoeNgayKham, 'dd/mm/yyyy')} /> */}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.showEditModal} onDelete={this.delete} />
                 </tr>),
         });
 
         const filebox = (
             <div className='tile'>
-                <h3 className='tile-title'>Upload danh sách ứng viên</h3>
-                <FormFileBox ref={e => this.fileBox = e} label='File excel ứng viên' uploadType='CandidateFile'
+                <h3 className='tile-title'>Import danh sách ứng viên</h3>
+                <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                <a href='/download/Candidate.xlsx' style={{ float: 'right' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
-            </div>
+                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                    <button className='btn btn-primary' type='button' onClick={this.save}>
+                        <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
+                    </button>
+                </div>
+            </div >
         );
         const list = (
             <div>
                 <div className='tile'>
                     <h3 className='tile-title'>Chọn cơ sở</h3>
-                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' data={ajaxSelectDivision} readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemDivision = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn cơ sở'} data={ajaxSelectDivision} readOnly={readOnly} />
+                    <h3 className='tile-title'>Chọn loại khóa học</h3>
+                    <FormSelect ref={e => this.itemCourseType = e} className='col-md-4' labelStyle={{ display: 'none' }} label={'Chọn loại khóa học'} data={ajaxSelectCourseType} readOnly={readOnly} />
                     <h3 className='tile-title'>Danh sách ứng viên</h3>
                     <div className='tile-body' style={{ overflowX: 'auto' }}>
                         {table}
