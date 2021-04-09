@@ -57,7 +57,7 @@ module.exports = app => {
     });
 
     app.put('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
-        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes, {questions: req.body.changes.questions=='empty' ? [] : req.body.changes.questions}), (error, item) => res.send({ error, item }));
+        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes,req.body.changes.questions&& {questions: req.body.changes && req.body.changes.questions && req.body.changes.questions == 'empty' ? [] : req.body.changes.questions}), (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/drive-test/swap', app.permission.check('driveTest:write'), (req, res) => {
@@ -90,17 +90,5 @@ module.exports = app => {
 
     app.delete('/api/drive-test', app.permission.check('driveTest:delete'), (req, res) => {
         app.model.driveTest.delete(req.body._id, error => res.send({ error }));
-    });
-
-    app.delete('/api/drive-test/image', app.permission.check('driveTest:write'), (req, res) => {
-        app.model.driveTest.get(req.body._id, (error, item) => {
-            if (item) {
-                app.deleteImage(item.image);
-                item.image = null;
-                item.save(error => res.send({ error }));
-            } else {
-                res.send({ error: error || 'Id không hợp lệ!' });
-            }
-        });
     });
 };

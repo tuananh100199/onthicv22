@@ -9,7 +9,6 @@ class SectionListContent extends React.Component {
         $(document).ready(() => {
             if (this.props.viewId) {
                 this.props.homeGetListContent(this.props.viewId, data => {
-                    console.log(data)
                     if (data.item) {
                         this.setState(data.item, () => {
                             T.ftcoAnimate()
