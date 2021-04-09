@@ -2,18 +2,21 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateDriveTest, getDriveTestItem, swapQuestions } from './redux';
 import { Link } from 'react-router-dom';
-import { ajaxSelectDriveQuestion, getAllDriveQuestions} from '../fwDriveQuestion/redux';
+import { getAllDriveQuestions} from '../fwDriveQuestion/redux';
 import { ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => { 
-            this.questionSelect.value(null);
+            this.props.getAllDriveQuestions(undefined,(data)=>{this.setState({list: data})});
         }));
     }
 
-    onShow = () => this.questionSelect.value('');
+    selectQuestion = (e, item) =>{
+        const questions = this.props.item.questions.map(item => item._id);
+        questions.push(_questionId);
+    }
 
     onSubmit = () => {
         const _questionId = this.questionSelect.value();
@@ -27,15 +30,30 @@ class QuestionModal extends AdminModal {
         }
     }
 
-    render = () => this.renderModal({
-        title: 'Câu hỏi thi',
-        body:
-            <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' 
-                data={{
-                ...ajaxSelectDriveQuestion, processResults: response => 
-                    ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-            }} readOnly={this.props.readOnly} />
-    });
+    render = () => {    
+        const readOnly = this.props.readOnly,
+            defaultStyle = { width: '40px', height: '40px', lineHeight: '40px', borderRadius: '50%', textAlign: 'center', marginLeft: '8px', cursor: 'pointer' }, 
+            listAnswers = [],
+            listQuestions = this.state.list && this.state.list.map((item, index) => {
+                listAnswers.push(<p key={index}>{index + 1}. {item}</p>)
+                const selectedStyle = { color: 'white', backgroundColor: '#28a745' } ;
+                return <label key={index} style={{ ...defaultStyle, ...selectedStyle }} onClick={e => !readOnly && this.selectQuestion(e, item)}>{index + 1}</label>
+            });
+        return this.renderModal({
+            title: 'Câu hỏi thi',
+            size: 'large',
+            body:
+            <>
+                <div className="row col-md-12">
+                    <label>Lựa chọn câu hỏi: {listQuestions}</label>
+                </div>
+                <div className="row col-md-12">
+                    <label>Bộ đề đã chọn:{listQuestions}</label>
+                 </div>
+            </>
+        });
+    }
+      
 }
 
 const backRoute = '/user/drive-test'
@@ -114,7 +132,7 @@ class DriveTestEditPage extends AdminPage {
             componentQuestion = <>
                     {table}
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
+                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
                 </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
