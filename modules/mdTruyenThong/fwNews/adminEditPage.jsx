@@ -69,7 +69,7 @@ class NewsEditPage extends AdminPage {
         const permission = this.getUserPermission('news'),
             readOnly = !permission.write;
         const { _id, title } = this.state,
-            linkDefaultNews = T.rootUrl + '/tintuc/' + _id;
+            linkDefaultNews = T.rootUrl + '/news/' + _id;
 
         return this.renderPage({
             icon: 'fa fa-file',
