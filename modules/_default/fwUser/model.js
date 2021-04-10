@@ -28,6 +28,7 @@ module.exports = (app) => {
     };
 
     const model = app.db.model('User', schema);
+
     app.model.user = {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
@@ -158,6 +159,7 @@ module.exports = (app) => {
                 item.remove(done);
             }
         }),
+        
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
