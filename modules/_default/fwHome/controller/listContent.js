@@ -5,7 +5,6 @@ module.exports = app => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize);
         app.model.listContent.getPage(pageNumber, pageSize, {}, (error, page) => {
-            console.log('page', page)
             res.send({ error: error || page == null ? 'Content list are not ready!' : null, page });
         });
     });

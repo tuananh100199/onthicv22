@@ -18,7 +18,7 @@ module.exports = app => {
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-question/all', app.permission.check('driveQuestion:read'), (req, res) => {
         const condition = {},
-            searchText = req.query.searchText;
+            searchText =  req.query.condition && req.query.condition.searchText ? req.query.condition.searchText : {};
         if (searchText) {
             condition.title = new RegExp(searchText, 'i');
         }
