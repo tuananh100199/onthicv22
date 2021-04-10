@@ -129,11 +129,7 @@ class HomeMenu extends React.Component {
             <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
                     <div className='logo'>
-                        <Link to='/' onClick={() => {
-                            this.setState({ link: '/' }, () => {
-                                $(this.nav.current).classyNav();
-                            })
-                        }}>
+                        <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav.current).classyNav())}>
                             <img src={logo} alt='Logo' style={{ height: '65px', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
