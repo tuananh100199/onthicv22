@@ -46,9 +46,10 @@ module.exports = (app) => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => error ? res.send({ error }) : res.send(data))
             });
-        }
 
-        //TODO: email
+            // Save email into Settings
+            if (email) app.model.setting.set({ email }, (error) => error && console.log(error));
+        }
     });
 
     app.get('/api/state', (req, res) => {
