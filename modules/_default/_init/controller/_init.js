@@ -128,15 +128,12 @@ module.exports = (app) => {
             address: '',
         },
 
-        init: () => {
-            app.state.keys = Object.keys(app.state.initState).map(key => `${app.appName}:state:${key}`);
-            app.configWorker && app.redis.keys(`${app.appName}:state:*`, (_, keys) => {
-                keys && Object.keys(app.state.initState).forEach(key => {
-                    const redisKey = `${app.appName}:state:${key}`;
-                    if (keys.indexOf(redisKey) == -1) app.redis.set(redisKey, app.state.initState[key]);
-                });
-            })
-        },
+        init: () => app.redis.keys(`${app.appName}:state:*`, (_, keys) => {
+            keys && Object.keys(app.state.initState).forEach(key => {
+                const redisKey = `${app.appName}:state:${key}`;
+                if (keys.indexOf(redisKey) == -1) app.redis.set(redisKey, app.state.initState[key]);
+            });
+        }),
 
         get: (...params) => {
             const n = params.length,
@@ -171,10 +168,11 @@ module.exports = (app) => {
             }
         },
     };
+    app.state.keys = Object.keys(app.state.initState).map(key => app.state.prefixKey + key);
 
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
         ready: () => app.redis,
-        run: () => app.state.init(),
+        run: () => app.configWorker && app.state.init(),
     });
 };
