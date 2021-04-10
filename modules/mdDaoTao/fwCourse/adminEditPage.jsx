@@ -97,7 +97,7 @@ class EditCoursePage extends AdminPage {
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
             { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
-            { title: 'Học viên', component: <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} /> },
+            { title: 'Học viên', component: <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} updateCourse={this.props.updateCourse} /> },
         ];
         return this.renderPage({
             icon: 'fa fa-cubes',
