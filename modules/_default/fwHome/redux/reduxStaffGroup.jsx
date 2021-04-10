@@ -210,7 +210,7 @@ export function homeGetStaffGroup(_id, done) {
 
 export const ajaxSelectStaffGroup = T.createAjaxAdapter(
     `/api/staff-group/all`,
-    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
+    response => response && response.list ? response.list.filter(item => item.active).map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetStaffGroup(_id, done) {
