@@ -158,7 +158,6 @@ module.exports = app => {
         app.model.user.delete(req.body._id, error => res.send({ error }));
     });
     
-
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/register', (req, res) => app.registerUser(req, res));
     app.post('/login', app.loginUser);

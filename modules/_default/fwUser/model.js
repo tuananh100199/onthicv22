@@ -28,7 +28,6 @@ module.exports = (app) => {
     };
 
     const model = app.db.model('User', schema);
-
     app.model.user = {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
