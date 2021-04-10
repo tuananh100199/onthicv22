@@ -98,7 +98,6 @@ module.exports = (app) => {
                 }
             ]
         };
-        console.log(condition)
         if (categoryType) condition.categories = categoryType;
         app.model.news.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     };

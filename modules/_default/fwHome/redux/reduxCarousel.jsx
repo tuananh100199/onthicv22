@@ -37,13 +37,13 @@ export function getCarouselAll(done) {
         const url = '/api/carousel/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Get carousel list failed!', 'danger');
+                T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.list);
                 dispatch({ type: CarouselGetAll, list: data.list || [] });
             }
-        }, error => T.notify('Get carousel list failed!', 'danger'));
+        }, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
     }
 }
 
@@ -64,13 +64,13 @@ export function createCarousel(data, done) {
         const url = '/api/carousel';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Tạo tập hình ảnh thành công!', 'danger');
+                T.notify('Tạo tập hình ảnh bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getCarouselAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo tập hình ảnh thành công!', 'danger'));
+        }, error => T.notify('Tạo tập hình ảnh bị lỗi!', 'danger'));
     }
 }
 
