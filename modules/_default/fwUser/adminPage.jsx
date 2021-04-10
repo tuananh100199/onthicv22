@@ -301,7 +301,7 @@ class UserPage extends AdminPage {
             header: <RoleFilter getUserPage={this.props.getUserPage} setRoleFilter={this.setRoleFilter} filter={this.state.roleFilter} pageNumber={pageNumber} pageSize={pageSize} />,
             breadcrumb: ['Người dùng'],
             content: <>
-                <div className='tile-table-fix-head'>{table}</div>
+                <div className='tile tile-table-fix-head'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getUserPage} />
                 <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles} user={this.props.system ? this.props.system.user : null}
