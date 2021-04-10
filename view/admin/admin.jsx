@@ -3,7 +3,7 @@ import './scss/admin/main.scss';
 import './admin.scss';
 import 'rc-tooltip/assets/bootstrap.css';
 
-import T from '../js/common';
+import T from '../js/common'; window.T = T;
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
@@ -12,53 +12,16 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-import { changeCarouselItem } from 'modules/_default/fwHome/redux/reduxCarousel';
-import { changeVideo } from 'modules/_default/fwHome/redux/reduxVideo';
-import { changeCategory } from 'modules/_default/fwCategory/redux';
 import { getSystemState, updateSystemState } from 'modules/_default/_init/redux';
 import { changeUser } from 'modules/_default/fwUser/redux';
-import { addContact, changeContact } from 'modules/mdTruyenThong/fwContact/redux';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import AdminHeader from 'view/component/AdminHeader';
 import AdminMenu from 'view/component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
-import _init from 'modules/_default/_init/index';
-import fwCategory from 'modules/_default/fwCategory/index';
-import fwCluster from 'modules/_default/fwCluster/index';
-import fwUser from 'modules/_default/fwUser/index';
-import fwRole from 'modules/_default/fwRole/index';
-import fwHome from 'modules/_default/fwHome/index';
-import fwMenu from 'modules/_default/fwMenu/index';
-import fwContact from 'modules/mdTruyenThong/fwContact/index';
-import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
-import fwEmail from 'modules/_default/fwEmail/index';
-import fwNews from 'modules/mdTruyenThong/fwNews/index';
-import fwDivision from 'modules/mdDaoTao/fwDivision/index';
-import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
-import fwCourse from 'modules/mdDaoTao/fwCourse/index';
-import fwSubject from 'modules/mdDaoTao/fwSubject/index';
-import fwLesson from 'modules/mdDaoTao/fwLesson/index';
-import fwDonDeNghiHoc from 'modules/mdDaoTao/fwDonDeNghiHoc/index';
-import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
-import fwSign from 'modules/mdDaoTao/fwSign/index';
-import fwDriveTest from 'modules/mdDaoTao/fwDriveTest/index';
-import fwCandidate from 'modules/mdDaoTao/fwCandidate';
-import fwStudent from 'modules/mdDaoTao/fwStudent';
-
-window.T = T;
-const modules = [
-    _init, fwCategory, fwCluster,
-    fwUser, fwRole, fwHome, fwMenu,
-    fwContact, fwSubscribe, fwEmail, fwNews,
-    fwDivision, fwCourseType, fwCourse, fwCandidate, fwStudent, fwSubject, fwLesson,
-    fwDonDeNghiHoc, fwDriveQuestion, fwSign, fwDriveTest
-];
-
-// Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
+import { modules } from './modules.jsx';
 const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
-
 modules.forEach(module => {
     module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
@@ -77,13 +40,6 @@ class App extends React.Component {
     routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
 
     componentDidMount() {
-        T.socket.on('category-changed', item => store.dispatch(changeCategory(item)));
-        T.socket.on('carouselItem-changed', item => store.dispatch(changeCarouselItem(item)));
-        T.socket.on('video-changed', item => store.dispatch(changeVideo(item)));
-
-        T.socket.on('contact-added', item => store.dispatch(addContact(item)));
-        T.socket.on('contact-changed', item => store.dispatch(changeContact(item)));
-
         T.socket.on('user-changed', user => {
             if (this.props.system && this.props.system.user && this.props.system.user._id == user._id) {
                 store.dispatch(updateSystemState({ user: Object.assign({}, this.props.system.user, user) }));
@@ -91,15 +47,8 @@ class App extends React.Component {
             store.dispatch(changeUser(user));
         });
 
-        T.socket.on('debug-user-changed', user => {
-            store.dispatch(updateSystemState({ user }));
-        });
-
-        T.socket.on('debug-role-changed', roles => {
-            if (this.props.system && this.props.system.isDebug) {
-                this.props.updateSystemState({ roles });
-            }
-        });
+        T.socket.on('debug-user-changed', user => store.dispatch(updateSystemState({ user })));
+        T.socket.on('debug-role-changed', roles => this.props.system && this.props.system.isDebug && this.props.updateSystemState({ roles }));
     }
 
     render() {

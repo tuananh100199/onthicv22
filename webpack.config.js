@@ -29,6 +29,41 @@ CleanFilesPlugin.prototype.apply = compiler => {
     compiler.hooks.done.tap('CleanFiles', () => cleanFilesPluginOptions.forEach(removeFiles));
 };
 
+const moduleContainer = { admin: {}, home: {} }, // Add template here
+    templateNames = Object.keys(moduleContainer);
+const UpdateModulesPlugin = function (options) { };
+UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('UpdateModules', () => {
+    templateNames.forEach(templateName => {
+        moduleContainer[templateName].moduleNames = [];
+        moduleContainer[templateName].importText = '';
+    });
+
+    fs.readdirSync(`./modules`).forEach(mainModuleName => {
+        fs.statSync(`./modules/${mainModuleName}`).isDirectory() && fs.readdirSync(`./modules/${mainModuleName}`).forEach(moduleName => {
+            if (fs.statSync(`./modules/${mainModuleName}/${moduleName}`).isDirectory() && fs.existsSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`)) {
+                const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split(String.fromCharCode(10));
+                if (moduleTextLines.length && moduleTextLines[0].startsWith('//TEMPLATES: ')) {
+                    const templates = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|');
+                    templateNames.forEach(templateName => {
+                        if (templates.indexOf(templateName) != -1) {
+                            moduleContainer[templateName].moduleNames.push(moduleName);
+                            moduleContainer[templateName].importText += `import ${moduleName} from 'modules/${mainModuleName}/${moduleName}/index';\n`;
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+    templateNames.forEach(templateName => {
+        const templateModule = moduleContainer[templateName];
+        if (templateModule.preModuleNames == null || templateModule.preModuleNames.length != templateModule.moduleNames.length) {
+            templateModule.preModuleNames = [...templateModule.moduleNames];
+            fs.writeFileSync(`./view/${templateName}/modules.jsx`, `${templateModule.importText}\nexport const modules = [${templateModule.moduleNames.join(', ')}];`);
+        }
+    });
+});
+
 const entry = {};
 fs.readdirSync('./view').forEach(folder => {
     if (fs.lstatSync('./view/' + folder).isDirectory() && fs.existsSync('./view/' + folder + '/' + folder + '.jsx')) {
@@ -64,7 +99,6 @@ module.exports = (env, argv) => ({
         path: path.join(__dirname, 'public'),
         publicPath: '/',
         filename: argv.mode === 'production' ? 'js/[name]-[contenthash].js' : 'js/[name].js'
-        // filename: 'js/[name].js',
     },
     plugins: [
         ...genHtmlWebpackPlugins(argv.mode === 'production'),
@@ -78,7 +112,8 @@ module.exports = (env, argv) => ({
                 { path: '/public/js', fileExtension: '.txt' },
                 { path: '/public/js', fileExtension: '.js', excludeExtension: '.min.js' },
                 { path: '/public', fileExtension: '.template' }
-            ])
+            ]),
+        new UpdateModulesPlugin(),
     ],
     module: {
         rules: [
@@ -90,7 +125,8 @@ module.exports = (env, argv) => ({
                 use: 'url-loader?limit=100000'
             },
             {
-                test: /\.jsx?$/, exclude: /node_modules/,
+                test: /\.jsx?$/,
+                exclude: [path.resolve(__dirname, 'view/admin/modules.jsx')], // /node_modules/
                 use: {
                     options: {
                         plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties'],
@@ -114,5 +150,5 @@ module.exports = (env, argv) => ({
         modules: [path.resolve(__dirname, './'), 'node_modules'],
         extensions: ['.js', '.jsx', '.json']
     },
-    optimization: { minimize: true }
+    optimization: { minimize: true },
 });

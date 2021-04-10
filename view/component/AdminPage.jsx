@@ -460,6 +460,21 @@ export class AdminPage extends React.Component {
 
     renderPage = ({ icon, title, header, breadcrumb, content, backRoute, onCreate, onSave, onExport }) => {
         if (breadcrumb == null) breadcrumb = [];
+
+        let right = 10, createButton, saveButton, exportButton;
+        if (onCreate) {
+            createButton = <CirclePageButton type='create' onClick={onCreate} style={{ right }} />;
+            right += 60;
+        }
+        if (onSave) {
+            saveButton = <CirclePageButton type='save' onClick={onSave} style={{ right }} />;
+            right += 60;
+        }
+        if (onExport) {
+            exportButton = <CirclePageButton type='export' onClick={onExport} style={{ right }} />;
+            right += 60;
+        }
+
         return (
             <main className='app-content'>
                 <div className='app-title'>
@@ -472,9 +487,7 @@ export class AdminPage extends React.Component {
                 </div>
                 {content}
                 {backRoute ? <CirclePageButton type='back' to={backRoute} /> : null}
-                {onCreate ? <CirclePageButton type='create' onClick={onCreate} /> : null}
-                {onSave ? <CirclePageButton type='save' onClick={onSave} /> : null}
-                {onExport ? <CirclePageButton type='export' onClick={onExport} /> : null}
+                {exportButton} {saveButton} {createButton}
             </main>);
     }
 
