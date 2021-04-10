@@ -1,5 +1,5 @@
 import './home.scss';
-import T from '../js/common';
+import T from '../js/common'; window.T = T;
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
@@ -16,23 +16,8 @@ import HomeFooter from 'view/component/HomeFooter';
 import LoginModal from 'view/component/LoginModal';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
-import _init from 'modules/_default/_init/index';
-import fwContact from 'modules/mdTruyenThong/fwContact/index';
-import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
-import fwHome from 'modules/_default/fwHome/index';
-import fwMenu from 'modules/_default/fwMenu/index';
-import fwUser from 'modules/_default/fwUser/index';
-import fwNews from 'modules/mdTruyenThong/fwNews/index';
-import fwCourse from 'modules/mdDaoTao/fwCourse/index';
-import fwDivision from 'modules/mdDaoTao/fwDivision/index';
-import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
-import fwCandidate from 'modules/mdDaoTao/fwCandidate';
-
-window.T = T;
-const modules = [_init, fwHome, fwMenu, fwUser, fwContact, fwSubscribe, fwNews, fwCourse, fwDivision, fwCourseType, fwCandidate];
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
-
-// Initialize Redux ---------------------------------------------------------------------------------------------------------------------------------
+import { modules } from './modules.jsx';
 const reducers = {}, routeMapper = {},
     addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {

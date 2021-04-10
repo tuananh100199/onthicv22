@@ -157,7 +157,7 @@ module.exports = app => {
     app.delete('/api/user', app.permission.check('user:delete'), (req, res) => {
         app.model.user.delete(req.body._id, error => res.send({ error }));
     });
-
+    
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/register', (req, res) => app.registerUser(req, res));
     app.post('/login', app.loginUser);

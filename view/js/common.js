@@ -4,20 +4,18 @@ import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
 const T = {
-    rootUrl: 'https://hpo.edu.vn',
-    questionTypes: { text: 'Văn bản', textArea: 'Đoạn văn bản', choice: 'Lựa chọn', multiChoice: 'Đa lựa chọn', date: 'Ngày tháng' },
+    debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
+    rootUrl: window.location.protocol + '//' + window.location.hostname,
+
     component: { '<empty>': null },
-    defaultPageSize: 50,
-    defaultUserPageSize: 21,
-    defaultUserSidebarSize: 3,
+    modules: { admin: [], home: [] },
+
+    defaultPageSize: 50, defaultUserPageSize: 21, defaultUserSidebarSize: 3,
     newsFeedPageSize: 4,
     courseFeedPageSize: 3,
 
     randomPassword: length => Math.random().toString(36).slice(-length),
 
-    debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
-
-    documentReady: (done) => $(document).ready(() => setTimeout(done, 250)),
     ready: (pathname, done) => $(document).ready(() => setTimeout(() => {
         T.clearSearchBox && T.clearSearchBox();
         T.hideSearchBox();
@@ -186,8 +184,6 @@ const T = {
         swal({ icon, title, content, dangerMode, buttons: { cancel: true, confirm: true }, }).then(done);
     },
 
-    dateFormat: { format: 'dd/mm/yyyy hh:ii', autoclose: true, todayBtn: true },
-    birthdayFormat: { format: 'dd/mm/yyyy', autoclose: true, todayBtn: true },
     formatDate: str => {
         try {
             let [strDate, strTime] = str.split(' '), [date, month, year] = strDate.split('/'), [hours, minutes] = strTime ? strTime.split(':') : [0, 0];
@@ -199,9 +195,7 @@ const T = {
 
     tooltip: (timeOut = 250) => {
         $(function () {
-            setTimeout(() => {
-                $('[data-toggle="tooltip"]').tooltip();
-            }, timeOut);
+            setTimeout(() => $('[data-toggle="tooltip"]').tooltip(), timeOut);
         });
     },
 
@@ -288,12 +282,6 @@ T.ftcoAnimate = (timeOut = 250) => {
         }, { offset: '95%' });
     }, timeOut)
 };
-
-T.truncate = (str, length) => {
-    if (str.length <= length) return str.toString();
-    let tempStr = str.slice(0, length)
-    return tempStr + '...'
-}
 
 T.clone = function () {
     let result = {};

@@ -1,3 +1,4 @@
+//TEMPLATES: admin
 import React from 'react';
 import category from './redux';
 

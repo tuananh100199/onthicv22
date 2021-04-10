@@ -224,7 +224,7 @@ class UserDonDeNghiPage extends React.Component {
                             <div className='form-group col-md-8'>
                                 <label className='control-label pt-4' htmlFor='userLastname'>Họ và tên: &nbsp; <span>{this.props.system.user.lastname + ' ' + this.props.system.user.firstname}</span></label>
                                 <label style={{ display: 'block' }} className='control-label pt-4' htmlFor='userEmail'>Email:&nbsp; <span>{this.props.system.user.email}</span></label>
-                                <label className='control-label pt-4 col-6' >Giới tính :&nbsp; <span>{user.sex}</span></label>
+                                <label className='control-label pt-4 col-6' >Giới tính :&nbsp; <span>{user.sex == 'male' ? 'Nam' : 'Nữ'}</span></label>
                             </div>
                             <div className='form-group col-md-3'>
                                 <label className='control-label'>Hình đại diện</label>
