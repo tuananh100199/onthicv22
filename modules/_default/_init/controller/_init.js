@@ -125,7 +125,7 @@ module.exports = (app) => {
         data: {
             todayViews: 0,
             allViews: 0,
-            logo: '/img/favicon.png',
+            logo: '/img/favicon.ico',
             map: '/img/map.png',
             footer: '/img/footer.jpg',
             contact: '/img/contact.jpg',
@@ -147,7 +147,7 @@ module.exports = (app) => {
     const initSystemData = {
         todayViews: 0,
         allViews: 0,
-        logo: '/img/favicon.png',
+        logo: '/img/favicon.ico',
         map: '/img/map.png',
         footer: '/img/footer.jpg',
         contact: '/img/contact.jpg',

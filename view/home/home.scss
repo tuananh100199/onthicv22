@@ -29,6 +29,18 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
         background-size: 100% auto !important;
     }
 }
+.parallax_background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.parallax-window {
+    min-height: 400px;
+    background: transparent;
+}
 
 .overlay {
     position: absolute;
