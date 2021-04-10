@@ -68,12 +68,6 @@ export function getDriveTestItem(_id, done) {
     }
 }
 
-export function changeDriveTest(driveTest) {
-    return { type: DriveTestGet, item: driveTest };
-}
-
-// Questions APIs -----------------------------------------------------------------------------------------------------
-
 export function createDriveTest(data, done) {
     return dispatch => {
         const url = '/api/drive-test';

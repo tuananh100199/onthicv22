@@ -49,8 +49,8 @@ export function getAllDriveQuestions(searchText, done) {
                 T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: DriveQuestionGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: DriveQuestionGetAll, items: data.list });
             }
         }, error => T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger'));
     }
@@ -177,7 +177,7 @@ export function deleteDriveQuestionImage(_id, done) {
 
 export const ajaxSelectDriveQuestion = T.createAjaxAdapter(
     '/api/drive-question/all',
-    params => ({ condition: {searchText: params.term } }),
+    params => ({ condition: params.term ? { searchText: params.term } : {} }),
     response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 

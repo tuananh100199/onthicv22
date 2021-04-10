@@ -60,7 +60,7 @@ class StaffModal extends AdminModal {
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' readOnly={this.props.readOnly} />
             </div>
             <div className='col-md-4'>
-                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}
+                <FormImageBox ref={e => this.imageBox = e} label='Hình ảnh nền (Tỉ lệ 3:4)' uploadType='StaffImage' image={this.state.image} readOnly={this.props.readOnly}
                     onSuccess={this.onUploadSuccess} onDelete={this.state._id ? this.deleteImage : null} />
                 <FormCheckbox ref={e => this.itemActive = e} label='Kích hoạt' readOnly={this.props.readOnly} />
             </div>
@@ -128,7 +128,7 @@ class StaffGroupEditPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.user.lastname + ' ' + item.user.firstname} onClick={this.edit} />
+                    <TableCell type='link' content={item.user.lastname + ' ' + item.user.firstname} onClick={e => this.edit(e, item)} />
                     <TableCell type='image' content={item.image || item.user.image} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateStaff(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={this.edit} onDelete={this.delete} />

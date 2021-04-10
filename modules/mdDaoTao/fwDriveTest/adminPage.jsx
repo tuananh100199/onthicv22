@@ -75,7 +75,7 @@ class DriveTestPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/drive-test/' + item._id} />
                     <TableCell type='text' content={item.courseType ? item.courseType.title : 'Không có loại khóa học'}/>
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateDriveTest(item._id, { active })} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={() => this.props.updateDriveTest( item._id, { active: !item.active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/drive-test/' + item._id} onSwap={this.swap} onDelete={this.delete} />
                 </tr>),
         });

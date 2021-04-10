@@ -6,7 +6,7 @@ import { ajaxSelectDriveQuestion, getAllDriveQuestions} from '../fwDriveQuestion
 import { ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
-class DriveTestModal extends AdminModal {
+class QuestionModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => { 
             this.questionSelect.value(null);
@@ -107,7 +107,6 @@ class DriveTestEditPage extends AdminPage {
                 <div className='row'>
                     <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên bộ đề thi' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
                     <FormSelect  className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
-
                 </div>
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả'  rows='6' readOnly={readOnly} />
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
@@ -115,7 +114,7 @@ class DriveTestEditPage extends AdminPage {
             componentQuestion = <>
                     {table}
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                    <DriveTestModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
+                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
                 </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 

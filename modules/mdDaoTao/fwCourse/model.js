@@ -56,13 +56,13 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('groups.teacher', '-password').exec(done);
+            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('groups.teacher', '-password').populate('groups.student', 'firstname lastname').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             changes.modifiedDate = new Date();
-            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('subjects', '-detailDescription').exec(done);
+            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname').populate('groups.student', 'firstname lastname').exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

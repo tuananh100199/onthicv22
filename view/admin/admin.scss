@@ -556,11 +556,9 @@
 .tile-table-fix-head {
     height: calc(100vh - 225px);
     overflow-y: scroll;
-
     table {
         overflow-y: auto;
         height: 100%;
-
         thead th {
             color: #ffffff;
             position: sticky;
