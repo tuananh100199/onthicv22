@@ -5,8 +5,6 @@ import Loading from 'view/component/Loading';
 // import SectionCourseList from './sectionCourseList';
 // import SectionCourse from './sectionCourse';
 import course from './redux';
-import student from '../fwStudent/redux';
-
 
 export default {
     init: () => {
@@ -20,7 +18,7 @@ export default {
         // };
     },
     redux: {
-        course, student
+        course
     },
     routes: [
         {
