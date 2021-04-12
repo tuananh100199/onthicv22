@@ -196,7 +196,7 @@ export class FormTextBox extends React.Component {
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
                 <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
-                {smallText ? <small>{smallText}</small> : null}
+                {smallText ? <small dangerouslySetInnerHTML={{ __html: smallText }}/> : null}
             </div>);
     };
 }
