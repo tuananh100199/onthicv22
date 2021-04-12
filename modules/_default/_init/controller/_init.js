@@ -104,32 +104,18 @@ module.exports = (app) => {
         );
     };
 
-    // System data ----------------------------------------------------------------------------------------------------------------------------------
-    // TODO: đưa state vào Redis
+    // System state ---------------------------------------------------------------------------------------------------------------------------------
     app.state = {
-        get: (key, done) => app.redis.get(key, done),
-        set: (...params) => {
-            const n = params.length;
-            if (n >= 2) {
-                let done = null;
-                if (n % 2) {
-                    done = params[n - 1];
-                    params.pop();
-                }
+        prefixKey: `${app.appName}:state:`,
 
-            }
-            // app.redis.set(key, value, done);
-            console.log(params);
-        },
-
-        data: {
+        initState: {
             todayViews: 0,
             allViews: 0,
             logo: '/img/favicon.png',
             map: '/img/map.png',
             footer: '/img/footer.jpg',
             contact: '/img/contact.jpg',
-            subscribe: '/img/subcribe.jpg',
+            subscribe: '/img/subscribe.jpg',
             facebook: 'https://www.facebook.com',
             fax: '',
             youtube: '',
@@ -141,45 +127,52 @@ module.exports = (app) => {
             mobile: '(08) 2214 6555',
             address: '',
         },
-    };
 
-    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
-    const initSystemData = {
-        todayViews: 0,
-        allViews: 0,
-        logo: '/img/favicon.png',
-        map: '/img/map.png',
-        footer: '/img/footer.jpg',
-        contact: '/img/contact.jpg',
-        subscribe: '/img/subcribe.jpg',
-        facebook: 'https://www.facebook.com',
-        fax: '',
-        youtube: '',
-        twitter: '',
-        instagram: '',
-        dangKyTuVanLink: '',
-        email: app.email.from,
-        emailPassword: app.email.password,
-        mobile: '(08) 2214 6555',
-        address: '',
-    };
+        init: () => app.redis.keys(`${app.appName}:state:*`, (_, keys) => {
+            keys && Object.keys(app.state.initState).forEach(key => {
+                const redisKey = `${app.appName}:state:${key}`;
+                if (keys.indexOf(redisKey) == -1) app.redis.set(redisKey, app.state.initState[key]);
+            });
+        }),
 
-    app.readyHooks.add('readyInit', {
-        ready: () => app.redis,
-        run: () => {
-            if (app.configWorker) {
-                app.redis.keys(`${app.appName}:state:*`, (error, keys) => {
-                    if (keys) {
-                        Object.keys(initSystemData).forEach(key => {
-                            const redisKey = `${app.appName}:state:${key}`,
-                                index = keys.indexOf(redisKey);
-                            index == -1 && app.redis.set(redisKey, initSystemData[key]);
-                        });
+        get: (...params) => {
+            const n = params.length,
+                prefixKeyLength = app.state.prefixKey.length;
+            if (n >= 1 && typeof params[n - 1] == 'function') {
+                const done = params.pop(); // done(error, values)
+                const keys = n == 1 ? app.state.keys : params.map(key => `${app.appName}:state:${key}`); // get chỉ có done => đọc hết app.state
+                app.redis.mget(keys, (error, values) => {
+                    if (error || values == null) {
+                        done(error || 'Error when get Redis value!');
+                    } else if (n == 2) {
+                        done(null, values[0]);
                     } else {
-                        console.error('readyInit: Errors occur when read Redis keys!', error);
+                        const state = {};
+                        keys.forEach((key, index) => state[key.substring(prefixKeyLength)] = values[index]);
+                        done(null, state);
                     }
                 });
+            } else {
+                console.log('Error when get app.state');
             }
         },
+
+        set: (...params) => {
+            const n = params.length;
+            if (n >= 1 && typeof params[n - 1] == 'function') {
+                const done = (n % 2) ? params.pop() : null;
+                for (let i = 0; i < n - 1; i += 2) params[i] = app.state.prefixKey + params[i];
+                n == 1 ? done() : app.redis.mset(params, error => done && done(error));
+            } else {
+                console.log('Error when set app.state');
+            }
+        },
+    };
+    app.state.keys = Object.keys(app.state.initState).map(key => app.state.prefixKey + key);
+
+    // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
+    app.readyHooks.add('readyInit', {
+        ready: () => app.redis,
+        run: () => app.configWorker && app.state.init(),
     });
 };

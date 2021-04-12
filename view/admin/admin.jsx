@@ -25,11 +25,7 @@ const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.pat
 modules.forEach(module => {
     module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
-    module.routes.forEach((route) => {
-        if (route.path.startsWith('/user')) {
-            addRoute(route);
-        }
-    });
+    module.routes.forEach(route => route.path.startsWith('/user') && addRoute(route));
 });
 
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
