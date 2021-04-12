@@ -107,14 +107,10 @@ export function deleteSubject(_id) {
     }
 }
 
-export const ajaxSelectSubject = {
-    ajax: true,
-    url: getPageUrl(1, 100),
-    data: params => ({ condition: params.term }),
-    processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
-    })
-}
+export const ajaxSelectSubject = T.createAjaxAdapter(
+    `/api/subject/page/1/20`,
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+);
 
 // Subject Lesson -------------------------------------------------------------------------------------------------------
 export function addSubjectLesson(_subjectId, _subjectLessonId, done) {

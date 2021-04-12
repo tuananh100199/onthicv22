@@ -5,11 +5,7 @@ module.exports = app => {
             4006: { title: 'Bộ đề thi', link: '/user/drive-test' },
         },
     };
-    app.permission.add(
-        { name: 'driveTest:read', menu },
-        { name: 'driveTest:write' },
-        { name: 'driveTest:delete' }
-    );
+    app.permission.add({ name: 'driveTest:read', menu }, { name: 'driveTest:write' }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
@@ -51,7 +47,7 @@ module.exports = app => {
     });
 
     app.put('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
-        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes, req.body.changes.questions && {questions: req.body.changes && req.body.changes.questions && req.body.changes.questions == 'empty' ? [] : req.body.changes.questions}), (error, item) => res.send({ error, item }));
+        app.model.driveTest.update(req.body._id, Object.assign(req.body.changes, req.body.changes.questions && { questions: req.body.changes && req.body.changes.questions && req.body.changes.questions == 'empty' ? [] : req.body.changes.questions }), (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/drive-test/swap', app.permission.check('driveTest:write'), (req, res) => {
@@ -117,7 +113,7 @@ module.exports = app => {
                         break;
                     }
                 }
-                res.send({ item: item });
+                res.send({ item });
             }
         });
     });
