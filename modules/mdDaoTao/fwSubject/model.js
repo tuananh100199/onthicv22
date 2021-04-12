@@ -61,7 +61,7 @@ module.exports = app => {
             model.findOneAndUpdate(_id, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
         },
         deleteLesson: (_id, _subjectLessonId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }).populate('lessons').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }, { new: true }).populate('lessons').exec(done);
         },
     };
 };

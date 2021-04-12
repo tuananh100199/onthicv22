@@ -7,7 +7,7 @@ const GET = 'applicationForm:getApplicationForm';
 const GET_ALL_FINISH = 'applicationForm:getAllFinishApplicationForm';
 const GET_ALL_REJECT = 'applicationForm:getAllRejectApplicationForm';
 
-export default function applicationFormReducer(state = null, data) {
+export default function applicationFormReducer(state = {}, data) {
     switch (data.type) {
         case GET_PAGE:
             return Object.assign({}, state, { page: data.page });

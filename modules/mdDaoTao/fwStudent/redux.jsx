@@ -6,7 +6,7 @@ const StudentUpdate = 'StudentUpdate';
 const PreStudentGetPage = 'PreStudentGetPage';
 const PreStudentGetAll = 'PreStudentGetAll';
 
-export default function studentReducer(state = null, data) {
+export default function studentReducer(state = {}, data) {
     switch (data.type) {
         case PreStudentGetAll:
             return Object.assign({}, state, { list: data.list });
