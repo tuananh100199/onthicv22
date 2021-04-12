@@ -13,17 +13,21 @@ export default class MenuPage extends React.Component {
         });
     }
 
-    renderComponents(index, ins, outs, isFirst) {
+    renderComponents(index, ins, outs, isFirst = false) {
         if (index < ins.length) {
             let item = ins[index],
                 itemView = null,
                 itemStyle = {};
-            if (item.style) { //TODO: bugs nè Sang
-                let [key, value] = item.style.split(':');
-                key = key.trim();
-                value = value.trim();
-                itemStyle[key] = value;
+            if (item.style) {
+                const styleList = item.style.split(';');
+                styleList.forEach(item => {
+                    let [key, value] = item.split(':');
+                    key = key.trim();
+                    value = value.trim();
+                    itemStyle[key] = value;
+                })
             }
+            
             if (T.component[item.viewType] && T.component[item.viewType].render) {
                 itemView = T.component[item.viewType].render(item.viewId);
             }
