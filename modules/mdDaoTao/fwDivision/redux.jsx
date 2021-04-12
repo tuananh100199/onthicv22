@@ -4,7 +4,7 @@ import T from 'view/js/common';
 const DivisionGet = 'DivisionGet';
 const DivisionGetAll = 'DivisionGetAll';
 
-export default function addressReducer(state = null, data) {
+export default function addressReducer(state = {}, data) {
     switch (data.type) {
         case DivisionGetAll:
             return Object.assign({}, state, { list: data.list });

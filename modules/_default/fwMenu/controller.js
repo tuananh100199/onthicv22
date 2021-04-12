@@ -167,6 +167,59 @@ module.exports = app => {
         app.model.menu.delete(req.body._id, error => res.send({ error }));
     });
 
+
+    app.get('/api/menu/path', (req, res) => {
+        new Promise((resolve, reject) => { // Get menus from Redis
+            app.redis.get(app.redis.menusKey, (error, menus) => {
+                if (error) {
+                    reject('System has errors!');
+                } else {
+                    let pathname = req.query.pathname;
+                    if (pathname) {
+                        if (pathname.length > 1 && pathname.endsWith('/')) pathname = pathname.substring(0, pathname.length - 1);
+                        if (!pathname) pathname = '/';
+                        const menu = JSON.parse(menus)[pathname];
+                        menu ? resolve(menu) : reject('Invalid link!');
+                    } else {
+                        reject('Invalid link!')
+                    }
+                }
+            });
+        }).then(menu => {
+            if (menu.component) {
+                res.send(menu.component);
+            } else if (menu.componentId) {
+                const getComponent = (index, componentIds, components, done) => {
+                    if (index < componentIds.length) {
+                        app.model.component.get(componentIds[index], (error, component) => {
+                            if (error || component == null) {
+                                getComponent(index + 1, componentIds, components, done);
+                            } else {
+                                component = app.clone(component);
+                                component.components = [];
+                                components.push(component);
+
+                                // Duyệt hết các components con rồi mới duyệt đến component kế tiếp
+                                const getNextComponent = () => getComponent(index + 1, componentIds, components, done);
+                                component.componentIds ?
+                                    getComponent(0, component.componentIds, component.components, getNextComponent) :
+                                    getNextComponent()
+                            }
+                        });
+                    } else {
+                        done();
+                    }
+                };
+
+                const menuComponents = [];
+                getComponent(0, [menu.componentId], menuComponents, () => res.send(menuComponents[0]));
+            } else {
+                res.send({ error: 'Invalid menu!' });
+            }
+        }).catch(error => res.send({ error }));
+    });
+
+
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('MenuReady', {
         ready: () => app.redis,

@@ -60,6 +60,13 @@ module.exports = app => {
             }
         }),
 
+        addSubject: (_id, subject, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { subjects: subject } }, { new: true }).populate('subjects', '-detailDescription').exec(done);
+        },
+        deleteSubject: (_id, _subjectId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { subjects: _subjectId } }, { new: true }).populate('subjects', '-detailDescription').exec(done);
+        },
+
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

@@ -19,15 +19,11 @@ import LoginModal from 'view/component/LoginModal';
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
 import { modules } from './modules.jsx';
 const reducers = {}, routeMapper = {},
-    addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
+    addRoute = (route) => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
     module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
-    module.routes.forEach((route) => {
-        if (!route.path.startsWith('/user')) {
-            addRoute(route);
-        }
-    });
+    module.routes.forEach(route => !route.path.startsWith('/user') && addRoute(route));
 });
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());
@@ -60,8 +56,8 @@ class App extends React.Component {
                 }
 
                 const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
-                const pathname = window.location.pathname, paths = routes.map(route => route.props.path);
-                const isMatch = paths.some(path => T.routeMatcher(path).parse(pathname));
+                const pathname = window.location.pathname;
+                const isMatch = routes.some(route => T.routeMatcher(route.props.path).parse(pathname));
                 this.setState({ routes, isMatch });
             } else {
                 setTimeout(done, 200)
@@ -77,7 +73,7 @@ class App extends React.Component {
         } else {
             this.loginModal.showLogin();
         }
-    };
+    }
 
     render() {
         return (

@@ -1,37 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseType, getCourseType } from './redux';
+import { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject } from './redux';
 import { Link } from 'react-router-dom';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {
-    componentDidMount() {
-        $(document).ready(() => this.onShown(() => { }));
-    }
-
     onShow = () => this.subjectSelect.value('');
 
     onSubmit = () => {
         const _subjectId = this.subjectSelect.value();
-        if (!_subjectId) T.notify('Tên cơ sở bị trống!', 'danger');
-        else {
-            const subjects = this.props.item.subjects.map(item => item._id);
-            subjects.push(_subjectId);
-            this.props.update(this.props.item._id, { subjects }, () => {
-                T.notify('Thêm môn học thành công', 'success');
-                this.hide();
-            });
+        if (!_subjectId) {
+            T.notify('Tên môn học không được trống!', 'danger');
+        } else {
+            this.props.add(this.props.item._id, _subjectId, this.hide);
         }
     }
 
     render = () => this.renderModal({
         title: 'Môn học',
-        body:
-            <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={{
-                ...ajaxSelectSubject, processResults: response =>
-                    ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjects.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-            }} readOnly={this.props.readOnly} />
+        body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={ajaxSelectSubject} readOnly={this.props.readOnly} />
     });
 }
 
@@ -59,13 +47,8 @@ class CourseTypeEditPage extends AdminPage {
         });
     }
 
-    remove = (e, index) => e.preventDefault() || T.confirm('Xoá môn học ', 'Bạn có chắc muốn xoá môn học khỏi loại khóa học này?', true, isConfirm => {
-        if (isConfirm) {
-            let subjects = this.props.courseType.item.subjects.map(item => item._id);
-            subjects.splice(index, 1);
-            this.props.updateCourseType(this.state._id, { subjects: subjects.length ? subjects : 'empty' }, () => T.alert('Xoá môn học khỏi loại khóa học thành công!', 'error', false, 800));
-        }
-    })
+    remove = (e, subject) => e.preventDefault() || T.confirm('Xoá môn học ', `Bạn có chắc muốn xoá môn học '${subject.title}' khỏi loại khóa học này?`, true, isConfirm =>
+        isConfirm && this.props.deleteCourseTypeSubject(this.state._id, subject._id));
 
     save = () => {
         const changes = {
@@ -75,7 +58,12 @@ class CourseTypeEditPage extends AdminPage {
             price: this.itemPrice.value(),
             isPriceDisplayed: this.itemIsPriceDisplayed.value()
         };
-        this.props.updateCourseType(this.state._id, changes, () => T.notify('Cập nhật loại khóa học thành công!', 'success'))
+        if (changes.title == '') {
+            T.notify('Tên loại khóa học không được trống!', 'danger');
+            this.itemTitle.focus();
+        } else {
+            this.props.updateCourseType(this.state._id, changes);
+        }
     }
 
     render() {
@@ -95,7 +83,7 @@ class CourseTypeEditPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type={permissionSubject.read ? 'link' : 'text'} content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
-                        {readOnly ? null : <TableCell type='buttons' content={index} permission={permissionCourseType} onDelete={this.remove} />}
+                        {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
                     </tr>),
             }),
             componentInfo = <>
@@ -116,7 +104,7 @@ class CourseTypeEditPage extends AdminPage {
             componentSubject = <>
                 {table}
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} update={this.props.updateCourseType} item={item} />
+                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
 
@@ -131,5 +119,5 @@ class CourseTypeEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { updateCourseType, getCourseType };
+const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypeEditPage);

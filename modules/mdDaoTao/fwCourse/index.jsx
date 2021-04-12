@@ -18,7 +18,7 @@ export default {
         // };
     },
     redux: {
-        course,
+        course
     },
     routes: [
         {

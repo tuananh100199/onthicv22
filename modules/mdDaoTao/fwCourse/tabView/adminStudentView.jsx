@@ -2,6 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { updateForm } from 'modules/mdDaoTao/fwDonDeNghiHoc/redux';
 import { FormTextBox } from 'view/component/AdminPage';
 class AdminStudentView extends React.Component {
     state = {};
@@ -32,7 +33,9 @@ class AdminStudentView extends React.Component {
         })
        this.props.updateStudent(_studentId, { course: this.props.course.item._id }, (error) => {
            if(!error) {
-            this.props.updateCourse( this.props.course.item._id, { groups });
+            this.props.updateCourse( this.props.course.item._id, { groups }, () => {
+                this.props.updateForm(this.props.donDeNghiHoc.item._id, { status: 'approved' });
+            });
             this.props.getPreStudentAll({ courseType: this.props.courseType._id });
            }
        });
@@ -91,5 +94,5 @@ class AdminStudentView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.student, course: state.course });
-const mapActionsToProps = { getPreStudentAll, updateStudent };
+const mapActionsToProps = { getPreStudentAll, updateStudent, updateForm };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);

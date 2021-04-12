@@ -5,7 +5,7 @@ const CourseTypeGetAll = 'CourseTypeGetAll';
 const CourseTypeGetPage = 'CourseTypeGetPage';
 const CourseTypeGetItem = 'CourseTypeGetItem';
 
-export default function courseTypeReducer(state = null, data) {
+export default function courseTypeReducer(state = {}, data) {
     switch (data.type) {
         case CourseTypeGetAll:
             return Object.assign({}, state, { list: data.list });
@@ -88,8 +88,8 @@ export function updateCourseType(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                dispatch({ type: CourseTypeGetItem, item: data.item });
                 dispatch(getCourseTypePage());
+                T.notify('Cập nhật khóa học thành công!', 'success');
                 done && done();
             }
         }, error => T.notify('Cập nhật thông tin loại khóa học bị lỗi!', 'danger'));
@@ -104,10 +104,41 @@ export function deleteCourseType(_id) {
                 T.notify('Xóa khóa học bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.alert('Khóa học được xóa thành công!', 'error', false, 800);
+                T.notify('Xoá khóa học thành công!', 'success');
                 dispatch(getCourseTypePage());
             }
         }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
+    }
+}
+
+export function addCourseTypeSubject(_courseTypeId, _subjectId, done) {
+    return dispatch => {
+        const url = `/api/course-type/subject`;
+        T.post(url, { _courseTypeId, _subjectId }, data => {
+            if (data.error) {
+                T.notify('Thêm môn học bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.notify('Môn học được thêm thành công!', 'success');
+                dispatch({ type: CourseTypeGetItem, item: data.item });
+                done && done();
+            }
+        }, error => T.notify('Thêm môn học bị lỗi!', 'danger'));
+    }
+}
+export function deleteCourseTypeSubject(_courseTypeId, _subjectId, done) {
+    return dispatch => {
+        const url = `/api/course-type/subject`;
+        T.delete(url, { _courseTypeId, _subjectId }, data => {
+            if (data.error) {
+                T.notify('Xóa môn học bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.notify('Môn học được xoá thành công!', 'success');
+                dispatch({ type: CourseTypeGetItem, item: data.item });
+                done && done();
+            }
+        }, error => T.notify('Xóa môn học bị lỗi!', 'danger'));
     }
 }
 
