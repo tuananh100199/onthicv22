@@ -60,16 +60,6 @@ module.exports = app => {
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------
-    // app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
-    //     const { _driveTestId, _questionId } = req.body;
-    //     app.model.driveQuestion.get(_questionId, (error, question) => {
-    //         if (error || question == null) {
-    //             res.send({ error: error || 'Invalid Id!' });
-    //         } else {
-    //             app.model.driveTest.addQuestion(_driveTestId, question, (error, item) => res.send({ error, item }));
-    //         }
-    //     });
-    // });
 
     app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
         const { _driveTestId, _questionId } = req.body;
@@ -82,7 +72,7 @@ module.exports = app => {
                         res.send({ error: error || 'Get drive test question failed!' });
                     }
                     else if (item) {
-                        res.send({ check: `Bộ đề thi đã có bài học này!` });
+                        res.send({ check: `Bộ đề thi đã có câu hỏi này!` });
                     }
                     else {
                         app.model.driveTest.addQuestion(_driveTestId, question, (error, item) => {
