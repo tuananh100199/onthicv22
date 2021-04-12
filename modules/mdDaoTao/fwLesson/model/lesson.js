@@ -59,8 +59,8 @@ module.exports = app => {
             });
         },
 
-        addVideo: (_id, videos, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { videos } }, { new: true }).populate('videos').exec(done);
+        addVideo: (_id, video, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { videos: video } }, { new: true }).populate('videos').exec(done);
         },
         deleteVideo: (_id, _lessonVideoId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { videos: _lessonVideoId } }, { new: true }).populate('videos').exec(done);
