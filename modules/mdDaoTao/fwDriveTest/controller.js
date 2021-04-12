@@ -67,14 +67,12 @@ module.exports = app => {
             if (error || question == null) {
                 res.send({ error: error || 'Invalid Id!' });
             } else {
-                app.model.driveTest.get({ _id: _driveTestId, questions: { _id: _questionId } }, (error, item) => {
+                app.model.driveTest.get({ _id: _driveTestId, questions: _questionId }, (error, item) => {
                     if (error) {
                         res.send({ error: error || 'Get drive test question failed!' });
-                    }
-                    else if (item) {
+                    } else if (item) {
                         res.send({ check: `Bộ đề thi đã có câu hỏi này!` });
-                    }
-                    else {
+                    } else {
                         app.model.driveTest.addQuestion(_driveTestId, question, (error, item) => {
                             res.send({ error, item })
                         });
