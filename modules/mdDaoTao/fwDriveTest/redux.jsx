@@ -152,7 +152,7 @@ export function createDriveTestQuestion(_driveTestId, _questionId, done) {
     }
 }
 
-export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
+export function swapDriveTestQuestion(_driveTestId, _questionId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/drive-test/question/swap`;
         T.put(url, { _driveTestId, _questionId, isMoveUp }, data => {

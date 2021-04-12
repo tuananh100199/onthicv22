@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapQuestions } from './redux';
-import { ajaxSelectDriveQuestion, getAllDriveQuestions} from 'modules/mdDaoTao/fwDriveQuestion/redux';
+import { createDriveTestQuestion, swapDriveTestQuestion, deleteDriveTestQuestion, getDriveTestItem, updateDriveTest  } from './redux';
+import { ajaxSelectDriveQuestion } from 'modules/mdDaoTao/fwDriveQuestion/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao//fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
@@ -56,9 +56,9 @@ class DriveTestEditPage extends AdminPage {
         });
     }
 
-    swap = (e, question, isMoveUp) => e.preventDefault() || this.props.swapQuestions(this.state._id, question._id, isMoveUp);
+    swap = (e, question, isMoveUp) => e.preventDefault() || this.props.swapDriveTestQuestion(this.state._id, question._id, isMoveUp);
 
-    delete = (e, question) => e.preventDefault() || T.confirm('Xóa câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong> ?`, true, isConfirm =>
+    delete = (e, question) => e.preventDefault() || T.confirm('Xóa câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>`, true, isConfirm =>
     isConfirm && this.props.deleteDriveTestQuestion(this.state._id, question._id));
 
     save = () => {
@@ -105,7 +105,7 @@ class DriveTestEditPage extends AdminPage {
             componentQuestion = <>
                     {table}
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
+                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} item={item} />
                 </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
@@ -121,5 +121,5 @@ class DriveTestEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapQuestions, getAllDriveQuestions };
+const mapActionsToProps = { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapDriveTestQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(DriveTestEditPage);
