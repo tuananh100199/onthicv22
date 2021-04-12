@@ -15,9 +15,10 @@ class SectionNews extends React.Component {
         let news = null;
         if (newsFeed && newsFeed.length) {
             news = newsFeed.map((item, index) => {
-                const link = item.link ? '/tintuc/' + item.link : '/news/' + item._id;
+                const link = item.link ? '/tintuc/' + item.link : '/news/' + item._id,
+                    border = index < newsFeed.length - 1 ? 'border-bottom' : '';
                 return (
-                    <div key={index} className='row ml-0 ftco-animate ' style={{ paddingBottom: '30px', paddingTop: '15px' }} >
+                    <div key={index} className={'row ml-0 ftco-animate ' + border} style={{ paddingBottom: '30px', paddingTop: '15px' }} >
                         <div className='col-md-3'>
                             <div className={'blog_post_image'} ><img src={item && item.image ? item.image : ''} style={{ width: '100%' }} alt='' /></div>
                         </div>
