@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { createDriveTestQuestion, swapDriveTestQuestion, deleteDriveTestQuestion, getDriveTestItem, updateDriveTest  } from './redux';
+import { createDriveTestQuestion, swapDriveTestQuestion, deleteDriveTestQuestion, getDriveTestItem, updateDriveTest } from './redux';
 import { ajaxSelectDriveQuestion } from 'modules/mdDaoTao/fwDriveQuestion/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao//fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => { 
+        $(document).ready(() => this.onShown(() => {
             this.questionSelect.value(null);
         }));
     }
@@ -26,11 +26,12 @@ class QuestionModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Câu hỏi thi',
         body:
-            <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' 
+            <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
                 data={{
-                ...ajaxSelectDriveQuestion, processResults: response => 
-                    ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-            }} readOnly={this.props.readOnly} />
+                    ...ajaxSelectDriveQuestion,
+                    processResults: response =>
+                        ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
+                }} readOnly={this.props.readOnly} />
     });
 }
 
@@ -42,7 +43,7 @@ class DriveTestEditPage extends AdminPage {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getDriveTestItem(params._id, item => {
                 if (item) {
-                    let {title, courseType, description} = item ? item : { title: '',courseType: '', description: '' };
+                    let { title, courseType, description } = item ? item : { title: '', courseType: '', description: '' };
                     this.itemTitle.value(title);
                     this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
                     this.itemDescription.value(description);
@@ -59,7 +60,7 @@ class DriveTestEditPage extends AdminPage {
     swap = (e, question, isMoveUp) => e.preventDefault() || this.props.swapDriveTestQuestion(this.state._id, question._id, isMoveUp);
 
     delete = (e, question) => e.preventDefault() || T.confirm('Xóa câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>`, true, isConfirm =>
-    isConfirm && this.props.deleteDriveTestQuestion(this.state._id, question._id));
+        isConfirm && this.props.deleteDriveTestQuestion(this.state._id, question._id));
 
     save = () => {
         const changes = {
@@ -72,7 +73,7 @@ class DriveTestEditPage extends AdminPage {
             this.itemTitle.focus();
         } else {
             this.props.updateDriveTest(this.state._id, changes)
-        } 
+        }
     }
 
     render() {
@@ -85,28 +86,28 @@ class DriveTestEditPage extends AdminPage {
                     <tr>
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '100%' }}>Tên câu hỏi thi</th>
-                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center'  }} nowrap='true'>Thao tác</th>}
+                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                     </tr>),
                 renderRow: (item, index) => (
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
-                        <TableCell type='buttons' content={item} permission={permission}  onSwap={this.swap} onDelete={this.delete} />
+                        <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onDelete={this.delete} />
                     </tr>),
             }),
             componentInfo = <>
                 <div className='row'>
                     <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên bộ đề thi' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                    <FormSelect  className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+                    <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
                 </div>
-                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả'  rows='6' readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' rows='6' readOnly={readOnly} />
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
             </>,
             componentQuestion = <>
-                    {table}
-                    {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} item={item} />
-                </>,
+                {table}
+                {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
+                <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} item={item} />
+            </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
         return this.renderPage({

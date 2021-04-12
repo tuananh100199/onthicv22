@@ -1,10 +1,10 @@
 module.exports = app => {
     const schema = app.db.Schema({
         title: String,
-        active: { type: Boolean, default: true },                               
+        active: { type: Boolean, default: true },
         priority: { type: Number, default: 0 },
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },
-        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },   
+        questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'DriveQuestion' }], default: [] },
         description: String,
     });
     const model = app.db.model('DriveTest', schema);
@@ -38,7 +38,8 @@ module.exports = app => {
 
 
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).populate('courseType', 'title').populate('questions', 'title').exec(done) : model.findOne(condition).populate('courseType', 'title').populate('questions', 'title').exec(done)
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).populate('courseType', 'title').populate('questions', 'title').exec(done)
         },
 
         // changes = { $set, $unset, $push, $pull }
@@ -78,7 +79,6 @@ module.exports = app => {
         addQuestion: (_id, question, done) => {
             model.findOneAndUpdate({ _id }, { $push: { questions: question } }, { new: true }).populate('questions', 'title').exec(done);
         },
-
         deleteQuestion: (_id, _questionId, done) => {
             model.findOneAndUpdate({ _id }, { $pull: { questions: _questionId } }, { new: true }).populate('questions', 'title').exec(done);
         },
