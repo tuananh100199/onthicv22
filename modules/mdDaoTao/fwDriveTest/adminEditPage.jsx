@@ -60,7 +60,7 @@ class DriveTestEditPage extends AdminPage {
         });
     }
 
-    remove = (e, index) => e.preventDefault() || T.confirm('Xoá câu hỏi thi', 'Bạn có chắc muốn xoá câu hỏi thi khỏi bộ đề thi này?', true, isConfirm => {
+    remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá câu hỏi thi', 'Bạn có chắc muốn xoá câu hỏi thi khỏi bộ đề thi này?', true, isConfirm => {
         if (isConfirm) {
             let questions = this.props.driveTest.item.questions.map(item => item._id);
             questions.splice(index, 1);
@@ -68,7 +68,7 @@ class DriveTestEditPage extends AdminPage {
         }
     })
 
-    swap = (e, question, isMoveUp) => e.preventDefault() || this.props.swapQuestions(this.state._id, question._id, isMoveUp);
+    swap = (e, [index, item], isMoveUp) => e.preventDefault() || this.props.swapQuestions(this.state._id, item._id, isMoveUp);
 
     save = () => {
         const changes = {
@@ -100,7 +100,7 @@ class DriveTestEditPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
-                        <TableCell type='buttons' content={item} permission={permission}  onSwap={this.swap} onDelete={this.remove} />
+                        <TableCell type='buttons' content={[index, item]} permission={permission}  onSwap={this.swap} onDelete={this.remove} />
                     </tr>),
             }),
             componentInfo = <>

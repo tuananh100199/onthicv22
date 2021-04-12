@@ -71,7 +71,6 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid Id!');
             } else {
-                app.deleteImage(item.image);
                 item.remove(done);
             }
         }),
