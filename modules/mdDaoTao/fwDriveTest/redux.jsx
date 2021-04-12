@@ -145,7 +145,7 @@ export function createDriveTestQuestion(_driveTestId, _questionId, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 T.notify('Thêm câu hỏi thi vào bộ đề thi thành công!', 'success');
-                dispatch({ type: DriveTestGet, item: { questions: data.questions } });
+                dispatch({ type: DriveTestGet, item: data.item });
                 done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
@@ -177,7 +177,7 @@ export function deleteDriveTestQuestion(_driveTestId, _questionId, done) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Câu hỏi được xóa thành công!', 'error', false, 800);
-                dispatch({ type: DriveTestGet, item: { questions: data.questions } });
+                dispatch({ type: DriveTestGet, item: data.item });
                 done && done();
             }
         }, error => console.error('DELETE: ' + url + '.', error));

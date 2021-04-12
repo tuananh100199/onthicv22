@@ -66,8 +66,12 @@ module.exports = app => {
     // Question APIs -----------------------------------------------------------------------------------------------------
     app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
         const { _driveTestId, _questionId } = req.body;
-        app.model.driveTest.addQuestion(_driveTestId, _questionId, (error, item) => {
-            res.send({ error, questions: item && item.questions ? item.questions : [] });
+        app.model.driveQuestion.get(_questionId, (error, question) => {
+            if (error || question == null) {
+                res.send({ error: error || 'Invalid Id!' });
+            } else {
+                app.model.driveTest.addQuestion(_driveTestId, question, (error, item) => res.send({ error, item }));
+            }
         });
     });
 
@@ -96,8 +100,6 @@ module.exports = app => {
 
     app.delete('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
         const { _driveTestId, _questionId } = req.body;
-        app.model.driveTest.deleteQuestion(_driveTestId, _questionId, (error, item) => {
-            res.send({ error, questions: item && item.questions ? item.questions : [] });
-        });
+        app.model.driveTest.deleteQuestion(_driveTestId, _questionId, (error, item) => res.send({ error, item }));
     });
 };
