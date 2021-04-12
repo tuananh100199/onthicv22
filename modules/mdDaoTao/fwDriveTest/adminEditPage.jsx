@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapQuestions } from './redux';
 import { Link } from 'react-router-dom';
-import { ajaxSelectDriveQuestion, getAllDriveQuestions} from '../fwDriveQuestion/redux';
-import { ajaxSelectCourseType } from '../fwCourseType/redux';
+import { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapQuestions } from './redux';
+import { ajaxSelectDriveQuestion, getAllDriveQuestions} from 'modules/mdDaoTao/fwDriveQuestion/redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao//fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
