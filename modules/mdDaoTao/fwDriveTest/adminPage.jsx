@@ -51,7 +51,7 @@ class DriveTestPage extends AdminPage {
 
     create = e => e.preventDefault() || this.modal.show();
 
-    swap = (e, _questionId, isMoveUp) => e.preventDefault() || this.props.swapDriveTest(_questionId, isMoveUp);
+    swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapDriveTest(item._id, isMoveUp);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Bộ đề thi', 'Bạn có chắc bạn muốn xóa bộ đề thi này?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteDriveTest(item._id));

@@ -59,6 +59,22 @@ module.exports = app => {
         app.model.driveTest.swapPriority(req.body._id, isMoveUp, (error) => res.send({ error }));
     });
 
+    app.delete('/api/drive-test', app.permission.check('driveTest:delete'), (req, res) => {
+        app.model.driveTest.delete(req.body._id, error => res.send({ error }));
+    });
+
+    // Question APIs -----------------------------------------------------------------------------------------------------
+    app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
+        const { _driveTestId, _questionId } = req.body;
+        app.model.driveQuestion.get(_questionId, (error, question) => {
+            if (error || question == null) {
+                res.send({ error: error || 'Invalid Id!' });
+            } else {
+                app.model.driveTest.addQuestion(_driveTestId, question, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+
     app.put('/api/drive-test/question/swap', app.permission.check('driveTest:write'), (req, res) => {
         const { _driveTestId, _questionId, isMoveUp } = req.body;
         app.model.driveTest.get(_driveTestId, (error, item) => {
@@ -82,7 +98,8 @@ module.exports = app => {
         });
     });
 
-    app.delete('/api/drive-test', app.permission.check('driveTest:delete'), (req, res) => {
-        app.model.driveTest.delete(req.body._id, error => res.send({ error }));
+    app.delete('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
+        const { _driveTestId, _questionId } = req.body;
+        app.model.driveTest.deleteQuestion(_driveTestId, _questionId, (error, item) => res.send({ error, item }));
     });
 };

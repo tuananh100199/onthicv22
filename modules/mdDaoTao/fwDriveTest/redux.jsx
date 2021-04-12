@@ -136,7 +136,23 @@ export function deleteDriveTest(_id, done) {
 
 //Questions-------------------------------
 
-export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
+export function createDriveTestQuestion(_driveTestId, _questionId, done) {
+    return dispatch => {
+        const url = `/api/drive-test/question`;
+        T.post(url, { _driveTestId, _questionId }, data => {
+            if (data.error) {
+                T.notify('Tạo câu hỏi thi bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                T.notify('Thêm câu hỏi thi vào bộ đề thi thành công!', 'success');
+                dispatch({ type: DriveTestGet, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    }
+}
+
+export function swapDriveTestQuestion(_driveTestId, _questionId, isMoveUp, done) {
     return dispatch => {
         const url = `/api/drive-test/question/swap`;
         T.put(url, { _driveTestId, _questionId, isMoveUp }, data => {
@@ -149,5 +165,21 @@ export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
                 done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
+    }
+}
+
+export function deleteDriveTestQuestion(_driveTestId, _questionId, done) {
+    return dispatch => {
+        const url = `/api/drive-test/question`;
+        T.delete(url, { _driveTestId, _questionId }, data => {
+            if (data.error) {
+                T.notify('Xóa câu hỏi thi bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.alert('Câu hỏi được xóa thành công!', 'error', false, 800);
+                dispatch({ type: DriveTestGet, item: data.item });
+                done && done();
+            }
+        }, error => console.error('DELETE: ' + url + '.', error));
     }
 }
