@@ -5,7 +5,7 @@ const DriveTestGet = 'DriveTestGet';
 const DriveTestGetAll = 'DriveTestGetAll';
 const DriveTestGetPage = 'DriveTestGetPage';
 
-export default function driveTestReducer(state = null, data) {
+export default function driveTestReducer(state = {}, data) {
     switch (data.type) {
         case DriveTestGetAll:
             return Object.assign({}, state, { list: data.items });
@@ -15,7 +15,7 @@ export default function driveTestReducer(state = null, data) {
 
         case DriveTestGet:
             return Object.assign({}, state, { item: data.item });
-            
+
         default:
             return state;
     }
@@ -162,7 +162,7 @@ export function swapQuestions(_driveTestId, _questionId, isMoveUp, done) {
             } else {
                 T.notify('Thay đổi thứ tự câu hỏi thi thành công!', 'success');
                 dispatch({ type: DriveTestGet, item: data.item });
-                done && done(); 
+                done && done();
             }
         }, error => console.error('PUT: ' + url + '.', error));
     }

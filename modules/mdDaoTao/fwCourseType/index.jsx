@@ -9,7 +9,7 @@ export default {
     init: () => {
         T.component['all course types'] = {
             render: (viewId) => <SectionListView viewId={viewId} />,
-            text: 'Tất cả loại khoá học',
+            text: 'Tất cả loại khóa học',
             backgroundColor: '#fb3553',
         };
     },

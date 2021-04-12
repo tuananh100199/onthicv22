@@ -137,6 +137,7 @@ module.exports = (app) => {
                     res.send({ error: err });
                 } else {
                     const student = students[index];
+                    student.division = req.body.division;
                     const dataPassword = app.randomPassword(8),
                         newUser = {
                             ...student,
@@ -160,7 +161,6 @@ module.exports = (app) => {
                                 });
                             }
                             student.user = user._id;   // assign id of user to user field of prestudent
-                            student.division = req.body.division;
                             student.courseType = req.body.courseType
                             app.model.student.create(student, () => {
                                 handleCreateStudent(index + 1);

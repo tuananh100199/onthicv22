@@ -57,11 +57,11 @@ module.exports = app => {
             });
         },
 
-        addLesson: (_id, lessons, done) => {
-            model.findOneAndUpdate(_id, { $push: { lessons } }, { new: true }).populate('lessons').exec(done);
+        addLesson: (_id, lesson, done) => {
+            model.findOneAndUpdate(_id, { $push: { lessons: lesson } }, { new: true }).populate('lessons').exec(done);
         },
         deleteLesson: (_id, _subjectLessonId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }).populate('lessons').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { lessons: _subjectLessonId } }, { new: true }).populate('lessons').exec(done);
         },
     };
 };

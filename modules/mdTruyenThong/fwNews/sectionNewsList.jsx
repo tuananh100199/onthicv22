@@ -51,11 +51,6 @@ class SectionNewsList extends React.Component {
                             <div className='date_year'>{new Date(item.createdDate).getFullYear()}</div>
                         </div>
                         <div className='blog_post_title'><Link to={link}>{item && item.title ? item.title : ''}</Link></div>
-                        <div className='blog_post_info'>
-                            <ul className='d-flex flex-row align-items-center justify-content-center'>
-                                {/*<li><a href='#'>Admin</a></li>*/}
-                            </ul>
-                        </div>
                         <div className='blog_post_text text-center'>
                             <p>{item && item.abstract ? item.abstract : ''}</p>
                         </div>

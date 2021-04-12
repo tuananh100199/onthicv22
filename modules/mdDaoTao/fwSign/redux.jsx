@@ -5,7 +5,7 @@ const SignGet = 'SignGet';
 const SignGetAll = 'SignGetAll';
 const SignGetPage = 'SignGetPage';
 
-export default function signReducer(state = null, data) {
+export default function signReducer(state = {}, data) {
     switch (data.type) {
         case SignGetAll:
             return Object.assign({}, state, { list: data.items });
