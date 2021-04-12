@@ -17,24 +17,18 @@ class NewsFeed extends React.Component {
             news = newsFeed.map((item, index) => {
                 const link = item.link ? '/tintuc/' + item.link : '/news/' + item._id;
                 return (
-                    <div key={index} className='row ml-0 ftco-animate'>
-                        <div style={{ width: '250px', padding: '15px 15px 15px 0px', float: 'left' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
-                            <Link to={link}>
-                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
-                            </Link>
+                    <div key={index} className='ftco-animate blog_post'>
+                        <div className='blog_post_image'><img src={item && item.image ? item.image : ''} style={{ width: '100%' }} alt='' /></div>
+                        <div className='blog_post_date d-flex flex-column align-items-center justify-content-center'>
+                            <div className='date_day'>{new Date(item.createdDate).getDate()}</div>
+                            <div className='date_month'>Tháng {new Date(item.createdDate).getMonth() + 1}</div>
+                            <div className='date_year'>{new Date(item.createdDate).getFullYear()}</div>
                         </div>
-                        <div style={{ marginRight: '15px', paddingTop: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
-                            <div className='text'>
-                                <div className='text-inner' style={{ paddingLeft: '15px' }}>
-                                    <h6 className='heading pb-0 mb-0'>
-                                        <Link to={link} style={{ color: '#4CA758' }}>{item.title}</Link>
-                                    </h6>
-                                    <div className='contact_content_text'>
-                                        <p className='text-justify' >{item.abstract}</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className='blog_post_title'><Link to={link}>{item && item.title ? item.title : ''}</Link></div>
+                        <div className='blog_post_text text-center'>
+                            <p>{item && item.abstract ? item.abstract : ''}</p>
                         </div>
+                        <div className='blog_post_button text-center'><div className='button button_4 ml-auto mr-auto'><Link to={link}>Xem thêm</Link></div></div>
                     </div>
                 )
             })

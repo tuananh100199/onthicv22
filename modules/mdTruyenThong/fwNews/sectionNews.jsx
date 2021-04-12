@@ -17,13 +17,11 @@ class SectionNews extends React.Component {
             news = newsFeed.map((item, index) => {
                 const link = item.link ? '/tintuc/' + item.link : '/news/' + item._id;
                 return (
-                    <div key={index} className='row ml-0 ftco-animate' style={{ marginBottom: '15px' }}>
-                        <div style={{ width: '250px', padding: '15px 15px 30px 0px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
-                            <Link to={link}>
-                                <img src={item.image} style={{ height: '95px', width: '100%' }} alt='Image' className='img-fluid' />
-                            </Link>
+                    <div key={index} className='row ml-0 ftco-animate ' style={{ paddingBottom: '30px', paddingTop: '15px' }} >
+                        <div className='col-md-3'>
+                            <div className={'blog_post_image'} ><img src={item && item.image ? item.image : ''} style={{ width: '100%' }} alt='' /></div>
                         </div>
-                        <div style={{ width: 'calc(100% - 265px)', marginRight: '15px', paddingTop: '15px', paddingBottom: '15px' }} className={index < newsFeed.length - 1 ? 'border-bottom' : ''}>
+                        <div className='col-md-9'>
                             <div className='text'>
                                 <div className='text-inner' style={{ paddingLeft: '15px' }}>
                                     <h6 className='heading pb-0 mb-0'>
