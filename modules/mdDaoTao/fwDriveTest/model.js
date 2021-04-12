@@ -26,7 +26,7 @@ module.exports = app => {
                     result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                     const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
 
-                    model.find(condition).populate('courseType', 'title').populate('questions').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
+                    model.find(condition).populate('courseType', 'title').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, items) => {
                         result.list = error ? [] : items;
                         done(error, result);
                     });
@@ -34,15 +34,15 @@ module.exports = app => {
             });
         },
 
-        getAll: (condition, done) => done ? model.find(condition).populate('questions', 'title').sort({ priority: -1 }).exec(done) : model.find({}).populate('questions', 'title').sort({ priority: -1 }).exec(condition),
+        getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
 
 
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').populate('courseType', 'title').populate('questions').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
+            typeof condition == 'string' ? model.findById(condition).populate('courseType', 'title').populate('questions', 'title').exec(done) : model.findOne(condition).populate('courseType', 'title').populate('questions', 'title').exec(done)
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions', 'title categories'),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions', 'title'),
 
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {
@@ -76,11 +76,11 @@ module.exports = app => {
         }),
 
         addQuestion: (_id, question, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { questions: question } }, { new: true }).populate('questions').exec(done);
+            model.findOneAndUpdate({ _id }, { $push: { questions: question } }, { new: true }).populate('questions', 'title').exec(done);
         },
 
         deleteQuestion: (_id, _questionId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { questions: _questionId } }, { new: true }).populate('questions').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { questions: _questionId } }, { new: true }).populate('questions', 'title').exec(done);
         },
     };
 };
