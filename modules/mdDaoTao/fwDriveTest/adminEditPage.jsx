@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateDriveTest, getDriveTestItem, swapQuestions } from './redux';
+import { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapQuestions } from './redux';
 import { Link } from 'react-router-dom';
 import { ajaxSelectDriveQuestion, getAllDriveQuestions} from '../fwDriveQuestion/redux';
 import { ajaxSelectCourseType } from '../fwCourseType/redux';
@@ -19,11 +19,7 @@ class QuestionModal extends AdminModal {
         const _questionId = this.questionSelect.value();
         if (!_questionId) T.notify('Tên câu hỏi thi bị trống!', 'danger');
         else {
-            const questions = this.props.item.questions.map(item => item._id);
-            questions.push(_questionId);
-            this.props.update(this.props.item._id, { questions }, () => {
-                this.hide();
-            });
+            this.props.create(this.props.item._id, _questionId, this.hide);
         }
     }
 
@@ -60,15 +56,10 @@ class DriveTestEditPage extends AdminPage {
         });
     }
 
-    remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá câu hỏi thi', 'Bạn có chắc muốn xoá câu hỏi thi khỏi bộ đề thi này?', true, isConfirm => {
-        if (isConfirm) {
-            let questions = this.props.driveTest.item.questions.map(item => item._id);
-            questions.splice(index, 1);
-            this.props.updateDriveTest(this.state._id, { questions: questions.length ? questions : 'empty' }, () => T.alert('Xoá câu hỏi thi khỏi bộ đề thi thành công!', 'error', false, 800));
-        }
-    })
+    swap = (e, question, isMoveUp) => e.preventDefault() || this.props.swapQuestions(this.state._id, question._id, isMoveUp);
 
-    swap = (e, [index, item], isMoveUp) => e.preventDefault() || this.props.swapQuestions(this.state._id, item._id, isMoveUp);
+    delete = (e, question) => e.preventDefault() || T.confirm('Xóa câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong> ?`, true, isConfirm =>
+    isConfirm && this.props.deleteDriveTestQuestion(this.state._id, question._id));
 
     save = () => {
         const changes = {
@@ -100,7 +91,7 @@ class DriveTestEditPage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={index + 1} />
                         <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
-                        <TableCell type='buttons' content={[index, item]} permission={permission}  onSwap={this.swap} onDelete={this.remove} />
+                        <TableCell type='buttons' content={item} permission={permission}  onSwap={this.swap} onDelete={this.delete} />
                     </tr>),
             }),
             componentInfo = <>
@@ -114,7 +105,7 @@ class DriveTestEditPage extends AdminPage {
             componentQuestion = <>
                     {table}
                     {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} update={this.props.updateDriveTest} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
+                    <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} item={item} getAllDriveQuestions={this.props.getAllDriveQuestions}/>
                 </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
@@ -130,5 +121,5 @@ class DriveTestEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { updateDriveTest, getDriveTestItem, swapQuestions, getAllDriveQuestions };
+const mapActionsToProps = { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapQuestions, getAllDriveQuestions };
 export default connect(mapStateToProps, mapActionsToProps)(DriveTestEditPage);

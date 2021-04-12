@@ -74,5 +74,13 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
+
+        addQuestion: (_id, _questionId, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { questions: _questionId } }, { new: true }).populate('questions').exec(done);
+        },
+
+        deleteQuestion: (_id, _questionId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { questions: _questionId } }).populate('questions').exec(done);
+        },
     };
 };
