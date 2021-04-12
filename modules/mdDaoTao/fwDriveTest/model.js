@@ -36,9 +36,13 @@ module.exports = app => {
 
         getAll: (condition, done) => done ? model.find(condition).sort({ priority: -1 }).exec(done) : model.find({}).sort({ priority: -1 }).exec(condition),
 
-
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).populate('courseType', 'title').populate('questions', 'title').exec(done) : model.findOne(condition).populate('courseType', 'title').populate('questions', 'title').exec(done)
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).populate('courseType', 'title').populate('questions', 'title').exec(done) 
         },
 
         // changes = { $set, $unset, $push, $pull }

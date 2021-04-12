@@ -26,11 +26,8 @@ class QuestionModal extends AdminModal {
     render = () => this.renderModal({
         title: 'Câu hỏi thi',
         body:
-            <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' 
-                data={{
-                ...ajaxSelectDriveQuestion, processResults: response => 
-                    ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-            }} readOnly={this.props.readOnly} />
+            <FormSelect ref={e => this.questionSelect = e} data={ajaxSelectDriveQuestion} label='Câu hỏi thi' />
+
     });
 }
 
