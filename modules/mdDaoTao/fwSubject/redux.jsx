@@ -44,23 +44,20 @@ export function getSubjectPage(pageNumber, pageSize, searchText, done) {
     }
 }
 export function getSubjectAll(condition, done) {
-    return dispatch => {
-        const url = `/api/subject/all`;
-        if (typeof condition == 'function') {
-            done = condition;
-            condition = {};
-        }
-        T.get(url, { condition }, data => {
-            if (data.error) {
-                T.notify('Lấy tất cả môn học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.list);
-            }
-        }, error => T.notify('Lấy tất cả môn học bị lỗi!', 'danger'));
+    const url = `/api/subject/all`;
+    if (!done) {
+        done = condition;
+        condition = {};
     }
+    T.get(url, { condition }, data => {
+        if (data.error) {
+            T.notify('Lấy tất cả môn học bị lỗi!', 'danger');
+            console.error('GET: ' + url + '. ' + data.error);
+        } else {
+            done && done(data.list);
+        }
+    }, error => T.notify('Lấy tất cả môn học bị lỗi!', 'danger'));
 }
-
 
 export function getSubject(_id, done) {
     return dispatch => {

@@ -7,12 +7,10 @@ import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, 
 
 class CourseTypeModal extends AdminModal {
     state = { subjects: [] };
-    componentDidUpdate(previousProps) {
-        if (previousProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
-            const _subjectIds = this.props.item.subjects.map(item => item._id)
-            this.props.getAll({ _id: { $nin: _subjectIds } }, list => {
-                this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) })
-            })
+    componentDidUpdate(prevProps) {
+        if (prevProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
+            const _subjectIds = this.props.item.subjects.map(item => item._id);
+            getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
         }
     }
     onShow = () => this.subjectSelect.value(null);
@@ -115,7 +113,7 @@ class CourseTypeEditPage extends AdminPage {
             componentSubject = <>
                 {table}
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} getAll={this.props.getSubjectAll} add={this.props.addCourseTypeSubject} item={item} />
+                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
 
@@ -130,5 +128,5 @@ class CourseTypeEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject, getSubjectAll };
+const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypeEditPage);
