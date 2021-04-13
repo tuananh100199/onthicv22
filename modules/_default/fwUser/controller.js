@@ -18,7 +18,7 @@ module.exports = app => {
             condition = req.query.condition || {},
             pageCondition = {};
         try {
-            if (JSON.stringify(condition) != '{}' || !condition) {
+            if (JSON.stringify(condition) != '{}' || condition) {
                 pageCondition['$or'] = [];
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
