@@ -18,8 +18,7 @@ module.exports = app => {
             condition = req.query.condition || {},
             pageCondition = {};
         try {
-            if (JSON.stringify(condition) != '{}' || condition) {
-                pageCondition['$or'] = [];
+            if (condition) {
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition['$or'] = [
@@ -30,6 +29,7 @@ module.exports = app => {
                     ];
                 }
                 if (condition.type) {
+                    pageCondition['$or'] = [];
                     condition.type.forEach((item) => {
                         pageCondition['$or'].push(JSON.parse(`{ "${item}":true}`));
                     })
