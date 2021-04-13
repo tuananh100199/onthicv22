@@ -114,7 +114,6 @@ class CourseTypeEditPage extends AdminPage {
             </>,
             componentSubject = <>
                 {table}
-                <CirclePageButton style={{ left: 300 }} type='create' onClick={() => this.props.addCourseTypeSubject(item._id, '60487b4f70cecf4a9f51891b', this.hide)} />
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
                 <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} getAll={this.props.getSubjectAll} add={this.props.addCourseTypeSubject} item={item} />
             </>,
