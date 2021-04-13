@@ -2,10 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject } from './redux';
 import { Link } from 'react-router-dom';
-import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
+import { getSubjectAll } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class CourseTypeModal extends AdminModal {
+    state = { subjects: [] };
+    componentDidUpdate(previousProps) {
+        if (previousProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
+            const _subjectIds = this.props.item.subjects.map(item => item._id)
+            this.props.getAll({ _id: { $nin: _subjectIds } }, list => {
+                this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) })
+            })
+        }
+    }
     onShow = () => this.subjectSelect.value(null);
 
     onSubmit = () => {
@@ -18,17 +27,9 @@ class CourseTypeModal extends AdminModal {
     }
 
     render = () => {
-        // chỉ lấy các môn chưa đưa vào
-        const processResults = response => {
-            const _subjectIds = this.props.item.subjects.map(item => item._id),
-                results = [];
-            (response && response.page && response.page.list ? response.page.list : [])
-                .forEach(item => _subjectIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
-            return { results }
-        };
         return this.renderModal({
             title: 'Môn học',
-            body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={{ ...ajaxSelectSubject, processResults }} readOnly={this.props.readOnly} />
+            body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={this.state.subjects} readOnly={this.props.readOnly} />
         });
     };
 }
@@ -113,8 +114,9 @@ class CourseTypeEditPage extends AdminPage {
             </>,
             componentSubject = <>
                 {table}
+                <CirclePageButton style={{ left: 300 }} type='create' onClick={() => this.props.addCourseTypeSubject(item._id, '60487b4f70cecf4a9f51891b', this.hide)} />
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
+                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} getAll={this.props.getSubjectAll} add={this.props.addCourseTypeSubject} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
 
@@ -129,5 +131,5 @@ class CourseTypeEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject };
+const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject, getSubjectAll };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypeEditPage);
