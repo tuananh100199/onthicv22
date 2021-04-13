@@ -23,17 +23,20 @@ class QuestionModal extends AdminModal {
         }
     }
 
-    render = () =>  
-        this.renderModal({
-        title: 'Câu hỏi thi',
-        body:
-            <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
-            data={{
-                ...ajaxSelectDriveQuestion,
-                processResults: response =>
-                    ({ results: response && response.list ? response.list.filter(item => !this.props.item.questions.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-            }} readOnly={this.props.readOnly} />
-    });
+    render = () => {
+        // chỉ lấy các câu hỏi chưa đưa vào
+        const processResults = response => {
+            const _questionIds = this.props.item.questions.map(item => item._id),
+                results = [];
+            (response && response.list ? response.list : [])
+                .forEach(item => _questionIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
+            return { results }
+        };
+        return this.renderModal({
+            title: 'Câu hỏi thi',
+            body: <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={{ ...ajaxSelectDriveQuestion, processResults }} readOnly={this.props.readOnly} />
+        });
+    };
 }
 
 const backRoute = '/user/drive-test'

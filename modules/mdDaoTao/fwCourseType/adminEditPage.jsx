@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 class CourseTypeModal extends AdminModal {
-    onShow = () => this.subjectSelect.value('');
+    onShow = () => this.subjectSelect.value(null);
 
     onSubmit = () => {
         const _subjectId = this.subjectSelect.value();
@@ -16,14 +16,20 @@ class CourseTypeModal extends AdminModal {
         }
     }
 
-    render = () => this.renderModal({
-        title: 'Môn học',
-        body: 
-        <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={{
-            ...ajaxSelectSubject, processResults: response =>
-                ({ results: response && response.page && response.page.list ? response.page.list.filter(item => !this.props.item.subjects.map(item => item._id).includes(item._id)).map(item => ({ id: item._id, text: item.title })) : [] })
-        }} readOnly={this.props.readOnly} />
-    });
+    render = () => {
+        // chỉ lấy các môn chưa đưa vào
+        const processResults = response => {
+            const _subjectIds = this.props.item.subjects.map(item => item._id),
+                results = [];
+            (response && response.page && response.page.list ? response.page.list : [])
+                .forEach(item => _subjectIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
+            return { results }
+        };
+        return this.renderModal({
+            title: 'Môn học',
+            body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={{ ...ajaxSelectSubject, processResults }} readOnly={this.props.readOnly} />
+        });
+    };
 }
 
 const backRoute = '/user/course-type'
