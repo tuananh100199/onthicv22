@@ -269,7 +269,7 @@ export class FormSelect extends React.Component {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
             const { data, label } = this.props,
-                options = { placeholder: label, tags: true, dropdownParent };
+                options = { placeholder: label, tags: false, dropdownParent };
             if (this.props.multiple) {
                 value = value ? (Array.isArray(value) ? value : [value]) : [];
                 // this.setState({ valueText: value.join(', ') }); // TODO: readonly value
