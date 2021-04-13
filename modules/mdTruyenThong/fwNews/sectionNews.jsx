@@ -44,18 +44,12 @@ class SectionNews extends React.Component {
                     </div >) :
                     <div className='pt-5'>
                         {
-                            <div id='carouselFooter' className='carousel slide ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
+                            <div id='carouselLastNews' className='carousel slide ftco-animate' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
                                 <div className='carousel-inner'>
                                     {newsFeed.map((item, index) => (
                                         <div className={'team_col carousel-item' + (index == 0 ? ' active' : '')}
-                                            key={index}
-                                            style={{
-                                                backgroundRepeat: 'no-repeat',
-                                                backgroundPosition: 'center center',
-                                                backgroundSize: 'cover',
-                                            }}>
-                                            {/* // <div key={index} className={this.state.items.length == 4 ? 'col-md-6 col-lg-3 team_col ftco-animate' : 'col-md-6 col-lg-4 team_col ftco-animate'} style={{ marginLeft: 'auto', marginRight: 'auto' }}> */}
-                                            <div className='team_item text-center d-flex flex-column aling-items-center justify-content'>
+                                            key={index}>
+                                            <div className='team_item text-center d-flex flex-column align-items-center justify-content'>
                                                 <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
                                                 <div className='team_content text-center'>
                                                     <div className='team_name'>
@@ -71,11 +65,11 @@ class SectionNews extends React.Component {
                                         </div>
                                     ))}
                                 </div>
-                                <a className='carousel-control-prev' href='#carouselFooter' role='button' data-slide='prev' style={{ opacity: 1 }}>
+                                <a className='carousel-control-prev' href='#carouselLastNews' role='button' data-slide='prev' style={{ opacity: 1 }}>
                                     <span className='carousel-control-prev-icon' />
                                     <span className='sr-only'>Previous</span>
                                 </a>
-                                <a className='carousel-control-next' href='#carouselFooter' role='button' data-slide='next' style={{ opacity: 1 }}>
+                                <a className='carousel-control-next' href='#carouselLastNews' role='button' data-slide='next' style={{ opacity: 1 }}>
                                     <span className='carousel-control-next-icon' />
                                     <span className='sr-only'>Next</span>
                                 </a>
