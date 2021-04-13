@@ -27,12 +27,11 @@ export default function subjectReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-const getPageUrl = (pageNumber, pageSize) => `/api/subject/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('pageSubject', true);
 export function getSubjectPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSubject', pageNumber, pageSize);
     return (dispatch) => {
-        const url = '/api/subject/page/' + page.pageNumber + '/' + page.pageSize;
+        const url = `/api/subject/page/${page.pageNumber}/${page.pageSize}`;
         T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
