@@ -1,13 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocChuaHoanThanhByUser, createDonDeNghiHocByUser } from 'modules/mdDaoTao/fwDonDeNghiHoc/redux';
+import { createDonDeNghiHocByUser } from 'modules/mdDaoTao/fwDonDeNghiHoc/redux';
+import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { AdminPage } from 'view/component/AdminPage';
 
-class UserProfilePage extends React.Component {
+class ProfileIcon extends React.Component {
+    render() {
+        const content = (
+            <div className={'widget-small coloured-icon ' + this.props.type}>
+                <i className={'icon fa fa-3x ' + this.props.icon} />
+                <div className='info'>
+                    <h4>{this.props.title} {this.props.courseType ? this.props.courseType : '' } </h4>
+                    <p style={{ fontWeight: 'bold' }}>{this.props.status}</p>
+                </div>
+            </div>
+        );
+        return this.props.link ? <Link to={this.props.link} style={{ textDecoration: 'none' }}>{content}</Link> : content;
+    }
+}
+class UserProfilePage extends AdminPage {
     componentDidMount() {
-        this.props.getAllDonDeNghiHocHoanThanhByUser();
-        this.props.getAllDonDeNghiHocChuaHoanThanhByUser();
-        T.ready();
+        if (this.props.system && this.props.system.user) {
+            this.props.getStudent({ user: this.props.system.user._id }, data => {
+                this.setState(data);
+            });
+            T.ready();
+        }
     }
 
     create = (e) => {
@@ -16,114 +35,28 @@ class UserProfilePage extends React.Component {
     }
 
     render() {
-        const unfinished = this.props.donDeNghiHoc && this.props.donDeNghiHoc.unfinished ? this.props.donDeNghiHoc.unfinished : [];
-        const finish = this.props.donDeNghiHoc && this.props.donDeNghiHoc.finish ? this.props.donDeNghiHoc.finish : [];
-        return (
-            <main className='app-content'>
-                <div className='app-title'>
-                    <h1><i className='fa fa-user' /> Trang cá nhân</h1>
-                </div>
-
+        const permission = this.getUserPermission('system', ['settings']);
+        const {course, courseType} = this.state ? this.state : {course: '', courseType: '' };
+        return this.renderPage({
+            icon: 'fa fa-dashboard',
+            title: 'Trang cá nhân: ',
+            breadcrumb: ['Trang cá nhân'],
+            content: (
                 <div className='row'>
-                    <div className='col-12'>
-                        <h4>Thông tin chung</h4>
-                        <div className='row'>
-                            <div className='col-md-6 col-lg-6'>
-                                <Link to='/user/profile' style={{ textDecoration: 'none' }}>
-                                    <div className={'widget-small coloured-icon primary'}>
-                                        <i className={'icon fa fa-3x fa-id-card'} />
-                                        <div className='info'>
-                                            <h4>Hồ sơ cá nhân</h4>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                        </div>
+                    <div className='col-md-12 col-lg-6'>
+                        <ProfileIcon type='primary' icon='fa-users' title='Thông tin chung' link='/user/profile' readOnly={permission.settings} />
                     </div>
-                    {
-                        !unfinished.length ?
-                            (finish.length < 3 ?
-                                <div className='col-md-6 col-lg-6'>
-                                    <h4>Sát hạch</h4>
-                                    <div onClick={this.create} className={'widget-small coloured-icon info'} style={{ cursor: 'pointer' }}>
-                                        <i className={'icon fa fa-3x fa-file-text'} />
-                                        <div className='info'>
-                                            <h4>Đơn đề nghị học, sát hạch mới</h4>
-                                            {this.props.status ?
-                                                <p>Trạng thái: {(this.props.status == 'waiting' ? 'Chờ duyệt' :
-                                                    (this.props.status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
-                                                        (this.props.status == 'reject' ? <span className='text-danger'>Từ chối</span> :
-                                                            (this.props.status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
-                                                                : <span className='text-warning'>Đã hoàn thành</span>)
-                                                        )
-                                                    )
-                                                )}</p>
-                                                : <p></p>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                :
-                                <div className='col-md-6 col-lg-6'>
-                                    <h4>Sát hạch</h4>
-                                    <div className={'widget-small coloured-icon info'} >
-                                        <i className={'icon fa fa-3x fa-check'} />
-                                        <div className='info'>
-                                            <h4>Bạn đã đạt số khóa học tối đa!</h4>
-                                        </div>
-                                    </div>
-                                </div>)
-                            :
-                            <div className='col-md-6 col-lg-6'>
-                                <h4>Sát hạch</h4>
-                                <Link to={'/user/bieu-mau/don-de-nghi-hoc/' + unfinished[0]._id} style={{ textDecoration: 'none' }}>
-                                    <div className={'widget-small coloured-icon info'} style={{ cursor: 'pointer' }}>
-                                        <i className={'icon fa fa-3x fa-briefcase'} />
-                                        <div className='info'>
-                                            <h4>{'Khóa học hạng ' + unfinished[0].newLicenseClass}</h4>
-                                            {unfinished[0].status ?
-                                                <p>Trạng thái: {(unfinished[0].status == 'waiting' ? 'Đang chờ duyệt' :
-                                                    (unfinished[0].status == 'approved' ? <span className='text-success'>Đang chờ khóa</span> :
-                                                        (unfinished[0].status == 'reject' ? <span className='text-danger'>Từ chối</span> :
-                                                            (unfinished[0].status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
-                                                                : <span className='text-warning'>Đã hoàn thành</span>)
-                                                        )
-                                                    )
-                                                )}</p>
-                                                : <p></p>
-                                            }
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                    }
-                    <div className='col-12'>
-                        <h4>Danh sách khóa học đã hoàn thành</h4>
-                        <div className='row'>
-                            {finish.length ? finish.map((item, index) => (
-                                <div className='col-md-6' key={index}>
-                                    <Link to={'/user/bieu-mau/don-de-nghi-hoc/' + item._id} style={{ textDecoration: 'none' }}>
-                                        <div className={'widget-small coloured-icon primary'} style={{ cursor: 'pointer' }}>
-                                            <i className={'icon fa fa-3x fa-briefcase'} />
-                                            <div className='info'>
-                                                <h4>{'Khóa học hạng ' + item.newLicenseClass}</h4>
-                                                {item.status ?
-                                                    <p>Trạng thái: <span className='text-warning'>Đã hoàn thành</span></p>
-                                                    : <p></p>
-                                                }
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>))
-                                : <div className='col-12'>Chưa có khóa học hoàn thành</div>}
-                        </div>
-                    </div>
-                </div>
-            </main>
-        );
+                    {course ? 
+                    <div className='col-md-12 col-lg-6'>
+                        <ProfileIcon type='info' icon='fa fa-cubes' courseType={courseType.title} status='Lớp' title='Khóa học hạng' readOnly={permission.settings} />
+                    </div> : 
+                    <div className='col-md-12 col-lg-6'>
+                        <ProfileIcon type='primary' icon='fa-book' title='Đơn đề nghị học, sát hạch mới'  status='Đang chờ duyệt' onClick={this.create} readOnly={permission.settings} />
+                    </div> }
+                </div>),
+        });
     }
 }
-
-const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
-const mapActionsToProps = { getAllDonDeNghiHocHoanThanhByUser, getAllDonDeNghiHocChuaHoanThanhByUser, createDonDeNghiHocByUser };
+const mapStateToProps = state => ({ system: state.system });
+const mapActionsToProps = {  createDonDeNghiHocByUser, getStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);
