@@ -142,8 +142,6 @@ export function createDriveTestQuestion(_driveTestId, _questionId, done) {
             if (data.error) {
                 T.notify('Tạo câu hỏi thi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
-            } else if (data.check) {
-                T.notify(data.check, 'danger');
             } else {
                 T.notify('Thêm câu hỏi thi vào bộ đề thi thành công!', 'success');
                 dispatch({ type: DriveTestGet, item: data.item });
