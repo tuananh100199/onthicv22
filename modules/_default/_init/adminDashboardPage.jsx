@@ -4,7 +4,6 @@ import { getStatistic } from './redux';
 import CountUp from 'view/js/countUp';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-
 class DashboardIcon extends React.Component {
     componentDidMount() {
         setTimeout(() => {

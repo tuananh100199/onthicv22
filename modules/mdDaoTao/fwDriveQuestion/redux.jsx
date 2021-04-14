@@ -175,13 +175,11 @@ export function deleteDriveQuestionImage(_id, done) {
     }
 }
 
-export const ajaxSelectDriveQuestion = T.createAjaxAdapter(
-    '/api/drive-question/all',
-    params => ({ condition: params.term ? { searchText: params.term } : {} }),
-    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
-);
-
-export function ajaxGetDriveQuestion(_id, done) {
-    const url = '/api/drive-question';
-    T.get(url, { _id }, done, error => T.notify('Lấy câu hỏi thi bị lỗi!', 'danger'));
-};
+export const ajaxSelectDriveQuestion = {
+    ajax: true,
+    url: '/api/drive-question/all',
+    data: params => ({ condition: params.term ? { searchText: params.term } : {} }),
+    processResults: response => 
+        ({ results: response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : []
+    })
+}
