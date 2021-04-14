@@ -101,13 +101,13 @@ export function deleteCourseType(_id) {
         const url = `/api/course-type`;
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xóa khóa học bị lỗi!', 'danger');
+                T.notify('Xóa loại khóa học bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.notify('Xoá khóa học thành công!', 'success');
+                T.notify('Xoá loại khóa học thành công!', 'success');
                 dispatch(getCourseTypePage());
             }
-        }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Xóa loại khóa học bị lỗi!', 'danger'));
     }
 }
 
@@ -121,7 +121,7 @@ export function addCourseTypeSubject(_courseTypeId, _subjectId, done) {
             } else {
                 T.notify('Môn học được thêm thành công!', 'success');
                 dispatch({ type: CourseTypeGetItem, item: data.item });
-                done && done();
+                done && done(data.item);
             }
         }, error => T.notify('Thêm môn học bị lỗi!', 'danger'));
     }
