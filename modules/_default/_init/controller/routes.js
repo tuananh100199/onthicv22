@@ -41,12 +41,12 @@ module.exports = (app) => {
             if (twitter || twitter == '') changes.push('twitter', twitter.trim() || '');
             if (instagram || instagram == '') changes.push('instagram', instagram.trim() || '');
             if (dangKyTuVanLink || dangKyTuVanLink == '') changes.push('dangKyTuVanLink', dangKyTuVanLink.trim() || '');
-
-            app.state.set(changes, error => {
+            app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
-                app.state.get((error, data) => error ? res.send({ error }) : res.send(data))
+                app.state.get((error, data) => {
+                    error ? res.send({ error }) : res.send(data)
+                })
             });
-
             // Save email into Settings
             if (email) app.model.setting.set({ email }, (error) => error && console.log(error));
         }

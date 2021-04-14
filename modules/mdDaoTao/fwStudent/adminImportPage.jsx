@@ -237,7 +237,7 @@ class ImportPage extends AdminPage {
                 <FormFileBox ref={e => this.fileBox = e} uploadType='CandidateFile'
                     onSuccess={this.onUploadSuccess} readOnly={readOnly} />
                 <div className='tile-footer' style={{ textAlign: 'right' }}>
-                    <button className='btn btn-primary' type='button' onClick={this.save}>
+                    <button className='btn btn-primary' type='button'>
                         <a href='/download/candidate.xlsx' style={{ textDecoration: 'none', color: 'white' }}><i className='fa-fw fa-lg fa fa-download' /> Tải xuống file mẫu</a>
                     </button>
                 </div>
