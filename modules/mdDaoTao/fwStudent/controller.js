@@ -213,7 +213,20 @@ module.exports = (app) => {
         app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-
+    // APIs Get Course Of Student -------------------------------------------------------------------------------------
+    app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
+        const _studentId = req.body._studentId;
+        app.model.student.get(_studentId, (error, student) => {
+            if (student) {
+                app.model.course.get(student.course, (error, course) => {
+                    res.send({ error, course });
+                });
+            } else {
+                res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không tồn tại!' });
+            }
+        });
+    });
+    
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
