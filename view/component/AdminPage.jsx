@@ -196,7 +196,7 @@ export class FormTextBox extends React.Component {
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
                 <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
-                {smallText ? <small>{smallText}</small> : null}
+                {smallText ? <small dangerouslySetInnerHTML={{ __html: smallText }} /> : null}
             </div>);
     };
 }
@@ -269,7 +269,7 @@ export class FormSelect extends React.Component {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
             const { data, label } = this.props,
-                options = { placeholder: label, tags: true, dropdownParent };
+                options = { placeholder: label, tags: false, dropdownParent };
             if (this.props.multiple) {
                 value = value ? (Array.isArray(value) ? value : [value]) : [];
                 // this.setState({ valueText: value.join(', ') }); // TODO: readonly value
@@ -279,7 +279,7 @@ export class FormSelect extends React.Component {
 
             if (Array.isArray(data)) {
                 options.data = data;
-                $(this.input).select2(options).val(value).trigger('change');
+                $(this.input).empty().select2(options).val(value).trigger('change');
             } else {
                 options.ajax = { ...data, delay: 500 };
                 $(this.input).select2(options);

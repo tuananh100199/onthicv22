@@ -14,7 +14,7 @@ class CourseTypeModal extends AdminModal {
     onSubmit = () => {
         const title = this.itemTitle.value().trim();
         if (title == '') {
-            T.notify('Tên loại khoá học bị trống!', 'danger');
+            T.notify('Tên loại khóa học bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
             this.props.create({ title }, data => {
@@ -27,7 +27,7 @@ class CourseTypeModal extends AdminModal {
     }
     render = () => this.renderModal({
         title: 'Bài viết',
-        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khoá học' />
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' />
     });
 }
 

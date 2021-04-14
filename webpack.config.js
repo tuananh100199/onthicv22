@@ -35,7 +35,7 @@ const UpdateModulesPlugin = function (options) { };
 UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('UpdateModules', () => {
     templateNames.forEach(templateName => {
         moduleContainer[templateName].moduleNames = [];
-        moduleContainer[templateName].importText = '';
+        moduleContainer[templateName].importText = '// That code below is generated automatically. Do not change them manually!\n';
     });
 
     fs.readdirSync(`./modules`).forEach(mainModuleName => {

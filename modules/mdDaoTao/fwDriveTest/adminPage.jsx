@@ -51,7 +51,7 @@ class DriveTestPage extends AdminPage {
 
     create = e => e.preventDefault() || this.modal.show();
 
-    swap = (e, _questionId, isMoveUp) => e.preventDefault() || this.props.swapDriveTest(_questionId, isMoveUp);
+    swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapDriveTest(item._id, isMoveUp);
 
     delete = (e, item) => e.preventDefault() || T.confirm('Bộ đề thi', 'Bạn có chắc bạn muốn xóa bộ đề thi này?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteDriveTest(item._id));
@@ -74,8 +74,8 @@ class DriveTestPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/drive-test/' + item._id} />
-                    <TableCell type='text' content={item.courseType ? item.courseType.title : 'Không có loại khóa học'}/>
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={() => this.props.updateDriveTest( item._id, { active: !item.active })} />
+                    <TableCell type='text' content={item.courseType ? item.courseType.title : 'Không có loại khóa học'} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={() => this.props.updateDriveTest(item._id, { active: !item.active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/drive-test/' + item._id} onSwap={this.swap} onDelete={this.delete} />
                 </tr>),
         });

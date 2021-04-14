@@ -86,7 +86,7 @@ class AdminQuestionPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    swap = (e, _questionId, isMoveUp) => e.preventDefault() || this.props.swapSign(_questionId, isMoveUp);
+    swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapSign(item._id, isMoveUp);
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa biển báo', 'Bạn có chắc bạn muốn xóa biển báo này?', true, isConfirm =>
         isConfirm && this.props.deleteSign(item._id));
 
@@ -115,7 +115,7 @@ class AdminQuestionPage extends AdminPage {
         });
 
         return this.renderPage({
-            icon: 'fa fa-list-alt',
+            icon: 'fa fa-universal-access',
             title: 'Biển báo',
             breadcrumb: ['Biển báo'],
             content: <>

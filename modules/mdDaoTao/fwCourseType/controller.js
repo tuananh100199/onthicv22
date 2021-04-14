@@ -44,7 +44,24 @@ module.exports = (app) => {
     });
 
     app.delete('/api/course-type', app.permission.check('course-type:delete'), (req, res) => {
-        app.model.courseType.delete(req.body._id, (error) => res.send({ error }))
+        const { _id } = req.body;
+        app.model.courseType.delete(_id, (error) => res.send({ error }))
+    });
+
+    // Subject APIs ---------------------------------------------------------------------------------------------------
+    app.post('/api/course-type/subject', app.permission.check('course-type:write'), (req, res) => {
+        const { _courseTypeId, _subjectId } = req.body;
+        app.model.subject.get(_subjectId, (error, subject) => {
+            if (error || subject == null) {
+                res.send({ error: error || 'Invalid Id!' });
+            } else {
+                app.model.courseType.addSubject(_courseTypeId, subject, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+    app.delete('/api/course-type/subject', app.permission.check('course-type:write'), (req, res) => {
+        const { _courseTypeId, _subjectId } = req.body;
+        app.model.courseType.deleteSubject(_courseTypeId, _subjectId, (error, item) => res.send({ error, item }));
     });
 
     // Home -----------------------------------------------------------------------------------------------------------

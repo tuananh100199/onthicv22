@@ -83,7 +83,7 @@ class UserProfilePage extends React.Component {
                                             <h4>{'Khóa học hạng ' + unfinished[0].newLicenseClass}</h4>
                                             {unfinished[0].status ?
                                                 <p>Trạng thái: {(unfinished[0].status == 'waiting' ? 'Đang chờ duyệt' :
-                                                    (unfinished[0].status == 'approved' ? <span className='text-success'>Đã duyệt</span> :
+                                                    (unfinished[0].status == 'approved' ? <span className='text-success'>Đang chờ khóa</span> :
                                                         (unfinished[0].status == 'reject' ? <span className='text-danger'>Từ chối</span> :
                                                             (unfinished[0].status == 'progressing' ? <span className='text-primary'>Đang theo học</span>
                                                                 : <span className='text-warning'>Đã hoàn thành</span>)

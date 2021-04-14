@@ -27,22 +27,36 @@ export default function subjectReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-const getPageUrl = (pageNumber, pageSize) => `/api/subject/page/${pageNumber}/${pageSize}`;
 T.initCookiePage('pageSubject', true);
 export function getSubjectPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageSubject', pageNumber, pageSize);
     return (dispatch) => {
-        const url = '/api/subject/page/' + page.pageNumber + '/' + page.pageSize;
+        const url = `/api/subject/page/${page.pageNumber}/${page.pageSize}`;
         T.get(url, { searchText }, data => {
             if (data.error) {
-                T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger');
+                T.notify('Lấy danh sách môn học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SubjectGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách loại khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy danh sách môn học bị lỗi!', 'danger'));
     }
+}
+export function getSubjectAll(condition, done) {
+    const url = `/api/subject/all`;
+    if (!done) {
+        done = condition;
+        condition = {};
+    }
+    T.get(url, { condition }, data => {
+        if (data.error) {
+            T.notify('Lấy tất cả môn học bị lỗi!', 'danger');
+            console.error('GET: ' + url + '. ' + data.error);
+        } else {
+            done && done(data.list);
+        }
+    }, error => T.notify('Lấy tất cả môn học bị lỗi!', 'danger'));
 }
 
 export function getSubject(_id, done) {
@@ -50,13 +64,13 @@ export function getSubject(_id, done) {
         const url = `/api/subject`;
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
+                T.notify('Lấy môn học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
                 dispatch({ type: SubjectGetItem, item: data.item });
             }
-        }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Lấy môn học bị lỗi!', 'danger'));
     }
 }
 
@@ -65,13 +79,13 @@ export function createSubject(data, done) {
         const url = '/api/subject';
         T.post(url, { data }, data => {
             if (data.error) {
-                T.notify('Tạo loại khóa học bị lỗi!', 'danger');
+                T.notify('Tạo môn học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 if (done) done(data);
                 dispatch(getSubjectPage());
             }
-        }, error => T.notify('Tạo loại khóa học bị lỗi!', 'danger'));
+        }, error => T.notify('Tạo môn học bị lỗi!', 'danger'));
     }
 }
 
@@ -107,14 +121,10 @@ export function deleteSubject(_id) {
     }
 }
 
-export const ajaxSelectSubject = {
-    ajax: true,
-    url: getPageUrl(1, 100),
-    data: params => ({ condition: params.term }),
-    processResults: response => ({
-        results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
-    })
-}
+export const ajaxSelectSubject = T.createAjaxAdapter(
+    `/api/subject/page/1/20`,
+    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []
+);
 
 // Subject Lesson -------------------------------------------------------------------------------------------------------
 export function addSubjectLesson(_subjectId, _subjectLessonId, done) {
