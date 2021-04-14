@@ -4,7 +4,6 @@ import { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseType
 import { Link } from 'react-router-dom';
 import { getSubjectAll } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
-
 class CourseTypeModal extends AdminModal {
     state = { subjects: [] };
     componentDidUpdate(prevProps) {

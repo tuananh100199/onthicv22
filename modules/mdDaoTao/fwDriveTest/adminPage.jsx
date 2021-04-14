@@ -23,7 +23,7 @@ class DriveTestModal extends AdminModal {
         if (data.title == '') {
             T.notify('Tên bộ đề thi bị trống!', 'danger');
             this.itemTitle.focus();
-        } if (!data.courseType) {
+        } else if (!data.courseType) {
             T.notify('Loại khóa học bị trống!', 'danger');
             this.itemCourseType.focus();
         } else {

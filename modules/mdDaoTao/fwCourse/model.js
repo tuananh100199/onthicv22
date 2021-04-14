@@ -62,7 +62,7 @@ module.exports = app => {
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             changes.modifiedDate = new Date();
-            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname').populate('groups.student', 'firstname lastname').exec(done);
+            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname division').populate('groups.student', 'firstname lastname').exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
