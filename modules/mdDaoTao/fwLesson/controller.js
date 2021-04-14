@@ -52,7 +52,9 @@ module.exports = (app) => {
             if (error || item == null) {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
             } else if (item.image == null) {
-                res.send({ item });
+                app.model.lesson.addVideo(_lessonId, item, (error, item) => {
+                    res.send({ error, videos: item && item.videos ? item.videos : [] });
+                });
             } else {
                 app.uploadImage('lesson-video', app.model.lessonVideo.get, item._id, item.image, data => {
                     if (data.error) {
