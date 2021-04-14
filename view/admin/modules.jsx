@@ -1,3 +1,4 @@
+// That code below is generated automatically. Do not change them manually!
 import _init from 'modules/_default/_init/index';
 import fwCategory from 'modules/_default/fwCategory/index';
 import fwCluster from 'modules/_default/fwCluster/index';
