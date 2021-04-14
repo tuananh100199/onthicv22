@@ -12,7 +12,7 @@ class VideoModal extends AdminModal {
     }
 
     onShow = (video) => {
-        let { _id, title, link, image, active } = video || { _id: null, title: '', link: '', image: '', active: true };
+        let { _id, title, link, image, active } = video || { _id: null, title: '', link: '', active: true };
         this.itemTitle.value(title);
         this.itemLink.value(link);
         this.imageBox.setData(`lessonVideoImage:${_id || 'new'}`);
