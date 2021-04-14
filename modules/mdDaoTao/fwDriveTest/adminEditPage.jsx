@@ -14,11 +14,14 @@ class QuestionModal extends AdminModal {
 
     onShow = () => {
         this.category.value(null);
-        this.questionSelect.value(null);
+        // this.questionSelect.value(null);
     }
 
     viewTypeChanged = (_idSelectedType) => {
+        console.log(_idSelectedType, 'viewTypechange')
         this.setState({ _idSelectedType });
+        this.questionSelect.value(null);
+        console.log(this.state, 'stateChange')
     }
 
     onSubmit = () => {
@@ -38,13 +41,17 @@ class QuestionModal extends AdminModal {
         //         .forEach(item => _questionIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
         //     return { results }
         // };
+        console.log(this.state, 'stateRender')
         return this.renderModal({
             title: 'Câu hỏi thi',
             body: <>
                 <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes}
+                    {...console.log('ajaxType')}
                     onChange={data => this.viewTypeChanged(data.id)}
                     readOnly={this.props.readOnly} />
                 <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
+                    {...console.log(this.state._idSelectedType, 'ajaxQues')}
+                    // data={ajaxSelectDriveQuestion(this.state && this.state._idSelectedType)}
                     data={ajaxSelectDriveQuestion(this.state._idSelectedType)}
                     readOnly={this.props.readOnly} />
             </>

@@ -17,12 +17,31 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-question/all', app.permission.check('driveQuestion:read'), (req, res) => {
-        const condition = {},
-            searchText =  req.query.condition && req.query.condition.searchText ? req.query.condition.searchText : {};
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
+        // const condition = {},
+        //     searchText =  req.query.condition && req.query.condition.searchText ? req.query.condition.searchText : {};
+        // if (searchText) {
+        //     condition.title = new RegExp(searchText, 'i');
+        // }
+        // app.model.driveQuestion.getAll(condition, (error, list) => res.send({ error, list }));
+        let condition = req.query.condition || {};
+        console.log(condition, 'controler')
+        if (condition) {
+            if (condition.searchText) {
+                condition.title = new RegExp(condition.searchText, 'i');
+                // const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            }
+            if (condition.categories) {
+                // condition.categories = {
+                //     $elemMatch: condition.categories
+                // };
+                condition.categories = [condition.categories]
+            }
+            console.log(condition, 'controler If')
         }
-        app.model.driveQuestion.getAll(condition, (error, list) => res.send({ error, list }));
+        app.model.driveQuestion.getAll(condition, (error, list) => {
+            console.log(list, 'list')
+            res.send({ error, list })
+        });
     });
 
     app.get('/api/drive-question/page/:pageNumber/:pageSize', (req, res) => {

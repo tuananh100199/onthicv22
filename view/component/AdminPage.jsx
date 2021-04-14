@@ -270,6 +270,7 @@ export class FormSelect extends React.Component {
         if (arguments.length) {
             const { data, label } = this.props,
                 options = { placeholder: label, tags: false, dropdownParent };
+            console.log(data, 'tata select')
             if (this.props.multiple) {
                 value = value ? (Array.isArray(value) ? value : [value]) : [];
                 // this.setState({ valueText: value.join(', ') }); // TODO: readonly value
