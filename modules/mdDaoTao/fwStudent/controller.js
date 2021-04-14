@@ -54,7 +54,9 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
-            pageCondition = { course: null };
+            // pageCondition = {course: null};
+            pageCondition = { course: { $exists: true, $type: 'array', $eq: [] } };
+            console.log('condition', pageCondition);
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
                 pageCondition.division = req.session.user.division._id;
@@ -210,19 +212,22 @@ module.exports = (app) => {
                 { email: value },
             ];
         }
-        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
+        app.model.student.getAll(condition, (error, list) => {
+            console.log('list', list);
+            res.send({ error, list })
+        });
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
         const _studentId = req.body._studentId;
-        app.model.student.get(_studentId, (error, student) => {
-            if (student) {
-                app.model.course.get(student.course, (error, course) => {
+        app.model.student.getByUser(_studentId, (error, student) => {
+            if (student.course) {
+                app.model.course.getByUser(student.course, (error, course) => {
                     res.send({ error, course });
                 });
             } else {
-                res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không tồn tại!' });
+                res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không có khóa học!' });
             }
         });
     });
