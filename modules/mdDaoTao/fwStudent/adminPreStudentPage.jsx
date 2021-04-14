@@ -126,7 +126,7 @@ class PreStudentPage extends AdminPage {
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
-            getDataSource: () => list && list.filter(item => item.course == null),
+            getDataSource: () => list && list.filter(item => item.course.length == 0),
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

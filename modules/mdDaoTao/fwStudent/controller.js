@@ -42,7 +42,20 @@ module.exports = (app) => {
     });
 
     app.put('/api/student', app.permission.check('student:write'), (req, res) => {
+        const newCourse = req.body.changes.course ?  req.body.changes.course  : null;
+        if (newCourse) {
+            app.model.course.get(req.query._id, (error, item) => {
+                if (error) {
+                    res.send({error})
+                }
+                else {
+                  item.course && item.course.push(newCourse);
+                  req.body.changes.course = item.course
+              }
+            }); 
+        }
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+       
     });
 
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
@@ -54,9 +67,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
-            // pageCondition = {course: null};
-            pageCondition = { course: { $exists: true, $type: 'array', $eq: [] } };
-            console.log('condition', pageCondition);
+            pageCondition = { course: {$type: 'array', $eq: []} };
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
                 pageCondition.division = req.session.user.division._id;
@@ -203,7 +214,8 @@ module.exports = (app) => {
     // Get All Student Have Course Null--------------------------------------------------------------------------------
     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
         const { searchText, courseType } = req.query,
-            condition = { course: null, courseType };
+            condition = { course: {$type: 'array', $eq: []}, courseType };
+           
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition['$or'] = [
@@ -212,16 +224,14 @@ module.exports = (app) => {
                 { email: value },
             ];
         }
-        app.model.student.getAll(condition, (error, list) => {
-            console.log('list', list);
-            res.send({ error, list })
-        });
+        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
-        const _studentId = req.body._studentId;
-        app.model.student.getByUser(_studentId, (error, student) => {
+        const _userId = req.session.user._id,
+            _studentId = req.body._studentId;
+        app.model.student.getAll( { user: _userId }, (error, students) => {
             if (student.course) {
                 app.model.course.getByUser(student.course, (error, course) => {
                     res.send({ error, course });
