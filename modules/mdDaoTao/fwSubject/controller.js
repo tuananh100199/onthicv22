@@ -24,6 +24,10 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/subject/all', (req, res) => {
+        app.model.subject.getAll(req.query.condition, (error, list) => res.send({ error, list }));
+    });
+
     app.get('/api/subject', app.permission.check('subject:read'), (req, res) => {
         app.model.subject.get(req.query._id, (error, item) => res.send({ error, item }));
     });
