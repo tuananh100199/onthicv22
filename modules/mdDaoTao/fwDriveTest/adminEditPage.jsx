@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { createDriveTestQuestion, swapDriveTestQuestion, deleteDriveTestQuestion, getDriveTestItem, updateDriveTest } from './redux';
 import { ajaxSelectDriveQuestion } from 'modules/mdDaoTao/fwDriveQuestion/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao//fwCourseType/redux';
@@ -8,12 +9,13 @@ import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, 
 
 class QuestionModal extends AdminModal {
     componentDidMount() {
-        $(document).ready(() => this.onShown(() => {
-            this.questionSelect.value(null);
-        }));
+        this.props.getCategoryAll('drive-question', null, items => this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
     }
 
-    onShow = () => this.questionSelect.value('');
+    onShow = () => {
+        this.category.value(null);
+        this.questionSelect.value(null);
+    }
 
     onSubmit = () => {
         const _questionId = this.questionSelect.value();
@@ -25,16 +27,23 @@ class QuestionModal extends AdminModal {
 
     render = () => {
         // chỉ lấy các câu hỏi chưa đưa vào
-        const processResults = response => {
-            const _questionIds = this.props.item.questions.map(item => item._id),
-                results = [];
-            (response && response.list ? response.list : [])
-                .forEach(item => _questionIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
-            return { results }
-        };
+        // const processResults = response => {
+        //     const _questionIds = this.props.item.questions.map(item => item._id),
+        //         results = [];
+        //     (response && response.list ? response.list : [])
+        //         .forEach(item => _questionIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
+        //     return { results }
+        // };
         return this.renderModal({
             title: 'Câu hỏi thi',
-            body: <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={{ ...ajaxSelectDriveQuestion, processResults }} readOnly={this.props.readOnly} />
+            body: <>
+                <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes}
+                    // onChange={data => this.viewTypeChanged(data.id)}
+                    readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
+                    // data={{ ...ajaxSelectDriveQuestion, processResults }}
+                    readOnly={this.props.readOnly} />
+            </>
         });
     };
 }
@@ -110,7 +119,7 @@ class DriveTestEditPage extends AdminPage {
             componentQuestion = <>
                 {table}
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} item={item} />
+                <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} getCategoryAll={this.props.getCategoryAll} item={item} />
             </>,
             tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
@@ -126,5 +135,5 @@ class DriveTestEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapDriveTestQuestion };
+const mapActionsToProps = { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapDriveTestQuestion, getCategoryAll };
 export default connect(mapStateToProps, mapActionsToProps)(DriveTestEditPage);
