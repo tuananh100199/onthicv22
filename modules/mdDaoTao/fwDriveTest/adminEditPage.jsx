@@ -17,6 +17,10 @@ class QuestionModal extends AdminModal {
         this.questionSelect.value(null);
     }
 
+    viewTypeChanged = (_idSelectedType) => {
+        this.setState({ _idSelectedType });
+    }
+
     onSubmit = () => {
         const _questionId = this.questionSelect.value();
         if (!_questionId) T.notify('Tên câu hỏi thi bị trống!', 'danger');
@@ -38,10 +42,10 @@ class QuestionModal extends AdminModal {
             title: 'Câu hỏi thi',
             body: <>
                 <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes}
-                    // onChange={data => this.viewTypeChanged(data.id)}
+                    onChange={data => this.viewTypeChanged(data.id)}
                     readOnly={this.props.readOnly} />
                 <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
-                    // data={{ ...ajaxSelectDriveQuestion, processResults }}
+                    data={ajaxSelectDriveQuestion(this.state._idSelectedType)}
                     readOnly={this.props.readOnly} />
             </>
         });
