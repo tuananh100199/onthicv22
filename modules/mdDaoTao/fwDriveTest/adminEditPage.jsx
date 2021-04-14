@@ -8,6 +8,14 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao//fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
+    // state = { questionTypes: [], _idSelectedType: '', questions };
+    state = { questionTypes: [], _idSelectedType: '' };
+    // componentDidUpdate(prevProps) {
+    //     if (prevProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
+    //         const _subjectIds = this.props.item.subjects.map(item => item._id);
+    //         getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
+    //     }
+    // }
     componentDidMount() {
         this.props.getCategoryAll('drive-question', null, items => this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
     }
@@ -41,6 +49,7 @@ class QuestionModal extends AdminModal {
         //         .forEach(item => _questionIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
         //     return { results }
         // };
+        const _questionIds = this.props.item.questions.map(item => item._id);
         console.log(this.state, 'stateRender')
         return this.renderModal({
             title: 'Câu hỏi thi',
@@ -52,7 +61,7 @@ class QuestionModal extends AdminModal {
                 <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
                     {...console.log(this.state._idSelectedType, 'ajaxQues')}
                     // data={ajaxSelectDriveQuestion(this.state && this.state._idSelectedType)}
-                    data={ajaxSelectDriveQuestion(this.state._idSelectedType)}
+                    data={ajaxSelectDriveQuestion(this.state._idSelectedType, { $nin: _questionIds })}
                     readOnly={this.props.readOnly} />
             </>
         });
