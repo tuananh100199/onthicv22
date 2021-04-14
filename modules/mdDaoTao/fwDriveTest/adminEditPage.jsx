@@ -8,28 +8,17 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao//fwCourseType/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, TableCell, renderTable, FormTabs, FormSelect } from 'view/component/AdminPage';
 
 class QuestionModal extends AdminModal {
-    // state = { questionTypes: [], _idSelectedType: '', questions };
     state = { questionTypes: [], _idSelectedType: '' };
-    // componentDidUpdate(prevProps) {
-    //     if (prevProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
-    //         const _subjectIds = this.props.item.subjects.map(item => item._id);
-    //         getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
-    //     }
-    // }
     componentDidMount() {
         this.props.getCategoryAll('drive-question', null, items => this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
     }
-
     onShow = () => {
         this.category.value(null);
-        // this.questionSelect.value(null);
+        this.setState({ _idSelectedType: null })
     }
-
     viewTypeChanged = (_idSelectedType) => {
-        console.log(_idSelectedType, 'viewTypechange')
         this.setState({ _idSelectedType });
         this.questionSelect.value(null);
-        console.log(this.state, 'stateChange')
     }
 
     onSubmit = () => {
@@ -41,28 +30,17 @@ class QuestionModal extends AdminModal {
     }
 
     render = () => {
-        // chỉ lấy các câu hỏi chưa đưa vào
-        // const processResults = response => {
-        //     const _questionIds = this.props.item.questions.map(item => item._id),
-        //         results = [];
-        //     (response && response.list ? response.list : [])
-        //         .forEach(item => _questionIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
-        //     return { results }
-        // };
-        const _questionIds = this.props.item.questions.map(item => item._id);
-        console.log(this.state, 'stateRender')
+        const questions = this.props.item.questions,
+            _questionIds = questions.map(item => item._id);
+        let _idSelectedType = this.state._idSelectedType,
+            numberOfQuestionsByType = questions.filter(item => item.categories && item.categories.includes(_idSelectedType)).length;
         return this.renderModal({
             title: 'Câu hỏi thi',
             body: <>
-                <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes}
-                    {...console.log('ajaxType')}
-                    onChange={data => this.viewTypeChanged(data.id)}
-                    readOnly={this.props.readOnly} />
-                <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi'
-                    {...console.log(this.state._idSelectedType, 'ajaxQues')}
-                    // data={ajaxSelectDriveQuestion(this.state && this.state._idSelectedType)}
-                    data={ajaxSelectDriveQuestion(this.state._idSelectedType, { $nin: _questionIds })}
-                    readOnly={this.props.readOnly} />
+                <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
+                {this.state._idSelectedType ? <>
+                    <div>Loại câu hỏi này đã có <b>{numberOfQuestionsByType}</b> câu hỏi trong bộ đề thi này</div>
+                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, _questionIds)} readOnly={this.props.readOnly} /></> : null}
             </>
         });
     };
