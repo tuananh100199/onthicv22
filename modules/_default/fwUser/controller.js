@@ -19,7 +19,6 @@ module.exports = app => {
             pageCondition = {};
         try {
             if (condition) {
-                pageCondition['$or'] = [];
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition['$or'] = [
@@ -30,10 +29,11 @@ module.exports = app => {
                     ];
                 }
                 if (condition.type) {
+                    pageCondition['$or'] = [];
                     condition.type.forEach((item) => {
                         pageCondition['$or'].push(JSON.parse(`{ "${item}":true}`));
                     })
-                } else pageCondition = {};
+                }
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
@@ -157,7 +157,7 @@ module.exports = app => {
     app.delete('/api/user', app.permission.check('user:delete'), (req, res) => {
         app.model.user.delete(req.body._id, error => res.send({ error }));
     });
-    
+
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/register', (req, res) => app.registerUser(req, res));
     app.post('/login', app.loginUser);

@@ -11,11 +11,11 @@ class StatisticItemModal extends AdminModal {
     }
 
     onShow = (item) => {
-        let { _id, title, image, number, active, statisticId } = Object.assign({ title: '', number: 0, active: true, image: '/img/avatar.jpg' }, item);
+        let { _id, title, image, number, active, statisticId } = Object.assign({ title: '', number: 0, active: true }, item);
         this.itemTitle.value(title);
         this.itemNumber.value(number);
         this.itemActive.value(active);
-        this.imageBox.setData('statisticItem:' + (_id || 'new'), image);
+        this.imageBox.setData(`statisticItem:${_id || 'new'}`);
 
         this.setState({ _id, statisticId, image });
     }

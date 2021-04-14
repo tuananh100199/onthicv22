@@ -1,6 +1,7 @@
 const fs = require('fs'),
     path = require('path'),
-    package = require('./package');
+    package = require('./package'),
+    endOfLine = require('os').EOL;
 
 const cleanFilesPluginOptions = [],
     CleanFilesPlugin = function (options) {
@@ -35,24 +36,29 @@ const UpdateModulesPlugin = function (options) { };
 UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('UpdateModules', () => {
     templateNames.forEach(templateName => {
         moduleContainer[templateName].moduleNames = [];
-        moduleContainer[templateName].importText = '';
+        moduleContainer[templateName].importText = '// That code below is generated automatically. Do not change them manually!\n';
     });
 
+    const moduleData = [];
     fs.readdirSync(`./modules`).forEach(mainModuleName => {
         fs.statSync(`./modules/${mainModuleName}`).isDirectory() && fs.readdirSync(`./modules/${mainModuleName}`).forEach(moduleName => {
             if (fs.statSync(`./modules/${mainModuleName}/${moduleName}`).isDirectory() && fs.existsSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`)) {
-                const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split(String.fromCharCode(10));
-                if (moduleTextLines.length && moduleTextLines[0].startsWith('//TEMPLATES: ')) {
-                    const templates = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|');
-                    templateNames.forEach(templateName => {
-                        if (templates.indexOf(templateName) != -1) {
-                            moduleContainer[templateName].moduleNames.push(moduleName);
-                            moduleContainer[templateName].importText += `import ${moduleName} from 'modules/${mainModuleName}/${moduleName}/index';\n`;
-                        }
-                    });
-                }
+                moduleData.push(mainModuleName + '|' + moduleName);
             }
         });
+    });
+    moduleData.sort().forEach(item => {
+        const [mainModuleName, moduleName] = item.split('|');
+        const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split(endOfLine);
+        if (moduleTextLines.length && moduleTextLines[0].startsWith('//TEMPLATES: ')) {
+            const templates = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|');
+            templateNames.forEach(templateName => {
+                if (templates.indexOf(templateName) != -1) {
+                    moduleContainer[templateName].moduleNames.push(moduleName);
+                    moduleContainer[templateName].importText += `import ${moduleName} from 'modules/${mainModuleName}/${moduleName}/index';\n`;
+                }
+            });
+        }
     });
 
     templateNames.forEach(templateName => {

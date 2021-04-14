@@ -2,9 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject } from './redux';
 import { Link } from 'react-router-dom';
-import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
+import { getSubjectAll } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
 class CourseTypeModal extends AdminModal {
+    state = { subjects: [] };
+    componentDidUpdate(prevProps) {
+        if (prevProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
+            const _subjectIds = this.props.item.subjects.map(item => item._id);
+            getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
+        }
+    }
     onShow = () => this.subjectSelect.value(null);
 
     onSubmit = () => {
@@ -17,17 +24,9 @@ class CourseTypeModal extends AdminModal {
     }
 
     render = () => {
-        // chỉ lấy các môn chưa đưa vào
-        const processResults = response => {
-            const _subjectIds = this.props.item.subjects.map(item => item._id),
-                results = [];
-            (response && response.page && response.page.list ? response.page.list : [])
-                .forEach(item => _subjectIds.includes(item._id) || results.push({ id: item._id, text: item.title }));
-            return { results }
-        };
         return this.renderModal({
             title: 'Môn học',
-            body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={{ ...ajaxSelectSubject, processResults }} readOnly={this.props.readOnly} />
+            body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={this.state.subjects} readOnly={this.props.readOnly} />
         });
     };
 }

@@ -146,9 +146,10 @@ module.exports = app => {
         app.model.candidate.create(req.body.candidate, (error, item) => {
             if (item) {
                 app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
-                    let mailSubject = result.emailCandidateTitle.replaceAll('{name}', item.firstname + ' ' + item.lastname),
-                        mailText = result.emailCandidateText.replaceAll('{name}', item.firstname + ' ' + item.lastname),
-                        mailHtml = result.emailCandidateHtml.replaceAll('{name}', item.firstname + ' ' + item.lastname);
+                    const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
+                        mailSubject = fillParams(result.emailCandidateTitle),
+                        mailText = fillParams(result.emailCandidateText),
+                        mailHtml = fillParams(result.emailCandidateHtml);
                     app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
                 });
             }
