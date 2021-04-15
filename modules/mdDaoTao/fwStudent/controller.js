@@ -214,8 +214,7 @@ module.exports = (app) => {
     // Get All Student Have Course Null--------------------------------------------------------------------------------
     app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
         const { searchText, courseType } = req.query,
-            condition = { course: {$type: 'array', $eq: []}, courseType };
-           
+            condition = { course: null, courseType };
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition['$or'] = [
@@ -229,19 +228,29 @@ module.exports = (app) => {
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
-        const _userId = req.session.user._id,
-            _studentId = req.body._studentId;
+        const _userId = req.session.user._id;
         app.model.student.getAll( { user: _userId }, (error, students) => {
-            if (student.course) {
-                app.model.course.getByUser(student.course, (error, course) => {
-                    res.send({ error, course });
-                });
+            let courses = [];
+            if (students.length) {
+                students.map((student, index) => {
+                    if (student.course) {
+                        app.model.course.getByUser({ _id: student.course,  active: true }, (error, course) => {
+                            if (course) {
+                                courses.push(course);
+                            }
+                            if (index == students.length -1) {
+                                res.send({ error, courses });
+                            }
+                        });
+                    } else {
+                        res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không có khóa học!' });
+                    }
+                }); 
             } else {
-                res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không có khóa học!' });
+                res.send({ error });   
             }
-        });
+         })
     });
-    
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
