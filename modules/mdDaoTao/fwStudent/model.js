@@ -27,8 +27,8 @@ module.exports = (app) => {
         giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
-        course: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Course' }], default: [] },     // Khoá học
-        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                             // Hạng đăng ký
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                 // Khoá học
+        courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
         hocPhiMienGiam: Number,                                                                     // Số tiển được miễn giảm
@@ -48,8 +48,6 @@ module.exports = (app) => {
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
-
-        getByUser: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition)).populate('division').populate('subjects').populate('courseType').populate('course','-groups').exec(done),
 
         getAll: (condition, done) => typeof condition == 'function' ?
             model.find({}).sort({ lastname: 1, firstname: 1 }).exec(condition) :

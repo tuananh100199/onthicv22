@@ -54,9 +54,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
-            // pageCondition = {course: null};
-            pageCondition = { course: { $exists: true, $type: 'array', $eq: [] } };
-            console.log('condition', pageCondition);
+            pageCondition = { course: null};
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
                 pageCondition.division = req.session.user.division._id;
@@ -212,26 +210,39 @@ module.exports = (app) => {
                 { email: value },
             ];
         }
-        app.model.student.getAll(condition, (error, list) => {
-            console.log('list', list);
-            res.send({ error, list })
-        });
+        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
-        const _studentId = req.body._studentId;
-        app.model.student.getByUser(_studentId, (error, student) => {
-            if (student.course) {
-                app.model.course.getByUser(student.course, (error, course) => {
-                    res.send({ error, course });
+        const _userId = req.session.user._id;
+        app.model.student.getAll( { user: _userId }, (error, students) => {
+            if (students.length) {
+                const coursePromises = students.map((student) => {
+                    return new Promise((resolve, reject) => {
+                        if (student.course) {
+                            app.model.course.getByUser({ _id: student.course,  active: true }, (error, course) => {
+                                if (error) {
+                                    reject(error);
+                                } else if (!course) {
+                                    resolve()
+                                } else {
+                                    resolve(course);
+                                }
+                            });
+                        } else {
+                            resolve()
+                        }
+                    })
                 });
+                Promise.all(coursePromises).then(courses => {
+                    res.send({ courses: courses.filter(item => item != null) })
+                }).catch(error => res.send({ error }));
             } else {
-                res.send({ error: error ? 'Hệ thống gặp lỗi!' : 'Ứng viên không có khóa học!' });
+                res.send({ error });   
             }
-        });
+         })
     });
-    
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');

@@ -60,8 +60,7 @@ module.exports = app => {
         },
 
         getByUser: (condition, done) => {
-            const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition,{'groups' : 0, 'admins' : 0, 'lock' : 0, 'modifiedDate' : 0 }, );
-            findTask.populate('courseType').populate('subjects').exec(done);
+            (typeof condition == 'string' ? model.findById(condition) : model.findOne(condition)).select('-groups -admins -lock -modifiedDate').populate('courseType').populate('subjects').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }
