@@ -143,17 +143,26 @@ module.exports = app => {
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/candidate', (req, res) => {
-        app.model.candidate.create(req.body.candidate, (error, item) => {
-            if (item) {
-                app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
-                    const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
-                        mailSubject = fillParams(result.emailCandidateTitle),
-                        mailText = fillParams(result.emailCandidateText),
-                        mailHtml = fillParams(result.emailCandidateHtml);
-                    app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
+        const candidate = req.body.candidate;
+        app.model.candidate.get({ email: candidate.email, courseType: candidate.courseType, state: 'MoiDangKy' }, (error, userCandidate) => {
+            if (error) {
+                res.send({ error })
+            } else if (userCandidate) {
+                res.send({ notify: 'Bạn đã đăng ký khóa học này, xin vui lòng chờ xét duyệt!' })
+            } else {
+                app.model.candidate.create(candidate, (error, item) => {
+                    if (item) {
+                        app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
+                            const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
+                                mailSubject = fillParams(result.emailCandidateTitle),
+                                mailText = fillParams(result.emailCandidateText),
+                                mailHtml = fillParams(result.emailCandidateHtml);
+                            app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
+                        });
+                    }
+                    res.send({ error, item });
                 });
             }
-            res.send({ error, item });
         });
     });
 };
