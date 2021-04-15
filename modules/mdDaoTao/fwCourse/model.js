@@ -59,6 +59,10 @@ module.exports = app => {
             findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('groups.teacher', '-password').populate('groups.student', 'firstname lastname').exec(done);
         },
 
+        getByUser: (condition, done) => {
+            (typeof condition == 'string' ? model.findById(condition) : model.findOne(condition)).select('-groups -admins -lock -modifiedDate').populate('courseType').populate('subjects').exec(done);
+        },
+
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             changes.modifiedDate = new Date();

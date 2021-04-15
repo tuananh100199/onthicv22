@@ -27,7 +27,7 @@ module.exports = (app) => {
         giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khoá học
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                 // Khoá học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
