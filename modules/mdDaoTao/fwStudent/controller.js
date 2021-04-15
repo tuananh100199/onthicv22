@@ -42,20 +42,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/student', app.permission.check('student:write'), (req, res) => {
-        const newCourse = req.body.changes.course ?  req.body.changes.course  : null;
-        if (newCourse) {
-            app.model.course.get(req.query._id, (error, item) => {
-                if (error) {
-                    res.send({error})
-                }
-                else {
-                  item.course && item.course.push(newCourse);
-                  req.body.changes.course = item.course
-              }
-            }); 
-        }
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
-       
     });
 
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
