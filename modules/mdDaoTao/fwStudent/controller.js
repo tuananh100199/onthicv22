@@ -236,10 +236,7 @@ module.exports = (app) => {
                     })
                 });
                 Promise.all(coursePromises).then(courses => {
-                    let activeCourses = courses.filter(function (course) {
-                        return course != null;
-                      });
-                    res.send({ activeCourses })
+                    res.send({ courses: courses.filter(item => item != null) })
                 }).catch(error => res.send({ error }));
             } else {
                 res.send({ error });   
