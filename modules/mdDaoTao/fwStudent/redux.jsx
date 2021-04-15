@@ -198,17 +198,3 @@ export function getPreStudentAll(condition, done) {
     }
 }
 
-//Get Course Of Student
-export function getStudentCourse(_studentId, done) {
-    return dispatch => {
-        const url = '/api/student/course';
-        T.get(url, { _studentId }, data => {
-            if (data.error) {
-                T.notify('Lấy thông tin khóa học của học viên bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data);
-            }
-        }, error => T.notify('Lấy thông tin khóa học của học viên bị lỗi!', 'danger'));
-    }
-}
