@@ -76,6 +76,7 @@ module.exports = (app) => {
                 const getUserToken = () => {
                     const token = user._id + '_' + app.getToken(8),
                         tokenKey = app.appName + '_mobile:' + token;
+
                     app.redis.get(tokenKey, (error, value) => {
                         if (error || value) {
                             getUserToken();
@@ -86,7 +87,7 @@ module.exports = (app) => {
                                         getUserToken();
                                     } else {
                                         app.redis.expire(tokenKey, 30 * 24 * 60 * 60); // 30 days
-                                        res.send({ token, user });
+                                        res.send({ token, user, cookie: req.headers.cookie.slice(10) });
                                     }
                                 });
                             });
