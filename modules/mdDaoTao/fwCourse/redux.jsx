@@ -166,3 +166,18 @@ export function getCourseFeed(done) {
         }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
     }
 }
+
+//Get Course Of User
+export function getUserCourse(done) {
+    return dispatch => {
+        const url = '/api/user-course';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data);
+            }
+        }, error => T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
+    }
+}

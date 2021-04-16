@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { getUserCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
 class UserProfilePage extends AdminPage {
     componentDidMount() {
         if (this.props.system && this.props.system.user) {
-            this.props.getStudent({ user: this.props.system.user._id }, data => {
+            this.props.getUserCourse( data => {
                 this.setState(data);
             });
             T.ready();
@@ -15,7 +15,7 @@ class UserProfilePage extends AdminPage {
     }
     //To do: chưa có lớp cho học viên
     render() {
-        const {course, courseType} = this.state ? this.state : {course: '', courseType: '' };
+        const { students } = this.state ? this.state : { students: [] };
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Trang cá nhân: ',
@@ -32,21 +32,28 @@ class UserProfilePage extends AdminPage {
                             </div>
                         </Link>
                     </div>
-                    <div className='col-md-12 col-lg-6'>
+                    {students && students.map((student, index) => (
+                    <div key={index} className='col-md-12 col-lg-6'>
                         <Link to='#'>
                             <div className='widget-small coloured-icon info'>
                                 <i className='icon fa fa-3x fa fa-cubes'/>
                                 <div className='info'>
-                                    <h4>Khóa học hạng {courseType? courseType.title : ''}</h4>
-                                    <p style={{ fontWeight: 'bold' }}>{course ? 'Lớp' : 'Đang chờ khóa'}</p> 
+                                    <h4>Khóa học hạng {student && student.courseType ? student.courseType.title : ''}</h4>
+                                    {student.course ? 
+                                    <p style={{ fontWeight: 'bold' }}>Lớp: {student.course.name}</p> 
+                                    :
+                                    <p style={{ fontWeight: 'bold' }}> Đang chờ khóa </p> 
+                                    }
                                 </div>
                             </div>
                         </Link>
                     </div>
-                </div>),
+                    ))
+                     }       
+            </div>),
         });
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getStudent };
+const mapActionsToProps = { getUserCourse };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);
