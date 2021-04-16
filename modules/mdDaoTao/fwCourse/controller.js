@@ -80,7 +80,44 @@ module.exports = (app) => {
     app.get('/home/course', (req, res) => {
         app.model.course.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
     });
+    // Get courses by user
+    app.get('/api/user-course', app.permission.check('course:read'), (req, res) => {
+        const _userId = req.session.user._id;
+        app.model.student.getAll( { user: _userId }, (error, students) => {
+          res.send({error, students})
+         })
+    });
 
+    // APIs Get Course Of Student -------------------------------------------------------------------------------------
+    app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
+        const _userId = req.session.user._id;
+        app.model.student.getAll( { user: _userId }, (error, students) => {
+            if (students.length) {
+                const coursePromises = students.map((student) => {
+                    return new Promise((resolve, reject) => {
+                        if (student.course) {
+                            app.model.course.getByUser({ _id: student.course,  active: true }, (error, course) => {
+                                if (error) {
+                                    reject(error);
+                                } else if (!course) {
+                                    resolve()
+                                } else {
+                                    resolve(course);
+                                }
+                            });
+                        } else {
+                            resolve()
+                        }
+                    })
+                });
+                Promise.all(coursePromises).then(courses => {
+                    res.send({ courses })
+                }).catch(error => res.send({ error }));
+            } else {
+                res.send({ error });   
+            }
+         })
+    });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
