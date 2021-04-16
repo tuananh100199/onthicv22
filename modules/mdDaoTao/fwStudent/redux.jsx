@@ -93,7 +93,7 @@ export function getStudent(_id, done) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
-                T.alert('Lấy thông tin học viên thành công!', 'error', false, 800);
+                // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
                 done && done(data.item);
                 dispatch({ type: StudentUpdate, item: data.item });
             }
@@ -195,5 +195,20 @@ export function getPreStudentAll(condition, done) {
                 dispatch({ type: PreStudentGetAll, list: data.list });
             }
         }, error => T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
+    }
+}
+
+//Get Course Of Student
+export function getStudentCourse(_studentId, done) {
+    return dispatch => {
+        const url = '/api/student/course';
+        T.get(url, { _studentId }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin khóa học của học viên bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data);
+            }
+        }, error => T.notify('Lấy thông tin khóa học của học viên bị lỗi!', 'danger'));
     }
 }

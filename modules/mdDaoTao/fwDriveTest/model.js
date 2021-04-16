@@ -38,11 +38,11 @@ module.exports = app => {
 
         get: (condition, done) => {
             if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).populate('courseType', 'title').populate('questions', 'title').exec(done)
+            model.findOne(condition).populate('courseType', 'title').populate('questions', 'title categories').exec(done)
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions', 'title'),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('questions', 'title categories'),
 
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {
@@ -76,10 +76,10 @@ module.exports = app => {
         }),
 
         addQuestion: (_id, question, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { questions: question } }, { new: true }).populate('questions', 'title').exec(done);
+            model.findOneAndUpdate({ _id }, { $push: { questions: question } }, { new: true }).populate('questions', 'title categories').exec(done);
         },
         deleteQuestion: (_id, _questionId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { questions: _questionId } }, { new: true }).populate('questions', 'title').exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { questions: _questionId } }, { new: true }).populate('questions', 'title categories').exec(done);
         },
     };
 };
