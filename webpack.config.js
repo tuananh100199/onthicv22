@@ -51,9 +51,9 @@ UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('Updat
         const [mainModuleName, moduleName] = item.split('|');
         const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split(endOfLine);
         if (moduleTextLines.length && moduleTextLines[0].startsWith('//TEMPLATES: ')) {
-            const templates = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|');
+            const moduleTemplateNames = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|').map(item => item.replace(/(\r\n|\n|\r)/gm, ''));
             templateNames.forEach(templateName => {
-                if (templates.indexOf(templateName) != -1) {
+                if (moduleTemplateNames.indexOf(templateName) != -1) {
                     moduleContainer[templateName].moduleNames.push(moduleName);
                     moduleContainer[templateName].importText += `import ${moduleName} from 'modules/${mainModuleName}/${moduleName}/index';\n`;
                 }
