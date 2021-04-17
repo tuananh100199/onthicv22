@@ -127,14 +127,28 @@ module.exports = (env, argv) => ({
             {
                 test: /\.jsx?$/, exclude: /node_modules/,
                 use: {
+                    loader: 'babel-loader',
                     options: {
                         plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties'],
                         presets: ['@babel/preset-env', '@babel/preset-react'],
                         cacheDirectory: true,
                         cacheCompression: false,
                     },
-                    loader: 'babel-loader',
                 }
+            },
+            {
+                test: /\.(eot|.svg|ttf|woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+                use: {
+                    loader: 'url-loader',
+                    options: { limit: 10000 },
+                },
+            },
+            {
+                test: /\.svg$/,
+                use: {
+                    loader: 'svg-url-loader',
+                    options: { limit: 10000 },
+                },
             },
         ]
     },
