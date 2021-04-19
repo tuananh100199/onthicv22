@@ -83,20 +83,20 @@ module.exports = (app) => {
     // Get courses by user
     app.get('/api/user-course', app.permission.check('course:read'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll( { user: _userId }, (error, students) => {
-          res.send({error, students})
-         })
+        app.model.student.getAll({ user: _userId }, (error, students) => {
+            res.send({ error, students })
+        })
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll( { user: _userId }, (error, students) => {
+        app.model.student.getAll({ user: _userId }, (error, students) => {
             if (students.length) {
                 const coursePromises = students.map((student) => {
                     return new Promise((resolve, reject) => {
                         if (student.course) {
-                            app.model.course.getByUser({ _id: student.course,  active: true }, (error, course) => {
+                            app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!course) {
@@ -114,9 +114,9 @@ module.exports = (app) => {
                     res.send({ courses })
                 }).catch(error => res.send({ error }));
             } else {
-                res.send({ error });   
+                res.send({ error });
             }
-         })
+        })
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------

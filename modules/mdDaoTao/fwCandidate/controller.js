@@ -148,7 +148,7 @@ module.exports = app => {
             if (error) {
                 res.send({ error })
             } else if (userCandidate) {
-                res.send({ notify: 'Bạn đã đăng ký khóa học này, xin vui lòng chờ xét duyệt!' })
+                res.send({ notify: 'Bạn đã đăng ký khóa học này, xin vui lòng chờ nhân viên chúng tôi liên hệ lại trong thời gian sớm nhất!' })
             } else {
                 app.model.candidate.create(candidate, (error, item) => {
                     if (item) {
