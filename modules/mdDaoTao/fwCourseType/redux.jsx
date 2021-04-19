@@ -184,7 +184,8 @@ export function getCourseTypeByUser(_id, done) {
 
 export const ajaxSelectCourseType = T.createAjaxAdapter(
     '/api/course-type/all',
-    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
+    response => 
+        response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetCourseType(_id, done) {

@@ -8,8 +8,10 @@ class SectionAdvisoryForm extends React.Component {
     state = {};
     componentDidMount() {
         $(document).ready(() => {
-            this.props.viewId && ajaxGetCourseType(this.props.viewId, data =>
-                this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
+            this.props.viewId ?
+             ajaxGetCourseType(this.props.viewId, data =>
+                this.courseType.value( data && data.item && { id: data.item._id, text: data.item.title })) : this.courseType.value(null);
+            
 
             const { firstname, lastname, email, phoneNumber } = this.props.system && this.props.system.user ?
                 this.props.system.user : { firstname: '', lastname: '', email: '', phoneNumber: '' };
@@ -44,8 +46,12 @@ class SectionAdvisoryForm extends React.Component {
         } else if (data.phoneNumber == '' && this.phoneNumber) {
             T.notify('Số điện thoại bị trống!', 'danger');
             this.phoneNumber.focus();
+        } else if (!data.courseType) {
+            T.notify('Loại khóa học bị trống!', 'danger');
+            this.courseType.focus();
         } else {
             this.props.createCandidate(data, () => {
+                this.props.hide;
                 !user ? this.firstname.value = this.lastname.value = this.email.value = this.phoneNumber.value = '' : null;
                 T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
             });

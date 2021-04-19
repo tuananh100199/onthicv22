@@ -24,7 +24,8 @@ module.exports = app => {
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
-        lock: { type: Boolean, default: false },
+        lock: { type: Boolean, default: false }, // bổ sung khóa khóa học lại
+        close: { type: Boolean, default: false }, // khóa học đã đóng
     });
     const model = app.db.model('Course', schema);
 

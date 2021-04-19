@@ -1,6 +1,6 @@
 module.exports = (app) => {
     app.componentModel['course'] = app.model.course;
-
+    // thêm quyền lock, close
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
