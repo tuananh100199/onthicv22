@@ -8,8 +8,6 @@ const T = {
     rootUrl: window.location.protocol + '//' + window.location.hostname,
 
     component: { '<empty>': null },
-    modules: { admin: [], home: [] },
-
     defaultPageSize: 50, defaultUserPageSize: 21, defaultUserSidebarSize: 3,
     newsFeedPageSize: 3,
     courseFeedPageSize: 3,

@@ -17,12 +17,16 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-question/all', app.permission.check('driveQuestion:read'), (req, res) => {
-        const condition = {},
-            searchText =  req.query.condition && req.query.condition.searchText ? req.query.condition.searchText : {};
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
+        const { _idSelectedType, _questionIds, title } = req.query.condition,
+            condition = {};
+        condition.categories = [_idSelectedType];
+        condition._id = { $nin: _questionIds }
+        if (title) {
+            condition.title = new RegExp(title, 'i');
         }
-        app.model.driveQuestion.getAll(condition, (error, list) => res.send({ error, list }));
+        app.model.driveQuestion.getAll(condition, (error, list) => {
+            res.send({ error, list })
+        });
     });
 
     app.get('/api/drive-question/page/:pageNumber/:pageSize', (req, res) => {
