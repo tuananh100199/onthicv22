@@ -60,7 +60,8 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
         margin-bottom: 50px;
     }
 }
-.team_name{
+
+.team_name {
     font-size: 24px;
     font-weight: 600;
     color: #404040;
@@ -556,18 +557,21 @@ $breakpoint-xs-landscape: 'only screen and (min-width:480px) and (max-width:767p
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+
 @media screen and (max-width: 800px) {
-  .team_image {
-    width: 100%;
-    height: auto !important;
-  }
+    .team_image {
+        width: 100%;
+        height: auto !important;
+    }
 }
+
 .team_image {
     width: 100%;
     overflow: hidden;
 }
-.team_image img{
-     object-fit: cover;
+
+.team_image img {
+    object-fit: cover;
 }
 
 //Dots
@@ -902,4 +906,10 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     .main_nav ul li:not(:last-child) {
         margin-right: 29px;
     }
+}
+
+//Intro CSS When Show Button
+.modal-dialog .intro {
+    background: #FFFFFF;
+    padding: 0px;
 }

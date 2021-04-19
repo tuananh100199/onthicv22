@@ -25,6 +25,7 @@ class SectionAdvisoryForm extends React.Component {
     }
 
     onSubmit = (e) => {
+        console.log(this.props)
         e.preventDefault();
         const user = this.props.system && this.props.system.user,
             data = {
@@ -54,6 +55,7 @@ class SectionAdvisoryForm extends React.Component {
                 this.props.hide;
                 !user ? this.firstname.value = this.lastname.value = this.email.value = this.phoneNumber.value = '' : null;
                 T.notify('Đăng ký tư vấn của bạn đã được gửi!', 'success', true, 3000);
+                this.props.hide;
             });
         }
     }
