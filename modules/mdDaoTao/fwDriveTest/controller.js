@@ -59,6 +59,61 @@ module.exports = app => {
         app.model.driveTest.delete(req.body._id, error => res.send({ error }));
     });
 
+    //Random Drive Test API ----------------------------------------------------------------------------------------------
+    app.post('/api/drive-test/random', app.permission.check('driveTest:write'), (req, res) => {
+        const user = req.session.user,
+            today = new Date();
+        if (user.driveTest && today < user.driveTest.expireDay ) {
+            res.send(req.session.user.driveTest)
+            // req.session.user.driveTest = {
+            //     questions: [],
+            //     expireDay: new Date(new Date().setHours(new Date().getHours() + 2))
+            // }
+        } else {
+            app.model.category.getAll({type: 'drive-question'}, (error, items) => {
+                if(error || items.length == 0) {
+                    res.send({ error: error || 'Get drive-question categories failed!' });
+                } else {
+                    //items: tất cả danh mục
+                    //list: tất cả câu hỏi theo 1 loại danh mục
+                    const arrayRandom = items.map((category, index) => {
+                        return new Promise((resolve, reject) => {
+                            app.model.driveQuestion.getAll({categories: category._id},(error, list) => {
+                                if (error || list == null) {
+                                    reject(error);
+                                } else {
+                                    if (index == 0) {
+                                        resolve(app.getRandom(list,1));
+                                    } else if (index == 1) {
+                                        resolve(app.getRandom(list,2));
+                                    } else if (index == 2) {
+                                        resolve(app.getRandom(list,1));
+                                    } else if (index == 3) {
+                                        resolve(app.getRandom(list,3));
+                                    } else if (index == 4) {
+                                        resolve(app.getRandom(list,2));
+                                    } else if (index == 5) {
+                                        resolve(app.getRandom(list,10));
+                                    } else {
+                                        resolve(app.getRandom(list,1));
+                                    }
+                                }
+                            });
+                        });
+                    });
+                    Promise.all(arrayRandom).then(final => {
+                        req.session.user.driveTest = {
+                                questions: final.filter(item => item).flat(),
+                                expireDay: new Date(new Date().setHours(new Date().getHours() + 2))
+                            }
+                        res.send( req.session.user.driveTest )
+                    }).catch(error => res.send({ error }));
+                }
+            });
+        }
+    
+    });
+
     // Question APIs -----------------------------------------------------------------------------------------------------
     app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
         const { _driveTestId, _questionId } = req.body;

@@ -84,6 +84,22 @@ export function createDriveTest(data, done) {
     }
 }
 
+export function createRandomDriveTest(data, done) {
+    return dispatch => {
+        const url = '/api/drive-test/random';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data);
+                T.notify('Tạo bộ đề thi ngẫu nhiên thành công!', 'success');
+                dispatch(getDriveTestPage());
+            }
+        }, error => T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
+    }
+}
+
 export function updateDriveTest(_id, changes, done) {
     return dispatch => {
         const url = '/api/drive-test';
