@@ -4,14 +4,29 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4045: { title: 'Khóa học', link: '/user/course' },
+            4045: { title: 'Khóa học', link: '/user/course' }
         },
     };
-    app.permission.add({ name: 'course:read', menu }, { name: 'course:write' }, { name: 'course:delete' }, { name: 'course:lock' });
 
+    const courseMenu = {
+        parentMenu: app.parentMenu.trainning,
+        menus: {
+            4050: { title: 'Khóa học của bạn', link: '/user/hoc-vien/khoa-hoc' }
+        },
+    };
+    app.permission.add({
+        name: 'course:read', menu
+    },
+        { name: 'course:write' },
+        { name: 'course:delete' },
+        { name: 'course:lock' },
+        { name: 'studentCourse:read', menu: courseMenu }
+    );
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/course/item/:_id', app.templates.home);
+    app.get('/user/hoc-vien/khoa-hoc', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
@@ -22,6 +37,7 @@ module.exports = (app) => {
             pageCondition.admins = req.session.user._id;
             pageCondition.active = true;
         }
+        console.log(pageCondition)
         app.model.course.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
         });

@@ -39,6 +39,7 @@ export default function courseReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageCourse');
 export function getCoursePage(pageNumber, pageSize, done) {
+    console.log(pageNumber, pageSize)
     const page = T.updatePage('pageCourse', pageNumber, pageSize);
     return (dispatch) => {
         const url = '/api/course/page/' + page.pageNumber + '/' + page.pageSize;
@@ -177,6 +178,22 @@ export function getUserCourse(done) {
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
+            }
+        }, error => T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
+    }
+}
+// Get Course of Student
+export function getStudentCourse(done) {
+    return dispatch => {
+        const url = '/api/student/course';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                console.log(data.courses)
+                if (done) done(data);
+                dispatch({ type: CourseGetItem, item: data.courses });
             }
         }, error => T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
     }
