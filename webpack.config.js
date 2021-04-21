@@ -1,7 +1,6 @@
 const package = require('./package'),
     fs = require('fs'),
-    path = require('path'),
-    endOfLine = require('os').EOL;
+    path = require('path');
 
 const cleanFilesluginOptions = [],
     CleanFileslugin = function (options) {
@@ -49,7 +48,7 @@ UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('Updat
     });
     moduleData.sort().forEach(item => {
         const [mainModuleName, moduleName] = item.split('|');
-        const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split(endOfLine);
+        const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split('\n');
         if (moduleTextLines.length && moduleTextLines[0].startsWith('//TEMPLATES: ')) {
             const moduleTemplateNames = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|').map(item => item.replace(/(\r\n|\n|\r)/gm, ''));
             templateNames.forEach(templateName => {
