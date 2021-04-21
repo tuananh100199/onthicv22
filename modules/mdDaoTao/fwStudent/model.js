@@ -50,8 +50,8 @@ module.exports = (app) => {
             .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
 
         getAll: (condition, done) => typeof condition == 'function' ?
-            model.find({}).populate('course', 'name').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
-            model.find(condition).populate('course', 'name').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(done),
+            model.find({}).populate('course', 'name').populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
+            model.find(condition).populate('course', 'name').populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
