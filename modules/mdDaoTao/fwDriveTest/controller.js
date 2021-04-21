@@ -64,19 +64,13 @@ module.exports = app => {
         const user = req.session.user,
             today = new Date();
         if (user.driveTest && today < user.driveTest.expireDay ) {
-            res.send(req.session.user.driveTest)
-            // req.session.user.driveTest = {
-            //     questions: [],
-            //     expireDay: new Date(new Date().setHours(new Date().getHours() + 2))
-            // }
+            res.send(user.driveTest)
         } else {
             app.model.category.getAll({type: 'drive-question'}, (error, items) => {
                 if(error || items.length == 0) {
                     res.send({ error: error || 'Get drive-question categories failed!' });
                 } else {
-                    //items: tất cả danh mục
-                    //list: tất cả câu hỏi theo 1 loại danh mục
-                    const arrayRandom = items.map((category, index) => {
+                    const randomQuestions = items.map((category, index) => {
                         return new Promise((resolve, reject) => {
                             app.model.driveQuestion.getAll({categories: category._id},(error, list) => {
                                 if (error || list == null) {
@@ -101,10 +95,10 @@ module.exports = app => {
                             });
                         });
                     });
-                    Promise.all(arrayRandom).then(final => {
+                    Promise.all(randomQuestions).then(questions => {
                         req.session.user.driveTest = {
-                                questions: final.filter(item => item).flat(),
-                                expireDay: new Date(new Date().setHours(new Date().getHours() + 2))
+                                questions: questions.filter(item => item).flat(),
+                                expireDay: new Date().setHours(new Date().getHours() + 2)
                             }
                         res.send( req.session.user.driveTest )
                     }).catch(error => res.send({ error }));
