@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject } from './redux';
+import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { Link } from 'react-router-dom';
 import { getSubjectAll } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
@@ -25,6 +26,7 @@ class CourseTypeModal extends AdminModal {
     }
 
     render = () => {
+
         return this.renderModal({
             title: 'Môn học',
             body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={this.state.subjects} readOnly={this.props.readOnly} />
@@ -53,6 +55,8 @@ class CourseTypeEditPage extends AdminPage {
                     this.props.history.push(backRoute);
                 }
             });
+            this.props.getCategoryAll('drive-question', null, (items) =>
+                this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
         });
     }
 
@@ -76,6 +80,8 @@ class CourseTypeEditPage extends AdminPage {
     }
 
     render() {
+        console.log(this.state)
+        const questionTypes = this.state.questionTypes ? this.state.questionTypes : [];
         const permissionSubject = this.getUserPermission('subject'),
             permissionCourseType = this.getUserPermission('course-type'),
             readOnly = !permissionCourseType.write,
@@ -95,6 +101,12 @@ class CourseTypeEditPage extends AdminPage {
                         {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
                     </tr>),
             }),
+            driveQuestionTypes = questionTypes.map((item, index) => {
+                return (
+                    <FormTextBox key={index} type='number' ref={e => this['question' + item._id] = e} label={item.text} readOnly={this.props.readOnly} />
+                )
+            })
+            ,
             componentInfo = <>
                 <div className='row'>
                     <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
@@ -115,7 +127,15 @@ class CourseTypeEditPage extends AdminPage {
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
                 <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
             </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
+             componentSetRandomDriveTest = <>
+                <div className='row'>
+                    <div className='col-md-8 order-md-1'>
+                        {driveQuestionTypes}
+                    </div>
+                </div>
+                {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
+             </>,
+            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }, { title: 'Thiết lập bộ đề ngẫu nhiên', component: componentSetRandomDriveTest }];
 
         return this.renderPage({
             icon: 'fa fa-file',
@@ -128,5 +148,5 @@ class CourseTypeEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject };
+const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject, getCategoryAll };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypeEditPage);

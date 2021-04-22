@@ -61,8 +61,9 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('driveTest:write'), (req, res) => {
+        req.session.user.driveTest = null;
         const user = req.session.user,
-            today = new Date();
+            today = new Date().getTime();
         if (user.driveTest && today < user.driveTest.expireDay ) {
             res.send(user.driveTest)
         } else {
@@ -98,7 +99,7 @@ module.exports = app => {
                     Promise.all(randomQuestions).then(questions => {
                         req.session.user.driveTest = {
                                 questions: questions.filter(item => item).flat(),
-                                expireDay: new Date().setHours(new Date().getHours() + 2)
+                                expireDay: new Date().setHours(new Date().getHours() + 2),
                             }
                         res.send( req.session.user.driveTest )
                     }).catch(error => res.send({ error }));
