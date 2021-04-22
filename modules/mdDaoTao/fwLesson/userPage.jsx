@@ -34,12 +34,13 @@ class adminEditPage extends AdminPage {
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswers, result => alert(result.score))
+        this.props.checkQuestion(studentAnswers, result => this.setState({ result: result }))
     }
 
     render() {
         const permission = this.getUserPermission('lesson'),
-            listVideo = this.props.lesson && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
+            { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
+            { score, total } = this.state.result ? this.state.result : { score: 0, total: questions.length };
         const componentInfo = (
             <div className='tile-body'>
                 <div className='form-group'>
@@ -55,7 +56,7 @@ class adminEditPage extends AdminPage {
 
         const componentVideo = (
             <div className='tile-body row'>
-                {listVideo.map((video, index) =>
+                {videos.map((video, index) =>
                 (
                     <div key={index} className='col-lg-4 col-md-6'>
                         <div className='embed-responsive embed-responsive-16by9'>
@@ -67,14 +68,14 @@ class adminEditPage extends AdminPage {
                 )}
             </div>);
 
-        const listQuestions = this.props.lesson && this.props.lesson.item && this.props.lesson.item.questions ? this.props.lesson.item.questions : [],
-            componentQuestion = (
-                <div className='tile-body'>
-                    {listQuestions.map((question, indexQuestion) => question.active ?
+        const componentQuestion = (
+            <div>
+                <div className='tile-body row'>
+                    {questions.map((question, indexQuestion) => question.active ?
                         (
-                            <div key={indexQuestion}>
+                            <div key={indexQuestion} className='col-md-6 pb-5'>
                                 <h6>Câu {indexQuestion + 1}:{question.title}</h6>
-                                {question.image ? <img src={question.image} alt='question' style={{ width: '20%', height: 'auto' }} /> : null}
+                                {question.image ? <img src={question.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
                                 <div className='form-check'>
                                     {question.answers.split('\n').map((answer, index) => (
                                         <div key={index}>
@@ -88,8 +89,13 @@ class adminEditPage extends AdminPage {
                             </div>
                         ) : <></>
                     )}
-                    <button className='btn btn-primary' onClick={e => this.submitAnswer(e, listQuestions)}>Gửi</button>
-                </div>);
+                </div>
+                <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
+                    <p>Số câu đúng của bạn: <b>{score} / {total}</b></p>
+                </div>
+            </div>
+        );
         const tabs = [{ title: 'Bài giảng', component: componentVideo }, { title: 'Thông tin chung', component: componentInfo }, { title: 'Câu hỏi ôn tập', component: componentQuestion }];
         return this.renderPage({
             icon: 'fa fa-book',
