@@ -36,20 +36,28 @@ module.exports = (app) => {
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
-        const answers = req.body.answers,
+        const answers = req.body.answers;
+        let questionIds = answers.map(answer => answer.questionId),
             score = 0,
             err = null;
-        answers.map(answer => {
-            app.model.question.get(answer._id, (error, item) => {
-                if (error) {
-                    err = error
-                } else if (item.trueAnswer == answer.answer) {
-                    score = score++;
-                }
-            })
+        app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const questionMapper = {};
+                questions.forEach(item => questionMapper[item._id] = item);
+                answers.map(answer => {
+                    if (questionMapper[answer.questionId]) {
+                        if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
+                            score = score + 1;
+                        }
+                    } else {
+                        err = 'Không tìm thấy câu hỏi!';
+                    }
+                })
+                res.send({ error: err, result: { score: score, total: answers.length } })
+            }
         })
-        const result = { score: score, total: answers.length }
-        res.send({ err, result: result })
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {

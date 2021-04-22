@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, checkQuestion } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, FormTabs } from 'view/component/AdminPage';
 
 const adminPageLink = '/user/hoc-vien/khoa-hoc';
 class adminEditPage extends AdminPage {
@@ -31,11 +31,10 @@ class adminEditPage extends AdminPage {
 
     submitAnswer = (e, list) => {
         e.preventDefault();
-        const studentAnswer = [];
-        list.map((question) => {
-            studentAnswer.push({ _id: question._id, answer: $('input[name=' + question._id + ']:checked').val() })
+        let studentAnswers = list.map((question) => {
+            return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswer, result => console.log(result))
+        this.props.checkQuestion(studentAnswers, result => alert(result.score))
     }
 
     render() {
@@ -55,14 +54,14 @@ class adminEditPage extends AdminPage {
             </div>);
 
         const componentVideo = (
-            <div className='tile-body'>
+            <div className='tile-body row'>
                 {listVideo.map((video, index) =>
                 (
-                    <div key={index}>
-                        <h3>{video.title}</h3>
+                    <div key={index} className='col-lg-4 col-md-6'>
                         <div className='embed-responsive embed-responsive-16by9'>
                             <iframe className='embed-responsive-item' src={'https://youtube.com/embed/' + video.link.slice(17)} frameBorder='0' allowFullScreen width='70%' height='auto'></iframe>
                         </div>
+                        <h5>{video.title}</h5>
                     </div>
                 )
                 )}
@@ -79,8 +78,8 @@ class adminEditPage extends AdminPage {
                                 <div className='form-check'>
                                     {question.answers.split('\n').map((answer, index) => (
                                         <div key={index}>
-                                            <input className='form-check-input' type='radio' name={question._id} id={index} value={index} />
-                                            <label className='form-check-label' htmlFor={indexQuestion}>
+                                            <input className='form-check-input' type='radio' name={question._id} id={question._id + index} value={index} />
+                                            <label className='form-check-label' htmlFor={question._id + index}>
                                                 {answer}
                                             </label>
                                         </div>
@@ -91,8 +90,6 @@ class adminEditPage extends AdminPage {
                     )}
                     <button className='btn btn-primary' onClick={e => this.submitAnswer(e, listQuestions)}>Gửi</button>
                 </div>);
-
-        // console.log(listQuestions && listQuestions.length && listQuestions[0].answers.split('\n'))
         const tabs = [{ title: 'Bài giảng', component: componentVideo }, { title: 'Thông tin chung', component: componentInfo }, { title: 'Câu hỏi ôn tập', component: componentQuestion }];
         return this.renderPage({
             icon: 'fa fa-book',
