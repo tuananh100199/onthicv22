@@ -22,5 +22,9 @@ export default {
             path: '/user/dao-tao/bai-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPage') })
+        },
     ],
 };

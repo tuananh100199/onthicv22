@@ -5,10 +5,11 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
-    app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write' }, { name: 'lesson:delete' });
+    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write', menu }, { name: 'lesson:delete' });
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -27,6 +28,28 @@ module.exports = (app) => {
     app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
         app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
+    });
+
+    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
+        const { _id } = req.query;
+        app.model.lesson.getByStudent(_id, (error, item) => res.send({ error, item }));
+    });
+
+    app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
+        const answers = req.body.answers,
+            score = 0,
+            err = null;
+        answers.map(answer => {
+            app.model.question.get(answer._id, (error, item) => {
+                if (error) {
+                    err = error
+                } else if (item.trueAnswer == answer.answer) {
+                    score = score++;
+                }
+            })
+        })
+        const result = { score: score, total: answers.length }
+        res.send({ err, result: result })
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {

@@ -5,11 +5,12 @@ module.exports = (app) => {
             4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc' },
         },
     };
-    app.permission.add({ name: 'subject:read', menu }, { name: 'subject:write' }, { name: 'subject:delete' });
+    app.permission.add({ name: 'subject:read' }, { name: 'subject:write', menu }, { name: 'subject:delete' });
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {

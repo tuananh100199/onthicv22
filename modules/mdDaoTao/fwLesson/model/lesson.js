@@ -42,6 +42,15 @@ module.exports = app => {
             model.findOne(condition).populate('videos').populate('questions').exec(done);
         },
 
+        getByStudent: (condition, done) => {
+            if (done == undefined) {
+                done = condition;
+                condition = {};
+            }
+            if (typeof condition == 'string') condition = { _id: condition };
+            model.findOne(condition).populate('videos').populate('questions', '-trueAnswer').exec(done);
+        },
+
         update: (_id, changes, done) => { // changes = {$set, $unset, $push, $pull}
             model.findOneAndUpdate({ _id }, changes, { new: true }).populate('videos').populate('questions').exec(done);
         },

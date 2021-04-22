@@ -117,6 +117,8 @@ export function createCandidate(candidate, done) {
             if (data.error) {
                 T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
+            } else if (data.notify) {
+                T.alert(data.notify, 'error', false, 2000);
             } else {
                 if (done) done(data);
             }
