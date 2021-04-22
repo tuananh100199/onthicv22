@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateCourse } from './redux.jsx';
-import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserSubjectView from './tabView/userSubjectView';
@@ -10,7 +9,7 @@ const previousRoute = '/user/hoc-vien/khoa-hoc';
 class EditCoursePage extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
-        T.ready('/user/course', () => {
+        T.ready('/user/hoc-vien/khoa-hoc', () => {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
                 _id = route.parse(window.location.pathname)._id;
             if (_id) {

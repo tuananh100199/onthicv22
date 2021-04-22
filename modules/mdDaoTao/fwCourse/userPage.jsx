@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 class UserCoursePage extends AdminPage {
     componentDidMount() {
         this.props.getStudentCourse();
-        T.ready();
+        T.ready('/user/hoc-vien/khoa-hoc');
     }
 
     render() {
@@ -41,7 +41,7 @@ class UserCoursePage extends AdminPage {
             breadcrumb: ['Khóa học'],
             content: (
                 <div className='row'>
-                    {list && list.map((course, index) => (
+                    {list.length && list.map((course, index) => (
                         <div key={index} className='col-md-12 col-lg-6'>
                             <Link to={'/user/hoc-vien/khoa-hoc/' + course._id}>
                                 <div className='widget-small coloured-icon info'>

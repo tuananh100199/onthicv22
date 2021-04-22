@@ -10,7 +10,7 @@ const userPageLink = '/user/hoc-vien/khoa-hoc';
 class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/subject', () => {
+        T.ready('/user/hoc-vien/khoa-hoc', () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/:_id').parse(url);
             if (params._id) {
@@ -41,21 +41,26 @@ class AdminEditPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Tên bài học</th>
+                    {/* <th style={{ width: 'auto', textAlign: 'center', nowrap: 'true' }}>Tiến độ hoàn thành</th> */}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} />
+                    <TableCell type='link' content={item.title} url={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + item._id} />
                 </tr>),
         });
 
         const componentInfo = (
             <div className='tile-body'>
-                <label>Tên môn học: <b>{this.state.title}</b></label>
-                <label>Mô tả ngắn gọn: <b>{this.state.shortDescription}</b></label>
-                {/* <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='2' readOnly={readOnly} />
-                <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={readOnly} />
-                {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null} */}
+                <div className='form-group'>
+                    Tên môn học: <b>{this.state.title}</b>
+                </div>
+                <div className='form-group'>
+                    <label>Mô tả ngắn gọn: <b>{this.state.shortDescription}</b></label>
+                </div>
+                <div className='form-group'>
+                    <label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} />
+                </div>
             </div>
         );
         const componentLesson = (

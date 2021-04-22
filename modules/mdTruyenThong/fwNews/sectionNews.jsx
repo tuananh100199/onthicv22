@@ -25,7 +25,7 @@ class SectionNews extends React.Component {
                     (<div className='row pt-5'>
                         {newsFeed.map((item, index) => (
                             <div key={index} className='team_col ftco-animate col-md-4' style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                                <div className='team_item text-center d-flex flex-column aling-items-center justify-content'>
+                                <div className='team_item text-center d-flex flex-column align-items-center justify-content'>
                                     <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
                                     <div className='team_content text-center'>
                                         <div className='team_name'>

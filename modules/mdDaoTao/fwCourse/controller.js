@@ -15,9 +15,9 @@ module.exports = (app) => {
         },
     };
     app.permission.add({
-        name: 'course:read', menu
+        name: 'course:read'
     },
-        { name: 'course:write' },
+        { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'studentCourse:read', menu: courseMenu }
