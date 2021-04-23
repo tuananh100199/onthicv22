@@ -4,6 +4,7 @@ import { getCourse, updateCourse } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserSubjectView from './tabView/userSubjectView';
+import UserDriveTestView from './tabView/userDriveTestView';
 
 const previousRoute = '/user/hoc-vien/khoa-hoc';
 class EditCoursePage extends AdminPage {
@@ -46,6 +47,7 @@ class EditCoursePage extends AdminPage {
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <UserSubjectView /> },
+            { title: 'Ôn tập đề thi', component: <UserDriveTestView /> },
         ];
         return this.renderPage({
             icon: 'fa fa-cubes',
