@@ -568,3 +568,14 @@
         }
     }
 }
+
+.app-advance-search {
+    display: none;
+    background-color: #FFF;
+    margin: -30px -30px 30px;
+    padding: 0 30px 20px 30px;
+
+    &.show {
+        display: block;
+    }
+}
