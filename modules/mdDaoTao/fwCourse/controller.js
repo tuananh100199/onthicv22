@@ -135,6 +135,25 @@ module.exports = (app) => {
         })
     });
 
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+        const { _id } = req.query,
+            studentId = req.session.user._id;
+        app.model.student.getAll({ user: studentId }, (error, students) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const studentMapper = {};
+                students.forEach(item => studentMapper[item.course._id] = item);
+                if (studentMapper[_id]) {
+                    app.model.course.get(_id, (error, item) => res.send({ error, item }));
+                } else {
+                    res.send({ notify: 'Bạn không thuộc khóa học này!' })
+                }
+            }
+        })
+
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read');

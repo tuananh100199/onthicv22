@@ -1,25 +1,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourse } from './redux.jsx';
+import { getCourseByStudent, updateCourse } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserSubjectView from './tabView/userSubjectView';
 import UserDriveTestView from './tabView/userDriveTestView';
 
 const previousRoute = '/user/hoc-vien/khoa-hoc';
-class EditCoursePage extends AdminPage {
+class UserCoursePageDetail extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
         T.ready('/user/hoc-vien/khoa-hoc', () => {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
                 _id = route.parse(window.location.pathname)._id;
             if (_id) {
-                this.props.getCourse(_id, data => {
+                this.props.getCourseByStudent(_id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
                         this.props.history.push(previousRoute);
+                    } else if (data.notify) {
+                        T.alert(data.notify, 'error', false, 2000);
+                        this.props.history.push(previousRoute);
                     } else if (data.item) {
-                        this.setState(data.item);
+                        this.setState(data.item)
                     } else {
                         this.props.history.push(previousRoute);
                     }
@@ -60,5 +63,5 @@ class EditCoursePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourse, updateCourse };
-export default connect(mapStateToProps, mapActionsToProps)(EditCoursePage);
+const mapActionsToProps = { getCourseByStudent, updateCourse };
+export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);

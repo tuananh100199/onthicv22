@@ -18,7 +18,7 @@ export default {
         },
         {
             path: '/user/hoc-vien/khoa-hoc/mon-hoc/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
+            component: Loadable({ loading: Loading, loader: () => import('./userPage') })
         },
     ],
 };
