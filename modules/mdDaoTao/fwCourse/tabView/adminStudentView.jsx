@@ -106,7 +106,9 @@ class AdminStudentView extends React.Component {
                                                 this.setState({ groups });
                                             }}
                                         >
-                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} class="fa fa-user-times"></i> : <span>{student.lastname} {student.firstname}</span>}
+                                            {student.lastname} {student.firstname}
+                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} style={{ float: 'right', color: 'red' }} class="fa fa-user-times"></i> : ''}
+                                            {/* // : <span>{student.lastname} {student.firstname}</span>} */}
                                         </li>
                                     ))}
                                 </ol> </> : 'Chưa có học viên'}
