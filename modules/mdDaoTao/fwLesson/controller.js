@@ -40,7 +40,7 @@ module.exports = (app) => {
         let questionIds = answers.map(answer => answer.questionId),
             score = 0,
             err = null;
-        app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
+        app.model.driveQuestion.getAll({ _id: { $in: questionIds } }, (error, questions) => {
             if (error) {
                 res.send({ error })
             } else {

@@ -36,10 +36,10 @@ class SectionAdvisoryForm extends React.Component {
             };
         if (data.lastname == '' && this.lastname) {
             T.notify('Họ bị trống!', 'danger');
-            this.firstname.focus();
+            this.lastname.focus();
         } else if (data.firstname == '' && this.firstname) {
             T.notify('Tên bị trống!', 'danger');
-            this.lastname.focus();
+            this.firstname.focus();
         } else if (this.email && data.email != '' && !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.email.focus();

@@ -890,13 +890,13 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     }
 }
 
-@media only screen and (max-width: 1280px) {
+@media only screen and (max-width: 1340px) {
     .social .large_btn {
         display: none;
     }
 }
 
-@media only screen and (min-width: 1281px) {
+@media only screen and (min-width: 1341px) {
     .social .small_btn {
         display: none;
     }
@@ -906,6 +906,14 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
     .main_nav ul li:not(:last-child) {
         margin-right: 29px;
     }
+    .button a {
+        font-size: 13px !important;
+    }
+}
+
+.social ul li:hover {
+    background-color: white;
+    border: solid 1px #4ca758;
 }
 
 //Intro CSS When Show Button
@@ -917,4 +925,14 @@ $breakpoint-xs: 'only screen and (max-width:767px)';
 .intro .intro_form .button {
     border: solid 2px #fd556d;
     outline: none;
+}
+
+.button a {
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+    line-height: 42px;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
 }

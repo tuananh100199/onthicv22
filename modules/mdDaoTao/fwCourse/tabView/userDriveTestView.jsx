@@ -18,10 +18,9 @@ class UserDriveTestView extends AdminPage {
 
         const { list } = this.props.driveTest && this.props.driveTest.page ?
         this.props.driveTest.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        console.log('list', list)
         const content = <>
             {list && list.map((driveTest, index) => (
-                <div key={index} className='col-md-12 col-lg-6'>
+                <div key={index} className='col-md-6 col-lg-6'>
                     <Link to= {'/user/hoc-vien/khoa-hoc/de-thi-thu/' + driveTest._id }>
                         <div className='widget-small coloured-icon info'>
                             <i className='icon fa fa-3x fa fa-cubes' />
@@ -40,7 +39,7 @@ class UserDriveTestView extends AdminPage {
             }
         </>;
         return (
-            <div className='tile-body'>
+            <div className='tile-body row'>
                 {content}
             </div>);
     }

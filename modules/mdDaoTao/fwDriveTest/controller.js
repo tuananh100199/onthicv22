@@ -109,6 +109,31 @@ module.exports = app => {
     
     });
 
+    app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
+        const { _id, answers } = req.body;
+        let score = 0,
+            err = null;
+        app.model.driveTest.get( _id, (error, test) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const questionMapper = {};
+                test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
+                answers.map(answer => {
+                    if (questionMapper[answer.questionId]) {
+                        if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
+                            score = score + 1;
+                        }
+                    } else {
+                        err = 'Không tìm thấy câu hỏi!';
+                    }
+                })
+                console.log('score', score)
+                res.send({ error: err, result: { score: score, total: answers.length } })
+            }
+        })
+    });
+
     // Question APIs -----------------------------------------------------------------------------------------------------
     app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
         const { _driveTestId, _questionId } = req.body;

@@ -155,13 +155,20 @@ class HomeMenu extends React.Component {
                                             <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={dangKyTuVanLink} onClick={this.props.showCandidateModal} ><i className='fa fa-envelope-o' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
                                         </div>
                                         <div className='btn-group m-auto pl-2' >
-                                            <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className='fa fa-user-circle-o' aria-hidden='true'></i></a></li>
+                                            <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className='fa fa-user-circle-o' style={{ color: '#4CA758' }} aria-hidden='true'></i></a></li>
                                             <li data-toggle='tooltip' title='Đăng xuất'><a href='#' onClick={this.logout} ><i className='fa fa-power-off' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
                                         </div>
                                     </div> :
                                     <div className='btn-group'>
-                                        <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>
-                                        <div className='button button_1 mr-1'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
+                                        <div className='button button_2 mr-1 large_btn'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
+                                        <div className='button button_1 mr-1 large_btn' > <a href={dangKyTuVanLink}  onClick={this.props.showCandidateModal}>Đăng ký tư vấn</a></div>
+                                        <div className='button button_2 mr-1 large_btn'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>
+
+                                        <div className='btn-group m-auto pl-2 small_btn' >
+                                            <li data-toggle='tooltip' title='Số điện thoại'><a href='#'><i className='fa fa-phone' style={{ color: '#4CA758' }} /></a></li>
+                                            <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={dangKyTuVanLink} onClick={this.props.showCandidateModal} ><i className='fa fa-envelope-o' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
+                                            <li data-toggle='tooltip' title='Đăng nhập' className='login_css_small' ><a href='#' onClick={this.props.showLoginModal} ><i className='fa fa-user-circle-o' style={{ color: '#4CA758' }} /></a></li>
+                                        </div>
                                     </div>}
                                 {/*{twitter}*/}
                                 {/*{facebook}*/}

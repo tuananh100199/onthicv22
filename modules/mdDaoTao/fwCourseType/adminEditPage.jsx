@@ -38,27 +38,33 @@ const backRoute = '/user/course-type'
 class CourseTypeEditPage extends AdminPage {
     state = {};
     componentDidMount() {
+        this.props.getCategoryAll('drive-question', null, (items) =>
+                this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title })) }));
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
                 if (item) {
-                    this.itemTitle.value(item.title);
-                    this.itemShortDescription.value(item.shortDescription);
-                    this.itemDetailDescription.html(item.detailDescription);
-                    this.itemPrice.value(item.price);
-                    this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
-                    this.itemImage.setData('course-type:' + item._id);
-
-                    this.itemTitle.focus();
-                    this.setState(item);
+                    this.setState(item, ()=> {
+                        this.itemTitle.value(item.title);
+                        this.itemShortDescription.value(item.shortDescription);
+                        this.itemDetailDescription.html(item.detailDescription);
+                        this.itemPrice.value(item.price);
+                        this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
+                        this.itemImage.setData('course-type:' + item._id);
+    
+                        this.itemTitle.focus();
+                        item.questionTypes && item.questionTypes.forEach(type => {
+                            this[type.category] && this[type.category].value(type.amount)
+                        })
+                    });
+                  
                 } else {
                     this.props.history.push(backRoute);
                 }
             });
-            this.props.getCategoryAll('drive-question', null, (items) =>
-                this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
+            
         });
-    }
+        }
 
     remove = (e, subject) => e.preventDefault() || T.confirm('Xoá môn học ', `Bạn có chắc muốn xoá môn học '${subject.title}' khỏi loại khóa học này?`, true, isConfirm =>
         isConfirm && this.props.deleteCourseTypeSubject(this.state._id, subject._id));
@@ -69,8 +75,13 @@ class CourseTypeEditPage extends AdminPage {
             shortDescription: this.itemShortDescription.value().trim(),
             detailDescription: this.itemDetailDescription.html(),
             price: this.itemPrice.value(),
-            isPriceDisplayed: this.itemIsPriceDisplayed.value()
+            isPriceDisplayed: this.itemIsPriceDisplayed.value(),
+            questionTypes: this.state.types.map(type => ({
+                category: type._id,
+                amount: this[type._id].value(),
+            }))
         };
+        console.log('changess', changes)
         if (changes.title == '') {
             T.notify('Tên loại khóa học không được trống!', 'danger');
             this.itemTitle.focus();
@@ -81,7 +92,7 @@ class CourseTypeEditPage extends AdminPage {
 
     render() {
         console.log(this.state)
-        const questionTypes = this.state.questionTypes ? this.state.questionTypes : [];
+        const types = this.state.types ? this.state.types : [];
         const permissionSubject = this.getUserPermission('subject'),
             permissionCourseType = this.getUserPermission('course-type'),
             readOnly = !permissionCourseType.write,
@@ -101,9 +112,9 @@ class CourseTypeEditPage extends AdminPage {
                         {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
                     </tr>),
             }),
-            driveQuestionTypes = questionTypes.map((item, index) => {
+            driveQuestionTypes = types.map((item, index) => {
                 return (
-                    <FormTextBox key={index} type='number' ref={e => this['question' + item._id] = e} label={item.text} readOnly={this.props.readOnly} />
+                    <FormTextBox key={index} type='number' ref={e => this[item._id] = e } label={item.text} readOnly={this.props.readOnly} />
                 )
             })
             ,

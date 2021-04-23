@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getDriveTestItem } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
+
 import { AdminPage } from 'view/component/AdminPage';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu'
@@ -24,13 +26,17 @@ class UserPageDriveTest extends AdminPage {
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswers, result => this.setState({ result: result }))
+        T.confirm('Gửi câu trả lời', 'Bạn có chắc chắn nộp câu trả lời cho bộ câu hỏi này?', true, isConfirm =>
+            isConfirm && this.props.checkDriveTestScore(this.state._id, studentAnswers, result => {
+                $('#submit-btn').removeAttr('disabled');
+                T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+                this.setState({ result: result })
+            }))
     }
 
     render() {
         console.log(this.state)
         const { questions } = this.state ? this.state : { questions: [] };
-        console.log('questions', questions)
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
 
         return this.renderPage({
@@ -68,5 +74,5 @@ class UserPageDriveTest extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { getDriveTestItem };
+const mapActionsToProps = { getDriveTestItem, checkDriveTestScore };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTest);
