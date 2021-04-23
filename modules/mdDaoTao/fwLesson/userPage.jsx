@@ -35,11 +35,12 @@ class adminEditPage extends AdminPage {
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswers, result => {
-            $('#submit-btn').removeAttr('disabled');
-            T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
-        })
+        T.confirm('Gửi câu trả lời', 'Bạn có chắc chắn nộp câu trả lời cho bộ câu hỏi này?', true, isConfirm =>
+            isConfirm && this.props.checkQuestion(studentAnswers, result => {
+                $('#submit-btn').removeAttr('disabled');
+                T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+                this.setState({ result: result })
+            }))
     }
 
     render() {
@@ -59,14 +60,13 @@ class adminEditPage extends AdminPage {
             </div>);
 
         const componentVideo = (
-            <div className='tile-body row'>
+            <div className='tile-body'>
                 {videos.length ? videos.map((video, index) =>
                 (
-                    <div key={index} className='col-lg-4 col-md-6'>
-                        <div className='embed-responsive embed-responsive-16by9'>
-                            <iframe className='embed-responsive-item' src={'https://youtube.com/embed/' + video.link.slice(17)} frameBorder='0' allowFullScreen width='70%' height='auto'></iframe>
+                    <div key={index} className='d-flex justify-content-center pb-5'>
+                        <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }}>
+                            <iframe className='embed-responsive-item' src={'https://youtube.com/embed/' + video.link.slice(17)} frameBorder='0' allowFullScreen></iframe>
                         </div>
-                        <h5>{video.title}</h5>
                     </div>
                 )
                 ) : <div className='tile-body'>Chưa có video bài giảng!</div>}
