@@ -5,6 +5,8 @@ import Loading from 'view/component/Loading';
 // import SectionCourseList from './sectionCourseList';
 // import SectionCourse from './sectionCourse';
 import course from './redux';
+import driveTest from 'modules/mdDaoTao/fwDriveTest/redux';
+
 
 export default {
     init: () => {
@@ -18,7 +20,7 @@ export default {
         // };
     },
     redux: {
-        course
+        course, driveTest
     },
     routes: [
         {
@@ -37,10 +39,10 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
-        // {
-        //     path: '/course/:_id',
-        //     component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail') })
-        // },
+        {
+            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

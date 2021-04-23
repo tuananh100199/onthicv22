@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getUserCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { getDriveTestPage } from 'modules/mdDaoTao/fwDriveTest/redux';
-import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 
 
 class UserDriveTestView extends AdminPage {
@@ -22,7 +22,7 @@ class UserDriveTestView extends AdminPage {
         const content = <>
             {list && list.map((driveTest, index) => (
                 <div key={index} className='col-md-12 col-lg-6'>
-                    <Link to=''>
+                    <Link to= {'/user/hoc-vien/khoa-hoc/de-thi-thu/' + driveTest._id }>
                         <div className='widget-small coloured-icon info'>
                             <i className='icon fa fa-3x fa fa-cubes' />
                             <div className='info'>
