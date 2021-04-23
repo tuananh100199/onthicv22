@@ -9,9 +9,9 @@ module.exports = (app) => {
     };
 
     const courseMenu = {
-        parentMenu: app.parentMenu.trainning,
+        parentMenu: app.parentMenu.studentCourse,
         menus: {
-            4050: { title: 'Khóa học của bạn', link: '/user/hoc-vien/khoa-hoc' }
+            5050: { title: 'Khóa học của bạn', link: '/user/hoc-vien/khoa-hoc' }
         },
     };
     app.permission.add({
@@ -37,7 +37,6 @@ module.exports = (app) => {
             pageCondition.admins = req.session.user._id;
             pageCondition.active = true;
         }
-        console.log(pageCondition)
         app.model.course.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
         });

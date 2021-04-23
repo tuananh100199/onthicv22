@@ -27,4 +27,5 @@
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4040 - Ứng viên (/user/pre-student)
 	4045 - Khóa học (/user/course)
-	4050 - Khóa học của bạn (/user/hoc-vien/khoa-hoc)
+5000. Khóa học của bạn (/user/hoc-vien/khoa-hoc)
+	5050 - Khóa học của bạn (/user/hoc-vien/khoa-hoc)
