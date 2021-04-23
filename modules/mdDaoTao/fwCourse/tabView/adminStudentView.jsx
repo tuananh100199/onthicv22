@@ -102,9 +102,7 @@ class AdminStudentView extends React.Component {
                                             onMouseLeave={() => {
                                                 const groups = this.state.groups;
                                                 const index = groups.findIndex(item1 => item1._id == item._id);
-                                                console.log(index, 'index');
                                                 groups[index].student[indexStudent].isHide = false;
-                                                console.log(groups[index].student[indexStudent], 'student');
                                                 this.setState({ groups });
                                             }}
                                         >
