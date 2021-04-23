@@ -4,42 +4,46 @@ import { getLessonByStudent, checkQuestion } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 
-const adminPageLink = '/user/hoc-vien/khoa-hoc';
+const userPageLink = '/user/hoc-vien/khoa-hoc';
 class adminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready(adminPageLink, () => {
+        T.ready(userPageLink, () => {
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id').parse(url);
             if (params._id) {
                 this.props.getLessonByStudent(params._id, data => {
                     if (data.error) {
                         T.notify('Lấy bài học bị lỗi!', 'danger');
-                        this.props.history.push(adminPageLink);
+                        this.props.history.push(userPageLink);
                     } else if (data.item) {
                         const { _id, title, shortDescription, detailDescription } = data.item;
                         this.setState({ _id, title, shortDescription, detailDescription });
                     } else {
-                        this.props.history.push(adminPageLink);
+                        this.props.history.push(userPageLink);
                     }
                 });
             } else {
-                this.props.history.push(adminPageLink);
+                this.props.history.push(userPageLink);
             }
         });
     }
 
     submitAnswer = (e, list) => {
+        $('#submit-btn').attr('disabled', true);
         e.preventDefault();
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswers, result => this.setState({ result: result }))
+        this.props.checkQuestion(studentAnswers, result => {
+            $('#submit-btn').removeAttr('disabled');
+            T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+            this.setState({ result: result })
+        })
     }
 
     render() {
-        const permission = this.getUserPermission('lesson'),
-            { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
+        const { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
             { score, total } = this.state.result ? this.state.result : { score: 0, total: questions.length };
         const componentInfo = (
             <div className='tile-body'>
@@ -56,7 +60,7 @@ class adminEditPage extends AdminPage {
 
         const componentVideo = (
             <div className='tile-body row'>
-                {videos.map((video, index) =>
+                {videos.length ? videos.map((video, index) =>
                 (
                     <div key={index} className='col-lg-4 col-md-6'>
                         <div className='embed-responsive embed-responsive-16by9'>
@@ -65,7 +69,7 @@ class adminEditPage extends AdminPage {
                         <h5>{video.title}</h5>
                     </div>
                 )
-                )}
+                ) : <div className='tile-body'>Chưa có video bài giảng!</div>}
             </div>);
 
         const componentQuestion = (
@@ -87,11 +91,11 @@ class adminEditPage extends AdminPage {
                                     ))}
                                 </div>
                             </div>
-                        ) : <></>
+                        ) : <div>Chưa có câu hỏi ôn tập</div>
                     )}
                 </div>
                 <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
+                    <button id='submit-btn' className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
                     <p>Số câu đúng của bạn: <b>{score} / {total}</b></p>
                 </div>
             </div>
@@ -100,9 +104,9 @@ class adminEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link to={userPageLink}>Bài học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
-            backRoute: adminPageLink,
+            backRoute: userPageLink,
         });
     }
 }

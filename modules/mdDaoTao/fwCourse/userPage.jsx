@@ -19,7 +19,7 @@ class UserCoursePage extends AdminPage {
             breadcrumb: ['Khóa học'],
             content: (
                 <div className='row'>
-                    {list.length && list.map((course, index) => (
+                    {list.length ? list.map((course, index) => (
                         <div key={index} className='col-md-12 col-lg-6'>
                             <Link to={'/user/hoc-vien/khoa-hoc/' + course._id}>
                                 <div className='widget-small coloured-icon info'>
@@ -30,7 +30,7 @@ class UserCoursePage extends AdminPage {
                                 </div>
                             </Link>
                         </div>
-                    ))
+                    )) : <h3>Chưa có khóa học!</h3>
                     }
                 </div>),
         });
