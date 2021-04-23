@@ -62,51 +62,43 @@ module.exports = app => {
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('driveTest:write'), (req, res) => {
         req.session.user.driveTest = null;
+        const _courseTypeId = req.body._courseTypeId;
         const user = req.session.user,
-            today = new Date().getTime();
+        today = new Date().getTime();
         if (user.driveTest && today < user.driveTest.expireDay ) {
             res.send(user.driveTest)
         } else {
-            app.model.category.getAll({type: 'drive-question'}, (error, items) => {
-                if(error || items.length == 0) {
-                    res.send({ error: error || 'Get drive-question categories failed!' });
+            app.model.courseType.get( _courseTypeId, (error, item) => {
+                if(error || item == null) {
+                    res.send({ error })
                 } else {
-                    const randomQuestions = items.map((category, index) => {
-                        return new Promise((resolve, reject) => {
-                            app.model.driveQuestion.getAll({categories: category._id},(error, list) => {
-                                if (error || list == null) {
-                                    reject(error);
-                                } else {
-                                    if (index == 0) {
-                                        resolve(app.getRandom(list,1));
-                                    } else if (index == 1) {
-                                        resolve(app.getRandom(list,2));
-                                    } else if (index == 2) {
-                                        resolve(app.getRandom(list,1));
-                                    } else if (index == 3) {
-                                        resolve(app.getRandom(list,3));
-                                    } else if (index == 4) {
-                                        resolve(app.getRandom(list,2));
-                                    } else if (index == 5) {
-                                        resolve(app.getRandom(list,10));
+                    if( item.questionTypes ) {
+                        const randomQuestions = item.questionTypes.map((type) => {
+                            console.log('type', type)
+                            return new Promise((resolve, reject) => {
+                                app.model.driveQuestion.getAll({categories: type.category},(error, list) => {
+                                    console.log('list', list)
+                                    if (error || list == null) {
+                                        reject(error);
                                     } else {
-                                        resolve(app.getRandom(list,1));
+                                            resolve(app.getRandom(list,type.amount));
                                     }
-                                }
+                                });
                             });
                         });
-                    });
-                    Promise.all(randomQuestions).then(questions => {
-                        req.session.user.driveTest = {
-                                questions: questions.filter(item => item).flat(),
-                                expireDay: new Date().setHours(new Date().getHours() + 2),
-                            }
-                        res.send( req.session.user.driveTest )
-                    }).catch(error => res.send({ error }));
+                        Promise.all(randomQuestions).then(questions => {
+                            req.session.user.driveTest = {
+                                    questions: questions.filter(item => item).flat(),
+                                    expireDay: new Date().setHours(new Date().getHours() + 2),
+                                }
+                            res.send( req.session.user.driveTest )
+                        }).catch(error => res.send({ error }));
+                    }
                 }
             });
         }
-    
+       
+       
     });
 
     app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {

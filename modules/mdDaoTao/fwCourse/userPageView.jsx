@@ -51,7 +51,7 @@ class UserCoursePageDetail extends AdminPage {
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <UserSubjectView /> },
-            { title: 'Ôn tập đề thi', component: <UserDriveTestView /> },
+            { title: 'Ôn tập đề thi', component: <UserDriveTestView courseType={this.state.courseType} /> },
         ];
         return this.renderPage({
             icon: 'fa fa-cubes',

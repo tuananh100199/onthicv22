@@ -43,6 +43,10 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

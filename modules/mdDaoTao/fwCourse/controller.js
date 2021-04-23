@@ -28,6 +28,7 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/de-thi-thu/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     
 

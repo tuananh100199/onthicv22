@@ -54,7 +54,7 @@ class CourseTypeEditPage extends AdminPage {
     
                         this.itemTitle.focus();
                         item.questionTypes && item.questionTypes.forEach(type => {
-                            this[type.category] && this[type.category].value(type.amount)
+                            this[type.category] && this[type.category].value(type.amount);
                         })
                     });
                   
@@ -81,7 +81,6 @@ class CourseTypeEditPage extends AdminPage {
                 amount: this[type._id].value(),
             }))
         };
-        console.log('changess', changes)
         if (changes.title == '') {
             T.notify('Tên loại khóa học không được trống!', 'danger');
             this.itemTitle.focus();
@@ -91,7 +90,6 @@ class CourseTypeEditPage extends AdminPage {
     }
 
     render() {
-        console.log(this.state)
         const types = this.state.types ? this.state.types : [];
         const permissionSubject = this.getUserPermission('subject'),
             permissionCourseType = this.getUserPermission('course-type'),
@@ -114,7 +112,7 @@ class CourseTypeEditPage extends AdminPage {
             }),
             driveQuestionTypes = types.map((item, index) => {
                 return (
-                    <FormTextBox key={index} type='number' ref={e => this[item._id] = e } label={item.text} readOnly={this.props.readOnly} />
+                    <FormTextBox className='col-md-6' key={index} type='number' ref={e => this[item._id] = e } label={item.text} readOnly={this.props.readOnly} />
                 )
             })
             ,
@@ -140,9 +138,7 @@ class CourseTypeEditPage extends AdminPage {
             </>,
              componentSetRandomDriveTest = <>
                 <div className='row'>
-                    <div className='col-md-8 order-md-1'>
                         {driveQuestionTypes}
-                    </div>
                 </div>
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
              </>,

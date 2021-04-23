@@ -84,10 +84,10 @@ export function createDriveTest(data, done) {
     }
 }
 
-export function createRandomDriveTest(data, done) {
+export function createRandomDriveTest(_courseTypeId, done) {
     return dispatch => {
         const url = '/api/drive-test/random';
-        T.post(url, { data }, data => {
+        T.post(url, { _courseTypeId }, data => {
             if (data.error) {
                 T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
