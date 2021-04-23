@@ -54,7 +54,9 @@ class CourseTypeEditPage extends AdminPage {
     
                         this.itemTitle.focus();
                         item.questionTypes && item.questionTypes.forEach(type => {
-                            this[type.category] && this[type.category].value(type.amount);
+                            type.amount ? 
+                            this[type.category] && this[type.category].value(type.amount)
+                            : this[type.category] && this[type.category].value(0);
                         })
                     });
                   

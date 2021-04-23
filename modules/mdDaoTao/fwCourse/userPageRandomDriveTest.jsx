@@ -41,7 +41,7 @@ class UserPageRandomDriveTest extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
-            title: 'Ôn tập: ' + this.state.title,
+            title: 'Ôn tập: Đề ngẫu nhiên ',
             breadcrumb: ['Bộ đề thi'],
             content: (
                 <div>

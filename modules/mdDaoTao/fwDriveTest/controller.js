@@ -60,7 +60,7 @@ module.exports = app => {
     });
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
-    app.post('/api/drive-test/random', app.permission.check('driveTest:write'), (req, res) => {
+    app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
         req.session.user.driveTest = null;
         const _courseTypeId = req.body._courseTypeId;
         const user = req.session.user,
@@ -72,7 +72,7 @@ module.exports = app => {
                 if(error || item == null) {
                     res.send({ error })
                 } else {
-                    if( item.questionTypes ) {
+                    if( item.questionTypes ) { 
                         const randomQuestions = item.questionTypes.map((type) => {
                             console.log('type', type)
                             return new Promise((resolve, reject) => {
@@ -81,7 +81,7 @@ module.exports = app => {
                                     if (error || list == null) {
                                         reject(error);
                                     } else {
-                                            resolve(app.getRandom(list,type.amount));
+                                        resolve(app.getRandom(list,type.amount));
                                     }
                                 });
                             });

@@ -93,7 +93,6 @@ export function createRandomDriveTest(_courseTypeId, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
-                T.notify('Tạo bộ đề thi ngẫu nhiên thành công!', 'success');
                 dispatch(getDriveTestPage());
             }
         }, error => T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
