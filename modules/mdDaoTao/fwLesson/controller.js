@@ -44,18 +44,20 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error })
             } else {
-                const questionMapper = {};
+                const questionMapper = {},
+                    trueAnswer = {};
                 questions.forEach(item => questionMapper[item._id] = item);
                 answers.map(answer => {
                     if (questionMapper[answer.questionId]) {
                         if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
                             score = score + 1;
+                            trueAnswer[answer.questionId] = answer.answer
                         }
                     } else {
                         err = 'Không tìm thấy câu hỏi!';
                     }
                 })
-                res.send({ error: err, result: { score: score, total: answers.length } })
+                res.send({ error: err, result: { score: score, total: answers.length, trueAnswer: trueAnswer } })
             }
         })
     });

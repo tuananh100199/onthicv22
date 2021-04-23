@@ -45,7 +45,7 @@ class adminEditPage extends AdminPage {
 
     render() {
         const { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
-            { score, total } = this.state.result ? this.state.result : { score: 0, total: questions.length };
+            { score, total, trueAnswer } = this.state.result ? this.state.result : { score: 0, total: questions.length, trueAnswer: {} };
         const componentInfo = (
             <div className='tile-body'>
                 <div className='form-group'>
@@ -78,13 +78,13 @@ class adminEditPage extends AdminPage {
                     {questions.map((question, indexQuestion) => question.active ?
                         (
                             <div key={indexQuestion} className='col-md-6 pb-5'>
-                                <h6>Câu {indexQuestion + 1}:{question.title}</h6>
+                                <h6>Câu {indexQuestion + 1}:{question.title} Điểm:{trueAnswer[question._id] ? 1 : 0} / 1</h6>
                                 {question.image ? <img src={question.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
                                 <div className='form-check'>
                                     {question.answers.split('\n').map((answer, index) => (
                                         <div key={index}>
                                             <input className='form-check-input' type='radio' name={question._id} id={question._id + index} value={index} />
-                                            <label className='form-check-label' htmlFor={question._id + index}>
+                                            <label className={'form-check-label'} htmlFor={question._id + index}>
                                                 {answer}
                                             </label>
                                         </div>
