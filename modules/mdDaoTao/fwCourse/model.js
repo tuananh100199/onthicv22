@@ -67,9 +67,9 @@ module.exports = app => {
         update: (_id, changes, done) => {
             let isError = false;
             new Promise((resolve, reject) => {
-                if (changes.groups) {
-                    app.model.division.getAll({ isOutside: true }, (error, list) => {
-                        const _divisionOutsideIds = list.map(item => item._id);
+                app.model.division.getAll({ isOutside: true }, (error, list) => {
+                    const _divisionOutsideIds = list.map(item => item._id);
+                    if (changes.groups) {
                         for (const group of changes.groups) {
                             if (group.student) {
                                 for (const student of group.student) {
@@ -90,11 +90,11 @@ module.exports = app => {
                                 break;
                             }
                         }
-                        if (!isError) {
-                            resolve();
-                        }
-                    })
-                }
+                    }
+                    if (!isError) {
+                        resolve();
+                    }
+                })
             }).then(() => {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname division').populate('groups.student', 'firstname lastname').exec(done);

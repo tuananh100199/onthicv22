@@ -5,7 +5,8 @@ import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redu
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox } from 'view/component/AdminPage';
 class AdminStudentView extends React.Component {
-    state = { outsideGroups: [], insideGroups: [] };
+    // state = { outsideGroups: [], insideGroups: [], hide: false };
+    state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [] };
     componentDidUpdate(prevProps) {
         const course = this.props.course;
         if (course !== prevProps.course) {
@@ -15,7 +16,7 @@ class AdminStudentView extends React.Component {
                     groups = course.item.groups || [],
                     outsideGroups = groups.filter(group => _idOutsideDivisions.includes(group.teacher.division)),
                     insideGroups = groups.filter(group => !outsideGroups.includes(group));
-                this.setState({ outsideGroups, insideGroups })
+                this.setState({ outsideGroups, insideGroups, divisions: list, groups })
             });
         }
     }
@@ -42,11 +43,13 @@ class AdminStudentView extends React.Component {
                 if (!error) {
                     this.props.updateCourse(_id, { groups }, () => {
                         // this.props.updateForm(this.props.donDeNghiHoc.item._id, { status: 'approved' });
+                        T.notify('Thêm ứng viên vào nhóm thành công!');
                     });
                 }
             });
         }
     }
+
     remove = (e, groupId, _studentId, indexStudent) => e.preventDefault() || T.confirm('Xoá học viên', 'Bạn có chắc muốn xoá học viên khỏi nhóm này?', true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item && this.props.course.item.groups) {
             const { _id, groups = [] } = this.props.course.item,
@@ -54,7 +57,9 @@ class AdminStudentView extends React.Component {
             groups[index].student.splice(indexStudent, 1);
             this.props.updateStudent(_studentId, { $unset: { course: 1 } }, (error) => {
                 if (!error) {
-                    this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' });
+                    this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' }, () => {
+                        T.alert('Xóa học viên thành công!', 'error', false, 800);
+                    });
                 }
             });
         }
@@ -63,6 +68,9 @@ class AdminStudentView extends React.Component {
     render() {
         const permission = this.props.permission,
             list = this.props.student && this.props.student.list ? this.props.student.list : [],
+            divisionStudents = list.reduce((result, item) => !result.find(item1 => JSON.stringify(item1) == JSON.stringify(item.division)) ? [...result, item.division] : result, []),
+            divisionTeachers = this.props.course && this.props.course.item && this.props.course.item.groups.reduce(
+                (result, item) => !result.find(item1 => item1 && item1._id == item.teacher.division) ? [...result, this.state.divisions.find(item2 => item2._id == item.teacher.division)] : result, []),
             studentOutsides = list.filter(item => item.division && item.division.isOutside),
             studentInsides = list.filter(item => !studentOutsides.includes(item)),
             renderStudents = list =>
@@ -80,35 +88,62 @@ class AdminStudentView extends React.Component {
                         <ul style={{ width: '100%', paddingLeft: 20, margin: 0, listStyle: 'none' }}>
                             {item.teacher ? (
                                 <li><span style={{ fontWeight: 'bold' }}>Giáo viên: </span> {item.teacher.lastname} {item.teacher.firstname}</li>
-                            ) : 'Không có thông tin giáo viên'}
-                            <li><span style={{ fontWeight: 'bold' }}>Danh sách học viên: </span></li>
-                            <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                                {item.student ? item.student.map((student, indexStudent) => (
-                                    <li key={indexStudent} style={{ whiteSpace: 'nowrap' }} >{student.lastname} {student.firstname}
-                                        { permission.write ? <span style={{ float: 'right', color: 'red' }} onClick={e => this.remove(e, item._id, student._id, indexStudent)}>
-                                            <i className='fa fa-trash' /></span> : null}
-                                    </li>
-                                )) : 'Không có thông tin học viên'}
-                            </ol>
+                            ) : 'Chưa có giáo viên'}
+                            {item.student.length ? <>
+                                <li><span style={{ fontWeight: 'bold' }}>Danh sách học viên: </span></li>
+                                <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                    {item.student.map((student, indexStudent) => (
+                                        <li key={indexStudent} style={{ whiteSpace: 'nowrap' }} onMouseEnter={() => {
+                                            const groups = this.state.groups;
+                                            const index = groups.findIndex(item1 => item1._id == item._id);
+                                            groups[index].student[indexStudent].isHide = true;
+                                            this.setState({ groups });
+                                        }}
+                                            onMouseLeave={() => {
+                                                const groups = this.state.groups;
+                                                const index = groups.findIndex(item1 => item1._id == item._id);
+                                                console.log(index, 'index');
+                                                groups[index].student[indexStudent].isHide = false;
+                                                console.log(groups[index].student[indexStudent], 'student');
+                                                this.setState({ groups });
+                                            }}
+                                        >
+                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} class="fa fa-user-times"></i> : <span>{student.lastname} {student.firstname}</span>}
+                                        </li>
+                                    ))}
+                                </ol> </> : 'Chưa có học viên'}
                         </ul>
-                    </div>)
-
+                    </div>);
         return (
             <div className='row'>
                 <div className='col-md-6' >
                     <h3 className='tile-title'>Ứng viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
-                        {renderStudents(studentInsides)}
-                        <h5>Ứng viên thuộc cơ sở ngoài</h5>
-                        {renderStudents(studentOutsides)}
+                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
+                        <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
+                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                            <h6>{item.title}</h6>
+                            {renderStudents(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
+                        </div>)] : result, []) : 'Không có thông tin'}
+                        <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
+                        {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                            <h6>{item.title}</h6>
+                            {renderStudents(studentOutsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
+                        </div>)] : result, []) : 'Không có thông tin'}
                     </div>
                 </div>
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Nhóm học viên</h3>
-                    {renderGroups(this.state.insideGroups)}
+                    <h5>Nhóm học viên thuộc cơ sở Hiệp Phát</h5>
+                    {this.state.insideGroups.length ? divisionTeachers.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                        <h6>{item.title}</h6>
+                        {renderGroups(this.state.insideGroups.filter(item1 => item._id == item1.teacher.division))}
+                    </div>)] : result, []) : 'Không có thông tin'}
                     <h5>Nhóm học viên thuộc cơ sở ngoài</h5>
-                    {renderGroups(this.state.outsideGroups)}
+                    {this.state.outsideGroups.length ? divisionTeachers.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                        <h6>{item.title}</h6>
+                        {renderGroups(this.state.outsideGroups.filter(item1 => item._id == item1.teacher.division))}
+                    </div>)] : result, []) : 'Không có thông tin'}
                 </div>
             </div>
         );
