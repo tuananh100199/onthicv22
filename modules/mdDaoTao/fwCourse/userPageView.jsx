@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseByStudent, updateCourse } from './redux.jsx';
+import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserSubjectView from './tabView/userSubjectView';
@@ -45,6 +45,7 @@ class UserCoursePageDetail extends AdminPage {
             <label className='col-md-6'>Thời gian tốt nghiệp dự kiến: <b>{T.dateToText(this.state.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy h:mm')}</b></label>
             <label className='col-md-6'>Thời gian tốt nghiệp chính thức: <b>{T.dateToText(this.state.thoiGianThiTotNghiepChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
             <label className='col-md-12'>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b>
+            <label className='col-md-12'>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} />
         </div>;
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
@@ -61,5 +62,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourseByStudent, updateCourse };
+const mapActionsToProps = { getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
