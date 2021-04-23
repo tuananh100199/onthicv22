@@ -30,16 +30,20 @@ class adminEditPage extends AdminPage {
     }
 
     submitAnswer = (e, list) => {
+        $('#submit-btn').attr('disabled', true);
         e.preventDefault();
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswers, result => this.setState({ result: result }))
+        this.props.checkQuestion(studentAnswers, result => {
+            $('#submit-btn').removeAttr('disabled');
+            T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+            this.setState({ result: result })
+        })
     }
 
     render() {
-        const permission = this.getUserPermission('lesson'),
-            { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
+        const { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
             { score, total } = this.state.result ? this.state.result : { score: 0, total: questions.length };
         const componentInfo = (
             <div className='tile-body'>
@@ -87,11 +91,11 @@ class adminEditPage extends AdminPage {
                                     ))}
                                 </div>
                             </div>
-                        ) : <></>
+                        ) : <div>Chưa có câu hỏi ôn tập</div>
                     )}
                 </div>
                 <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
+                    <button id='submit-btn' className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
                     <p>Số câu đúng của bạn: <b>{score} / {total}</b></p>
                 </div>
             </div>
