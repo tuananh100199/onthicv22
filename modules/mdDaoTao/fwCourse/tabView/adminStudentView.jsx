@@ -67,8 +67,8 @@ class AdminStudentView extends React.Component {
             studentInsides = list.filter(item => !studentOutsides.includes(item)),
             renderStudents = list =>
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                    {list.map((item) => {
-                        return (<li onDragStart={e => this.onDragStart(e, item)} draggable>
+                    {list.map((item, index) => {
+                        return (<li key={index} onDragStart={e => this.onDragStart(e, item)} draggable>
                             {item.lastname} {item.firstname}</li>)
                     })}
                 </ol>,
@@ -84,7 +84,7 @@ class AdminStudentView extends React.Component {
                             <li><span style={{ fontWeight: 'bold' }}>Danh sách học viên: </span></li>
                             <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                                 {item.student ? item.student.map((student, indexStudent) => (
-                                    <li style={{ whiteSpace: 'nowrap' }} >{student.lastname} {student.firstname}
+                                    <li key={indexStudent} style={{ whiteSpace: 'nowrap' }} >{student.lastname} {student.firstname}
                                         { permission.write ? <span style={{ float: 'right', color: 'red' }} onClick={e => this.remove(e, item._id, student._id, indexStudent)}>
                                             <i className='fa fa-trash' /></span> : null}
                                     </li>
