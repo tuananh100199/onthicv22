@@ -99,7 +99,6 @@ export function updateCourse(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật thông tin khóa học thành công!', 'info');
                 dispatch({ type: CourseGetItem, item: data.item });
                 dispatch(getCoursePage());
                 done && done();

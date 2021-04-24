@@ -62,7 +62,9 @@ class EditCoursePage extends AdminPage {
             T.notify('Tên khóa học trống!', 'danger');
             this.name.focus();
         } else {
-            this.props.updateCourse(this.state._id, changes);
+            this.props.updateCourse(this.state._id, changes, () => {
+                T.notify('Cập nhật thông tin khóa học thành công!');
+            });
         }
     }
 
