@@ -63,35 +63,6 @@ class AdminEditPage extends AdminPage {
                 {tableLesson}
             </div>);
 
-        // const questions = this.props.subject && this.props.subject.item && this.props.subject.item.questions ? this.props.subject.item.questions : [],
-        //     componentQuestion = (
-        //         <div>
-        //             <div className='tile-body row'>
-        //                 {questions.map((question, indexQuestion) => question.active ?
-        //                     (
-        //                         <div key={indexQuestion} className='col-md-6 pb-5'>
-        //                             <h6>Câu {indexQuestion + 1}:{question.title}</h6>
-        //                             {question.image ? <img src={question.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
-        //                             <div className='form-check'>
-        //                                 {question.answers.split('\n').map((answer, index) => (
-        //                                     <div key={index}>
-        //                                         <input className='form-check-input' type='radio' name={question._id} id={question._id + index} value={index} />
-        //                                         <label className='form-check-label' htmlFor={question._id + index}>
-        //                                             {answer}
-        //                                         </label>
-        //                                     </div>
-        //                                 ))}
-        //                             </div>
-        //                         </div>
-        //                     ) : <div>Chưa có câu hỏi ôn tập!</div>
-        //                 )}
-        //             </div>
-        //             <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-        //                 <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
-        //             </div>
-        //         </div>
-        //     );
-
         const tabs = [{ title: 'Bài học', component: componentLesson }, { title: 'Thông tin chung', component: componentInfo }];
         return this.renderPage({
             icon: 'fa fa-book',

@@ -36,11 +36,7 @@ module.exports = (app) => {
     app.get('/api/subject/student', app.permission.check('subject:read'), (req, res) => {
         app.model.subject.get(req.query._id, (error, item) => {
             const currentCourse = req.session.user.currentCourse;
-            if (currentCourse) {
-                res.send({ error, item, currentCourse })
-            } else {
-                res.send({ error, item })
-            }
+            res.send({ error, item, currentCourse });
         });
     });
 

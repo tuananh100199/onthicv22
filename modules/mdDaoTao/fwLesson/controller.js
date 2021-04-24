@@ -36,14 +36,10 @@ module.exports = (app) => {
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
                 item.questions.forEach(question => {
-                    question.trueAnswer = null;
+                    question.trueAnswer = null
                 })
             }
-            if (currentCourse) {
-                res.send({ error, item, currentCourse })
-            } else {
-                res.send({ error, item })
-            }
+            res.send({ error, item, currentCourse });
         });
     });
 

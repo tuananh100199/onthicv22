@@ -39,7 +39,6 @@ export default function courseReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageCourse');
 export function getCoursePage(pageNumber, pageSize, done) {
-    console.log(pageNumber, pageSize)
     const page = T.updatePage('pageCourse', pageNumber, pageSize);
     return (dispatch) => {
         const url = '/api/course/page/' + page.pageNumber + '/' + page.pageSize;
