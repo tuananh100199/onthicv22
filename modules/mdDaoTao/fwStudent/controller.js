@@ -54,7 +54,7 @@ module.exports = (app) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.condition || {},
-            pageCondition = { course: null};
+            pageCondition = { course: null };
         try {
             if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
                 pageCondition.division = req.session.user.division._id;
@@ -91,6 +91,7 @@ module.exports = (app) => {
                             firstname: data.firstname,
                             lastname: data.lastname,
                             phoneNumber: data.phoneNumber,
+                            division: data.division || req.session.user.division,
                             password: dataPassword
                         };
                     app.model.user.create(newUser, (error, user) => {
@@ -199,7 +200,7 @@ module.exports = (app) => {
     });
 
     // Get All Student Have Course Null--------------------------------------------------------------------------------
-    app.get('/api/course/preStudent/all', app.permission.check('pre-student:read'), (req, res) => {
+    app.get('/api/course/pre-student/all', app.permission.check('pre-student:read'), (req, res) => {
         const { searchText, courseType } = req.query,
             condition = { course: null, courseType };
         if (searchText) {
@@ -216,12 +217,12 @@ module.exports = (app) => {
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll( { user: _userId }, (error, students) => {
+        app.model.student.getAll({ user: _userId }, (error, students) => {
             if (students.length) {
                 const coursePromises = students.map((student) => {
                     return new Promise((resolve, reject) => {
                         if (student.course) {
-                            app.model.course.getByUser({ _id: student.course,  active: true }, (error, course) => {
+                            app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!course) {
@@ -239,9 +240,9 @@ module.exports = (app) => {
                     res.send({ courses: courses.filter(item => item != null) })
                 }).catch(error => res.send({ error }));
             } else {
-                res.send({ error });   
+                res.send({ error });
             }
-         })
+        })
     });
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
