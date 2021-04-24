@@ -22,16 +22,16 @@ export default function driveTestReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllDriveTests(searchText, done) {
+export function getAllDriveTests(condition, done) {
     return dispatch => {
         const url = '/api/drive-test/all';
-        T.get(url, { searchText }, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả bộ đề thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: DriveTestGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: DriveTestGetAll, items: data.list });
             }
         }, error => T.notify('Lấy tất cả bộ đề thi bị lỗi!', 'danger'));
     }

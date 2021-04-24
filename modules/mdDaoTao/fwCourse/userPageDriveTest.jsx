@@ -35,7 +35,6 @@ class UserPageDriveTest extends AdminPage {
     }
 
     render() {
-        console.log(this.state)
         const { questions } = this.state ? this.state : { questions: [] };
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
 

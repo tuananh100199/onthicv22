@@ -191,7 +191,6 @@ export function getStudentCourse(done) {
                 T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                console.log(data.courses)
                 if (done) done(data);
                 dispatch({ type: CourseGetItem, item: data.courses });
             }

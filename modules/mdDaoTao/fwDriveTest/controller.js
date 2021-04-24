@@ -11,12 +11,8 @@ module.exports = app => {
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
-    app.get('/api/drive-test/all', app.permission.check('driveTest:read'), (req, res) => {
-        const condition = {},
-            searchText = req.query.searchText;
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
-        }
+    app.get('/api/drive-test/all', app.permission.check('studentCourse:read'), (req, res) => {
+        const condition = req.query.condition;
         app.model.driveTest.getAll(condition, (error, list) => {
             res.send({ error, list })
         });
@@ -62,9 +58,9 @@ module.exports = app => {
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
         req.session.user.driveTest = null;
-        const _courseTypeId = req.body._courseTypeId;
-        const user = req.session.user,
-        today = new Date().getTime();
+        const _courseTypeId = req.body._courseTypeId,
+            user = req.session.user,
+            today = new Date().getTime();
         if (user.driveTest && today < user.driveTest.expireDay ) {
             res.send(user.driveTest)
         } else {
@@ -74,10 +70,8 @@ module.exports = app => {
                 } else {
                     if( item.questionTypes ) { 
                         const randomQuestions = item.questionTypes.map((type) => {
-                            console.log('type', type)
                             return new Promise((resolve, reject) => {
                                 app.model.driveQuestion.getAll({categories: type.category},(error, list) => {
-                                    console.log('list', list)
                                     if (error || list == null) {
                                         reject(error);
                                     } else {
@@ -120,7 +114,6 @@ module.exports = app => {
                         err = 'Không tìm thấy câu hỏi!';
                     }
                 })
-                console.log('score', score)
                 res.send({ error: err, result: { score: score, total: answers.length } })
             }
         })
