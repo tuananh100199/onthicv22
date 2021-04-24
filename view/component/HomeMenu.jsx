@@ -127,9 +127,9 @@ class HomeMenu extends React.Component {
         return <>
             <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
-                    <div className='logo'>
+                    <div className='logo' style={{ height: '100%' }}>
                         <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav.current).classyNav())}>
-                            <img src={logo} alt='Logo' style={{ height: '65px', width: 'auto' }} />
+                            <img src={logo} alt='Logo' style={{ marginTop: '2%', height: '96%', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>

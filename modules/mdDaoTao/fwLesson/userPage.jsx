@@ -35,16 +35,17 @@ class adminEditPage extends AdminPage {
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        this.props.checkQuestion(studentAnswers, result => {
-            $('#submit-btn').removeAttr('disabled');
-            T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
-        })
+        T.confirm('Gửi câu trả lời', 'Bạn có chắc chắn nộp câu trả lời cho bộ câu hỏi này?', true, isConfirm =>
+            isConfirm && this.props.checkQuestion(studentAnswers, result => {
+                $('#submit-btn').removeAttr('disabled');
+                T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+                this.setState({ result: result })
+            }))
     }
 
     render() {
         const { videos, questions } = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item : { videos: [], questions: [] },
-            { score, total } = this.state.result ? this.state.result : { score: 0, total: questions.length };
+            { score, total, trueAnswer } = this.state.result ? this.state.result : { score: 0, total: questions.length, trueAnswer: {} };
         const componentInfo = (
             <div className='tile-body'>
                 <div className='form-group'>
@@ -59,14 +60,13 @@ class adminEditPage extends AdminPage {
             </div>);
 
         const componentVideo = (
-            <div className='tile-body row'>
+            <div className='tile-body'>
                 {videos.length ? videos.map((video, index) =>
                 (
-                    <div key={index} className='col-lg-4 col-md-6'>
-                        <div className='embed-responsive embed-responsive-16by9'>
-                            <iframe className='embed-responsive-item' src={'https://youtube.com/embed/' + video.link.slice(17)} frameBorder='0' allowFullScreen width='70%' height='auto'></iframe>
+                    <div key={index} className='d-flex justify-content-center pb-5'>
+                        <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }}>
+                            <iframe className='embed-responsive-item' src={'https://youtube.com/embed/' + video.link.slice(17)} frameBorder='0' allowFullScreen></iframe>
                         </div>
-                        <h5>{video.title}</h5>
                     </div>
                 )
                 ) : <div className='tile-body'>Chưa có video bài giảng!</div>}
@@ -78,13 +78,13 @@ class adminEditPage extends AdminPage {
                     {questions.map((question, indexQuestion) => question.active ?
                         (
                             <div key={indexQuestion} className='col-md-6 pb-5'>
-                                <h6>Câu {indexQuestion + 1}:{question.title}</h6>
+                                <h6>Câu {indexQuestion + 1}:{question.title} Điểm:{trueAnswer[question._id] ? 1 : 0} / 1</h6>
                                 {question.image ? <img src={question.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
                                 <div className='form-check'>
                                     {question.answers.split('\n').map((answer, index) => (
                                         <div key={index}>
                                             <input className='form-check-input' type='radio' name={question._id} id={question._id + index} value={index} />
-                                            <label className='form-check-label' htmlFor={question._id + index}>
+                                            <label className={'form-check-label'} htmlFor={question._id + index}>
                                                 {answer}
                                             </label>
                                         </div>

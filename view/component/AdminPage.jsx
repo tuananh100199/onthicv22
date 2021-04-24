@@ -4,6 +4,7 @@ import ImageBox from 'view/component/ImageBox';
 import FileBox from 'view/component/FileBox';
 import Editor from 'view/component/CkEditor4';
 import Datetime from 'react-datetime';
+import InputMask from 'react-input-mask';
 import 'react-datetime/css/react-datetime.css';
 
 // Table components ---------------------------------------------------------------------------------------------------
@@ -15,9 +16,9 @@ export class TableCell extends React.Component { // type = number | date | link 
         if (display != true) {
             return null;
         } else if (type == 'number') {
-            return <td className={className} style={{ textAlign: 'right', ...style }}>{content ? T.numberDisplay(content) : content}</td>
+            return <td className={className} style={{ textAlign: 'right', ...style }}>{content && !isNaN(content) ? T.numberDisplay(content) : content}</td>;
         } else if (type == 'date') {
-            return <td className={className} style={{ ...style }}>{new Date(content).getText()}</td>
+            return <td className={className} style={{ ...style }}>{new Date(content).getText()}</td>;
         } else if (type == 'link') {
             let url = this.props.url ? this.props.url.trim() : '',
                 onClick = this.props.onClick;
@@ -26,7 +27,7 @@ export class TableCell extends React.Component { // type = number | date | link 
             } else {
                 return url.startsWith('http://') || url.startsWith('https://') ?
                     <td className={className} style={{ textAlign: 'left', ...style }}><a href={url} target='_blank' style={contentStyle}>{content}</a></td> :
-                    <td className={className} style={{ textAlign: 'left', ...style }}><Link to={url} style={contentStyle}>{content}</Link></td>
+                    <td className={className} style={{ textAlign: 'left', ...style }}><Link to={url} style={contentStyle}>{content}</Link></td>;
             }
         } else if (type == 'image') {
             return content ?
@@ -95,7 +96,7 @@ export function renderTable({ style = {}, className = '', getDataSource = () => 
     } else {
         return emptyTable;
     }
-};
+}
 
 // Form components ----------------------------------------------------------------------------------------------------
 export class FormTabs extends React.Component {
@@ -105,11 +106,19 @@ export class FormTabs extends React.Component {
         $(document).ready(() => {
             let tabIndex = parseInt(T.cookie(this.props.id || 'tab'));
             if (isNaN(tabIndex) || tabIndex < 0 || tabIndex >= $(this.tabs).children().length) tabIndex = 0;
-            this.setState({ tabIndex });
+            this.setState({ tabIndex }, () => {
+                setTimeout(() => {
+                    this.props.onChange && this.props.onChange({ tabIndex });
+                }, 250);
+            });
         });
     }
 
-    onSelectTab = (e, tabIndex) => e.preventDefault() || this.setState({ tabIndex }) || T.cookie(this.props.id || 'tab', tabIndex);
+    onSelectTab = (e, tabIndex) => {
+        e.preventDefault();
+        T.cookie(this.props.id || 'tab', tabIndex);
+        this.setState({ tabIndex }, () => this.props.onChange && this.props.onChange({ tabIndex }));
+    };
 
     selectedTabIndex = () => this.state.tabIndex;
 
@@ -142,7 +151,7 @@ export class FormCheckbox extends React.Component {
         }
     }
 
-    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || this.props.onChange && this.props.onChange(!this.state.checked);
+    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || this.props.onChange(!this.state.checked);
 
     render() {
         let { className, label, style } = this.props;
@@ -196,9 +205,9 @@ export class FormTextBox extends React.Component {
             <div className={'form-group ' + (className || '')}>
                 <label onClick={e => this.input.focus()}>{label}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
                 <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
-                {smallText ? <small dangerouslySetInnerHTML={{ __html: smallText }} /> : null}
+                {smallText ? <small>{smallText}</small> : null}
             </div>);
-    };
+    }
 }
 
 export class FormRichTextBox extends React.Component {
@@ -222,7 +231,7 @@ export class FormRichTextBox extends React.Component {
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
-    };
+    }
 }
 
 export class FormEditor extends React.Component {
@@ -236,6 +245,8 @@ export class FormEditor extends React.Component {
             return this.input.html();
         }
     }
+    
+    value = this.html;
 
     text = () => this.input.text();
 
@@ -253,14 +264,28 @@ export class FormEditor extends React.Component {
                     <Editor ref={e => this.input = e} height={height} placeholder={label} uploadUrl={uploadUrl} />
                 </div>
             </div>);
-    };
+    }
 }
 
 export class FormSelect extends React.Component {
     state = { valueText: '' };
+    hasInit = false;
     componentDidMount() {
         $(this.input).select2();
         $(this.input).on('select2:select', e => this.props.onChange && this.props.onChange(e.params.data));
+        $(this.input).on('select2:unselect', e => this.props.onChange && this.props.onChange(e.params.data));
+        $(this.input).on('select2:open', () => {
+            !this.hasInit && setTimeout(() => {
+                this.value(null);
+                setTimeout(this.focus, 50);
+            }, 50);
+        });
+    }
+
+    componentWillUnmount() {
+        $(this.input).off('select2:select');
+        $(this.input).off('select2:unselect');
+        $(this.input).off('select2:open');
     }
 
     focus = () => $(this.input).select2('open');
@@ -268,25 +293,43 @@ export class FormSelect extends React.Component {
     value = function (value) {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
-            const { data, label } = this.props,
-                options = { placeholder: label, tags: false, dropdownParent };
-            if (this.props.multiple) {
-                value = value ? (Array.isArray(value) ? value : [value]) : [];
-                // this.setState({ valueText: value.join(', ') }); // TODO: readonly value
-            } else {
-                this.setState({ valueText: value && value.text ? value.text : value });
-            }
-
+            let hasInit = this.hasInit;
+            if (!hasInit) this.hasInit = true;
+            
+            const { data, label, placeholder, minimumResultsForSearch = 1 } = this.props,
+                options = { placeholder: placeholder || label, dropdownParent, minimumResultsForSearch };
+            
             if (Array.isArray(data)) {
                 options.data = data;
-                $(this.input).empty().select2(options).val(value).trigger('change');
+                $(this.input).select2(options).val(value).trigger('change');
             } else {
                 options.ajax = { ...data, delay: 500 };
                 $(this.input).select2(options);
                 if (value) {
-                    $(this.input).select2('trigger', 'select', { data: value });
+                    if ((typeof value == 'string' || typeof value == 'number') && data.fetchOne) {
+                        data.fetchOne(value, _item => {
+                            $(this.input).select2('trigger', 'select', { data: _item });
+                            // Async set readOnlyText
+                            this.setState({ valueText: _item.text });
+                        });
+                    } else if (value.hasOwnProperty('id') && value.hasOwnProperty('text')) {
+                        $(this.input).select2('trigger', 'select', { data: value });
+                    } else {
+                        $(this.input).select2('trigger', 'select', { data: { id: value, text: value } });
+                    }
                 } else {
                     $(this.input).val(null).trigger('change');
+                }
+            }
+    
+            // Set readOnly text
+            if (this.props.multiple) {
+                let stringValue = value ? (Array.isArray(value) ? value : [value]) : [];
+                this.setState({ valueText: stringValue.join(', ') }); // TODO: readonly value
+            } else {
+                // this.setState({ valueText: value && value.text ? value.text : value, hasInit });
+                if (!data || !data.fetchOne) {
+                    this.setState({ valueText: $(this.input).find(':selected').text() });
                 }
             }
         } else {
@@ -298,34 +341,81 @@ export class FormSelect extends React.Component {
         const { className = '', style = {}, labelStyle = {}, label = '', multiple = false, readOnly = false } = this.props;
         return (
             <div className={'form-group ' + className} style={style}>
-                {label ? <label style={labelStyle}>{label}{readOnly ? ':' : ''}</label> : null} {readOnly ? <b>{this.state.valueText}</b> : ''}
+                {label ? <label style={labelStyle} onClick={this.focus}>{label}{readOnly ? ':' : ''}</label> : null} {readOnly ? <b>{this.state.valueText}</b> : ''}
                 <div style={{ width: '100%', display: readOnly ? 'none' : 'block' }}>
-                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly}>
-                        {/* <optgroup label={'Lựa chọn ' + label} /> */}
-                    </select>
+                    <select ref={e => this.input = e} multiple={multiple} disabled={readOnly} />
                 </div>
             </div>
-        )
+        );
     }
 }
 
 export class FormDatePicker extends React.Component {
-    state = {};
+    static defaultProps = {
+        type: 'date'
+    };
+    
+    mask = {
+        'time-mask': '39/19/2099 h9:59',
+        'date-mask': '39/19/2099'
+    };
+    
+    state = { value: '', readOnlyText: '' };
+    
     value = function (date) {
+        const type = this.props.type;
         if (arguments.length) {
-            this.setState({ value: new Date(date) });
+            if (type.endsWith('-mask')) {
+                const value = date ? T.dateToText(new Date(date), type == 'date-mask' ? 'dd/mm/yyyy' : 'dd/mm/yyyy HH:MM') : '';
+                this.setState({ value, readOnlyText: value });
+            } else {
+                this.setState({
+                    value: date ? new Date(date) : '',
+                    readOnlyText: date ? T.dateToText(new Date(date), type == 'date' ? 'dd/mm/yyyy' : 'dd/mm/yyyy HH:MM') : ''
+                });
+            }
         } else {
-            return this.state.value;
+            if (type.endsWith('-mask')) {
+                const date = T.formatDate(this.state.value);
+                if (date == null || Number.isNaN(date.getTime())) return '';
+                return date;
+            } else {
+                return this.state.value;
+            }
         }
     }
-
+    
+    focus = () => {
+        const type = this.props.type;
+        if (type.endsWith('-mask')) {
+            this.input.getInputDOMNode().focus()
+        } else {
+            $(this.inputRef).focus();
+        }
+    }
+    
+    handleChange = event => {
+        const type = this.props.type;
+        event.preventDefault && event.preventDefault();
+        this.setState({ value: type.endsWith('-mask') ? event.target.value : new Date(event) }, () => {
+            this.props.onChange && this.props.onChange(this.value());
+        });
+    }
+    
     render() {
-        let { label = '', type = 'date', className = '', readOnly = false } = this.props; // type = date || time
+        let { label = '', type = 'date', className = '', readOnly = false } = this.props; // type = date || time || date-mask || time-mask
         return (
             <div className={'form-group ' + (className || '')}>
-                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.value}</b></> : ''}
-                <Datetime ref={e => this.input = e} timeFormat={type == 'time'} dateFormat='DD/MM/YYYY' inputProps={{ placeholder: label }} value={this.state.value}
-                    onChange={e => this.setState({ value: new Date(e) })} />
+                <label onClick={() => this.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.readOnlyText}</b></> : ''}
+                {type.endsWith('-mask') ? (
+                    <InputMask ref={e => this.input = e} className='form-control' mask={this.mask[type]} onChange={this.handleChange} style={{ display: readOnly ? 'none' : '' }}
+                               formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
+                               value={this.state.value} readOnly={readOnly} placeholder={label}/>
+                ) : (
+                    <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
+                              inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                              value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                )}
             </div>);
     }
 }
@@ -363,28 +453,35 @@ export class FormFileBox extends React.Component {
 // Page components ----------------------------------------------------------------------------------------------------
 export class CirclePageButton extends React.Component {
     render() {
-        const { type = 'back', style = {}, to = '', onClick = () => { } } = this.props; // type = back | save | create | export
+        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick = () => { } } = this.props; // type = back | save | create | delete | export | import | custom
+        const properties = {
+            type: 'button',
+            style: { position: 'fixed', right: '10px', bottom: '10px', zIndex: 500, ...style },
+            'data-toggle': 'tooltip', title: tooltip,
+            onClick,
+        };
+        let result = null;
         if (type == 'save') {
-            return (
-                <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
-                    <i className='fa fa-lg fa-save' />
-                </button>);
+            result = <button {...properties} className='btn btn-primary btn-circle'><i className='fa fa-lg fa-save' /></button>;
+        } else if (type == 'search') {
+            result = <button {...properties} className='btn btn-primary btn-circle'><i className='fa fa-lg fa-search' /></button>;
         } else if (type == 'create') {
-            return (
-                <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
-                    <i className='fa fa-lg fa-plus' />
-                </button>);
+            result = <button {...properties} className='btn btn-success btn-circle'><i className='fa fa-lg fa-plus' /></button>;
         } else if (type == 'export') {
-            return (
-                <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px', ...style }} onClick={onClick}>
-                    <i className='fa fa-lg fa-file-excel-o' />
-                </button>);
+            result = <button {...properties} className='btn btn-success btn-circle'><i className='fa fa-lg fa-cloud-download' /></button>;
+        } else if (type == 'import') {
+            result = <button {...properties} className='btn btn-success btn-circle'><i className='fa fa-lg fa-cloud-upload' /></button>;
+        } else if (type == 'delete') {
+            result = <button {...properties} className='btn btn-danger btn-circle'><i className='fa fa-lg fa-trash' /></button>;
+        } else if (type == 'custom') {
+            result = <button {...properties} className={'btn btn-circle ' + customClassName}><i className={'fa fa-lg ' + customIcon} /></button>;
         } else {
-            return (
-                <Link to={to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', ...style }}>
+            result = (
+                <Link to={to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
                     <i className='fa fa-lg fa-reply' />
                 </Link>);
         }
+        return result;
     }
 }
 
@@ -414,11 +511,11 @@ export class AdminModal extends React.Component {
         }
     }
 
-    renderModal = ({ title, body, size }) => {
+    renderModal = ({ title, body, size, buttons, isLoading = false }) => {
         const { readOnly = false } = this.props;
         return (
             <div className='modal fade' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
-                <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e) }}>
+                <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : '')} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e); }}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>{title}</h5>
@@ -431,10 +528,11 @@ export class AdminModal extends React.Component {
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                                 <i className='fa fa-fw fa-lg fa-times' />Đóng
                             </button>
-                            {readOnly == null || readOnly == true ? null :
-                                <button type='submit' className='btn btn-primary'>
-                                    <i className='fa fa-fw fa-lg fa-save' /> Lưu
+                            {readOnly == true ? null :
+                                <button type='submit' className='btn btn-primary' disabled={isLoading}>
+                                    {isLoading ? <i className='fa fa-spin fa-lg fa-spinner'/> : <i className='fa fa-fw fa-lg fa-save'/>} Lưu
                                 </button>}
+                            {buttons}
                         </div>
                     </div>
                 </form>
@@ -447,7 +545,12 @@ export class AdminModal extends React.Component {
 export class AdminPage extends React.Component {
     componentWillUnmount() {
         T.onSearch = null;
+        T.onAdvanceSearchHide = null;
+
+        this.willUnmount();
     }
+
+    willUnmount = () => { };
 
     getCurrentPermissions = () => this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
 
@@ -458,10 +561,10 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderPage = ({ icon, title, header, breadcrumb, content, backRoute, onCreate, onSave, onExport }) => {
+    renderPage = ({ icon, title, subTitle, header, breadcrumb, advanceSearch, content, backRoute, onCreate, onSave, onExport, onImport }) => {
         if (breadcrumb == null) breadcrumb = [];
 
-        let right = 10, createButton, saveButton, exportButton;
+        let right = 10, createButton, saveButton, exportButton, importButton;
         if (onCreate) {
             createButton = <CirclePageButton type='create' onClick={onCreate} style={{ right }} />;
             right += 60;
@@ -474,20 +577,31 @@ export class AdminPage extends React.Component {
             exportButton = <CirclePageButton type='export' onClick={onExport} style={{ right }} />;
             right += 60;
         }
+        if (onImport) {
+            importButton = <CirclePageButton type='import' onClick={onImport} style={{ right }} />;
+            right += 60;
+        }
 
         return (
             <main className='app-content'>
                 <div className='app-title'>
-                    <h1><i className={icon} /> {title}</h1>
+                    <div>
+                        <h1><i className={icon} /> {title}</h1>
+                        <p>{subTitle}</p>
+                    </div>
                     <ul className='app-breadcrumb breadcrumb'>
                         {header}
                         <Link to='/user'><i className='fa fa-home fa-lg' /></Link>
                         {breadcrumb.map((item, index) => <span key={index}>&nbsp;/&nbsp;{item}</span>)}
                     </ul>
                 </div>
+                <div className='app-advance-search'>
+                    <h5>Tìm kiếm nâng cao</h5>
+                    <div style={{ width: '100%' }}>{advanceSearch}</div>
+                </div>
                 {content}
                 {backRoute ? <CirclePageButton type='back' to={backRoute} /> : null}
-                {exportButton} {saveButton} {createButton}
+                {importButton} {exportButton} {saveButton} {createButton}
             </main>);
     }
 

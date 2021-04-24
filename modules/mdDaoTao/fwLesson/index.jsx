@@ -11,10 +11,6 @@ export default {
     },
     routes: [
         {
-            path: '/user/dao-tao',
-            component: () => <SubMenusPage menuLink='/user/dao-tao' menuKey={8000} headerIcon='fa-user' />
-        },
-        {
             path: '/user/dao-tao/bai-hoc',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
