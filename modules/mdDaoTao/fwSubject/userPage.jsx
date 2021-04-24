@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubject, updateSubject, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson, changeSubjectQuestions } from './redux';
+import { getSubjectByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -8,34 +8,26 @@ const userPageLink = '/user/hoc-vien/khoa-hoc';
 class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/hoc-vien/khoa-hoc', () => {
-            let url = window.location.pathname,
-                params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/:_id').parse(url);
-            if (params._id) {
-                this.props.getSubject(params._id, data => {
-                    if (data.error) {
-                        T.notify('Lấy môn học bị lỗi!', 'danger');
-                        this.props.history.push(userPageLink);
-                    } else if (data.item) {
-                        const { _id, title, shortDescription, detailDescription } = data.item;
-                        this.setState({ _id, title, shortDescription, detailDescription });
-                    } else {
-                        this.props.history.push(userPageLink);
-                    }
-                });
-            } else {
-                this.props.history.push(userPageLink);
-            }
-        });
-    }
 
-    // submitAnswer = (e, list) => {
-    //     e.preventDefault();
-    //     let studentAnswers = list.map((question) => {
-    //         return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
-    //     })
-    //     T.alert('Cảm ơn bạn đã gửi đánh giá cho chúng tôi!', 'success', false, 2000);
-    // }
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/:_id').parse(url);
+        if (params._id) {
+            this.props.getSubjectByStudent(params._id, data => {
+                if (data.error) {
+                    T.notify('Lấy môn học bị lỗi!', 'danger');
+                    this.props.history.push(userPageLink);
+                } else if (data.item && data.currentCourse) {
+                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
+                    const { _id, title, shortDescription, detailDescription } = data.item;
+                    this.setState({ _id, title, shortDescription, detailDescription });
+                } else {
+                    this.props.history.push(userPageLink);
+                }
+            });
+        } else {
+            this.props.history.push(userPageLink);
+        }
+    }
 
     render() {
         const tableLesson = renderTable({
@@ -112,5 +104,5 @@ class AdminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { getSubject, updateSubject, addSubjectLesson, swapSubjectLesson, deleteSubjectLesson, changeSubjectQuestions };
+const mapActionsToProps = { getSubjectByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);

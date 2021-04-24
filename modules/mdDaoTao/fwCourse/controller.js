@@ -10,10 +10,9 @@ module.exports = (app) => {
 
     const courseMenu = {
         parentMenu: app.parentMenu.studentCourse,
-        menus: {
-            5050: { title: 'Khóa học của bạn', link: '/user/hoc-vien/khoa-hoc' }
-        },
+        menus: {},
     };
+
     app.permission.add({
         name: 'course:read'
     },
@@ -137,6 +136,7 @@ module.exports = (app) => {
     app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
         const { _id } = req.query,
             studentId = req.session.user._id;
+        req.session.user.currentCourse = _id;
         app.model.student.getAll({ user: studentId }, (error, students) => {
             if (error) {
                 res.send({ error })

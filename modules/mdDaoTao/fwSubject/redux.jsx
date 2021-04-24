@@ -74,6 +74,21 @@ export function getSubject(_id, done) {
     }
 }
 
+export function getSubjectByStudent(_id, done) {
+    return dispatch => {
+        const url = `/api/subject/student`;
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy môn học bị lỗi1!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: SubjectGetItem, item: data.item });
+            }
+        }, error => T.notify('Lấy môn học bị lỗi!', 'danger'));
+    }
+}
+
 export function createSubject(data, done) {
     return dispatch => {
         const url = '/api/subject';

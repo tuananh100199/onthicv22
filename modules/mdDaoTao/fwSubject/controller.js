@@ -33,6 +33,17 @@ module.exports = (app) => {
         app.model.subject.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/subject/student', app.permission.check('subject:read'), (req, res) => {
+        app.model.subject.get(req.query._id, (error, item) => {
+            const currentCourse = req.session.user.currentCourse;
+            if (currentCourse) {
+                res.send({ error, item, currentCourse })
+            } else {
+                res.send({ error, item })
+            }
+        });
+    });
+
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
         app.model.subject.create(req.body.data, (error, item) => res.send({ error, item }));
     });

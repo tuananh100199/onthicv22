@@ -30,17 +30,9 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc',
-            component: Loadable({ loading: Loading, loader: () => import('./userPage') })
-        },
-        {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
-        // {
-        //     path: '/course/:_id',
-        //     component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail') })
-        // },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

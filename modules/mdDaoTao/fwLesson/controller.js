@@ -32,7 +32,19 @@ module.exports = (app) => {
 
     app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
-        app.model.lesson.getByStudent(_id, (error, item) => res.send({ error, item }));
+        const currentCourse = req.session.user.currentCourse;
+        app.model.lesson.get(_id, (error, item) => {
+            if (item && item.questions) {
+                item.questions.forEach(question => {
+                    question.trueAnswer = null;
+                })
+            }
+            if (currentCourse) {
+                res.send({ error, item, currentCourse })
+            } else {
+                res.send({ error, item })
+            }
+        });
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
