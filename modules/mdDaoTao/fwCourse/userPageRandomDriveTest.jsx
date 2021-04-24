@@ -26,16 +26,14 @@ class UserPageRandomDriveTest extends AdminPage {
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
         })
-        T.confirm('Gửi câu trả lời', 'Bạn có chắc chắn nộp câu trả lời cho bộ câu hỏi này?', true, isConfirm =>
-            isConfirm && this.props.checkDriveTestScore(this.state._id, studentAnswers, result => {
-                $('#submit-btn').removeAttr('disabled');
-                T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-                this.setState({ result: result })
-            }))
+        this.props.checkDriveTestScore(this.state._id, studentAnswers, result => {
+            $('#submit-btn').removeAttr('disabled');
+            T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+            this.setState({ result: result })
+        })
     }
 
     render() {
-        console.log(this.state)
         const { questions } = this.state ? this.state : { questions: [] };
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
 
@@ -44,32 +42,33 @@ class UserPageRandomDriveTest extends AdminPage {
             title: 'Ôn tập: Đề ngẫu nhiên ',
             breadcrumb: ['Bộ đề thi'],
             content: (
-                <div>
-                <div className='tile-body row'>
-                    {questions ? questions.map((question, indexQuestion) => question.active ?
-                        (
-                            <div key={indexQuestion} className='col-md-6 pb-5'>
-                                <h6>Câu {indexQuestion + 1}:{question.title}</h6>
-                                {question.image ? <img src={question.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
-                                <div className='form-check'>
-                                    {question.answers.split('\n').map((answer, index) => (
-                                        <div key={index}>
-                                            <input className='form-check-input' type='radio' name={question._id} id={question._id + index} value={index} />
-                                            <label className='form-check-label' htmlFor={question._id + index}>
-                                                {answer}
-                                            </label>
-                                        </div>
-                                    ))}
+                <div className='tile'>
+                    <div className='tile-body row'>
+                        {questions ? questions.map((question, indexQuestion) => question.active ?
+                            (
+                                <div key={indexQuestion} className='col-md-6 pb-5'>
+                                    <h6>Câu {indexQuestion + 1}:{question.title}</h6>
+                                    {question.image ? <img src={question.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
+                                    <div className='form-check'>
+                                        {question.answers.split('\n').map((answer, index) => (
+                                            <div key={index}>
+                                                <input className='form-check-input' type='radio' name={question._id} id={question._id + index} value={index} />
+                                                <label className='form-check-label' htmlFor={question._id + index}>
+                                                    {answer}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ) : <></>
-                    ): null}
+                            ) : <></>
+                        ): null}
+                    </div>
+                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
+                        <p>Số câu đúng của bạn: <b>{score} / {total}</b></p>
+                    </div>
                 </div>
-                <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
-                    <p>Số câu đúng của bạn: <b>{score} / {total}</b></p>
-                </div>
-            </div>),
+            ),
         });
     }
 }
