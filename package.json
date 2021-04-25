@@ -11,7 +11,9 @@
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
     "webpack-server": "webpack serve --mode development --color",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "lint:jsx:fix": "npm run lint:jsx --  --fix",
+    "lint:jsx": "eslint . --ext .jsx,.js --ignore-path .gitignore"
   },
   "repository": {
     "type": "git",
@@ -86,6 +88,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "archiver": "^5.0.2",
+    "babel-eslint": "^10.1.0",
     "basic-auth": "^2.0.1",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.19.0",
@@ -96,6 +99,8 @@
     "decompress-zip": "^0.3.3",
     "docxtemplater": "^3.21.1",
     "docxtemplater-image-module-free": "^1.1.1",
+    "eslint": "^7.25.0",
+    "eslint-plugin-react": "^7.23.2",
     "exceljs": "^4.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
@@ -105,6 +110,7 @@
     "jimp": "^0.16.1",
     "json-beautify": "^1.1.1",
     "jsonwebtoken": "^8.5.1",
+    "lint-staged": "^10.5.4",
     "moment": "^2.29.0",
     "mongoose": "^5.10.14",
     "morgan": "^1.10.0",
@@ -124,5 +130,16 @@
     "socket.io-parser": "^4.0.4",
     "socket.io-redis": "^6.1.0",
     "xlsx": "^0.16.8"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*{.jsx,.js}": [
+      "eslint ",
+      "git add"
+    ]
   }
 }

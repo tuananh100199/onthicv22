@@ -66,8 +66,40 @@ module.exports = app => {
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
-            changes.modifiedDate = new Date();
-            model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname division').populate('groups.student', 'firstname lastname').exec(done);
+            let isError = false;
+            new Promise((resolve, reject) => {
+                app.model.division.getAll({ isOutside: true }, (error, list) => {
+                    const _divisionOutsideIds = list.map(item => item._id);
+                    if (changes.groups) {
+                        for (const group of changes.groups) {
+                            if (group.student) {
+                                for (const student of group.student) {
+                                    app.model.student.get(student._id || student, (error, item) => {
+                                        app.model.user.get(group.teacher._id || group.teacher, (error, teacher) => {
+                                            if ((_divisionOutsideIds.includes(item.division._id) && !_divisionOutsideIds.includes(teacher.division._id)) || (!_divisionOutsideIds.includes(item.division._id) && _divisionOutsideIds.includes(teacher.division._id))) {
+                                                reject('Ứng viên thuộc cơ sở ngoài chỉ được thêm vào nhóm học viên thuộc cơ sở ngoài!');
+                                                isError = true;
+                                            } else if (item.division._id != teacher.division._id) {
+                                                reject('Giáo viên và ứng viên phải trùng cơ sở đào tạo!');
+                                                isError = true;
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                            if (isError) {
+                                break;
+                            }
+                        }
+                    }
+                    if (!isError) {
+                        resolve();
+                    }
+                });
+            }).then(() => {
+                changes.modifiedDate = new Date();
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname division').populate('groups.student', 'firstname lastname').exec(done);
+            }).catch(error => done(error));
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

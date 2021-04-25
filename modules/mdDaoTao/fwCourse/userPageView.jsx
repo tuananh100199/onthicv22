@@ -6,14 +6,14 @@ import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserSubjectView from './tabView/userSubjectView';
 import UserDriveTestView from './tabView/userDriveTestView';
 
-const previousRoute = '/user/hoc-vien/khoa-hoc';
+const previousRoute = '/user';
 class UserCoursePageDetail extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
-        T.ready('/user/hoc-vien/khoa-hoc', () => {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
-                _id = route.parse(window.location.pathname)._id;
-            if (_id) {
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
+            _id = route.parse(window.location.pathname)._id;
+        if (_id) {
+            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
@@ -22,15 +22,40 @@ class UserCoursePageDetail extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
-                        this.setState(data.item)
+                        this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
                     }
                 });
+            });
+        } else {
+            this.props.history.push(previousRoute);
+        }
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.match.url != this.props.match.url) {
+            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
+                _id = route.parse(window.location.pathname)._id;
+            if (_id) {
+                T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
+                    this.props.getCourseByStudent(_id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push(previousRoute);
+                        } else if (data.notify) {
+                            T.alert(data.notify, 'error', false, 2000);
+                            this.props.history.push(previousRoute);
+                        } else if (data.item) {
+                            this.setState(data.item);
+                        } else {
+                            this.props.history.push(previousRoute);
+                        }
+                    });
+                });
             } else {
-                this.props.history.push(previousRoute);
+                this.props.history.push('/user');
             }
-        });
+        }
     }
 
     render() {
@@ -56,9 +81,8 @@ class UserCoursePageDetail extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
-            breadcrumb: [<Link to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
             content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,
-            backRoute: previousRoute,
         });
     }
 }

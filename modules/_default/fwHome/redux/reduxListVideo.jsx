@@ -35,8 +35,8 @@ export function getListVideoAll(done) {
                 if (done) done(data.list);
                 dispatch({ type: ListVideoGetAll, list: data.list || [] });
             }
-        }, error => console.error(`GET: ${url}. ${error}`))
-    }
+        }, error => console.error(`GET: ${url}. ${error}`));
+    };
 }
 
 export function getListVideo(_id, done) {
@@ -60,11 +60,11 @@ export function createListVideo(data, done) {
                 T.notify('Tạo danh sách video bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                dispatch(getListVideoAll())
+                dispatch(getListVideoAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo danh sách video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo danh sách video bị lỗi!', 'danger'));
+    };
 }
 
 export function updateListVideo(_id, changes, done) {
@@ -80,8 +80,8 @@ export function updateListVideo(_id, changes, done) {
                 dispatch({ type: ListVideoUpdate, item: data.item });
                 done && done();
             }
-        }, error => T.notify('Cập nhật danh sách video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật danh sách video bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteListVideo(_id) {
@@ -95,8 +95,8 @@ export function deleteListVideo(_id) {
                 T.alert('Xóa danh sách video thành công!', 'error', false, 800);
                 dispatch(getListVideoAll());
             }
-        }, error => T.notify('Xóa danh sách video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa danh sách video bị lỗi!', 'danger'));
+    };
 }
 
 export function getListVideoByUser(_id, done) {
@@ -109,8 +109,8 @@ export function getListVideoByUser(_id, done) {
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Lấy danh sách video bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách video bị lỗi', 'danger'));
+    };
 }
 export const ajaxSelectListVideo = T.createAjaxAdapter(
     '/api/list-video/all',

@@ -89,7 +89,7 @@ class StatisticEditPage extends AdminPage {
             title: this.itemTitle.value(),
             description: this.itemDescription.html(),
             titleVisible: this.itemTitleVisible.value(),
-        })
+        });
     };
 
     createItem = (e) => e.preventDefault() || this.modal.show({ statisticId: this.state._id });
@@ -102,7 +102,7 @@ class StatisticEditPage extends AdminPage {
         isConfirm && this.props.deleteStatisticItem(item._id));
 
     render() {
-        const items = this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items
+        const items = this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items;
         const permission = this.getUserPermission('component');
         const table = renderTable({
             getDataSource: () => this.props.component.statistic && this.props.component.statistic.selectedItem && this.props.component.statistic.selectedItem.items,
@@ -129,7 +129,7 @@ class StatisticEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-picture-o',
             title: 'Thống kê: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Thống kê'],
+            breadcrumb: [<Link key={0} to='/user/component'>Thành phần giao diện</Link>, 'Thống kê'],
             content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>

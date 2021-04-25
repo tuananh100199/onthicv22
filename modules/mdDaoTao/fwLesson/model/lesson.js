@@ -30,7 +30,7 @@ module.exports = app => {
         },
 
         getAll: (condition, done) => {
-            done ? model.find(condition).exec(done) : model.find({}).exec(condition)
+            done ? model.find(condition).exec(done) : model.find({}).exec(condition);
         },
 
         get: (condition, done) => {
@@ -42,15 +42,6 @@ module.exports = app => {
             model.findOne(condition).populate('videos').populate('questions').exec(done);
         },
 
-        getByStudent: (condition, done) => {
-            if (done == undefined) {
-                done = condition;
-                condition = {};
-            }
-            if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).populate('videos').populate('questions', '-trueAnswer').exec(done);
-        },
-
         update: (_id, changes, done) => { // changes = {$set, $unset, $push, $pull}
             model.findOneAndUpdate({ _id }, changes, { new: true }).populate('videos').populate('questions').exec(done);
         },
@@ -59,8 +50,8 @@ module.exports = app => {
             model.findById(_id, (error, item) => {
                 if (item) {
                     app.deleteImage(item.image);
-                    app.model.lessonVideo.delete(item.videos, error => error && console.log(error));
-                    app.model.question.delete(item.questions, error => error && console.log(error));
+                    app.model.lessonVideo.delete(item.videos, error => error && console.error(error));
+                    app.model.question.delete(item.questions, error => error && console.error(error));
                     item.remove(done);
                 } else {
                     done(error || 'Invalid Id!');

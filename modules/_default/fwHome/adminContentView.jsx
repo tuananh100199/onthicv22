@@ -21,7 +21,7 @@ class ContentModal extends AdminModal {
                     this.hide();
                     this.props.history.push('/user/content/' + data.item._id);
                 }
-            })
+            });
         }
     }
     render = () => this.renderModal({

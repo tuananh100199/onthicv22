@@ -68,7 +68,7 @@ const compareSearch = (item, searchValue) => {
             removeAccentMarksVietnamese(item).includes(searchValue) ||
             removeAccentHatVietnamese(item).includes(searchValue));
     }
-}
+};
 
 class SubMenusPage extends React.Component {
     state = { mode: 'normal' };
@@ -91,7 +91,7 @@ class SubMenusPage extends React.Component {
                 } else {
                     setTimeout(getMenu, 500);
                 }
-            }
+            };
             getMenu();
         });
     }
@@ -124,7 +124,7 @@ class SubMenusPage extends React.Component {
     }
     selectAllIcons = (value) => {
         const menuState = this.state.menuState;
-        Object.keys(menuState).forEach(key => menuState[key] = value)
+        Object.keys(menuState).forEach(key => menuState[key] = value);
         this.setState({ menuState });
     }
     cancelUserPage = () => {

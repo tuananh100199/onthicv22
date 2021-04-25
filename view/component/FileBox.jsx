@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UploadBoxStyle = {
-    backgroundImage: `url('/img/upload.png')`,
+    backgroundImage: 'url(\'/img/upload.png\')',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'contain',
@@ -16,19 +16,15 @@ const UploadBoxStyle = {
 };
 
 export default class FileBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { isUploading: false, userData: null };
-
-        this.box = React.createRef();
-        this.uploadInput = React.createRef();
-    }
+    state = { isUploading: false, userData: null };
+    box = React.createRef();
+    uploadInput = React.createRef();
 
     setData = (userData) => this.setState({ userData })
 
     onDrop = (event) => {
         event.preventDefault();
-        $(this.box.current).css('background-color', '#FFF')
+        $(this.box.current).css('background-color', '#FFF');
 
         if (event.dataTransfer.items) {
             if (event.dataTransfer.items.length > 0) {
@@ -64,7 +60,7 @@ export default class FileBox extends React.Component {
 
     onSelectFileChanged = (event) => {
         if (event.target.files.length > 0) {
-            this.onUploadFile(event.target.files[0])
+            this.onUploadFile(event.target.files[0]);
             event.target.value = '';
         }
     };
@@ -125,7 +121,6 @@ export default class FileBox extends React.Component {
     }
 
     render() {
-        const accept = this.props.accept ? this.props.accept : '';
         const fileAttrs = { type: 'file' };
         if (this.props.accept) fileAttrs.accept = this.props.accept;
 

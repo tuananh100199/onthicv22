@@ -21,7 +21,7 @@ class ListContentModal extends AdminModal {
                     this.hide();
                     this.props.history.push('/user/list-content/' + data.item._id);
                 }
-            })
+            });
         }
     }
     render = () => this.renderModal({

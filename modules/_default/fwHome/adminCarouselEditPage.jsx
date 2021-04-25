@@ -131,7 +131,7 @@ class CarouselEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-picture-o',
             title: 'Tập hình ảnh: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Tập hình ảnh'],
+            breadcrumb: [<Link key={0} to='/user/component'>Thành phần giao diện</Link>, 'Tập hình ảnh'],
             content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>

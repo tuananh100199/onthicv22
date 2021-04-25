@@ -19,7 +19,7 @@ class DenyModal extends React.Component {
                 if (!data.error) T.notify('Từ chối duyệt hồ sơ thành công!', 'success');
                 $('#submit-btn').removeAttr('disabled');
                 $(this.modal).modal('hide');
-            })
+            });
         }
     }
 
@@ -47,7 +47,7 @@ class DenyModal extends React.Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
@@ -57,7 +57,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc/edit/:_id').parse(url);
-        T.ready('/user/don-de-nghi-hoc')
+        T.ready('/user/don-de-nghi-hoc');
         this.props.getForm(params._id);
     }
 
@@ -66,7 +66,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
             isConfirm && this.props.updateForm(this.props.donDeNghiHoc.item._id, { status: 'approved' }, () => {
                 T.alert('Đơn đề nghị học đã được duyệt!', 'success', false, 1000);
             });
-        })
+        });
     }
 
     render() {
@@ -165,7 +165,7 @@ class AdminDonDeNghiHocEditPage extends React.Component {
                 {item.status == 'waiting' ?
                     <div>
                         <Tooltip placement='bottom' overlay='Từ chối đơn'>
-                            <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.show() }}
+                            <button type='button' className='btn btn-danger btn-circle' onClick={e => { e.preventDefault(); this.denyModal.show(); }}
                                 style={{ position: 'fixed', right: '70px', bottom: '10px' }}>
                                 <i className='fa fa-user-times' />
                             </button>

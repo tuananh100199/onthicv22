@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getStudentPage } from './redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
 class StudentPage extends AdminPage {
     state = { searchText: '', isSearching: false };

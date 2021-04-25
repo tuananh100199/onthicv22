@@ -8,25 +8,24 @@ const userPageLink = '/user/hoc-vien/khoa-hoc';
 class adminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready(userPageLink, () => {
-            let url = window.location.pathname,
-                params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id').parse(url);
-            if (params._id) {
-                this.props.getLessonByStudent(params._id, data => {
-                    if (data.error) {
-                        T.notify('Lấy bài học bị lỗi!', 'danger');
-                        this.props.history.push(userPageLink);
-                    } else if (data.item) {
-                        const { _id, title, shortDescription, detailDescription } = data.item;
-                        this.setState({ _id, title, shortDescription, detailDescription });
-                    } else {
-                        this.props.history.push(userPageLink);
-                    }
-                });
-            } else {
-                this.props.history.push(userPageLink);
-            }
-        });
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id').parse(url);
+        if (params._id) {
+            this.props.getLessonByStudent(params._id, data => {
+                if (data.error) {
+                    T.notify('Lấy bài học bị lỗi!', 'danger');
+                    this.props.history.push(userPageLink);
+                } else if (data.item && data.currentCourse) {
+                    T.ready(userPageLink + '/' + data.currentCourse);
+                    const { _id, title, shortDescription, detailDescription } = data.item;
+                    this.setState({ _id, title, shortDescription, detailDescription });
+                } else {
+                    this.props.history.push(userPageLink);
+                }
+            });
+        } else {
+            this.props.history.push(userPageLink);
+        }
     }
 
     submitAnswer = (e, list) => {
@@ -103,7 +102,7 @@ class adminEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to={userPageLink}>Bài học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={userPageLink}>Bài học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: userPageLink,
         });

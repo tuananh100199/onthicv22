@@ -92,7 +92,7 @@ module.exports = (app) => {
                             });
                         }
                     });
-                }
+                };
                 getUserToken();
             } else {
                 res.send({ error: 'Your account is inactive!' });

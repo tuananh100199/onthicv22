@@ -23,7 +23,7 @@ class StaffGroupModal extends AdminModal {
                     this.hide();
                     this.props.history.push('/user/staff-group/' + data.item._id);
                 }
-            })
+            });
         }
     }
 
@@ -63,12 +63,12 @@ class StaffGroupPage extends React.Component {
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/staff-group/' + item._id} onDelete={this.delete} />
                 </tr>
             )
-        })
+        });
         return <>
             {table}
             <StaffGroupModal ref={e => this.modal = e} create={this.props.createStaffGroup} readOnly={!permission.write} history={this.props.history} />
             {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
-        </>
+        </>;
     }
 }
 

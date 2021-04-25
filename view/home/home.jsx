@@ -38,8 +38,8 @@ class App extends React.Component {
         const done = () => {
             if ($(this.loader).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
                 const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
-                handlePaddingFooter()
-                setTimeout(handlePaddingFooter, 250)
+                handlePaddingFooter();
+                setTimeout(handlePaddingFooter, 250);
                 $(window).on('resize', handlePaddingFooter);
                 this.loader.isShown() && this.loader.hide();
                 let menuList = [...this.props.system.menus];
@@ -62,7 +62,7 @@ class App extends React.Component {
                 const isMatch = routes.some(route => T.routeMatcher(route.props.path).parse(pathname));
                 this.setState({ routes, isMatch });
             } else {
-                setTimeout(done, 200)
+                setTimeout(done, 200);
             }
         };
         $(document).ready(done);

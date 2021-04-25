@@ -7,11 +7,8 @@ module.exports = app => {
             2040: { title: 'Cluster', link: '/user/cluster', icon: 'fa-braille', backgroundColor: '#4db6ac' }
         }
     };
-    app.permission.add(
-        { name: 'cluster:read', menu },
-        { name: 'cluster:write' },
-        { name: 'cluster:delete' },
-    );
+    app.permission.add({ name: 'cluster:read', menu }, { name: 'cluster:write' }, { name: 'cluster:delete' });
+
     app.get('/user/cluster', app.permission.check('cluster:read'), app.templates.admin);
 
     // Cluster APIs ---------------------------------------------------------------------------------------------------------------------------------
@@ -59,7 +56,7 @@ module.exports = app => {
             unzipper.on('error', error => {
                 res.send({ error: 'Unzip has error!' });
             });
-            unzipper.on('extract', log => {
+            unzipper.on('extract', () => {
                 let destPath = app.path.dirname(require.main.filename),
                     mainCodeFilename = require(destPath + '/package.json').main;
                 if (app.isDebug) {

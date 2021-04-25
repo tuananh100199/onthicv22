@@ -14,7 +14,7 @@ module.exports = app => {
     app.get('/api/drive-test/all', app.permission.check('studentCourse:read'), (req, res) => {
         const condition = req.query.condition;
         app.model.driveTest.getAll(condition, (error, list) => {
-            res.send({ error, list })
+            res.send({ error, list });
         });
     });
 

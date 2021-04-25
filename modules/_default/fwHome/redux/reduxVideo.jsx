@@ -40,7 +40,7 @@ export function getVideoAll(condition, done) {
         }, error => {
             console.error('GET: ' + url + '. ' + error);
         });
-    }
+    };
 }
 
 export function getVideo(_id, done) {
@@ -65,8 +65,8 @@ export function createVideo(data, done) {
                 dispatch(getVideoAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo video bị lỗi!', 'danger'));
+    };
 }
 
 export function updateVideo(_id, changes) {
@@ -80,8 +80,8 @@ export function updateVideo(_id, changes) {
                 T.notify('Cập nhật thông tin video thành công!', 'success');
                 dispatch({ type: VideoChange, item: data.item });
             }
-        }, error => T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin video bị lỗi!', 'danger'));
+    };
 }
 export function changeVideo(video) {
     return { type: VideoChange, item: video };
@@ -98,8 +98,8 @@ export function deleteVideo(_id) {
                 T.alert('Video được xóa thành công!', 'error', false, 800);
                 dispatch(getVideoAll());
             }
-        }, error => T.notify('Xóa video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa video bị lỗi!', 'danger'));
+    };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------
@@ -113,8 +113,8 @@ export function getVideoAllByUser(condition, done) {
             } else {
                 if (done) done(data.items);
             }
-        }, error => T.notify('Lấy danh sách video bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách video bị lỗi!', 'danger'));
+    };
 }
 export function homeGetVideo(_id, done) {
     return dispatch => {
@@ -130,15 +130,15 @@ export function homeGetVideo(_id, done) {
         }, error => {
             console.error('GET: ' + url + '. ' + error);
         });
-    }
+    };
 }
 
 export const ajaxSelectVideo = T.createAjaxAdapter(
-    `/api/video/all`,
+    '/api/video/all',
     response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetVideo(_id, done) {
     const url = '/api/video';
     T.get(url, { _id }, done, error => T.notify('Lấy nội dung bị lỗi!', 'danger'));
-};
+}

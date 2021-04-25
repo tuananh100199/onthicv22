@@ -14,13 +14,13 @@ class SectionCarousel extends React.Component {
         const viewportWidth = $(window).width();
         let viewportHeight = $(window).height();
         if (viewportWidth <= 576) { // Small
-            viewportHeight *= 0.45
+            viewportHeight *= 0.45;
         }
         if (viewportWidth <= 768) { // Medium
-            viewportHeight *= 0.65
+            viewportHeight *= 0.65;
         }
         if (viewportWidth <= 992) { //Large
-            viewportHeight *= 0.8
+            viewportHeight *= 0.8;
         }
         $('.slider-content').css('height', viewportHeight);
     }
@@ -64,10 +64,10 @@ class SectionCarousel extends React.Component {
                             }
                         });
                     }
-                    $(window).trigger('resize')
-                })
+                    $(window).trigger('resize');
+                });
             });
-        })
+        });
     }
 
     componentWillUnmount() {
@@ -168,7 +168,7 @@ class SectionCarousel extends React.Component {
                         {elements}
                     </div>
                 </div>
-            </div>
+            </div>;
     }
 }
 

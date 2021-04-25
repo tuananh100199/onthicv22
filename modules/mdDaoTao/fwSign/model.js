@@ -15,7 +15,7 @@ module.exports = app => {
             model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
                 data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
                 model.create(data, done);
-            })
+            });
         },
 
         getPage: (pageNumber, pageSize, condition, done) => {
@@ -39,7 +39,7 @@ module.exports = app => {
 
 
         get: (condition, done) => {
-            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done)
+            typeof condition == 'string' ? model.findById(condition).populate('categories', 'title').exec(done) : model.findOne(condition).populate('categories', 'title').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

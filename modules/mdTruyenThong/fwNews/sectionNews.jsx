@@ -8,11 +8,11 @@ class SectionNews extends React.Component {
     componentDidMount() {
         $(document).ready(() => {
             this.props.getNewsFeed(T.ftcoAnimate);
-        })
+        });
         $(window).on('resize', this.handleResize);
     }
     handleResize = () => {
-        this.setState({ viewport: $('.services').width() > 768 ? 'big' : 'small' })
+        this.setState({ viewport: $('.services').width() > 768 ? 'big' : 'small' });
         T.ftcoAnimate();
     }
 
@@ -78,7 +78,7 @@ class SectionNews extends React.Component {
                     </div >
                 }</div>
             </div>
-        )
+        );
     }
 }
 

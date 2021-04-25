@@ -27,7 +27,7 @@ export default function contentReducer(state = {}, data) {
 // Action -------------------------------------------------------------------------------------------------------------
 export function getContentAll(done) {
     return dispatch => {
-        const url = `/api/content/all`;
+        const url = '/api/content/all';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
@@ -39,7 +39,7 @@ export function getContentAll(done) {
         }, error => {
             console.error('GET: ' + url + '. ' + error);
         });
-    }
+    };
 }
 
 export function getContent(_id, done) {
@@ -56,7 +56,7 @@ export function getContent(_id, done) {
 
 export function createContent(data, done) {
     return dispatch => {
-        const url = `/api/content`;
+        const url = '/api/content';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo nội dung bị lỗi!', 'danger');
@@ -65,13 +65,13 @@ export function createContent(data, done) {
                 dispatch(getContentAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo nội dung bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo nội dung bị lỗi!', 'danger'));
+    };
 }
 
 export function updateContent(_id, changes, done) {
     return dispatch => {
-        const url = `/api/content`;
+        const url = '/api/content';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật nội dung bị lỗi!', 'danger');
@@ -82,13 +82,13 @@ export function updateContent(_id, changes, done) {
                 dispatch(getContentAll());
                 done && done();
             }
-        }, error => T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật nội dung bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteContent(_id) {
     return dispatch => {
-        const url = `/api/content`;
+        const url = '/api/content';
         T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xóa nội dung bị lỗi!', 'danger');
@@ -97,8 +97,8 @@ export function deleteContent(_id) {
                 T.alert('Nội dung được xóa thành công!', 'error', false, 800);
                 dispatch(getContentAll());
             }
-        }, error => T.notify('Xóa nội dung bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa nội dung bị lỗi!', 'danger'));
+    };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------
@@ -113,8 +113,8 @@ export function homeGetContent(_id, done) {
                 dispatch({ type: ContentUpdate, item: data.item });
                 done && done(data);
             }
-        }, error => T.notify('Lấy nội dung bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy nội dung bị lỗi', 'danger'));
+    };
 }
 
 export const ajaxSelectContent = T.createAjaxAdapter(
@@ -125,4 +125,4 @@ export const ajaxSelectContent = T.createAjaxAdapter(
 export function ajaxGetContent(_id, done) {
     const url = '/api/content';
     T.get(url, { _id }, done, error => T.notify('Lấy nội dung bị lỗi!', 'danger'));
-};
+}

@@ -11,7 +11,7 @@ class HomeMenu extends React.Component {
             if ($.fn.classyNav && this.nav.current && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
                 this.setState({ link: window.location.pathname }, () => {
                     $(this.nav.current).classyNav();
-                })
+                });
             } else {
                 setTimeout(done, 100);
             }
@@ -57,14 +57,14 @@ class HomeMenu extends React.Component {
 
             $(document).on('scroll', () => setHeader());
 
-            done()
+            done();
         });
     }
 
     onMenuClick = (link) => {
         this.setState({ link }, () => {
             $(this.nav.current).classyNav();
-        })
+        });
         $('.hamburger').css('display') == 'block' && $('.menu_close').click();
     };
 
@@ -89,7 +89,7 @@ class HomeMenu extends React.Component {
 
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank'>{item.title}</a> : (item.link ?
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> : (item.link ?
                                 <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
                                 <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>)}
                             <ul className='dropdown'>{
@@ -100,14 +100,14 @@ class HomeMenu extends React.Component {
                                     } else {
                                         return isExternalLink ?
                                             <li key={subIndex}><a href={link}>{subMenu.title}</a></li> :
-                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{subMenu.title}</Link></li>
+                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{subMenu.title}</Link></li>;
                                     }
                                 })}
                             </ul>
                         </li>
                     ) :
                         <li key={index} className={currentLink == link ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank'>{item.title}</a> :
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> :
                                 (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
                         </li>;
                 }
@@ -115,10 +115,10 @@ class HomeMenu extends React.Component {
         }
 
         let { logo, user, facebook, youtube, twitter, instagram, mobile, email, dangKyTuVanLink } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
-        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+        facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
 
         // facebook = facebook ? <li style={{ marginTop: '12px' }}><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
         // youtube = youtube ? <li style={{ marginTop: '12px' }}><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';

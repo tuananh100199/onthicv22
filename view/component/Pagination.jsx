@@ -56,7 +56,7 @@ export default class Pagination extends React.Component {
                 maxPageNumber = Math.min(minPageNumber + 6, this.props.pageTotal);
             }
             if (maxPageNumber - 6 < minPageNumber) {
-                minPageNumber = Math.max(1, maxPageNumber - 6)
+                minPageNumber = Math.max(1, maxPageNumber - 6);
             }
             for (let i = minPageNumber; i <= maxPageNumber; i++) {
                 pageItems.push(

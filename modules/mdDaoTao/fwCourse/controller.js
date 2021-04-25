@@ -10,10 +10,9 @@ module.exports = (app) => {
 
     const courseMenu = {
         parentMenu: app.parentMenu.studentCourse,
-        menus: {
-            5050: { title: 'Khóa học của bạn', link: '/user/hoc-vien/khoa-hoc' }
-        },
+        menus: {},
     };
+
     app.permission.add({
         name: 'course:read'
     },
@@ -80,7 +79,7 @@ module.exports = (app) => {
             if (changes.groups && changes.groups === 'empty') changes.groups = [];
             if (changes.admins && changes.admins === 'empty') changes.admins = [];
         }
-        app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }))
+        app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
@@ -103,8 +102,8 @@ module.exports = (app) => {
     app.get('/api/user-course', app.permission.check('course:read'), (req, res) => {
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
-            res.send({ error, students })
-        })
+            res.send({ error, students });
+        });
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
@@ -119,41 +118,42 @@ module.exports = (app) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!course) {
-                                    resolve()
+                                    resolve();
                                 } else {
                                     resolve(course);
                                 }
                             });
                         } else {
-                            resolve()
+                            resolve();
                         }
-                    })
+                    });
                 });
                 Promise.all(coursePromises).then(courses => {
-                    res.send({ courses })
+                    res.send({ courses });
                 }).catch(error => res.send({ error }));
             } else {
                 res.send({ error });
             }
-        })
+        });
     });
 
     app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
         const { _id } = req.query,
             studentId = req.session.user._id;
+        req.session.user.currentCourse = _id;
         app.model.student.getAll({ user: studentId }, (error, students) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else {
                 const studentMapper = {};
                 students.forEach(item => studentMapper[item.course._id] = item._id);
                 if (studentMapper[_id]) {
                     app.model.course.get(_id, (error, item) => res.send({ error, item }));
                 } else {
-                    res.send({ notify: 'Bạn không thuộc khóa học này!' })
+                    res.send({ notify: 'Bạn không thuộc khóa học này!' });
                 }
             }
-        })
+        });
 
     });
 

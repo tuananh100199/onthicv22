@@ -20,7 +20,7 @@ class ListVideoModal extends AdminModal {
                 this.hide();
                 this.props.history.push('/user/list-video/' + data.item._id);
             }
-        })
+        });
     }
     render = () => this.renderModal({
         title: 'Danh sách video',
@@ -58,13 +58,13 @@ class ListVideoPage extends React.Component {
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/list-video/' + item._id} onDelete={this.delete} />
                 </tr>
             )
-        })
+        });
 
         return <>
             {table}
             <ListVideoModal history={this.props.history} ref={e => this.modal = e} create={this.props.createListVideo} readOnly={!permission.write} />
             {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
-        </>
+        </>;
     }
 }
 

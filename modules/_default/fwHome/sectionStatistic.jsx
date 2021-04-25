@@ -19,7 +19,7 @@ class StatisticNumber extends React.Component {
                     <div className='milestone_text'>{this.props.title}</div>
                 </div>
             </div>
-        )
+        );
     }
 }
 class SectionStatistic extends React.Component {

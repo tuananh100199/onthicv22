@@ -149,13 +149,13 @@ class adminEditPage extends AdminPage {
             </div>);
 
         const questions = this.props.lesson && this.props.lesson.item && this.props.lesson.item.questions,
-            componentQuestion = <QuestionView type='lesson' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeLessonQuestions} />
+            componentQuestion = <QuestionView type='lesson' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeLessonQuestions} />;
 
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={adminPageLink}>Bài học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: adminPageLink,
         });

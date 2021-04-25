@@ -10,7 +10,7 @@ module.exports = app => {
     });
 
     app.get('/api/list-content/all', app.permission.check('component:read'), (req, res) => {
-        app.model.listContent.getAll((error, list) => { res.send({ error, list }) });
+        app.model.listContent.getAll((error, list) => { res.send({ error, list }); });
     });
 
     app.get('/api/list-content', app.permission.check('component:read'), (req, res) => {
@@ -18,7 +18,7 @@ module.exports = app => {
     });
 
     app.post('/api/list-content', app.permission.check('component:write'), (req, res) => {
-        app.model.listContent.create(req.body.data, (error, item) => res.send({ error, item }))
+        app.model.listContent.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/list-content', app.permission.check('component:write'), (req, res) => {

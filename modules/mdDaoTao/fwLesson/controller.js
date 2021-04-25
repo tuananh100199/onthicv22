@@ -32,7 +32,15 @@ module.exports = (app) => {
 
     app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
-        app.model.lesson.getByStudent(_id, (error, item) => res.send({ error, item }));
+        const currentCourse = req.session.user.currentCourse;
+        app.model.lesson.get(_id, (error, item) => {
+            if (item && item.questions) {
+                item.questions.forEach(question => {
+                    question.trueAnswer = null;
+                });
+            }
+            res.send({ error, item, currentCourse });
+        });
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
@@ -42,7 +50,7 @@ module.exports = (app) => {
             err = null;
         app.model.driveQuestion.getAll({ _id: { $in: questionIds } }, (error, questions) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else {
                 const questionMapper = {},
                     trueAnswer = {};
@@ -51,15 +59,15 @@ module.exports = (app) => {
                     if (questionMapper[answer.questionId]) {
                         if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
                             score = score + 1;
-                            trueAnswer[answer.questionId] = answer.answer
+                            trueAnswer[answer.questionId] = answer.answer;
                         }
                     } else {
                         err = 'Không tìm thấy câu hỏi!';
                     }
-                })
-                res.send({ error: err, result: { score: score, total: answers.length, trueAnswer: trueAnswer } })
+                });
+                res.send({ error: err, result: { score: score, total: answers.length, trueAnswer: trueAnswer } });
             }
-        })
+        });
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {

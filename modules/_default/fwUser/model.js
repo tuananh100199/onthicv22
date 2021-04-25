@@ -109,7 +109,7 @@ module.exports = (app) => {
                             done(error, result);
                         });
                 }
-            })
+            });
         },
 
         getAll: (condition, done) => {

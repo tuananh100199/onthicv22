@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateProfile, changeSystemState } from '../_init/redux';
 import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
-const countryList = require('country-list');
 
 class ProfilePage extends AdminPage {
     state = {};
@@ -38,7 +37,7 @@ class ProfilePage extends AdminPage {
         } else {
             this.props.updateProfile(changes);
             T.notify('Cập nhật thông tin cá nhân thành công', 'info');
-        };
+        }
     }
 
     savePassword = () => {
@@ -59,6 +58,7 @@ class ProfilePage extends AdminPage {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');

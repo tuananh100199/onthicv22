@@ -6,27 +6,27 @@ class AdminMenu extends React.Component {
     componentDidMount() {
         T.ready(() => {
             // Toggle Sidebar
-            $(`[data-toggle='sidebar']`).click(function (event) {
+            $('[data-toggle=\'sidebar\']').click(function (event) {
                 $('.app').toggleClass('sidenav-toggled');
                 event.preventDefault();
             });
 
             // Activate sidebar treeview toggle
-            $(`[data-toggle='treeview']`).click(function (event) {
+            $('[data-toggle=\'treeview\']').click(function (event) {
                 if (!$(this).parent().hasClass('is-expanded')) {
-                    $('.app-menu').find(`[data-toggle='treeview']`).parent().removeClass('is-expanded');
+                    $('.app-menu').find('[data-toggle=\'treeview\']').parent().removeClass('is-expanded');
                 }
                 $(this).parent().toggleClass('is-expanded');
                 event.preventDefault();
             });
 
             // Set initial active toggle
-            $(`[data-toggle='treeview.'].is-expanded`)
+            $('[data-toggle=\'treeview.\'].is-expanded')
                 .parent()
                 .toggleClass('is-expanded');
 
             //Activate bootstrip tooltips
-            $(`[data-toggle='tooltip']`).tooltip();
+            $('[data-toggle=\'tooltip\']').tooltip();
         });
     }
 

@@ -54,8 +54,8 @@ export function getNewsPage(pageNumber, pageSize, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: NewsGetNewsPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function createNews(done) {
@@ -69,8 +69,8 @@ export function createNews(done) {
                 dispatch(getNewsPage());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function updateNews(_id, changes, done) {
@@ -86,8 +86,8 @@ export function updateNews(_id, changes, done) {
                 dispatch(getNewsPage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function swapNews(_id, isMoveUp) {
@@ -101,8 +101,8 @@ export function swapNews(_id, isMoveUp) {
                 T.notify('Thay đổi thứ tự tin tức thành công!', 'info');
                 dispatch(getNewsPage());
             }
-        }, error => T.notify('Thay đổi thứ tự tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteNews(_id) {
@@ -116,8 +116,8 @@ export function deleteNews(_id) {
                 T.alert('Tin tức được xóa thành công!', 'error', false, 800);
                 dispatch(getNewsPage());
             }
-        }, error => T.notify('Xóa tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function getNews(_id, done) {
@@ -130,8 +130,8 @@ export function getNews(_id, done) {
             } else {
                 done && done(data);
             }
-        }, error => T.notify('Lấy tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function checkLink(_id, link, done) {
@@ -144,8 +144,8 @@ export function checkLink(_id, link, done) {
             } else {
                 done && done();
             }
-        }, error => T.notify('Kiểm tra Link bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Kiểm tra Link bị lỗi!', 'danger'));
+    };
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
@@ -158,10 +158,10 @@ export function getNewsPageByUser(pageNumber, pageSize, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: NewsGetNewsPageByUser, page: data.page });
-                done && done()
+                done && done();
             }
-        }, error => T.notify('Lấy danh sách tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function getNewsByUser(_id, link, done) {
@@ -175,13 +175,13 @@ export function getNewsByUser(_id, link, done) {
                 dispatch({ type: NewsGetNewsByUser, item: data.item });
                 done && done(data);
             }
-        }, error => T.notify('Lấy tin tức bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tin tức bị lỗi!', 'danger'));
+    };
 }
 
 export function getNewsFeed(done) {
     return dispatch => {
-        const url = '/home/news/page/1/' + T.newsFeedPageSize
+        const url = '/home/news/page/1/' + T.newsFeedPageSize;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy new feed bị lỗi!', 'danger');
@@ -190,6 +190,6 @@ export function getNewsFeed(done) {
                 done && done(data.page.list);
                 dispatch({ type: NewsGetNewsFeed, list: data.page.list });
             }
-        }, error => T.notify('Lấy new feed bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy new feed bị lỗi!', 'danger'));
+    };
 }

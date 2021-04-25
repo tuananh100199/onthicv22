@@ -14,7 +14,7 @@ class SectionNewsList extends React.Component {
         super(props);
         this.state = {
             viewMode: (T.cookie('viewMode') ? T.cookie('viewMode') : 'grid')
-        }
+        };
     }
 
     ready = () => {
@@ -32,9 +32,9 @@ class SectionNewsList extends React.Component {
     }
 
     setViewMode = (e, viewMode) => {
-        e.preventDefault()
-        this.setState({ viewMode: viewMode })
-        T.cookie('viewMode', viewMode)
+        e.preventDefault();
+        this.setState({ viewMode: viewMode });
+        T.cookie('viewMode', viewMode);
     }
 
     render() {

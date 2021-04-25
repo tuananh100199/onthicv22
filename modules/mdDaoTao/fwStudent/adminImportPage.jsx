@@ -46,7 +46,7 @@ class EditModal extends AdminModal {
                 giayKhamSucKhoe: '',
                 giayKhamSucKhoeNgayKham: ''
             };
-        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'd-none' })
+        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'd-none' });
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
@@ -67,7 +67,7 @@ class EditModal extends AdminModal {
     }
 
     isChecked = (checked) => {
-        this.setState({ className: checked ? 'col-md-6' : 'd-none' })
+        this.setState({ className: checked ? 'col-md-6' : 'd-none' });
     }
 
     onSubmit = () => {
@@ -147,7 +147,7 @@ class ImportPage extends AdminPage {
     onUploadSuccess = (data) => {
         this.setState(data);
         this.itemDivision.value(null);
-        this.itemCourseType.value(null)
+        this.itemCourseType.value(null);
     }
 
     showEditModal = (e, item) => e.preventDefault() || this.modalEdit.show(item);
@@ -155,7 +155,7 @@ class ImportPage extends AdminPage {
     edit = (studentId, changes) => {
         this.setState(prevState => ({
             data: prevState.data.map(data => data.id === studentId ? changes : data)
-        }))
+        }));
     }
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa thông tin ứng viên', `Bạn có chắc bạn muốn xóa thông tin ứng viên <strong>${item.firstname + ' ' + item.lastname}</strong>?`, true, isConfirm =>
@@ -178,7 +178,7 @@ class ImportPage extends AdminPage {
                 } else {
                     this.props.history.push('/user/pre-student');
                 }
-            })
+            });
         }
     }
 
@@ -262,7 +262,7 @@ class ImportPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-graduation-cap',
             title: 'Nhập ứng viên bằng Excel',
-            breadcrumb: [<Link to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
+            breadcrumb: [<Link key={0} to='/user/pre-student'>Ứng viên</Link>, 'Nhập ứng viên bằng Excel'],
             content: <>
                 {filebox}
                 {this.state.data && this.state.data.length ? list : null}
@@ -272,5 +272,5 @@ class ImportPage extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { importPreStudent }
+const mapActionsToProps = { importPreStudent };
 export default connect(mapStateToProps, mapActionsToProps)(ImportPage);

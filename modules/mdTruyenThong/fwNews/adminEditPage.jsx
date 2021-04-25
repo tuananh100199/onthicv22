@@ -58,10 +58,10 @@ class NewsEditPage extends AdminPage {
                         T.notify('Link không hợp lệ!', 'danger');
                         this.itemLink.focus();
                     } else {
-                        this.props.updateNews(this.state._id, newData)
+                        this.props.updateNews(this.state._id, newData);
                     }
                 }) :
-                this.props.updateNews(this.state._id, newData)
+                this.props.updateNews(this.state._id, newData);
         }
     }
 
@@ -74,7 +74,7 @@ class NewsEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Tin tức: ' + title,
-            breadcrumb: [<Link to='/user/news'>Tin tức</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to='/user/news'>Tin tức</Link>, 'Chỉnh sửa'],
             content: <>
                 <div className='row'>
                     <div className='col-md-6'>
@@ -100,11 +100,11 @@ class NewsEditPage extends AdminPage {
                             <div className='tile-body'>
                                 <div className='form-group'>
                                     <label style={{ display: 'flex' }}>Link mặc định:&nbsp;
-                                        <a href={linkDefaultNews} style={{ fontWeight: 'bold' }} target='_blank'>{linkDefaultNews}</a>
+                                        <a href={linkDefaultNews} style={{ fontWeight: 'bold' }} target='_blank' rel='noreferrer'>{linkDefaultNews}</a>
                                     </label>
                                 </div>
                                 <FormTextBox type='text' ref={e => this.itemLink = e} label='Link truyền thông' onChange={e => this.setState({ link: e.target.value })} readOnly={readOnly} />
-                                {this.state.link ? <>URL: <a href={T.rootUrl + '/tintuc/' + this.state.link} style={{ fontWeight: 'bold' }} target='_blank'>{T.rootUrl + '/tintuc/' + this.state.link}</a></> : ''}
+                                {this.state.link ? <>URL: <a href={T.rootUrl + '/tintuc/' + this.state.link} style={{ fontWeight: 'bold' }} target='_blank' rel='noreferrer'>{T.rootUrl + '/tintuc/' + this.state.link}</a></> : ''}
                             </div>
                             {readOnly || !this.state.link ? '' :
                                 <div className='tile-footer'>

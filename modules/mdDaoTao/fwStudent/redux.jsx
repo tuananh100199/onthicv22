@@ -14,7 +14,7 @@ export default function studentReducer(state = {}, data) {
         case StudentGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case StudentUpdate:
+        case StudentUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
             if (updatedPage.list) {
@@ -26,6 +26,7 @@ export default function studentReducer(state = {}, data) {
                 }
             }
             return Object.assign({}, state, { page: updatedPage });
+        }
 
         case PreStudentGetPage:
             return Object.assign({}, state, { prePage: data.page });
@@ -50,8 +51,8 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
                 if (done) done(data.page);
                 dispatch({ type: StudentGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function updateStudent(_id, changes, done) {
@@ -62,12 +63,11 @@ export function updateStudent(_id, changes, done) {
                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
-                T.notify('Cập nhật thông tin học viên thành công!', 'info');
                 dispatch(getStudentPage());
             }
             done && done(data.error);
-        }, error => T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteStudent(_id) {
@@ -81,13 +81,13 @@ export function deleteStudent(_id) {
                 T.alert('Học viên được xóa thành công!', 'error', false, 800);
                 dispatch(getStudentPage());
             }
-        }, error => T.notify('Xóa học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function getStudent(_id, done) {
     return dispatch => {
-        const url = `/api/student`;
+        const url = '/api/student';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
@@ -97,8 +97,8 @@ export function getStudent(_id, done) {
                 done && done(data.item);
                 dispatch({ type: StudentUpdate, item: data.item });
             }
-        }, error => T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
 }
 
 // Pre-student Actions ------------------------------------------------------------------------------------------------
@@ -116,8 +116,8 @@ export function getPreStudentPage(pageNumber, pageSize, pageCondition, done) {
                 if (done) done(data.page);
                 dispatch({ type: PreStudentGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function createPreStudent(student, done) {
@@ -131,8 +131,8 @@ export function createPreStudent(student, done) {
                 dispatch(getPreStudentPage());
                 done && done(data);
             }
-        }, error => T.notify('Tạo học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function updatePreStudent(_id, changes, done) {
@@ -147,8 +147,8 @@ export function updatePreStudent(_id, changes, done) {
                 dispatch(getPreStudentPage());
             }
             done && done(data.error);
-        }, error => T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function deletePreStudent(_id) {
@@ -162,8 +162,8 @@ export function deletePreStudent(_id) {
                 T.alert('Học viên được xóa thành công!', 'error', false, 800);
                 dispatch(getPreStudentPage());
             }
-        }, error => T.notify('Xóa học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa học viên bị lỗi!', 'danger'));
+    };
 }
 
 export function importPreStudent(students, division, courseType, done) {
@@ -178,14 +178,14 @@ export function importPreStudent(students, division, courseType, done) {
                 dispatch(getPreStudentPage());
                 done && done(data);
             }
-        }, error => T.notify('Tạo học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo học viên bị lỗi!', 'danger'));
+    };
 }
 
 // Get All PreStudent ------------------------------------------------------------------------------------------
 export function getPreStudentAll(condition, done) {
     return dispatch => {
-        const url = '/api/course/preStudent/all';
+        const url = '/api/course/pre-student/all';
         T.get(url, condition, data => {
             if (data.error) {
                 T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger');
@@ -194,7 +194,7 @@ export function getPreStudentAll(condition, done) {
                 if (done) done(data.list);
                 dispatch({ type: PreStudentGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
+    };
 }
 

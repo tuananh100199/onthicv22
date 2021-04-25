@@ -8,7 +8,7 @@ export default function categoryReducer(state = [], data) {
         case CategoryGetAll:
             return data.items;
 
-        case CategoryChange:
+        case CategoryChange: {
             let updateItemState = state.slice();
             for (let i = 0; i < updateItemState.length; i++) {
                 if (updateItemState[i]._id == data.item._id) {
@@ -17,6 +17,7 @@ export default function categoryReducer(state = [], data) {
                 }
             }
             return updateItemState;
+        }
 
         default:
             return state;
@@ -35,8 +36,8 @@ export function getCategoryAll(type, searchText, done) {
                 dispatch({ type: CategoryGetAll, items: data.items });
                 done && done(data.items);
             }
-        }, error => T.notify('Lấy danh mục bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh mục bị lỗi!', 'danger'));
+    };
 }
 
 export function createCategory(data, done) {
@@ -50,8 +51,8 @@ export function createCategory(data, done) {
                 dispatch(getCategoryAll(data.item.type));
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo danh mục bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo danh mục bị lỗi!', 'danger'));
+    };
 }
 
 export function updateCategory(_id, changes, done) {
@@ -67,8 +68,8 @@ export function updateCategory(_id, changes, done) {
                 dispatch(getCategoryAll(data.item.type));
                 done && done();
             }
-        }, error => T.notify('Cập nhật danh mục bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật danh mục bị lỗi!', 'danger'));
+    };
 }
 
 export function swapCategory(_id, isMoveUp, type) {
@@ -81,8 +82,8 @@ export function swapCategory(_id, isMoveUp, type) {
             } else {
                 dispatch(getCategoryAll(type));
             }
-        }, error => T.notify('Thay đổi thứ tự danh mục bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự danh mục bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteCategory(_id, type) {
@@ -96,8 +97,8 @@ export function deleteCategory(_id, type) {
                 T.alert('Xóa danh mục thành công!', 'error', false, 800);
                 dispatch(getCategoryAll(type));
             }
-        }, error => T.notify('Xóa danh mục bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa danh mục bị lỗi!', 'danger'));
+    };
 }
 
 export function changeCategory(category) {

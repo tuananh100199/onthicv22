@@ -96,8 +96,8 @@ export function getContactAll(done) {
                 if (done) done(data.list);
                 dispatch({ type: ContactGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
+    };
 }
 
 T.initCookiePage('pageContact');
@@ -113,8 +113,8 @@ export function getContactPage(pageNumber, pageSize, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: ContactGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
+    };
 }
 
 export function getContact(contactId, done) {
@@ -128,8 +128,8 @@ export function getContact(contactId, done) {
                 if (done) done(data.item);
                 dispatch({ type: ContactUpdate, item: data.item });
             }
-        }, error => T.notify('Lấy liên hệ bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy liên hệ bị lỗi!', 'danger'));
+    };
 }
 
 export function getUnreadContacts(done) {
@@ -143,8 +143,8 @@ export function getUnreadContacts(done) {
                 if (done) done(data.list);
                 dispatch({ type: ContactGetUnread, list: data.list });
             }
-        }, error => T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
+    };
 }
 
 export function updateContact(_id, changes, done) {
@@ -160,8 +160,8 @@ export function updateContact(_id, changes, done) {
                 dispatch(getContactPage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật liên hệ bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật liên hệ bị lỗi', 'danger'));
+    };
 }
 
 export function deleteContact(_id) {
@@ -175,8 +175,8 @@ export function deleteContact(_id) {
                 T.alert('Xoá liên hệ thành công!', 'error', false, 800);
                 dispatch(getContactPage());
             }
-        }, error => T.notify('Xoá liên hệ bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xoá liên hệ bị lỗi', 'danger'));
+    };
 }
 
 export function addContact(item) {
@@ -196,12 +196,10 @@ export function createContact(contact, done) {
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Gửi liên hệ bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Gửi liên hệ bị lỗi!', 'danger'));
+    };
 }
 
-export function exportContactToExcel(done) {
-    return dispatch => {
-        T.download(T.url(`/api/contact/export`));
-    }
+export function exportContactToExcel() {
+    T.download(T.url('/api/contact/export'));
 }

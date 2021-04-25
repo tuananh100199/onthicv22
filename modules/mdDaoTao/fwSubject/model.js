@@ -49,7 +49,7 @@ module.exports = app => {
             model.findById(_id, (error, item) => {
                 if (item) {
                     app.deleteImage(item.image);
-                    app.model.question.delete(item.questions, error => error && console.log(error));
+                    app.model.question.delete(item.questions, error => error && console.error(error));
                     item.remove(done);
                 } else {
                     done(error || 'Invalid Id!');
