@@ -44,19 +44,13 @@ class UserPageDriveTest extends AdminPage {
             this.setState({ activeQuestionIndex: index });
         }
     }
-    onAnswerChanged = (e) => {
-        // this.setState( studentAnswers[1]: index );
+    onAnswerChanged = (e, index) => {
         const { value } = e.target;
-        // newelement = this.studentAnswers[this.state.activeQuestionIndex];
         console.log('e.target', e.target)
-
-        this.setState(this.studentAnswers[this.state.activeQuestionIndex] = value);
+        this.studentAnswers[index] = value;
         this.setState({
-            studentAnswers: [...this.state.studentAnswers, newelement]
+            studentAnswers: this.studentAnswers
           })
-        // $('input[name=' + _id + ']:checked').val(value);
-
-        console.log('value', value)
     }
 
     render() {
@@ -64,7 +58,8 @@ class UserPageDriveTest extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        console.log(activeQuestion)
+        activeQuestion ? $('input[name=' + activeQuestion._id + ']:checked').val(this.state.studentAnswers && this.state.studentAnswers[activeQuestionIndex]) : null;
+        console.log(this.state.studentAnswers)
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
@@ -85,8 +80,8 @@ class UserPageDriveTest extends AdminPage {
                                                     type='radio' 
                                                     name={activeQuestion._id} 
                                                     id={activeQuestion._id + index} 
-                                                    value={this.studentAnswers[activeQuestionIndex] ? this.studentAnswers[activeQuestionIndex] : index} 
-                                                    onChange={this.onAnswerChanged} />
+                                                    value={ index} 
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestionIndex)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
                                                 </label>
