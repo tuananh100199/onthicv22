@@ -11,16 +11,16 @@ export default {
     },
     routes: [
         {
-            path: '/user/dao-tao',
-            component: () => <SubMenusPage menuLink='/user/dao-tao' menuKey={8000} headerIcon='fa-user' />
-        },
-        {
             path: '/user/dao-tao/bai-hoc',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
             path: '/user/dao-tao/bai-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPage') })
         },
     ],
 };

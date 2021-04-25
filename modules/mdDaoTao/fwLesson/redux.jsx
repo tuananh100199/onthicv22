@@ -60,6 +60,35 @@ export function getLesson(_id, done) {
     }
 }
 
+export function getLessonByStudent(_id, done) {
+    return dispatch => {
+        const url = '/api/lesson/student';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: LessonGetItem, item: data.item });
+            }
+        }, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+    }
+}
+
+export function checkQuestion(answers, done) {
+    return dispatch => {
+        const url = '/api/question/student/submit';
+        T.post(url, { answers }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.result);
+            }
+        }, error => T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    }
+}
+
 export function createLesson(data, done) {
     return dispatch => {
         const url = '/api/lesson';

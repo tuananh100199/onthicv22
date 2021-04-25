@@ -29,10 +29,10 @@ export default {
             path: '/user/course/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
-        // {
-        //     path: '/course/:_id',
-        //     component: Loadable({ loading: Loading, loader: () => import('./homeCourseDetail') })
-        // },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

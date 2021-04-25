@@ -5,10 +5,11 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
-    app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write' }, { name: 'lesson:delete' });
+    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write', menu }, { name: 'lesson:delete' });
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -27,6 +28,46 @@ module.exports = (app) => {
     app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
         app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
+    });
+
+    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
+        const { _id } = req.query;
+        const currentCourse = req.session.user.currentCourse;
+        app.model.lesson.get(_id, (error, item) => {
+            if (item && item.questions) {
+                item.questions.forEach(question => {
+                    question.trueAnswer = null
+                })
+            }
+            res.send({ error, item, currentCourse });
+        });
+    });
+
+    app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
+        const answers = req.body.answers;
+        let questionIds = answers.map(answer => answer.questionId),
+            score = 0,
+            err = null;
+        app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const questionMapper = {},
+                    trueAnswer = {};
+                questions.forEach(item => questionMapper[item._id] = item);
+                answers.map(answer => {
+                    if (questionMapper[answer.questionId]) {
+                        if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
+                            score = score + 1;
+                            trueAnswer[answer.questionId] = answer.answer
+                        }
+                    } else {
+                        err = 'Không tìm thấy câu hỏi!';
+                    }
+                })
+                res.send({ error: err, result: { score: score, total: answers.length, trueAnswer: trueAnswer } })
+            }
+        })
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {

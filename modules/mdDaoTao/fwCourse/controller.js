@@ -4,14 +4,28 @@ module.exports = (app) => {
     const menu = {
         parentMenu: app.parentMenu.trainning,
         menus: {
-            4045: { title: 'Khóa học', link: '/user/course' },
+            4045: { title: 'Khóa học', link: '/user/course' }
         },
     };
-    app.permission.add({ name: 'course:read', menu }, { name: 'course:write' }, { name: 'course:delete' }, { name: 'course:lock' });
 
+    const courseMenu = {
+        parentMenu: app.parentMenu.studentCourse,
+        menus: {},
+    };
+
+    app.permission.add({
+        name: 'course:read'
+    },
+        { name: 'course:write', menu },
+        { name: 'course:delete' },
+        { name: 'course:lock' },
+        { name: 'studentCourse:read', menu: courseMenu }
+    );
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/course/item/:_id', app.templates.home);
+    app.get('/user/hoc-vien/khoa-hoc', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
@@ -83,20 +97,20 @@ module.exports = (app) => {
     // Get courses by user
     app.get('/api/user-course', app.permission.check('course:read'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll( { user: _userId }, (error, students) => {
-          res.send({error, students})
-         })
+        app.model.student.getAll({ user: _userId }, (error, students) => {
+            res.send({ error, students })
+        })
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll( { user: _userId }, (error, students) => {
+        app.model.student.getAll({ user: _userId }, (error, students) => {
             if (students.length) {
                 const coursePromises = students.map((student) => {
                     return new Promise((resolve, reject) => {
                         if (student.course) {
-                            app.model.course.getByUser({ _id: student.course,  active: true }, (error, course) => {
+                            app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!course) {
@@ -114,9 +128,29 @@ module.exports = (app) => {
                     res.send({ courses })
                 }).catch(error => res.send({ error }));
             } else {
-                res.send({ error });   
+                res.send({ error });
             }
-         })
+        })
+    });
+
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+        const { _id } = req.query,
+            studentId = req.session.user._id;
+        req.session.user.currentCourse = _id;
+        app.model.student.getAll({ user: studentId }, (error, students) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const studentMapper = {};
+                students.forEach(item => studentMapper[item.course._id] = item._id);
+                if (studentMapper[_id]) {
+                    app.model.course.get(_id, (error, item) => res.send({ error, item }));
+                } else {
+                    res.send({ notify: 'Bạn không thuộc khóa học này!' })
+                }
+            }
+        })
+
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
