@@ -121,5 +121,5 @@ export const ajaxSelectDivision = T.createAjaxAdapter(
 
 export function ajaxGetDivision(_id, done) {
     const url = '/api/division';
-    T.get(url, { _id }, done, error => T.notify('Lấy cơ sở đào tạo bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy cơ sở đào tạo bị lỗi!', 'danger'));
 }

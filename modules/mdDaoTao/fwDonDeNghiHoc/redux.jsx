@@ -24,6 +24,7 @@ export default function applicationFormReducer(state = {}, data) {
             page.list = list;
             return Object.assign({}, state, { page });
         }
+
         case GET:
             return Object.assign({}, state, { item: data.item });
 
@@ -41,16 +42,14 @@ export default function applicationFormReducer(state = {}, data) {
 // Actions (admin) ----------------------------------------------------------------------------------------------------
 export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, licenseClass, done) {
     const url = '/api/application-form/page/' + pageNumber + '/' + pageSize;
-    T.get(url, { condition: pageCondition, licenseClass: licenseClass }, data => {
-        done(data);
-    }, error => console.error(error) || T.notify('Lấy danh sách form bị lỗi!', 'danger'));
+    T.get(url, { condition: pageCondition, licenseClass: licenseClass },
+        data => done && done(data),
+        error => console.error(error) || T.notify('Lấy danh sách form bị lỗi!', 'danger'));
 }
 
 export function ajaxGetForm(_id, option, done) {
     const url = '/api/application-form/item/' + _id;
-    T.get(url, { option }, data => {
-        done(data);
-    }, error => console.error(error) || T.notify('Lấy form bị lỗi!', 'danger'));
+    T.get(url, { option }, data => done(data), error => console.error(error) || T.notify('Lấy form bị lỗi!', 'danger'));
 }
 
 T.initCookiePage('pageForm');
@@ -61,7 +60,7 @@ export function getFormInPage(pageNumber, pageSize, pageCondition, licenseClass,
         ajaxGetFormInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, licenseClass, data => {
             if (data.error) {
                 T.notify('Lấy danh sách form bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
+                console.error('GET: getFormInPage.', data.error);
             } else {
                 if (done) done(data);
                 dispatch({ type: GET_PAGE, page: data.page });
@@ -75,7 +74,7 @@ export function getForm(_id, option, done) {
         ajaxGetForm(_id, option, data => {
             if (data.error) {
                 T.notify('Lấy form bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
+                console.error('GET: getForm.', data.error);
             } else {
                 dispatch({ type: GET, item: data.item });
                 done && done(data);

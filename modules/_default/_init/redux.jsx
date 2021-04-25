@@ -34,10 +34,10 @@ export function getSystemState(done) {
         const url = '/api/state';
         T.get(url, data => {
             data && dispatch({ type: SystemUpdateState, state: data });
-            if (done) done(data);
+            done && done(data);
         }, error => {
             T.notify('Lấy thông tin hệ thống lỗi!', 'danger');
-            if (done) done();
+            done && done();
         });
     };
 }

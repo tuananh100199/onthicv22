@@ -70,7 +70,7 @@ class EditCoursePage extends AdminPage {
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
-            currentPermissions = this.getCurrentPermissions(),
+            // currentPermissions = this.getCurrentPermissions(),
             permissionCourse = this.getUserPermission('course'),
             permissionUser = this.getUserPermission('user'),
             permissionDivision = this.getUserPermission('division'),
