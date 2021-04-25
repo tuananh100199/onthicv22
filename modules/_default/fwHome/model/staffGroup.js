@@ -25,7 +25,7 @@ module.exports = app => {
             } else {
                 item.remove(error => {
                     if (error) {
-                        done(error)
+                        done(error);
                     } else {
                         app.model.staff.getAll({ staffGroupId: _id }, (error, staffs) => {
                             if (error || staffs == null) {

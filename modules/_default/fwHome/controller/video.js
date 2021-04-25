@@ -9,7 +9,7 @@ module.exports = app => {
 
     app.get('/api/video/all', app.permission.check('component:read'), (req, res) => {
         const condition = req.query.condition || {};
-        app.model.video.getAll(condition, (error, list) => res.send({ error, list }))
+        app.model.video.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/video', app.permission.check('component:read'), (req, res) => {
@@ -38,7 +38,7 @@ module.exports = app => {
 
     app.get('/home/video/all', (req, res) => {
         const condition = req.query.condition || {};
-        app.model.video.getAll(condition, (error, items) => res.send({ error, items }))
+        app.model.video.getAll(condition, (error, items) => res.send({ error, items }));
     });
 
 

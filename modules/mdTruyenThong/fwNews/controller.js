@@ -48,14 +48,14 @@ module.exports = (app) => {
         const changes = { $set: req.body.changes, $unset: {} };
         if (changes['$set'].startPost == 'Invalid Date') {
             changes['$unset'].startPost = 1;
-            delete changes['$set'].startPost
+            delete changes['$set'].startPost;
         }
         if (changes['$set'].stopPost == 'Invalid Date') {
             changes['$unset'].stopPost = 1;
-            delete changes['$set'].stopPost
+            delete changes['$set'].stopPost;
         }
 
-        app.model.news.update(req.body._id, changes, (error, item) => res.send({ error, item }))
+        app.model.news.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/news/check-link', app.permission.check('news:write'), (req, res) => {
@@ -63,7 +63,7 @@ module.exports = (app) => {
             res.send({
                 error: error ? 'Lỗi hệ thống' : (item == null || item._id == req.body._id ? null : 'Link không hợp lệ'),
             });
-        })
+        });
     });
 
     app.post('/api/news', app.permission.check('news:write'), (req, res) => {

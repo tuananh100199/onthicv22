@@ -50,8 +50,8 @@ export function getCoursePage(pageNumber, pageSize, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: CourseGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    };
 }
 
 export function getCourse(_id, done) {
@@ -71,8 +71,8 @@ export function getCourse(_id, done) {
                 done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
             }
-        }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+    };
 }
 
 export function createCourse(data, done) {
@@ -86,8 +86,8 @@ export function createCourse(data, done) {
                 dispatch(getCoursePage());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
+    };
 }
 
 export function updateCourse(_id, changes, done) {
@@ -103,8 +103,8 @@ export function updateCourse(_id, changes, done) {
                 dispatch(getCoursePage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteCourse(_id) {
@@ -118,8 +118,8 @@ export function deleteCourse(_id) {
                 T.alert('Khóa học được xóa thành công!', 'error', false, 800);
                 dispatch(getCoursePage());
             }
-        }, error => T.notify('Xóa khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa khóa học bị lỗi!', 'danger'));
+    };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------
@@ -132,10 +132,10 @@ export function getCoursePageByUser(pageNumber, pageSize, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 dispatch({ type: CourseGetPageByUser, page: data.page });
-                done && done()
+                done && done();
             }
-        }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    };
 }
 
 export function getCourseByUser(_id, done) {
@@ -148,8 +148,8 @@ export function getCourseByUser(_id, done) {
             } else {
                 done && done(data);
             }
-        }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+    };
 }
 
 export function getCourseFeed(done) {
@@ -162,8 +162,8 @@ export function getCourseFeed(done) {
             } else {
                 done && done(data.page.list);
             }
-        }, error => T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    };
 }
 
 //Get Course Of User
@@ -177,8 +177,8 @@ export function getUserCourse(done) {
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
+    };
 }
 // Get Course of Student
 export function getStudentCourse(done) {
@@ -192,8 +192,8 @@ export function getStudentCourse(done) {
                 if (done) done(data);
                 dispatch({ type: CourseGetItem, item: data.courses });
             }
-        }, error => T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
+    };
 }
 
 export function getCourseByStudent(_id, done) {
@@ -207,6 +207,6 @@ export function getCourseByStudent(_id, done) {
                 done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
             }
-        }, error => T.notify('Lấy khóa học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+    };
 }

@@ -32,7 +32,7 @@ class CourseTypeModal extends AdminModal {
     };
 }
 
-const backRoute = '/user/course-type'
+const backRoute = '/user/course-type';
 class CourseTypeEditPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -120,7 +120,7 @@ class CourseTypeEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học: ' + this.state.title,
-            breadcrumb: [<Link to={backRoute}>Loại khóa học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={backRoute}>Loại khóa học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: backRoute,
         });

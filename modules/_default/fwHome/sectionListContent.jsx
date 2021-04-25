@@ -11,7 +11,7 @@ class SectionListContent extends React.Component {
                 this.props.homeGetListContent(this.props.viewId, data => {
                     if (data.item) {
                         this.setState(data.item, () => {
-                            T.ftcoAnimate()
+                            T.ftcoAnimate();
                             $(this.background).parallax();
                         });
                     } else {
@@ -72,7 +72,7 @@ class SectionListContent extends React.Component {
             <div className='contact'>
                 <div className='container mt-2'>{itemList}</div>
             </div>
-        </>
+        </>;
     }
 }
 const mapStateToProps = state => ({ system: state.system, component: state.component });

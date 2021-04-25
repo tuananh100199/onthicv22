@@ -1,5 +1,5 @@
 import React from 'react';
-import './input.scss'
+import './input.scss';
 
 export class Select extends React.Component {
     state = { data: [] }
@@ -48,7 +48,7 @@ export class Select extends React.Component {
                 $(this.input.current).append(option).trigger('change');
             }
         } else {
-            return $(this.input.current).val()
+            return $(this.input.current).val();
         }
     }
     
@@ -63,11 +63,11 @@ export class Select extends React.Component {
         return (
             <label style={{ width: '100%', marginBottom: '0' }}>
                 {this.props.displayLabel && <div style={{ marginBottom: '0.5rem' }}>{this.props.label}{this.props.required && <span style={{ color: 'red' }}> *</span>}</div>}
-                <select className='form-control' ref={this.input} disabled={this.props.disabled} multiple={this.props.multiple} onChange={() => { T.notify('a', 'danger')}}>
+                <select className='form-control' ref={this.input} disabled={this.props.disabled} multiple={this.props.multiple} onChange={() => { T.notify('a', 'danger');}}>
                     {this.props.multiple ? null : <option style={{ display: 'none' }} />}
                     {optionsData.map(item => <option key={item.value} value={item.value}>{item.text}</option>)}
                 </select>
             </label>
-        )
+        );
     }
 }

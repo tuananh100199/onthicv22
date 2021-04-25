@@ -14,7 +14,7 @@ class EmailItem extends React.Component {
             title: this.title.value,
             text: this.editor.text(),
             html: this.editor.html(),
-        }
+        };
     }
 
     render() {

@@ -4,7 +4,7 @@ import { getFormInPage, createForm, updateForm, deleteForm, exportDonDeNghiHocTo
 import { getUserPage } from 'modules/_default/fwUser/redux';
 import { Link } from 'react-router-dom';
 import Pagination, { OverlayLoading } from 'view/component/Pagination';
-import FileSaver from 'file-saver'
+import FileSaver from 'file-saver';
 import Tooltip from 'rc-tooltip';
 
 class AdminDonDeNghiHocPage extends React.Component {
@@ -15,7 +15,7 @@ class AdminDonDeNghiHocPage extends React.Component {
             params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         T.ready('/user/don-de-nghi-hoc', () => {
             this.props.getFormInPage(undefined, undefined, {}, params.licenseClass, () => {
-                this.setState({ isSearching: false })
+                this.setState({ isSearching: false });
             });
         });
     }
@@ -50,14 +50,13 @@ class AdminDonDeNghiHocPage extends React.Component {
             this.props.getFormInPage(undefined, undefined, condition, params.licenseClass, () => {
                 this.setState({ searchText, isSearching: false });
             });
-        })
+        });
     }
 
     render() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
         const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
-        const readOnly = !currentPermission.contains('applicationForm:write');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
             this.props.donDeNghiHoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const table = list && list.length ? (

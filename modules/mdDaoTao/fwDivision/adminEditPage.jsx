@@ -68,7 +68,7 @@ class DivisionEditPage extends AdminPage {
             T.notify('Địa chỉ bị trống!', 'danger');
             this.itemAddress.focus();
         } else {
-            this.props.updateDivision(this.state._id, changes, () => T.notify('Cập nhật cơ sở thành công!', 'success'))
+            this.props.updateDivision(this.state._id, changes, () => T.notify('Cập nhật cơ sở thành công!', 'success'));
         }
     }
 
@@ -77,7 +77,7 @@ class DivisionEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-university',
             title: 'Cơ sở đào tạo: ' + this.state.title,
-            breadcrumb: [<Link to='/user/division'>Cơ sở đào tạo</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to='/user/division'>Cơ sở đào tạo</Link>, 'Chỉnh sửa'],
             content: <>
                 <div className='tile'>
                     <FormCheckbox style={{ position: 'absolute', right: '24px', top: '24px' }} ref={e => this.itemIsOutside = e} label='Cơ sở ngoài' />

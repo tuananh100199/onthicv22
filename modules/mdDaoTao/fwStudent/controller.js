@@ -122,7 +122,7 @@ module.exports = (app) => {
                     res.send({ error, item });
                 } else {
                     app.uploadImage('pre-student', app.model.student.get, item._id, item.image, data => {
-                        res.send(data)
+                        res.send(data);
                     });
                 }
             });
@@ -162,17 +162,17 @@ module.exports = (app) => {
                                 });
                             }
                             student.user = user._id;   // assign id of user to user field of prestudent
-                            student.courseType = req.body.courseType
+                            student.courseType = req.body.courseType;
                             app.model.student.create(student, () => {
                                 handleCreateStudent(index + 1);
-                            })
+                            });
                         }
                     });
                 }
-            }
+            };
             handleCreateStudent();
         } else {
-            res.send({ error: 'Danh sách ứng viên trống!' })
+            res.send({ error: 'Danh sách ứng viên trống!' });
         }
     });
 
@@ -226,23 +226,23 @@ module.exports = (app) => {
                                 if (error) {
                                     reject(error);
                                 } else if (!course) {
-                                    resolve()
+                                    resolve();
                                 } else {
                                     resolve(course);
                                 }
                             });
                         } else {
-                            resolve()
+                            resolve();
                         }
-                    })
+                    });
                 });
                 Promise.all(coursePromises).then(courses => {
-                    res.send({ courses: courses.filter(item => item != null) })
+                    res.send({ courses: courses.filter(item => item != null) });
                 }).catch(error => res.send({ error }));
             } else {
                 res.send({ error });
             }
-        })
+        });
     });
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {

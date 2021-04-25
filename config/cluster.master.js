@@ -1,7 +1,7 @@
 module.exports = (cluster, isDebug) => {
     const fs = require('fs'),
         path = require('path'),
-        package = require('../package.json');
+        appConfig = require('../package.json');
     const imageInfoPath = path.dirname(require.main.filename) + '/imageInfo.txt';
 
     const workers = {},
@@ -9,12 +9,12 @@ module.exports = (cluster, isDebug) => {
     for (let i = 0; i < numWorkers; i++) {
         const worker = cluster.fork({ enableInit: i == 0 });
         worker.status = 'running';
-        worker.version = package.version;
+        worker.version = appConfig.version;
         worker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
         worker.createdDate = new Date();
         workers[worker.process.pid] = worker;
     }
-    console.log(` - The ${package.title} is ` + (isDebug ? `debugging on http://localhost:${package.port}` : `running on ${package.rootUrl}`));
+    console.log(` - The ${appConfig.title} is ` + (isDebug ? `debugging on http://localhost:${appConfig.port}` : `running on ${appConfig.rootUrl}`));
     console.log(` - Worker${workers.length >= 2 ? 's' : ''} ${Object.keys(workers)} ${workers.length >= 2 ? 'are' : 'is'} online.`);
 
     const workersChanged = () => {
@@ -30,10 +30,10 @@ module.exports = (cluster, isDebug) => {
             try {
                 !worker.isDead() && worker.send({ type: 'workersChanged', workers: items });
             } catch (error) {
-                console.log('Error', error)
+                console.log('Error', error);
             }
         });
-    }
+    };
     workersChanged();
 
     // Listen from WORKER ---------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ module.exports = (cluster, isDebug) => {
             if (message.type == 'createWorker') {
                 const targetWorker = cluster.fork();
                 targetWorker.status = 'running';
-                targetWorker.version = package.version;
+                targetWorker.version = appConfig.version;
                 targetWorker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
                 targetWorker.createdDate = new Date();
                 workers[targetWorker.process.pid] = targetWorker;
@@ -76,7 +76,7 @@ module.exports = (cluster, isDebug) => {
         if (status == 'resetting' || status == 'running') {
             worker = cluster.fork();
             worker.status = 'running';
-            worker.version = package.version;
+            worker.version = appConfig.version;
             worker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
             worker.createdDate = new Date();
             workers[worker.process.pid] = worker;

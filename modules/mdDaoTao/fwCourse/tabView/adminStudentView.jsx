@@ -16,20 +16,20 @@ class AdminStudentView extends React.Component {
                     groups = course.item.groups || [],
                     outsideGroups = groups.filter(group => _idOutsideDivisions.includes(group.teacher.division)),
                     insideGroups = groups.filter(group => !outsideGroups.includes(group));
-                this.setState({ outsideGroups, insideGroups, divisions: list, groups })
+                this.setState({ outsideGroups, insideGroups, divisions: list, groups });
             });
         }
     }
 
     onDragStart = (e, item) => {
-        e.dataTransfer.setData("student", JSON.stringify(item));
+        e.dataTransfer.setData('student', JSON.stringify(item));
     }
     onDragOver = (e) => {
         e.preventDefault();
     }
 
     onDrop = (e, group) => {
-        const student = JSON.parse(e.dataTransfer.getData("student")),
+        const student = JSON.parse(e.dataTransfer.getData('student')),
             isOutside = student.division.isOutside;
         if ((isOutside && !this.state.outsideGroups.includes(group)) || (!isOutside && !this.state.insideGroups.includes(group))) {
             T.notify('Ứng viên thuộc cơ sở ngoài chỉ được thêm vào nhóm học viên thuộc cơ sở ngoài!', 'danger');
@@ -77,7 +77,7 @@ class AdminStudentView extends React.Component {
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {list.map((item, index) => {
                         return (<li key={index} onDragStart={e => this.onDragStart(e, item)} draggable>
-                            {item.lastname} {item.firstname}</li>)
+                            {item.lastname} {item.firstname}</li>);
                     })}
                 </ol>,
             renderGroups = (list) =>
@@ -107,7 +107,7 @@ class AdminStudentView extends React.Component {
                                             }}
                                         >
                                             {student.lastname} {student.firstname}
-                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} style={{ float: 'right', color: 'red' }} class="fa fa-user-times"></i> : ''}
+                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} style={{ float: 'right', color: 'red' }} className="fa fa-user-times"></i> : ''}
                                             {/* // : <span>{student.lastname} {student.firstname}</span>} */}
                                         </li>
                                     ))}

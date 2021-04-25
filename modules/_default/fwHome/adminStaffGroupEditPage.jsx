@@ -12,7 +12,7 @@ class StaffModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, image, active, description, user, staffGroupId } = item || { _id: null, active: true }
+        const { _id, image, active, description, user, staffGroupId } = item || { _id: null, active: true };
         this.itemDescription.value(description || '');
         this.itemUser.value(user ? { id: user._id, text: `${user.lastname} ${user.firstname} (${user.email})` } : null);
         this.itemActive.value(active);
@@ -114,7 +114,7 @@ class StaffGroupEditPage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('component');
-        const list = this.props.component.staffGroup && this.props.component.staffGroup.selectedItem && this.props.component.staffGroup.selectedItem.items
+        const list = this.props.component.staffGroup && this.props.component.staffGroup.selectedItem && this.props.component.staffGroup.selectedItem.items;
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -138,7 +138,7 @@ class StaffGroupEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-group',
             title: 'Nhóm nhân viên: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Nhóm nhân viên'],
+            breadcrumb: [<Link key={0} to='/user/component'>Thành phần giao diện</Link>, 'Nhóm nhân viên'],
             content: <>
                 <div className='tile'>
                     <FormTextBox ref={e => this.itemTitle = e} label='Tiêu đề' className='tile-body' onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />

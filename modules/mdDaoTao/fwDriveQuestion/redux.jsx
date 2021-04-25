@@ -52,8 +52,8 @@ export function getAllDriveQuestions(searchText, done) {
                 if (done) done(data.list);
                 dispatch({ type: DriveQuestionGetAll, items: data.list });
             }
-        }, error => T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tất cả câu hỏi thi bị lỗi!', 'danger'));
+    };
 }
 
 export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
@@ -68,8 +68,8 @@ export function getDriveQuestionPage(pageNumber, pageSize, searchText, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: DriveQuestionGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách câu hỏi thi bị lỗi!', 'danger'));
+    };
 }
 
 export function getDriveQuestionItem(_id, done) {
@@ -83,8 +83,8 @@ export function getDriveQuestionItem(_id, done) {
                 dispatch({ type: DriveQuestionGet, item: data.item });
             }
             if (done) done(data);
-        }, error => T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy câu hỏi thi bị lỗi', 'danger'));
+    };
 }
 
 export function changeDriveQuestion(driveQuestion) {
@@ -105,8 +105,8 @@ export function createDriveQuestion(data, done) {
                 T.notify('Tạo câu hỏi thi thành công!', 'success');
                 dispatch(getDriveQuestionPage());
             }
-        }, error => T.notify('Tạo câu hỏi thi bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo câu hỏi thi bị lỗi!', 'danger'));
+    };
 }
 
 export function updateDriveQuestion(_id, changes, done) {
@@ -123,13 +123,13 @@ export function updateDriveQuestion(_id, changes, done) {
                 dispatch(getDriveQuestionPage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật câu hỏi thi bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật câu hỏi thi bị lỗi!', 'danger'));
+    };
 }
 
 export function swapDriveQuestion(_id, isMoveUp, done) {
     return dispatch => {
-        const url = `/api/drive-question/swap`;
+        const url = '/api/drive-question/swap';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi thi bị lỗi!', 'danger');
@@ -139,8 +139,8 @@ export function swapDriveQuestion(_id, isMoveUp, done) {
                 dispatch(getDriveQuestionPage());
                 done && done();
             }
-        }, error => T.notify('Thay đổi thứ tự câu hỏi thi bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự câu hỏi thi bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteDriveQuestion(_id, done) {
@@ -155,8 +155,8 @@ export function deleteDriveQuestion(_id, done) {
                 dispatch(getDriveQuestionPage());
                 done && done();
             }
-        }, error => T.notify('Xóa câu hỏi thi bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa câu hỏi thi bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteDriveQuestionImage(_id, done) {
@@ -171,8 +171,8 @@ export function deleteDriveQuestionImage(_id, done) {
                 dispatch(getDriveQuestionPage());
                 done && done();
             }
-        }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
+    };
 }
 
 export const ajaxSelectDriveQuestion = (_idSelectedType, _questionIds) => T.createAjaxAdapter(

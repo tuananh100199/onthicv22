@@ -32,7 +32,7 @@ module.exports = app => {
                     pageCondition['$or'] = [];
                     condition.type.forEach((item) => {
                         pageCondition['$or'].push(JSON.parse(`{ "${item}":true}`));
-                    })
+                    });
                 }
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
@@ -53,7 +53,7 @@ module.exports = app => {
         } else if (email) {
             app.model.user.get({ email }, (error, user) => res.send({ error, user }));
         } else {
-            res.send({ error: 'Invalid params!' })
+            res.send({ error: 'Invalid params!' });
         }
     });
 
@@ -147,11 +147,11 @@ module.exports = app => {
 
         app.model.user.update(req.session.user._id, changes, $unset, (error, user) => {
             if (user) {
-                app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }))
+                app.updateSessionUser(req, user, sessionUser => res.send({ error, user: sessionUser }));
             } else {
                 res.send({ error, user: req.session.user });
             }
-        })
+        });
     });
 
     app.delete('/api/user', app.permission.check('user:delete'), (req, res) => {
@@ -188,7 +188,7 @@ module.exports = app => {
                 user.tokenDate = new Date().getTime() + 24 * 60 * 60 * 1000;
                 user.save(error => {
                     if (error) {
-                        res.send({ error })
+                        res.send({ error });
                     } else {
                         app.model.setting.get('email', 'emailPassword', 'emailForgotPasswordTitle', 'emailForgotPasswordText', 'emailForgotPasswordHtml', result => {
                             let name = user.firstname + ' ' + user.lastname,

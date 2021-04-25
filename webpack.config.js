@@ -39,7 +39,7 @@ UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('Updat
     });
 
     const moduleData = [];
-    fs.readdirSync(`./modules`).forEach(mainModuleName => {
+    fs.readdirSync('./modules').forEach(mainModuleName => {
         fs.statSync(`./modules/${mainModuleName}`).isDirectory() && fs.readdirSync(`./modules/${mainModuleName}`).forEach(moduleName => {
             if (fs.statSync(`./modules/${mainModuleName}/${moduleName}`).isDirectory() && fs.existsSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`)) {
                 moduleData.push(mainModuleName + '|' + moduleName);

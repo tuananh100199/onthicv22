@@ -68,7 +68,7 @@ class CarouselView extends React.Component {
         return <>
             {table}
             <CarouselModal ref={e => this.modal = e} create={this.props.createCarousel} readOnly={!permission.write} />
-            {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
+            {permission.write ? <CirclePageButton type='create' onClick={() => this.modal.show()} /> : null}
         </>;
     }
 }

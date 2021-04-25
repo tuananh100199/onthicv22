@@ -19,13 +19,13 @@ class SectionListVideo extends React.Component {
                     fixedContentPos: false,
                     closeOnBgClick: false
                 });
-            }, 50)
+            }, 50);
         };
 
         if (windowWidth < 768 && mobileView == false) {
-            this.setState({ mobileView: true }, done)
+            this.setState({ mobileView: true }, done);
         } else if (windowWidth >= 768 && mobileView == true) {
-            this.setState({ mobileView: false }, done)
+            this.setState({ mobileView: false }, done);
         }
     }
 
@@ -36,7 +36,7 @@ class SectionListVideo extends React.Component {
             if (this.props.viewId) {
                 this.props.getListVideoByUser(this.props.viewId, data => {
                     if (data.error) {
-                        console.log('list các video trống')
+                        console.log('list các video trống');
                     } else if (data.item) {
                         this.props.getVideoAllByUser({ listVideoId: data.item._id }, (items) => {
                             if (items) {
@@ -44,7 +44,7 @@ class SectionListVideo extends React.Component {
                                     const done = () => {
                                         const elements = $('.popup-youtube, .popup-vimeo, .popup-gmaps');
                                         if (elements.length == 2 * items.length) {
-                                            this.handleResize()
+                                            this.handleResize();
                                             setTimeout(() => {
                                                 $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
                                                     disableOn: 700,
@@ -55,7 +55,7 @@ class SectionListVideo extends React.Component {
                                                     fixedContentPos: false,
                                                     // closeOnBgClick: false
                                                 });
-                                            }, 50)
+                                            }, 50);
                                         } else {
                                             setTimeout(done, 100);
                                         }
@@ -67,7 +67,7 @@ class SectionListVideo extends React.Component {
                     }
                 });
             }
-        })
+        });
     }
 
     componentWillUnmount() {
@@ -116,7 +116,7 @@ class SectionListVideo extends React.Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 

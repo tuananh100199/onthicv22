@@ -48,7 +48,7 @@ class AdminListSubject extends AdminPage {
             this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
 
         const table = renderTable({
-            getDataSource: () => this.props.subject && this.props.subject.page && this.props.subject.page.list,
+            getDataSource: () => list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>

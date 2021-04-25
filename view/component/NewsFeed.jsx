@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 class NewsFeed extends React.Component {
     componentDidMount() {
         this.props.getNewsFeed(() => {
-            T.ftcoAnimate()
+            T.ftcoAnimate();
         });
     }
 
@@ -30,15 +30,15 @@ class NewsFeed extends React.Component {
                         </div>
                         <div className='blog_post_button text-center'><div className='button button_4 ml-auto mr-auto'><Link to={link}>Xem thêm</Link></div></div>
                     </div>
-                )
-            })
+                );
+            });
         }
         return (
             <div className='contact_form_container'>
                 <div className='contact_form_title'>Tin tức mới nhất</div>
                 <div>{news}</div>
             </div>
-        )
+        );
     }
 }
 

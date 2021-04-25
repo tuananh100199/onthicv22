@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubscribePage, deleteSubscribe, exportSubscribeToExcel } from './redux';
+import { getSubscribePage, deleteSubscribe } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -13,10 +13,6 @@ class SubscribePage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá đăng ký nhận tin', 'Bạn có chắc muốn xoá đăng ký nhận tin này?', true, isConfirm =>
         isConfirm && this.props.deleteSubscribe(item._id));
-
-    exportSubscribe = (e) => {
-        this.props.exportSubscribeToExcel();
-    }
 
     render() {
         const permission = this.getUserPermission('subscribe');
@@ -49,7 +45,7 @@ class SubscribePage extends AdminPage {
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getSubscribePage} />
                 {permission.write ?
                     <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel'
-                        onClick={e => this.props.exportSubscribeToExcel()}>
+                        onClick={() => exportSubscribeToExcel()}>
                         <i className='fa fa-file-excel-o' />
                     </button> : null}
             </>,
@@ -58,5 +54,5 @@ class SubscribePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, subscribe: state.subscribe });
-const mapActionsToProps = { getSubscribePage, deleteSubscribe, exportSubscribeToExcel };
+const mapActionsToProps = { getSubscribePage, deleteSubscribe };
 export default connect(mapStateToProps, mapActionsToProps)(SubscribePage);

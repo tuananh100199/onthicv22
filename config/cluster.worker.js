@@ -1,8 +1,8 @@
 module.exports = (cluster, isDebug) => {
-    let package = require('../package.json');
+    let appConfig = require('../package.json');
     const express = require('express');
     const app = express();
-    app.appName = package.name;
+    app.appName = appConfig.name;
     app.isDebug = isDebug;
     app.fs = require('fs');
     app.path = require('path');
@@ -15,30 +15,30 @@ module.exports = (cluster, isDebug) => {
             key: app.fs.readFileSync('/etc/ssl/hpo_private.key'),
         }, app);
 
-    if (!app.isDebug && app.fs.existsSync('./asset/config.json')) package = Object.assign({}, package, require('../asset/config.json'));
+    if (!app.isDebug && app.fs.existsSync('./asset/config.json')) appConfig = Object.assign({}, appConfig, require('../asset/config.json'));
 
     // Variables ------------------------------------------------------------------------------------------------------
-    app.port = package.port;
-    app.rootUrl = package.rootUrl;
+    app.port = appConfig.port;
+    app.rootUrl = appConfig.rootUrl;
     app.debugUrl = `http://localhost:${app.port}`;
-    app.mongodb = `mongodb://localhost:27017/${package.dbName}`;
-    app.email = package.email;
-    app.defaultAdminEmail = package.default.adminEmail;
-    app.defaultAdminPassword = package.default.adminPassword;
-    app.assetPath = app.path.join(__dirname, '..', package.path.asset);
+    app.mongodb = `mongodb://localhost:27017/${appConfig.dbName}`;
+    app.email = appConfig.email;
+    app.defaultAdminEmail = appConfig.default.adminEmail;
+    app.defaultAdminPassword = appConfig.default.adminPassword;
+    app.assetPath = app.path.join(__dirname, '..', appConfig.path.asset);
     app.bundlePath = app.path.join(app.assetPath, 'bundle');
-    app.viewPath = app.path.join(__dirname, '..', package.path.view);
-    app.modulesPath = app.path.join(__dirname, '..', package.path.modules);
-    app.publicPath = app.path.join(__dirname, '..', package.path.public);
-    app.imagePath = app.path.join(package.path.public, 'img');
-    app.uploadPath = app.path.join(__dirname, '..', package.path.upload);
-    app.faviconPath = app.path.join(__dirname, '..', package.path.favicon);
+    app.viewPath = app.path.join(__dirname, '..', appConfig.path.view);
+    app.modulesPath = app.path.join(__dirname, '..', appConfig.path.modules);
+    app.publicPath = app.path.join(__dirname, '..', appConfig.path.public);
+    app.imagePath = app.path.join(appConfig.path.public, 'img');
+    app.uploadPath = app.path.join(__dirname, '..', appConfig.path.upload);
+    app.faviconPath = app.path.join(__dirname, '..', appConfig.path.favicon);
 
     // Configure ------------------------------------------------------------------------------------------------------
     require('./common')(app, app.appName);
     require('./view')(app, express);
     require('./database')(app);
-    require('./packages')(app, server, package);
+    require('./packages')(app, server, appConfig);
     require('./authentication')(app);
     require('./permission')(app);
     require('./io')(app, server);
@@ -56,7 +56,7 @@ module.exports = (cluster, isDebug) => {
         if (app.isDebug && req.session.user) app.updateSessionUser(req, req.session.user);
         const link = req.path.endsWith('/') && req.path.length > 1 ? req.path.substring(0, req.path.length - 1) : req.path;
         app.model.menu.get({ link }, (error, menu) => {
-            (error || menu == null) ? next() : app.templates.home(req, res)
+            (error || menu == null) ? next() : app.templates.home(req, res);
         });
     });
 

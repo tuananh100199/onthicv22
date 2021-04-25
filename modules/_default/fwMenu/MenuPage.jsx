@@ -25,7 +25,7 @@ export default class MenuPage extends React.Component {
                     key = key.trim();
                     value = value.trim();
                     itemStyle[key] = value;
-                })
+                });
             }
             
             if (T.component[item.viewType] && T.component[item.viewType].render) {

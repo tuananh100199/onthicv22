@@ -33,15 +33,15 @@ export function getDivisionAll(searchText, done) {
                 if (done) done(data.list);
                 dispatch({ type: DivisionGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger'));
+    };
 }
 
 export function getDivisionItem(_id, done) {
     return dispatch => ajaxGetDivision(_id, data => {
         if (data.error) {
             T.notify('Lấy cơ sở bị lỗi', 'danger');
-            console.error('GET: ' + url + '. ' + data.error);
+            console.error('GET: getDivisionItem.', data.error);
         } else {
             dispatch({ type: DivisionGet, item: data.item });
         }
@@ -60,8 +60,8 @@ export function createDivision(data, done) {
                 if (done) done(data);
                 dispatch(getDivisionAll());
             }
-        }, error => T.notify('Tạo cơ sở bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo cơ sở bị lỗi!', 'danger'));
+    };
 }
 
 export function updateDivision(_id, changes, done) {
@@ -77,8 +77,8 @@ export function updateDivision(_id, changes, done) {
                 dispatch(getDivisionAll());
                 done && done();
             }
-        }, error => T.notify('Cập nhật cơ sở bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật cơ sở bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteDivision(_id) {
@@ -92,8 +92,8 @@ export function deleteDivision(_id) {
                 T.alert('Xóa cơ sở thành công!', 'error', false, 800);
                 dispatch(getDivisionAll());
             }
-        }, error => T.notify('Xóa cơ sở bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa cơ sở bị lỗi!', 'danger'));
+    };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------
@@ -109,8 +109,8 @@ export function getAllDivisionByUser(done) {
             }
             if (done) done(data);
 
-        }, error => T.notify('Lấy danh sách cơ sở bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách cơ sở bị lỗi', 'danger'));
+    };
 }
 
 // AJAX ---------------------------------------------------------------------------------------------------------------
@@ -122,4 +122,4 @@ export const ajaxSelectDivision = T.createAjaxAdapter(
 export function ajaxGetDivision(_id, done) {
     const url = '/api/division';
     T.get(url, { _id }, done, error => T.notify('Lấy cơ sở đào tạo bị lỗi!', 'danger'));
-};
+}

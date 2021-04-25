@@ -20,12 +20,12 @@ module.exports = app => {
         const { _idSelectedType, _questionIds, title } = req.query.condition,
             condition = {};
         condition.categories = [_idSelectedType];
-        condition._id = { $nin: _questionIds }
+        condition._id = { $nin: _questionIds };
         if (title) {
             condition.title = new RegExp(title, 'i');
         }
         app.model.driveQuestion.getAll(condition, (error, list) => {
-            res.send({ error, list })
+            res.send({ error, list });
         });
     });
 

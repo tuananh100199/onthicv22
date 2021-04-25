@@ -83,5 +83,5 @@ module.exports = (app) => {
                 item.remove(done);
             }
         }),
-    }
+    };
 };

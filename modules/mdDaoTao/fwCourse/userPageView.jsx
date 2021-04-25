@@ -21,7 +21,7 @@ class UserCoursePageDetail extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
-                        this.setState(data.item)
+                        this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
                     }
@@ -45,7 +45,7 @@ class UserCoursePageDetail extends AdminPage {
                             T.alert(data.notify, 'error', false, 2000);
                             this.props.history.push(previousRoute);
                         } else if (data.item) {
-                            this.setState(data.item)
+                            this.setState(data.item);
                         } else {
                             this.props.history.push(previousRoute);
                         }
@@ -79,7 +79,7 @@ class UserCoursePageDetail extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
-            breadcrumb: [<Link to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
             content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,
         });
     }

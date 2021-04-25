@@ -37,7 +37,7 @@ module.exports = app => {
                 res.redirect(req.session.user ? '/request-permissions' : '/request-login');
             }
         } else {
-            res.send({ error: `You don't have permission!` });
+            res.send({ error: 'You don\'t have permission!' });
         }
     };
     const responseWithPermissions = (req, success, fail, permissions) => {
@@ -107,21 +107,21 @@ module.exports = app => {
                 const userId = req.cookies.userId;
                 app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
                     if (error || user == null) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else {
-                        app.updateSessionUser(req, user, _ => checkPermissions(req, res, next, permissions));
+                        app.updateSessionUser(req, user, () => checkPermissions(req, res, next, permissions));
                     }
                 });
             } else if (req.headers.authorization) { // is token
                 app.redis.get(req.headers.authorization, (error, value) => {
                     if (error) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else if (value) {
                         if (req.session == null) req.session = {};
                         req.session.sessionUser = JSON.parse(value);
                         checkPermissions(req, res, next, permissions);
                     } else {
-                        res.send({ error: `Invalid token!` });
+                        res.send({ error: 'Invalid token!' });
                     }
                 });
             } else {
@@ -134,21 +134,21 @@ module.exports = app => {
                 const userId = req.cookies.userId;
                 app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
                     if (error || user == null) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else {
-                        app.updateSessionUser(req, user, _ => checkOrPermissions(req, res, next, permissions));
+                        app.updateSessionUser(req, user, () => checkOrPermissions(req, res, next, permissions));
                     }
                 });
             } else if (req.headers.authorization) { // is token
                 app.redis.get(req.headers.authorization, (error, value) => {
                     if (error) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else if (value) {
                         if (req.session == null) req.session = {};
                         req.session.sessionUser = JSON.parse(value);
                         checkPermissions(req, res, next, permissions);
                     } else {
-                        res.send({ error: `Invalid token!` });
+                        res.send({ error: 'Invalid token!' });
                     }
                 });
             } else {
@@ -165,9 +165,9 @@ module.exports = app => {
                 const userId = req.cookies.userId;
                 app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
                     if (error || !user) {
-                        fail && fail({ error: `System has errors!` });
+                        fail && fail({ error: 'System has errors!' });
                     } else {
-                        app.updateSessionUser(req, user, sessionUser => responseWithPermissions(req, success, fail, permissions));
+                        app.updateSessionUser(req, user, () => responseWithPermissions(req, success, fail, permissions));
                     }
                 });
             } else {
@@ -237,16 +237,11 @@ module.exports = app => {
                     }
                 })).then(() => new Promise(resolve => { // Check và add course vào session user
                     app.model.student.getAll({ user: req.session.user._id }, (error, students) => {
-                        if (error) {
-                            reject(error);
-                        } else {
-                            let studentCourse = students.map((student) => {
-                                return { courseId: student.course._id, name: student.course.name };
-                            })
-                            req.session.user.courses = studentCourse;
-                            resolve();
+                        if (students) {
+                            req.session.user.courses = students.map(student => ({ courseId: student.course._id, name: student.course.name }));
                         }
-                    })
+                        resolve();
+                    });
                 })).then(() => {  // Build menu tree
                     user.menu = app.permission.tree();
                     Object.keys(user.menu).forEach(parentMenuIndex => {
@@ -277,8 +272,8 @@ module.exports = app => {
                                         title: 'Khóa học ' + course.name,
                                         link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
                                         permissions: ['studentCourse:read']
-                                    }
-                                })
+                                    };
+                                });
                             }
                         });
                     });

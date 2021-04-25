@@ -104,7 +104,7 @@ class EditCoursePage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
-            breadcrumb: [<Link to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
             content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: previousRoute,
         });

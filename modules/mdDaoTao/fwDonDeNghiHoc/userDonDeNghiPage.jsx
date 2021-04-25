@@ -48,7 +48,7 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-                    data.item.status == 'approved' ? $('#newLicenseClass').prop('disabled', true) : $('#newLicenseClass').prop('disabled', false)
+                    data.item.status == 'approved' ? $('#newLicenseClass').prop('disabled', true) : $('#newLicenseClass').prop('disabled', false);
                     const user = data.item.user;
                     $('#userBirthday').val(user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : '');
                     $('#phoneNumber').val(user.phoneNumber);
