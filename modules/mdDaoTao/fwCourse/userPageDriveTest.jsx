@@ -8,6 +8,7 @@ import { AdminPage } from 'view/component/AdminPage';
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu'
 class UserPageDriveTest extends AdminPage {
     state = {};
+    studentAnswers = [];
     componentDidMount() {
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
@@ -32,25 +33,38 @@ class UserPageDriveTest extends AdminPage {
             this.setState({ result: result })
         })
     }
-    changeQuestion = (index) => {
-        if(index == 0) {
-            $('#prev-btn').attr('disabled', true);
-        } else if(index == this.state.questions.length()-1) {
-            $('#next-btn').attr('disabled', true);
+    changeQuestion = (e, index) => {
+        e.preventDefault();
+        // this.studentAnswers[this.state.activeQuestionIndex] = value;
+        if (index == -1) {
+            T.notify('Câu hỏi này đã là câu hỏi đầu tiên!', 'danger');
+        } else if (index == this.state.questions.length) {
+            T.notify('Câu hỏi này đã là câu hỏi cuối cùng!', 'danger');
         } else {
-            this.setState({activeQuestionIndex: index});
+            this.setState({ activeQuestionIndex: index });
         }
+    }
+    onAnswerChanged = (e) => {
+        // this.setState( studentAnswers[1]: index );
+        const { value } = e.target;
+        // newelement = this.studentAnswers[this.state.activeQuestionIndex];
+        console.log('e.target', e.target)
+
+        this.setState(this.studentAnswers[this.state.activeQuestionIndex] = value);
+        this.setState({
+            studentAnswers: [...this.state.studentAnswers, newelement]
+          })
+        // $('input[name=' + _id + ']:checked').val(value);
+
+        console.log('value', value)
     }
 
     render() {
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        console.log('this.state',this.state)
-        console.log('activeQuestionIndex',activeQuestionIndex)
-
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
-        const activeQuestion = questions ? questions[activeQuestionIndex + 1] : null;
-        console.log('activeQuestion', questions&&questions[0])
+        const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+        console.log(activeQuestion)
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
@@ -62,12 +76,17 @@ class UserPageDriveTest extends AdminPage {
                         {activeQuestion? 
                             (
                                 <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi:{activeQuestion.title}</h6>
+                                    <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index}>
-                                                <input className='form-check-input' type='radio' name={activeQuestion._id} id={activeQuestion._id + index} value={index} />
+                                                <input className='form-check-input' 
+                                                    type='radio' 
+                                                    name={activeQuestion._id} 
+                                                    id={activeQuestion._id + index} 
+                                                    value={this.studentAnswers[activeQuestionIndex] ? this.studentAnswers[activeQuestionIndex] : index} 
+                                                    onChange={this.onAnswerChanged} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
                                                 </label>
@@ -81,11 +100,11 @@ class UserPageDriveTest extends AdminPage {
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
                     <nav aria-label='...'>
                         <ul className='pagination'>
-                            <li className='page-item disabled' id='prev-btn'>
-                                <a className='page-link' onClick={this.changeQuestion(activeQuestionIndex)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                            <li className='page-item' id='prev-btn'>
+                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
                             </li>
                             <li className='page-item' id='next-btn'>
-                                <a className='page-link' href='#' tabIndex='1'> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
                             </li>
                         </ul>
                         </nav>
