@@ -17,24 +17,35 @@ class UserPageDriveTest extends AdminPage {
                 } else {
                     this.props.history.push(backRoute);
                 }
+                $("#totalScore").css("display", "none");
+
             });
         });
     }
-    
-    submitAnswer = (e, list) => {
+
+    submitAnswer = (e) => {
         e.preventDefault();
-        let studentAnswers = list.map((question) => {
-            return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
-        })
-        this.props.checkDriveTestScore(this.state._id, studentAnswers, result => {
-            $('#submit-btn').removeAttr('disabled');
+        this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({ result: result })
+            $("#totalScore").css("display", "block");
+            $('#submit-btn').attr('disabled');
+            $('#submit-btn').hide();
         })
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
-        this.setState({ activeQuestionIndex: index });
+        this.setState({ activeQuestionIndex: index }, () => {
+            const activeQuestion = this.state.questions[index],
+                questionId = activeQuestion ? activeQuestion._id : null;
+            if (activeQuestion) {
+                if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
+                    $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                } else {
+                    $('input[name="' + questionId + '"]').prop('checked', false);
+                }
+            }
+        });
     }
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
@@ -43,26 +54,21 @@ class UserPageDriveTest extends AdminPage {
     }
 
     render() {
-
+        console.log('result', this.state.result)
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
-        const activeQuestion = questions ? questions[activeQuestionIndex] : null,
-        questionId = activeQuestion ? activeQuestion._id : null;
-        if ( activeQuestionIndex == 0 ) {
-            $('#prev-btn').addClass('disabled');
+        const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
+        const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+        if (activeQuestionIndex == 0) {
+            $("#prev-btn").addClass('disabled');
+            $('#submit-btn').hide();
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').addClass('disabled');
+            !this.state.result && $('#submit-btn').show();
         } else {
             $('#prev-btn').removeClass('disabled');
             $('#next-btn').removeClass('disabled');
-        }
-        console.log('this.state.studentAnswer ', this.state.studentAnswer )
-        if(this.state.studentAnswer) {
-            console.log(this.state.studentAnswer.questionId )
-            console.log('hi',  $('input[name=' + questionId + '][value=' + this.state.studentAnswer.questionId + ']').prop('checked', false))
-            // $('input[name=' + questionId + '][value=' + this.state.studentAnswer.questionId + ']').prop('checked', false);
-            $("#" + questionId + " input[name='" + questionId + "'][value='" + this.state.studentAnswer.questionId + "']").attr('checked', true);
+            $('#submit-btn').hide();
         }
 
         return this.renderPage({
@@ -72,7 +78,7 @@ class UserPageDriveTest extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
-                        {activeQuestion? 
+                        {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
                                     <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
@@ -80,10 +86,10 @@ class UserPageDriveTest extends AdminPage {
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index}>
-                                                <input className='form-check-input' 
-                                                    type='radio' 
+                                                <input className='form-check-input'
+                                                    type='radio'
                                                     name={activeQuestion._id}
-                                                    id={activeQuestion._id + index} 
+                                                    id={activeQuestion._id + index}
                                                     value={index}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
@@ -97,18 +103,18 @@ class UserPageDriveTest extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <nav aria-label='...'>
-                        <ul className='pagination'>
-                            <li className='page-item' id='prev-btn'>
-                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                            </li>
-                            <li className='page-item' id='next-btn'>
-                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                            </li>
-                        </ul>
-                    </nav>
-                        {/* <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button> */}
-                        {/* <p>Số câu đúng của bạn: <b>{score} / {total}</b></p> */}
+                        <nav aria-label='...'>
+                            <ul className='pagination'>
+                                <li className='page-item' id='prev-btn'>
+                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                </li>
+                                <li className='page-item' id='next-btn'>
+                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <button className='btn btn-primary' id='submit-btn' onClick={e => this.submitAnswer(e)}>Chấm điểm</button>
+                        <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {total}</b></p>
                     </div>
                 </div>
             ),
