@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject } from './redux';
+import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { Link } from 'react-router-dom';
 import { getSubjectAll } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, CirclePageButton, AdminModal, FormTextBox, FormRichTextBox, FormEditor, FormImageBox, TableCell, renderTable, FormCheckbox, FormTabs, FormSelect } from 'view/component/AdminPage';
@@ -25,6 +26,7 @@ class CourseTypeModal extends AdminModal {
     }
 
     render = () => {
+
         return this.renderModal({
             title: 'Môn học',
             body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={this.state.subjects} readOnly={this.props.readOnly} />
@@ -36,25 +38,35 @@ const backRoute = '/user/course-type';
 class CourseTypeEditPage extends AdminPage {
     state = {};
     componentDidMount() {
+        this.props.getCategoryAll('drive-question', null, (items) =>
+                this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title })) }));
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
                 if (item) {
-                    this.itemTitle.value(item.title);
-                    this.itemShortDescription.value(item.shortDescription);
-                    this.itemDetailDescription.html(item.detailDescription);
-                    this.itemPrice.value(item.price);
-                    this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
-                    this.itemImage.setData('course-type:' + item._id);
-
-                    this.itemTitle.focus();
-                    this.setState(item);
+                    this.setState(item, ()=> {
+                        this.itemTitle.value(item.title);
+                        this.itemShortDescription.value(item.shortDescription);
+                        this.itemDetailDescription.html(item.detailDescription);
+                        this.itemPrice.value(item.price);
+                        this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
+                        this.itemImage.setData('course-type:' + item._id);
+    
+                        this.itemTitle.focus();
+                        item.questionTypes && item.questionTypes.forEach(type => {
+                            type.amount ? 
+                            this[type.category] && this[type.category].value(type.amount)
+                            : this[type.category] && this[type.category].value(0);
+                        })
+                    });
+                  
                 } else {
                     this.props.history.push(backRoute);
                 }
             });
+            
         });
-    }
+        }
 
     remove = (e, subject) => e.preventDefault() || T.confirm('Xoá môn học ', `Bạn có chắc muốn xoá môn học '${subject.title}' khỏi loại khóa học này?`, true, isConfirm =>
         isConfirm && this.props.deleteCourseTypeSubject(this.state._id, subject._id));
@@ -65,7 +77,11 @@ class CourseTypeEditPage extends AdminPage {
             shortDescription: this.itemShortDescription.value().trim(),
             detailDescription: this.itemDetailDescription.html(),
             price: this.itemPrice.value(),
-            isPriceDisplayed: this.itemIsPriceDisplayed.value()
+            isPriceDisplayed: this.itemIsPriceDisplayed.value(),
+            questionTypes: this.state.types.map(type => ({
+                category: type._id,
+                amount: this[type._id].value(),
+            }))
         };
         if (changes.title == '') {
             T.notify('Tên loại khóa học không được trống!', 'danger');
@@ -76,6 +92,7 @@ class CourseTypeEditPage extends AdminPage {
     }
 
     render() {
+        const types = this.state.types ? this.state.types : [];
         const permissionSubject = this.getUserPermission('subject'),
             permissionCourseType = this.getUserPermission('course-type'),
             readOnly = !permissionCourseType.write,
@@ -95,6 +112,12 @@ class CourseTypeEditPage extends AdminPage {
                         {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
                     </tr>),
             }),
+            driveQuestionTypes = types.map((item, index) => {
+                return (
+                    <FormTextBox className='col-md-6' key={index} type='number' ref={e => this[item._id] = e } label={item.text} readOnly={this.props.readOnly} />
+                )
+            })
+            ,
             componentInfo = <>
                 <div className='row'>
                     <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
@@ -115,7 +138,13 @@ class CourseTypeEditPage extends AdminPage {
                 {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
                 <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
             </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }];
+             componentSetRandomDriveTest = <>
+                <div className='row'>
+                        {driveQuestionTypes}
+                </div>
+                {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
+             </>,
+            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }, { title: 'Thiết lập bộ đề ngẫu nhiên', component: componentSetRandomDriveTest }];
 
         return this.renderPage({
             icon: 'fa fa-file',
@@ -128,5 +157,5 @@ class CourseTypeEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, courseType: state.courseType });
-const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject };
+const mapActionsToProps = { updateCourseType, getCourseType, addCourseTypeSubject, deleteCourseTypeSubject, getCategoryAll };
 export default connect(mapStateToProps, mapActionsToProps)(CourseTypeEditPage);

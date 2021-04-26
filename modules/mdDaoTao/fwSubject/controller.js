@@ -11,6 +11,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/mon-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -34,7 +35,9 @@ module.exports = (app) => {
     });
 
     app.get('/api/subject/student', app.permission.check('subject:read'), (req, res) => {
-        app.model.subject.get(req.query._id, (error, item) => {
+        const subjectId = req.query._id;
+        req.session.user.currentSubject = subjectId;
+        app.model.subject.get(subjectId, (error, item) => {
             const currentCourse = req.session.user.currentCourse;
             res.send({ error, item, currentCourse });
         });

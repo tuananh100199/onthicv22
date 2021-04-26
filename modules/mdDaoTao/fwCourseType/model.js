@@ -6,6 +6,10 @@ module.exports = app => {
         detailDescription: String,
         image: String,
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
+        questionTypes: [{ 
+            category: { type: app.db.Schema.ObjectId, ref: 'Category' },
+            amount: Number
+         }],
         isPriceDisplayed: { type: Boolean, default: false }
     });
     const model = app.db.model('CourseType', schema);

@@ -2,8 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTabs } from 'view/component/AdminPage';
-import UserSubjectView from './tabView/userSubjectView';
+import { AdminPage } from 'view/component/AdminPage';
+import { getAllDriveTests } from 'modules/mdDaoTao/fwDriveTest/redux';
+
 
 const previousRoute = '/user';
 class UserCoursePageDetail extends AdminPage {
@@ -11,6 +12,7 @@ class UserCoursePageDetail extends AdminPage {
     componentDidMount() {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
             _id = route.parse(window.location.pathname)._id;
+        this.setState({ courseId: _id })
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
@@ -31,10 +33,11 @@ class UserCoursePageDetail extends AdminPage {
             this.props.history.push(previousRoute);
         }
     }
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.match.url != this.props.match.url) {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
                 _id = route.parse(window.location.pathname)._id;
+            this.setState({ courseId: _id })
             if (_id) {
                 T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                     this.props.getCourseByStudent(_id, data => {
@@ -55,36 +58,89 @@ class UserCoursePageDetail extends AdminPage {
                 this.props.history.push('/user');
             }
         }
+        if (this.state.courseType && this.state.courseType !== prevState.courseType) {
+            this.setState({ _courseTypeId: this.state.courseType._id })
+            this.props.getAllDriveTests({ courseType: this.state.courseType._id });
+        }
     }
 
     render() {
-        const tabInfo = <div className='row'>
-            <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
-            <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType && this.state.courseType.title}</b></label>
-            <label className='col-md-3'>Học phí:  <b>{this.state.courseFee}</b></label>
-            <label className='col'>Thời gian khai giảng: <b>{T.dateToText(this.state.thoiGianKhaiGiang, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-6'>Thời gian bắt đầu: <b>{T.dateToText(this.state.thoiGianBatDau, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-6'>Thời gian kết thúc: <b>{T.dateToText(this.state.thoiGianKetThuc, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-6'>Thời gian kết thúc môn dự kiến: <b>{T.dateToText(this.state.thoiGianThiKetThucMonDuKien, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-6'>Thời gian kết thúc môn chính thức: <b>{T.dateToText(this.state.thoiGianThiKetThucMonChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-6'>Thời gian tốt nghiệp dự kiến: <b>{T.dateToText(this.state.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-6'>Thời gian tốt nghiệp chính thức: <b>{T.dateToText(this.state.thoiGianThiTotNghiepChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
-            <label className='col-md-12'>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b>
-            <label className='col-md-12'>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} />
-        </div>;
-        const tabs = [
-            { title: 'Thông tin chung', component: tabInfo },
-            { title: 'Môn học', component: <UserSubjectView /> },
-        ];
+        const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
+        const _courseTypeId = this.state && this.state._courseTypeId ? this.state._courseTypeId : '';
+        const { list } = this.props.driveTest ? this.props.driveTest : [];
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
-            content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,
+            breadcrumb: ['Khóa học'],
+            content: (
+                <div className='row'>
+                    <div className='col-12'>
+                        <h4>Thông tin chung</h4>
+                        <div className='row'>
+                            <div className='col-md-6'>
+                                <Link to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
+                                    <div className='widget-small coloured-icon info'>
+                                        <i className='icon fa fa-3x fa-info' />
+                                        <div className='info'>
+                                            <h4>Thông tin khóa học</h4>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='col-12'>
+                        <h4>Môn học</h4>
+                        <div className='row'>
+                            {subjects.length ? subjects.map((subject, index) => (
+                                <div key={index} className='col-md-6 col-lg-4'>
+                                    <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/' + subject._id}>
+                                        <div className='widget-small coloured-icon primary'>
+                                            <i className='icon fa fa-3x fa fa-briefcase' />
+                                            <div className='info'>
+                                                <h4>{subject && subject.title}</h4>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )) : <div className='col-md-4'>Chưa có môn học!</div>
+                            }
+                        </div>
+                    </div>
+                    <div className='col-12'>
+                        <h4>Ôn tập đề thi</h4>
+                        <div className='row'>
+                            <div className='col-md-4'>
+                                <Link to={'/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/' + _courseTypeId}>
+                                    <div className='widget-small coloured-icon info'>
+                                        <i className='icon fa fa-3x fa-cubes' />
+                                        <div className='info'>
+                                            <h4>Đề thi ngẫu nhiên</h4>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                            {list && list.map((driveTest, index) => (
+                                <div key={index} className='col-md-4'>
+                                    <Link to={'/user/hoc-vien/khoa-hoc/de-thi-thu/' + driveTest._id}>
+                                        <div className='widget-small coloured-icon info'>
+                                            <i className='icon fa fa-3x fa fa-cubes' />
+                                            <div className='info'>
+                                                <h4>{driveTest.title}</h4>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ))
+                            }
+                        </div>
+                    </div>
+                </div>
+            ),
         });
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCourseByStudent };
+const mapStateToProps = state => ({ system: state.system, course: state.course, driveTest: state.driveTest });
+const mapActionsToProps = { getCourseByStudent, getAllDriveTests };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
