@@ -35,32 +35,36 @@ class UserPageDriveTest extends AdminPage {
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
-        // this.studentAnswers[this.state.activeQuestionIndex] = value;
-        if (index == -1) {
-            T.notify('Câu hỏi này đã là câu hỏi đầu tiên!', 'danger');
-        } else if (index == this.state.questions.length) {
-            T.notify('Câu hỏi này đã là câu hỏi cuối cùng!', 'danger');
-        } else {
-            this.setState({ activeQuestionIndex: index });
-        }
+        this.setState({ activeQuestionIndex: index });
     }
-    onAnswerChanged = (e, index) => {
-        console.log('index', index)
+    onAnswerChanged = (e, _questionId) => {
         const { value } = e.target;
-        console.log('e.target', e.target)
-        this.studentAnswers[index] = value;
+        // this.studentAnswers[index] = value;
+        console.log('aaaaaa', $('input[name=' + _questionId + ']:checked').val())  
+        const newelement =  {
+            _id: _questionId,
+            value:  $('input[name=' + _questionId + ']:checked').val()
+        };
         this.setState({
-            studentAnswers: this.studentAnswers
-          })
+            // studentAnswers: this.state.studentAnswers, newelement
+        })
     }
 
     render() {
+        console.log('stateeee', this.state)
+
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        activeQuestion ? $('input[name=' + activeQuestion._id + activeQuestionIndex +']').val(this.state.studentAnswers && this.state.studentAnswers[activeQuestionIndex]) : null;
-        console.log('activeQuestion', activeQuestion && activeQuestion._id)
+        if ( activeQuestionIndex == 0 ) {
+            $("#prev-btn").addClass('disabled');
+        } else if (activeQuestionIndex == questions.length - 1) {
+            $("#next-btn").addClass('disabled');
+        } else {
+            $('#prev-btn').removeClass('disabled');
+            $('#next-btn').removeClass('disabled');
+        }
 
 
         return this.renderPage({
@@ -83,7 +87,7 @@ class UserPageDriveTest extends AdminPage {
                                                     name={activeQuestion._id}
                                                     id={activeQuestion._id + index} 
                                                     value={index}
-                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id + index)} />
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
                                                 </label>
