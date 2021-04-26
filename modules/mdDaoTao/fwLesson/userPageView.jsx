@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import YouTube from 'react-youtube';
 import { getLessonByStudent, checkQuestion } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
@@ -26,18 +27,24 @@ class adminEditPage extends AdminPage {
         } else {
             this.props.history.push(userPageLink);
         }
-    }
-
-    onView = (e, _id, index) => {
-        console.log('object')
-        this.setState(prevState => ({ viewed: { ...prevState.viewed, [_id]: index } }), () => {
-            console.log(this.state.viewd)
-        })
+        $('#questionBtn').css({ 'visibility': 'hidden' });
     }
 
     render() {
         const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item ? this.props.lesson.item.videos : [];
         const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/' + this.state.subjectId;
+        const checkElapsedTime = (e, _id, index) => {
+            if (e.target.playerInfo.playerState == 1) {
+                this.setState(prevState => ({
+                    viewed: { ...prevState.viewed, [_id]: index }
+                }), () => {
+                    if (Object.keys(this.state.viewed).length == videos.length) {
+                        $('#questionBtn').css({ 'visibility': 'visible' });
+                    }
+                })
+
+            }
+        };
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Bài học: ' + (this.state.title || '...'),
@@ -52,7 +59,11 @@ class adminEditPage extends AdminPage {
                             (
                                 <div key={index} className='d-flex justify-content-center pb-5'>
                                     <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
-                                        <iframe className='embed-responsive-item' src={'https://youtube.com/embed/' + video.link.slice(17)} frameBorder='0' allowFullScreen></iframe>
+                                        <YouTube
+                                            videoId={video.link.slice(17)}
+                                            containerClassName='embed embed-youtube'
+                                            onStateChange={(e) => checkElapsedTime(e, video._id, index)}
+                                        />
                                     </div>
                                 </div>
                             )
@@ -60,7 +71,7 @@ class adminEditPage extends AdminPage {
                         </div>
                     </div>
                     <div className='tile-footer' style={{ textAlign: 'right' }} >
-                        <a href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/' + this.state.lessonId} className='btn btn-primary'>Câu hỏi ôn tập</a>
+                        <a id='questionBtn' href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/' + this.state.lessonId} className='btn btn-primary'>Câu hỏi ôn tập</a>
                     </div>
                 </div>
             ),
