@@ -77,12 +77,12 @@ class UserCoursePageDetail extends AdminPage {
                     <div className='col-12'>
                         <h4>Thông tin chung</h4>
                         <div className='row'>
-                            <div className='col-md-4'>
+                            <div className='col-md-6'>
                                 <Link to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
                                     <div className='widget-small coloured-icon info'>
                                         <i className='icon fa fa-3x fa-info' />
                                         <div className='info'>
-                                            <h4>Thông tin chung</h4>
+                                            <h4>Thông tin khóa học</h4>
                                         </div>
                                     </div>
                                 </Link>
