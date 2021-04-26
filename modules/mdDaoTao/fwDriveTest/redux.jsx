@@ -162,6 +162,19 @@ export function checkDriveTestScore(_id, answers, done) {
         }, error => T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     }
 }
+export function checkRandomDriveTestScore(answers, done) {
+    return dispatch => {
+        const url = '/api/drive-test/random/submit';
+        T.post(url, { answers }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.result);
+            }
+        }, error => T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    }
+}
 
 // Questions ----------------------------------------------------------------------------------------------------------
 export function createDriveTestQuestion(_driveTestId, _questionId, done) {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { getDriveTestItem } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
-
 import { AdminPage } from 'view/component/AdminPage';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu'
@@ -17,8 +17,7 @@ class UserPageDriveTest extends AdminPage {
                 } else {
                     this.props.history.push(backRoute);
                 }
-                $("#totalScore").css("display", "none");
-
+                $('#totalScore').css('display', 'none');
             });
         });
     }
@@ -28,8 +27,7 @@ class UserPageDriveTest extends AdminPage {
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({ result: result })
-            $("#totalScore").css("display", "block");
-            $('#submit-btn').attr('disabled');
+            $('#totalScore').css('display', 'block');
             $('#submit-btn').hide();
         })
     }
@@ -54,28 +52,34 @@ class UserPageDriveTest extends AdminPage {
     }
 
     render() {
-        console.log('result', this.state.result)
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        if (activeQuestionIndex == 0) {
-            $("#prev-btn").addClass('disabled');
-            $('#submit-btn').hide();
-        } else if (activeQuestionIndex == questions.length - 1) {
-            $('#next-btn').addClass('disabled');
-            !this.state.result && $('#submit-btn').show();
-        } else {
-            $('#prev-btn').removeClass('disabled');
-            $('#next-btn').removeClass('disabled');
-            $('#submit-btn').hide();
-        }
 
+        if (questions && questions.length == 1){
+            $('#prev-btn').css({'visibility':'hidden'});
+            $('#next-btn').css({'visibility':'hidden'});
+            !this.state.result && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+        } else if (activeQuestionIndex == 0) {
+            $('#prev-btn').css({'visibility':'hidden'});
+            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+        } else if (activeQuestionIndex == questions.length - 1) {
+            $('#next-btn').css({'visibility':'hidden'});
+            !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
+        } else {
+            $('#prev-btn').css({'visibility':'visible'});
+            $('#next-btn').css({'visibility':'visible'});
+            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
+        }
+      
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + this.state.title,
-            breadcrumb: ['Bộ đề thi'],
+            breadcrumb: [<Link key={0} to={backRoute}>Bộ đề thi</Link>, this.state.title],
+            backRoute: backRoute,
             content: (
+                <>
                 <div className='tile'>
                     <div className='tile-body row'>
                         {activeQuestion ?
@@ -113,10 +117,13 @@ class UserPageDriveTest extends AdminPage {
                                 </li>
                             </ul>
                         </nav>
-                        <button className='btn btn-primary' id='submit-btn' onClick={e => this.submitAnswer(e)}>Chấm điểm</button>
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {total}</b></p>
                     </div>
                 </div>
+                <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                    <i className='fa fa-lg fa-paper-plane-o' />
+                </button>
+                </>
             ),
         });
     }

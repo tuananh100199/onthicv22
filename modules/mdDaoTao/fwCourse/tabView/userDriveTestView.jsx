@@ -35,8 +35,8 @@ class UserDriveTestView extends AdminPage {
             }
             <div className='col-md-6 col-lg-6'>
                 <Link to= {'/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/' + _courseTypeId}>
-                    <div className='widget-small coloured-icon info'>
-                        <i className='icon fa fa-3x fa fa-cubes' />
+                    <div className='widget-small coloured-icon info' >
+                        <i className='icon fa fa-3x fa fa-cubes' style={{backgroundColor:'green'}}/>
                         <div className='info'>
                             <h4>Đề thi ngẫu nhiên</h4>
                         </div>

@@ -18,6 +18,9 @@ module.exports = (app, appName) => {
     };
 
     app.getRandom = (arr, n) => {
+        if (n < 1) {
+            return null;
+        }
         let result = new Array(n),
             len = arr.length,
             taken = new Array(len);
