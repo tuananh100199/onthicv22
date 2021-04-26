@@ -10,6 +10,8 @@ module.exports = (app) => {
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id', app.permission.check('lesson:read'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
