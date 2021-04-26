@@ -236,8 +236,8 @@ module.exports = app => {
                         resolve();
                     }
                 })).then(() => new Promise(resolve => { // Check và add course vào session user
-                    app.model.student.getAll({ user: req.session.user._id }, (error, students) => {
-                        if (students) {
+                    app.model.student.getAll({ user: req.session.user && req.session.user._id }, (error, students) => {
+                        if (students && req.session.user) {
                             req.session.user.courses = students.map(student => ({ courseId: student.course._id, name: student.course.name }));
                         }
                         resolve();
@@ -264,7 +264,7 @@ module.exports = app => {
                                 delete menuItem.menus[menuIndex];
                                 if (Object.keys(menuItem.menus).length == 0) delete user.menu[parentMenuIndex];
                             }
-                            if (req.session.user.courses) {
+                            if (req.session.user && req.session.user.courses) {
                                 const courses = req.session.user.courses;
                                 courses.map((course, index) => {
                                     const menuName = 5000 + index + 1;
