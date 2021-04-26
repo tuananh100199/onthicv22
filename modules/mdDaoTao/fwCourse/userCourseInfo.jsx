@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-import { getAllDriveTests } from 'modules/mdDaoTao/fwDriveTest/redux';
 
 
 const previousRoute = '/user';
@@ -92,5 +91,5 @@ class UserCourseInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course, driveTest: state.driveTest });
-const mapActionsToProps = { getCourseByStudent, getAllDriveTests };
+const mapActionsToProps = { getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCourseInfo);

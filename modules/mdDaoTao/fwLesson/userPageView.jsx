@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import YouTube from 'react-youtube';
-import { getLessonByStudent, checkQuestion } from './redux';
+import { getLessonByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -81,5 +81,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getLessonByStudent, checkQuestion };
+const mapActionsToProps = { getLessonByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTabs } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 import { getAllDriveTests } from 'modules/mdDaoTao/fwDriveTest/redux';
 
 
