@@ -32,31 +32,6 @@ class UserCourseInfo extends AdminPage {
             this.props.history.push(previousRoute);
         }
     }
-    componentDidUpdate(prevProps) {
-        if (prevProps.match.url != this.props.match.url) {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/thong-tin/:_id'),
-                _id = route.parse(window.location.pathname)._id;
-            if (_id) {
-                T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-                    this.props.getCourseByStudent(_id, data => {
-                        if (data.error) {
-                            T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push(previousRoute);
-                        } else if (data.notify) {
-                            T.alert(data.notify, 'error', false, 2000);
-                            this.props.history.push(previousRoute);
-                        } else if (data.item) {
-                            this.setState(data.item);
-                        } else {
-                            this.props.history.push(previousRoute);
-                        }
-                    });
-                });
-            } else {
-                this.props.history.push('/user');
-            }
-        }
-    }
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId

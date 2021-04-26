@@ -9,19 +9,19 @@ class UserPageRandomDriveTest extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher(backRoute + '/:_id'), 
-            params = route.parse(window.location.pathname);
+            const route = T.routeMatcher(backRoute + '/:_id'),
+                params = route.parse(window.location.pathname);
             this.props.createRandomDriveTest(params._id, item => {
-            if (item) {
-                this.setState(item);
-            } else {
-                this.props.history.push(backRoute);
-            }
-            $('#totalScore').css('display', 'none');
-        })
+                if (item) {
+                    this.setState(item);
+                } else {
+                    this.props.history.push(backRoute);
+                }
+                $('#totalScore').css('display', 'none');
+            })
         });
     }
-  
+
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
@@ -56,20 +56,20 @@ class UserPageRandomDriveTest extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        
-        if (questions && questions.length == 1){
-            $('#prev-btn').css({'visibility':'hidden'});
-            $('#next-btn').css({'visibility':'hidden'});
+
+        if (questions && questions.length == 1) {
+            $('#prev-btn').css({ 'visibility': 'hidden' });
+            $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
         } else if (activeQuestionIndex == 0) {
-            $('#prev-btn').css({'visibility':'hidden'});
+            $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
-            $('#next-btn').css({'visibility':'hidden'});
+            $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
-            $('#prev-btn').css({'visibility':'visible'});
-            $('#next-btn').css({'visibility':'visible'});
+            $('#prev-btn').css({ 'visibility': 'visible' });
+            $('#next-btn').css({ 'visibility': 'visible' });
             $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         }
 
