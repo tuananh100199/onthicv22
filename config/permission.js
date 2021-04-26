@@ -37,7 +37,7 @@ module.exports = app => {
                 res.redirect(req.session.user ? '/request-permissions' : '/request-login');
             }
         } else {
-            res.send({ error: `You don't have permission!` });
+            res.send({ error: 'You don\'t have permission!' });
         }
     };
     const responseWithPermissions = (req, success, fail, permissions) => {
@@ -107,21 +107,21 @@ module.exports = app => {
                 const userId = req.cookies.userId;
                 app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
                     if (error || user == null) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else {
-                        app.updateSessionUser(req, user, _ => checkPermissions(req, res, next, permissions));
+                        app.updateSessionUser(req, user, () => checkPermissions(req, res, next, permissions));
                     }
                 });
             } else if (req.headers.authorization) { // is token
                 app.redis.get(req.headers.authorization, (error, value) => {
                     if (error) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else if (value) {
                         if (req.session == null) req.session = {};
                         req.session.sessionUser = JSON.parse(value);
                         checkPermissions(req, res, next, permissions);
                     } else {
-                        res.send({ error: `Invalid token!` });
+                        res.send({ error: 'Invalid token!' });
                     }
                 });
             } else {
@@ -134,21 +134,21 @@ module.exports = app => {
                 const userId = req.cookies.userId;
                 app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
                     if (error || user == null) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else {
-                        app.updateSessionUser(req, user, _ => checkOrPermissions(req, res, next, permissions));
+                        app.updateSessionUser(req, user, () => checkOrPermissions(req, res, next, permissions));
                     }
                 });
             } else if (req.headers.authorization) { // is token
                 app.redis.get(req.headers.authorization, (error, value) => {
                     if (error) {
-                        res.send({ error: `System has errors!` });
+                        res.send({ error: 'System has errors!' });
                     } else if (value) {
                         if (req.session == null) req.session = {};
                         req.session.sessionUser = JSON.parse(value);
                         checkPermissions(req, res, next, permissions);
                     } else {
-                        res.send({ error: `Invalid token!` });
+                        res.send({ error: 'Invalid token!' });
                     }
                 });
             } else {
@@ -165,9 +165,9 @@ module.exports = app => {
                 const userId = req.cookies.userId;
                 app.model.user.get(userId ? { _id: userId } : { email: app.defaultAdminEmail }, (error, user) => {
                     if (error || !user) {
-                        fail && fail({ error: `System has errors!` });
+                        fail && fail({ error: 'System has errors!' });
                     } else {
-                        app.updateSessionUser(req, user, sessionUser => responseWithPermissions(req, success, fail, permissions));
+                        app.updateSessionUser(req, user, () => responseWithPermissions(req, success, fail, permissions));
                     }
                 });
             } else {
@@ -235,62 +235,61 @@ module.exports = app => {
                     } else {
                         resolve();
                     }
-                })).then(() => new Promise(resolve => { // Check và add course vào session user
-                    app.model.student.getAll({ user: req.session.user._id }, (error, students) => {
-                        if (error) {
-                            reject(error);
-                        } else {
-                            let studentCourse = students.map((student) => {
-                                return { courseId: student.course._id, name: student.course.name };
-                            })
-                            req.session.user.courses = studentCourse;
+                }))
+                    .then(() => new Promise(resolve => { // Check và add course vào session user
+                        app.model.student.getAll({ user: req.session.user && req.session.user._id }, (error, students) => {
+                            if (students) {
+                                if (req.session.user) {
+                                    req.session.user.courses = students.map(student => ({ courseId: student.course._id, name: student.course.name }));
+                                }
+                            }
                             resolve();
-                        }
-                    })
-                })).then(() => {  // Build menu tree
-                    user.menu = app.permission.tree();
-                    Object.keys(user.menu).forEach(parentMenuIndex => {
-                        let flag = true;
-                        const menuItem = user.menu[parentMenuIndex];
-                        if (menuItem.parentMenu && menuItem.parentMenu.permissions) {
-                            if (hasPermission(user.permissions, menuItem.parentMenu.permissions)) {
-                                delete menuItem.parentMenu.permissions;
-                            } else {
-                                delete user.menu[parentMenuIndex];
-                                flag = false;
-                            }
-                        }
-
-                        flag && Object.keys(menuItem.menus).forEach(menuIndex => {
-                            const menu = menuItem.menus[menuIndex];
-                            if (hasPermission(user.permissions, menu.permissions)) {
-                                delete menu.permissions;
-                            } else {
-                                delete menuItem.menus[menuIndex];
-                                if (Object.keys(menuItem.menus).length == 0) delete user.menu[parentMenuIndex];
-                            }
-                            if (req.session.user.courses) {
-                                const courses = req.session.user.courses;
-                                courses.map((course, index) => {
-                                    const menuName = 5000 + index + 1;
-                                    user.menu['5000'].menus[menuName] = {
-                                        title: 'Khóa học ' + course.name,
-                                        link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
-                                        permissions: ['studentCourse:read']
-                                    }
-                                })
-                            }
                         });
-                    });
+                    }))
+                    .then(() => {  // Build menu tree
+                        user.menu = app.permission.tree();
+                        Object.keys(user.menu).forEach(parentMenuIndex => {
+                            let flag = true;
+                            const menuItem = user.menu[parentMenuIndex];
+                            if (menuItem.parentMenu && menuItem.parentMenu.permissions) {
+                                if (hasPermission(user.permissions, menuItem.parentMenu.permissions)) {
+                                    delete menuItem.parentMenu.permissions;
+                                } else {
+                                    delete user.menu[parentMenuIndex];
+                                    flag = false;
+                                }
+                            }
 
-                    if (req.session) {
-                        req.session.user = user;
-                        req.session.save();
-                    } else {
-                        req.session = { user };
-                    }
-                    done && done(user);
-                });
+                            flag && Object.keys(menuItem.menus).forEach(menuIndex => {
+                                const menu = menuItem.menus[menuIndex];
+                                if (hasPermission(user.permissions, menu.permissions)) {
+                                    delete menu.permissions;
+                                } else {
+                                    delete menuItem.menus[menuIndex];
+                                    if (Object.keys(menuItem.menus).length == 0) delete user.menu[parentMenuIndex];
+                                }
+                                if (req.session.user && req.session.user.courses) {
+                                    const courses = req.session.user.courses;
+                                    courses.map((course, index) => {
+                                        const menuName = 5000 + index + 1;
+                                        user.menu['5000'].menus[menuName] = {
+                                            title: 'Khóa học ' + course.name,
+                                            link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
+                                            permissions: ['studentCourse:read']
+                                        };
+                                    });
+                                }
+                            });
+                        });
+
+                        if (req.session) {
+                            req.session.user = user;
+                            req.session.save();
+                        } else {
+                            req.session = { user };
+                        }
+                        done && done(user);
+                    });
             }
         });
     };
