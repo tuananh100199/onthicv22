@@ -8,7 +8,6 @@ import { AdminPage } from 'view/component/AdminPage';
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu'
 class UserPageDriveTest extends AdminPage {
     state = {};
-    studentAnswers = [];
     componentDidMount() {
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
@@ -35,36 +34,52 @@ class UserPageDriveTest extends AdminPage {
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
-        // this.studentAnswers[this.state.activeQuestionIndex] = value;
-        if (index == -1) {
-            T.notify('Câu hỏi này đã là câu hỏi đầu tiên!', 'danger');
-        } else if (index == this.state.questions.length) {
-            T.notify('Câu hỏi này đã là câu hỏi cuối cùng!', 'danger');
-        } else {
-            this.setState({ activeQuestionIndex: index });
-        }
+        this.setState({ activeQuestionIndex: index }, () => {
+            const activeQuestion = this.state.questions[index],
+                questionId = activeQuestion ? activeQuestion._id : null;
+            if (activeQuestion) {
+                if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
+                    $("#" + questionId + this.state.studentAnswer[activeQuestion._id]).prop("checked", true);
+                } else {
+                    $('input[name="' + questionId + '"]').prop('checked', false);
+                }
+            }
+        });
     }
-    onAnswerChanged = (e, index) => {
-        console.log('index', index)
+    onAnswerChanged = (e, _questionId) => {
         const { value } = e.target;
-        console.log('e.target', e.target)
-        this.studentAnswers[index] = value;
-        this.setState({
-            studentAnswers: this.studentAnswers
-        })
+        // this.studentAnswers[index] = value
+        const newelement = {
+            _id: _questionId,
+            value: $('input[name=' + _questionId + ']:checked').val()
+        };
+        this.setState(prevState => ({
+            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
+        }))
     }
 
     render() {
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
-        const activeQuestion = questions ? questions[activeQuestionIndex] : null,
-            id = activeQuestion ? activeQuestion._id : 0;
-        activeQuestion ? $('input[name=' + activeQuestion._id + activeQuestionIndex + ']').val(this.state.studentAnswers && this.state.studentAnswers[activeQuestionIndex]) : null;
-
-        setTimeout(() => {
-            console.log(id, $('input[name=' + id + ']:checked').val())
-        }, 1000);
+        const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+        if (activeQuestionIndex == 0) {
+            $("#prev-btn").addClass('disabled');
+        } else if (activeQuestionIndex == questions.length - 1) {
+            $("#next-btn").addClass('disabled');
+        } else {
+            $('#prev-btn').removeClass('disabled');
+            $('#next-btn').removeClass('disabled');
+        }
+        // setTimeout(() => {
+        //     if (activeQuestion) {
+        //         if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
+        //             $("#" + questionId + this.state.studentAnswer[activeQuestion._id]).prop("checked", true);
+        //         } else {
+        //             $('input[name="' + questionId + '"]').prop('checked', false);
+        //         }
+        //     }
+        // }, 1);
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
@@ -86,7 +101,7 @@ class UserPageDriveTest extends AdminPage {
                                                     name={activeQuestion._id}
                                                     id={activeQuestion._id + index}
                                                     value={index}
-                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id + index)} />
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
                                                 </label>
