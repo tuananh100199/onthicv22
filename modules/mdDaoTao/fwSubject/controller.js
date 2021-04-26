@@ -35,7 +35,9 @@ module.exports = (app) => {
     });
 
     app.get('/api/subject/student', app.permission.check('subject:read'), (req, res) => {
-        app.model.subject.get(req.query._id, (error, item) => {
+        const subjectId = req.query._id;
+        req.session.user.currentSubject = subjectId;
+        app.model.subject.get(subjectId, (error, item) => {
             const currentCourse = req.session.user.currentCourse;
             res.send({ error, item, currentCourse });
         });

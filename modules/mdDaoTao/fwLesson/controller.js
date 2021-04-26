@@ -34,14 +34,15 @@ module.exports = (app) => {
 
     app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
-        const currentCourse = req.session.user.currentCourse;
+        const currentCourse = req.session.user.currentCourse,
+            currentSubject = req.session.user.currentSubject;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
                 item.questions.forEach(question => {
                     question.trueAnswer = null;
                 });
             }
-            res.send({ error, item, currentCourse });
+            res.send({ error, item, currentCourse, currentSubject });
         });
     });
 
