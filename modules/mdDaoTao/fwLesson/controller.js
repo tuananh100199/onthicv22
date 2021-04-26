@@ -44,28 +44,30 @@ module.exports = (app) => {
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
-        const answers = req.body.answers;
-        let questionIds = answers.map(answer => answer.questionId),
+        const { answers } = req.body;
+        let questionIds = answers ? Object.keys(answers) : [],
             score = 0,
             err = null;
-        app.model.driveQuestion.getAll({ _id: { $in: questionIds } }, (error, questions) => {
+        app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
             if (error) {
                 res.send({ error });
             } else {
-                const questionMapper = {},
-                    trueAnswer = {};
+                const questionMapper = {};
+                trueAnswer = {};
                 questions.forEach(item => questionMapper[item._id] = item);
-                answers.map(answer => {
-                    if (questionMapper[answer.questionId]) {
-                        if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
-                            score = score + 1;
-                            trueAnswer[answer.questionId] = answer.answer;
+                if (answers) {
+                    for (const [key, value] of Object.entries(answers)) {
+                        if (questionMapper[key]) {
+                            if (questionMapper[key].trueAnswer == value) {
+                                score = score + 1;
+                                trueAnswer[key] = value;
+                            }
+                        } else {
+                            err = 'Không tìm thấy câu hỏi!';
                         }
-                    } else {
-                        err = 'Không tìm thấy câu hỏi!';
                     }
-                });
-                res.send({ error: err, result: { score: score, total: answers.length, trueAnswer: trueAnswer } });
+                }
+                res.send({ error: err, result: { score: score, trueAnswer: trueAnswer } });
             }
         });
     });

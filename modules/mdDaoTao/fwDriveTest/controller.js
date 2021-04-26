@@ -103,17 +103,19 @@ module.exports = app => {
             } else {
                 const questionMapper = {};
                 test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
-                console.log(Object.keys(answers));
-                // answers.map(answer => {
-                //     if (questionMapper[answer.questionId]) {
-                //         if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
-                //             score = score + 1;
-                //         }
-                //     } else {
-                //         err = 'Không tìm thấy câu hỏi!';
-                //     }
-                // })
-                res.send({ error: err, result: { score: score, total: answers.length } })
+                if (answers) {
+                    for (const [key, value] of Object.entries(answers)) {
+                        if (questionMapper[key]) {
+                            if (questionMapper[key].trueAnswer == value) {
+                                score = score + 1;
+                            }
+                        } else {
+                            err = 'Không tìm thấy câu hỏi!';
+                        }
+                    }
+                }
+
+                res.send({ error: err, result: { score: score, total: test.questions.length } })
             }
         })
     });

@@ -37,6 +37,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
         {
+            path: '/user/hoc-vien/khoa-hoc/thong-tin/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
         },

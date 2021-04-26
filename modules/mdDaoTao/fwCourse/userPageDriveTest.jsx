@@ -17,22 +17,21 @@ class UserPageDriveTest extends AdminPage {
                 } else {
                     this.props.history.push(backRoute);
                 }
+                $("#totalScore").css("display", "none");
+
             });
         });
     }
 
     submitAnswer = (e) => {
         e.preventDefault();
-        if (this.state.studentAnswer) {
-            this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
-                $('#submit-btn').removeAttr('disabled');
-                T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-                this.setState({ result: result })
-            })
-        } else {
-            console.log('chưa có câu hỏi')
-        }
-
+        this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
+            T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+            this.setState({ result: result })
+            $("#totalScore").css("display", "block");
+            $('#submit-btn').attr('disabled');
+            $('#submit-btn').hide();
+        })
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
@@ -41,7 +40,7 @@ class UserPageDriveTest extends AdminPage {
                 questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
                 if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
-                    $("#" + questionId + this.state.studentAnswer[activeQuestion._id]).prop("checked", true);
+                    $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
                 } else {
                     $('input[name="' + questionId + '"]').prop('checked', false);
                 }
@@ -55,17 +54,21 @@ class UserPageDriveTest extends AdminPage {
     }
 
     render() {
+        console.log('result', this.state.result)
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         if (activeQuestionIndex == 0) {
             $("#prev-btn").addClass('disabled');
+            $('#submit-btn').hide();
         } else if (activeQuestionIndex == questions.length - 1) {
-            $("#next-btn").addClass('disabled');
+            $('#next-btn').addClass('disabled');
+            !this.state.result && $('#submit-btn').show();
         } else {
             $('#prev-btn').removeClass('disabled');
             $('#next-btn').removeClass('disabled');
+            $('#submit-btn').hide();
         }
 
         return this.renderPage({
@@ -110,8 +113,8 @@ class UserPageDriveTest extends AdminPage {
                                 </li>
                             </ul>
                         </nav>
-                        <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button>
-                        <p>Số câu đúng của bạn: <b>{score} / {total}</b></p>
+                        <button className='btn btn-primary' id='submit-btn' onClick={e => this.submitAnswer(e)}>Chấm điểm</button>
+                        <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {total}</b></p>
                     </div>
                 </div>
             ),

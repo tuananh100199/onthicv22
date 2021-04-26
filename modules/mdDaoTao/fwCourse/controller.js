@@ -26,10 +26,11 @@ module.exports = (app) => {
     app.get('/course/item/:_id', app.templates.home);
     app.get('/user/hoc-vien/khoa-hoc', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/de-thi-thu/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
-    
+
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
