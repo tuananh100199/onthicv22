@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubjectByStudent } from './redux.jsx';
+import { getLessonByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -9,23 +9,24 @@ const previousRoute = '/user';
 class UserCourseInfo extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/:_id'),
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id'),
             _id = route.parse(window.location.pathname)._id;
-        this.setState({ subjectId: _id })
+        this.setState({ lessonId: _id })
         if (_id) {
-            this.props.getSubjectByStudent(_id, data => {
-                if (data.error) {
-                    T.notify('Lấy khóa học bị lỗi!', 'danger');
-                    this.props.history.push(previousRoute);
-                } else if (data.notify) {
-                    T.alert(data.notify, 'error', false, 2000);
-                    this.props.history.push(previousRoute);
-                } else if (data.item && data.currentCourse) {
-                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
-                    this.setState(data.item);
-                } else {
-                    this.props.history.push(previousRoute);
-                }
+            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
+                this.props.getLessonByStudent(_id, data => {
+                    if (data.error) {
+                        T.notify('Lấy khóa học bị lỗi!', 'danger');
+                        this.props.history.push(previousRoute);
+                    } else if (data.notify) {
+                        T.alert(data.notify, 'error', false, 2000);
+                        this.props.history.push(previousRoute);
+                    } else if (data.item) {
+                        this.setState(data.item);
+                    } else {
+                        this.props.history.push(previousRoute);
+                    }
+                });
             });
         } else {
             this.props.history.push(previousRoute);
@@ -33,11 +34,11 @@ class UserCourseInfo extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/' + this.state.subjectId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + this.state.lessonId;
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Môn học: ' + (this.state.title),
-            breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Thông tin chung'],
+            title: 'Bài học: ' + (this.state.title),
+            breadcrumb: [<Link key={0} to={userPageLink}>Bài học</Link>, 'Thông tin chung'],
             content: (
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>
@@ -62,5 +63,5 @@ class UserCourseInfo extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course, driveTest: state.driveTest });
-const mapActionsToProps = { getSubjectByStudent };
+const mapActionsToProps = { getLessonByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCourseInfo);

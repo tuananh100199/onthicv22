@@ -4,7 +4,6 @@ import { getSubjectByStudent } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
-const userPageLink = '/user/hoc-vien/khoa-hoc';
 class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -16,26 +15,27 @@ class AdminEditPage extends AdminPage {
             this.props.getSubjectByStudent(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
-                    this.props.history.push(userPageLink);
+                    this.props.history.push('/user');
                 } else if (data.item && data.currentCourse) {
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription, courseId: data.currentCourse });
                 } else {
-                    this.props.history.push(userPageLink);
+                    this.props.history.push('/user');
                 }
             });
         } else {
-            this.props.history.push(userPageLink);
+            this.props.history.push('/user');
         }
     }
 
     render() {
         const lessons = this.props.subject && this.props.subject.item && this.props.subject.item.lessons ? this.props.subject.item.lessons : [];
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Môn học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link key={0} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId}>Khóa học</Link>, 'Môn học'],
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Môn học'],
             content: (
                 <div className='row'>
                     <div className='col-12'>
@@ -73,6 +73,7 @@ class AdminEditPage extends AdminPage {
                     </div>
                 </div>
             ),
+            backRoute: userPageLink,
         });
     }
 }
