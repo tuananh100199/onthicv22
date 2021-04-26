@@ -4,7 +4,7 @@ import { getCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien'
+const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien';
 class UserPageRandomDriveTest extends AdminPage {
     state = {};
     componentDidMount() {
@@ -18,7 +18,7 @@ class UserPageRandomDriveTest extends AdminPage {
                     this.props.history.push(backRoute);
                 }
                 $('#totalScore').css('display', 'none');
-            })
+            });
         });
     }
 
@@ -26,10 +26,10 @@ class UserPageRandomDriveTest extends AdminPage {
         e.preventDefault();
         this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
+            this.setState({ result: result });
             $('#totalScore').css('display', 'block');
             $('#submit-btn').hide();
-        })
+        });
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
@@ -48,7 +48,7 @@ class UserPageRandomDriveTest extends AdminPage {
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
-        }))
+        }));
     }
 
     render() {

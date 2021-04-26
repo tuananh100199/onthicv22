@@ -11,7 +11,7 @@ class UserCourseInfo extends AdminPage {
     componentDidMount() {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/thong-tin/:_id'),
             _id = route.parse(window.location.pathname)._id;
-        this.setState({ courseId: _id })
+        this.setState({ courseId: _id });
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
@@ -34,7 +34,7 @@ class UserCourseInfo extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),

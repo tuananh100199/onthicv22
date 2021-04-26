@@ -9,7 +9,7 @@ class adminEditPage extends AdminPage {
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(url);
-        this.setState({ lessonId: params._id })
+        this.setState({ lessonId: params._id });
         if (params._id) {
             this.props.getLessonByStudent(params._id, data => {
                 if (data.error) {
@@ -26,18 +26,18 @@ class adminEditPage extends AdminPage {
         } else {
             this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
         }
-        $("#totalScore").css("display", "none");
-        $("#trueAnswer").css("display", "none");
+        $('#totalScore').css('display', 'none');
+        $('#trueAnswer').css('display', 'none');
     }
 
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkQuestion(this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
-            $("#totalScore").css("display", "block");
-            $("#trueAnswer").css("display", "block");
-        })
+            this.setState({ result: result });
+            $('#totalScore').css('display', 'block');
+            $('#trueAnswer').css('display', 'block');
+        });
     }
 
     changeQuestion = (e, index) => {
@@ -58,7 +58,7 @@ class adminEditPage extends AdminPage {
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
-        }))
+        }));
     }
 
     render() {

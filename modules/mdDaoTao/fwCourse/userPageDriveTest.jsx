@@ -5,7 +5,7 @@ import { getDriveTestItem } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu'
+const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu';
 class UserPageDriveTest extends AdminPage {
     state = {};
     componentDidMount() {
@@ -26,10 +26,10 @@ class UserPageDriveTest extends AdminPage {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
+            this.setState({ result: result });
             $('#totalScore').css('display', 'block');
             $('#submit-btn').hide();
-        })
+        });
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
@@ -48,7 +48,7 @@ class UserPageDriveTest extends AdminPage {
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
-        }))
+        }));
     }
 
     render() {

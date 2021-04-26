@@ -61,7 +61,7 @@ module.exports = app => {
                             } else {
                                 const deleteChild = index => {
                                     if (index < items.length) {
-                                        app.model.menu.delete(_id, error => deleteChild(index + 1));
+                                        app.model.menu.delete(_id, () => deleteChild(index + 1));
                                     } else {
                                         done(null);
                                     }

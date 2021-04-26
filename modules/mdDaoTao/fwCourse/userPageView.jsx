@@ -12,7 +12,7 @@ class UserCoursePageDetail extends AdminPage {
     componentDidMount() {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
             _id = route.parse(window.location.pathname)._id;
-        this.setState({ courseId: _id })
+        this.setState({ courseId: _id });
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
@@ -37,7 +37,7 @@ class UserCoursePageDetail extends AdminPage {
         if (prevProps.match.url != this.props.match.url) {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
                 _id = route.parse(window.location.pathname)._id;
-            this.setState({ courseId: _id })
+            this.setState({ courseId: _id });
             if (_id) {
                 T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                     this.props.getCourseByStudent(_id, data => {
@@ -59,7 +59,7 @@ class UserCoursePageDetail extends AdminPage {
             }
         }
         if (this.state.courseType && this.state.courseType !== prevState.courseType) {
-            this.setState({ _courseTypeId: this.state.courseType._id })
+            this.setState({ _courseTypeId: this.state.courseType._id });
             this.props.getAllDriveTests({ courseType: this.state.courseType._id });
         }
     }

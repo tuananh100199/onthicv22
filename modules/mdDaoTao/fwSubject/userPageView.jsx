@@ -7,10 +7,9 @@ import { AdminPage } from 'view/component/AdminPage';
 class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
-
         let url = window.location.pathname,
             params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/:_id').parse(url);
-        this.setState({ subjectId: params._id })
+        this.setState({ subjectId: params._id });
         if (params._id) {
             this.props.getSubjectByStudent(params._id, data => {
                 if (data.error) {

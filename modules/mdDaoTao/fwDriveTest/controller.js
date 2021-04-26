@@ -62,11 +62,11 @@ module.exports = app => {
             user = req.session.user,
             today = new Date().getTime();
         if (user.driveTest && today < user.driveTest.expireDay) {
-            res.send(user.driveTest)
+            res.send(user.driveTest);
         } else {
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
-                    res.send({ error })
+                    res.send({ error });
                 } else {
                     if (item.questionTypes) {
                         const randomQuestions = item.questionTypes.map((type) => {
@@ -84,8 +84,8 @@ module.exports = app => {
                             req.session.user.driveTest = {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
-                            }
-                            res.send(req.session.user.driveTest)
+                            };
+                            res.send(req.session.user.driveTest);
                         }).catch(error => res.send({ error }));
                     }
                 }
@@ -99,7 +99,7 @@ module.exports = app => {
             err = null;
         app.model.driveTest.get(_id, (error, test) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else {
                 const questionMapper = {};
                 test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
@@ -115,9 +115,9 @@ module.exports = app => {
                     }
                 }
 
-                res.send({ error: err, result: { score: score, total: test.questions.length } })
+                res.send({ error: err, result: { score: score, total: test.questions.length } });
             }
-        })
+        });
     });
     app.post('/api/drive-test/random/submit', app.permission.check('driveQuestion:read'), (req, res) => {
         const { answers } = req.body,
@@ -137,7 +137,7 @@ module.exports = app => {
                     }
                 }
             }
-            res.send({ error: err, result: { score: score, total: randomTest.questions.length } })
+            res.send({ error: err, result: { score: score, total: randomTest.questions.length } });
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------
