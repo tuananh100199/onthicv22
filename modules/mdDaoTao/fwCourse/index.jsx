@@ -41,7 +41,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_courseId/:_id/',
+            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_id/',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
         },
         {

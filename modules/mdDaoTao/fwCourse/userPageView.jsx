@@ -122,7 +122,7 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                             {list && list.map((driveTest, index) => (
                                 <div key={index} className='col-md-4'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/de-thi-thu/' + this.state.courseId +'/'+ driveTest._id}>
+                                    <Link to={'/user/hoc-vien/khoa-hoc/de-thi-thu/' + driveTest._id}>
                                         <div className='widget-small coloured-icon info'>
                                             <i className='icon fa fa-3x fa fa-cubes' />
                                             <div className='info'>
