@@ -239,7 +239,9 @@ module.exports = app => {
                 .then(() => new Promise(resolve => { // Check và add course vào session user
                     app.model.student.getAll({ user: req.session.user && req.session.user._id }, (error, students) => {
                         if (students) {
-                            req.session.user.courses = students.map(student => ({ courseId: student.course._id, name: student.course.name }));
+                            if(req.session.user) {
+                                req.session.user.courses = students.map(student => ({ courseId: student.course._id, name: student.course.name }));
+                            }
                         }
                         resolve();
                     });

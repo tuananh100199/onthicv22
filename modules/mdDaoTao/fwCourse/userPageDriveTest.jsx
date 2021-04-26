@@ -45,6 +45,7 @@ class UserPageDriveTest extends AdminPage {
         }
     }
     onAnswerChanged = (e, index) => {
+        console.log('index', index)
         const { value } = e.target;
         console.log('e.target', e.target)
         this.studentAnswers[index] = value;
@@ -58,8 +59,9 @@ class UserPageDriveTest extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        activeQuestion ? $('input[name=' + activeQuestion._id + ']:checked').val(this.state.studentAnswers && this.state.studentAnswers[activeQuestionIndex]) : null;
-        console.log(this.state.studentAnswers)
+        activeQuestion ? $('input[name=' + activeQuestion._id + activeQuestionIndex +']').val(this.state.studentAnswers && this.state.studentAnswers[activeQuestionIndex]) : null;
+        console.log('activeQuestion', activeQuestion && activeQuestion._id)
+
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
@@ -78,10 +80,10 @@ class UserPageDriveTest extends AdminPage {
                                             <div key={index}>
                                                 <input className='form-check-input' 
                                                     type='radio' 
-                                                    name={activeQuestion._id} 
+                                                    name={activeQuestion._id}
                                                     id={activeQuestion._id + index} 
-                                                    value={ index} 
-                                                    onChange={e => this.onAnswerChanged(e, activeQuestionIndex)} />
+                                                    value={index}
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id + index)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
                                                 </label>
@@ -102,7 +104,7 @@ class UserPageDriveTest extends AdminPage {
                                 <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
                             </li>
                         </ul>
-                        </nav>
+                    </nav>
                         {/* <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button> */}
                         {/* <p>Số câu đúng của bạn: <b>{score} / {total}</b></p> */}
                     </div>
