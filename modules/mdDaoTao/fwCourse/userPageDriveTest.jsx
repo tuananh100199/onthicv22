@@ -8,7 +8,6 @@ import { AdminPage } from 'view/component/AdminPage';
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu'
 class UserPageDriveTest extends AdminPage {
     state = {};
-    studentAnswers = [];
     componentDidMount() {
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
@@ -38,34 +37,33 @@ class UserPageDriveTest extends AdminPage {
         this.setState({ activeQuestionIndex: index });
     }
     onAnswerChanged = (e, _questionId) => {
-        const { value } = e.target;
-        // this.studentAnswers[index] = value;
-        console.log('aaaaaa', $('input[name=' + _questionId + ']:checked').val())  
-        const newelement =  {
-            _id: _questionId,
-            value:  $('input[name=' + _questionId + ']:checked').val()
-        };
-        this.setState({
-            // studentAnswers: this.state.studentAnswers, newelement
-        })
+        this.setState(prevState => ({
+            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
+        }))
     }
 
     render() {
-        console.log('stateeee', this.state)
 
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
-        const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+        const activeQuestion = questions ? questions[activeQuestionIndex] : null,
+        questionId = activeQuestion ? activeQuestion._id : null;
         if ( activeQuestionIndex == 0 ) {
-            $("#prev-btn").addClass('disabled');
+            $('#prev-btn').addClass('disabled');
         } else if (activeQuestionIndex == questions.length - 1) {
-            $("#next-btn").addClass('disabled');
+            $('#next-btn').addClass('disabled');
         } else {
             $('#prev-btn').removeClass('disabled');
             $('#next-btn').removeClass('disabled');
         }
-
+        console.log('this.state.studentAnswer ', this.state.studentAnswer )
+        if(this.state.studentAnswer) {
+            console.log(this.state.studentAnswer.questionId )
+            console.log('hi',  $('input[name=' + questionId + '][value=' + this.state.studentAnswer.questionId + ']').prop('checked', false))
+            // $('input[name=' + questionId + '][value=' + this.state.studentAnswer.questionId + ']').prop('checked', false);
+            $("#" + questionId + " input[name='" + questionId + "'][value='" + this.state.studentAnswer.questionId + "']").attr('checked', true);
+        }
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
