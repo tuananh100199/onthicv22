@@ -61,45 +61,43 @@ module.exports = app => {
         const _courseTypeId = req.body._courseTypeId,
             user = req.session.user,
             today = new Date().getTime();
-        if (user.driveTest && today < user.driveTest.expireDay ) {
+        if (user.driveTest && today < user.driveTest.expireDay) {
             res.send(user.driveTest)
         } else {
-            app.model.courseType.get( _courseTypeId, (error, item) => {
-                if(error || item == null) {
+            app.model.courseType.get(_courseTypeId, (error, item) => {
+                if (error || item == null) {
                     res.send({ error })
                 } else {
-                    if( item.questionTypes ) { 
+                    if (item.questionTypes) {
                         const randomQuestions = item.questionTypes.map((type) => {
                             return new Promise((resolve, reject) => {
-                                app.model.driveQuestion.getAll({categories: type.category},(error, list) => {
+                                app.model.driveQuestion.getAll({ categories: type.category }, (error, list) => {
                                     if (error || list == null) {
                                         reject(error);
                                     } else {
-                                        resolve(app.getRandom(list,type.amount));
+                                        resolve(app.getRandom(list, type.amount));
                                     }
                                 });
                             });
                         });
                         Promise.all(randomQuestions).then(questions => {
                             req.session.user.driveTest = {
-                                    questions: questions.filter(item => item).flat(),
-                                    expireDay: new Date().setHours(new Date().getHours() + 2),
-                                }
-                            res.send( req.session.user.driveTest )
+                                questions: questions.filter(item => item).flat(),
+                                expireDay: new Date().setHours(new Date().getHours() + 2),
+                            }
+                            res.send(req.session.user.driveTest)
                         }).catch(error => res.send({ error }));
                     }
                 }
             });
         }
-       
-       
     });
 
     app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
         const { _id, answers } = req.body;
         let score = 0,
             err = null;
-        app.model.driveTest.get( _id, (error, test) => {
+        app.model.driveTest.get(_id, (error, test) => {
             if (error) {
                 res.send({ error })
             } else {
@@ -116,7 +114,7 @@ module.exports = app => {
                         }
                     }
                 }
-               
+
                 res.send({ error: err, result: { score: score, total: test.questions.length } })
             }
         })

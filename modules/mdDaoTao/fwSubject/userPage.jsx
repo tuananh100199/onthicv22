@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getSubjectByStudent } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTabs, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 
 const userPageLink = '/user/hoc-vien/khoa-hoc';
 class AdminEditPage extends AdminPage {
@@ -11,6 +11,7 @@ class AdminEditPage extends AdminPage {
 
         let url = window.location.pathname,
             params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/:_id').parse(url);
+        this.setState({ subjectId: params._id })
         if (params._id) {
             this.props.getSubjectByStudent(params._id, data => {
                 if (data.error) {
@@ -19,7 +20,7 @@ class AdminEditPage extends AdminPage {
                 } else if (data.item && data.currentCourse) {
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription } = data.item;
-                    this.setState({ _id, title, shortDescription, detailDescription });
+                    this.setState({ _id, title, shortDescription, detailDescription, courseId: data.currentCourse });
                 } else {
                     this.props.history.push(userPageLink);
                 }
@@ -30,46 +31,48 @@ class AdminEditPage extends AdminPage {
     }
 
     render() {
-        const tableLesson = renderTable({
-            getDataSource: () => this.props.subject && this.props.subject.item && this.props.subject.item.lessons,
-            renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Tên bài học</th>
-                    {/* <th style={{ width: 'auto', textAlign: 'center', nowrap: 'true' }}>Tiến độ hoàn thành</th> */}
-                </tr>),
-            renderRow: (item, index) => (
-                <tr key={index}>
-                    <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={item.title} url={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + item._id} />
-                </tr>),
-        });
-
-        const componentInfo = (
-            <div className='tile-body'>
-                <div className='form-group'>
-                    Tên môn học: <b>{this.state.title}</b>
-                </div>
-                <div className='form-group'>
-                    <label>Mô tả ngắn gọn: <b>{this.state.shortDescription}</b></label>
-                </div>
-                <div className='form-group'>
-                    <label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} />
-                </div>
-            </div>
-        );
-        const componentLesson = (
-            <div className='tile-body'>
-                {tableLesson}
-            </div>);
-
-        const tabs = [{ title: 'Bài học', component: componentLesson }, { title: 'Thông tin chung', component: componentInfo }];
+        const lessons = this.props.subject && this.props.subject.item && this.props.subject.item.lessons ? this.props.subject.item.lessons : [];
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Môn học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Chỉnh sửa'],
-            content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
-            backRoute: userPageLink,
+            breadcrumb: [<Link key={0} to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId}>Khóa học</Link>, 'Môn học'],
+            content: (
+                <div className='row'>
+                    <div className='col-12'>
+                        <h4>Thông tin chung</h4>
+                        <div className='row'>
+                            <div className='col-md-6'>
+                                <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/' + this.state.subjectId}>
+                                    <div className='widget-small coloured-icon info'>
+                                        <i className='icon fa fa-3x fa-info' />
+                                        <div className='info'>
+                                            <h4>Thông tin môn học</h4>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='col-12'>
+                        <h4>Bài học</h4>
+                        <div className='row'>
+                            {lessons.length ? lessons.map((lesson, index) => (
+                                <div key={index} className='col-md-6 col-lg-4'>
+                                    <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + lesson._id}>
+                                        <div className='widget-small coloured-icon primary'>
+                                            <i className='icon fa fa-3x fa fa-briefcase' />
+                                            <div className='info'>
+                                                <h4>{lesson && lesson.title}</h4>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )) : <div className='col-md-4'>Chưa có bài học</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            ),
         });
     }
 }
