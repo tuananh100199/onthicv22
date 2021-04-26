@@ -193,5 +193,5 @@ export const ajaxSelectStatistic = T.createAjaxAdapter(
 );
 export function ajaxGetStatistic(_id, done) {
     const url = '/api/statistic';
-    T.get(url, { _id }, done, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy thống kê bị lỗi!', 'danger'));
 }

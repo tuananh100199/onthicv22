@@ -51,9 +51,12 @@ class ListContentEditPage extends AdminPage {
             });
         });
     }
+
     edit = (e, [index, item]) => e.preventDefault() || this.modal.show([index, item]);
+    // eslint-disable-next-line no-unused-vars
     remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá bài viết ', 'Bạn có chắc muốn xoá bài viết khỏi danh sách này?', true, isConfirm =>
         isConfirm && this.props.updateListContent(this.state._id, index, () => T.alert('Xoá bài viết trong danh sách thành công!', 'error', false, 800)));
+    // eslint-disable-next-line no-unused-vars
     swap = (e, [index, item], isMoveUp) => e.preventDefault() || this.props.updateListContent(this.state._id, { index, isMoveUp }, () => T.notify('Thay đổi thứ tự bài viết trong danh sách thành công!', 'info'));
 
     save = () => {
@@ -114,7 +117,7 @@ class ListContentEditPage extends AdminPage {
                     <div className='tile-body'>{table}</div>
                     {permission.write ?
                         <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <button className='btn btn-success' type='button' onClick={e => this.modal.show([])}>
+                            <button className='btn btn-success' type='button' onClick={() => this.modal.show([])}>
                                 <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                             </button>
                         </div> : null}

@@ -48,7 +48,6 @@ module.exports = app => {
                 let parentComponent = parents[0],
                     hasSend = false;
                 for (let i = 0, n = parentComponent.componentIds.length; i < n; i++) {
-                    component = parentComponent.componentIds[i];
                     if (parentComponent.componentIds[i] == _id) {
                         if (!isMoveUp && i + 1 < n) {
                             hasSend = true;
@@ -81,7 +80,7 @@ module.exports = app => {
                     if (componentIndex != -1) {
                         parentComponent.componentIds.splice(componentIndex, 1);
                     }
-                    parentComponent.save(error => removeComponent(index + 1));
+                    parentComponent.save(error => console.error(error) || removeComponent(index + 1));
                 } else {
                     model.deleteOne({ _id }, done);
                 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { homeGetContent } from './redux/reduxContent';
-import NewsFeed from 'view/component/NewsFeed';
 
 class ContentDetail extends React.Component {
     state = { _id: null, title: '', active: false, content: '' };

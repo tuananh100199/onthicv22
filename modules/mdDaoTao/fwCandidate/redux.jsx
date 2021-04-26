@@ -125,8 +125,7 @@ export function createCandidate(candidate, done) {
         }, error => console.error(error) || T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
     };
 }
+
 export function exportCandidateToExcel() {
-    return dispatch => {
-        T.download(T.url('/api/candidate/export'));
-    };
+    T.download(T.url('/api/candidate/export'));
 }

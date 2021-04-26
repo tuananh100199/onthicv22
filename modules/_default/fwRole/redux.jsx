@@ -44,7 +44,7 @@ export default function roleReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('adminRole');
 
-export function changeRole(role, done) {
+export function changeRole(role) {
     return dispatch => {
         const url = '/api/debug/change-role';
         T.post(url, { role: role._id }, data => {

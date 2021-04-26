@@ -13,7 +13,7 @@ export default function staffGroupReducer(state = {}, data) {
         case StaffGroupGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case StaffGroupChange:
+        case StaffGroupChange: {
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.staffGroupId) {
@@ -25,6 +25,7 @@ export default function staffGroupReducer(state = {}, data) {
                 }
             }
             return state;
+        }
 
         default:
             return state;
@@ -39,12 +40,12 @@ export function getStaffGroupAll(done) {
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nhóm nhân viên bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
+                console.error(`GET: getStaffGroupAll. ${data.error}`);
             } else {
                 if (done) done(data.list);
                 dispatch({ type: StaffGroupGetAll, list: data.list || [] });
             }
-        }, error => console.error(`GET: ${url}. ${error}`));
+        }, error => console.error(`GET: getStaffGroupAll. ${error}`));
     };
 }
 
@@ -52,7 +53,7 @@ export function getStaffGroup(_id, done) {
     return dispatch => ajaxGetStaffGroup(_id, data => {
         if (data.error || !data.item) {
             T.notify('Lấy nhóm nhân viên bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getStaffGroup. ${data.error}`);
         } else {
             // dispatch(getStaffGroupAll());
             // dispatch({ type: StaffGroupUpdate, item: data.item });
