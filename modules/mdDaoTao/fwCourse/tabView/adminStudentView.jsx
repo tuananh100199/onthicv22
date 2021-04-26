@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-import { FormTextBox } from 'view/component/AdminPage';
+import { FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 class AdminStudentView extends React.Component {
     // state = { outsideGroups: [], insideGroups: [], hide: false };
     state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [] };
@@ -96,13 +96,13 @@ class AdminStudentView extends React.Component {
                                         <li key={indexStudent} style={{ whiteSpace: 'nowrap' }} onMouseEnter={() => {
                                             const groups = this.state.groups;
                                             const index = groups.findIndex(item1 => item1._id == item._id);
-                                            groups[index].student[indexStudent].isHide = true;
+                                            if (groups[index].student[indexStudent]) groups[index].student[indexStudent].isHide = true;
                                             this.setState({ groups });
                                         }}
                                             onMouseLeave={() => {
                                                 const groups = this.state.groups;
                                                 const index = groups.findIndex(item1 => item1._id == item._id);
-                                                groups[index].student[indexStudent].isHide = false;
+                                                if (groups[index].student[indexStudent]) groups[index].student[indexStudent].isHide = false;
                                                 this.setState({ groups });
                                             }}
                                         >
@@ -122,7 +122,8 @@ class AdminStudentView extends React.Component {
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
                         {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
-                            <h6>{item.title}</h6>
+                            <h6>
+                                {item.title} <FormCheckbox /></h6>
                             {renderStudents(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
                         </div>)] : result, []) : 'Không có thông tin'}
                         <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
