@@ -67,6 +67,20 @@ export function getDriveTestItem(_id, done) {
         }, error => console.error(error) || T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
     };
 }
+export function getDriveTestItemByStudent(_id, done) {
+    return dispatch => {
+        const url = '/api/drive-test';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy bộ đề thi bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: DriveTestGet, item: data.item });
+            }
+            if (done) done(data.item);
+        }, error => console.error(error) || T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
+    };
+}
 
 export function createDriveTest(data, done) {
     return dispatch => {

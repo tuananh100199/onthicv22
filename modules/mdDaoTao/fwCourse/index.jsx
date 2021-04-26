@@ -41,11 +41,11 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:id',
+            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_courseId/:_id/',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:id',
+            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })
         },
     ],

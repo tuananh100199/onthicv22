@@ -76,8 +76,8 @@ class UserPageDriveTest extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + this.state.title,
-            breadcrumb: [<Link key={0} to={backRoute}>Bộ đề thi</Link>, this.state.title],
-            backRoute: backRoute,
+            breadcrumb: [<Link key={0} to={'/user/hoc-vien/khoa-hoc/' + _courseId}>Bộ đề thi</Link>, this.state.title],
+            backRoute: '/user/hoc-vien/khoa-hoc/' + _courseId,
             content: (
                 <>
                 <div className='tile'>
