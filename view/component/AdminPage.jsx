@@ -26,7 +26,7 @@ export class TableCell extends React.Component { // type = number | date | link 
                 return <td className={className} style={{ ...style }}><a href='#' onClick={onClick}>{content}</a></td>;
             } else {
                 return url.startsWith('http://') || url.startsWith('https://') ?
-                    <td className={className} style={{ textAlign: 'left', ...style }}><a href={url} target='_blank' style={contentStyle}>{content}</a></td> :
+                    <td className={className} style={{ textAlign: 'left', ...style }}><a href={url} target='_blank' style={contentStyle} rel='noreferrer'>{content}</a></td> :
                     <td className={className} style={{ textAlign: 'left', ...style }}><Link to={url} style={contentStyle}>{content}</Link></td>;
             }
         } else if (type == 'image') {
@@ -65,8 +65,8 @@ export class TableCell extends React.Component { // type = number | date | link 
     }
 }
 
-export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false,
-    renderHead = () => null, renderRow = (item, index) => null }) {
+// eslint-disable-next-line no-unused-vars
+export function renderTable({ style = {}, className = '', getDataSource = () => null, loadingText = 'Đang tải...', emptyTable = 'Chưa có dữ liệu!', stickyHead = false, renderHead = () => null, renderRow = (item, index) => null }) {
     const list = getDataSource();
     if (list == null) {
         return (
@@ -203,7 +203,7 @@ export class FormTextBox extends React.Component {
         }
         return (
             <div className={'form-group ' + (className || '')}>
-                <label onClick={e => this.input.focus()}>{label}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
+                <label onClick={() => this.input.focus()}>{label}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
                 <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
                 {smallText ? <small>{smallText}</small> : null}
             </div>);
@@ -227,7 +227,7 @@ export class FormRichTextBox extends React.Component {
         const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null } = this.props;
         return (
             <div className={'form-group ' + (className ? className : '')} style={style}>
-                <label onClick={e => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <><br /><b>{this.state.value}</b></> : ''}
+                <label onClick={() => this.input.focus()}>{label}</label>{readOnly && this.state.value ? <><br /><b>{this.state.value}</b></> : ''}
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
@@ -245,7 +245,7 @@ export class FormEditor extends React.Component {
             return this.input.html();
         }
     }
-    
+
     value = this.html;
 
     text = () => this.input.text();
@@ -295,10 +295,10 @@ export class FormSelect extends React.Component {
         if (arguments.length) {
             let hasInit = this.hasInit;
             if (!hasInit) this.hasInit = true;
-            
+
             const { data, label, placeholder, minimumResultsForSearch = 1 } = this.props,
                 options = { placeholder: placeholder || label, dropdownParent, minimumResultsForSearch };
-            
+
             if (Array.isArray(data)) {
                 options.data = data;
                 $(this.input).select2(options).val(value).trigger('change');
@@ -321,7 +321,7 @@ export class FormSelect extends React.Component {
                     $(this.input).val(null).trigger('change');
                 }
             }
-    
+
             // Set readOnly text
             if (this.props.multiple) {
                 let stringValue = value ? (Array.isArray(value) ? value : [value]) : [];
@@ -354,14 +354,14 @@ export class FormDatePicker extends React.Component {
     static defaultProps = {
         type: 'date'
     };
-    
+
     mask = {
         'time-mask': '39/19/2099 h9:59',
         'date-mask': '39/19/2099'
     };
-    
+
     state = { value: '', readOnlyText: '' };
-    
+
     value = function (date) {
         const type = this.props.type;
         if (arguments.length) {
@@ -384,16 +384,16 @@ export class FormDatePicker extends React.Component {
             }
         }
     }
-    
+
     focus = () => {
         const type = this.props.type;
         if (type.endsWith('-mask')) {
-            this.input.getInputDOMNode().focus()
+            this.input.getInputDOMNode().focus();
         } else {
             $(this.inputRef).focus();
         }
     }
-    
+
     handleChange = event => {
         const type = this.props.type;
         event.preventDefault && event.preventDefault();
@@ -401,7 +401,7 @@ export class FormDatePicker extends React.Component {
             this.props.onChange && this.props.onChange(this.value());
         });
     }
-    
+
     render() {
         let { label = '', type = 'date', className = '', readOnly = false } = this.props; // type = date || time || date-mask || time-mask
         return (
@@ -409,12 +409,12 @@ export class FormDatePicker extends React.Component {
                 <label onClick={() => this.focus()}>{label}</label>{readOnly && this.state.value ? <>: <b>{this.state.readOnlyText}</b></> : ''}
                 {type.endsWith('-mask') ? (
                     <InputMask ref={e => this.input = e} className='form-control' mask={this.mask[type]} onChange={this.handleChange} style={{ display: readOnly ? 'none' : '' }}
-                               formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
-                               value={this.state.value} readOnly={readOnly} placeholder={label}/>
+                        formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
+                        value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
                     <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                              inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                              value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                        value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
                 )}
             </div>);
     }
@@ -530,7 +530,7 @@ export class AdminModal extends React.Component {
                             </button>
                             {readOnly == true ? null :
                                 <button type='submit' className='btn btn-primary' disabled={isLoading}>
-                                    {isLoading ? <i className='fa fa-spin fa-lg fa-spinner'/> : <i className='fa fa-fw fa-lg fa-save'/>} Lưu
+                                    {isLoading ? <i className='fa fa-spin fa-lg fa-spinner' /> : <i className='fa fa-fw fa-lg fa-save' />} Lưu
                                 </button>}
                             {buttons}
                         </div>

@@ -55,8 +55,8 @@ export function getCandidatePage(pageNumber, pageSize, searchText, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: CandidateGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách đăng ký tư vấn bị lỗi!', 'danger'));
+    };
 }
 
 export function getCandidate(_id, done) {
@@ -70,8 +70,8 @@ export function getCandidate(_id, done) {
                 if (done) done(data.item);
                 dispatch({ type: CandidateUpdate, item: data.item });
             }
-        }, error => T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger'));
+    };
 }
 
 export function updateCandidate(_id, changes, done) {
@@ -87,8 +87,8 @@ export function updateCandidate(_id, changes, done) {
                 dispatch(getCandidatePage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật đăng ký tư vấn bị lỗi', 'danger'));
+    };
 }
 
 export function deleteCandidate(_id) {
@@ -102,8 +102,8 @@ export function deleteCandidate(_id) {
                 T.alert('Xoá đăng ký tư vấn thành công!', 'error', false, 800);
                 dispatch(getCandidatePage());
             }
-        }, error => T.notify('Xoá đăng ký tư vấn bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xoá đăng ký tư vấn bị lỗi', 'danger'));
+    };
 }
 
 export function changeCandidate(item) {
@@ -122,11 +122,11 @@ export function createCandidate(candidate, done) {
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
+    };
 }
 export function exportCandidateToExcel(done) {
     return dispatch => {
-        T.download(T.url(`/api/candidate/export`));
-    }
+        T.download(T.url('/api/candidate/export'));
+    };
 }

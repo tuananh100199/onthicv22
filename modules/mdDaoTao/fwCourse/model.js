@@ -82,8 +82,8 @@ module.exports = app => {
                                                 reject('Giáo viên và ứng viên phải trùng cơ sở đào tạo!');
                                                 isError = true;
                                             }
-                                        })
-                                    })
+                                        });
+                                    });
                                 }
                             }
                             if (isError) {
@@ -94,7 +94,7 @@ module.exports = app => {
                     if (!isError) {
                         resolve();
                     }
-                })
+                });
             }).then(() => {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname division').populate('groups.student', 'firstname lastname').exec(done);

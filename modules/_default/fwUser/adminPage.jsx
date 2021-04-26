@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getUserPage, createUser, updateUser, deleteUser, changeUser } from './redux';
-import { changeSystemState } from 'modules/_default/_init/redux'
+import { changeSystemState } from 'modules/_default/_init/redux';
 import { getRoleAll } from 'modules/_default/fwRole/redux';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
@@ -166,9 +166,9 @@ export class RoleFilter extends React.Component {
                                 isStaff: isStaff,
                                 isLecturer: isLecturer,
                                 isAll: !isAll
-                            }
-                            this.props.getUserPage(pageNumber, pageSize, changes)
-                            this.props.setRoleFilter(changes)
+                            };
+                            this.props.getUserPage(pageNumber, pageSize, changes);
+                            this.props.setRoleFilter(changes);
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -182,9 +182,9 @@ export class RoleFilter extends React.Component {
                                 isStaff: isStaff,
                                 isLecturer: isLecturer,
                                 isAll: isAll
-                            }
-                            this.props.getUserPage(pageNumber, pageSize, changes)
-                            this.props.setRoleFilter(changes)
+                            };
+                            this.props.getUserPage(pageNumber, pageSize, changes);
+                            this.props.setRoleFilter(changes);
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -198,9 +198,9 @@ export class RoleFilter extends React.Component {
                                 isStaff: !isStaff,
                                 isLecturer: isLecturer,
                                 isAll: isAll
-                            }
-                            this.props.getUserPage(pageNumber, pageSize, changes)
-                            this.props.setRoleFilter(changes)
+                            };
+                            this.props.getUserPage(pageNumber, pageSize, changes);
+                            this.props.setRoleFilter(changes);
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -214,9 +214,9 @@ export class RoleFilter extends React.Component {
                                 isStaff: isStaff,
                                 isLecturer: !isLecturer,
                                 isAll: isAll
-                            }
-                            this.props.getUserPage(pageNumber, pageSize, changes)
-                            this.props.setRoleFilter(changes)
+                            };
+                            this.props.getUserPage(pageNumber, pageSize, changes);
+                            this.props.setRoleFilter(changes);
                         }} />
                         <span className='button-indecator' />
                     </label>
@@ -248,8 +248,8 @@ class UserPage extends AdminPage {
     }
 
     setRoleFilter = (roleFilter) => {
-        this.setState({ roleFilter: roleFilter })
-        T.cookie('roleFilter', roleFilter)
+        this.setState({ roleFilter: roleFilter });
+        T.cookie('roleFilter', roleFilter);
     }
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);

@@ -40,12 +40,12 @@ module.exports = (app) => {
     app.put('/api/course-type', app.permission.check('course-type:write'), (req, res) => {
         const { _id, changes } = req.body;
         if (changes && changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-        app.model.courseType.update(_id, changes, (error, item) => res.send({ error, item }))
+        app.model.courseType.update(_id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/course-type', app.permission.check('course-type:delete'), (req, res) => {
         const { _id } = req.body;
-        app.model.courseType.delete(_id, (error) => res.send({ error }))
+        app.model.courseType.delete(_id, (error) => res.send({ error }));
     });
 
     // Subject APIs ---------------------------------------------------------------------------------------------------

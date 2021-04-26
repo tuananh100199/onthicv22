@@ -8,18 +8,18 @@ class SectionSubscribe extends React.Component {
         $(document).ready(() => {
             const done = () => {
                 if (this.props && this.props.system && this.props.system.subscribe) {
-                    $(window).trigger('resize')
+                    $(window).trigger('resize');
                     $(this.background).parallax();
                 } else {
-                    setTimeout(done, 100)
+                    setTimeout(done, 100);
                 }
-            }
-            done()
-        })
+            };
+            done();
+        });
     }
 
     componentWillUnmount() {
-        $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy')
+        $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy');
     }
 
     sendMessage = (e) => {

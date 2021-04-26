@@ -67,7 +67,7 @@ class AdminEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Môn học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to={userPageLink}>Môn học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: userPageLink,
         });

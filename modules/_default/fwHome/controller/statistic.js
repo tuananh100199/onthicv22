@@ -30,7 +30,7 @@ module.exports = app => {
     });
 
     app.post('/api/statistic', app.permission.check('component:write'), (req, res) => {
-        app.model.statistic.create(req.body.data, (error, statistic) => res.send({ error, statistic }))
+        app.model.statistic.create(req.body.data, (error, statistic) => res.send({ error, statistic }));
     });
 
     app.put('/api/statistic', app.permission.check('component:write'), (req, res) => {

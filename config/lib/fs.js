@@ -1,12 +1,12 @@
 module.exports = app => {
-    
+
     // Download file (http / https)
     app.downloadFile = (url, path) => {
         let network = require(url.startsWith('http') ? 'http' : 'https'),
             file = app.fs.createWriteStream(path);
         network.get(url, response => response.pipe(file));
     };
-    
+
     app.createFolder = function () {
         for (let i = 0; i < arguments.length; i++) {
             !app.fs.existsSync(arguments[i]) && app.fs.mkdirSync(arguments[i]);
@@ -25,7 +25,7 @@ module.exports = app => {
             app.fs.rmdirSync(path);
         }
     };
-    
+
     app.deleteImage = (image, done) => {
         if (image && image !== '') {
             let imagePath = app.path.join(app.publicPath, image),
@@ -33,14 +33,14 @@ module.exports = app => {
             if (imageIndex != -1) {
                 imagePath = imagePath.substring(0, imageIndex);
             }
-            
+
             if (app.fs.existsSync(imagePath)) {
                 app.fs.unlinkSync(imagePath);
             }
         }
         if (done) done();
     };
-    
+
     app.deleteFile = (path, done) => {
         if (path && path !== '') {
             const index = path.indexOf('?t=');
@@ -49,11 +49,11 @@ module.exports = app => {
         }
         if (done) done();
     };
-    
-    app.parseArgToString = (arguments) => {
+
+    app.parseArgToString = (args) => {
         let returnString = '';
-        for (let i = 0; i < arguments.length; i++) {
-            returnString += arguments[i] + (i < arguments.length - 1 ? ', ' : '');
+        for (let i = 0; i < args.length; i++) {
+            returnString += args[i] + (i < args.length - 1 ? ', ' : '');
         }
         return returnString;
     };

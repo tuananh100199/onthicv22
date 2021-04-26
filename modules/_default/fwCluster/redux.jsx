@@ -19,7 +19,7 @@ export default function clusterReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 export function getClusterAll() {
     return dispatch => {
-        const url = `/api/cluster/all`;
+        const url = '/api/cluster/all';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy cluster bị lỗi!', 'danger');
@@ -27,20 +27,20 @@ export function getClusterAll() {
             } else {
                 dispatch({ type: ClusterGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy cluster bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy cluster bị lỗi!', 'danger'));
+    };
 }
 
 export function getCluster(clusterId, done) {
     return dispatch => {
         const url = `/api/cluster/item/${clusterId}`;
         T.get(url, data => done(data), error => done({ error }));
-    }
+    };
 }
 
 export function createCluster(done) {
     return dispatch => {
-        const url = `/api/cluster`;
+        const url = '/api/cluster';
         T.post(url, data => {
             if (data.error) {
                 T.notify('Tạo cluster bị lỗi!', 'danger');
@@ -49,8 +49,8 @@ export function createCluster(done) {
                 dispatch(getClusterAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo cluster bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo cluster bị lỗi!', 'danger'));
+    };
 }
 
 export function resetCluster(id, done) {
@@ -62,7 +62,7 @@ export function resetCluster(id, done) {
             }
         }
 
-        const url = `/api/cluster`;
+        const url = '/api/cluster';
         T.put(url, { id }, data => {
             if (data.error) {
                 T.notify('Cập nhật cluster bị lỗi!', 'danger');
@@ -73,13 +73,13 @@ export function resetCluster(id, done) {
                 dispatch(getClusterAll());
                 done && done();
             }
-        }, error => T.notify('Cập nhật cluster bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật cluster bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteCluster(id) {
     return dispatch => {
-        const url = `/api/cluster`;
+        const url = '/api/cluster';
         T.delete(url, { id }, data => {
             if (data.error) {
                 T.notify('Xóa cluster bị lỗi!', 'danger');
@@ -88,13 +88,13 @@ export function deleteCluster(id) {
                 T.alert('Xóa cluster thành công!', 'error', false, 800);
                 dispatch(getClusterAll());
             }
-        }, error => T.notify('Xóa cluster bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa cluster bị lỗi!', 'danger'));
+    };
 }
 
 export function getSystemImageAll() {
     return dispatch => {
-        const url = `/api/cluster/image/all`;
+        const url = '/api/cluster/image/all';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy image bị lỗi!', 'danger');
@@ -102,13 +102,13 @@ export function getSystemImageAll() {
             } else {
                 dispatch({ type: SystemImageGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy image bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy image bị lỗi!', 'danger'));
+    };
 }
 
 export function applySystemImage(filename, done) {
     return dispatch => {
-        const url = `/api/cluster/image`;
+        const url = '/api/cluster/image';
         T.put(url, { filename }, data => {
             if (data.error) {
                 T.notify('Triển khai image bị lỗi!', 'danger');
@@ -118,13 +118,13 @@ export function applySystemImage(filename, done) {
                 T.notify('Triển khai image thành công!', 'success');
                 done && done();
             }
-        }, error => T.notify('Triển khai image bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Triển khai image bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteSystemImage(filename) {
     return dispatch => {
-        const url = `/api/cluster/image`;
+        const url = '/api/cluster/image';
         T.delete(url, { filename }, data => {
             if (data.error) {
                 T.notify('Xóa image bị lỗi!', 'danger');
@@ -133,6 +133,6 @@ export function deleteSystemImage(filename) {
                 T.alert('Xóa image thành công!', 'error', false, 800);
                 dispatch(getSystemImageAll());
             }
-        }, error => T.notify('Xóa image bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa image bị lỗi!', 'danger'));
+    };
 }

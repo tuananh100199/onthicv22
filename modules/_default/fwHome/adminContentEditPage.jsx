@@ -42,7 +42,7 @@ class ContentEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-edit',
             title: 'Bài viết: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Bài viết'],
+            breadcrumb: [<Link key={0} to='/user/component'>Thành phần giao diện</Link>, 'Bài viết'],
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>

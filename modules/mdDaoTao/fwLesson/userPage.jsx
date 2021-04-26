@@ -33,13 +33,13 @@ class adminEditPage extends AdminPage {
         e.preventDefault();
         let studentAnswers = list.map((question) => {
             return { questionId: question._id, answer: $('input[name=' + question._id + ']:checked').val() };
-        })
+        });
         T.confirm('Gửi câu trả lời', 'Bạn có chắc chắn nộp câu trả lời cho bộ câu hỏi này?', true, isConfirm =>
             isConfirm && this.props.checkQuestion(studentAnswers, result => {
                 $('#submit-btn').removeAttr('disabled');
                 T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-                this.setState({ result: result })
-            }))
+                this.setState({ result: result });
+            }));
     }
 
     render() {
@@ -103,7 +103,7 @@ class adminEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to={userPageLink}>Bài học</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={userPageLink}>Bài học</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: userPageLink,
         });

@@ -11,7 +11,7 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => {
-            done ? model.find(condition).exec(done) : model.find({}).exec(condition)
+            done ? model.find(condition).exec(done) : model.find({}).exec(condition);
         },
 
         get: (condition, done) => {

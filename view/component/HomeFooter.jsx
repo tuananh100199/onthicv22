@@ -8,12 +8,11 @@ class Footer extends React.Component {
     }
 
     render() {
-        let { logo, facebook, youtube, twitter, instagram, todayViews, allViews, footer } =
-            this.props.system ? this.props.system : { logo: '', todayViews: 0, allViews: 0, footer: '/img/footer.jpg' };
-        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+        let { facebook, youtube, twitter, instagram, todayViews, allViews } = this.props.system ? this.props.system : { todayViews: 0, allViews: 0 };
+        facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
 
         return (
             <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
@@ -117,7 +116,7 @@ class Footer extends React.Component {
                     </div>
                 </div>
             </footer>
-        )
+        );
     }
 }
 

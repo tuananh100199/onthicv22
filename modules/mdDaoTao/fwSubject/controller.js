@@ -45,7 +45,7 @@ module.exports = (app) => {
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/subject', app.permission.check('subject:delete'), (req, res) => {
@@ -60,7 +60,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else if (item) {
-                res.send({ check: `Môn học đã có bài học này!` });
+                res.send({ check: 'Môn học đã có bài học này!' });
             } else {
                 app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
             }

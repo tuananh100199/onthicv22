@@ -1,8 +1,8 @@
 module.exports = (app) => {
-    const parentModelContainer = {}
+    const parentModelContainer = {};
     app.hookQuestion = (type, parentModel) => parentModelContainer[type] = parentModel;
 
-    app.post(`/api/question/:type`, (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
+    app.post('/api/question/:type', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
         const { _parentId, data } = req.body,
             parentModel = parentModelContainer[req.params.type];
         new Promise((resolve, reject) => {
@@ -23,7 +23,7 @@ module.exports = (app) => {
         }).catch(error => res.send({ error }));
     });
 
-    app.put(`/api/question/:type`, (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
+    app.put('/api/question/:type', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
         const { _parentId, _questionId, data } = req.body,
             parentModel = parentModelContainer[req.params.type];
         app.model.question.update(_questionId, data, error => {
@@ -33,7 +33,7 @@ module.exports = (app) => {
         });
     });
 
-    app.put(`/api/question/:type/swap`, (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
+    app.put('/api/question/:type/swap', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
         const { _parentId, _questionId, isMoveUp } = req.body,
             parentModel = parentModelContainer[req.params.type];
         parentModel.get(_parentId, (error, item) => {
@@ -57,7 +57,7 @@ module.exports = (app) => {
         });
     });
 
-    app.delete(`/api/question/:type`, (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
+    app.delete('/api/question/:type', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
         const { _parentId, _questionId } = req.body,
             parentModel = parentModelContainer[req.params.type];
         app.model.question.delete(_questionId, error => {

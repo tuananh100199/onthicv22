@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getContactPage, getContact, updateContact, deleteContact,  exportContactToExcel} from './redux';
+import { getContactPage, getContact, updateContact, deleteContact, exportContactToExcel } from './redux';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 import AdminContactModal from 'view/component/AdminContactModal';
 import Pagination from 'view/component/Pagination';
@@ -17,10 +17,6 @@ class ContactPage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá liên hệ', 'Bạn có chắc muốn xoá liên hệ này?', true, isConfirm =>
         isConfirm && this.props.deleteContact(item._id));
-
-    exportContact = (e) => {
-        this.props.exportContactToExcel();
-    }
 
     render() {
         const permission = this.getUserPermission('contact');
@@ -60,7 +56,7 @@ class ContactPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='pageContact' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getContactPage} />
                 {permission.write ?
-                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel' onClick={e => this.exportContact(e)}>
+                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} data-toggle='tooltip' title='Xuất Excel' onClick={() => exportContactToExcel()}>
                         <i className='fa fa-file-excel-o' />
                     </button> : null}
                 <AdminContactModal ref={e => this.modal = e} />
@@ -70,5 +66,5 @@ class ContactPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, contact: state.contact });
-const mapActionsToProps = { getContactPage, getContact, updateContact, deleteContact, exportContactToExcel };
+const mapActionsToProps = { getContactPage, getContact, updateContact, deleteContact };
 export default connect(mapStateToProps, mapActionsToProps)(ContactPage);

@@ -22,7 +22,7 @@ class CourseTypeModal extends AdminModal {
                     this.hide();
                     this.props.history.push('/user/course-type/' + data.item._id);
                 }
-            })
+            });
         }
     }
     render = () => this.renderModal({

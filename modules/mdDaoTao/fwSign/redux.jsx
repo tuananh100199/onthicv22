@@ -13,7 +13,7 @@ export default function signReducer(state = {}, data) {
         case SignGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case SignGet:
+        case SignGet: {
             let updatedList = Object.assign({}, state.list),
                 updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -34,6 +34,7 @@ export default function signReducer(state = {}, data) {
                 }
             }
             return Object.assign({}, state, { item: data.item, list: updatedList, page: updatedPage });
+        }
 
         default:
             return state;
@@ -52,8 +53,8 @@ export function getAllSigns(searchText, done) {
                 if (done) done(data.items);
                 dispatch({ type: SignGetAll, items: data.items });
             }
-        }, error => T.notify('Lấy tất cả biển báo bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tất cả biển báo bị lỗi!', 'danger'));
+    };
 }
 
 export function getSignPage(pageNumber, pageSize, searchText, done) {
@@ -68,8 +69,8 @@ export function getSignPage(pageNumber, pageSize, searchText, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SignGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách biển báo bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách biển báo bị lỗi!', 'danger'));
+    };
 }
 
 export function getSign(_id, done) {
@@ -83,8 +84,8 @@ export function getSign(_id, done) {
                 dispatch({ type: SignGet, item: data.item });
             }
             if (done) done(data);
-        }, error => T.notify('Lấy biển báo bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy biển báo bị lỗi', 'danger'));
+    };
 }
 
 export function createSign(data, done) {
@@ -99,8 +100,8 @@ export function createSign(data, done) {
                 T.notify('Tạo biển báo thành công!', 'success');
                 dispatch(getSignPage());
             }
-        }, error => T.notify('Tạo biển báo bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo biển báo bị lỗi!', 'danger'));
+    };
 }
 
 export function updateSign(_id, changes, done) {
@@ -117,13 +118,13 @@ export function updateSign(_id, changes, done) {
                 dispatch(getSignPage());
                 done && done();
             }
-        }, error => T.notify('Cập nhật biển báo bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật biển báo bị lỗi!', 'danger'));
+    };
 }
 
 export function swapSign(_id, isMoveUp, done) {
     return dispatch => {
-        const url = `/api/sign/swap`;
+        const url = '/api/sign/swap';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự biển báo bị lỗi!', 'danger');
@@ -133,8 +134,8 @@ export function swapSign(_id, isMoveUp, done) {
                 dispatch(getSignPage());
                 done && done();
             }
-        }, error => T.notify('Thay đổi thứ tự biển báo bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự biển báo bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteSign(_id, done) {
@@ -149,8 +150,8 @@ export function deleteSign(_id, done) {
                 dispatch(getSignPage());
                 done && done();
             }
-        }, error => T.notify('Xóa biển báo bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa biển báo bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteSignImage(_id, done) {
@@ -165,8 +166,8 @@ export function deleteSignImage(_id, done) {
                 dispatch(getSignPage());
                 done && done();
             }
-        }, error => T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa hình minh họa bị lỗi!', 'danger'));
+    };
 }
 
 export function changeSign(sign) {

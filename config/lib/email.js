@@ -18,9 +18,9 @@ module.exports = app => {
             html: mailHtml,
             attachments: mailAttachments
         };
-        transporter.sendMail(mailOptions, (error, info) => {
+        transporter.sendMail(mailOptions, error => {
             if (error) {
-                console.log(error);
+                console.error(error);
                 if (errorCallback) errorCallback(error);
             } else {
                 console.log('Send mail to ' + mailTo + ' successful.');

@@ -25,26 +25,26 @@ export function saveSystemState(changes, done) {
                 T.notify('Lưu thông tin hệ thống thành công!', 'success');
                 dispatch({ type: SystemUpdateState, state: data });
             }
-        }, error => T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lưu thông tin hệ thống lỗi!', 'danger'));
+    };
 }
 
 export function getSystemState(done) {
     return dispatch => {
-        const url = `/api/state`;
+        const url = '/api/state';
         T.get(url, data => {
             data && dispatch({ type: SystemUpdateState, state: data });
-            if (done) done(data);
+            done && done(data);
         }, error => {
             T.notify('Lấy thông tin hệ thống lỗi!', 'danger');
-            if (done) done();
+            done && done();
         });
-    }
+    };
 }
 
 export function getStatistic(done) {
     return dispatch => {
-        const url = `/api/statistic/dashboard`;
+        const url = '/api/statistic/dashboard';
         T.get(url, data => {
             data && dispatch({ type: SystemUpdateState, state: data });
             if (done) done(data);
@@ -52,7 +52,7 @@ export function getStatistic(done) {
             T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
             if (done) done();
         });
-    }
+    };
 }
 
 export function login(data, done) {
@@ -102,7 +102,7 @@ export function updateProfile(changes) {
             } else {
                 dispatch({ type: SystemUpdateState, state: { user: res.user } });
             }
-        }, error => T.notify('Cập nhật thông tin cá nhân lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật thông tin cá nhân lỗi!', 'danger'));
     };
 }
 
@@ -140,7 +140,7 @@ export function saveSystemEmails(type, email) {
         } else {
             T.notify('Lưu thông tin email hệ thống thành công!', 'success');
         }
-    }, error => T.notify('Lưu thông tin email hệ thống lỗi!', 'danger'));
+    }, error => console.error(error) || T.notify('Lưu thông tin email hệ thống lỗi!', 'danger'));
 }
 
 export function updateSystemState(state) {

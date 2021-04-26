@@ -68,9 +68,9 @@ class QuestionModal extends AdminModal {
             defaultStyle = { width: '40px', height: '40px', lineHeight: '40px', borderRadius: '50%', textAlign: 'center', marginLeft: '8px', cursor: 'pointer' },
             listAnswers = [],
             listTrueAnswers = answers.map((item, index) => {
-                listAnswers.push(<p key={index}>{index + 1}. {item}</p>)
+                listAnswers.push(<p key={index}>{index + 1}. {item}</p>);
                 const trueAnswerStyle = trueAnswer == index ? { color: 'white', backgroundColor: '#28a745' } : {};
-                return <label key={index} style={{ ...defaultStyle, ...trueAnswerStyle }} onClick={e => !readOnly && this.setTrueAnswer(e, index)}>{index + 1}</label>
+                return <label key={index} style={{ ...defaultStyle, ...trueAnswerStyle }} onClick={e => !readOnly && this.setTrueAnswer(e, index)}>{index + 1}</label>;
             });
 
         return this.renderModal({
@@ -93,7 +93,7 @@ class QuestionModal extends AdminModal {
                 <FormCheckbox ref={e => this.itemIsImportance = e} className='col-md-6' style={{ color: 'red' }} label='Câu điểm liệt' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
             </div>
-        })
+        });
     }
 }
 

@@ -4,6 +4,7 @@ import { getStatistic } from './redux';
 import CountUp from 'view/js/countUp';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
+
 class DashboardIcon extends React.Component {
     componentDidMount() {
         setTimeout(() => {
@@ -33,9 +34,9 @@ class DashboardPage extends AdminPage {
     }
 
     render() {
+        // eslint-disable-next-line no-unused-vars
+        const { numberOfUser = 0, numberOfNews = 0, numberOfCourse = 0, todayViews = 0, allViews = 0 } = this.props.system || {};
         const permission = this.getUserPermission('system', ['settings']);
-        const { numberOfUser, numberOfNews, numberOfCourse, todayViews, allViews } = this.props.system ?
-            this.props.system : { numberOfUser: 0, numberOfNews: 0, numberOfCourse: 0, todayViews: 0, allViews: 0 };
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Dashboard: ',

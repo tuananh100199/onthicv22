@@ -63,7 +63,7 @@ class StatisticPage extends AdminPage {
             {table}
             <StatisticModal ref={e => this.modal = e} create={this.props.createStatistic} readOnly={!permission.write} />
             {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
-        </>)
+        </>);
     }
 }
 

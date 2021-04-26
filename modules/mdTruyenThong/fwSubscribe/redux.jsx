@@ -96,8 +96,8 @@ export function getSubscribeAll(done) {
                 if (done) done(data.list);
                 dispatch({ type: SubscribeGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger'));
+    };
 }
 
 T.initCookiePage('pageSubscribe');
@@ -113,8 +113,8 @@ export function getSubscribePage(pageNumber, pageSize, searchText, done) {
                 if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SubscribeGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteSubscribe(_id) {
@@ -128,8 +128,8 @@ export function deleteSubscribe(_id) {
                 T.alert('Xoá đăng ký nhận tin thành công!', 'error', false, 800);
                 dispatch(getSubscribePage());
             }
-        }, error => T.notify('Xoá đăng ký nhận tin bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xoá đăng ký nhận tin bị lỗi', 'danger'));
+    };
 }
 
 export function addSubscribe(item) {
@@ -147,13 +147,12 @@ export function createSubscribe(subscribe, done) {
                 T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
+                dispatch({ type: SubscribeGetPage, page: data.page });
                 if (done) done(data);
             }
-        }, error => T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger'));
+    };
 }
-export function exportSubscribeToExcel(done) {
-    return dispatch => {
-        T.download(T.url(`/api/subscribe/export`));
-    }
+export function exportSubscribeToExcel() {
+    T.download(T.url('/api/subscribe/export'));
 }

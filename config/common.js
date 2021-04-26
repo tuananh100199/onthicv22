@@ -138,7 +138,7 @@ module.exports = (app, appName) => {
         });
         modelPaths.forEach(path => require(path)(app));
         if (loadController) controllerPaths.forEach(path => require(path)(app));
-    }
+    };
 
     // Setup admin account (default account) ---------------------------------------------------------------------------
     app.setupAdmin = () => {
@@ -159,11 +159,11 @@ module.exports = (app, appName) => {
                     };
                     app.model.user.create(data, (error, newUser) => {
                         if (error || !newUser) {
-                            console.log(' - Error: Cannot generate default Admin User!', error)
+                            console.log(' - Error: Cannot generate default Admin User!', error);
                         } else {
-                            console.log(' - Generate default Admin User successfully!')
+                            console.log(' - Generate default Admin User successfully!');
                         }
-                    })
+                    });
                 } else {
                     const roleIdList = (user.roles ? user.roles : []).map(role => role._id);
                     if (roleIdList.indexOf(adminRole._id) == -1) {
@@ -172,10 +172,10 @@ module.exports = (app, appName) => {
                     user.firstname = 'TÙNG';
                     user.lastname = 'NGUYỄN THANH';
                     user.save(() => {
-                        console.log(' - Generate default Admin User successfully!')
+                        console.log(' - Generate default Admin User successfully!');
                     });
                 }
-            })
+            });
         };
 
         app.model.role.get({ name: 'admin' }, (error, role) => {

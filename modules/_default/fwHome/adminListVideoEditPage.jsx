@@ -92,7 +92,7 @@ class ListVideoEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-edit',
             title: 'Danh sách video: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Danh sách video'],
+            breadcrumb: [<Link key={0} to='/user/component'>Thành phần giao diện</Link>, 'Danh sách video'],
             content: (
                 <>
                     <div className='tile'>
@@ -121,7 +121,7 @@ class ListVideoEditPage extends AdminPage {
                 </>
             ),
             backRoute: '/user/component',
-        })
+        });
     }
 }
 const mapStateToProps = state => ({ system: state.system, component: state.component });

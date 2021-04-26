@@ -47,7 +47,7 @@ class MenuPage extends AdminPage {
                 <Link to={'/user/menu/' + menu._id} style={{ color: menu.active ? '#009688' : 'gray' }}>
                     {menu.title}
                 </Link>&nbsp;
-                {menu.link ? <p>(<a href={menu.link} target='_blank' style={{ color: 'blue' }}>{menu.link}</a>)</p> : null}
+                {menu.link ? <p>(<a href={menu.link} target='_blank' style={{ color: 'blue' }} rel='noreferrer'>{menu.link}</a>)</p> : null}
 
                 <div className='buttons btn-group btn-group-sm'>
                     {hasUpdate && level == 0 ?

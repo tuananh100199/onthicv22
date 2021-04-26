@@ -18,7 +18,7 @@ module.exports = app => {
             condition.title = new RegExp(searchText, 'i');
         }
         app.model.driveTest.getAll(condition, (error, list) => {
-            res.send({ error, list })
+            res.send({ error, list });
         });
     });
 

@@ -16,7 +16,7 @@ module.exports = (app) => {
                     } else {
                         for (let i = 0; i <= items.length; i++) {
                             if (i == items.length) {
-                                done(result)
+                                done(result);
                             } else {
                                 result[items[i].key] = items[i].value;
                             }
