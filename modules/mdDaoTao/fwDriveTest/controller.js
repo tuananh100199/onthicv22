@@ -11,12 +11,8 @@ module.exports = app => {
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
-    app.get('/api/drive-test/all', app.permission.check('driveTest:read'), (req, res) => {
-        const condition = {},
-            searchText = req.query.searchText;
-        if (searchText) {
-            condition.title = new RegExp(searchText, 'i');
-        }
+    app.get('/api/drive-test/all', app.permission.check('studentCourse:read'), (req, res) => {
+        const condition = req.query.condition;
         app.model.driveTest.getAll(condition, (error, list) => {
             res.send({ error, list });
         });
@@ -57,6 +53,70 @@ module.exports = app => {
 
     app.delete('/api/drive-test', app.permission.check('driveTest:delete'), (req, res) => {
         app.model.driveTest.delete(req.body._id, error => res.send({ error }));
+    });
+
+    //Random Drive Test API ----------------------------------------------------------------------------------------------
+    app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
+        req.session.user.driveTest = null;
+        const _courseTypeId = req.body._courseTypeId,
+            user = req.session.user,
+            today = new Date().getTime();
+        if (user.driveTest && today < user.driveTest.expireDay ) {
+            res.send(user.driveTest)
+        } else {
+            app.model.courseType.get( _courseTypeId, (error, item) => {
+                if(error || item == null) {
+                    res.send({ error })
+                } else {
+                    if( item.questionTypes ) { 
+                        const randomQuestions = item.questionTypes.map((type) => {
+                            return new Promise((resolve, reject) => {
+                                app.model.driveQuestion.getAll({categories: type.category},(error, list) => {
+                                    if (error || list == null) {
+                                        reject(error);
+                                    } else {
+                                        resolve(app.getRandom(list,type.amount));
+                                    }
+                                });
+                            });
+                        });
+                        Promise.all(randomQuestions).then(questions => {
+                            req.session.user.driveTest = {
+                                    questions: questions.filter(item => item).flat(),
+                                    expireDay: new Date().setHours(new Date().getHours() + 2),
+                                }
+                            res.send( req.session.user.driveTest )
+                        }).catch(error => res.send({ error }));
+                    }
+                }
+            });
+        }
+       
+       
+    });
+
+    app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
+        const { _id, answers } = req.body;
+        let score = 0,
+            err = null;
+        app.model.driveTest.get( _id, (error, test) => {
+            if (error) {
+                res.send({ error })
+            } else {
+                const questionMapper = {};
+                test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
+                answers.map(answer => {
+                    if (questionMapper[answer.questionId]) {
+                        if (questionMapper[answer.questionId].trueAnswer == answer.answer) {
+                            score = score + 1;
+                        }
+                    } else {
+                        err = 'Không tìm thấy câu hỏi!';
+                    }
+                })
+                res.send({ error: err, result: { score: score, total: answers.length } })
+            }
+        })
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------
