@@ -51,7 +51,7 @@ class adminEditPage extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Bài học'],
             content: (
                 <div className='tile'>
-                    <a href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/' + this.state.lessonId} style={{ color: 'black' }}><h3>Thông tin bài học</h3></a>
+                    <a href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/' + this.state.lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
                     <h3 className='tile-title'>Bài giảng</h3>
                     <div className='tile-body'>
                         <div className='tile-body'>
