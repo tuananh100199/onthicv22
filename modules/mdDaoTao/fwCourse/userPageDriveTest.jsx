@@ -21,7 +21,7 @@ class UserPageDriveTest extends AdminPage {
             });
         });
     }
-    
+
     submitAnswer = (e, list) => {
         e.preventDefault();
         let studentAnswers = list.map((question) => {
@@ -44,27 +44,27 @@ class UserPageDriveTest extends AdminPage {
             this.setState({ activeQuestionIndex: index });
         }
     }
-    onAnswerChanged = (e) => {
-        // this.setState( studentAnswers[1]: index );
+    onAnswerChanged = (e, index) => {
+        console.log('index', index)
         const { value } = e.target;
-        // newelement = this.studentAnswers[this.state.activeQuestionIndex];
         console.log('e.target', e.target)
-
-        this.setState(this.studentAnswers[this.state.activeQuestionIndex] = value);
+        this.studentAnswers[index] = value;
         this.setState({
-            studentAnswers: [...this.state.studentAnswers, newelement]
-          })
-        // $('input[name=' + _id + ']:checked').val(value);
-
-        console.log('value', value)
+            studentAnswers: this.studentAnswers
+        })
     }
 
     render() {
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         // const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
-        const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        console.log(activeQuestion)
+        const activeQuestion = questions ? questions[activeQuestionIndex] : null,
+            id = activeQuestion ? activeQuestion._id : 0;
+        activeQuestion ? $('input[name=' + activeQuestion._id + activeQuestionIndex + ']').val(this.state.studentAnswers && this.state.studentAnswers[activeQuestionIndex]) : null;
+
+        setTimeout(() => {
+            console.log(id, $('input[name=' + id + ']:checked').val())
+        }, 1000);
 
         return this.renderPage({
             icon: 'fa fa-dashboard',
@@ -73,7 +73,7 @@ class UserPageDriveTest extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
-                        {activeQuestion? 
+                        {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
                                     <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
@@ -81,12 +81,12 @@ class UserPageDriveTest extends AdminPage {
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index}>
-                                                <input className='form-check-input' 
-                                                    type='radio' 
-                                                    name={activeQuestion._id} 
-                                                    id={activeQuestion._id + index} 
-                                                    value={this.studentAnswers[activeQuestionIndex] ? this.studentAnswers[activeQuestionIndex] : index} 
-                                                    onChange={this.onAnswerChanged} />
+                                                <input className='form-check-input'
+                                                    type='radio'
+                                                    name={activeQuestion._id}
+                                                    id={activeQuestion._id + index}
+                                                    value={index}
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id + index)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
                                                 </label>
@@ -98,15 +98,15 @@ class UserPageDriveTest extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <nav aria-label='...'>
-                        <ul className='pagination'>
-                            <li className='page-item' id='prev-btn'>
-                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                            </li>
-                            <li className='page-item' id='next-btn'>
-                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                            </li>
-                        </ul>
+                        <nav aria-label='...'>
+                            <ul className='pagination'>
+                                <li className='page-item' id='prev-btn'>
+                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                </li>
+                                <li className='page-item' id='next-btn'>
+                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                </li>
+                            </ul>
                         </nav>
                         {/* <button className='btn btn-primary' onClick={e => this.submitAnswer(e, questions)}>Gửi</button> */}
                         {/* <p>Số câu đúng của bạn: <b>{score} / {total}</b></p> */}
