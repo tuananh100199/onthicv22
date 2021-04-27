@@ -5,7 +5,6 @@ import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redu
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 class AdminStudentView extends React.Component {
-    // state = { outsideGroups: [], insideGroups: [], hide: false };
     state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [] };
     componentDidUpdate(prevProps) {
         const course = this.props.course;
@@ -66,6 +65,7 @@ class AdminStudentView extends React.Component {
     });
 
     render() {
+        console.log(this, 'ds')
         const permission = this.props.permission,
             list = this.props.student && this.props.student.list ? this.props.student.list : [],
             divisionStudents = list.reduce((result, item) => !result.find(item1 => JSON.stringify(item1) == JSON.stringify(item.division)) ? [...result, item.division] : result, []),
@@ -73,13 +73,15 @@ class AdminStudentView extends React.Component {
                 (result, item) => !result.find(item1 => item1 && item1._id == item.teacher.division) ? [...result, this.state.divisions.find(item2 => item2._id == item.teacher.division)] : result, []),
             studentOutsides = list.filter(item => item.division && item.division.isOutside),
             studentInsides = list.filter(item => !studentOutsides.includes(item)),
-            renderStudents = list =>
+
+            renderStudents = (list) =>
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {list.map((item, index) => {
-                        return (<li key={index} onDragStart={e => this.onDragStart(e, item)} draggable>
-                            {item.lastname} {item.firstname}</li>);
+                        return (<li key={index} onDragStart={e => this.onDragStart(e, item)} style={{ whiteSpace: 'nowrap' }} draggable>
+                            <FormCheckbox ref={e => this[item._id] = e} />{item.lastname} {item.firstname}</li>);
                     })}
                 </ol>,
+
             renderGroups = (list) =>
                 list.map((item, index) =>
                     <div key={index} style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12, marginBottom: 10 }}
@@ -108,12 +110,12 @@ class AdminStudentView extends React.Component {
                                         >
                                             {student.lastname} {student.firstname}
                                             {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} style={{ float: 'right', color: 'red' }} className="fa fa-user-times"></i> : ''}
-                                            {/* // : <span>{student.lastname} {student.firstname}</span>} */}
                                         </li>
                                     ))}
                                 </ol> </> : 'Chưa có học viên'}
                         </ul>
                     </div>);
+
         return (
             <div className='row'>
                 <div className='col-md-6' >
@@ -122,8 +124,12 @@ class AdminStudentView extends React.Component {
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
                         {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
-                            <h6>
-                                {item.title} <FormCheckbox /></h6>
+                            <h6><FormCheckbox onChange={value => {
+                                const _idStudents = studentInsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
+                                    [...result, student._id] : result, []);
+                                _idStudents.forEach(item2 => this[item2] && this[item2].value(value));
+                            }} style={{ display: 'flex' }} />{item.title}</h6>
+                            {console.log(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)), 'sfdf2')}
                             {renderStudents(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
                         </div>)] : result, []) : 'Không có thông tin'}
                         <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
