@@ -29,7 +29,7 @@ export default class ForgotPasswordPage extends React.Component {
                         this.setState({ message: 'Đổi mật khẩu thành công!', error: null });
                     }
                 },
-                error => { });
+                error => console.error(error));
         }
     }
 

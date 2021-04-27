@@ -9,7 +9,7 @@ class adminEditPage extends AdminPage {
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(url);
-        this.setState({ lessonId: params._id })
+        this.setState({ lessonId: params._id });
         if (params._id) {
             this.props.getLessonByStudent(params._id, data => {
                 if (data.error) {
@@ -26,19 +26,18 @@ class adminEditPage extends AdminPage {
         } else {
             this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
         }
-        $("#totalScore").css("display", "none");
-        $("#trueAnswer").css("display", "none");
+        $('#totalScore').css('display', 'none');
+        $('#trueAnswer').css('display', 'none');
     }
 
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkQuestion(this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
-            $("#totalScore").css("display", "block");
-            $("#trueAnswer").css("display", "block");
-            $('#submit-btn').hide();
-        })
+            this.setState({ result: result });
+            $('#totalScore').css('display', 'block');
+            $('#trueAnswer').css('display', 'block');
+        });
     }
 
     changeQuestion = (e, index) => {
@@ -59,7 +58,7 @@ class adminEditPage extends AdminPage {
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
-        }))
+        }));
     }
 
     render() {
@@ -68,16 +67,20 @@ class adminEditPage extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        if (activeQuestionIndex == 0) {
-            $("#prev-btn").addClass('disabled');
-            $('#submit-btn').hide();
+        if (questions && questions.length == 1) {
+            $('#prev-btn').css({ 'visibility': 'hidden' });
+            $('#next-btn').css({ 'visibility': 'hidden' });
+            !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
+        } else if (activeQuestionIndex == 0) {
+            $('#prev-btn').css({ 'visibility': 'hidden' });
+            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
-            $('#next-btn').addClass('disabled');
-            !this.state.result && $('#submit-btn').show();
+            $('#next-btn').css({ 'visibility': 'hidden' });
+            !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
-            $('#prev-btn').removeClass('disabled');
-            $('#next-btn').removeClass('disabled');
-            $('#submit-btn').hide();
+            $('#prev-btn').css({ 'visibility': 'visible' });
+            $('#next-btn').css({ 'visibility': 'visible' });
+            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         }
         return this.renderPage({
             icon: 'fa fa-book',
@@ -90,7 +93,7 @@ class adminEditPage extends AdminPage {
                             (
                                 <div className='col-md-12 pb-5'>
                                     <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto' }} /> : null}
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index}>
@@ -122,7 +125,9 @@ class adminEditPage extends AdminPage {
                                 </li>
                             </ul>
                         </nav>
-                        <button className='btn btn-primary' id='submit-btn' onClick={e => this.submitAnswer(e)}>Chấm điểm</button>
+                        <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                            <i className='fa fa-lg fa-paper-plane-o' />
+                        </button>
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>

@@ -57,7 +57,7 @@ class CourseTypeEditPage extends AdminPage {
                             type.amount ? 
                             this[type.category] && this[type.category].value(type.amount)
                             : this[type.category] && this[type.category].value(0);
-                        })
+                        });
                     });
                   
                 } else {
@@ -115,7 +115,7 @@ class CourseTypeEditPage extends AdminPage {
             driveQuestionTypes = types.map((item, index) => {
                 return (
                     <FormTextBox className='col-md-6' key={index} type='number' ref={e => this[item._id] = e } label={item.text} readOnly={this.props.readOnly} />
-                )
+                );
             })
             ,
             componentInfo = <>

@@ -11,7 +11,7 @@ class UserCourseInfo extends AdminPage {
     componentDidMount() {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id'),
             _id = route.parse(window.location.pathname)._id;
-        this.setState({ lessonId: _id })
+        this.setState({ lessonId: _id });
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getLessonByStudent(_id, data => {

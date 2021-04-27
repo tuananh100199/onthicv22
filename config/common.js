@@ -28,12 +28,12 @@ module.exports = (app, appName) => {
             return null;
         }
         while (n--) {
-            var x = Math.floor(Math.random() * len);
+            let x = Math.floor(Math.random() * len);
             result[n] = arr[x in taken ? taken[x] : x];
             taken[x] = --len in taken ? taken[len] : len;
         }
         return result;
-    }
+    };
 
     // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};

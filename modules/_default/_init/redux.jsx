@@ -36,6 +36,7 @@ export function getSystemState(done) {
             data && dispatch({ type: SystemUpdateState, state: data });
             done && done(data);
         }, error => {
+            console.error(error);
             T.notify('Lấy thông tin hệ thống lỗi!', 'danger');
             done && done();
         });
@@ -47,10 +48,11 @@ export function getStatistic(done) {
         const url = '/api/statistic/dashboard';
         T.get(url, data => {
             data && dispatch({ type: SystemUpdateState, state: data });
-            if (done) done(data);
+            done && done(data);
         }, error => {
+            console.error(error);
             T.notify('Lấy thông tin thống kê hệ thống lỗi!', 'danger');
-            if (done) done();
+            done && done();
         });
     };
 }
@@ -64,6 +66,7 @@ export function login(data, done) {
                 done({ user: res.user });
             }
         }, error => {
+            console.error(error);
             done({ error: 'Đăng nhập thất bại!' });
         });
     };
@@ -77,7 +80,7 @@ export function logout(config) {
     return dispatch => {
         T.confirm(config.title, config.message, true, isConfirm => {
             isConfirm && T.post('/logout', {},
-                data => {
+                () => {
                     dispatch({ type: SystemUpdateState, state: { user: null } });
                     const pathname = window.location.pathname;
                     if (pathname.startsWith('/user')) {
@@ -86,7 +89,7 @@ export function logout(config) {
                         config.done();
                     }
                 },
-                error => T.notify(config.errorMessage, 'danger')
+                error => console.error(error) || T.notify(config.errorMessage, 'danger')
             );
         });
     };
@@ -119,7 +122,7 @@ export function register(data, done) {
         } else {
             done({ user: res.user });
         }
-    }, error => done({ error: 'Đăng ký lỗi!' }));
+    }, error => console.error(error) || done({ error: 'Đăng ký lỗi!' }));
 }
 
 export function forgotPassword(email, onSuccess, onError) {
@@ -128,7 +131,7 @@ export function forgotPassword(email, onSuccess, onError) {
 
 
 export function getSystemEmails(done) {
-    T.get('/api/email/all', done, error => T.notify('Lấy email hệ thống lỗi!', 'danger'));
+    T.get('/api/email/all', done, error => console.error(error) || T.notify('Lấy email hệ thống lỗi!', 'danger'));
 }
 
 export function saveSystemEmails(type, email) {

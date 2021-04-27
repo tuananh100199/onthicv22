@@ -13,7 +13,7 @@ export default function driveQuestionReducer(state = {}, data) {
         case DriveQuestionGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case DriveQuestionGet:
+        case DriveQuestionGet: {
             let updatedList = Object.assign({}, state.list),
                 updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -34,6 +34,7 @@ export default function driveQuestionReducer(state = {}, data) {
                 }
             }
             return Object.assign({}, state, { item: data.item, list: updatedList, page: updatedPage });
+        }
 
         default:
             return state;

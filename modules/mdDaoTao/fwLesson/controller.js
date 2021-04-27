@@ -34,28 +34,26 @@ module.exports = (app) => {
 
     app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
-        const currentCourse = req.session.user.currentCourse;
+        const currentCourse = req.session.user.currentCourse,
+            currentSubject = req.session.user.currentSubject;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
-                item.questions.forEach(question => {
-                    question.trueAnswer = null;
-                });
+                item.questions.forEach(question => question.trueAnswer = null);
             }
-            res.send({ error, item, currentCourse });
+            res.send({ error, item, currentCourse, currentSubject });
         });
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
         const { answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
-            score = 0,
-            err = null;
+            score = 0;
         app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
             if (error) {
                 res.send({ error });
             } else {
-                const questionMapper = {};
-                trueAnswer = {};
+                const questionMapper = {},
+                    trueAnswer = {};
                 questions.forEach(item => questionMapper[item._id] = item);
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
@@ -65,11 +63,11 @@ module.exports = (app) => {
                                 trueAnswer[key] = value;
                             }
                         } else {
-                            err = 'Không tìm thấy câu hỏi!';
+                            error = 'Không tìm thấy câu hỏi!';
                         }
                     }
                 }
-                res.send({ error: err, result: { score: score, trueAnswer: trueAnswer } });
+                res.send({ error, result: { score, trueAnswer } });
             }
         });
     });

@@ -5,7 +5,7 @@ import { getCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien'
+const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien';
 class UserPageRandomDriveTest extends AdminPage {
     state = {};
     componentDidMount() {
@@ -23,15 +23,15 @@ class UserPageRandomDriveTest extends AdminPage {
         })
         });
     }
-  
+
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result })
+            this.setState({ result: result });
             $('#totalScore').css('display', 'block');
             $('#submit-btn').hide();
-        })
+        });
     }
     changeQuestion = (e, index) => {
         e.preventDefault();
@@ -50,28 +50,36 @@ class UserPageRandomDriveTest extends AdminPage {
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
-        }))
+        }));
     }
     render() {
         const  questions  =  this.state.questions ? this.state.questions :  [] ;
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+<<<<<<< HEAD
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
 
         if (questions && questions.length == 1){
             $('#prev-btn').css({'visibility':'hidden'});
             $('#next-btn').css({'visibility':'hidden'});
             !this.state.result && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+=======
+
+        if (questions && questions.length == 1) {
+            $('#prev-btn').css({ 'visibility': 'hidden' });
+            $('#next-btn').css({ 'visibility': 'hidden' });
+            !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
+>>>>>>> 797d0181046f625c8fc6806679075079f1a63f59
         } else if (activeQuestionIndex == 0) {
-            $('#prev-btn').css({'visibility':'hidden'});
+            $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
-            $('#next-btn').css({'visibility':'hidden'});
+            $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
-            $('#prev-btn').css({'visibility':'visible'});
-            $('#next-btn').css({'visibility':'visible'});
+            $('#prev-btn').css({ 'visibility': 'visible' });
+            $('#next-btn').css({ 'visibility': 'visible' });
             $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         }
         return this.renderPage({

@@ -43,7 +43,7 @@ export function getListVideo(_id, done) {
     return dispatch => ajaxGetListVideo(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy danh sách video bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getListVideo. ${data.error}`);
         } else {
             dispatch(getListVideoAll());
             dispatch({ type: ListVideoUpdate, item: data.item });
@@ -119,5 +119,5 @@ export const ajaxSelectListVideo = T.createAjaxAdapter(
 
 export function ajaxGetListVideo(_id, done) {
     const url = '/api/list-video';
-    T.get(url, { _id }, done, error => T.notify('Lấy list video bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy list video bị lỗi!', 'danger'));
 }

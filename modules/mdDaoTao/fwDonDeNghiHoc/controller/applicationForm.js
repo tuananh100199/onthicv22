@@ -1,7 +1,7 @@
 module.exports = app => {
-    const menu = {
-        parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
-    };
+    // const menu = {
+    //     parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
+    // };
 
     // app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
@@ -161,7 +161,7 @@ module.exports = app => {
             if (error || !user) {
                 res.send({ error });
             } else {
-                app.updateSessionUser(req, user, sessionUser => {
+                app.updateSessionUser(req, user, () => {
                     app.model.applicationForm.update(req.body._id, changes, (error, item) => res.send({ error, item }));
                 });
             }

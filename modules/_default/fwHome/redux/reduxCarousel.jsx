@@ -13,7 +13,7 @@ export default function carouselReducer(state = null, data) {
         case CarouselGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case CarouselChange:
+        case CarouselChange: {
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.carouselId) {
@@ -25,6 +25,7 @@ export default function carouselReducer(state = null, data) {
                 }
             }
             return state;
+        }
 
         default:
             return state;
@@ -51,7 +52,7 @@ export function getCarousel(_id, done) {
     return dispatch => ajaxGetCarousel(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getCarousel. ${data.error}`);
         } else {
             dispatch({ type: CarouselGet, item: data.item });
             done && done(data);
@@ -193,5 +194,5 @@ export const ajaxSelectCarousel = T.createAjaxAdapter(
 );
 export function ajaxGetCarousel(_id, done) {
     const url = '/api/carousel';
-    T.get(url, { _id }, done, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
 }

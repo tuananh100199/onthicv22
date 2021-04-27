@@ -109,8 +109,8 @@ export function createRandomDriveTest(_courseTypeId, done) {
                 if (done) done(data);
                 dispatch(getDriveTestPage());
             }
-        }, error => T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
+    };
 }
 
 export function updateDriveTest(_id, changes, done) {
@@ -173,8 +173,8 @@ export function checkDriveTestScore(_id, answers, done) {
             } else {
                 if (done) done(data.result);
             }
-        }, error => T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
 }
 export function checkRandomDriveTestScore(answers, done) {
     return dispatch => {
@@ -186,8 +186,8 @@ export function checkRandomDriveTestScore(answers, done) {
             } else {
                 if (done) done(data.result);
             }
-        }, error => T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
 }
 
 // Questions ----------------------------------------------------------------------------------------------------------
