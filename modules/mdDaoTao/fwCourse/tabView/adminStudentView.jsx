@@ -3,7 +3,53 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-import { FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import { FormTextBox, FormCheckbox, AdminModal, FormSelect } from 'view/component/AdminPage';
+
+class TeacherModal extends AdminModal {
+    state = { subjects: [] };
+    // componentDidMount(prevProps) {
+    //     if (prevProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
+    //         const _subjectIds = this.props.item.subjects.map(item => item._id);
+    //         getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
+    //     }
+    // }
+    // componentDidMount() {
+    //     console.log(this.props.students, 'student')
+    // }
+    onShow = () => {
+        console.log(this.props.students, 'student')
+        this.teacherSelect.value(null)
+    };
+
+    onSubmit = () => {
+        const _teacherId = this.teacherSelect.value();
+        if (!_teacherId) {
+            T.notify('Giáo viên không được trống!', 'danger');
+        } else {
+            const { _id, groups = [] } = this.props.course,
+                index = groups.findIndex(item => item.teacher._id == _teacherId);
+            const _studentIds = this.props.students.map(item => item._id);
+            groups[index].student.push(_studentIds);
+            _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }, (error) => {
+            }))
+            this.props.add(_id, { groups }, () => {
+                T.notify('Thêm ứng viên vào nhóm thành công!');
+                this.hide();
+            });
+            // this.props.add(this.props.item._id, _subjectId, this.hide);
+        }
+    }
+
+    render = () => {
+        return this.renderModal({
+            title: 'Giáo viên',
+            body: <FormSelect ref={e => this.teacherSelect = e} label='Giáo viên'
+                data={this.props.course.groups.reduce((result, item) => item.teacher.division == this.props.division._id ?
+                    [...result, { id: item.teacher._id, text: `${item.teacher.lastname} ${item.teacher.firstname}` }] : result, [])}
+                readOnly={this.props.readOnly} />
+        });
+    };
+}
 class AdminStudentView extends React.Component {
     state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [] };
     componentDidUpdate(prevProps) {
@@ -65,7 +111,6 @@ class AdminStudentView extends React.Component {
     });
 
     render() {
-        console.log(this, 'ds')
         const permission = this.props.permission,
             list = this.props.student && this.props.student.list ? this.props.student.list : [],
             divisionStudents = list.reduce((result, item) => !result.find(item1 => JSON.stringify(item1) == JSON.stringify(item.division)) ? [...result, item.division] : result, []),
@@ -145,7 +190,16 @@ class AdminStudentView extends React.Component {
                                     const _idStudents = studentInsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
                                         [...result, student._id] : result, []);
                                     _idStudents.forEach(item2 => this[item2] && this[item2].value(value));
-                                }} style={{ display: 'flex' }} />{item.title}</h6>
+                                }} style={{ display: 'flex' }} />{item.title}
+                                <button className='btn btn-success' type='button' style={{
+                                    float: 'right'
+                                }} onClick={() => this[`modal${item._id}`].show()}>
+                                    <i className='fa fa-fw fa-lg fa-plus' />  Học viên
+                                </button>
+                            </h6>
+                            <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}
+                                course={this.props.course.item} division={item} students={studentInsides.reduce((result, student) => this[student._id] && this[student._id].value() == true ?
+                                    [...result, student] : result, [])} />
                             {renderStudents(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)), item._id)}
                         </div>)] : result, []) : 'Không có thông tin'}
                         <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
