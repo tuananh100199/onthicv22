@@ -6,16 +6,6 @@ import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox, FormCheckbox, AdminModal, FormSelect } from 'view/component/AdminPage';
 
 class TeacherModal extends AdminModal {
-    state = { subjects: [] };
-    // componentDidMount(prevProps) {
-    //     if (prevProps.item !== this.props.item) {   // chỉ lấy các môn chưa đưa vào
-    //         const _subjectIds = this.props.item.subjects.map(item => item._id);
-    //         getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
-    //     }
-    // }
-    // componentDidMount() {
-    //     console.log(this.props.students, 'student')
-    // }
     onShow = () => {
         console.log(this.props.students, 'student')
         this.teacherSelect.value(null)
@@ -29,14 +19,12 @@ class TeacherModal extends AdminModal {
             const { _id, groups = [] } = this.props.course,
                 index = groups.findIndex(item => item.teacher._id == _teacherId);
             const _studentIds = this.props.students.map(item => item._id);
-            groups[index].student.push(_studentIds);
-            _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }, (error) => {
-            }))
+            _studentIds.forEach(item => groups[index].student.push(item))
+            _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }))
             this.props.add(_id, { groups }, () => {
                 T.notify('Thêm ứng viên vào nhóm thành công!');
                 this.hide();
             });
-            // this.props.add(this.props.item._id, _subjectId, this.hide);
         }
     }
 
@@ -51,10 +39,11 @@ class TeacherModal extends AdminModal {
     };
 }
 class AdminStudentView extends React.Component {
-    state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [] };
+    state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [], studentSelecteds: [] };
     componentDidUpdate(prevProps) {
         const course = this.props.course;
         if (course !== prevProps.course) {
+            this.setState({ studentSelecteds: [] })
             this.props.getPreStudentAll({ courseType: this.props.courseType._id });
             this.props.getDivisionAll(list => {
                 const _idOutsideDivisions = list.reduce((result, item) => item.isOutside ? [...result, item._id] : result, []),
@@ -111,7 +100,7 @@ class AdminStudentView extends React.Component {
     });
 
     render() {
-        const permission = this.props.permission,
+        const permission = this.props.permission, divisions = this.state.divisions,
             list = this.props.student && this.props.student.list ? this.props.student.list : [],
             divisionStudents = list.reduce((result, item) => !result.find(item1 => JSON.stringify(item1) == JSON.stringify(item.division)) ? [...result, item.division] : result, []),
             divisionTeachers = this.props.course && this.props.course.item && this.props.course.item.groups.reduce(
@@ -119,26 +108,37 @@ class AdminStudentView extends React.Component {
             studentOutsides = list.filter(item => item.division && item.division.isOutside),
             studentInsides = list.filter(item => !studentOutsides.includes(item)),
 
-            renderStudents = (list, _idDiv) =>
+            renderStudents = (list, _idDiv, isHide) =>
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {list.map((item, index) => {
                         return (<li key={index} onDragStart={e => this.onDragStart(e, item)} style={{ whiteSpace: 'nowrap' }} draggable>
-                            <FormCheckbox ref={e => this[item._id] = e}
+                            {isHide && <FormCheckbox ref={e => this[item._id] = e}
                                 onChange={value => {
+                                    const students = this.state.studentSelecteds;
                                     if (!value) {
-                                        this[_idDiv].value(false)
-                                    } else if (list.length != 1) {
-                                        const _idStudents = list.map(item => item._id);
-                                        _idStudents.splice(index, 1);
-                                        for (const _id of _idStudents) {
-                                            if (this[_id].value() == false) {
-                                                this[_idDiv].value(false);
-                                                break;
-                                            } else this[_idDiv].value(true);
+                                        const index = students.indexOf(item);
+                                        if (index != -1) {
+                                            students.splice(index, 1);
+                                            this.setState({ studentSelecteds: students });
                                         }
-                                    } else this[_idDiv].value(true);
+                                        this[_idDiv] && this[_idDiv].value(false)
+                                    } else {
+                                        students.push(item)
+                                        this.setState({ studentSelecteds: students })
+                                        if (list.length != 1) {
+                                            const _idStudents = list.map(item => item._id);
+                                            _idStudents.splice(index, 1);
+                                            for (const _id of _idStudents) {
+                                                if (this[_id].value() == false) {
+                                                    this[_idDiv] && this[_idDiv].value(false);
+                                                    break;
+                                                } else this[_idDiv] && this[_idDiv].value(true);
+                                            }
+                                        } else this[_idDiv] && this[_idDiv].value(true);
+                                    }
                                 }}
-                            />{item.lastname} {item.firstname}</li>);
+                            />}
+                            {item.lastname} {item.firstname}</li>);
                     })}
                 </ol>,
 
@@ -155,12 +155,13 @@ class AdminStudentView extends React.Component {
                                 <li><span style={{ fontWeight: 'bold' }}>Danh sách học viên: </span></li>
                                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                                     {item.student.map((student, indexStudent) => (
-                                        <li key={indexStudent} style={{ whiteSpace: 'nowrap' }} onMouseEnter={() => {
-                                            const groups = this.state.groups;
-                                            const index = groups.findIndex(item1 => item1._id == item._id);
-                                            if (groups[index].student[indexStudent]) groups[index].student[indexStudent].isHide = true;
-                                            this.setState({ groups });
-                                        }}
+                                        <li key={indexStudent} style={{ whiteSpace: 'nowrap' }}
+                                            onMouseEnter={() => {
+                                                const groups = this.state.groups;
+                                                const index = groups.findIndex(item1 => item1._id == item._id);
+                                                if (groups[index].student[indexStudent]) groups[index].student[indexStudent].isHide = true;
+                                                this.setState({ groups });
+                                            }}
                                             onMouseLeave={() => {
                                                 const groups = this.state.groups;
                                                 const index = groups.findIndex(item1 => item1._id == item._id);
@@ -183,24 +184,55 @@ class AdminStudentView extends React.Component {
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
-                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
-                            <h6><FormCheckbox
-                                ref={e => this[item._id] = e}
-                                onChange={value => {
-                                    const _idStudents = studentInsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
-                                        [...result, student._id] : result, []);
-                                    _idStudents.forEach(item2 => this[item2] && this[item2].value(value));
-                                }} style={{ display: 'flex' }} />{item.title}
-                                <button className='btn btn-success' type='button' style={{
-                                    float: 'right'
-                                }} onClick={() => this[`modal${item._id}`].show()}>
-                                    <i className='fa fa-fw fa-lg fa-plus' />  Học viên
+                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}
+                            onMouseEnter={() => {
+                                const index = divisions.findIndex(item1 => item1._id == item._id);
+                                if (divisions[index]) divisions[index].isHide = true;
+                                this.setState({ divisions });
+                            }}
+                            onMouseLeave={() => {
+                                const index = divisions.findIndex(item1 => item1._id == item._id);
+                                if (divisions[index]) divisions[index].isHide = false;
+                                this.setState({ divisions });
+                            }}
+                        >
+                            <h6>{divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide ?
+                                <>
+                                    <FormCheckbox
+                                        ref={e => this[item._id] = e}
+                                        onChange={value => {
+                                            const students = this.state.studentSelecteds;
+                                            const _idStudents = studentInsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
+                                                [...result, student] : result, []);
+                                            if (value) {
+                                                _idStudents.forEach(item => students.push(item))
+                                                this.setState({ studentSelecteds: students })
+                                            } else {
+                                                _idStudents.forEach(item => {
+                                                    const index = students.indexOf(item);
+                                                    if (index != -1) {
+                                                        students.splice(index, 1);
+                                                    }
+                                                })
+                                                this.setState({ studentSelecteds: students })
+                                            }
+                                            _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
+                                        }} style={{ display: 'flex' }} />
+                                    {item.title}
+                                    <button className='btn btn-success' type='button' style={{
+                                        float: 'right'
+                                    }} onClick={() => this[`modal${item._id}`].show()}>
+                                        <i className='fa fa-fw fa-lg fa-plus' />  Học viên
                                 </button>
+                                </> : item.title}
                             </h6>
                             <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}
-                                course={this.props.course.item} division={item} students={studentInsides.reduce((result, student) => this[student._id] && this[student._id].value() == true ?
-                                    [...result, student] : result, [])} />
-                            {renderStudents(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)), item._id)}
+                                course={this.props.course.item} division={item}
+                                students={this.state.studentSelecteds.filter(item1 => item._id == item1.division._id)}
+                            />
+                            {renderStudents(studentInsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)), item._id,
+                                divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide
+                            )}
                         </div>)] : result, []) : 'Không có thông tin'}
                         <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
                         {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
