@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -140,5 +139,5 @@ class UserPageRandomDriveTest extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { getCourseType, checkRandomDriveTestScore, createRandomDriveTest };
+const mapActionsToProps = { checkRandomDriveTestScore, createRandomDriveTest };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageRandomDriveTest);

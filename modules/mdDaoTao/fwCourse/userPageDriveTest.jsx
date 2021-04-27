@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getDriveTestItemByStudent } from 'modules/mdDaoTao/fwDriveTest/redux';
-import { checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu';
