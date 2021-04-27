@@ -187,7 +187,7 @@ export function changeContact(item) {
 }
 
 export function createContact(contact, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/contact';
         T.post(url, { contact }, data => {
             if (data.error) {
