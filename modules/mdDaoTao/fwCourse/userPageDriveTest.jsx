@@ -13,6 +13,7 @@ class UserPageDriveTest extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
+                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, questions } = data.item;
                     this.setState({ _id, title, questions, _courseId: data.currentCourse });
                 } else {
