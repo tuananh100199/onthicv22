@@ -10,7 +10,8 @@ class UserPageDriveTest extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
+            const route = T.routeMatcher(backRoute + '/:_id'), 
+                params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
                     const { _id, title, questions } = data.item;
@@ -19,6 +20,7 @@ class UserPageDriveTest extends AdminPage {
                     this.props.history.push(backRoute);
                 }
                 $('#totalScore').css('display', 'none');
+                $('#trueAnswer').css('display', 'none');
             });
         });
     }
@@ -30,6 +32,7 @@ class UserPageDriveTest extends AdminPage {
             this.setState({ result: result });
             $('#totalScore').css('display', 'block');
             $('#submit-btn').hide();
+            $('#trueAnswer').css('display', 'block');
         });
     }
     changeQuestion = (e, index) => {
@@ -55,7 +58,7 @@ class UserPageDriveTest extends AdminPage {
     render() {
         const  questions  =  this.state.questions ? this.state.questions :  [] ;
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        const { score, total } = this.state.result ? this.state.result : { score: 0, total: questions && questions.length };
+        const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
 
@@ -64,16 +67,19 @@ class UserPageDriveTest extends AdminPage {
             $('#next-btn').css({'visibility':'hidden'});
             !this.state.result && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
         } else if (activeQuestionIndex == 0) {
-            $('#prev-btn').css({'visibility':'hidden'});
-            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            $('#prev-btn').css({ 'visibility': 'hidden' });
+            $('#next-btn').css({ 'visibility': 'visible' });
+            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
-            $('#next-btn').css({'visibility':'hidden'});
+            $('#prev-btn').css({ 'visibility': 'visible' });
+            $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
-            $('#prev-btn').css({'visibility':'visible'});
-            $('#next-btn').css({'visibility':'visible'});
+            $('#prev-btn').css({ 'visibility': 'visible' });
+            $('#next-btn').css({ 'visibility': 'visible' });
             $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         }
+
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + ( this.state.title || '...'),
@@ -108,6 +114,7 @@ class UserPageDriveTest extends AdminPage {
                             : <>Không có câu hỏi</>}
                         </div>
                         <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                            <p id='trueAnswer'>Điểm của câu hỏi: <b>{trueAnswer[activeQuestion && activeQuestion._id] ? 1 : 0} / 1</b></p>
                             <nav aria-label='...'>
                                 <ul className='pagination'>
                                     <li className='page-item' id='prev-btn'>
@@ -118,7 +125,7 @@ class UserPageDriveTest extends AdminPage {
                                     </li>
                                 </ul>
                             </nav>
-                            <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {total}</b></p>
+                            <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                         </div>
                     </div>
                     <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
