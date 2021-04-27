@@ -53,10 +53,8 @@ class UserCourseInfo extends AdminPage {
                         <label className='col-md-6'>Thời gian kết thúc môn chính thức: <b>{T.dateToText(this.state.thoiGianThiKetThucMonChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian tốt nghiệp dự kiến: <b>{T.dateToText(this.state.thoiGianThiTotNghiepDuKien, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian tốt nghiệp chính thức: <b>{T.dateToText(this.state.thoiGianThiTotNghiepChinhThuc, 'dd/mm/yyyy h:mm')}</b></label>
-                        <label className='col-md-12'>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b>
-                        <label className='col-md-12'>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} />
-                    </div>
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        {this.state.shortDescription ? <div className='col-md-12'><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></div> : <></>}
+                        {this.state.detailDescription ? <div className='col-md-12'><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </div> : <></>}
                     </div>
                 </div>
             ),
