@@ -1,19 +1,18 @@
-const fs = require('fs'),
-    path = require('path'),
-    package = require('./package'),
-    endOfLine = require('os').EOL;
+const appConfig = require('./package'),
+    fs = require('fs'),
+    path = require('path');
 
-const cleanFilesPluginOptions = [],
-    CleanFilesPlugin = function (options) {
+const cleanFilesluginOptions = [],
+    CleanFileslugin = function (options) {
         options.forEach(option => {
             if (option.path) {
                 option = Object.assign({ fileExtension: '.js' }, option, { path: __dirname + option.path });
-                cleanFilesPluginOptions.push(option);
-                console.log('\x1b[46m%s\x1b[0m', `Clean file in folder ${option.path}!`);
+                cleanFilesluginOptions.push(option);
+                console.log(`  - Clean files in folder ${option.path}!`);
             }
         });
     };
-CleanFilesPlugin.prototype.apply = compiler => {
+CleanFileslugin.prototype.apply = compiler => {
     const removeFiles = (option) => {
         fs.readdirSync(option.path).forEach(filePath => {
             filePath = option.path + '/' + filePath;
@@ -21,18 +20,18 @@ CleanFilesPlugin.prototype.apply = compiler => {
             if (option.recursive && state.isDirectory()) {
                 removeFiles(Object.assign({}, option, { path: filePath }));
             } else if (state.isFile() && filePath.endsWith(option.fileExtension) && (option.excludeExtension == null || !filePath.endsWith(option.excludeExtension))) {
-                console.log('Delete file \x1b[36m%s\x1b[0m!', filePath);
+                console.log(`Delete file ${filePath}`);
                 fs.unlinkSync(filePath);
             }
         });
     };
 
-    compiler.hooks.done.tap('CleanFiles', () => cleanFilesPluginOptions.forEach(removeFiles));
+    compiler.hooks.done.tap('CleanFiles', () => cleanFilesluginOptions.forEach(removeFiles));
 };
 
 const moduleContainer = { admin: {}, home: {} }, // Add template here
     templateNames = Object.keys(moduleContainer);
-const UpdateModulesPlugin = function (options) { };
+const UpdateModulesPlugin = function () { };
 UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('UpdateModules', () => {
     templateNames.forEach(templateName => {
         moduleContainer[templateName].moduleNames = [];
@@ -40,7 +39,7 @@ UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('Updat
     });
 
     const moduleData = [];
-    fs.readdirSync(`./modules`).forEach(mainModuleName => {
+    fs.readdirSync('./modules').forEach(mainModuleName => {
         fs.statSync(`./modules/${mainModuleName}`).isDirectory() && fs.readdirSync(`./modules/${mainModuleName}`).forEach(moduleName => {
             if (fs.statSync(`./modules/${mainModuleName}/${moduleName}`).isDirectory() && fs.existsSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`)) {
                 moduleData.push(mainModuleName + '|' + moduleName);
@@ -49,15 +48,17 @@ UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('Updat
     });
     moduleData.sort().forEach(item => {
         const [mainModuleName, moduleName] = item.split('|');
-        const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split(endOfLine);
+        const moduleTextLines = fs.readFileSync(`./modules/${mainModuleName}/${moduleName}/index.jsx`).toString().split('\n');
         if (moduleTextLines.length && moduleTextLines[0].startsWith('//TEMPLATES: ')) {
-            const templates = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|');
+            const moduleTemplateNames = moduleTextLines[0].substring('//TEMPLATES: '.length).split('|').map(item => item.replace(/(\r\n|\n|\r)/gm, ''));
             templateNames.forEach(templateName => {
-                if (templates.indexOf(templateName) != -1) {
+                if (moduleTemplateNames.indexOf(templateName) != -1) {
                     moduleContainer[templateName].moduleNames.push(moduleName);
                     moduleContainer[templateName].importText += `import ${moduleName} from 'modules/${mainModuleName}/${moduleName}/index';\n`;
                 }
             });
+        } else {
+            console.warn(`  - Warning: ${mainModuleName}:${moduleName} không thuộc template nào cả!`);
         }
     });
 
@@ -73,10 +74,9 @@ UpdateModulesPlugin.prototype.apply = compiler => compiler.hooks.done.tap('Updat
 const entry = {};
 fs.readdirSync('./view').forEach(folder => {
     if (fs.lstatSync('./view/' + folder).isDirectory() && fs.existsSync('./view/' + folder + '/' + folder + '.jsx')) {
-        entry[folder] = path.join(__dirname, '/view', folder, folder + '.jsx');
+        entry[folder] = path.join(__dirname, 'view', folder, folder + '.jsx');
     }
 });
-
 const genHtmlWebpackPlugins = (isProductionMode) => {
     const HtmlWebpackPlugin = isProductionMode ? require(require.resolve('html-webpack-plugin', { paths: [require.main.path] })) : require('html-webpack-plugin'),
         plugins = [],
@@ -84,10 +84,10 @@ const genHtmlWebpackPlugins = (isProductionMode) => {
             inject: false,
             hash: true,
             minifyOptions: { removeComments: true, collapseWhitespace: true, conservativeCollapse: true },
-            title: package.title,
-            keywords: package.keywords,
-            version: package.version,
-            description: package.description,
+            title: appConfig.title,
+            keywords: appConfig.keywords,
+            version: appConfig.version,
+            description: appConfig.description,
         };
     fs.readdirSync('./view').forEach(filename => {
         const template = `./view/${filename}/${filename}.pug`;
@@ -104,57 +104,65 @@ module.exports = (env, argv) => ({
     output: {
         path: path.join(__dirname, 'public'),
         publicPath: '/',
-        filename: argv.mode === 'production' ? 'js/[name]-[contenthash].js' : 'js/[name].js'
+        filename: 'js/[name].[contenthash].js',
     },
     plugins: [
         ...genHtmlWebpackPlugins(argv.mode === 'production'),
-        new CleanFilesPlugin(argv.mode === 'production' ?
+        new CleanFileslugin(argv.mode === 'production' ?
             [
                 { path: '/public/js', fileExtension: '.txt' },
             ] : [
-                { path: '/public', fileExtension: '.svg' },
-                { path: '/public', fileExtension: '.ttf' },
-                { path: '/public', fileExtension: '.eot' },
                 { path: '/public/js', fileExtension: '.txt' },
                 { path: '/public/js', fileExtension: '.js', excludeExtension: '.min.js' },
-                { path: '/public', fileExtension: '.template' }
+                { path: '/public', fileExtension: '.template' },
             ]),
         new UpdateModulesPlugin(),
     ],
     module: {
         rules: [
             { test: /\.pug$/, use: ['pug-loader'] },
-            { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+            { test: /\.css$/i, use: ['style-loader', 'css-loader'] },
             { test: /\.s[ac]ss$/i, use: ['style-loader', 'css-loader', 'sass-loader'] },
             {
-                test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
-                use: 'url-loader?limit=100000'
-            },
-            {
-                test: /\.jsx?$/,
-                exclude: [path.resolve(__dirname, 'view/admin/modules.jsx')], // /node_modules/
+                test: /\.jsx?$/, exclude: /node_modules/,
                 use: {
+                    loader: 'babel-loader',
                     options: {
                         plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties'],
                         presets: ['@babel/preset-env', '@babel/preset-react'],
                         cacheDirectory: true,
-                        cacheCompression: false
+                        cacheCompression: false,
                     },
-                    loader: 'babel-loader'
                 }
-            }
+            },
+            {
+                test: /\.(eot|.svg|ttf|woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+                use: {
+                    loader: 'url-loader',
+                    options: { limit: 10000 },
+                },
+            },
+            {
+                test: /\.svg$/,
+                use: {
+                    loader: 'svg-url-loader',
+                    options: { limit: 10000 },
+                },
+            },
         ]
     },
     devServer: {
         contentBase: path.join(__dirname, 'public'),
-        port: package.port + 1,
+        port: appConfig.port + 1,
         compress: true,
         historyApiFallback: true,
-        disableHostCheck: true
+        disableHostCheck: true,
+        open: true,
     },
     resolve: {
+        alias: { exceljsFE: path.resolve(__dirname, 'node_modules/exceljs/dist/exceljs.min') },
         modules: [path.resolve(__dirname, './'), 'node_modules'],
-        extensions: ['.js', '.jsx', '.json']
+        extensions: ['.js', '.jsx', '.json'],
     },
     optimization: { minimize: true },
 });

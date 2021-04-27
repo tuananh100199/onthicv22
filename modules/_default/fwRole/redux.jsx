@@ -13,7 +13,7 @@ export default function roleReducer(state = null, data) {
         case RoleGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case RoleUpdate:
+        case RoleUpdate: {
             let updatedList = Object.assign({}, state.list),
                 updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -34,6 +34,7 @@ export default function roleReducer(state = null, data) {
                 }
             }
             return Object.assign({}, state, { list: updatedList, page: updatedPage });
+        }
 
         default:
             return state;
@@ -43,7 +44,7 @@ export default function roleReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('adminRole');
 
-export function changeRole(role, done) {
+export function changeRole(role) {
     return dispatch => {
         const url = '/api/debug/change-role';
         T.post(url, { role: role._id }, data => {
@@ -54,7 +55,7 @@ export function changeRole(role, done) {
                 window.location = '/user';
             }
         }, () => T.notify('Change debug role error!', 'danger'));
-    }
+    };
 }
 
 export function getRoleAll(done) {
@@ -68,8 +69,8 @@ export function getRoleAll(done) {
                 done && done();
                 dispatch({ type: RoleGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
+    };
 }
 
 export function getRolePage(pageNumber, pageSize, pageCondition, done) {
@@ -85,8 +86,8 @@ export function getRolePage(pageNumber, pageSize, pageCondition, done) {
                 if (done) done(data.page);
                 dispatch({ type: RoleGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));
+    };
 }
 
 export function createRole(role, done) {
@@ -100,8 +101,8 @@ export function createRole(role, done) {
                 dispatch(getRolePage());
                 done && done(data);
             }
-        }, error => T.notify('Tạo vai trò bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo vai trò bị lỗi!', 'danger'));
+    };
 }
 
 export function updateRole(_id, changes, done) {
@@ -116,8 +117,8 @@ export function updateRole(_id, changes, done) {
                 dispatch(getRolePage());
             }
             done && done(data.error);
-        }, error => T.notify('Cập nhật thông tin vai trò bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin vai trò bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteRole(_id) {
@@ -131,13 +132,13 @@ export function deleteRole(_id) {
                 T.alert('Vai trò được xóa thành công!', 'error', false, 800);
                 dispatch(getRolePage());
             }
-        }, error => T.notify('Xóa vai trò bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa vai trò bị lỗi!', 'danger'));
+    };
 }
 
 export function getRole(_id, done) {
     return dispatch => {
-        const url = `/api/role`;
+        const url = '/api/role';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin vai trò bị lỗi!', 'danger');
@@ -146,6 +147,6 @@ export function getRole(_id, done) {
                 done && done(data.item);
                 T.alert('Lấy thông tin vai trò thành công!', 'error', false, 800);
             }
-        }, error => T.notify('Lấy thông tin vai trò bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy thông tin vai trò bị lỗi', 'danger'));
+    };
 }

@@ -76,8 +76,8 @@ export function getAllStaffs(done) {
                 if (done) done(data.list);
                 dispatch({ type: StaffGetAll, list: data.list });
             }
-        }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
+    };
 }
 
 T.initCookiePage('adminUser', true);
@@ -94,8 +94,8 @@ export function getUserPage(pageNumber, pageSize, pageCondition, done) {
                 done && done(data.page);
                 dispatch({ type: UserGetPage, page: data.page });
             }
-        }, error => T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));
+    };
 }
 
 export function getUser(_id, done) {
@@ -117,8 +117,8 @@ export function createUser(user, done) {
                 dispatch(getUserPage());
                 done && done(data.user);
             }
-        }, error => T.notify('Tạo người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo người dùng bị lỗi!', 'danger'));
+    };
 }
 
 export function updateUser(_id, changes, done) {
@@ -134,8 +134,8 @@ export function updateUser(_id, changes, done) {
                 dispatch(changeUser(data.user));
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin người dùng bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteUser(_id, done) {
@@ -150,8 +150,8 @@ export function deleteUser(_id, done) {
                 dispatch(getUserPage());
             }
             done && done();
-        }, error => T.notify('Xóa người dùng bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa người dùng bị lỗi!', 'danger'));
+    };
 }
 
 export function changeUser(user) {
@@ -169,13 +169,13 @@ export function userUpdateProfile(changes, done) {
                 T.notify('Update profile successfully!', 'info');
             }
             done && done(data);
-        }, error => T.notify('Error when update profile!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Error when update profile!', 'danger'));
+    };
 }
 
 export function switchUser(_id) {
     return dispatch => {
-        const url = `/api/debug/switch-user`;
+        const url = '/api/debug/switch-user';
         T.post(url, { _id }, data => {
             if (data.error) {
                 T.notify(data.error.message, 'danger');
@@ -184,7 +184,7 @@ export function switchUser(_id) {
                 location.reload();
             }
         }, () => T.notify('Switch user has some errors!', 'danger'));
-    }
+    };
 }
 
 // export const ajaxSelectUser = {
@@ -197,12 +197,12 @@ export function switchUser(_id) {
 // };
 
 export const ajaxSelectUser = T.createAjaxAdapter(
-    `/api/user/page/1/20`,
+    '/api/user/page/1/20',
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
 );
 
 export const ajaxSelectUserType = (type) => T.createAjaxAdapter(
-    `/api/user/page/1/20`,
+    '/api/user/page/1/20',
     params => ({ condition: params.term ? { searchText: params.term } : { type } }),
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
 );

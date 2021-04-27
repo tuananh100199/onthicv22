@@ -67,11 +67,11 @@ class SignModal extends AdminModal {
                 <FormRichTextBox ref={e => this.itemTitle = e} className='col-md-8' label='Tên biển báo' rows='5' readOnly={readOnly} />
                 <FormImageBox ref={e => this.itemImage = e} className='col-md-4' label='Hình minh họa' uploadType='SignImage' image={this.state.image}
                     onDelete={this.deleteImage} onSuccess={this.onUploadSuccess} readOnly={readOnly} />
-                <FormRichTextBox ref={e => this.itemDescription = e} className='col-md-12' label='Mô tả' rows='5' readOnly={readOnly} readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} className='col-md-12' label='Mô tả' rows='5' readOnly={readOnly} />
                 <FormSelect ref={e => this.itemCategories = e} className='col-md-12' data={this.props.signTypes} label='Loại biển báo' readOnly={readOnly} />
                 <FormCheckbox ref={e => this.itemIsActive = e} className='col-md-6' label='Kích hoạt' readOnly={readOnly} />
             </div>
-        })
+        });
     }
 }
 

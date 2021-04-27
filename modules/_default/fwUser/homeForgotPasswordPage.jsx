@@ -2,11 +2,8 @@ import React from 'react';
 
 export default class ForgotPasswordPage extends React.Component {
     state = { message: '', error: '' };
-
     componentDidMount() {
-        T.post(window.location.pathname,
-            res => this.setState({ message: res.error }),
-            error => T.notify('Hệ thống bị lỗi!', 'danger'));
+        T.post(window.location.pathname, res => this.setState({ message: res.error }), () => T.notify('Hệ thống bị lỗi!', 'danger'));
     }
 
     save = () => {
@@ -32,7 +29,7 @@ export default class ForgotPasswordPage extends React.Component {
                         this.setState({ message: 'Đổi mật khẩu thành công!', error: null });
                     }
                 },
-                error => { });
+                error => console.error(error));
         }
     }
 

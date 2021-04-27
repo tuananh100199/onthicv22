@@ -1,24 +1,15 @@
 import React from 'react';
 
 export default class MessagePage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-
+    state = {};
     componentDidMount() {
         let pathname = window.location.pathname;
         if (pathname.startsWith('/active-user/')) {
-            T.post(window.location.pathname,
-                res => this.setState({ message: res.message }),
-                error => T.notify('Kích hoạt người dùng bị lỗi!', 'danger'));
+            T.post(window.location.pathname, res => this.setState({ message: res.message }), () => T.notify('Kích hoạt người dùng bị lỗi!', 'danger'));
         }
     }
 
-    goToHomePage = (e) => {
-        this.props.history.push('/');
-        e.preventDefault();
-    }
+    goToHomePage = (e) => e.preventDefault() || this.props.history.push('/');
 
     render() {
         let pathname = window.location.pathname,
@@ -41,7 +32,6 @@ export default class MessagePage extends React.Component {
                     Nhấp vào <a href='/'>đây</a> để trở về trang chủ.
                 </div>
             </div>
-
         );
     }
 }

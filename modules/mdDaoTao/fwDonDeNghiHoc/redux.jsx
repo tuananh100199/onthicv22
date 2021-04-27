@@ -24,6 +24,7 @@ export default function applicationFormReducer(state = {}, data) {
             page.list = list;
             return Object.assign({}, state, { page });
         }
+
         case GET:
             return Object.assign({}, state, { item: data.item });
 
@@ -41,16 +42,14 @@ export default function applicationFormReducer(state = {}, data) {
 // Actions (admin) ----------------------------------------------------------------------------------------------------
 export function ajaxGetFormInPage(pageNumber, pageSize, pageCondition, licenseClass, done) {
     const url = '/api/application-form/page/' + pageNumber + '/' + pageSize;
-    T.get(url, { condition: pageCondition, licenseClass: licenseClass }, data => {
-        done(data)
-    }, error => T.notify('Lấy danh sách form bị lỗi!', 'danger'))
+    T.get(url, { condition: pageCondition, licenseClass: licenseClass },
+        data => done && done(data),
+        error => console.error(error) || T.notify('Lấy danh sách form bị lỗi!', 'danger'));
 }
 
 export function ajaxGetForm(_id, option, done) {
     const url = '/api/application-form/item/' + _id;
-    T.get(url, { option }, data => {
-        done(data)
-    }, error => T.notify('Lấy form bị lỗi!', 'danger'))
+    T.get(url, { option }, data => done(data), error => console.error(error) || T.notify('Lấy form bị lỗi!', 'danger'));
 }
 
 T.initCookiePage('pageForm');
@@ -61,12 +60,12 @@ export function getFormInPage(pageNumber, pageSize, pageCondition, licenseClass,
         ajaxGetFormInPage(page.pageNumber, page.pageSize, page.pageCondition ? JSON.parse(page.pageCondition) : {}, licenseClass, data => {
             if (data.error) {
                 T.notify('Lấy danh sách form bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
+                console.error('GET: getFormInPage.', data.error);
             } else {
                 if (done) done(data);
                 dispatch({ type: GET_PAGE, page: data.page });
             }
-        })
+        });
     };
 }
 
@@ -75,13 +74,13 @@ export function getForm(_id, option, done) {
         ajaxGetForm(_id, option, data => {
             if (data.error) {
                 T.notify('Lấy form bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
+                console.error('GET: getForm.', data.error);
             } else {
                 dispatch({ type: GET, item: data.item });
                 done && done(data);
             }
-        })
-    }
+        });
+    };
 }
 
 export function createForm(done) {
@@ -97,8 +96,8 @@ export function createForm(done) {
             } else {
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo form bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo form bị lỗi!', 'danger'));
+    };
 }
 
 export function updateForm(_id, changes, done) {
@@ -113,8 +112,8 @@ export function updateForm(_id, changes, done) {
                 dispatch({ type: UPDATE, item: data.item });
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin form bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin form bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteForm(_id) {
@@ -128,8 +127,8 @@ export function deleteForm(_id) {
                 T.alert('Form được xóa thành công!', 'error', false, 800);
                 dispatch(getFormInPage());
             }
-        }, error => T.notify('Xóa form bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa form bị lỗi!', 'danger'));
+    };
 }
 
 export function getApplicationFormEmail(done) {
@@ -145,7 +144,7 @@ export function saveApplicationFormEmail(type, email) {
         } else {
             T.notify('Lưu thông tin email thành công!', 'info');
         }
-    }, error => T.notify('Lưu thông tin email bị lỗi!', 'danger'));
+    }, error => console.error(error) || T.notify('Lưu thông tin email bị lỗi!', 'danger'));
 }
 
 export function denyApplicationForm(_id, reason, done) {
@@ -157,8 +156,8 @@ export function denyApplicationForm(_id, reason, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             }
             done && done(data);
-        }, error => T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Gửi mail từ chối bị lỗi!', 'danger'));
+    };
 }
 
 // Actions (user) -----------------------------------------------------------------------------------------------------
@@ -173,8 +172,8 @@ export function getDonDeNghiHocByUser(_id, done) {
                 dispatch({ type: GET, item: data.item });
             }
             done && done(data);
-        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    };
 }
 
 export function createDonDeNghiHocByUser(done) {
@@ -188,8 +187,8 @@ export function createDonDeNghiHocByUser(done) {
                 dispatch({ type: GET, item: data.item });
             }
             if (done) done(data);
-        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    };
 }
 
 export function getAllDonDeNghiHocHoanThanhByUser(done) {
@@ -203,8 +202,8 @@ export function getAllDonDeNghiHocHoanThanhByUser(done) {
                 dispatch({ type: GET_ALL_FINISH, finish: data.finish });
             }
             done && done(data.list);
-        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    };
 }
 
 export function getAllDonDeNghiHocChuaHoanThanhByUser(done) {
@@ -218,8 +217,8 @@ export function getAllDonDeNghiHocChuaHoanThanhByUser(done) {
                 dispatch({ type: GET_ALL_REJECT, unfinished: data.unfinished });
             }
             done && done(data.list);
-        }, error => T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy đơn đề nghị học, sát hạch bị lỗi!', 'danger'));
+    };
 }
 
 export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
@@ -234,14 +233,14 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
                 dispatch({ type: UPDATE, item: data.item });
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin đơn đề nghị học bị lỗi!', 'danger'));
+    };
 }
 
 //exportToWord
 export function exportDonDeNghiHocToWord(_id, done) {
     return dispatch => {
-        const url = `/api/user-application-form/export/` + _id;
+        const url = '/api/user-application-form/export/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
@@ -250,12 +249,12 @@ export function exportDonDeNghiHocToWord(_id, done) {
                 if (done) done(data);
                 T.notify('Xuất file word thành công!', 'success');
             }
-        }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
 }
 export function exportBienNhanLanDauToWord(_id, done) {
     return dispatch => {
-        const url = `/api/user-application-form-receipt/export/` + _id;
+        const url = '/api/user-application-form-receipt/export/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
@@ -264,13 +263,13 @@ export function exportBienNhanLanDauToWord(_id, done) {
                 if (done) done(data);
                 T.notify('Xuất file word thành công!', 'success');
             }
-        }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
 }
 
 export function exportBanCamKetToWord(_id, done) {
     return dispatch => {
-        const url = `/api/user-application-form-commitment/export/` + _id;
+        const url = '/api/user-application-form-commitment/export/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xuất file word bị lỗi!', 'danger');
@@ -279,7 +278,7 @@ export function exportBanCamKetToWord(_id, done) {
                 if (done) done(data);
                 T.notify('Xuất file word thành công!', 'success');
             }
-        }, error => T.notify('Xuất file word bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xuất file word bị lỗi!', 'danger'));
+    };
 }
 

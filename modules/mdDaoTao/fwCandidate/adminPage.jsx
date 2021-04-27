@@ -20,7 +20,7 @@ class CandidateModal extends AdminModal {
         this.itemPhoneNumber.value(phoneNumber);
         ajaxGetCourseType(courseType, data =>
             this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
-        this.states.value(state)
+        this.states.value(state);
 
         this.setState({ _id });
     }
@@ -121,7 +121,7 @@ class CandidatePage extends AdminPage {
                 const selectedState = stateMapper[item.state],
                     dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
                 const courseTypeText = item.courseType ? item.courseType.title : '',
-                    dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />
+                    dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />;
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>
@@ -155,10 +155,10 @@ class CandidatePage extends AdminPage {
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
                 <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states} />
             </>,
-            onExport: permission.export ? this.props.exportCandidateToExcel : null,
+            onExport: permission.export ? exportCandidateToExcel : null,
         });
     }
 }
 const mapStateToProps = state => ({ system: state.system, candidate: state.candidate });
-const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel };
+const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);

@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { logout } from 'modules/_default/_init/redux';
 import { Link } from 'react-router-dom';
-
 class HomeMenu extends React.Component {
     state = { link: '' };
     nav = React.createRef();
@@ -12,7 +11,7 @@ class HomeMenu extends React.Component {
             if ($.fn.classyNav && this.nav.current && $(this.nav.current).length > 0 && this.props.system && this.props.system.menus) {
                 this.setState({ link: window.location.pathname }, () => {
                     $(this.nav.current).classyNav();
-                })
+                });
             } else {
                 setTimeout(done, 100);
             }
@@ -58,14 +57,14 @@ class HomeMenu extends React.Component {
 
             $(document).on('scroll', () => setHeader());
 
-            done()
+            done();
         });
     }
 
     onMenuClick = (link) => {
         this.setState({ link }, () => {
             $(this.nav.current).classyNav();
-        })
+        });
         $('.hamburger').css('display') == 'block' && $('.menu_close').click();
     };
 
@@ -90,7 +89,7 @@ class HomeMenu extends React.Component {
 
                     return (item.submenus && item.submenus.length > 0) ? (
                         <li key={index} className={currentLink == item.link || item.submenus.some(item => item.link == currentLink) ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank'>{item.title}</a> : (item.link ?
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> : (item.link ?
                                 <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}</Link> :
                                 <a href='#' onClick={e => e.preventDefault()}>{item.title}</a>)}
                             <ul className='dropdown'>{
@@ -101,14 +100,14 @@ class HomeMenu extends React.Component {
                                     } else {
                                         return isExternalLink ?
                                             <li key={subIndex}><a href={link}>{subMenu.title}</a></li> :
-                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{subMenu.title}</Link></li>
+                                            <li key={subIndex} className={currentLink == link ? 'active' : ''}><Link to={link} onClick={() => this.onMenuClick(link)}>{subMenu.title}</Link></li>;
                                     }
                                 })}
                             </ul>
                         </li>
                     ) :
                         <li key={index} className={currentLink == link ? 'active' : ''}>
-                            {isExternalLink ? <a href={link} target='_blank'>{item.title}</a> :
+                            {isExternalLink ? <a href={link} target='_blank' rel='noreferrer'>{item.title}</a> :
                                 (link.startsWith('#') ? <a href={link}>{item.title}</a> : <Link to={link} onClick={() => this.onMenuClick(link)}>{item.title}  </Link>)}
                         </li>;
                 }
@@ -116,10 +115,10 @@ class HomeMenu extends React.Component {
         }
 
         let { logo, user, facebook, youtube, twitter, instagram, mobile, email, dangKyTuVanLink } = this.props.system ? this.props.system : { logo: '', user: '', facebook: '', youtube: '', twitter: '', instagram: '', mobile: '', email: '' };
-        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+        facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
 
         // facebook = facebook ? <li style={{ marginTop: '12px' }}><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true'/></a></li> : '';
         // youtube = youtube ? <li style={{ marginTop: '12px' }}><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true'/></a></li> : '';
@@ -128,9 +127,9 @@ class HomeMenu extends React.Component {
         return <>
             <header className='header trans_400'>
                 <div className='header_content d-flex flex-row align-items-center jusity-content-start trans_400 classy-nav-container breakpoint-off'>
-                    <div className='logo'>
+                    <div className='logo' style={{ height: '100%' }}>
                         <Link to='/' onClick={() => this.setState({ link: '/' }, () => $(this.nav.current).classyNav())}>
-                            <img src={logo} alt='Logo' style={{ height: '65px', width: 'auto' }} />
+                            <img src={logo} alt='Logo' style={{ marginTop: '2%', height: '96%', width: 'auto' }} />
                             {/*<div style={{ whiteSpace: 'nowrap' }}>Hiệp Phát</div>*/}
                         </Link>
                     </div>
@@ -149,20 +148,27 @@ class HomeMenu extends React.Component {
                                 {user && user._id ?
                                     <div className='btn-group'>
                                         <div className='button button_2 mr-1 large_btn'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
-                                        <div className='button button_1 mr-1 large_btn' > <a href={dangKyTuVanLink}>Đăng ký tư vấn</a></div>
+                                        <div className='button button_1 mr-1 large_btn' > <a href={dangKyTuVanLink}  onClick={this.props.showCandidateModal}>Đăng ký tư vấn</a></div>
 
                                         <div className='btn-group m-auto pl-2 small_btn' >
                                             <li data-toggle='tooltip' title='Số điện thoại'><a href='#'><i className='fa fa-phone' style={{ color: '#4CA758' }} /></a></li>
-                                            <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={dangKyTuVanLink} ><i className='fa fa-envelope-o' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
+                                            <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={dangKyTuVanLink} onClick={this.props.showCandidateModal} ><i className='fa fa-envelope-o' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
                                         </div>
                                         <div className='btn-group m-auto pl-2' >
-                                            <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className='fa fa-user-circle-o' aria-hidden='true'></i></a></li>
+                                            <li data-toggle='tooltip' title='Trang cá nhân'><a href='/user'><i className='fa fa-user-circle-o' style={{ color: '#4CA758' }} aria-hidden='true'></i></a></li>
                                             <li data-toggle='tooltip' title='Đăng xuất'><a href='#' onClick={this.logout} ><i className='fa fa-power-off' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
                                         </div>
                                     </div> :
                                     <div className='btn-group'>
-                                        <div className='button button_2 mr-1'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>
-                                        <div className='button button_1 mr-1'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
+                                        <div className='button button_2 mr-1 large_btn'><a href='#'><i className='fa fa-phone' /> {mobile}</a></div>
+                                        <div className='button button_1 mr-1 large_btn' > <a href={dangKyTuVanLink}  onClick={this.props.showCandidateModal}>Đăng ký tư vấn</a></div>
+                                        <div className='button button_2 mr-1 large_btn'><a href='#' onClick={this.props.showLoginModal}>Đăng nhập</a></div>
+
+                                        <div className='btn-group m-auto pl-2 small_btn' >
+                                            <li data-toggle='tooltip' title='Số điện thoại'><a href='#'><i className='fa fa-phone' style={{ color: '#4CA758' }} /></a></li>
+                                            <li data-toggle='tooltip' title='Đăng ký tư vấn'><a href={dangKyTuVanLink} onClick={this.props.showCandidateModal} ><i className='fa fa-envelope-o' style={{ color: 'red' }} aria-hidden='true'></i></a></li>
+                                            <li data-toggle='tooltip' title='Đăng nhập' className='login_css_small' ><a href='#' onClick={this.props.showLoginModal} ><i className='fa fa-user-circle-o' style={{ color: '#4CA758' }} /></a></li>
+                                        </div>
                                     </div>}
                                 {/*{twitter}*/}
                                 {/*{facebook}*/}
@@ -202,6 +208,7 @@ class HomeMenu extends React.Component {
                 </div>
             </div>
         </>;
+
     }
 }
 

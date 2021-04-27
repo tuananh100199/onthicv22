@@ -6,7 +6,7 @@ module.exports = app => {
 
     app.language.parse = (req, text, getAll) => {
         let obj = {};
-        try { obj = JSON.parse(text) } catch (e) { }
+        try { obj = JSON.parse(text); } catch (e) { obj = {}; }
         if (obj.vi == null) obj.vi = text;
         if (obj.en == null) obj.en = text;
         return getAll ? obj : obj[app.language(req)];
@@ -14,7 +14,7 @@ module.exports = app => {
 
     app.language.parseAll = (text) => {
         let obj = {};
-        try { obj = JSON.parse(text) } catch (e) { }
+        try { obj = JSON.parse(text); } catch (e) { obj = {}; }
         if (obj.vi == null) obj.vi = text;
         if (obj.en == null) obj.en = text;
         return obj;

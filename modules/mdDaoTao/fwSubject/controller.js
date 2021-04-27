@@ -5,11 +5,13 @@ module.exports = (app) => {
             4020: { title: 'Môn học', link: '/user/dao-tao/mon-hoc' },
         },
     };
-    app.permission.add({ name: 'subject:read', menu }, { name: 'subject:write' }, { name: 'subject:delete' });
+    app.permission.add({ name: 'subject:read' }, { name: 'subject:write', menu }, { name: 'subject:delete' });
 
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -32,12 +34,21 @@ module.exports = (app) => {
         app.model.subject.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/subject/student', app.permission.check('subject:read'), (req, res) => {
+        const subjectId = req.query._id;
+        req.session.user.currentSubject = subjectId;
+        app.model.subject.get(subjectId, (error, item) => {
+            const currentCourse = req.session.user.currentCourse;
+            res.send({ error, item, currentCourse });
+        });
+    });
+
     app.post('/api/subject', app.permission.check('subject:write'), (req, res) => {
         app.model.subject.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/subject', app.permission.check('subject:write'), (req, res) => {
-        app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }))
+        app.model.subject.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
     app.delete('/api/subject', app.permission.check('subject:delete'), (req, res) => {
@@ -52,7 +63,7 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else if (item) {
-                res.send({ check: `Môn học đã có bài học này!` });
+                res.send({ check: 'Môn học đã có bài học này!' });
             } else {
                 app.model.subject.addLesson({ _id: subjectId }, lessonId, (error, item) => res.send({ error, lessons: item && item.lessons ? item.lessons : [] }));
             }

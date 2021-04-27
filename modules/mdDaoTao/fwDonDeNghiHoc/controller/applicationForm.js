@@ -1,7 +1,7 @@
 module.exports = app => {
-    const menu = {
-        parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
-    };
+    // const menu = {
+    //     parentMenu: { index: 7000, title: 'Đơn đề nghị học - sát hạch', link: '/user/don-de-nghi-hoc', icon: 'fa-file-text-o', subMenusRender: false },
+    // };
 
     // app.permission.add({ name: 'applicationForm:read', menu }, { name: 'applicationForm:write', menu });
 
@@ -37,7 +37,7 @@ module.exports = app => {
         } else {
             app.model.user.getAll(pageCondition, (error, users) => {
                 if (error) {
-                    res.send({ error })
+                    res.send({ error });
                 } else {
                     const userIds = users.map(user => user._id);
                     app.model.applicationForm.getPage(pageNumber, pageSize, { user: { $in: userIds }, newLicenseClass: licenseClass, status: { $in: ['waiting'] } }, (error, page) => {
@@ -48,7 +48,7 @@ module.exports = app => {
                         }
                     });
                 }
-            })
+            });
         }
     });
 
@@ -58,19 +58,19 @@ module.exports = app => {
 
     app.post('/api/application-form', app.permission.check('applicationForm:write'), (req, res) => {
         app.model.applicationForm.create(req.body.data, (error, item) => {
-            res.send({ error, item })
-        })
+            res.send({ error, item });
+        });
     });
 
     app.post('/api/application-form/reject', app.permission.check('applicationForm:write'), (req, res) => {
         const { _id, reason } = req.body;
         app.model.applicationForm.get(_id, (error, item) => {
             if (error || item == null) {
-                res.send({ error: `System has errors!` })
+                res.send({ error: 'System has errors!' });
             } else {
                 app.model.user.get(item.user._id, (error, user) => {
                     if (error || user == null) {
-                        res.send({ error: `Id người dùng không hợp lệ!` });
+                        res.send({ error: 'Id người dùng không hợp lệ!' });
                     } else {
                         app.model.setting.get('email', 'emailPassword', 'rejectDonDeNghiHocTitle', 'rejectDonDeNghiHocText', 'rejectDonDeNghiHocHtml', result => {
                             const fillParams = str => str.replaceAll('{name}', user.firstname + ' ' + user.lastname).replaceAll('{reason}', reason),
@@ -86,7 +86,7 @@ module.exports = app => {
                             });
                         });
                     }
-                })
+                });
             }
         });
     });
@@ -102,15 +102,15 @@ module.exports = app => {
         const user = req.session.user;
         app.model.applicationForm.get(req.params._id, (error, item) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else if (item) {
-                res.send({ item })
+                res.send({ item });
             } else {
                 app.model.applicationForm.create({
                     user: user._id,
                 }, (error, item) => res.send({ error, item }));
             }
-        })
+        });
     });
     app.post('/api/user-application-form/new', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
@@ -128,25 +128,25 @@ module.exports = app => {
         const user = req.session.user;
         app.model.applicationForm.getAll({ user: user._id, status: 'finish' }, (error, finish) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else if (finish) {
-                res.send({ finish })
+                res.send({ finish });
             } else {
                 res.send({ error });
             }
-        })
+        });
     });
     app.get('/api/user-application-form/all/unfinished', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user;
         app.model.applicationForm.getAll({ user: user._id, status: { $in: ['reject', 'approved', 'progressing', 'waiting'] } }, (error, unfinished) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else if (unfinished) {
-                res.send({ unfinished })
+                res.send({ unfinished });
             } else {
                 res.send({ error });
             }
-        })
+        });
     });
     app.put('/api/user-application-form', app.permission.check('user:login'), (req, res) => {
         const user = req.session.user,
@@ -159,13 +159,13 @@ module.exports = app => {
 
         app.model.user.update(user._id, userChanges, (error, user) => {
             if (error || !user) {
-                res.send({ error })
+                res.send({ error });
             } else {
-                app.updateSessionUser(req, user, sessionUser => {
+                app.updateSessionUser(req, user, () => {
                     app.model.applicationForm.update(req.body._id, changes, (error, item) => res.send({ error, item }));
-                })
+                });
             }
-        })
+        });
     });
 
     // Export Don de nghi hoc
@@ -193,8 +193,8 @@ module.exports = app => {
                     licenseClass: licenseClass || '',
                     newLicenseClass: newLicenseClass || '',
                     i: integration,
-                }
-                app.docx.generateFile(`/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx`, data, (error, buf) => {
+                };
+                app.docx.generateFile('/document/Don_De_Nghi_Hoc_Sat_Hach_Lai_Xe.docx', data, (error, buf) => {
                     res.send({ error: null, buf: buf });
                 });
             } else {
@@ -217,9 +217,9 @@ module.exports = app => {
                     phoneNumber: user.phoneNumber || '',
                     regularResidence: user.regularResidence || '',
                     newLicenseClass: newLicenseClass || '',
-                }
+                };
 
-                app.docx.generateFile(`/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx`, data, (error, buf) => {
+                app.docx.generateFile('/document/Bien_Nhan_Ho_So_Hoc_Vien_Lan_Dau.docx', data, (error, buf) => {
                     res.send({ error: null, buf: buf });
                 });
             } else {
@@ -248,8 +248,8 @@ module.exports = app => {
                     licenseIssuedBy: licenseIssuedBy || '',
                     otherDocumentation: otherDocumentation || '',
                     licenseClass: licenseClass || '',
-                }
-                app.docx.generateFile(`/document/Ban_Cam_Ket.docx`, data, (error, buf) => {
+                };
+                app.docx.generateFile('/document/Ban_Cam_Ket.docx', data, (error, buf) => {
                     res.send({ error: null, buf: buf });
                 });
             } else {

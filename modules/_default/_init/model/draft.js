@@ -41,7 +41,7 @@ module.exports = app => {
                                 item.save(done);
                             }
                         });
-                    })
+                    });
                 }
             }
         }),
@@ -60,7 +60,7 @@ module.exports = app => {
                     stopPost: JSON.parse(result.documentJson).stopPost,
                 };
                 app.model.news.get(result.documentId, (error, value) => {
-                    if (error) { done(error) } else {
+                    if (error) { done(error); } else {
                         const srcPath = app.path.join(app.publicPath, (result.image.indexOf('?t=') != -1) ? result.image.substring(0, result.image.indexOf('?t=')) : result.image);
                         if (value) {
                             const destPath = app.path.join(app.publicPath, (value.image.indexOf('?t=') != -1) ? value.image.substring(0, value.image.indexOf('?t=')) : value.image);
@@ -75,7 +75,7 @@ module.exports = app => {
                                         });
                                     }
                                 });
-                            })
+                            });
                         } else {
                             app.model.news.create(news, (error, item) => {
                                 const destPath = app.path.join(app.publicPath, item.image);
@@ -93,7 +93,7 @@ module.exports = app => {
                             });
                         }
                     }
-                })
+                });
             }
         }),
 

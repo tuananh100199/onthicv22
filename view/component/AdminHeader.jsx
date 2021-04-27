@@ -31,7 +31,7 @@ class AdminHeader extends React.Component {
         T.hideSearchBox = () => this.searchBox && $(this.searchBox).parent().css('display', 'none');
         T.clearSearchBox = () => {
             if (this.searchBox) this.searchBox.value = '';
-        }
+        };
     }
 
     showContact = (e, contactId) => e.preventDefault() || this.props.getContact(contactId, contact => this.contactModal.show(contact));

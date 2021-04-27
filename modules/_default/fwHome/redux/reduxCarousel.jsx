@@ -13,7 +13,7 @@ export default function carouselReducer(state = null, data) {
         case CarouselGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case CarouselChange:
+        case CarouselChange: {
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.carouselId) {
@@ -25,6 +25,7 @@ export default function carouselReducer(state = null, data) {
                 }
             }
             return state;
+        }
 
         default:
             return state;
@@ -43,15 +44,15 @@ export function getCarouselAll(done) {
                 if (done) done(data.list);
                 dispatch({ type: CarouselGetAll, list: data.list || [] });
             }
-        }, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function getCarousel(_id, done) {
     return dispatch => ajaxGetCarousel(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getCarousel. ${data.error}`);
         } else {
             dispatch({ type: CarouselGet, item: data.item });
             done && done(data);
@@ -70,8 +71,8 @@ export function createCarousel(data, done) {
                 dispatch(getCarouselAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo tập hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo tập hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function updateCarousel(_id, changes, done) {
@@ -86,8 +87,8 @@ export function updateCarousel(_id, changes, done) {
                 dispatch(getCarouselAll());
                 done && done();
             }
-        }, error => T.notify('Cập nhật tập hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật tập hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteCarousel(_id) {
@@ -101,8 +102,8 @@ export function deleteCarousel(_id) {
                 T.alert('Xoá tập hình ảnh thành công!', 'error', false, 800);
                 dispatch(getCarouselAll());
             }
-        }, error => T.notify('Xoá tập hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xoá tập hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 // Item -------------------------------------------------------------------------------------------
@@ -117,8 +118,8 @@ export function createCarouselItem(data, done) {
                 dispatch(getCarousel(data.item.carouselId));
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function updateCarouselItem(_id, changes, done) {
@@ -133,8 +134,8 @@ export function updateCarouselItem(_id, changes, done) {
                 dispatch(getCarousel(data.item.carouselId));
                 if (done) done();
             }
-        }, error => T.notify('Cập nhật hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function swapCarouselItem(_id, isMoveUp) {
@@ -142,13 +143,13 @@ export function swapCarouselItem(_id, isMoveUp) {
         const url = '/api/carousel/item/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger')
+                T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else if (data.item1) {
                 dispatch(getCarousel(data.item1.carouselId));
             }
-        }, error => T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteCarouselItem(_id) {
@@ -162,8 +163,8 @@ export function deleteCarouselItem(_id) {
                 T.alert('Hình ảnh được xóa thành công!', 'error', false, 800);
                 dispatch(getCarousel(data.carouselId));
             }
-        }, error => T.notify('Xoá hình ảnh bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xoá hình ảnh bị lỗi!', 'danger'));
+    };
 }
 
 export function changeCarouselItem(item) {
@@ -184,7 +185,7 @@ export function homeGetCarousel(_id, done) {
         }, error => {
             console.error('GET: ' + url + '. ' + error);
         });
-    }
+    };
 }
 
 export const ajaxSelectCarousel = T.createAjaxAdapter(
@@ -193,5 +194,5 @@ export const ajaxSelectCarousel = T.createAjaxAdapter(
 );
 export function ajaxGetCarousel(_id, done) {
     const url = '/api/carousel';
-    T.get(url, { _id }, done, error => T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
-};
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
+}

@@ -10,7 +10,7 @@ module.exports = (app, http) => {
     });
 
     if (app.isDebug) {
-        app.fs.watch('public/js', (eventType, filename) => {
+        app.fs.watch('public/js', () => {
             console.log('Reload client!');
             app.io.emit('debug', 'reload');
         });

@@ -38,7 +38,7 @@ module.exports = app => {
     app.get('/api/contact/export', app.permission.check('contact:read'), (req, res) => {
         app.model.contact.getAll((error, items) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else {
                 const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Subscribe');
                 const cells = [
@@ -67,11 +67,11 @@ module.exports = app => {
                         message: item.message,
                         createdDate: item.createdDate
                     });
-                })
+                });
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, `Contact.xlsx`);
+                app.excel.attachment(workbook, res, 'Contact.xlsx');
             }
-        })
+        });
     });
 
     app.delete('/api/contact', app.permission.check('contact:delete'), (req, res) => {
@@ -87,7 +87,7 @@ module.exports = app => {
                 let mailSubject = result.emailContactTitle.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                     mailText = result.emailContactText.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message),
                     mailHtml = result.emailContactHtml.replaceAll('{name}', item.name).replaceAll('{subject}', item.subject).replaceAll('{message}', item.message);
-                app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
+                app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
             });
         }
         res.send({ error, item });

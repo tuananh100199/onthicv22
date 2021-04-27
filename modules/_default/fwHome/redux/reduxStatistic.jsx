@@ -43,15 +43,15 @@ export function getStatisticAll(done) {
                 if (done) done(data.list);
                 dispatch({ type: StatisticGetAll, list: data.list || [] });
             }
-        }, error => T.notify('Lấy danh sách thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function getStatistic(_id, done) {
     return dispatch => ajaxGetStatistic(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy thống kê bị lỗi!', 'danger');
-            console.error(`GET: ajaxGetStatistic.`, data.error);
+            console.error('GET: ajaxGetStatistic.', data.error);
         } else {
             dispatch({ type: StatisticGet, item: data.item });
             done && done(data);
@@ -70,8 +70,8 @@ export function createStatistic(data, done) {
                 dispatch(getStatisticAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function updateStatistic(_id, changes, done) {
@@ -86,8 +86,8 @@ export function updateStatistic(_id, changes, done) {
                 dispatch(getStatisticAll());
                 done && done();
             }
-        }, error => T.notify('Cập nhật thông tin thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thông tin thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteStatistic(_id) {
@@ -101,8 +101,8 @@ export function deleteStatistic(_id) {
                 T.alert('Xóa thống kê thành công!', 'error', false, 800);
                 dispatch(getStatisticAll());
             }
-        }, error => T.notify('Xóa thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa thống kê bị lỗi!', 'danger'));
+    };
 }
 
 // Item -------------------------------------------------------------------------------------------
@@ -117,8 +117,8 @@ export function createStatisticItem(data, done) {
                 dispatch(getStatistic(data.item.statisticId));
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function updateStatisticItem(_id, changes, done) {
@@ -133,8 +133,8 @@ export function updateStatisticItem(_id, changes, done) {
                 dispatch(getStatistic(data.item.statisticId));
                 if (done) done();
             }
-        }, error => T.notify('Cập nhật thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function swapStatisticItem(_id, isMoveUp) {
@@ -142,13 +142,13 @@ export function swapStatisticItem(_id, isMoveUp) {
         const url = '/api/statistic/item/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Thay đổi thứ tự thống kê bị lỗi!', 'danger')
+                T.notify('Thay đổi thứ tự thống kê bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else {
                 dispatch(getStatistic(data.item1.statisticId));
             }
-        }, error => T.notify('Thay đổi thứ tự thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteStatisticItem(_id) {
@@ -162,8 +162,8 @@ export function deleteStatisticItem(_id) {
                 T.alert('Xóa thống kê thành công!', 'error', false, 800);
                 dispatch(getStatistic(data.statisticId));
             }
-        }, error => T.notify('Xóa thống kê bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa thống kê bị lỗi!', 'danger'));
+    };
 }
 
 export function changeStatisticItem(item) {
@@ -184,7 +184,7 @@ export function homeGetStatistic(_id, done) {
         }, error => {
             console.error('GET: ' + url + '. ' + error);
         });
-    }
+    };
 }
 
 export const ajaxSelectStatistic = T.createAjaxAdapter(
@@ -193,5 +193,5 @@ export const ajaxSelectStatistic = T.createAjaxAdapter(
 );
 export function ajaxGetStatistic(_id, done) {
     const url = '/api/statistic';
-    T.get(url, { _id }, done, error => T.notify('Lấy thống kê bị lỗi!', 'danger'));
-};
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy thống kê bị lỗi!', 'danger'));
+}

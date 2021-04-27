@@ -37,7 +37,7 @@ module.exports = app => {
             } else {
                 item.remove(error => {
                     if (error) {
-                        done(error)
+                        done(error);
                     } else {
                         app.model.carouselItem.getAll({ carouselId: _id }, (error, carouselItems) => {
                             if (error || carouselItems == null) {

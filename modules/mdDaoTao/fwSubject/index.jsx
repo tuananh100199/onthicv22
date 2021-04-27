@@ -16,5 +16,13 @@ export default {
             path: '/user/dao-tao/mon-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/mon-hoc/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userSubjectInfo') })
+        },
     ],
 };

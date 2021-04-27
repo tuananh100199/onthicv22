@@ -5,10 +5,13 @@ module.exports = (app) => {
             4030: { title: 'Bài học', link: '/user/dao-tao/bai-hoc' },
         },
     };
-    app.permission.add({ name: 'lesson:read', menu }, { name: 'lesson:write' }, { name: 'lesson:delete' });
+    app.permission.add({ name: 'lesson:read' }, { name: 'lesson:write', menu }, { name: 'lesson:delete' });
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id', app.permission.check('lesson:read'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -27,6 +30,46 @@ module.exports = (app) => {
     app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
         app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
+    });
+
+    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
+        const { _id } = req.query;
+        const currentCourse = req.session.user.currentCourse,
+            currentSubject = req.session.user.currentSubject;
+        app.model.lesson.get(_id, (error, item) => {
+            if (item && item.questions) {
+                item.questions.forEach(question => question.trueAnswer = null);
+            }
+            res.send({ error, item, currentCourse, currentSubject });
+        });
+    });
+
+    app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
+        const { answers } = req.body;
+        let questionIds = answers ? Object.keys(answers) : [],
+            score = 0;
+        app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const questionMapper = {},
+                    trueAnswer = {};
+                questions.forEach(item => questionMapper[item._id] = item);
+                if (answers) {
+                    for (const [key, value] of Object.entries(answers)) {
+                        if (questionMapper[key]) {
+                            if (questionMapper[key].trueAnswer == value) {
+                                score = score + 1;
+                                trueAnswer[key] = value;
+                            }
+                        } else {
+                            error = 'Không tìm thấy câu hỏi!';
+                        }
+                    }
+                }
+                res.send({ error, result: { score, trueAnswer } });
+            }
+        });
     });
 
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {

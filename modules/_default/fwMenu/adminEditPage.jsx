@@ -154,12 +154,12 @@ class MenuEditPage extends AdminPage {
         const { title, link, createdDate } = this.state;
         const linkLabel = link == '' ? 'Link' :
             (link.startsWith('http://') || link.startsWith('https://') ?
-                <>Link: <a href={link} style={{ fontWeight: 'bold' }} target='_blank'>{link}</a></> :
-                <>Link: <a href={T.rootUrl + link} style={{ fontWeight: 'bold' }} target='_blank'>{T.rootUrl + link}</a></>);
+                <>Link: <a href={link} style={{ fontWeight: 'bold' }} target='_blank' rel='noreferrer'>{link}</a></> :
+                <>Link: <a href={T.rootUrl + link} style={{ fontWeight: 'bold' }} target='_blank' rel='noreferrer'>{T.rootUrl + link}</a></>);
         return this.renderPage({
             icon: 'fa fa-bars',
             title: `Menu: ${title || ''}${createdDate ? ' (' + T.dateToText(createdDate) + ')' : ''}`,
-            breadcrumb: [<Link to='/user/menu'>Menu</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to='/user/menu'>Menu</Link>, 'Chỉnh sửa'],
             content: <>
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>

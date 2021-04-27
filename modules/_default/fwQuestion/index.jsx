@@ -10,7 +10,7 @@ class QuestionModal extends AdminModal {
 
     onShow = (item) => {
         let { _id, title, answers, trueAnswer, image, active } = item || { _id: null, title: '', answers: '', trueAnswer: 0, active: true };
-        this.itemTitle.value(title)
+        this.itemTitle.value(title);
         this.imageBox.setData(`questionImage:${_id || 'new'}`);
         this.itemAnswers.value(answers);
         this.itemActive.value(active);
@@ -41,6 +41,7 @@ class QuestionModal extends AdminModal {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');
@@ -62,9 +63,9 @@ class QuestionModal extends AdminModal {
             defaultStyle = { width: '40px', height: '40px', lineHeight: '40px', borderRadius: '50%', textAlign: 'center', marginLeft: '8px', cursor: 'pointer' },
             listAnswers = [],
             listTrueAnswers = answers.map((item, index) => {
-                listAnswers.push(<p key={index}>{index + 1}. {item}</p>)
+                listAnswers.push(<p key={index}>{index + 1}. {item}</p>);
                 const trueAnswerStyle = trueAnswer == index ? { color: 'white', backgroundColor: '#28a745' } : {};
-                return <label key={index} style={{ ...defaultStyle, ...trueAnswerStyle }} onClick={e => !readOnly && this.setTrueAnswer(e, index)}>{index + 1}</label>
+                return <label key={index} style={{ ...defaultStyle, ...trueAnswerStyle }} onClick={e => !readOnly && this.setTrueAnswer(e, index)}>{index + 1}</label>;
             });
 
         return this.renderModal({

@@ -36,7 +36,7 @@ module.exports = app => {
         const condition = { state: { $in: ['MoiDangKy', 'DangLienHe', 'Huy'] } };
         app.model.candidate.getAll(condition, (error, list) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else {
                 const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Candidate');
                 const cells = [
@@ -71,11 +71,11 @@ module.exports = app => {
                         state: item.state,
                         createdDate: item.createdDate
                     });
-                })
+                });
                 app.excel.write(worksheet, cells);
-                app.excel.attachment(workbook, res, `Candidate.xlsx`);
+                app.excel.attachment(workbook, res, 'Candidate.xlsx');
             }
-        })
+        });
     });
 
     app.put('/api/candidate', app.permission.check('candidate:write'), (req, res) => {
@@ -143,17 +143,26 @@ module.exports = app => {
 
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.post('/api/candidate', (req, res) => {
-        app.model.candidate.create(req.body.candidate, (error, item) => {
-            if (item) {
-                app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
-                    const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
-                        mailSubject = fillParams(result.emailCandidateTitle),
-                        mailText = fillParams(result.emailCandidateText),
-                        mailHtml = fillParams(result.emailCandidateHtml);
-                    app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null)
+        const candidate = req.body.candidate;
+        app.model.candidate.get({ email: candidate.email, courseType: candidate.courseType, state: 'MoiDangKy' }, (error, userCandidate) => {
+            if (error) {
+                res.send({ error });
+            } else if (userCandidate) {
+                res.send({ notify: 'Bạn đã đăng ký khóa học này, xin vui lòng chờ nhân viên chúng tôi liên hệ lại trong thời gian sớm nhất!' });
+            } else {
+                app.model.candidate.create(candidate, (error, item) => {
+                    if (item) {
+                        app.model.setting.get('email', 'emailPassword', 'emailCandidateTitle', 'emailCandidateText', 'emailCandidateHtml', result => {
+                            const fillParams = (data) => data.replaceAll('{name}', `${item.lastname} ${item.firstname}`),
+                                mailSubject = fillParams(result.emailCandidateTitle),
+                                mailText = fillParams(result.emailCandidateText),
+                                mailHtml = fillParams(result.emailCandidateHtml);
+                            app.email.sendEmail(result.email, result.emailPassword, item.email, [], mailSubject, mailText, mailHtml, null);
+                        });
+                    }
+                    res.send({ error, item });
                 });
             }
-            res.send({ error, item });
         });
     });
 };

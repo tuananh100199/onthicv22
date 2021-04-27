@@ -32,7 +32,6 @@ class ListVideoModal extends AdminModal {
 
 class ListVideoEditPage extends AdminPage {
     state = {};
-
     componentDidMount() {
         T.ready('/user/component', () => {
             const route = T.routeMatcher('/user/list-video/:_id'),
@@ -52,9 +51,12 @@ class ListVideoEditPage extends AdminPage {
             });
         });
     }
+
     edit = (e, [index, item]) => e.preventDefault() || this.modal.show([index, item]);
+    // eslint-disable-next-line no-unused-vars
     remove = (e, [index, item]) => e.preventDefault() || T.confirm('Xoá video ', 'Bạn có chắc muốn xoá video khỏi danh sách này?', true, isConfirm =>
         isConfirm && this.props.updateListVideo(this.state._id, index, () => T.alert('Xoá video trong danh sách thành công!', 'error', false, 800)));
+    // eslint-disable-next-line no-unused-vars
     swap = (e, [index, item], isMoveUp) => e.preventDefault() || this.props.updateListVideo(this.state._id, { index, isMoveUp }, () => T.notify('Thay đổi thứ tự video trong danh sách thành công!', 'info'));
 
     save = () => {
@@ -92,7 +94,7 @@ class ListVideoEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-edit',
             title: 'Danh sách video: ' + (this.state.title || '...'),
-            breadcrumb: [<Link to='/user/component'>Thành phần giao diện</Link>, 'Danh sách video'],
+            breadcrumb: [<Link key={0} to='/user/component'>Thành phần giao diện</Link>, 'Danh sách video'],
             content: (
                 <>
                     <div className='tile'>
@@ -112,7 +114,7 @@ class ListVideoEditPage extends AdminPage {
                         <div className='tile-body'>{table}</div>
                         {permission.write ?
                             <div className='tile-footer' style={{ textAlign: 'right' }}>
-                                <button className='btn btn-success' type='button' onClick={e => this.modal.show([])}>
+                                <button className='btn btn-success' type='button' onClick={() => this.modal.show([])}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
                             </div> : null}
@@ -121,7 +123,7 @@ class ListVideoEditPage extends AdminPage {
                 </>
             ),
             backRoute: '/user/component',
-        })
+        });
     }
 }
 const mapStateToProps = state => ({ system: state.system, component: state.component });

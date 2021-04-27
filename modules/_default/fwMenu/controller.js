@@ -56,7 +56,7 @@ module.exports = app => {
                 callback && callback();
             }));
         }
-    }
+    };
 
     app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => {
         app.model.menu.getAll({}, (error, menuTree) => res.send({ error, items: menuTree }));
@@ -102,7 +102,7 @@ module.exports = app => {
                     } else {
                         done();
                     }
-                }
+                };
 
                 const menuComponentIds = [],
                     menuComponents = [];
@@ -140,7 +140,7 @@ module.exports = app => {
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
         app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
             if (error == null) app.buildAppMenus();
-            res.send({ error, item })
+            res.send({ error, item });
         })
     );
 
@@ -181,7 +181,7 @@ module.exports = app => {
                         const menu = JSON.parse(menus)[pathname];
                         menu ? resolve(menu) : reject('Invalid link!');
                     } else {
-                        reject('Invalid link!')
+                        reject('Invalid link!');
                     }
                 }
             });
@@ -203,7 +203,7 @@ module.exports = app => {
                                 const getNextComponent = () => getComponent(index + 1, componentIds, components, done);
                                 component.componentIds ?
                                     getComponent(0, component.componentIds, component.components, getNextComponent) :
-                                    getNextComponent()
+                                    getNextComponent();
                             }
                         });
                     } else {
@@ -239,7 +239,7 @@ module.exports = app => {
                 data.componentIds = [];
                 app.model.component.create(data, (error, component) => {
                     if (error || component == null) {
-                        if (error) console.log(error);
+                        if (error) console.error(error);
                         res.send({ error: 'Tạo component bị lỗi!' });
                     } else {
                         parent.componentIds.push(component._id);

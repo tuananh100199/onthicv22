@@ -44,11 +44,11 @@ module.exports = (app) => {
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {
-                    error ? res.send({ error }) : res.send(data)
-                })
+                    error ? res.send({ error }) : res.send(data);
+                });
             });
             // Save email into Settings
-            if (email) app.model.setting.set({ email }, (error) => error && console.log(error));
+            if (email) app.model.setting.set({ email }, (error) => error && console.error(error));
         }
     });
 
@@ -86,15 +86,15 @@ module.exports = (app) => {
     app.get('/api/statistic/dashboard', app.permission.check('statistic:read'), (req, res) => {
         app.model.user.count({}, (error, numberOfUser) => {
             if (error) {
-                res.send({ error })
+                res.send({ error });
             } else {
                 app.model.news.count({}, (error, numberOfNews) => {
                     if (error) {
-                        res.send({ error })
+                        res.send({ error });
                     } else {
                         app.model.course.count({}, (error, numberOfCourse) => {
                             if (error) {
-                                res.send({ error })
+                                res.send({ error });
                             } else {
                                 res.send({ numberOfUser: numberOfUser || 0, numberOfCourse: numberOfCourse || 0, numberOfNews: numberOfNews || 0 });
                             }

@@ -23,7 +23,7 @@ class CourseModal extends AdminModal {
         if (data.name == '') {
             T.notify('Tên khóa học bị trống!', 'danger');
             this.itemName.focus();
-        } if (data.licenseClass == '') {
+        } else if (data.courseType == '') {
             T.notify('Loại khóa học bị trống!', 'danger');
             this.itemCourseType.focus();
         } else {
@@ -79,7 +79,9 @@ class CoursePage extends AdminPage {
                     <TableCell type='number' content={item.admins ? item.admins.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.reduce((a, b) => (a.student ? a.student.length : 0) + (b.student ? b.student.length : 0), 0) : 0} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCourse(item._id, { active })} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCourse(item._id, { active }, () => {
+                        T.notify('Cập nhật thông tin khóa học thành công!');
+                    })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />
                 </tr>),
         });

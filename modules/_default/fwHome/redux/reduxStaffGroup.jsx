@@ -13,7 +13,7 @@ export default function staffGroupReducer(state = {}, data) {
         case StaffGroupGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case StaffGroupChange:
+        case StaffGroupChange: {
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.staffGroupId) {
@@ -25,6 +25,7 @@ export default function staffGroupReducer(state = {}, data) {
                 }
             }
             return state;
+        }
 
         default:
             return state;
@@ -35,24 +36,24 @@ export default function staffGroupReducer(state = {}, data) {
 // Staff Group
 export function getStaffGroupAll(done) {
     return dispatch => {
-        const url = `/api/staff-group/all`;
+        const url = '/api/staff-group/all';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nhóm nhân viên bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
+                console.error(`GET: getStaffGroupAll. ${data.error}`);
             } else {
                 if (done) done(data.list);
                 dispatch({ type: StaffGroupGetAll, list: data.list || [] });
             }
-        }, error => console.error(`GET: ${url}. ${error}`))
-    }
+        }, error => console.error(`GET: getStaffGroupAll. ${error}`));
+    };
 }
 
 export function getStaffGroup(_id, done) {
     return dispatch => ajaxGetStaffGroup(_id, data => {
         if (data.error || !data.item) {
             T.notify('Lấy nhóm nhân viên bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getStaffGroup. ${data.error}`);
         } else {
             // dispatch(getStaffGroupAll());
             // dispatch({ type: StaffGroupUpdate, item: data.item });
@@ -64,7 +65,7 @@ export function getStaffGroup(_id, done) {
 
 export function createStaffGroup(data, done) {
     return dispatch => {
-        const url = `/api/staff-group`;
+        const url = '/api/staff-group';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo nhóm nhân viên bị lỗi!', 'danger');
@@ -73,13 +74,13 @@ export function createStaffGroup(data, done) {
                 dispatch(getStaffGroupAll());
                 if (done) done(data);
             }
-        }, error => console.error(`POST: ${url}. ${error}`))
-    }
+        }, error => console.error(`POST: ${url}. ${error}`));
+    };
 }
 
 export function updateStaffGroup(_id, changes, done) {
     return dispatch => {
-        const url = `/api/staff-group`;
+        const url = '/api/staff-group';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin nhóm nhân viên bị lỗi!', 'danger');
@@ -91,13 +92,13 @@ export function updateStaffGroup(_id, changes, done) {
                 // dispatch({ type: StaffGroupUpdate, item: data.item });
                 done && done();
             }
-        }, error => console.error(`PUT: ${url}. ${error}`))
-    }
+        }, error => console.error(`PUT: ${url}. ${error}`));
+    };
 }
 
 export function deleteStaffGroup(_id) {
     return dispatch => {
-        const url = `/api/staff-group`;
+        const url = '/api/staff-group';
         T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xóa nhóm nhân viên bị lỗi!', 'danger');
@@ -106,8 +107,8 @@ export function deleteStaffGroup(_id) {
                 T.alert('Xóa nhóm nhân viên thành công!', 'error', false, 800);
                 dispatch(getStaffGroupAll());
             }
-        }, error => console.error(`DELETE: ${url}. ${error}`))
-    }
+        }, error => console.error(`DELETE: ${url}. ${error}`));
+    };
 }
 //Staff
 
@@ -122,8 +123,8 @@ export function createStaff(data, done) {
                 dispatch(getStaffGroup(data.item.staffGroupId));
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo nhân viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo nhân viên bị lỗi!', 'danger'));
+    };
 }
 
 export function updateStaff(_id, changes, done) {
@@ -138,8 +139,8 @@ export function updateStaff(_id, changes, done) {
                 dispatch(getStaffGroup(data.item.staffGroupId));
                 if (done) done();
             }
-        }, error => T.notify('Cập nhật nhân viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật nhân viên bị lỗi!', 'danger'));
+    };
 }
 
 export function swapStaff(_id, isMoveUp) {
@@ -147,14 +148,14 @@ export function swapStaff(_id, isMoveUp) {
         const url = '/api/staff/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
-                T.notify('Thay đổi thứ tự nhân viên bị lỗi!', 'danger')
+                T.notify('Thay đổi thứ tự nhân viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
             } else if (data.item1) {
-                T.notify('Thay đổi thứ tự nhân viên thành công!', 'info')
+                T.notify('Thay đổi thứ tự nhân viên thành công!', 'info');
                 dispatch(getStaffGroup(data.item1.staffGroupId));
             }
-        }, error => T.notify('Thay đổi thứ tự nhân viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Thay đổi thứ tự nhân viên bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteStaff(_id) {
@@ -168,8 +169,8 @@ export function deleteStaff(_id) {
                 T.alert('nhân viên được xóa thành công!', 'error', false, 800);
                 dispatch(getStaffGroup(data.staffGroupId));
             }
-        }, error => T.notify('Xoá nhân viên bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xoá nhân viên bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteStaffImage(_id, done) {
@@ -184,8 +185,8 @@ export function deleteStaffImage(_id, done) {
                 dispatch(getStaffGroup(data.item.staffGroupId));
                 done && done();
             }
-        }, error => T.notify('Xóa hình bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa hình bị lỗi!', 'danger'));
+    };
 }
 
 export function changeStaff(item) {
@@ -196,7 +197,7 @@ export function changeStaff(item) {
 
 export function homeGetStaffGroup(_id, done) {
     return () => {
-        const url = `/home/staff-group/`;
+        const url = '/home/staff-group/';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger');
@@ -204,16 +205,16 @@ export function homeGetStaffGroup(_id, done) {
             } else {
                 if (done) done(data.item);
             }
-        }, error => console.error(`GET: ${url}. ${error}`))
-    }
+        }, error => console.error(`GET: ${url}. ${error}`));
+    };
 }
 
 export const ajaxSelectStaffGroup = T.createAjaxAdapter(
-    `/api/staff-group/all`,
+    '/api/staff-group/all',
     response => response && response.list ? response.list.filter(item => item.active).map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetStaffGroup(_id, done) {
-    const url = `/api/staff-group`;
+    const url = '/api/staff-group';
     T.get(url, { _id }, done, error => T.notify('Lấy  nhóm nhân viên bị lỗi!', 'danger'));
 }

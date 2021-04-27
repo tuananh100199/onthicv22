@@ -6,11 +6,11 @@ import { getAllDivisionByUser } from 'modules/mdDaoTao/fwDivision/redux';
 class SectionContact extends React.Component {
     componentDidMount() {
         T.ftcoAnimate();
-        $(this.background).parallax()
+        $(this.background).parallax();
     }
 
     componentWillUnmount() {
-        $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy')
+        $('.parallax-mirror').length != 0 && $(this.background).parallax('destroy');
     }
 
     sendMessage = (e) => {
@@ -46,10 +46,10 @@ class SectionContact extends React.Component {
     render() {
         let { facebook, youtube, twitter, instagram, contact } =
             this.props.system ? this.props.system : { facebook: '', youtube: '', twitter: '', instagram: '', contact: '/img/contact.jpg' };
-        facebook = facebook ? <li><a href={facebook} target='_blank'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
-        youtube = youtube ? <li><a href={youtube} target='_blank'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
-        twitter = twitter ? <li><a href={twitter} target='_blank'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
-        instagram = instagram ? <li><a href={instagram} target='_blank'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
+        facebook = facebook ? <li><a href={facebook} target='_blank' rel='noreferrer'><i className='fa fa-facebook' aria-hidden='true' /></a></li> : '';
+        youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
+        twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
+        instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
 
         return [
             <div key={0} className='home-contact d-flex flex-column align-items-start justify-content-end'>

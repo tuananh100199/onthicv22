@@ -127,7 +127,7 @@ class HomeRequestLoginPage extends React.Component {
                         </div>
                     </div>
                 </div>
-            )
+            );
         } else {
             return (
                 <div className='container'>
@@ -225,7 +225,7 @@ class HomeRequestLoginPage extends React.Component {
                         </div>
                     </div>
                 </div>
-            )
+            );
         }
     }
 }

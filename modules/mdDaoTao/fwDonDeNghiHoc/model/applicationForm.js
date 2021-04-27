@@ -53,5 +53,5 @@ module.exports = app => {
             }
         }),
         getAll: (condition, done) => done ? model.find(condition).exec(done) : model.find({}).exec(condition),
-    }
+    };
 };

@@ -29,7 +29,7 @@ class UserDonDeNghiPage extends React.Component {
             if (this.props.system && this.props.system.user) {
                 const image = this.props.system.user.image ? this.props.system.user.image : '/img/avatar.png';
                 this.setState({ image });
-                let { firstname, lastname, sex, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { firstname: '', lastname: '', sex: '', birthday: '', phoneNumber: '', regularResidence: '', residence: '', identityCard: '', identityIssuedBy: '', image: '/img/avatar.png' };
+                let { firstname, lastname, birthday, phoneNumber, regularResidence, residence, identityCard, identityDate, identityIssuedBy } = this.props.system.user || { firstname: '', lastname: '', sex: '', birthday: '', phoneNumber: '', regularResidence: '', residence: '', identityCard: '', identityIssuedBy: '', image: '/img/avatar.png' };
                 $('#userLastname').val(lastname);
                 $('#userFirstname').val(firstname);
                 $('#userBirthday').val(birthday ? T.dateToText(birthday, 'dd/mm/yyyy') : '');
@@ -40,7 +40,6 @@ class UserDonDeNghiPage extends React.Component {
                 $('#identityDate').val(identityDate ? T.dateToText(identityDate, 'dd/mm/yyyy') : '');
                 $('#identityIssuedBy').val(identityIssuedBy);
                 this.imageBox.current.setData('profile', image ? image : '/img/avatar.png');
-                // this.sex.current.setText(sex ? sex : 'Nam');
             }
             let url = window.location.pathname,
                 params = T.routeMatcher('/user/bieu-mau/don-de-nghi-hoc/:id').parse(url);
@@ -48,7 +47,7 @@ class UserDonDeNghiPage extends React.Component {
                 if (data.error) {
                     this.props.history.push('/user');
                 } else if (data.item) {
-                    data.item.status == 'approved' ? $('#newLicenseClass').prop('disabled', true) : $('#newLicenseClass').prop('disabled', false)
+                    data.item.status == 'approved' ? $('#newLicenseClass').prop('disabled', true) : $('#newLicenseClass').prop('disabled', false);
                     const user = data.item.user;
                     $('#userBirthday').val(user.birthday ? T.dateToText(user.birthday, 'dd/mm/yyyy') : '');
                     $('#phoneNumber').val(user.phoneNumber);
@@ -69,13 +68,10 @@ class UserDonDeNghiPage extends React.Component {
                     this.props.history.push('/user');
                 }
             });
-
         });
     }
 
-    changeActive = (event) => {
-        this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
-    }
+    changeActive = (event) => this.setState({ item: Object.assign({}, this.state.item, { integration: event.target.checked }) });
 
     save = () => {
         const
@@ -282,7 +278,7 @@ class UserDonDeNghiPage extends React.Component {
                                         url: '',
                                         data: {},
                                         processResults: () => ({
-                                            results: this.props.courseType.page.list.map((item, index) => ({ id: item.title, text: item.title }))
+                                            results: this.props.courseType.page.list.map(item => ({ id: item.title, text: item.title }))
                                         })
                                     }
                                 } label='Hạng' />
@@ -304,7 +300,7 @@ class UserDonDeNghiPage extends React.Component {
                                     url: '',
                                     data: {},
                                     processResults: () => ({
-                                        results: this.props.courseType.page.list.map((item, index) => ({ id: item.title, text: item.title }))
+                                        results: this.props.courseType.page.list.map(item => ({ id: item.title, text: item.title }))
                                     })
                                 }
                             } label='Hạng' />

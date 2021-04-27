@@ -12,6 +12,7 @@ class StatisticModal extends AdminModal {
         this.itemTitle.value('');
         this.itemDescription.html('');
     }
+
     onSubmit = () => {
         const data = {
             title: this.itemTitle.value(),
@@ -24,6 +25,7 @@ class StatisticModal extends AdminModal {
             this.props.create(data, this.hide);
         }
     }
+
     render = () => this.renderModal({
         title: 'Thống kê',
         body: <>
@@ -62,8 +64,8 @@ class StatisticPage extends AdminPage {
         return (<>
             {table}
             <StatisticModal ref={e => this.modal = e} create={this.props.createStatistic} readOnly={!permission.write} />
-            {permission.write ? <CirclePageButton type='create' onClick={e => this.modal.show()} /> : null}
-        </>)
+            {permission.write ? <CirclePageButton type='create' onClick={() => this.modal.show()} /> : null}
+        </>);
     }
 }
 

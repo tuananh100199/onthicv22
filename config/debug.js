@@ -27,7 +27,7 @@ module.exports = app => {
                 if (error || !user) {
                     res.send({ error: 'System has errors!' });
                 } else {
-                    app.updateSessionUser(req, user, _ => res.send({ user }));
+                    app.updateSessionUser(req, user, () => res.send({ user }));
                 }
             });
         } else {

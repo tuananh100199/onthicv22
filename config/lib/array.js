@@ -1,7 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 module.exports = app => {
     Array.prototype.contains = function (pattern) {
         return pattern.reduce((result, item) => result && this.includes(item), true);
-    }
+    };
 
     Array.prototype.exists = function (pattern, req = null) {
         if (!req) {

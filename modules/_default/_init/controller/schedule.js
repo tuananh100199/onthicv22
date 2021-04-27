@@ -19,4 +19,4 @@ module.exports = (app) => {
         // Cập nhật biến đếm ngày hôm nay về 0
         app.redis.set(`${app.appName}:state:todayViews`, 0);
     });
-}
+};

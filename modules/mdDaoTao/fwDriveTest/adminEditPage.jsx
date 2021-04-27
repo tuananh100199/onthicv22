@@ -14,7 +14,7 @@ class QuestionModal extends AdminModal {
     }
     onShow = () => {
         this.category.value(null);
-        this.setState({ _idSelectedType: null })
+        this.setState({ _idSelectedType: null });
     }
     viewTypeChanged = (_idSelectedType) => {
         this.setState({ _idSelectedType });
@@ -46,7 +46,7 @@ class QuestionModal extends AdminModal {
     };
 }
 
-const backRoute = '/user/drive-test'
+const backRoute = '/user/drive-test';
 class DriveTestEditPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -83,7 +83,7 @@ class DriveTestEditPage extends AdminPage {
             T.notify('Tên bộ đề thi bị trống!', 'danger');
             this.itemTitle.focus();
         } else {
-            this.props.updateDriveTest(this.state._id, changes)
+            this.props.updateDriveTest(this.state._id, changes);
         }
     }
 
@@ -125,7 +125,7 @@ class DriveTestEditPage extends AdminPage {
             icon: 'fa fa-file',
             title: 'Bộ đề thi: ' + this.state.title,
             size: 'large',
-            breadcrumb: [<Link to={backRoute}>Bộ đề thi</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={backRoute}>Bộ đề thi</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: backRoute,
         });

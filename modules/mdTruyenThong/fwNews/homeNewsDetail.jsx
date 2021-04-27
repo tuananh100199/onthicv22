@@ -40,11 +40,11 @@ class NewsDetail extends React.Component {
         if (item == null) {
             return <p>...</p>;
         } else {
-            let categories = !item.categories ? [] : item.categories.map((item, index) =>
-                <div key={index} className='bg-black pb-1 px-2 mb-2 text-white d-inline-block rounded mr-1'>
-                    <span><small>{item.title}</small></span>
-                </div>
-            );
+            // let categories = !item.categories ? [] : item.categories.map((item, index) =>
+            //     <div key={index} className='bg-black pb-1 px-2 mb-2 text-white d-inline-block rounded mr-1'>
+            //         <span><small>{item.title}</small></span>
+            //     </div>
+            // );
             return <>
                 <div className='home-contact d-flex flex-column align-items-start justify-content-end'>
                     <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={item ? item.image : '/img/avatar.jpg'} data-speed='0.8' />

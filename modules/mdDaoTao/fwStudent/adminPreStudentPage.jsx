@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getPreStudentPage, createPreStudent, updatePreStudent, deletePreStudent } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, CirclePageButton, FormCheckbox, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton, FormImageBox, FormDatePicker, AdminModal, FormTextBox, FormRichTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 
 class PreStudenModal extends AdminModal {
@@ -13,7 +13,7 @@ class PreStudenModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' }
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' };
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemBirthday.value(birthday);
@@ -66,6 +66,7 @@ class PreStudenModal extends AdminModal {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');

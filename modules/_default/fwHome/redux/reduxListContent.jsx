@@ -9,7 +9,7 @@ export default function listContentReducer(state = {}, data) {
         case ListContentGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case ListContentUpdate:
+        case ListContentUpdate: {
             state = state && state.list ? state.list.slice() : { list: [] };
             for (let i = 0; i < state.length; i++) {
                 if (state[i]._id == data.item._id) {
@@ -18,6 +18,8 @@ export default function listContentReducer(state = {}, data) {
                 }
             }
             return state;
+        }
+
         default:
             return state;
     }
@@ -26,7 +28,7 @@ export default function listContentReducer(state = {}, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 export function getListContentAll(done) {
     return dispatch => {
-        const url = `/api/list-content/all`;
+        const url = '/api/list-content/all';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger');
@@ -36,14 +38,14 @@ export function getListContentAll(done) {
                 dispatch({ type: ListContentGetAll, list: data.list ? data.list : [] });
             }
         }, error => console.error(`GET: ${url}. ${error}`));
-    }
+    };
 }
 
 export function getListContent(_id, done) {
     return dispatch => ajaxGetListContent(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getListContent. ${data.error}`);
         } else {
             dispatch(getListContentAll());
             dispatch({ type: ListContentUpdate, item: data.item });
@@ -54,7 +56,7 @@ export function getListContent(_id, done) {
 
 export function createListContent(data, done) {
     return dispatch => {
-        const url = `/api/list-content`;
+        const url = '/api/list-content';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo danh sách bài viết bị lỗi!', 'danger');
@@ -63,13 +65,13 @@ export function createListContent(data, done) {
                 dispatch(getListContentAll());
                 if (done) done(data);
             }
-        }, error => T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
+    };
 }
 
 export function updateListContent(_id, changes, done) {
     return dispatch => {
-        const url = `/api/list-content`;
+        const url = '/api/list-content';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger');
@@ -80,13 +82,13 @@ export function updateListContent(_id, changes, done) {
                 dispatch({ type: ListContentUpdate, item: data.item });
                 done && done();
             }
-        }, error => T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Cập nhật danh sách bài viết bị lỗi!', 'danger'));
+    };
 }
 
 export function deleteListContent(_id) {
     return dispatch => {
-        const url = `/api/list-content`;
+        const url = '/api/list-content';
         T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xóa danh sách bài viết bị lỗi!', 'danger');
@@ -95,8 +97,8 @@ export function deleteListContent(_id) {
                 T.alert('Xóa danh sách bài viết thành công!', 'error', false, 800);
                 dispatch(getListContentAll());
             }
-        }, error => T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Xóa danh sách bài viết bị lỗi!', 'danger'));
+    };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------
@@ -111,8 +113,8 @@ export function homeGetListContent(_id, done) {
                 dispatch({ type: ListContentUpdate, item: data.item });
                 done && done(data);
             }
-        }, error => T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
-    }
+        }, error => console.error(error) || T.notify('Lấy danh sách bài viết bị lỗi', 'danger'));
+    };
 }
 
 export const ajaxSelectListContent = T.createAjaxAdapter(
@@ -122,5 +124,5 @@ export const ajaxSelectListContent = T.createAjaxAdapter(
 
 export function ajaxGetListContent(_id, done) {
     const url = '/api/list-content';
-    T.get(url, { _id }, done, error => T.notify('Lấy danh sách nội dung bị lỗi!', 'danger'));
-};
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy danh sách nội dung bị lỗi!', 'danger'));
+}
