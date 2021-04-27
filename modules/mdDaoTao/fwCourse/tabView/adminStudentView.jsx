@@ -82,22 +82,16 @@ class AdminStudentView extends React.Component {
                                 onChange={value => {
                                     if (!value) {
                                         this[_idDiv].value(false)
-                                    } else {
+                                    } else if (list.length != 1) {
                                         const _idStudents = list.map(item => item._id);
                                         _idStudents.splice(index, 1);
-                                        console.log(_idStudents, 'ftrue')
                                         for (const _id of _idStudents) {
-                                            console.log(this[_id].value(), '2')
                                             if (this[_id].value() == false) {
                                                 this[_idDiv].value(false);
                                                 break;
                                             } else this[_idDiv].value(true);
                                         }
-                                    }
-                                    // (checkList.findIndex((item) => item.checked === false) === -1)
-                                    // const _idStudents = studentInsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
-                                    //     [...result, student._id] : result, []);
-                                    // _idStudents.forEach(item2 => this[item2] && this[item2].value(value));
+                                    } else this[_idDiv].value(true);
                                 }}
                             />{item.lastname} {item.firstname}</li>);
                     })}
