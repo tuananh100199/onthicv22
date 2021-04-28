@@ -229,8 +229,8 @@ class AdminStudentView extends React.Component {
                                         this.setState({ divisions });
                                         this[`modal${item._id}`].show()
                                     }}>
-                                        <i className='fa fa-fw fa-lg fa-plus' />  Học viên
-                                </button>
+                                        <i className='fa fa-arrow-right' />
+                                    </button>
                                 </> : item.title}
                             </h6>
                             <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}
@@ -289,8 +289,8 @@ class AdminStudentView extends React.Component {
                                         this.setState({ divisions });
                                         this[`modal${item._id}`].show()
                                     }}>
-                                        <i className='fa fa-fw fa-lg fa-plus' />  Học viên
-                                </button>
+                                        <i className='fa fa-arrow-right' />
+                                    </button>
                                 </> : item.title}
                             </h6>
                             <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}
