@@ -32,7 +32,7 @@ export function getClusterAll() {
 }
 
 export function getCluster(clusterId, done) {
-    return dispatch => {
+    return () => {
         const url = `/api/cluster/item/${clusterId}`;
         T.get(url, data => done(data), error => done({ error }));
     };
@@ -107,7 +107,7 @@ export function getSystemImageAll() {
 }
 
 export function applySystemImage(filename, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/cluster/image';
         T.put(url, { filename }, data => {
             if (data.error) {

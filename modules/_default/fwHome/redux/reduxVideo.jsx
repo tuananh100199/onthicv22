@@ -47,7 +47,7 @@ export function getVideo(_id, done) {
     return dispatch => ajaxGetVideo(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy video bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getVideo. ${data.error}`);
         } else {
             dispatch({ type: VideoChange, item: data.item });
             done && done(data);
@@ -127,9 +127,7 @@ export function homeGetVideo(_id, done) {
                 dispatch({ type: VideoChange, item: data.item });
                 if (done) done({ item: data.item });
             }
-        }, error => {
-            console.error('GET: ' + url + '. ' + error);
-        });
+        }, error => console.error('GET: ' + url + '. ' + error));
     };
 }
 
@@ -140,5 +138,5 @@ export const ajaxSelectVideo = T.createAjaxAdapter(
 
 export function ajaxGetVideo(_id, done) {
     const url = '/api/video';
-    T.get(url, { _id }, done, error => T.notify('Lấy nội dung bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy nội dung bị lỗi!', 'danger'));
 }

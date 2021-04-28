@@ -111,7 +111,7 @@ export function changeCandidate(item) {
 }
 
 export function createCandidate(candidate, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/candidate';
         T.post(url, { candidate }, data => {
             if (data.error) {
@@ -125,8 +125,7 @@ export function createCandidate(candidate, done) {
         }, error => console.error(error) || T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
     };
 }
-export function exportCandidateToExcel(done) {
-    return dispatch => {
-        T.download(T.url('/api/candidate/export'));
-    };
+
+export function exportCandidateToExcel() {
+    T.download(T.url('/api/candidate/export'));
 }

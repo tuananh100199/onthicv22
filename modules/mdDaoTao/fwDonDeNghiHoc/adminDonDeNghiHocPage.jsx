@@ -56,7 +56,7 @@ class AdminDonDeNghiHocPage extends React.Component {
     render() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/don-de-nghi-hoc/list/:licenseClass').parse(url);
-        const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
+        // const currentPermission = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.donDeNghiHoc && this.props.donDeNghiHoc.page ?
             this.props.donDeNghiHoc.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const table = list && list.length ? (

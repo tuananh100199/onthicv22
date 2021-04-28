@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubscribePage, deleteSubscribe } from './redux';
+import { getSubscribePage, deleteSubscribe, exportSubscribeToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 

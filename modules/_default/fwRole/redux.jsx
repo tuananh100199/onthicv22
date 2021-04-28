@@ -13,7 +13,7 @@ export default function roleReducer(state = null, data) {
         case RoleGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case RoleUpdate:
+        case RoleUpdate: {
             let updatedList = Object.assign({}, state.list),
                 updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -34,6 +34,7 @@ export default function roleReducer(state = null, data) {
                 }
             }
             return Object.assign({}, state, { list: updatedList, page: updatedPage });
+        }
 
         default:
             return state;
@@ -43,8 +44,8 @@ export default function roleReducer(state = null, data) {
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('adminRole');
 
-export function changeRole(role, done) {
-    return dispatch => {
+export function changeRole(role) {
+    return () => {
         const url = '/api/debug/change-role';
         T.post(url, { role: role._id }, data => {
             if (data.error) {
@@ -136,7 +137,7 @@ export function deleteRole(_id) {
 }
 
 export function getRole(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/role';
         T.get(url, { _id }, data => {
             if (data.error) {

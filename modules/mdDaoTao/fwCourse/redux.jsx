@@ -139,7 +139,7 @@ export function getCoursePageByUser(pageNumber, pageSize, done) {
 }
 
 export function getCourseByUser(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/home/course';
         T.get(url, { _id }, data => {
             if (data.error) {
@@ -153,7 +153,7 @@ export function getCourseByUser(_id, done) {
 }
 
 export function getCourseFeed(done) {
-    return dispatch => {
+    return () => {
         const url = '/home/course/page/1/' + T.courseFeedPageSize;
         T.get(url, data => {
             if (data.error) {
@@ -168,7 +168,7 @@ export function getCourseFeed(done) {
 
 //Get Course Of User
 export function getUserCourse(done) {
-    return dispatch => {
+    return () => {
         const url = '/api/user-course';
         T.get(url, data => {
             if (data.error) {

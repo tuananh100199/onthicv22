@@ -23,7 +23,7 @@ class CourseModal extends AdminModal {
         if (data.name == '') {
             T.notify('Tên khóa học bị trống!', 'danger');
             this.itemName.focus();
-        } if (data.licenseClass == '') {
+        } else if (data.courseType == '') {
             T.notify('Loại khóa học bị trống!', 'danger');
             this.itemCourseType.focus();
         } else {

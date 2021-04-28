@@ -155,10 +155,10 @@ class CandidatePage extends AdminPage {
                 <Pagination name='pageCandidate' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getCandidatePage} />
                 <CandidateModal ref={e => this.candidateModal = e} update={this.props.updateCandidate} states={states} />
             </>,
-            onExport: permission.export ? this.props.exportCandidateToExcel : null,
+            onExport: permission.export ? exportCandidateToExcel : null,
         });
     }
 }
 const mapStateToProps = state => ({ system: state.system, candidate: state.candidate });
-const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel };
+const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);

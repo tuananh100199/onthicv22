@@ -1,24 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { forgotPassword, login, register } from '../_init/redux';
 
-const texts = {
-    vi: {
-        hasLoggedIn: 'Bạn đã đăng nhập!',
-        continue: 'Tiếp tục',
-        login: 'Đăng nhập',
-        signUp: 'Đăng ký',
-        forgotPassword: 'Quên mật khẩu?'
-    },
-    en: {
-        hasLoggedIn: 'You have logged in!',
-        continue: 'Continue',
-        login: 'Login',
-        signUp: 'Sign up',
-        forgotPassword: 'Forgot password?'
-    }
-};
+// const texts = {
+//     vi: {
+//         hasLoggedIn: 'Bạn đã đăng nhập!',
+//         continue: 'Tiếp tục',
+//         login: 'Đăng nhập',
+//         signUp: 'Đăng ký',
+//         forgotPassword: 'Quên mật khẩu?'
+//     },
+//     en: {
+//         hasLoggedIn: 'You have logged in!',
+//         continue: 'Continue',
+//         login: 'Login',
+//         signUp: 'Sign up',
+//         forgotPassword: 'Forgot password?'
+//     }
+// };
 
 class HomeRequestLoginPage extends React.Component {
     state = { query: {} };
@@ -119,7 +118,7 @@ class HomeRequestLoginPage extends React.Component {
                                 <div className='bg-white'>
                                     <div className='p-3 p-lg-5 border'>
                                         <p className='text-black text-center'>
-                                            <span className='h2'>{language.hasLoggedIn}</span> | <Link to={this.continueLink()}>{language.continue}</Link>
+                                            {/* <span className='h2'>{language.hasLoggedIn}</span> | <Link to={this.continueLink()}>{language.continue}</Link>//TODO */}
                                         </p>
                                     </div>
                                 </div>
@@ -137,10 +136,10 @@ class HomeRequestLoginPage extends React.Component {
                                 <div className='course--content'>
                                     <ul className='nav nav-tabs nav-justified'>
                                         <li className='nav-item'>
-                                            <a className='nav-link active' data-toggle='tab' href='#loginTab' role='tab' aria-selected='true'>{language.login}</a>
+                                            {/* <a className='nav-link active' data-toggle='tab' href='#loginTab' role='tab' aria-selected='true'>{language.login}</a> TODO */}
                                         </li>
                                         <li className='nav-item'>
-                                            <a className='nav-link' data-toggle='tab' href='#signUpTab' role='tab' aria-selected='false'>{language.signUp}</a>
+                                            {/* <a className='nav-link' data-toggle='tab' href='#signUpTab' role='tab' aria-selected='false'>{language.signUp}</a> TODO */}
                                         </li>
                                     </ul>
                                     <div className='tab-content'>
@@ -165,13 +164,13 @@ class HomeRequestLoginPage extends React.Component {
                                                     </div>
                                                     <div className='form-group row'>
                                                         <div className='col-lg-12'>
-                                                            <button type='submit' className='btn btn-primary btn-lg btn-block'>{language.login}</button>
+                                                            {/* <button type='submit' className='btn btn-primary btn-lg btn-block'>{language.login}</button>//TODO */}
                                                         </div>
                                                     </div>
                                                 </form>
                                                 <div className='text-center'>
                                                     <a href='#' onClick={this.onForgotPasswordClick}>
-                                                        <small>{language.forgotPassword}</small>
+                                                        {/* <small>{language.forgotPassword}</small> TODO */}
                                                     </a>
                                                 </div>
                                             </div>
@@ -213,7 +212,7 @@ class HomeRequestLoginPage extends React.Component {
                                                     </div>
                                                     <div className='form-group row'>
                                                         <div className='col-lg-12'>
-                                                            <button type='submit' className='btn btn-primary btn-lg btn-block'>{language.signUp}</button>
+                                                            {/* <button type='submit' className='btn btn-primary btn-lg btn-block'>{language.signUp}</button>//TODO */}
                                                         </div>
                                                     </div>
                                                 </form>

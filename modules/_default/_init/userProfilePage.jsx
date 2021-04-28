@@ -64,6 +64,6 @@ class UserProfilePage extends AdminPage {
         });
     }
 }
-const mapStateToProps = state => ({ system: state.system });
+const mapStateToProps = state => ({ system: state.system, student: state.student });
 const mapActionsToProps = { getUserCourse };
 export default connect(mapStateToProps, mapActionsToProps)(UserProfilePage);

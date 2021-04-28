@@ -8,7 +8,7 @@ export default function lessonReducer(state = {}, data) {
         case LessonGetPage:
             return Object.assign({}, state, { page: data.page });
 
-        case LessonGetItem:
+        case LessonGetItem: {
             let updatedPage = Object.assign({}, state.page || {}),
                 updatedItem = Object.assign({}, state.item || {}, data.item);
             if (updatedPage.list) {
@@ -20,6 +20,7 @@ export default function lessonReducer(state = {}, data) {
                 }
             }
             return Object.assign({}, state, { item: updatedItem, page: updatedPage });
+        }
 
         default:
             return state;
@@ -76,7 +77,7 @@ export function getLessonByStudent(_id, done) {
 }
 
 export function checkQuestion(answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/question/student/submit';
         T.post(url, { answers }, data => {
             if (data.error) {

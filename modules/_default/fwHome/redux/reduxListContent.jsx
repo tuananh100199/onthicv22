@@ -9,7 +9,7 @@ export default function listContentReducer(state = {}, data) {
         case ListContentGetAll:
             return Object.assign({}, state, { list: data.list });
 
-        case ListContentUpdate:
+        case ListContentUpdate: {
             state = state && state.list ? state.list.slice() : { list: [] };
             for (let i = 0; i < state.length; i++) {
                 if (state[i]._id == data.item._id) {
@@ -18,6 +18,8 @@ export default function listContentReducer(state = {}, data) {
                 }
             }
             return state;
+        }
+
         default:
             return state;
     }
@@ -43,7 +45,7 @@ export function getListContent(_id, done) {
     return dispatch => ajaxGetListContent(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
+            console.error(`GET: getListContent. ${data.error}`);
         } else {
             dispatch(getListContentAll());
             dispatch({ type: ListContentUpdate, item: data.item });
@@ -122,5 +124,5 @@ export const ajaxSelectListContent = T.createAjaxAdapter(
 
 export function ajaxGetListContent(_id, done) {
     const url = '/api/list-content';
-    T.get(url, { _id }, done, error => T.notify('Lấy danh sách nội dung bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy danh sách nội dung bị lỗi!', 'danger'));
 }

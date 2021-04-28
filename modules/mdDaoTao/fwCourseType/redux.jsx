@@ -144,7 +144,7 @@ export function deleteCourseTypeSubject(_courseTypeId, _subjectId, done) {
 
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getAllCourseTypeByUser(done) {
-    return dispatch => {
+    return () => {
         const url = '/home/course-type/all';
         T.get(url, data => {
             if (data.error) {
@@ -184,10 +184,11 @@ export function getCourseTypeByUser(_id, done) {
 
 export const ajaxSelectCourseType = T.createAjaxAdapter(
     '/api/course-type/all',
-    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
+    response =>
+        response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetCourseType(_id, done) {
     const url = '/api/course-type';
-    T.get(url, { _id }, done, error => T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, error => console.error(error) || T.notify('Lấy loại khóa học bị lỗi!', 'danger'));
 }

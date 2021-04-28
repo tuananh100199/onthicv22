@@ -20,7 +20,15 @@ export default {
         },
         {
             path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./userPage') })
+            component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userLessonInfo') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userQuestion') })
         },
     ],
 };

@@ -22,16 +22,16 @@ export default function driveTestReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getAllDriveTests(searchText, done) {
+export function getAllDriveTests(condition, done) {
     return dispatch => {
         const url = '/api/drive-test/all';
-        T.get(url, { searchText }, data => {
+        T.get(url, { condition }, data => {
             if (data.error) {
                 T.notify('Lấy tất cả bộ đề thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
-                dispatch({ type: DriveTestGetAll, items: data.items });
+                if (done) done(data.list);
+                dispatch({ type: DriveTestGetAll, items: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy tất cả bộ đề thi bị lỗi!', 'danger'));
     };
@@ -67,6 +67,20 @@ export function getDriveTestItem(_id, done) {
         }, error => console.error(error) || T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
     };
 }
+export function getDriveTestItemByStudent(_id, done) {
+    return dispatch => {
+        const url = '/api/drive-test/student';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy bộ đề thi bị lỗi', 'danger');
+                console.error('GET: ' + url + '. ' + data.error);
+            } else {
+                dispatch({ type: DriveTestGet, item: data.item });
+            }
+            if (done) done(data);
+        }, error => console.error(error) || T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
+    };
+}
 
 export function createDriveTest(data, done) {
     return dispatch => {
@@ -81,6 +95,21 @@ export function createDriveTest(data, done) {
                 dispatch(getDriveTestPage());
             }
         }, error => console.error(error) || T.notify('Tạo bộ đề thi bị lỗi!', 'danger'));
+    };
+}
+
+export function createRandomDriveTest(_courseTypeId, done) {
+    return dispatch => {
+        const url = '/api/drive-test/random';
+        T.post(url, { _courseTypeId }, data => {
+            if (data.error) {
+                T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger');
+                console.error('POST: ' + url + '. ' + data.error);
+            } else {
+                if (done) done(data);
+                dispatch(getDriveTestPage());
+            }
+        }, error => console.error(error) || T.notify('Tạo bộ đề thi ngẫu nhiên bị lỗi!', 'danger'));
     };
 }
 
@@ -131,6 +160,33 @@ export function deleteDriveTest(_id, done) {
                 done && done();
             }
         }, error => console.error(error) || T.notify('Xóa bộ đề thi bị lỗi!', 'danger'));
+    };
+}
+
+export function checkDriveTestScore(_id, answers, done) {
+    return () => {
+        const url = '/api/drive-test/student/submit';
+        T.post(url, { _id, answers }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
+}
+export function checkRandomDriveTestScore(answers, done) {
+    return () => {
+        const url = '/api/drive-test/random/submit';
+        T.post(url, { answers }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     };
 }
 

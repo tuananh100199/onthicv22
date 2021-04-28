@@ -41,6 +41,7 @@ class QuestionModal extends AdminModal {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');

@@ -6,6 +6,8 @@ import Loading from 'view/component/Loading';
 // import SectionCourseList from './sectionCourseList';
 // import SectionCourse from './sectionCourse';
 import course from './redux';
+import driveTest from 'modules/mdDaoTao/fwDriveTest/redux';
+
 
 export default {
     init: () => {
@@ -19,7 +21,7 @@ export default {
         // };
     },
     redux: {
-        course
+        course, driveTest
     },
     routes: [
         {
@@ -33,6 +35,18 @@ export default {
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/thong-tin/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_id/',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })
         },
     ],
     Section: {
