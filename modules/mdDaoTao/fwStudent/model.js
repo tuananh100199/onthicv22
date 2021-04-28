@@ -87,7 +87,7 @@ module.exports = (app) => {
                                 Object.assign(changes.tienDoHocTap, obj)
                             }
                         });
-                        
+
                         changes.modifiedDate = new Date();
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
                     }
@@ -117,6 +117,19 @@ module.exports = (app) => {
                     obj[lessonId] = score;
                     Object.assign(student.tienDoHocTap[subjectId], obj)
                     model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                }
+            })
+        },
+        addDriveTestScore: (studentId, driveTestId, score, done) => {
+            app.model.student.get(studentId, (error, student) => {
+                if (error) {
+                    done(error)
+                } else {
+                    const obj = {};
+                    obj[driveTestId] = score;
+                    console.log('obj', obj)
+                    Object.assign(student.diemBoDeThi, obj)
+                    model.findOneAndUpdate({ _id: studentId }, { diemBoDeThi: student.diemBoDeThi }, { new: true }).exec(done);
                 }
             })
         },

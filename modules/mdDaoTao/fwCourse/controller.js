@@ -107,7 +107,7 @@ module.exports = (app) => {
         });
     });
 
-    // APIs Get Course Of Student -------------------------------------------------------------------------------------
+    // APIs Get Course Of Student Mobile -------------------------------------------------------------------------------------
     app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
@@ -130,7 +130,7 @@ module.exports = (app) => {
                     });
                 });
                 Promise.all(coursePromises).then(courses => {
-                    res.send({ courses });
+                    res.send({ courses: courses.filter(item => item != null) });
                 }).catch(error => res.send({ error }));
             } else {
                 res.send({ error });
@@ -147,15 +147,16 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const studentMapper = {};
+
                 students.forEach(item => studentMapper[item.course && item.course._id] = item._id);
                 if (studentMapper[_id]) {
-                    app.model.course.get(_id, (error, item) => res.send({ error, item }));
+                    const _studentId = studentMapper[_id];
+                    app.model.course.get(_id, (error, item) => res.send({ error, item, _studentId}));
                 } else {
                     res.send({ notify: 'Bạn không thuộc khóa học này!' });
                 }
             }
         });
-
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------

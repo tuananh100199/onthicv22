@@ -125,19 +125,16 @@ module.exports = app => {
                         }
                     }
                 }
-                console.log('user', _userId)
-                console.log('_currentCourseId', _currentCourseId)
 
-                app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, item) => {
-                    if(err || item == null) {
-                        err = 'Không tìm thấy học viên';
+                app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, students) => {
+                    if (error || !students.length) {
+                        res.send({ error });
                     } else {
-                        app.model.student.update(_id, {diemBoDeThi: }, (error, item) => res.send({ error, item }));
-
+                        app.model.student.addDriveTestScore(students[0]._id, _id, score, (error, item) => {
+                            res.send({ error, result: { score, trueAnswer }, item });
+                        })
                     }
                 });
-
-                res.send({ error: err, result: { score, trueAnswer } });
             }
         });
     });

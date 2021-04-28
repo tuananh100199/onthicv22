@@ -4,6 +4,8 @@ import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 import { getAllDriveTests } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+
 
 
 const previousRoute = '/user';
@@ -22,7 +24,10 @@ class UserCoursePageDetail extends AdminPage {
                     } else if (data.notify) {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
-                    } else if (data.item) {
+                    } else if (data.item && data._studentId) {
+                        this.props.getStudent(data._studentId, data => {
+                            console.log(data)
+                        })
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
@@ -65,6 +70,7 @@ class UserCoursePageDetail extends AdminPage {
     }
 
     render() {
+        const { questions } = this.state.questions ? this.state : { questions: [] };
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
         const _courseTypeId = this.state && this.state._courseTypeId ? this.state._courseTypeId : '';
         const { list } = this.props.driveTest ? this.props.driveTest : [];
@@ -128,7 +134,7 @@ class UserCoursePageDetail extends AdminPage {
                                             <div className='info'>
                                                 <h4>{driveTest.title}</h4>
                                                 <p style={{fontSize: '15px'}}>
-                                                    Điểm của bạn : 32/35
+                                                    Điểm của bạn : 32/{driveTest.questions && driveTest.questions.length}
                                                 </p>
                                             </div>
                                         </div>
@@ -145,5 +151,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course, driveTest: state.driveTest });
-const mapActionsToProps = { getCourseByStudent, getAllDriveTests };
+const mapActionsToProps = { getCourseByStudent, getAllDriveTests, getStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
