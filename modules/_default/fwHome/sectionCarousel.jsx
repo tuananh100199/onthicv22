@@ -27,10 +27,13 @@ class SectionCarousel extends React.Component {
 
     componentDidMount() {
         $(document).ready(() => {
-            const single_id = 'carousel_' + this.props.viewId, logo_id = 'logo_carousel_' + this.props.viewId;
+            // const single_id = 'carousel_' + this.props.viewId;
+            const logo_id = 'logo_carousel_' + this.props.viewId;
             this.props.homeGetCarousel(this.props.viewId, carousel => {
                 this.setState(carousel, () => {
-                    let singleCarousel = $('#' + single_id), logoCarousel = $('#' + logo_id);
+                    let singleCarousel = $('#' + logo_id);
+                    // let singleCarousel = $('#' + single_id) = $('#' + logo_id); TODO: Nguyên mẫu
+
                     const getRandomAnimationEntrance = () => inComing[Math.floor(Math.random() * inComing.length)];
                     const getRandomAnimationExit = () => outGoing[Math.floor(Math.random() * outGoing.length)];
                     this.handleResize();
@@ -75,7 +78,7 @@ class SectionCarousel extends React.Component {
     }
 
     render() {
-        let elements = null, height = this.state.height;
+        let elements = null;
 
         if (this.state.items) {
             elements = this.state.items.map((item, index) => {

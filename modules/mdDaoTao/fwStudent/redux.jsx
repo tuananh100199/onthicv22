@@ -101,6 +101,22 @@ export function getStudent(_id, done) {
     };
 }
 
+export function getStudentScore(done) {
+    return dispatch => {
+        const url = '/api/student/score';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`DELETE: ${url}. ${data.error}`);
+            } else {
+                // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
+                done && done(data.item);
+                dispatch({ type: StudentUpdate, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
 export function getPreStudentPage(pageNumber, pageSize, pageCondition, done) {

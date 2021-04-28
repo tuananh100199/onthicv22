@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, checkQuestion } from './redux';
+import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -15,7 +16,10 @@ class adminEditPage extends AdminPage {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
-                } else if (data.item && data.currentCourse) {
+                } else if (data.item && data.currentCourse && data.currentSubject) {
+                    this.props.getStudentScore(item => {
+                        this.setState({ prevAnswers: item[data.currentSubject][params._id].answers })
+                    })
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription, questions });
@@ -46,11 +50,19 @@ class adminEditPage extends AdminPage {
             const activeQuestion = this.state.questions[index],
                 questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
-                if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
-                    $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                if (this.state.prevAnswers[questionId]) {
+                    $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
+                    this.setState(prevState => ({
+                        studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
+                    }));
                 } else {
-                    $('input[name="' + questionId + '"]').prop('checked', false);
+                    if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
+                        $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                    } else {
+                        $('input[name="' + questionId + '"]').prop('checked', false);
+                    }
                 }
+
             }
         });
     }
@@ -92,7 +104,7 @@ class adminEditPage extends AdminPage {
                         {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
+                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -102,6 +114,7 @@ class adminEditPage extends AdminPage {
                                                     name={activeQuestion._id}
                                                     id={activeQuestion._id + index}
                                                     value={index}
+                                                    disabled={this.state.prevAnswers && this.state.prevAnswers[activeQuestion._id]}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
                                                 <label className='form-check-label' htmlFor={activeQuestion._id + index}>
                                                     {answer}
@@ -138,5 +151,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getLessonByStudent, checkQuestion };
+const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

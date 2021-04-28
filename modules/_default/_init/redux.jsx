@@ -58,7 +58,7 @@ export function getStatistic(done) {
 }
 
 export function login(data, done) {
-    return dispatch => {
+    return () => {
         T.post('/login', data, res => {
             if (res.error) {
                 done({ error: res.error ? res.error : '' });

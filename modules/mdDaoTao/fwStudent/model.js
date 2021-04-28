@@ -105,13 +105,14 @@ module.exports = (app) => {
             }
         }),
 
-        addStudiedLesson: (studentId, subjectId, lessonId, score, done) => {
+        addStudiedLesson: (studentId, subjectId, lessonId, score, answers, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {
                     done(error)
                 } else {
+                    console.log(answers)
                     const obj = {};
-                    obj[lessonId] = score;
+                    obj[lessonId] = { score: score, answers: answers };
                     Object.assign(student.tienDoHocTap[subjectId], obj)
                     model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }

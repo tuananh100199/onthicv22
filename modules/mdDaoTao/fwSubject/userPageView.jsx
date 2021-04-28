@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getSubjectByStudent } from './redux';
+import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -16,6 +17,13 @@ class AdminEditPage extends AdminPage {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user');
                 } else if (data.item && data.currentCourse) {
+                    this.props.getStudentScore(data => {
+                        if (data.error) {
+                            this.props.history.push('/user')
+                        } else {
+                            this.setState({ tienDoHocTap: data[params._id] })
+                        }
+                    });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription, courseId: data.currentCourse });
@@ -29,6 +37,7 @@ class AdminEditPage extends AdminPage {
     }
 
     render() {
+        const tienDoHocTap = this.state.tienDoHocTap;
         const lessons = this.props.subject && this.props.subject.item && this.props.subject.item.lessons ? this.props.subject.item.lessons : [];
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         return this.renderPage({
@@ -56,12 +65,13 @@ class AdminEditPage extends AdminPage {
                         <h4>Bài học</h4>
                         <div className='row'>
                             {lessons.length ? lessons.map((lesson, index) => (
-                                <div key={index} className='col-md-6 col-lg-4'>
+                                <div key={index} className='col-md-6 col-lg-6'>
                                     <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + lesson._id}>
                                         <div className='widget-small coloured-icon primary'>
                                             <i className='icon fa fa-3x fa fa-briefcase' />
                                             <div className='info'>
                                                 <h4>{lesson && lesson.title}</h4>
+                                                {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{(tienDoHocTap[lesson._id].score + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}
                                             </div>
                                         </div>
                                     </Link>
@@ -77,6 +87,6 @@ class AdminEditPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, subject: state.subject });
-const mapActionsToProps = { getSubjectByStudent };
+const mapStateToProps = state => ({ system: state.system, subject: state.subject, student: state.student });
+const mapActionsToProps = { getSubjectByStudent, getStudentScore };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);

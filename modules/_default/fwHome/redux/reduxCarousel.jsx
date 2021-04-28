@@ -173,7 +173,7 @@ export function changeCarouselItem(item) {
 
 // Home -------------------------------------------------------------------------------------------
 export function homeGetCarousel(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/home/carousel';
         T.get(url, { _id }, data => {
             if (data.error) {

@@ -49,6 +49,14 @@ module.exports = (app) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }));
     });
 
+    app.get('/api/student/score', app.permission.check('student:read'), (req, res) => {
+        const userId = req.session.user._id,
+            courseId = req.session.user.currentCourse;
+        app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
+            res.send({ error, item: item[0].tienDoHocTap })
+        });
+    });
+
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
@@ -215,35 +223,32 @@ module.exports = (app) => {
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
-        const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            if (students.length) {
-                const coursePromises = students.map((student) => {
-                    return new Promise((resolve, reject) => {
-                        if (student.course) {
-                            app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
-                                if (error) {
-                                    reject(error);
-                                } else if (!course) {
-                                    resolve();
-                                } else {
-                                    resolve(course);
-                                }
-                            });
-                        } else {
-                            resolve();
-                        }
-                    });
-                });
-                Promise.all(coursePromises).then(courses => {
-                    res.send({ courses: courses.filter(item => item != null) });
-                }).catch(error => res.send({ error }));
-            } else {
-                res.send({ error });
-            }
-        });
-    });
+    // app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
+    //     const _userId = req.session.user._id;
+    //     app.model.student.getAll({ user: _userId }, (error, students) => {
+    //         if (students.length) {
+    //             const coursePromises = students.map((student) => {
+    //                 return new Promise((resolve, reject) => {
+    //                     if (student.course) {
+    //                         app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
+    //                             if (error) {
+    //                                 reject(error);
+    //                             } else if (!course) {
+    //                                 resolve();
+    //                             } else {
+    //                                 resolve(course);
+    //                             }
+    //                         });
+    //                     } else {
+    //                         resolve();
+    //                     }
+    //                 });
+    //             });
+    //         } else {
+    //             res.send({ error });
+    //         }
+    //     });
+    // });
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');

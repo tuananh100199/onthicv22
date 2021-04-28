@@ -13,6 +13,7 @@ class UserPageDriveTest extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
+                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, questions } = data.item;
                     this.setState({ _id, title, questions, _courseId: data.currentCourse });
                 } else {
@@ -67,7 +68,7 @@ class UserPageDriveTest extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'visible' });
-            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
+            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true); 4
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#prev-btn').css({ 'visibility': 'visible' });
             $('#next-btn').css({ 'visibility': 'hidden' });

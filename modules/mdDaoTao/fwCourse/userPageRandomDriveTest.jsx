@@ -13,6 +13,7 @@ class UserPageRandomDriveTest extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.createRandomDriveTest(params._id, data => {
                 if (data.driveTest) {
+                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, questions } = data.driveTest;
                     this.setState({ _id, title, questions, _courseId: data.currentCourse });
                 } else {

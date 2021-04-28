@@ -164,7 +164,7 @@ export function deleteDriveTest(_id, done) {
 }
 
 export function checkDriveTestScore(_id, answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/drive-test/student/submit';
         T.post(url, { _id, answers }, data => {
             if (data.error) {
@@ -177,7 +177,7 @@ export function checkDriveTestScore(_id, answers, done) {
     };
 }
 export function checkRandomDriveTestScore(answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/drive-test/random/submit';
         T.post(url, { answers }, data => {
             if (data.error) {

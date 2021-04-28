@@ -44,7 +44,7 @@ class AdminManagerView extends React.Component {
         e.preventDefault();
         const { _id, groups = [] } = this.props.course.item,
             _teacherUserId = this.selectTeacher.value();
-        if (_teacherUserId && groups.find(({ teacher, students }) => teacher._id == _teacherUserId) == null) {
+        if (_teacherUserId && groups.find(({ teacher }) => teacher._id == _teacherUserId) == null) {
             groups.push({ teacher: _teacherUserId });
             this.props.updateCourse(_id, { groups }, () => {
                 this.selectTeacher.value(null);
