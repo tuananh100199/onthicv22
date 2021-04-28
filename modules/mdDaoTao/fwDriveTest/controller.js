@@ -41,7 +41,20 @@ module.exports = app => {
     app.get('/api/drive-test/student', app.permission.check('driveTest:read'), (req, res) => {
         app.model.driveTest.get(req.query._id, (error, item) => {
             const currentCourse = req.session.user.currentCourse;
+            if (item && item.questions) {
+                item.questions.forEach(question => question.trueAnswer = null);
+            }
             res.send({ error, item, currentCourse });
+        });
+    });
+
+    app.get('/api/drive-test/student/score', app.permission.check('driveTest:read'), (req, res) => {
+
+        const userId = req.session.user._id,
+            _driveTestId = req.body._id;
+            courseId = req.session.user.currentCourse;
+        app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
+            res.send({ error, item: item[0].diemBoDeThi });
         });
     });
 
@@ -133,12 +146,11 @@ module.exports = app => {
                         }
                     }
                 }
-                console.log('importanceScore888', importanceScore)
                 app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, students) => {
                     if (error || !students.length) {
                         res.send({ error });
                     } else {
-                        app.model.student.addDriveTestScore(students[0]._id, _driveTestId, score, importanceScore, (error, item) => {
+                        app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, (error, item) => {
                             res.send({ error, result: { score, trueAnswer, importanceScore }, item });
                         })
                     }

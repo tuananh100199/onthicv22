@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { getDriveTestItemByStudent, checkDriveTestScore, getDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-thu';
@@ -13,6 +13,17 @@ class UserPageDriveTest extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
+                    this.props.getDriveTestScore(params._id, items => {
+                        console.log('items', items)
+                        // if (items) {
+                        //     Object.entries(items).map(([key, value]) => {
+                        //     this.setState({
+                        //         prevTrueAnswers: item[data.currentSubject][params._id].trueAnswers,
+                        //         prevAnswers: item[data.currentSubject][params._id].answers
+                        //     });
+                        //     })
+                        // }
+                    });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, questions } = data.item;
                     this.setState({ _id, title, questions, _courseId: data.currentCourse });
@@ -28,6 +39,8 @@ class UserPageDriveTest extends AdminPage {
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
+
+            console.log('this.state.studentAnswer', this.state.studentAnswer)
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({ result: result });
             $('#totalScore').css('display', 'block');
@@ -35,20 +48,31 @@ class UserPageDriveTest extends AdminPage {
             $('#trueAnswer').css('display', 'block');
         });
     }
+
     changeQuestion = (e, index) => {
         e.preventDefault();
         this.setState({ activeQuestionIndex: index }, () => {
             const activeQuestion = this.state.questions[index],
                 questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
-                if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
-                    $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
+                    $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
+                    this.setState(prevState => ({
+                        studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
+                    }));
+                    $(':radio').click(() => false);
                 } else {
-                    $('input[name="' + questionId + '"]').prop('checked', false);
+                    if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
+                        $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                    } else {
+                        $('input[name="' + questionId + '"]').prop('checked', false);
+                    }
                 }
+
             }
         });
     }
+
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
@@ -61,16 +85,19 @@ class UserPageDriveTest extends AdminPage {
         const { score, trueAnswer, importanceScore } = this.state.result ? this.state.result : { score: 0, trueAnswer: {}, importanceScore: false };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
+        const { prevTrueAnswers, prevAnswers } = this.state;
+
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
-            $('#next-btn').css({ 'visibility': 'visible' });
-            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true); 4;
+            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            if (activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]) {
+                $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
+            }
         } else if (activeQuestionIndex == questions.length - 1) {
-            $('#prev-btn').css({ 'visibility': 'visible' });
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
@@ -103,7 +130,10 @@ class UserPageDriveTest extends AdminPage {
                                                             id={activeQuestion._id + index}
                                                             value={index}
                                                             onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                        <label className='form-check-label' htmlFor={activeQuestion._id + index}>
+                                                        <label className={'form-check-label ' +
+                                                            ((prevAnswers && prevAnswers[activeQuestion._id] == index)
+                                                                ? ((prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index) ? 'text-success' : 'text-danger')
+                                                                : '')} htmlFor={activeQuestion._id + index} >
                                                             {answer}
                                                         </label>
                                                     </div>
@@ -138,5 +168,5 @@ class UserPageDriveTest extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore };
+const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore, getDriveTestScore };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTest);

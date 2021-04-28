@@ -120,15 +120,17 @@ module.exports = (app) => {
                 }
             });
         },
-        addDriveTestScore: (studentId, driveTestId, score, importanceScore, done) => {
+        addDriveTestScore: (studentId, driveTestId, trueAnswers, answers, importanceScore, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {
                     done(error)
                 } else {
                     const obj = {};
                     obj[driveTestId] = {
-                        score: score,
-                        importanceScore: importanceScore
+                        score: Object.keys(trueAnswers).length,
+                        importanceScore: importanceScore,
+                        trueAnswers: trueAnswers,
+                        answers: answers
                     };
                     Object.assign(student.diemBoDeThi, obj)
                     model.findOneAndUpdate({ _id: studentId }, { diemBoDeThi: student.diemBoDeThi }, { new: true }).exec(done);
