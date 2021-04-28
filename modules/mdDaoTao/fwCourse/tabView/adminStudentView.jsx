@@ -66,6 +66,7 @@ class AdminStudentView extends React.Component {
     });
 
     render() {
+        console.log(this.props)
         const permission = this.props.permission,
             list = this.props.student && this.props.student.list ? this.props.student.list : [],
             divisionStudents = list.reduce((result, item) => !result.find(item1 => JSON.stringify(item1) == JSON.stringify(item.division)) ? [...result, item.division] : result, []),

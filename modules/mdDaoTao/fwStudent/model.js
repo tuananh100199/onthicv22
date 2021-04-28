@@ -35,6 +35,7 @@ module.exports = (app) => {
         hocPhiDaDong: Number,   // Học phí đã đóng
 
         tienDoHocTap: {},
+        diemBoDeThi: {},
 
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
@@ -78,6 +79,7 @@ module.exports = (app) => {
                         done(error)
                     } else {
                         changes.tienDoHocTap = {};
+                        changes.diemBoDeThi = {};
                         item.subjects.forEach(subject => {
                             {
                                 const obj = {};
@@ -85,6 +87,7 @@ module.exports = (app) => {
                                 Object.assign(changes.tienDoHocTap, obj)
                             }
                         });
+                        
                         changes.modifiedDate = new Date();
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
                     }

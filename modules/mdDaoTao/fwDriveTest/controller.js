@@ -64,7 +64,7 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
-        const currentCourse = req.session.user.currentCourse;
+        const currentCourse = req.session.user && req.session.user.currentCourse;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.user.driveTest,
             today = new Date().getTime();
@@ -102,6 +102,8 @@ module.exports = app => {
 
     app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
         const { _id, answers } = req.body;
+        const _currentCourseId = req.session.user &&  req.session.user.currentCourse;
+        const _userId = req.session.user._id;
         let score = 0,
             err = null;
         app.model.driveTest.get(_id, (error, test) => {
@@ -123,6 +125,17 @@ module.exports = app => {
                         }
                     }
                 }
+                console.log('user', _userId)
+                console.log('_currentCourseId', _currentCourseId)
+
+                app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, item) => {
+                    if(err || item == null) {
+                        err = 'Không tìm thấy học viên';
+                    } else {
+                        app.model.student.update(_id, {diemBoDeThi: }, (error, item) => res.send({ error, item }));
+
+                    }
+                });
 
                 res.send({ error: err, result: { score, trueAnswer } });
             }

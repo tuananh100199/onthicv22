@@ -127,6 +127,9 @@ class UserCoursePageDetail extends AdminPage {
                                             <i className='icon fa fa-3x fa fa-cubes' />
                                             <div className='info'>
                                                 <h4>{driveTest.title}</h4>
+                                                <p style={{fontSize: '15px'}}>
+                                                    Điểm của bạn : 32/35
+                                                </p>
                                             </div>
                                         </div>
                                     </Link>

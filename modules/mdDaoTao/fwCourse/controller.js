@@ -147,7 +147,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const studentMapper = {};
-                students.forEach(item => studentMapper[item.course._id] = item._id);
+                students.forEach(item => studentMapper[item.course && item.course._id] = item._id);
                 if (studentMapper[_id]) {
                     app.model.course.get(_id, (error, item) => res.send({ error, item }));
                 } else {
