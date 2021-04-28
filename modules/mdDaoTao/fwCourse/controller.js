@@ -88,6 +88,7 @@ module.exports = (app) => {
             if (changes.groups && changes.groups === 'empty') changes.groups = [];
             if (changes.admins && changes.admins === 'empty') changes.admins = [];
         }
+        delete changes.courseFee;
         app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
