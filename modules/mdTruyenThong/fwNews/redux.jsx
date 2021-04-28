@@ -121,7 +121,7 @@ export function deleteNews(_id) {
 }
 
 export function getNews(_id, done) {
-    return (dispatch) => {
+    return () => {
         const url = '/api/news';
         T.get(url, { _id }, data => {
             if (data.error) {
@@ -135,7 +135,7 @@ export function getNews(_id, done) {
 }
 
 export function checkLink(_id, link, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/news/check-link';
         T.put(url, { _id, link }, data => {
             if (data.error) {

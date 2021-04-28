@@ -90,14 +90,14 @@ export function deleteMenu(_id) {
 
 
 export function getMenu(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/menu';
         T.get(url, { _id }, data => done(data), error => done({ error }));
     };
 }
 
 export function createComponent(parentId, component, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/menu/component';
         T.post(url, { parentId, component }, data => {
             if (data.error) {
@@ -111,7 +111,7 @@ export function createComponent(parentId, component, done) {
 }
 
 export function updateComponent(_id, changes, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/menu/component';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
@@ -125,7 +125,7 @@ export function updateComponent(_id, changes, done) {
 }
 
 export function swapComponent(_id, isMoveUp, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/menu/component/swap/';
         T.put(url, { _id, isMoveUp }, data => {
             if (data.error) {
@@ -140,7 +140,7 @@ export function swapComponent(_id, isMoveUp, done) {
 }
 
 export function deleteComponent(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/menu/component';
         T.delete(url, { _id }, data => {
             if (data.error) {
@@ -154,7 +154,7 @@ export function deleteComponent(_id, done) {
 }
 
 export function getComponentViews(type, done) {
-    return dispatch => {
+    return () => {
         const url = `/api/menu/component/type/${type}`;
         T.get(url, data => {
             if (data.error) {

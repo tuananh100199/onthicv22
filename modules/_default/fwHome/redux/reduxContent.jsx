@@ -46,7 +46,6 @@ export function getContent(_id, done) {
     return dispatch => ajaxGetContent(_id, data => {
         if (data.error || data.item == null) {
             T.notify('Lấy nội dung bị lỗi!', 'danger');
-            console.error(`GET: ${url}. ${data.error}`);
         } else {
             dispatch({ type: ContentUpdate, item: data.item });
             done && done(data);
@@ -124,5 +123,5 @@ export const ajaxSelectContent = T.createAjaxAdapter(
 
 export function ajaxGetContent(_id, done) {
     const url = '/api/content';
-    T.get(url, { _id }, done, error => T.notify('Lấy nội dung bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, () => T.notify('Lấy nội dung bị lỗi!', 'danger'));
 }

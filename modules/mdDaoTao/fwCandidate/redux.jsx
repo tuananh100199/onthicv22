@@ -111,7 +111,7 @@ export function changeCandidate(item) {
 }
 
 export function createCandidate(candidate, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/candidate';
         T.post(url, { candidate }, data => {
             if (data.error) {
