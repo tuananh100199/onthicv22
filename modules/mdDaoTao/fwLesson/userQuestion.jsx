@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLessonByStudent, checkQuestion } from './redux';
+import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -15,7 +16,15 @@ class adminEditPage extends AdminPage {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
-                } else if (data.item && data.currentCourse) {
+                } else if (data.item && data.currentCourse && data.currentSubject) {
+                    this.props.getStudentScore(item => {
+                        if (item) {
+                            this.setState({
+                                prevTrueAnswers: item[data.currentSubject][params._id].trueAnswers,
+                                prevAnswers: item[data.currentSubject][params._id].answers
+                            });
+                        }
+                    });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription, questions });
@@ -46,11 +55,20 @@ class adminEditPage extends AdminPage {
             const activeQuestion = this.state.questions[index],
                 questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
-                if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
-                    $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
+                    $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
+                    this.setState(prevState => ({
+                        studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
+                    }));
+                    $(':radio').click(() => false);
                 } else {
-                    $('input[name="' + questionId + '"]').prop('checked', false);
+                    if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
+                        $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
+                    } else {
+                        $('input[name="' + questionId + '"]').prop('checked', false);
+                    }
                 }
+
             }
         });
     }
@@ -67,6 +85,7 @@ class adminEditPage extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+        const { prevTrueAnswers, prevAnswers } = this.state;
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -74,6 +93,9 @@ class adminEditPage extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            if (activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]) {
+                $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
+            }
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -92,7 +114,7 @@ class adminEditPage extends AdminPage {
                         {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
+                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -103,7 +125,10 @@ class adminEditPage extends AdminPage {
                                                     id={activeQuestion._id + index}
                                                     value={index}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                <label className='form-check-label' htmlFor={activeQuestion._id + index}>
+                                                <label className={'form-check-label ' +
+                                                    ((prevAnswers && prevAnswers[activeQuestion._id] == index)
+                                                        ? ((prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index) ? 'text-success' : 'text-danger')
+                                                        : '')} htmlFor={activeQuestion._id + index} >
                                                     {answer}
                                                 </label>
                                             </div>
@@ -138,5 +163,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getLessonByStudent, checkQuestion };
+const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

@@ -21,7 +21,7 @@ class UserPageRandomDriveTest extends AdminPage {
                 }
                 $('#totalScore').css('display', 'none');
                 $('#trueAnswer').css('display', 'none');
-            })
+            });
         });
     }
 

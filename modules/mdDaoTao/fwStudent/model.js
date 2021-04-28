@@ -76,7 +76,7 @@ module.exports = (app) => {
             if (changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
                     if (error) {
-                        done(error)
+                        done(error);
                     } else {
                         changes.tienDoHocTap = {};
                         changes.diemBoDeThi = {};
@@ -84,7 +84,7 @@ module.exports = (app) => {
                             {
                                 const obj = {};
                                 obj[subject._id] = {};
-                                Object.assign(changes.tienDoHocTap, obj)
+                                Object.assign(changes.tienDoHocTap, obj);
                             }
                         });
 
@@ -108,17 +108,17 @@ module.exports = (app) => {
             }
         }),
 
-        addStudiedLesson: (studentId, subjectId, lessonId, score, done) => {
+        addStudiedLesson: (studentId, subjectId, lessonId, trueAnswers, answers, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {
-                    done(error)
+                    done(error);
                 } else {
                     const obj = {};
-                    obj[lessonId] = score;
-                    Object.assign(student.tienDoHocTap[subjectId], obj)
+                    obj[lessonId] = { score: Object.keys(trueAnswers).length, trueAnswers: trueAnswers, answers: answers };
+                    Object.assign(student.tienDoHocTap[subjectId], obj);
                     model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
-            })
+            });
         },
         addDriveTestScore: (studentId, driveTestId, score, importanceScore, done) => {
             app.model.student.get(studentId, (error, student) => {

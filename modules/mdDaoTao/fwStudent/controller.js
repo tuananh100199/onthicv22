@@ -49,6 +49,14 @@ module.exports = (app) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }));
     });
 
+    app.get('/api/student/score', app.permission.check('student:read'), (req, res) => {
+        const userId = req.session.user._id,
+            courseId = req.session.user.currentCourse;
+        app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
+            res.send({ error, item: item[0].tienDoHocTap });
+        });
+    });
+
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
