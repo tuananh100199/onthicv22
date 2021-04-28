@@ -18,7 +18,12 @@ class adminEditPage extends AdminPage {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
                 } else if (data.item && data.currentCourse && data.currentSubject) {
                     this.props.getStudentScore(item => {
-                        this.setState({ prevAnswers: item[data.currentSubject][params._id].answers });
+                        if (item) {
+                            this.setState({
+                                prevTrueAnswers: item[data.currentSubject][params._id].trueAnswers,
+                                prevAnswers: item[data.currentSubject][params._id].answers
+                            });
+                        }
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
@@ -50,11 +55,12 @@ class adminEditPage extends AdminPage {
             const activeQuestion = this.state.questions[index],
                 questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
-                if (this.state.prevAnswers[questionId]) {
+                if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
                     $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
+                    $(':radio').click(() => false);
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -79,8 +85,7 @@ class adminEditPage extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const prevAnswers = this.state.prevAnswers;
-        console.log(prevAnswers);
+        const { prevTrueAnswers, prevAnswers } = this.state;
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -88,6 +93,9 @@ class adminEditPage extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            if (activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]) {
+                $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
+            }
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -117,7 +125,10 @@ class adminEditPage extends AdminPage {
                                                     id={activeQuestion._id + index}
                                                     value={index}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                <label className={'form-check-label ' + (prevAnswers && prevAnswers[activeQuestion._id] == index) ? 'text-success' : ''} htmlFor={activeQuestion._id + index} >
+                                                <label className={'form-check-label ' +
+                                                    ((prevAnswers && prevAnswers[activeQuestion._id] == index)
+                                                        ? ((prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index) ? 'text-success' : 'text-danger')
+                                                        : '')} htmlFor={activeQuestion._id + index} >
                                                     {answer}
                                                 </label>
                                             </div>

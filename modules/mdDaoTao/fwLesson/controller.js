@@ -73,7 +73,7 @@ module.exports = (app) => {
                     if (error || !students.length) {
                         res.send({ error });
                     } else {
-                        app.model.student.addStudiedLesson(students[0]._id, subjectId, lessonId, score, trueAnswer, (error, item) => {
+                        app.model.student.addStudiedLesson(students[0]._id, subjectId, lessonId, trueAnswer, answers, (error, item) => {
                             res.send({ error, result: { score, trueAnswer }, item });
                         });
                     }
