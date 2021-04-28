@@ -158,7 +158,7 @@ export class FormCheckbox extends React.Component {
         if (style == null) style = {};
         return (
             <div className={className} style={{ ...style, display: 'inline-flex' }}>
-                <label style={{ cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>
+                {label && <label style={{ cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>}
                 <div className='toggle'>
                     <label style={{ marginBottom: 0 }}>
                         <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} /><span className='button-indecator' />
