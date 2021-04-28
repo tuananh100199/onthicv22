@@ -30,8 +30,6 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc/de-thi-thu/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
-
-
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -130,7 +128,7 @@ module.exports = (app) => {
                     });
                 });
                 Promise.all(coursePromises).then(courses => {
-                    res.send({ courses });
+                    res.send({ courses: courses.filter(item => item != null) });
                 }).catch(error => res.send({ error }));
             } else {
                 res.send({ error });

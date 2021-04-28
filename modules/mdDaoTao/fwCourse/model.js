@@ -4,10 +4,10 @@ module.exports = app => {
         shortDescription: String,                                           // Giới thiệu ngắn khóa học
         detailDescription: String,                                          // Chi tiết khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
-        // courseFee: { type: Number, default: 0 },                            // Học phí => Delete
-        courseFees: [{
+        courseFee: { type: Number, default: 0 },                            // Học phí => Delete
+        courseFees: [{                                                      // Học phí => courseFee
             division: { type: app.db.Schema.ObjectId, ref: 'Division' },
-            fee: { type: Number, default: 0 }
+            fee: { type: Number, default: 0 },
         }],
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
         modifiedDate: { type: Date, default: Date.now },
