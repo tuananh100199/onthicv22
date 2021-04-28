@@ -7,7 +7,6 @@ import { FormTextBox, FormCheckbox, AdminModal, FormSelect } from 'view/componen
 
 class TeacherModal extends AdminModal {
     onShow = () => {
-        console.log(this.props.students, 'student')
         this.teacherSelect.value(null)
     };
 
