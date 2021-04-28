@@ -56,6 +56,7 @@ class EditCoursePage extends AdminPage {
             courseFee: this.courseFee.value(),
             shortDescription: this.shortDescription.value(),
             detailDescription: this.detailDescription.html(),
+            courseFees: this.state.courseFees
         };
         if (changes.courseFee == null) changes.courseFee = 0;
         if (changes.name == '') {

@@ -43,7 +43,7 @@ class AdminStudentView extends React.Component {
         const course = this.props.course;
         if (course !== prevProps.course) {
             this.setState({ studentSelecteds: [] });
-            this.props.getPreStudentAll({ courseType: this.props.courseType._id });
+            this.props.getPreStudentAll({ courseType: this.props.courseType && this.props.courseType._id });
             this.props.getDivisionAll(list => {
                 const _idOutsideDivisions = list.reduce((result, item) => item.isOutside ? [...result, item._id] : result, []),
                     groups = course.item.groups || [],

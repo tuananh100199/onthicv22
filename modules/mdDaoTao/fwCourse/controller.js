@@ -45,18 +45,20 @@ module.exports = (app) => {
     });
 
     app.get('/api/course', app.permission.check('course:read'), (req, res) => {
-        const { _id } = req.query;
+        const { _id } = req.query, sessionUser = req.session.user;
         app.model.course.get(_id, (error, item) => {
-            if (item && req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) {
+            const division = sessionUser.division, courseFees = item.courseFees;
+            if (item && sessionUser.isCourseAdmin && division && division.isOutside) {
                 // Với user là isCourseAdmin + isOutside: ẩn đi các lecturer, student thuộc cơ sở của họ
+                const courseFee = courseFees.find(courseFee => courseFee.division == division._id);
+                if (courseFee) item.courseFee = courseFee.fee;
                 app.model.division.getAll({ isOutside: true }, (error, divisions) => {
-                    const isOusideDivisions = [];
-                    (divisions || []).forEach(division => division.isOutside && isOusideDivisions.push(division._id.toString()));
-
-                    const groups = (item.groups || []).filter(group => group.teacher && group.teacher.division && isOusideDivisions.includes(group.teacher.division.toString()));
+                    const groups = (item.groups || []).reduce((result, group) => group.teacher && group.teacher.division &&
+                        divisions.findIndex(div => div._id.toString() == group.teacher.division.toString()) != -1 ? [...result, group] : result, []);
                     res.send({ error, item: app.clone(item, { groups }) });
                 });
             } else {
+                item.courseFee = courseFees[0].fee;
                 res.send({ error, item });
             }
         });
@@ -68,12 +70,20 @@ module.exports = (app) => {
 
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
         let changes = req.body.changes || {};
-        if (req.session.user && req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) {
+        const sessionUser = req.session.user, courseFees = changes.courseFees, division = sessionUser.division;
+        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+            const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
+            if (index != -1) courseFees[index].fee = changes.courseFee;
+            else courseFees.push({
+                division: division._id,
+                fee: changes.courseFee
+            });
             if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
             const groups = changes.groups == null || changes.groups === 'empty' ? [] : changes.groups;
             //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
             changes = { groups };
         } else {
+            courseFees[0].fee = changes.courseFee;
             if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
             if (changes.groups && changes.groups === 'empty') changes.groups = [];
             if (changes.admins && changes.admins === 'empty') changes.admins = [];
