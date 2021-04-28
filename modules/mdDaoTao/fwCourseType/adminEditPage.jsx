@@ -140,7 +140,7 @@ class CourseTypeEditPage extends AdminPage {
             </>,
              componentSetRandomDriveTest = <>
                 <div className='row'>
-                        {driveQuestionTypes}
+                    {driveQuestionTypes}
                 </div>
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
              </>,

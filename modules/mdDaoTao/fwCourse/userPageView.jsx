@@ -26,7 +26,9 @@ class UserCoursePageDetail extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item && data._studentId) {
                         this.props.getStudent(data._studentId, data => {
-                            console.log(data)
+                            if(data) {
+                                this.setState({diemBoDeThi: data.diemBoDeThi});
+                            }
                         })
                         this.setState(data.item);
                     } else {
@@ -70,7 +72,7 @@ class UserCoursePageDetail extends AdminPage {
     }
 
     render() {
-        const { questions } = this.state.questions ? this.state : { questions: [] };
+        const diemBoDeThi = this.state.diemBoDeThi ? this.state.diemBoDeThi : null;
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
         const _courseTypeId = this.state && this.state._courseTypeId ? this.state._courseTypeId : '';
         const { list } = this.props.driveTest ? this.props.driveTest : [];
@@ -133,9 +135,16 @@ class UserCoursePageDetail extends AdminPage {
                                             <i className='icon fa fa-3x fa fa-cubes' />
                                             <div className='info'>
                                                 <h4>{driveTest.title}</h4>
-                                                <p style={{fontSize: '15px'}}>
-                                                    Điểm của bạn : 32/{driveTest.questions && driveTest.questions.length}
-                                                </p>
+                                                { diemBoDeThi && Object.entries(diemBoDeThi).map(([key, value]) => {
+                                                    { key == driveTest._id ? 
+                                                        <p key ={index} style={{fontSize: '15px'}}>
+                                                            Điểm của bạn : {value.score}/{driveTest.questions && driveTest.questions.length}
+                                                        </p>
+                                                    } :
+                                                    
+                                                        
+                                                })
+                                                }
                                             </div>
                                         </div>
                                     </Link>

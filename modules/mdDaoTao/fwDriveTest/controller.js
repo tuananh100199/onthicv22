@@ -101,12 +101,15 @@ module.exports = app => {
     });
 
     app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
-        const { _id, answers } = req.body;
-        const _currentCourseId = req.session.user &&  req.session.user.currentCourse;
-        const _userId = req.session.user._id;
+        const { answers } = req.body,
+            _driveTestId = req.body._id,
+            _currentCourseId = req.session.user &&  req.session.user.currentCourse,
+            _userId = req.session.user._id;
         let score = 0,
-            err = null;
-        app.model.driveTest.get(_id, (error, test) => {
+            err = null,
+            importanceScore = false;
+
+        app.model.driveTest.get(_driveTestId, (error, test) => {
             if (error) {
                 res.send({ error });
             } else {
@@ -119,6 +122,9 @@ module.exports = app => {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
                                 trueAnswer[key] = value;
+                            } 
+                            if (questionMapper[key]._id == key) {
+                                importanceScore = true;
                             }
                         } else {
                             err = 'Không tìm thấy câu hỏi!';
@@ -130,8 +136,8 @@ module.exports = app => {
                     if (error || !students.length) {
                         res.send({ error });
                     } else {
-                        app.model.student.addDriveTestScore(students[0]._id, _id, score, (error, item) => {
-                            res.send({ error, result: { score, trueAnswer }, item });
+                        app.model.student.addDriveTestScore(students[0]._id, _driveTestId, score, importanceScore, (error, item) => {
+                            res.send({ error, result: { score, trueAnswer, importanceScore }, item });
                         })
                     }
                 });

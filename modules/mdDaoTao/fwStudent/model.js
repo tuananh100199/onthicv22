@@ -120,14 +120,16 @@ module.exports = (app) => {
                 }
             })
         },
-        addDriveTestScore: (studentId, driveTestId, score, done) => {
+        addDriveTestScore: (studentId, driveTestId, score, importanceScore, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {
                     done(error)
                 } else {
                     const obj = {};
-                    obj[driveTestId] = score;
-                    console.log('obj', obj)
+                    obj[driveTestId] = {
+                        score: score,
+                        importanceScore: importanceScore
+                    };
                     Object.assign(student.diemBoDeThi, obj)
                     model.findOneAndUpdate({ _id: studentId }, { diemBoDeThi: student.diemBoDeThi }, { new: true }).exec(done);
                 }

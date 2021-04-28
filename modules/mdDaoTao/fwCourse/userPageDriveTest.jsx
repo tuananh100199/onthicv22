@@ -58,7 +58,7 @@ class UserPageDriveTest extends AdminPage {
     render() {
         const { questions } = this.state.questions ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
+        const { score, trueAnswer, importanceScore } = this.state.result ? this.state.result : { score: 0, trueAnswer: {}, importanceScore: false };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
         if (questions && questions.length == 1) {
