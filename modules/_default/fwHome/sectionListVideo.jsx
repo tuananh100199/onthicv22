@@ -120,6 +120,6 @@ class SectionListVideo extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = () => ({});
 const mapActionsToProps = { getVideoAllByUser, getListVideoByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionListVideo);

@@ -77,7 +77,7 @@ export function getLessonByStudent(_id, done) {
 }
 
 export function checkQuestion(answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/question/student/submit';
         T.post(url, { answers }, data => {
             if (data.error) {

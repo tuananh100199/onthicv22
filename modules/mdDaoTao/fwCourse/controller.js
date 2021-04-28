@@ -128,7 +128,7 @@ module.exports = (app) => {
                     });
                 });
                 Promise.all(coursePromises).then(courses => {
-                    res.send({ courses });
+                    res.send({ courses: courses.filter(item => item != null) });
                 }).catch(error => res.send({ error }));
             } else {
                 res.send({ error });

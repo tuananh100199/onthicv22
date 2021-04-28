@@ -6,7 +6,7 @@ module.exports = app => {
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
         courseFee: { type: Number, default: 0 },                            // Học phí => Delete
         courseFees: [{                                                      // Học phí => courseFee
-            division: app.db.Schema.ObjectId, ref: 'Division',
+            division: { type: app.db.Schema.ObjectId, ref: 'Division' },
             fee: { type: Number, default: 0 },
         }],
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học

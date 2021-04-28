@@ -84,7 +84,7 @@ export function getForm(_id, option, done) {
 }
 
 export function createForm(done) {
-    return dispatch => {
+    return () => {
         const url = '/api/user-form';
         const data = {
             title: 'Form mới '
@@ -148,7 +148,7 @@ export function saveApplicationFormEmail(type, email) {
 }
 
 export function denyApplicationForm(_id, reason, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/application-form/reject';
         T.post(url, { _id, reason }, data => {
             if (data.error) {
@@ -239,7 +239,7 @@ export function userUpdateDonDeNghiHoc(_id, changes, userChanges, done) {
 
 //exportToWord
 export function exportDonDeNghiHocToWord(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/user-application-form/export/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
@@ -253,7 +253,7 @@ export function exportDonDeNghiHocToWord(_id, done) {
     };
 }
 export function exportBienNhanLanDauToWord(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/user-application-form-receipt/export/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {
@@ -268,7 +268,7 @@ export function exportBienNhanLanDauToWord(_id, done) {
 }
 
 export function exportBanCamKetToWord(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/user-application-form-commitment/export/' + _id;
         T.get(url, { _id }, data => {
             if (data.error) {

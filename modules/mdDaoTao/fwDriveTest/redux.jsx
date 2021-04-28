@@ -69,7 +69,7 @@ export function getDriveTestItem(_id, done) {
 }
 export function getDriveTestItemByStudent(_id, done) {
     return dispatch => {
-        const url = '/api/drive-test';
+        const url = '/api/drive-test/student';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy bộ đề thi bị lỗi', 'danger');
@@ -77,7 +77,7 @@ export function getDriveTestItemByStudent(_id, done) {
             } else {
                 dispatch({ type: DriveTestGet, item: data.item });
             }
-            if (done) done(data.item);
+            if (done) done(data);
         }, error => console.error(error) || T.notify('Lấy bộ đề thi bị lỗi', 'danger'));
     };
 }
@@ -164,7 +164,7 @@ export function deleteDriveTest(_id, done) {
 }
 
 export function checkDriveTestScore(_id, answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/drive-test/student/submit';
         T.post(url, { _id, answers }, data => {
             if (data.error) {
@@ -177,7 +177,7 @@ export function checkDriveTestScore(_id, answers, done) {
     };
 }
 export function checkRandomDriveTestScore(answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/drive-test/random/submit';
         T.post(url, { answers }, data => {
             if (data.error) {

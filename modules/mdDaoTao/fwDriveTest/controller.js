@@ -38,6 +38,13 @@ module.exports = app => {
         app.model.driveTest.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/drive-test/student', app.permission.check('driveTest:read'), (req, res) => {
+        app.model.driveTest.get(req.query._id, (error, item) => {
+            const currentCourse = req.session.user.currentCourse;
+            res.send({ error, item, currentCourse });
+        });
+    });
+
     app.post('/api/drive-test', app.permission.check('driveTest:write'), (req, res) => {
         app.model.driveTest.create(req.body.data, (error, item) => res.send({ error, item }));
     });
@@ -57,12 +64,12 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
-        req.session.user.driveTest = null;
+        const currentCourse = req.session.user.currentCourse;
         const _courseTypeId = req.body._courseTypeId,
-            user = req.session.user,
+            driveTest = req.session.user.driveTest,
             today = new Date().getTime();
-        if (user.driveTest && today < user.driveTest.expireDay) {
-            res.send(user.driveTest);
+        if (driveTest && today < driveTest.expireDay) {
+            res.send({driveTest, currentCourse});
         } else {
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
@@ -81,11 +88,11 @@ module.exports = app => {
                             });
                         });
                         Promise.all(randomQuestions).then(questions => {
-                            req.session.user.driveTest = {
+                            const driveTest = req.session.user.driveTest = {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
                             };
-                            res.send(req.session.user.driveTest);
+                            res.send({driveTest, currentCourse});
                         }).catch(error => res.send({ error }));
                     }
                 }
@@ -101,13 +108,15 @@ module.exports = app => {
             if (error) {
                 res.send({ error });
             } else {
-                const questionMapper = {};
+                const questionMapper = {},
+                trueAnswer = {};
                 test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
                         if (questionMapper[key]) {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
+                                trueAnswer[key] = value;
                             }
                         } else {
                             err = 'Không tìm thấy câu hỏi!';
@@ -115,7 +124,7 @@ module.exports = app => {
                     }
                 }
 
-                res.send({ error: err, result: { score: score, total: test.questions.length } });
+                res.send({ error: err, result: { score, trueAnswer } });
             }
         });
     });
@@ -124,20 +133,23 @@ module.exports = app => {
             randomTest = req.session.user.driveTest;
         let score = 0,
             err = null;
-            const questionMapper = {};
+            const questionMapper = {},
+                trueAnswer = {};
             randomTest.questions && randomTest.questions.forEach(item => questionMapper[item._id] = item);
             if (answers) {
                 for (const [key, value] of Object.entries(answers)) {
                     if (questionMapper[key]) {
                         if (questionMapper[key].trueAnswer == value) {
                             score = score + 1;
+                            trueAnswer[key] = value;
                         }
                     } else {
                         err = 'Không tìm thấy câu hỏi!';
                     }
                 }
             }
-            res.send({ error: err, result: { score: score, total: randomTest.questions.length } });
+            res.send({ error: err, result: { score, trueAnswer } });
+
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------
