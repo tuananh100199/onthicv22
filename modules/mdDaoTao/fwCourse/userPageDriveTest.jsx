@@ -92,7 +92,7 @@ class UserPageDriveTest extends AdminPage {
                                 <div className='tile-body row'>
                                     {activeQuestion ?
                                         (<div className='col-md-12 pb-5'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
+                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}>*Câu điểm liệt</span> : null}</h6>
                                             {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px', marginBottom: '30px' }} /> : null}
                                             <div className='form-check'>
                                                 {activeQuestion.answers.split('\n').map((answer, index) => (
