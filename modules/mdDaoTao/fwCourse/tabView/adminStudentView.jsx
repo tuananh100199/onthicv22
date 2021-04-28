@@ -7,7 +7,7 @@ import { FormTextBox, FormCheckbox, AdminModal, FormSelect } from 'view/componen
 
 class TeacherModal extends AdminModal {
     onShow = () => {
-        this.teacherSelect.value(null)
+        this.teacherSelect.value(null);
     };
 
     onSubmit = () => {
@@ -18,8 +18,8 @@ class TeacherModal extends AdminModal {
             const { _id, groups = [] } = this.props.course,
                 index = groups.findIndex(item => item.teacher._id == _teacherId);
             const _studentIds = this.props.students.map(item => item._id).filter((item, idx, arr) => arr.indexOf(item) == idx);
-            _studentIds.forEach(item => groups[index].student.push(item))
-            _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }))
+            _studentIds.forEach(item => groups[index].student.push(item));
+            _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }));
             this.props.add(_id, { groups }, () => {
                 T.notify('Thêm ứng viên vào nhóm thành công!');
                 this.hide();
@@ -42,7 +42,7 @@ class AdminStudentView extends React.Component {
     componentDidUpdate(prevProps) {
         const course = this.props.course;
         if (course !== prevProps.course) {
-            this.setState({ studentSelecteds: [] })
+            this.setState({ studentSelecteds: [] });
             this.props.getPreStudentAll({ courseType: this.props.courseType._id });
             this.props.getDivisionAll(list => {
                 const _idOutsideDivisions = list.reduce((result, item) => item.isOutside ? [...result, item._id] : result, []),
@@ -120,10 +120,10 @@ class AdminStudentView extends React.Component {
                                             students.splice(index, 1);
                                             this.setState({ studentSelecteds: students });
                                         }
-                                        this[_idDiv] && this[_idDiv].value(false)
+                                        this[_idDiv] && this[_idDiv].value(false);
                                     } else {
-                                        students.push(item)
-                                        this.setState({ studentSelecteds: students })
+                                        students.push(item);
+                                        this.setState({ studentSelecteds: students });
                                         if (list.length != 1) {
                                             const _idStudents = list.map(item => item._id);
                                             _idStudents.splice(index, 1);
@@ -206,16 +206,16 @@ class AdminStudentView extends React.Component {
                                             const _idStudents = studentInsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
                                                 [...result, student] : result, []);
                                             if (value) {
-                                                _idStudents.forEach(item => students.push(item))
-                                                this.setState({ studentSelecteds: students })
+                                                _idStudents.forEach(item => students.push(item));
+                                                this.setState({ studentSelecteds: students });
                                             } else {
                                                 _idStudents.forEach(item => {
                                                     const index = students.indexOf(item);
                                                     if (index != -1) {
                                                         students.splice(index, 1);
                                                     }
-                                                    this.setState({ studentSelecteds: students })
-                                                })
+                                                    this.setState({ studentSelecteds: students });
+                                                });
                                                 // this.setState({ studentSelecteds: students })
                                             }
                                             _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
@@ -227,7 +227,7 @@ class AdminStudentView extends React.Component {
                                         const index = divisions.findIndex(item1 => item1._id == item._id);
                                         if (divisions[index]) divisions[index].isModalOpened = true;
                                         this.setState({ divisions });
-                                        this[`modal${item._id}`].show()
+                                        this[`modal${item._id}`].show();
                                     }}>
                                         <i className='fa fa-fw fa-lg fa-plus' />  Học viên
                                 </button>
@@ -265,18 +265,16 @@ class AdminStudentView extends React.Component {
                                             const _idStudents = studentOutsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
                                                 [...result, student] : result, []);
                                             if (value) {
-                                                _idStudents.forEach(item => students.push(item))
-                                                this.setState({ studentSelecteds: students })
+                                                _idStudents.forEach(item => students.push(item));
+                                                this.setState({ studentSelecteds: students });
                                             } else {
                                                 _idStudents.forEach(item => {
                                                     const index = students.indexOf(item);
                                                     if (index != -1) {
                                                         students.splice(index, 1);
                                                     }
-                                                    this.setState({ studentSelecteds: students })
-                                                    console.log(this.state.studentSelecteds, 'fkfk')
-                                                })
-                                                // this.setState({ studentSelecteds: students })
+                                                    this.setState({ studentSelecteds: students });
+                                                });
                                             }
                                             _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
                                         }} style={{ display: 'flex' }} />
@@ -287,7 +285,7 @@ class AdminStudentView extends React.Component {
                                         const index = divisions.findIndex(item1 => item1._id == item._id);
                                         if (divisions[index]) divisions[index].isModalOpened = true;
                                         this.setState({ divisions });
-                                        this[`modal${item._id}`].show()
+                                        this[`modal${item._id}`].show();
                                     }}>
                                         <i className='fa fa-fw fa-lg fa-plus' />  Học viên
                                 </button>

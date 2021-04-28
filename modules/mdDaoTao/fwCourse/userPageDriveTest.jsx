@@ -69,7 +69,7 @@ class UserPageDriveTest extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'visible' });
-            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);4
+            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#prev-btn').css({ 'visibility': 'visible' });
             $('#next-btn').css({ 'visibility': 'hidden' });

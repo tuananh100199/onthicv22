@@ -91,8 +91,8 @@ module.exports = app => {
                             const driveTest = req.session.user.driveTest = {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
-                            }
-                            res.send({driveTest, currentCourse})
+                            };
+                            res.send({driveTest, currentCourse});
                         }).catch(error => res.send({ error }));
                     }
                 }
