@@ -53,7 +53,7 @@ module.exports = (app) => {
         const userId = req.session.user._id,
             courseId = req.session.user.currentCourse;
         app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
-            res.send({ error, item: item[0].tienDoHocTap })
+            res.send({ error, item: item[0].tienDoHocTap });
         });
     });
 

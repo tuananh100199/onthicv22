@@ -136,7 +136,7 @@ class HomeRequestLoginPage extends React.Component {
                                 <div className='course--content'>
                                     <ul className='nav nav-tabs nav-justified'>
                                         <li className='nav-item'>
-                                            {/* <a className='nav-link active' data-toggle='tab' href='#loginTab' role='tab' aria-selected='true'>{language.login}</a> TODO */}
+                                            {/* <a className='nav-link active' data-toggle='tab' href='#loginTab' role='tab' aria-selected='true'>{language.login}</a> */}
                                         </li>
                                         <li className='nav-item'>
                                             {/* <a className='nav-link' data-toggle='tab' href='#signUpTab' role='tab' aria-selected='false'>{language.signUp}</a> TODO */}

@@ -19,9 +19,9 @@ class AdminEditPage extends AdminPage {
                 } else if (data.item && data.currentCourse) {
                     this.props.getStudentScore(data => {
                         if (data.error) {
-                            this.props.history.push('/user')
+                            this.props.history.push('/user');
                         } else {
-                            this.setState({ tienDoHocTap: data[params._id] })
+                            this.setState({ tienDoHocTap: data[params._id] });
                         }
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);

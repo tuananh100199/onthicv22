@@ -18,8 +18,8 @@ class adminEditPage extends AdminPage {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
                 } else if (data.item && data.currentCourse && data.currentSubject) {
                     this.props.getStudentScore(item => {
-                        this.setState({ prevAnswers: item[data.currentSubject][params._id].answers })
-                    })
+                        this.setState({ prevAnswers: item[data.currentSubject][params._id].answers });
+                    });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription, questions });
@@ -80,7 +80,7 @@ class adminEditPage extends AdminPage {
         const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const prevAnswers = this.state.prevAnswers;
-        console.log(prevAnswers)
+        console.log(prevAnswers);
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });

@@ -75,14 +75,14 @@ module.exports = (app) => {
             if (changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
                     if (error) {
-                        done(error)
+                        done(error);
                     } else {
                         changes.tienDoHocTap = {};
                         item.subjects.forEach(subject => {
                             {
                                 const obj = {};
                                 obj[subject._id] = {};
-                                Object.assign(changes.tienDoHocTap, obj)
+                                Object.assign(changes.tienDoHocTap, obj);
                             }
                         });
                         changes.modifiedDate = new Date();
@@ -108,15 +108,15 @@ module.exports = (app) => {
         addStudiedLesson: (studentId, subjectId, lessonId, score, answers, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {
-                    done(error)
+                    done(error);
                 } else {
-                    console.log(answers)
+                    console.log(answers);
                     const obj = {};
                     obj[lessonId] = { score: score, answers: answers };
-                    Object.assign(student.tienDoHocTap[subjectId], obj)
+                    Object.assign(student.tienDoHocTap[subjectId], obj);
                     model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
-            })
+            });
         },
     };
 };
