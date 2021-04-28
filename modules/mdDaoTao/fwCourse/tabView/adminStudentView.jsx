@@ -18,7 +18,7 @@ class TeacherModal extends AdminModal {
         } else {
             const { _id, groups = [] } = this.props.course,
                 index = groups.findIndex(item => item.teacher._id == _teacherId);
-            const _studentIds = this.props.students.map(item => item._id);
+            const _studentIds = this.props.students.map(item => item._id).filter((item, idx, arr) => arr.indexOf(item) == idx);
             _studentIds.forEach(item => groups[index].student.push(item))
             _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }))
             this.props.add(_id, { groups }, () => {
@@ -184,7 +184,7 @@ class AdminStudentView extends React.Component {
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
-                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}
+                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 0 }}
                             onMouseEnter={() => {
                                 const index = divisions.findIndex(item1 => item1._id == item._id);
                                 if (divisions[index]) divisions[index].isHide = true;
@@ -192,11 +192,13 @@ class AdminStudentView extends React.Component {
                             }}
                             onMouseLeave={() => {
                                 const index = divisions.findIndex(item1 => item1._id == item._id);
-                                if (divisions[index]) divisions[index].isHide = false;
+                                if (divisions[index] && divisions[index].isModalOpened)
+                                    divisions[index].isHide = true;
+                                else divisions[index].isHide = false;
                                 this.setState({ divisions });
                             }}
                         >
-                            <h6>{divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide ?
+                            <h6 style={{ paddingTop: 20 }}>{divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide ?
                                 <>
                                     <FormCheckbox
                                         ref={e => this[item._id] = e}
@@ -213,15 +215,21 @@ class AdminStudentView extends React.Component {
                                                     if (index != -1) {
                                                         students.splice(index, 1);
                                                     }
+                                                    this.setState({ studentSelecteds: students })
                                                 })
-                                                this.setState({ studentSelecteds: students })
+                                                // this.setState({ studentSelecteds: students })
                                             }
                                             _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
                                         }} style={{ display: 'flex' }} />
                                     {item.title}
                                     <button className='btn btn-success' type='button' style={{
                                         float: 'right'
-                                    }} onClick={() => this[`modal${item._id}`].show()}>
+                                    }} onClick={() => {
+                                        const index = divisions.findIndex(item1 => item1._id == item._id);
+                                        if (divisions[index]) divisions[index].isModalOpened = true;
+                                        this.setState({ divisions });
+                                        this[`modal${item._id}`].show()
+                                    }}>
                                         <i className='fa fa-fw fa-lg fa-plus' />  Học viên
                                 </button>
                                 </> : item.title}
@@ -235,10 +243,69 @@ class AdminStudentView extends React.Component {
                             )}
                         </div>)] : result, []) : 'Không có thông tin'}
                         <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
-                        {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                        {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 0 }}
+                            onMouseEnter={() => {
+                                const index = divisions.findIndex(item1 => item1._id == item._id);
+                                if (divisions[index]) divisions[index].isHide = true;
+                                this.setState({ divisions });
+                            }}
+                            onMouseLeave={() => {
+                                const index = divisions.findIndex(item1 => item1._id == item._id);
+                                if (divisions[index] && divisions[index].isModalOpened)
+                                    divisions[index].isHide = true;
+                                else divisions[index].isHide = false;
+                                this.setState({ divisions });
+                            }}
+                        >
+                            <h6 style={{ paddingTop: 20 }}>{divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide ?
+                                <>
+                                    <FormCheckbox
+                                        ref={e => this[item._id] = e}
+                                        onChange={value => {
+                                            const students = this.state.studentSelecteds;
+                                            const _idStudents = studentOutsides.reduce((result, student) => JSON.stringify(student.division) == JSON.stringify(item) ?
+                                                [...result, student] : result, []);
+                                            if (value) {
+                                                _idStudents.forEach(item => students.push(item))
+                                                this.setState({ studentSelecteds: students })
+                                            } else {
+                                                _idStudents.forEach(item => {
+                                                    const index = students.indexOf(item);
+                                                    if (index != -1) {
+                                                        students.splice(index, 1);
+                                                    }
+                                                    this.setState({ studentSelecteds: students })
+                                                    console.log(this.state.studentSelecteds, 'fkfk')
+                                                })
+                                                // this.setState({ studentSelecteds: students })
+                                            }
+                                            _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
+                                        }} style={{ display: 'flex' }} />
+                                    {item.title}
+                                    <button className='btn btn-success' type='button' style={{
+                                        float: 'right'
+                                    }} onClick={() => {
+                                        const index = divisions.findIndex(item1 => item1._id == item._id);
+                                        if (divisions[index]) divisions[index].isModalOpened = true;
+                                        this.setState({ divisions });
+                                        this[`modal${item._id}`].show()
+                                    }}>
+                                        <i className='fa fa-fw fa-lg fa-plus' />  Học viên
+                                </button>
+                                </> : item.title}
+                            </h6>
+                            <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}
+                                course={this.props.course.item} division={item}
+                                students={this.state.studentSelecteds.filter(item1 => item._id == item1.division._id)}
+                            />
+                            {renderStudents(studentOutsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)), item._id,
+                                divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide
+                            )}
+                        </div>)] : result, []) : 'Không có thông tin'}
+                        {/* {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
                             <h6>{item.title}</h6>
                             {renderStudents(studentOutsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
-                        </div>)] : result, []) : 'Không có thông tin'}
+                        </div>)] : result, []) : 'Không có thông tin'} */}
                     </div>
                 </div>
                 <div className='col-md-6'>
