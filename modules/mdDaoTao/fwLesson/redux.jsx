@@ -76,7 +76,7 @@ export function getLessonByStudent(_id, done) {
     };
 }
 
-export function checkQuestion(answers, done) {
+export function checkQuestion(lessonId, answers, done) {
     return () => {
         const url = '/api/question/student/submit';
         T.post(url, { lessonId, answers }, data => {

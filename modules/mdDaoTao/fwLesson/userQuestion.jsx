@@ -79,6 +79,8 @@ class adminEditPage extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
+        const prevAnswers = this.state.prevAnswers;
+        console.log(prevAnswers)
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -114,9 +116,8 @@ class adminEditPage extends AdminPage {
                                                     name={activeQuestion._id}
                                                     id={activeQuestion._id + index}
                                                     value={index}
-                                                    disabled={this.state.prevAnswers && this.state.prevAnswers[activeQuestion._id]}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                <label className='form-check-label' htmlFor={activeQuestion._id + index}>
+                                                <label className={'form-check-label ' + (prevAnswers && prevAnswers[activeQuestion._id] == index) ? 'text-success' : ''} htmlFor={activeQuestion._id + index} >
                                                     {answer}
                                                 </label>
                                             </div>
