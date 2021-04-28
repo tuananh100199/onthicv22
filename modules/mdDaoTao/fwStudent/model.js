@@ -32,7 +32,9 @@ module.exports = (app) => {
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
         hocPhiMienGiam: Number,                                                                     // Số tiển được miễn giảm
-        hocPhiDaDong: Number,                                                                       // Học phí đã đóng
+        hocPhiDaDong: Number,   // Học phí đã đóng
+
+        tienDoHocTap: {},
 
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
@@ -70,8 +72,27 @@ module.exports = (app) => {
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
-            changes.modifiedDate = new Date();
-            model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+            if (changes.course) {
+                app.model.course.get(changes.course, (error, item) => {
+                    if (error) {
+                        done(error)
+                    } else {
+                        changes.tienDoHocTap = {};
+                        item.subjects.forEach(subject => {
+                            {
+                                const obj = {};
+                                obj[subject._id] = {};
+                                Object.assign(changes.tienDoHocTap, obj)
+                            }
+                        });
+                        changes.modifiedDate = new Date();
+                        model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+                    }
+                });
+            } else {
+                changes.modifiedDate = new Date();
+                model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+            }
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
@@ -83,5 +104,18 @@ module.exports = (app) => {
                 item.remove(done);
             }
         }),
+
+        addStudiedLesson: (studentId, subjectId, lessonId, score, done) => {
+            app.model.student.get(studentId, (error, student) => {
+                if (error) {
+                    done(error)
+                } else {
+                    const obj = {};
+                    obj[lessonId] = score;
+                    Object.assign(student.tienDoHocTap[subjectId], obj)
+                    model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                }
+            })
+        },
     };
 };
