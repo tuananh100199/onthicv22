@@ -123,15 +123,17 @@ module.exports = app => {
                                 score = score + 1;
                                 trueAnswer[key] = value;
                             } 
-                            if (questionMapper[key]._id == key) {
-                                importanceScore = true;
+                            else  {
+                                if (questionMapper[key]._id == key) {
+                                    importanceScore = true;
+                                }
                             }
                         } else {
                             err = 'Không tìm thấy câu hỏi!';
                         }
                     }
                 }
-
+                console.log('importanceScore888', importanceScore)
                 app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, students) => {
                     if (error || !students.length) {
                         res.send({ error });
