@@ -16,7 +16,7 @@ class FormEditPage extends React.Component {
     componentDidMount() {
         T.ready('/user', () => {
             if (this.props.system && this.props.system.user) {
-                const { firstname, lastname, sex, birthday } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '' };
+                // const { firstname, lastname, sex, birthday } = this.props.system.user || { image: '/img/avatar.png', firstname: '', lastname: '', sex: '', birthday: '' };
                 $('#birthday').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
                 $('#licenseDated').datepicker({ autoclose: true, format: 'dd/mm/yyyy' });
                 //TODO: set birhtday and sex, firstName, lastName
@@ -126,7 +126,7 @@ class FormEditPage extends React.Component {
                                     <input className='form-control' type='text' placeholder='Nhập số điện thoại' id='phoneNumber' />
                                 </div>
                                 <div className='form-group'>
-                                    //TODO: Xoa ten don
+                                    {/* //TODO: Xoa ten don */}
                                     <label className='control-label' htmlFor='formName'>Tên đơn</label>
                                     <textarea defaultValue='' className='form-control' id='formName'
                                         placeholder='Đơn đăng ký...' readOnly={readOnly}

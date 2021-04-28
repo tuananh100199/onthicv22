@@ -45,7 +45,7 @@ export default function roleReducer(state = null, data) {
 T.initCookiePage('adminRole');
 
 export function changeRole(role) {
-    return dispatch => {
+    return () => {
         const url = '/api/debug/change-role';
         T.post(url, { role: role._id }, data => {
             if (data.error) {
@@ -137,7 +137,7 @@ export function deleteRole(_id) {
 }
 
 export function getRole(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/role';
         T.get(url, { _id }, data => {
             if (data.error) {

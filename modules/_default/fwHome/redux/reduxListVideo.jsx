@@ -100,7 +100,7 @@ export function deleteListVideo(_id) {
 }
 
 export function getListVideoByUser(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/home/list-video/' + _id;
         T.get(url, data => {
             if (data.error) {

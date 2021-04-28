@@ -216,5 +216,5 @@ export const ajaxSelectStaffGroup = T.createAjaxAdapter(
 
 export function ajaxGetStaffGroup(_id, done) {
     const url = '/api/staff-group';
-    T.get(url, { _id }, done, error => T.notify('Lấy  nhóm nhân viên bị lỗi!', 'danger'));
+    T.get(url, { _id }, done, () => T.notify('Lấy  nhóm nhân viên bị lỗi!', 'danger'));
 }

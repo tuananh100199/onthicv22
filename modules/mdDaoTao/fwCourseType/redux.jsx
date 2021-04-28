@@ -144,7 +144,7 @@ export function deleteCourseTypeSubject(_courseTypeId, _subjectId, done) {
 
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getAllCourseTypeByUser(done) {
-    return dispatch => {
+    return () => {
         const url = '/home/course-type/all';
         T.get(url, data => {
             if (data.error) {

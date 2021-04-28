@@ -13,7 +13,7 @@ export default function statisticReducer(state = null, data) {
         case StatisticGet:
             return Object.assign({}, state, { selectedItem: data.item });
 
-        case StatisticChange:
+        case StatisticChange: {
             state = Object.assign({}, state);
             const updatedItem = data.item;
             if (state && state.selectedItem && state.selectedItem._id == updatedItem.statisticId) {
@@ -25,6 +25,7 @@ export default function statisticReducer(state = null, data) {
                 }
             }
             return state;
+        }
 
         default:
             return state;
@@ -172,7 +173,7 @@ export function changeStatisticItem(item) {
 
 // Home -------------------------------------------------------------------------------------------
 export function homeGetStatistic(_id, done) {
-    return dispatch => {
+    return () => {
         const url = '/home/statistic';
         T.get(url, { _id }, data => {
             if (data.error) {

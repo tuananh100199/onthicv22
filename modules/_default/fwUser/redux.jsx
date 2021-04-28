@@ -99,7 +99,7 @@ export function getUserPage(pageNumber, pageSize, pageCondition, done) {
 }
 
 export function getUser(_id, done) {
-    return dispatch => ajaxGetUser(_id, data => {
+    return () => ajaxGetUser(_id, data => {
         done && done(data);
         // dispatch({ type: UserGetItem, item: data.user });
     });
@@ -159,7 +159,7 @@ export function changeUser(user) {
 }
 
 export function userUpdateProfile(changes, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/user/profile';
         T.put(url, { changes }, data => {
             if (data.error) {
@@ -174,7 +174,7 @@ export function userUpdateProfile(changes, done) {
 }
 
 export function switchUser(_id) {
-    return dispatch => {
+    return () => {
         const url = '/api/debug/switch-user';
         T.post(url, { _id }, data => {
             if (data.error) {
