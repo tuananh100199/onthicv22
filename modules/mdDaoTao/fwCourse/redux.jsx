@@ -85,6 +85,7 @@ export function createCourse(data, done) {
             } else {
                 dispatch(getCoursePage());
                 if (done) done(data);
+                console.log('data', data.item);
             }
         }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
     };
