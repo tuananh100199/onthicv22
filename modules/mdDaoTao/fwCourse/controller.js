@@ -58,7 +58,7 @@ module.exports = (app) => {
                     res.send({ error, item: app.clone(item, { groups }) });
                 });
             } else {
-                item.courseFee = courseFees[0].fee;
+                item.courseFee = courseFees[0] && courseFees[0].fee;
                 res.send({ error, item });
             }
         });
@@ -72,18 +72,20 @@ module.exports = (app) => {
         let changes = req.body.changes || {};
         const sessionUser = req.session.user, courseFees = changes.courseFees, division = sessionUser.division;
         if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
-            if (index != -1) courseFees[index].fee = changes.courseFee;
-            else courseFees.push({
-                division: division._id,
-                fee: changes.courseFee
-            });
+            if (courseFees) {
+                const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
+                if (index != -1) courseFees[index].fee = changes.courseFee;
+                else courseFees.push({
+                    division: division._id,
+                    fee: changes.courseFee
+                });
+            }
             if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
             const groups = changes.groups == null || changes.groups === 'empty' ? [] : changes.groups;
             //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
             changes = { groups };
         } else {
-            courseFees[0].fee = changes.courseFee;
+            if (courseFees) courseFees[0].fee = changes.courseFee;
             if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
             if (changes.groups && changes.groups === 'empty') changes.groups = [];
             if (changes.admins && changes.admins === 'empty') changes.admins = [];

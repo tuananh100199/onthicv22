@@ -110,7 +110,7 @@ class AdminStudentView extends React.Component {
             renderStudents = (list, _idDiv, isHide) =>
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {list.map((item, index) => {
-                        return (<li key={index} onDragStart={e => this.onDragStart(e, item)} style={{ whiteSpace: 'nowrap' }} draggable>
+                        return (<li key={index} style={{ whiteSpace: 'nowrap' }}>
                             {isHide && <FormCheckbox ref={e => this[item._id] = e}
                                 onChange={value => {
                                     const students = this.state.studentSelecteds;
@@ -137,7 +137,7 @@ class AdminStudentView extends React.Component {
                                     }
                                 }}
                             />}
-                            {item.lastname} {item.firstname}</li>);
+                            <span draggable onDragStart={e => this.onDragStart(e, item)}>{item.lastname} {item.firstname}</span></li>);
                     })}
                 </ol>,
 
