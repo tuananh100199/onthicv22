@@ -80,7 +80,7 @@ class UserPageDriveTest extends AdminPage {
     }
 
     render() {
-        const { questions } = this.state.questions ? this.state : { questions: [] };
+        const questions = this.state.questions ? this.state.questions : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const { score, trueAnswer, importanceScore } = this.state.result ? this.state.result : { score: 0, trueAnswer: {}, importanceScore: false };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -90,13 +90,11 @@ class UserPageDriveTest extends AdminPage {
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
+            !this.state.result && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
-            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
-            if (activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]) {
-                $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
-            }
+            $('#next-btn').css({ 'visibility': 'visible' });
+            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -119,7 +117,7 @@ class UserPageDriveTest extends AdminPage {
                                 <div className='tile-body row'>
                                     {activeQuestion ?
                                         (<div className='col-md-12 pb-5'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}>*Câu điểm liệt</span> : null}</h6>
+                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
                                             {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px', marginBottom: '30px' }} /> : null}
                                             <div className='form-check'>
                                                 {activeQuestion.answers.split('\n').map((answer, index) => (
