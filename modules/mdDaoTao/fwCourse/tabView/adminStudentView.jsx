@@ -43,7 +43,7 @@ class AdminStudentView extends React.Component {
         const course = this.props.course;
         if (course !== prevProps.course) {
             this.setState({ studentSelecteds: [] });
-            this.props.getPreStudentAll({ courseType: this.props.courseType._id });
+            this.props.getPreStudentAll({ courseType: this.props.courseType && this.props.courseType._id });
             this.props.getDivisionAll(list => {
                 const _idOutsideDivisions = list.reduce((result, item) => item.isOutside ? [...result, item._id] : result, []),
                     groups = course.item.groups || [],
@@ -110,7 +110,7 @@ class AdminStudentView extends React.Component {
             renderStudents = (list, _idDiv, isHide) =>
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {list.map((item, index) => {
-                        return (<li key={index} onDragStart={e => this.onDragStart(e, item)} style={{ whiteSpace: 'nowrap' }} draggable>
+                        return (<li key={index} style={{ whiteSpace: 'nowrap' }}>
                             {isHide && <FormCheckbox ref={e => this[item._id] = e}
                                 onChange={value => {
                                     const students = this.state.studentSelecteds;
@@ -137,7 +137,7 @@ class AdminStudentView extends React.Component {
                                     }
                                 }}
                             />}
-                            {item.lastname} {item.firstname}</li>);
+                            <span draggable onDragStart={e => this.onDragStart(e, item)}>{item.lastname} {item.firstname}</span></li>);
                     })}
                 </ol>,
 
@@ -229,8 +229,8 @@ class AdminStudentView extends React.Component {
                                         this.setState({ divisions });
                                         this[`modal${item._id}`].show();
                                     }}>
-                                        <i className='fa fa-fw fa-lg fa-plus' />  Học viên
-                                </button>
+                                        <i className='fa fa-arrow-right' />
+                                    </button>
                                 </> : item.title}
                             </h6>
                             <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}
@@ -287,8 +287,8 @@ class AdminStudentView extends React.Component {
                                         this.setState({ divisions });
                                         this[`modal${item._id}`].show();
                                     }}>
-                                        <i className='fa fa-fw fa-lg fa-plus' />  Học viên
-                                </button>
+                                        <i className='fa fa-arrow-right' />
+                                    </button>
                                 </> : item.title}
                             </h6>
                             <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse} updateStudent={this.props.updateStudent}

@@ -69,7 +69,7 @@ module.exports = app => {
             driveTest = req.session.user.driveTest,
             today = new Date().getTime();
         if (driveTest && today < driveTest.expireDay) {
-            res.send({driveTest, currentCourse});
+            res.send({ driveTest, currentCourse });
         } else {
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
@@ -92,7 +92,7 @@ module.exports = app => {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
                             };
-                            res.send({driveTest, currentCourse});
+                            res.send({ driveTest, currentCourse });
                         }).catch(error => res.send({ error }));
                     }
                 }
@@ -109,7 +109,7 @@ module.exports = app => {
                 res.send({ error });
             } else {
                 const questionMapper = {},
-                trueAnswer = {};
+                    trueAnswer = {};
                 test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
@@ -133,22 +133,22 @@ module.exports = app => {
             randomTest = req.session.user.driveTest;
         let score = 0,
             err = null;
-            const questionMapper = {},
-                trueAnswer = {};
-            randomTest.questions && randomTest.questions.forEach(item => questionMapper[item._id] = item);
-            if (answers) {
-                for (const [key, value] of Object.entries(answers)) {
-                    if (questionMapper[key]) {
-                        if (questionMapper[key].trueAnswer == value) {
-                            score = score + 1;
-                            trueAnswer[key] = value;
-                        }
-                    } else {
-                        err = 'Không tìm thấy câu hỏi!';
+        const questionMapper = {},
+            trueAnswer = {};
+        randomTest.questions && randomTest.questions.forEach(item => questionMapper[item._id] = item);
+        if (answers) {
+            for (const [key, value] of Object.entries(answers)) {
+                if (questionMapper[key]) {
+                    if (questionMapper[key].trueAnswer == value) {
+                        score = score + 1;
+                        trueAnswer[key] = value;
                     }
+                } else {
+                    err = 'Không tìm thấy câu hỏi!';
                 }
             }
-            res.send({ error: err, result: { score, trueAnswer } });
+        }
+        res.send({ error: err, result: { score, trueAnswer } });
 
     });
 

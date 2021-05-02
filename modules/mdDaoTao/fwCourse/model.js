@@ -6,7 +6,7 @@ module.exports = app => {
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },    // Loại khóa học
         courseFee: { type: Number, default: 0 },                            // Học phí => Delete
         courseFees: [{                                                      // Học phí => courseFee
-            division: { type: app.db.Schema.ObjectId, ref: 'Division' },
+            division: String,
             fee: { type: Number, default: 0 },
         }],
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
@@ -37,7 +37,10 @@ module.exports = app => {
         create: (data, done) => app.model.courseType.get(data.courseType, (_, item) =>
             model.create({
                 ...data,
-                courseFee: item.price,
+                courseFees: [{
+                    division: '0',
+                    fee: item.price
+                }],
                 shortDescription: item.shortDescription,
                 detailDescription: item.detailDescription,
                 subjects: item.subjects,
