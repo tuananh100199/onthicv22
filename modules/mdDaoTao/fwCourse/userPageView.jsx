@@ -29,7 +29,7 @@ class UserCoursePageDetail extends AdminPage {
                             if(data) {
                                 this.setState({diemBoDeThi: data.diemBoDeThi});
                             }
-                        })
+                        });
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);

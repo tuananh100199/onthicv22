@@ -25,7 +25,7 @@ class UserPageDriveTest extends AdminPage {
                                     });
                                     // $('#submit-btn').css({ 'visibility': 'hidden' });
                                 }
-                            })
+                            });
                         }
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);

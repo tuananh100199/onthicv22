@@ -123,7 +123,7 @@ module.exports = (app) => {
         addDriveTestScore: (studentId, driveTestId, trueAnswers, answers, importanceScore, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {
-                    done(error)
+                    done(error);
                 } else {
                     const obj = {};
                     obj[driveTestId] = {
@@ -132,10 +132,10 @@ module.exports = (app) => {
                         trueAnswers: trueAnswers,
                         answers: answers
                     };
-                    Object.assign(student.diemBoDeThi, obj)
+                    Object.assign(student.diemBoDeThi, obj);
                     model.findOneAndUpdate({ _id: studentId }, { diemBoDeThi: student.diemBoDeThi }, { new: true }).exec(done);
                 }
-            })
+            });
         },
     };
 };

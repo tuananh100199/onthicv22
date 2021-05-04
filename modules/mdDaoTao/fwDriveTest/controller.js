@@ -117,7 +117,6 @@ module.exports = app => {
             _currentCourseId = req.session.user &&  req.session.user.currentCourse,
             _userId = req.session.user._id;
         let score = 0,
-            err = null,
             importanceScore = false;
 
         app.model.driveTest.get(_driveTestId, (error, test) => {
@@ -140,7 +139,7 @@ module.exports = app => {
                                 }
                             }
                         } else {
-                            err = 'Không tìm thấy câu hỏi!';
+                            error = 'Không tìm thấy câu hỏi!';
                         }
                     }
                 }
@@ -150,7 +149,7 @@ module.exports = app => {
                     } else {
                         app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, (error, item) => {
                             res.send({ error, result: { score, trueAnswer, importanceScore }, item });
-                        })
+                        });
                     }
                 });
             }
