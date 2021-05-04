@@ -7,7 +7,7 @@ import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/input.scss';
 
 class adminEditPage extends AdminPage {
-    state = { showSubmitButton: false };
+    state = { showSubmitButton: true };
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(url);
@@ -95,6 +95,7 @@ class adminEditPage extends AdminPage {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
+            activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false);
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
@@ -158,9 +159,7 @@ class adminEditPage extends AdminPage {
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
                             </button> :
-                            <button className='btn btn-circle' id='refresh-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Làm kiểm tra lại' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
-                                <i className='fa fa-lg fa-refresh' />
-                            </button>}
+                            null}
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>

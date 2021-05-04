@@ -119,21 +119,19 @@ module.exports = (app) => {
     });
 
     app.get('/api/student/course', app.permission.check('course:read'), (req, res) => {
-        const { _id } = req.query,
-            studentId = req.session.user._id;
-        req.session.user.currentCourse = _id;
-        app.model.student.getAll({ user: studentId }, (error, students) => {
+        const _courseId = req.query._id,
+            _studentId = req.session.user._id;
+        req.session.user.currentCourse = _courseId;
+        app.model.student.getAll({ user: _studentId, course: _courseId }, (error, students) => {
             if (error) {
                 res.send({ error });
+            } else if (students.length == 0) {
+                res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
-                
-                const studentMapper = {};
-                students.forEach(item => studentMapper[item.course && item.course._id] = item._id);
-                if (studentMapper[_id]) {
-                    const _studentId = studentMapper[_id];
-                    app.model.course.get(_id, (error, item) => res.send({ error, item, _studentId }));
+                if (students[0].course && students[0].course.active) {
+                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId }));
                 } else {
-                    res.send({ notify: 'Bạn không thuộc khóa học này!' });
+                    res.send({ notify: 'Khóa học chưa được kích hoạt!' });
                 }
             }
         });
