@@ -41,7 +41,20 @@ module.exports = app => {
     app.get('/api/drive-test/student', app.permission.check('driveTest:read'), (req, res) => {
         app.model.driveTest.get(req.query._id, (error, item) => {
             const currentCourse = req.session.user.currentCourse;
+            if (item && item.questions) {
+                item.questions.forEach(question => question.trueAnswer = null);
+            }
             res.send({ error, item, currentCourse });
+        });
+    });
+
+    app.get('/api/drive-test/student/score', app.permission.check('driveTest:read'), (req, res) => {
+
+        const userId = req.session.user._id,
+            _driveTestId = req.body._id;
+            courseId = req.session.user.currentCourse;
+        app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
+            res.send({ error, item: item[0].diemBoDeThi });
         });
     });
 
@@ -64,7 +77,7 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
-        const currentCourse = req.session.user.currentCourse;
+        const currentCourse = req.session.user && req.session.user.currentCourse;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.user.driveTest,
             today = new Date().getTime();
@@ -101,10 +114,15 @@ module.exports = app => {
     });
 
     app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
-        const { _id, answers } = req.body;
+        const { answers } = req.body,
+            _driveTestId = req.body._id,
+            _currentCourseId = req.session.user &&  req.session.user.currentCourse,
+            _userId = req.session.user._id;
         let score = 0,
-            err = null;
-        app.model.driveTest.get(_id, (error, test) => {
+            err = null,
+            importanceScore = false;
+
+        app.model.driveTest.get(_driveTestId, (error, test) => {
             if (error) {
                 res.send({ error });
             } else {
@@ -117,14 +135,26 @@ module.exports = app => {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
                                 trueAnswer[key] = value;
+                            } 
+                            else  {
+                                if (questionMapper[key]._id == key) {
+                                    importanceScore = true;
+                                }
                             }
                         } else {
                             err = 'Không tìm thấy câu hỏi!';
                         }
                     }
                 }
-
-                res.send({ error: err, result: { score, trueAnswer } });
+                app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, students) => {
+                    if (error || !students.length) {
+                        res.send({ error });
+                    } else {
+                        app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, (error, item) => {
+                            res.send({ error, result: { score, trueAnswer, importanceScore }, item });
+                        })
+                    }
+                });
             }
         });
     });

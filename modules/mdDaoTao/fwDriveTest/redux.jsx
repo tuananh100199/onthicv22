@@ -189,6 +189,22 @@ export function checkRandomDriveTestScore(answers, done) {
         }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     };
 }
+export function getDriveTestScore(_id, done) {
+    return dispatch => {
+        const url = '/api/drive-test/student/score';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`DELETE: ${url}. ${data.error}`);
+            } else {
+                // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
+                done && done(data.item);
+                dispatch({ type: DriveTestGet, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
 
 // Questions ----------------------------------------------------------------------------------------------------------
 export function createDriveTestQuestion(_driveTestId, _questionId, done) {

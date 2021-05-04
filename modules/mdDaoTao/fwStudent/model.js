@@ -35,6 +35,7 @@ module.exports = (app) => {
         hocPhiDaDong: Number,   // Học phí đã đóng
 
         tienDoHocTap: {},
+        diemBoDeThi: {},
 
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
@@ -78,6 +79,7 @@ module.exports = (app) => {
                         done(error);
                     } else {
                         changes.tienDoHocTap = {};
+                        changes.diemBoDeThi = {};
                         item.subjects.forEach(subject => {
                             {
                                 const obj = {};
@@ -85,6 +87,7 @@ module.exports = (app) => {
                                 Object.assign(changes.tienDoHocTap, obj);
                             }
                         });
+
                         changes.modifiedDate = new Date();
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
                     }
@@ -116,6 +119,23 @@ module.exports = (app) => {
                     model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
             });
+        },
+        addDriveTestScore: (studentId, driveTestId, trueAnswers, answers, importanceScore, done) => {
+            app.model.student.get(studentId, (error, student) => {
+                if (error) {
+                    done(error)
+                } else {
+                    const obj = {};
+                    obj[driveTestId] = {
+                        score: Object.keys(trueAnswers).length,
+                        importanceScore: importanceScore,
+                        trueAnswers: trueAnswers,
+                        answers: answers
+                    };
+                    Object.assign(student.diemBoDeThi, obj)
+                    model.findOneAndUpdate({ _id: studentId }, { diemBoDeThi: student.diemBoDeThi }, { new: true }).exec(done);
+                }
+            })
         },
     };
 };

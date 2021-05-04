@@ -222,33 +222,6 @@ module.exports = (app) => {
         app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-    // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    // app.get('/api/student/course', app.permission.check('student:read'), (req, res) => {
-    //     const _userId = req.session.user._id;
-    //     app.model.student.getAll({ user: _userId }, (error, students) => {
-    //         if (students.length) {
-    //             const coursePromises = students.map((student) => {
-    //                 return new Promise((resolve, reject) => {
-    //                     if (student.course) {
-    //                         app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
-    //                             if (error) {
-    //                                 reject(error);
-    //                             } else if (!course) {
-    //                                 resolve();
-    //                             } else {
-    //                                 resolve(course);
-    //                             }
-    //                         });
-    //                     } else {
-    //                         resolve();
-    //                     }
-    //                 });
-    //             });
-    //         } else {
-    //             res.send({ error });
-    //         }
-    //     });
-    // });
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
