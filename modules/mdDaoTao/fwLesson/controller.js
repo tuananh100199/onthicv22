@@ -56,13 +56,15 @@ module.exports = (app) => {
                     trueAnswer = {},
                     subjectId = req.session.user.currentSubject,
                     courseId = req.session.user.currentCourse;
-                questions.forEach(item => questionMapper[item._id] = item);
+                questions.forEach(item => {
+                    questionMapper[item._id] = item;
+                    trueAnswer[item._id] = item.trueAnswer;
+                });
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
                         if (questionMapper[key]) {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
-                                trueAnswer[key] = value;
                             }
                         } else {
                             error = 'Không tìm thấy câu hỏi!';
@@ -74,7 +76,7 @@ module.exports = (app) => {
                         res.send({ error });
                     } else {
                         app.model.student.addStudiedLesson(students[0]._id, subjectId, lessonId, trueAnswer, answers, (error, item) => {
-                            res.send({ error, result: { score, trueAnswer }, item });
+                            res.send({ error, result: { score }, item });
                         });
                     }
                 });

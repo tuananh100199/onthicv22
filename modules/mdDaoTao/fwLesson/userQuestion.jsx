@@ -4,9 +4,10 @@ import { getLessonByStudent, checkQuestion } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
+import '../../../view/component/input.scss';
 
 class adminEditPage extends AdminPage {
-    state = {};
+    state = { showSubmitButton: false };
     componentDidMount() {
         let url = window.location.pathname,
             params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(url);
@@ -20,8 +21,9 @@ class adminEditPage extends AdminPage {
                     this.props.getStudentScore(item => {
                         if (item) {
                             this.setState({
-                                prevTrueAnswers: item[data.currentSubject][params._id].trueAnswers,
-                                prevAnswers: item[data.currentSubject][params._id].answers
+                                prevTrueAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].trueAnswers : null,
+                                prevAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].answers : null,
+                                showSubmitButton: item[data.currentSubject][params._id] ? false : true
                             });
                         }
                     });
@@ -60,7 +62,9 @@ class adminEditPage extends AdminPage {
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
-                    $(':radio').click(() => false);
+                    if (this.state.prevAnswers[questionId] == this.state.prevTrueAnswers[questionId]) {
+                        $(':radio').click(() => false);
+                    }
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -75,7 +79,8 @@ class adminEditPage extends AdminPage {
 
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
-            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
+            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() },
+            prevAnswers: { ...prevState.prevAnswers, [_questionId]: null }
         }));
     }
 
@@ -83,9 +88,9 @@ class adminEditPage extends AdminPage {
         const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + this.state.lessonId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
+        const { score } = this.state.result ? this.state.result : { score: 0 };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { prevTrueAnswers, prevAnswers } = this.state;
+        const { prevTrueAnswers, prevAnswers, showSubmitButton } = this.state;
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -93,9 +98,7 @@ class adminEditPage extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
-            if (activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]) {
-                $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
-            }
+            activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -118,17 +121,19 @@ class adminEditPage extends AdminPage {
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
-                                            <div key={index}>
-                                                <input className='form-check-input'
+                                            <div key={index} className='custom-control custom-radio'>
+                                                <input className='custom-control-input'
                                                     type='radio'
                                                     name={activeQuestion._id}
                                                     id={activeQuestion._id + index}
                                                     value={index}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                <label className={'form-check-label ' +
-                                                    ((prevAnswers && prevAnswers[activeQuestion._id] == index)
-                                                        ? ((prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index) ? 'text-success' : 'text-danger')
-                                                        : '')} htmlFor={activeQuestion._id + index} >
+
+                                                <label className={'custom-control-label ' +
+                                                    (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                        (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
+                                                            (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                                } htmlFor={activeQuestion._id + index} >
                                                     {answer}
                                                 </label>
                                             </div>
@@ -139,7 +144,6 @@ class adminEditPage extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <p id='trueAnswer'>Điểm của câu hỏi: <b>{trueAnswer[activeQuestion && activeQuestion._id] ? 1 : 0} / 1</b></p>
                         <nav aria-label='...'>
                             <ul className='pagination'>
                                 <li className='page-item' id='prev-btn'>
@@ -150,9 +154,13 @@ class adminEditPage extends AdminPage {
                                 </li>
                             </ul>
                         </nav>
-                        <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
-                            <i className='fa fa-lg fa-paper-plane-o' />
-                        </button>
+                        {showSubmitButton ?
+                            <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                                <i className='fa fa-lg fa-paper-plane-o' />
+                            </button> :
+                            <button className='btn btn-circle' id='refresh-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Làm kiểm tra lại' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                                <i className='fa fa-lg fa-refresh' />
+                            </button>}
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>
