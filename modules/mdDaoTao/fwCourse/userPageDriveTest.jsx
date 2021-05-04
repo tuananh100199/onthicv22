@@ -14,15 +14,19 @@ class UserPageDriveTest extends AdminPage {
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
                     this.props.getDriveTestScore(params._id, items => {
-                        console.log('items', items)
-                        // if (items) {
-                        //     Object.entries(items).map(([key, value]) => {
-                        //     this.setState({
-                        //         prevTrueAnswers: item[data.currentSubject][params._id].trueAnswers,
-                        //         prevAnswers: item[data.currentSubject][params._id].answers
-                        //     });
-                        //     })
-                        // }
+                        if (items) {
+                            Object.entries(items).map(([key, value]) => {
+                                if( data && data.currentTest == key ) {                                   
+                                    this.setState({
+                                        prevTrueAnswers: value.trueAnswers,
+                                        prevAnswers: value.answers,
+                                        importanceScore: value.importanceScore,
+                                        score: value.score
+                                    });
+                                    // $('#submit-btn').css({ 'visibility': 'hidden' });
+                                }
+                            })
+                        }
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
                     const { _id, title, questions } = data.item;
@@ -30,8 +34,6 @@ class UserPageDriveTest extends AdminPage {
                 } else {
                     this.props.history.push(backRoute);
                 }
-                $('#totalScore').css('display', 'none');
-                $('#trueAnswer').css('display', 'none');
             });
         });
     }
@@ -39,13 +41,9 @@ class UserPageDriveTest extends AdminPage {
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
-
-            console.log('this.state.studentAnswer', this.state.studentAnswer)
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({ result: result });
-            $('#totalScore').css('display', 'block');
             $('#submit-btn').hide();
-            $('#trueAnswer').css('display', 'block');
         });
     }
 
@@ -68,7 +66,6 @@ class UserPageDriveTest extends AdminPage {
                         $('input[name="' + questionId + '"]').prop('checked', false);
                     }
                 }
-
             }
         });
     }
@@ -82,22 +79,23 @@ class UserPageDriveTest extends AdminPage {
     render() {
         const questions = this.state.questions ? this.state.questions : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        const { score, trueAnswer, importanceScore } = this.state.result ? this.state.result : { score: 0, trueAnswer: {}, importanceScore: false };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
-        const { prevTrueAnswers, prevAnswers } = this.state;
+        const { prevTrueAnswers, prevAnswers, score } = this.state;
 
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            !this.state.prevAnswers && $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'visible' });
             $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
+            // !this.state.prevAnswers && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
+            this.state.prevAnswers && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
+
         } else {
             $('#prev-btn').css({ 'visibility': 'visible' });
             $('#next-btn').css({ 'visibility': 'visible' });
@@ -117,7 +115,7 @@ class UserPageDriveTest extends AdminPage {
                                 <div className='tile-body row'>
                                     {activeQuestion ?
                                         (<div className='col-md-12 pb-5'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
+                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}>*Câu điểm liệt</span> : null}</h6>
                                             {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px', marginBottom: '30px' }} /> : null}
                                             <div className='form-check'>
                                                 {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -141,7 +139,10 @@ class UserPageDriveTest extends AdminPage {
                                         : <>Không có câu hỏi</>}
                                 </div>
                                 <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                    <p id='trueAnswer'>Điểm của câu hỏi: <b>{trueAnswer[activeQuestion && activeQuestion._id] ? 1 : 0} / 1</b></p>
+                                    {prevTrueAnswers ? (
+                                    <p id='trueAnswer'>Điểm của câu hỏi: <b>{prevTrueAnswers && prevTrueAnswers[activeQuestion && activeQuestion._id] ? 1 : 0} / 1</b></p>
+                                    ) : null}
+                                    
                                     <nav aria-label='...'>
                                         <ul className='pagination'>
                                             <li className='page-item' id='prev-btn'>
@@ -152,7 +153,7 @@ class UserPageDriveTest extends AdminPage {
                                             </li>
                                         </ul>
                                     </nav>
-                                    <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
+                                    {prevAnswers ? ( <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>) : null }
                                 </div>
                             </div>
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>

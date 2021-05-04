@@ -44,14 +44,12 @@ module.exports = app => {
             if (item && item.questions) {
                 item.questions.forEach(question => question.trueAnswer = null);
             }
-            res.send({ error, item, currentCourse });
+            res.send({ error, item, currentCourse, currentTest: req.query._id});
         });
     });
 
     app.get('/api/drive-test/student/score', app.permission.check('driveTest:read'), (req, res) => {
-
         const userId = req.session.user._id,
-            _driveTestId = req.body._id;
             courseId = req.session.user.currentCourse;
         app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
             res.send({ error, item: item[0].diemBoDeThi });

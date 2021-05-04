@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
@@ -274,13 +273,7 @@ class AdminStudentView extends React.Component {
                                                         students.splice(index, 1);
                                                     }
                                                     this.setState({ studentSelecteds: students });
-<<<<<<< HEAD
-                                                    console.log(this.state.studentSelecteds, 'fkfk');
                                                 });
-                                                // this.setState({ studentSelecteds: students })
-=======
-                                                });
->>>>>>> da22e9a85a70a3584785482c05e7933f0bccbe54
                                             }
                                             _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
                                         }} style={{ display: 'flex' }} />
