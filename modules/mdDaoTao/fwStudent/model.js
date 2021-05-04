@@ -108,18 +108,19 @@ module.exports = (app) => {
             }
         }),
 
-        addStudiedLesson: (studentId, subjectId, lessonId, trueAnswers, answers, done) => {
-            app.model.student.get(studentId, (error, student) => {
+        addStudiedLesson: (data, done) => {
+            app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
                 } else {
                     const obj = {};
-                    obj[lessonId] = { score: Object.keys(trueAnswers).length, trueAnswers: trueAnswers, answers: answers };
-                    Object.assign(student.tienDoHocTap[subjectId], obj);
-                    model.findOneAndUpdate({ _id: studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                    obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };
+                    Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
             });
         },
+
         addDriveTestScore: (studentId, driveTestId, trueAnswers, answers, importanceScore, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {

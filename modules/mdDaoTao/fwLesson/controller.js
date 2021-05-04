@@ -75,7 +75,8 @@ module.exports = (app) => {
                     if (error || !students.length) {
                         res.send({ error });
                     } else {
-                        app.model.student.addStudiedLesson(students[0]._id, subjectId, lessonId, trueAnswer, answers, (error, item) => {
+                        const data = { studentId: students[0]._id, subjectId, lessonId, trueAnswer, answers, score };
+                        app.model.student.addStudiedLesson(data, (error, item) => {
                             res.send({ error, result: { score }, item });
                         });
                     }
