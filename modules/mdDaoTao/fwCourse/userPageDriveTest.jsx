@@ -14,7 +14,7 @@ class UserPageDriveTest extends AdminPage {
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
                     this.props.getDriveTestScore(params._id, items => {
-                        console.log('items', items)
+                        console.log('items', items);
                         // if (items) {
                         //     Object.entries(items).map(([key, value]) => {
                         //     this.setState({
@@ -40,7 +40,7 @@ class UserPageDriveTest extends AdminPage {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
 
-            console.log('this.state.studentAnswer', this.state.studentAnswer)
+            console.log('this.state.studentAnswer', this.state.studentAnswer);
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({ result: result });
             $('#totalScore').css('display', 'block');
@@ -82,7 +82,7 @@ class UserPageDriveTest extends AdminPage {
     render() {
         const { questions } = this.state.questions ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        const { score, trueAnswer, importanceScore } = this.state.result ? this.state.result : { score: 0, trueAnswer: {}, importanceScore: false };
+        const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {}, importanceScore: false };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
         const { prevTrueAnswers, prevAnswers } = this.state;
@@ -119,7 +119,7 @@ class UserPageDriveTest extends AdminPage {
                                 <div className='tile-body row'>
                                     {activeQuestion ?
                                         (<div className='col-md-12 pb-5'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}>*Câu điểm liệt</span> : null}</h6>
+                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title} {activeQuestion.importance ? <span style={{ color: 'red' }}>*Câu điểm liệt</span> : null}</h6>
                                             {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px', marginBottom: '30px' }} /> : null}
                                             <div className='form-check'>
                                                 {activeQuestion.answers.split('\n').map((answer, index) => (

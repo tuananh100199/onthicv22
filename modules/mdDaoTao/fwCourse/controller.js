@@ -108,37 +108,7 @@ module.exports = (app) => {
     });
 
     // APIs Get Course Of Student Mobile -------------------------------------------------------------------------------------
-    app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
-        const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            if (students.length) {
-                const coursePromises = students.map((student) => {
-                    return new Promise((resolve, reject) => {
-                        if (student.course) {
-                            app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
-                                if (error) {
-                                    reject(error);
-                                } else if (!course) {
-                                    resolve();
-                                } else {
-                                    resolve(course);
-                                }
-                            });
-                        } else {
-                            resolve();
-                        }
-                    });
-                });
-                Promise.all(coursePromises).then(courses => {
-                    res.send({ courses: courses.filter(item => item != null) });
-                }).catch(error => res.send({ error }));
-            } else {
-                res.send({ error });
-            }
-        });
-    });
-
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/student/course', app.permission.check('course:read'), (req, res) => {
         const { _id } = req.query,
             studentId = req.session.user._id;
         req.session.user.currentCourse = _id;
@@ -151,7 +121,7 @@ module.exports = (app) => {
                 students.forEach(item => studentMapper[item.course && item.course._id] = item._id);
                 if (studentMapper[_id]) {
                     const _studentId = studentMapper[_id];
-                    app.model.course.get(_id, (error, item) => res.send({ error, item, _studentId}));
+                    app.model.course.get(_id, (error, item) => res.send({ error, item, _studentId }));
                 } else {
                     res.send({ notify: 'Bạn không thuộc khóa học này!' });
                 }

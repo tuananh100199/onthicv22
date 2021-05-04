@@ -51,7 +51,6 @@ module.exports = app => {
     app.get('/api/drive-test/student/score', app.permission.check('driveTest:read'), (req, res) => {
 
         const userId = req.session.user._id,
-            _driveTestId = req.body._id;
             courseId = req.session.user.currentCourse;
         app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
             res.send({ error, item: item[0].diemBoDeThi });
@@ -82,7 +81,7 @@ module.exports = app => {
             driveTest = req.session.user.driveTest,
             today = new Date().getTime();
         if (driveTest && today < driveTest.expireDay) {
-            res.send({driveTest, currentCourse});
+            res.send({ driveTest, currentCourse });
         } else {
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
@@ -105,7 +104,7 @@ module.exports = app => {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
                             };
-                            res.send({driveTest, currentCourse});
+                            res.send({ driveTest, currentCourse });
                         }).catch(error => res.send({ error }));
                     }
                 }
@@ -116,10 +115,9 @@ module.exports = app => {
     app.post('/api/drive-test/student/submit', app.permission.check('driveQuestion:read'), (req, res) => {
         const { answers } = req.body,
             _driveTestId = req.body._id,
-            _currentCourseId = req.session.user &&  req.session.user.currentCourse,
+            _currentCourseId = req.session.user && req.session.user.currentCourse,
             _userId = req.session.user._id;
         let score = 0,
-            err = null,
             importanceScore = false;
 
         app.model.driveTest.get(_driveTestId, (error, test) => {
@@ -127,7 +125,7 @@ module.exports = app => {
                 res.send({ error });
             } else {
                 const questionMapper = {},
-                trueAnswer = {};
+                    trueAnswer = {};
                 test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
@@ -135,24 +133,24 @@ module.exports = app => {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
                                 trueAnswer[key] = value;
-                            } 
-                            else  {
+                            }
+                            else {
                                 if (questionMapper[key]._id == key) {
                                     importanceScore = true;
                                 }
                             }
                         } else {
-                            err = 'Không tìm thấy câu hỏi!';
+                            error = 'Không tìm thấy câu hỏi!';
                         }
                     }
                 }
-                app.model.student.getAll({user: _userId, course: _currentCourseId }, (error, students) => {
+                app.model.student.getAll({ user: _userId, course: _currentCourseId }, (error, students) => {
                     if (error || !students.length) {
                         res.send({ error });
                     } else {
                         app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, (error, item) => {
                             res.send({ error, result: { score, trueAnswer, importanceScore }, item });
-                        })
+                        });
                     }
                 });
             }
@@ -163,22 +161,22 @@ module.exports = app => {
             randomTest = req.session.user.driveTest;
         let score = 0,
             err = null;
-            const questionMapper = {},
-                trueAnswer = {};
-            randomTest.questions && randomTest.questions.forEach(item => questionMapper[item._id] = item);
-            if (answers) {
-                for (const [key, value] of Object.entries(answers)) {
-                    if (questionMapper[key]) {
-                        if (questionMapper[key].trueAnswer == value) {
-                            score = score + 1;
-                            trueAnswer[key] = value;
-                        }
-                    } else {
-                        err = 'Không tìm thấy câu hỏi!';
+        const questionMapper = {},
+            trueAnswer = {};
+        randomTest.questions && randomTest.questions.forEach(item => questionMapper[item._id] = item);
+        if (answers) {
+            for (const [key, value] of Object.entries(answers)) {
+                if (questionMapper[key]) {
+                    if (questionMapper[key].trueAnswer == value) {
+                        score = score + 1;
+                        trueAnswer[key] = value;
                     }
+                } else {
+                    err = 'Không tìm thấy câu hỏi!';
                 }
             }
-            res.send({ error: err, result: { score, trueAnswer } });
+        }
+        res.send({ error: err, result: { score, trueAnswer } });
 
     });
 

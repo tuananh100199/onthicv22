@@ -26,10 +26,10 @@ class UserCoursePageDetail extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item && data._studentId) {
                         this.props.getStudent(data._studentId, data => {
-                            if(data) {
-                                this.setState({diemBoDeThi: data.diemBoDeThi});
+                            if (data) {
+                                this.setState({ diemBoDeThi: data.diemBoDeThi });
                             }
-                        })
+                        });
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
@@ -136,38 +136,38 @@ class UserCoursePageDetail extends AdminPage {
                                             <i className='icon fa fa-3x fa fa-cubes' />
                                             <div className='info'>
                                                 <h4>{driveTest.title}</h4>
-                                                { diemBoDeThi ? Object.entries(diemBoDeThi).map(([key, value]) => (
+                                                {diemBoDeThi ? Object.entries(diemBoDeThi).map(([key, value]) => (
                                                     key == driveTest._id ? (
-                                                    <div key={index}>
-                                                        <p style={{fontSize: '15px'}}>
-                                                             Điểm của bạn : {value.score}/{driveTest.questions && driveTest.questions.length}
-                                                        </p>
-                                                        { value.importanceScore || value.score < (driveTest.questions && driveTest.questions.length - 3) ? 
-                                                        <div>
-                                                            <p style={{fontSize: '15px', fontWeight: 'bold', color: 'red'}}>
-                                                                Bạn đã rớt.
+                                                        <div key={index}>
+                                                            <p style={{ fontSize: '15px' }}>
+                                                                Điểm của bạn : {value.score}/{driveTest.questions && driveTest.questions.length}
                                                             </p>
-                                                            <p style={{color: 'red', fontWeight: 'bold'}}> Lý do: 
-                                                                { value.importanceScore ? 
-                                                                    <span style={{fontSize: '14px', color: 'red'}}>
-                                                                       &nbsp; Sai câu điểm liệt
-                                                                    </span> : null
-                                                                }
-                                                                { value.score < (driveTest.questions && driveTest.questions.length - 3) ? 
-                                                                    <span style={{fontSize: '14px', color: 'red'}}>
-                                                                        &nbsp; Không đạt đủ số câu tối thiểu
-                                                                    </span> : null
-                                                                }
+                                                            { value.importanceScore || value.score < (driveTest.questions && driveTest.questions.length - 3) ?
+                                                                <div>
+                                                                    <p style={{ fontSize: '15px', fontWeight: 'bold', color: 'red' }}>
+                                                                        Bạn đã rớt.
                                                             </p>
+                                                                    <p style={{ color: 'red', fontWeight: 'bold' }}> Lý do:
+                                                                {value.importanceScore ?
+                                                                            <span style={{ fontSize: '14px', color: 'red' }}>
+                                                                                &nbsp; Sai câu điểm liệt
+                                                                    </span> : null
+                                                                        }
+                                                                        {value.score < (driveTest.questions && driveTest.questions.length - 3) ?
+                                                                            <span style={{ fontSize: '14px', color: 'red' }}>
+                                                                                &nbsp; Không đạt đủ số câu tối thiểu
+                                                                    </span> : null
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                                :
+                                                                <p style={{ fontSize: '15px', fontWeight: 'bold', color: '#28a745' }}>
+                                                                    Bạn đã đậu
+                                                            </p>
+                                                            }
                                                         </div>
-                                                            :  
-                                                            <p style={{fontSize: '15px', fontWeight: 'bold', color: '#28a745'}}>
-                                                                Bạn đã đậu
-                                                            </p>
-                                                        }
-                                                    </div>
-                                                     ) : null
-                                                )) : <div className='col-md-4'>Chưa có môn học!</div> }
+                                                    ) : null
+                                                )) : <div className='col-md-4'>Chưa có môn học!</div>}
                                             </div>
                                         </div>
                                     </Link>
