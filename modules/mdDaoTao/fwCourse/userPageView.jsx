@@ -167,7 +167,7 @@ class UserCoursePageDetail extends AdminPage {
                                                             }
                                                         </div>
                                                     ) : null
-                                                )) : <div className='col-md-4'>Chưa có môn học!</div>}
+                                                )) : null}
                                             </div>
                                         </div>
                                     </Link>

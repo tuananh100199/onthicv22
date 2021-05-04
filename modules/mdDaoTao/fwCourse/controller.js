@@ -118,7 +118,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/student/course', app.permission.check('course:read'), (req, res) => {
         const { _id } = req.query,
             studentId = req.session.user._id;
         req.session.user.currentCourse = _id;
@@ -126,8 +126,8 @@ module.exports = (app) => {
             if (error) {
                 res.send({ error });
             } else {
+                
                 const studentMapper = {};
-
                 students.forEach(item => studentMapper[item.course && item.course._id] = item._id);
                 if (studentMapper[_id]) {
                     const _studentId = studentMapper[_id];
