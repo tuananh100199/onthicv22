@@ -16,5 +16,13 @@ export default {
             path: '/user/drive-test/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_id/',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })
+        },
     ]
 };

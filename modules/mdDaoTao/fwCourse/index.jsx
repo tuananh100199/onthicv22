@@ -40,14 +40,6 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
         },
-        {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_id/',
-            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
-        },
-        {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })
-        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

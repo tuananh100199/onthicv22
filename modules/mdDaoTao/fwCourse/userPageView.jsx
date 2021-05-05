@@ -72,10 +72,7 @@ class UserCoursePageDetail extends AdminPage {
     }
 
     render() {
-        const diemBoDeThi = this.state.diemBoDeThi ? this.state.diemBoDeThi : null;
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
-        const _courseTypeId = this.state && this.state._courseTypeId ? this.state._courseTypeId : '';
-        const { list } = this.props.driveTest ? this.props.driveTest : [];
 
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -113,66 +110,6 @@ class UserCoursePageDetail extends AdminPage {
                                     </Link>
                                 </div>
                             )) : <div className='col-md-4'>Chưa có môn học!</div>
-                            }
-                        </div>
-                    </div>
-                    <div className='col-12'>
-                        <h4>Ôn tập đề thi</h4>
-                        <div className='row'>
-                            <div className='col-md-6'>
-                                <Link to={'/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/' + _courseTypeId}>
-                                    <div className='widget-small coloured-icon info'>
-                                        <i className='icon fa fa-3x fa-cubes' />
-                                        <div className='info'>
-                                            <h4>Đề thi ngẫu nhiên</h4>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
-                            {list && list.map((driveTest, index) => (
-                                <div key={index} className='col-md-6'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/de-thi-thu/' + driveTest._id}>
-                                        <div className='widget-small coloured-icon info'>
-                                            <i className='icon fa fa-3x fa fa-cubes' />
-                                            <div className='info'>
-                                                <h4>{driveTest.title}</h4>
-                                                {diemBoDeThi ? Object.entries(diemBoDeThi).map(([key, value]) => (
-                                                    key == driveTest._id ? (
-                                                        <div key={index}>
-                                                            <p style={{ fontSize: '15px' }}>
-                                                                Điểm của bạn : {value.score}/{driveTest.questions && driveTest.questions.length}
-                                                            </p>
-                                                            { value.importanceScore || value.score < (driveTest.questions && driveTest.questions.length - 3) ?
-                                                                <div>
-                                                                    <p style={{ fontSize: '15px', fontWeight: 'bold', color: 'red' }}>
-                                                                        Bạn đã rớt.
-                                                            </p>
-                                                                    <p style={{ color: 'red', fontWeight: 'bold' }}> Lý do:
-                                                                {value.importanceScore ?
-                                                                            <span style={{ fontSize: '14px', color: 'red' }}>
-                                                                                &nbsp; Sai câu điểm liệt
-                                                                    </span> : null
-                                                                        }
-                                                                        {value.score < (driveTest.questions && driveTest.questions.length - 3) ?
-                                                                            <span style={{ fontSize: '14px', color: 'red' }}>
-                                                                                &nbsp; Không đạt đủ số câu tối thiểu
-                                                                    </span> : null
-                                                                        }
-                                                                    </p>
-                                                                </div>
-                                                                :
-                                                                <p style={{ fontSize: '15px', fontWeight: 'bold', color: '#28a745' }}>
-                                                                    Bạn đã đậu
-                                                            </p>
-                                                            }
-                                                        </div>
-                                                    ) : null
-                                                )) : null}
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>
-                            ))
                             }
                         </div>
                     </div>
