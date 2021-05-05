@@ -51,6 +51,20 @@ class adminEditPage extends AdminPage {
         });
     }
 
+    refreshQuestion = (e) => {
+        e.preventDefault();
+        // this.props.deleteStudentAnswer(this.state.lessonId, this.state.studentAnswer, result => {
+        //     T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
+        //     $('#totalScore').css('display', 'block');
+        //     $('#trueAnswer').css('display', 'block');
+        // });
+        this.setState({
+            prevAnswers: null,
+            prevTrueAnswers: null,
+            showSubmitButton: true,
+        });
+    }
+
     changeQuestion = (e, index) => {
         e.preventDefault();
         this.setState({ activeQuestionIndex: index }, () => {
@@ -62,9 +76,7 @@ class adminEditPage extends AdminPage {
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
-                    if (this.state.prevAnswers[questionId] == this.state.prevTrueAnswers[questionId]) {
-                        $(':radio').click(() => false);
-                    }
+
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -99,7 +111,11 @@ class adminEditPage extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
-            activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false);
+            activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]
+                ? $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false)
+                : $(':radio').click((e) => {
+                    $('#' + e.currentTarget.id).prop('checked', true);
+                });
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -159,7 +175,9 @@ class adminEditPage extends AdminPage {
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
                             </button> :
-                            null}
+                            <button className='btn btn-info' id='refresh-btn' disabled={showSubmitButton} onClick={e => this.refreshQuestion(e)} data-toggle='tooltip' title='Làm lại bài kiểm tra'>
+                                <i className='fa fa-lg fa-refresh' /> Làm lại bài kiểm tra
+                            </button>}
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>

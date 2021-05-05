@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/input.scss';
-
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien';
 class UserPageRandomDriveTest extends AdminPage {
     state = {};
@@ -25,7 +24,6 @@ class UserPageRandomDriveTest extends AdminPage {
             });
         });
     }
-
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
@@ -36,7 +34,6 @@ class UserPageRandomDriveTest extends AdminPage {
             $('#trueAnswer').css('display', 'block');
         });
     }
-
     changeQuestion = (e, index) => {
         e.preventDefault();
         this.setState({ activeQuestionIndex: index }, () => {
@@ -51,20 +48,17 @@ class UserPageRandomDriveTest extends AdminPage {
             }
         });
     }
-
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
         }));
     }
-
     render() {
         const questions = this.state.questions ? this.state.questions : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { score, trueAnswer, answers } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
-        
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -104,7 +98,6 @@ class UserPageRandomDriveTest extends AdminPage {
                                                     id={activeQuestion._id + index}
                                                     value={index}
                                                     onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-
                                                 <label className={'custom-control-label ' +
                                                     (trueAnswer && answers && trueAnswer[activeQuestion._id] == answers[activeQuestion._id] && answers[activeQuestion._id] == index ? 'text-success valid ' :
                                                         (trueAnswer && trueAnswer[activeQuestion._id] == index ? 'text-success ' :
@@ -130,12 +123,12 @@ class UserPageRandomDriveTest extends AdminPage {
                                 </li>
                             </ul>
                         </nav>
-                            <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
-                                <i className='fa fa-lg fa-paper-plane-o' />
-                            </button>
-                            <button className='btn btn-circle' id='refresh-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Làm kiểm tra lại' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
-                                <i className='fa fa-lg fa-refresh' />
-                            </button>
+                        <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                            <i className='fa fa-lg fa-paper-plane-o' />
+                        </button>
+                        <button className='btn btn-circle' id='refresh-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Làm kiểm tra lại' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                            <i className='fa fa-lg fa-refresh' />
+                        </button>
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>
