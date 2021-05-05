@@ -51,7 +51,7 @@ module.exports = (app) => {
                 if (user == null) {
                     res.send({ error: 'Invalid email or password!' });
                 } else if (user.active) {
-                    app.updateSessionUser(req, user, sessionUser => res.send({ user: sessionUser }));
+                    app.updateSessionUser(req, user, () => res.send({ user }));
                 } else {
                     res.send({ error: 'Your account is inactive!' });
                 }
