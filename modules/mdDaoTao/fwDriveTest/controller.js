@@ -175,7 +175,7 @@ module.exports = app => {
                 }
             }
         }
-        res.send({ error: err, result: { score, trueAnswer } });
+        res.send({ error: err, result: { score, trueAnswer, answers } });
 
     });
 

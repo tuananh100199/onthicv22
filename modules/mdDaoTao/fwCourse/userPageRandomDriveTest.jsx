@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
+import '../../../view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien';
 class UserPageRandomDriveTest extends AdminPage {
@@ -61,8 +62,9 @@ class UserPageRandomDriveTest extends AdminPage {
         const questions = this.state.questions ? this.state.questions : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
+        const { score, trueAnswer, answers } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
+        console.log('this.state', this.state)
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -98,13 +100,17 @@ class UserPageRandomDriveTest extends AdminPage {
                                             <div className='form-check'>
                                                 {activeQuestion.answers.split('\n').map((answer, index) => (
                                                     <div key={index} style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                                        <input className='form-check-input'
+                                                        <input className='custom-control-input'
                                                             type='radio'
                                                             name={activeQuestion._id}
                                                             id={activeQuestion._id + index}
                                                             value={index}
                                                             onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                        <label className='form-check-label' htmlFor={activeQuestion._id + index}>
+                                                        <label className={'custom-control-label ' +
+                                                            (trueAnswer && answers && trueAnswer[activeQuestion._id] == answers[activeQuestion._id] && answers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                                (trueAnswer && trueAnswer[activeQuestion._id] == index ? 'text-success ' :
+                                                                    (answers && answers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                                        } htmlFor={activeQuestion._id + index} >
                                                             {answer}
                                                         </label>
                                                     </div>
