@@ -92,10 +92,6 @@ module.exports = (app) => {
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
                     }
                 });
-            } else if (changes.unset) {
-                const obj = {};
-                obj[changes.unset] = {};
-                model.findOneAndUpdate({ _id }, { '$unset': obj }, { new: true }).exec(done);
             } else {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
