@@ -44,10 +44,24 @@ class UserPageDriveTest extends AdminPage {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ result: result });
+            this.setState({ prevTrueAnswers: result.trueAnswer,
+                            prevAnswers: result.answers,
+                            score: result.score,
+                        });
             $('#totalScore').css('display', 'block');
             $('#trueAnswer').css('display', 'block');
         });
+    }
+
+    rework = (e) => {
+        e.preventDefault();
+        $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+        this.setState({ prevTrueAnswers: null,
+            prevAnswers: null,
+            score: 0,
+            showSubmitButton: true
+        });
+        $('#rework-btn').css({ 'visibility': 'hidden' });
     }
 
     changeQuestion = (e, index) => {
@@ -71,7 +85,6 @@ class UserPageDriveTest extends AdminPage {
                         $('input[name="' + questionId + '"]').prop('checked', false);
                     }
                 }
-
             }
         });
     }
@@ -86,9 +99,8 @@ class UserPageDriveTest extends AdminPage {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
-        const { score } = this.state.result ? this.state.result : { score: 0 };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { prevTrueAnswers, prevAnswers, showSubmitButton } = this.state;
+        const { prevTrueAnswers, prevAnswers, showSubmitButton, score } = this.state;
 
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
@@ -117,7 +129,20 @@ class UserPageDriveTest extends AdminPage {
                         {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}> *câu điểm liệt</span> : null}</h6>
+                                    <div className='row'>
+                                        <h6 className='col-md-8'>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}> *câu điểm liệt</span> : null}</h6>
+                                        <nav aria-label='...' className='col-md-4'>
+                                            <ul className='pagination'>
+                                                <li className='page-item' id='prev-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                                </li>
+                                                <li className='page-item' id='next-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -144,16 +169,10 @@ class UserPageDriveTest extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <nav aria-label='...'>
-                            <ul className='pagination'>
-                                <li className='page-item' id='prev-btn'>
-                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                                </li>
-                                <li className='page-item' id='next-btn'>
-                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                                </li>
-                            </ul>
-                        </nav>
+                    <button id='rework-btn' type='button' className='btn btn-primary btn-lg' onClick={e => this.rework(e)}>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                        Làm lại bài kiểm tra
+                    </button>
                         {showSubmitButton ?
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />

@@ -151,7 +151,7 @@ module.exports = app => {
                         res.send({ error });
                     } else {
                         app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, score, (error, item) => {
-                            res.send({ error, result: { score, trueAnswer, importanceScore }, item });
+                            res.send({ error, result: { score, trueAnswer, answers, importanceScore }, item });
                         });
                     }
                 });

@@ -93,7 +93,19 @@ class UserPageRandomDriveTest extends AdminPage {
                         {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}> *câu điểm liệt</span> : null}</h6>
+                                     <div className='row'>
+                                        <h6 className='col-md-8'>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}> *câu điểm liệt</span> : null}</h6>
+                                        <nav aria-label='...' className='col-md-4'>
+                                            <ul className='pagination'>
+                                                <li className='page-item' id='prev-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                                </li>
+                                                <li className='page-item' id='next-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -120,19 +132,9 @@ class UserPageRandomDriveTest extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <nav aria-label='...'>
-                            <ul className='pagination'>
-                                <li className='page-item' id='prev-btn'>
-                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                                </li>
-                                <li className='page-item' id='next-btn'>
-                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                                </li>
-                            </ul>
-                        </nav>
-                            <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
-                                <i className='fa fa-lg fa-paper-plane-o' />
-                            </button>
+                        <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                            <i className='fa fa-lg fa-paper-plane-o' />
+                        </button>
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>
