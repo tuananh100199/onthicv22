@@ -47,22 +47,25 @@ class UserPageDriveTest extends AdminPage {
             this.setState({ prevTrueAnswers: result.trueAnswer,
                             prevAnswers: result.answers,
                             score: result.score,
+                            showSubmitButton: true
                         });
             $('#totalScore').css('display', 'block');
             $('#trueAnswer').css('display', 'block');
         });
     }
 
-    rework = (e) => {
-        e.preventDefault();
-        $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
-        this.setState({ prevTrueAnswers: null,
-            prevAnswers: null,
-            score: 0,
-            showSubmitButton: true
-        });
-        $('#rework-btn').css({ 'visibility': 'hidden' });
-    }
+    rework = (e) => T.confirm('Làm lại bài thi', 'Bạn có chắc bạn muốn làm lại bài thi này?', true, isConfirm => {
+        if(isConfirm) {
+            e.preventDefault();
+            this.setState({ prevTrueAnswers: null,
+                prevAnswers: null,
+                score: 0,
+                showSubmitButton: true
+            });
+            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+            $('#rework-btn').css({ 'visibility': 'hidden' });
+        }
+    });
 
     changeQuestion = (e, index) => {
         e.preventDefault();
@@ -91,8 +94,7 @@ class UserPageDriveTest extends AdminPage {
 
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
-            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() },
-            prevAnswers: { ...prevState.prevAnswers, [_questionId]: null }
+            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
         }));
     }
     render() {
@@ -101,18 +103,18 @@ class UserPageDriveTest extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { prevTrueAnswers, prevAnswers, showSubmitButton, score } = this.state;
-
+        
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
+            $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
+            $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
             $('#prev-btn').css({ 'visibility': 'visible' });
             $('#next-btn').css({ 'visibility': 'visible' });
@@ -168,11 +170,11 @@ class UserPageDriveTest extends AdminPage {
                             ) : <></>
                         }
                     </div>
-                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <button id='rework-btn' type='button' className='btn btn-primary btn-lg' onClick={e => this.rework(e)}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
-                        Làm lại bài kiểm tra
-                    </button>
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <button id='rework-btn' type='button' className='btn btn-info btn-lg' onClick={e => this.rework(e)}>
+                            <i className="fa fa-refresh" aria-hidden="true"></i>
+                            Làm lại bài kiểm tra
+                        </button>
                         {showSubmitButton ?
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
