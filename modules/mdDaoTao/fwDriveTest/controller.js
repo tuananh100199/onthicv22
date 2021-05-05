@@ -150,8 +150,8 @@ module.exports = app => {
                     if (error || !students.length) {
                         res.send({ error });
                     } else {
-                        app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, (error, item) => {
-                            res.send({ error, result: { score, trueAnswer, importanceScore }, item });
+                        app.model.student.addDriveTestScore(students[0]._id, _driveTestId, trueAnswer, answers, importanceScore, score, (error, item) => {
+                            res.send({ error, result: { score, trueAnswer, answers, importanceScore }, item });
                         });
                     }
                 });

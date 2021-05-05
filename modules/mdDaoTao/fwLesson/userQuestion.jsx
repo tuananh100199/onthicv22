@@ -53,11 +53,6 @@ class adminEditPage extends AdminPage {
 
     refreshQuestion = (e) => {
         e.preventDefault();
-        // this.props.deleteStudentAnswer(this.state.lessonId, this.state.studentAnswer, result => {
-        //     T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-        //     $('#totalScore').css('display', 'block');
-        //     $('#trueAnswer').css('display', 'block');
-        // });
         this.setState({
             prevAnswers: null,
             prevTrueAnswers: null,
@@ -111,11 +106,7 @@ class adminEditPage extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
-            activeQuestion && prevAnswers && prevAnswers[activeQuestion._id]
-                ? $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false)
-                : $(':radio').click((e) => {
-                    $('#' + e.currentTarget.id).prop('checked', true);
-                });
+            activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true) && $(':radio').click(() => false);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -134,8 +125,24 @@ class adminEditPage extends AdminPage {
                         {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
+                                    <div className='row'>
+                                        <div className='col-md-8'>
+                                            <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: </h6>
+                                            <h6>{activeQuestion.title}</h6>
+                                        </div>
+                                        <nav aria-label='...' className='col-md-4'>
+                                            <ul className='pagination'>
+                                                <li className='page-item' id='prev-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                                </li>
+                                                <li className='page-item' id='next-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+
+                                    </div>
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index} className='custom-control custom-radio'>
@@ -161,23 +168,14 @@ class adminEditPage extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <nav aria-label='...'>
-                            <ul className='pagination'>
-                                <li className='page-item' id='prev-btn'>
-                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                                </li>
-                                <li className='page-item' id='next-btn'>
-                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                                </li>
-                            </ul>
-                        </nav>
                         {showSubmitButton ?
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
                             </button> :
-                            <button className='btn btn-info' id='refresh-btn' disabled={showSubmitButton} onClick={e => this.refreshQuestion(e)} data-toggle='tooltip' title='Làm lại bài kiểm tra'>
-                                <i className='fa fa-lg fa-refresh' /> Làm lại bài kiểm tra
-                            </button>}
+                            // <button className='btn btn-info' id='refresh-btn' disabled={showSubmitButton} onClick={e => this.refreshQuestion(e)} data-toggle='tooltip' title='Làm lại bài kiểm tra'>
+                            //     <i className='fa fa-lg fa-refresh' /> Làm lại bài kiểm tra
+                            // </button>
+                            null}
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>
