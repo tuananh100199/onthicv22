@@ -75,6 +75,7 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', app.permission.check('studentCourse:read'), (req, res) => {
+        req.session.user.driveTest = null;
         const currentCourse = req.session.user && req.session.user.currentCourse;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.user.driveTest,
