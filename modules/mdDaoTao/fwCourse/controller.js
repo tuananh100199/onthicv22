@@ -129,7 +129,7 @@ module.exports = (app) => {
                 res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
                 if (students[0].course && students[0].course.active) {
-                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId }));
+                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId: students[0]._id }));
                 } else {
                     res.send({ notify: 'Khóa học chưa được kích hoạt!' });
                 }

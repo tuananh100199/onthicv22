@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
-
+import '../../../view/component/input.scss';
 const backRoute = '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien';
 class UserPageRandomDriveTest extends AdminPage {
     state = {};
@@ -24,7 +24,6 @@ class UserPageRandomDriveTest extends AdminPage {
             });
         });
     }
-
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
@@ -35,7 +34,6 @@ class UserPageRandomDriveTest extends AdminPage {
             $('#trueAnswer').css('display', 'block');
         });
     }
-
     changeQuestion = (e, index) => {
         e.preventDefault();
         this.setState({ activeQuestionIndex: index }, () => {
@@ -50,18 +48,16 @@ class UserPageRandomDriveTest extends AdminPage {
             }
         });
     }
-
     onAnswerChanged = (e, _questionId) => {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() }
         }));
     }
-
     render() {
         const questions = this.state.questions ? this.state.questions : [];
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
+        const { score, trueAnswer, answers } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
@@ -86,54 +82,55 @@ class UserPageRandomDriveTest extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, 'Đề thi ngẫu nhiên'],
             backRoute: userPageLink,
             content: (
-                <>
-                    {questions && questions.length ? (
-                        <div>
-                            <div className='tile'>
-                                <div className='tile-body row'>
-                                    {activeQuestion ?
-                                        (<div className='col-md-12 pb-5'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
-                                            {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px', marginBottom: '30px' }} /> : null}
-                                            <div className='form-check'>
-                                                {activeQuestion.answers.split('\n').map((answer, index) => (
-                                                    <div key={index} style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                                        <input className='form-check-input'
-                                                            type='radio'
-                                                            name={activeQuestion._id}
-                                                            id={activeQuestion._id + index}
-                                                            value={index}
-                                                            onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                        <label className='form-check-label' htmlFor={activeQuestion._id + index}>
-                                                            {answer}
-                                                        </label>
-                                                    </div>
-                                                ))}
+                <div className='tile'>
+                    <div className='tile-body row'>
+                        {activeQuestion ?
+                            (
+                                <div className='col-md-12 pb-5'>
+                                    <div className='row'>
+                                        <h6 className='col-md-8'>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{ color: 'red' }}> *câu điểm liệt</span> : null}</h6>
+                                        <nav aria-label='...' className='col-md-4'>
+                                            <ul className='pagination'>
+                                                <li className='page-item' id='prev-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                                </li>
+                                                <li className='page-item' id='next-btn'>
+                                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
+                                    <div className='form-check'>
+                                        {activeQuestion.answers.split('\n').map((answer, index) => (
+                                            <div key={index} className='custom-control custom-radio'>
+                                                <input className='custom-control-input'
+                                                    type='radio'
+                                                    name={activeQuestion._id}
+                                                    id={activeQuestion._id + index}
+                                                    value={index}
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+                                                <label className={'custom-control-label ' +
+                                                    (trueAnswer && answers && trueAnswer[activeQuestion._id] == answers[activeQuestion._id] && answers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                        (trueAnswer && trueAnswer[activeQuestion._id] == index ? 'text-success ' :
+                                                            (answers && answers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                                } htmlFor={activeQuestion._id + index} >
+                                                    {answer}
+                                                </label>
                                             </div>
-                                        </div>)
-                                        : <>Không có câu hỏi</>}
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                    <p id='trueAnswer'>Điểm của câu hỏi: <b>{trueAnswer[activeQuestion && activeQuestion._id] ? 1 : 0} / 1</b></p>
-                                    <nav aria-label='...'>
-                                        <ul className='pagination'>
-                                            <li className='page-item' id='prev-btn'>
-                                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                                            </li>
-                                            <li className='page-item' id='next-btn'>
-                                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                    <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
-                                </div>
-                            </div>
-                            <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
-                                <i className='fa fa-lg fa-paper-plane-o' />
-                            </button>
-                        </div>
-                    ) : <div className='tile'>Không có câu hỏi</div>}
-                </>
+                            ) : <></>
+                        }
+                    </div>
+                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                            <i className='fa fa-lg fa-paper-plane-o' />
+                        </button>
+                        <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
+                    </div>
+                </div>
             ),
         });
     }
