@@ -63,7 +63,6 @@ class UserPageRandomDriveTest extends AdminPage {
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { score, trueAnswer } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
-
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });

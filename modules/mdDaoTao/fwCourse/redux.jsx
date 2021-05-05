@@ -180,25 +180,10 @@ export function getUserCourse(done) {
         }, error => console.error(error) || T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
     };
 }
-// Get Course of Student
-export function getStudentCourse(done) {
-    return dispatch => {
-        const url = '/api/student/course';
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data);
-                dispatch({ type: CourseGetItem, item: data.courses });
-            }
-        }, error => console.error(error) || T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
-    };
-}
 
 export function getCourseByStudent(_id, done) {
     return dispatch => {
-        const url = '/api/course/student';
+        const url = '/api/student/course';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');

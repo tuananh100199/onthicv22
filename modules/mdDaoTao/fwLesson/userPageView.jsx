@@ -26,22 +26,22 @@ class adminEditPage extends AdminPage {
         }
     }
 
-    checkElapsedTime = (e, _id, index) => {
-        if (e.target.playerInfo.playerState == 1) {
-            this.setState(prevState => ({ viewed: { ...prevState.viewed, [_id]: index } }), () => {
-                const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
-                this.setState({ showQuestionButton: Object.keys(this.state.viewed).length == videos.length });
-            });
-        }
-    };
+    // checkElapsedTime = (e, _id, index) => {
+    //     if (e.target.playerInfo.playerState == 1) {
+    //         this.setState(prevState => ({ viewed: { ...prevState.viewed, [_id]: index } }), () => {
+    //             const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
+    //             this.setState({ showQuestionButton: Object.keys(this.state.viewed).length == videos.length });
+    //         });
+    //     }
+    // };
 
     render() {
-        const { showQuestionButton, lessonId, subjectId, title } = this.state;
+        const { lessonId, subjectId, title } = this.state;
         const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
         const videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
-                    <YouTube videoId={video.link.slice(17)} containerClassName='embed embed-youtube' onStateChange={e => this.checkElapsedTime(e, video._id, index)} />
+                    <YouTube videoId={video.link} containerClassName='embed embed-youtube' />
                 </div>
             </div>)) : 'Chưa có video bài giảng!';
 
@@ -49,16 +49,15 @@ class adminEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Bài học: ' + (title || '...'),
-            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Bài học'],
+            breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Bài học'],
             content: lessonId ? (
                 <div className='tile'>
                     <a href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/' + lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
                     <h3 className='tile-title'>Bài giảng</h3>
                     <div className='tile-body'>{videosRender}</div>
-                    {showQuestionButton ?
-                        <div className='tile-footer' style={{ textAlign: 'right' }}>
-                            <a href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</a>
-                        </div> : null}
+                    <div className='tile-footer' style={{ textAlign: 'right' }}>
+                        <a href={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</a>
+                    </div>
                 </div>) : null,
             backRoute: userPageLink,
         });

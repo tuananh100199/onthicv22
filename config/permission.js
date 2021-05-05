@@ -240,7 +240,7 @@ module.exports = app => {
                         app.model.student.getAll({ user: req.session.user && req.session.user._id }, (error, students) => {
                             if (students) {
                                 if (req.session.user) {
-                                    req.session.user.courses = students.map(student => ({ courseId: student.course._id, name: student.course.name }));
+                                    req.session.user.courses = students.map(student => ({ courseId: student.course && student.course._id, name: student.course && student.course.name }));
                                 }
                             }
                             resolve();

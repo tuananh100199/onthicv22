@@ -76,10 +76,10 @@ export function getLessonByStudent(_id, done) {
     };
 }
 
-export function checkQuestion(answers, done) {
+export function checkQuestion(lessonId, answers, done) {
     return () => {
         const url = '/api/question/student/submit';
-        T.post(url, { answers }, data => {
+        T.post(url, { lessonId, answers }, data => {
             if (data.error) {
                 T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);

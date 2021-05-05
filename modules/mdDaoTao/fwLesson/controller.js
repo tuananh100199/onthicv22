@@ -45,7 +45,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
-        const { answers } = req.body;
+        const { lessonId, answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
             score = 0;
         app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
@@ -53,21 +53,34 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const questionMapper = {},
-                    trueAnswer = {};
-                questions.forEach(item => questionMapper[item._id] = item);
+                    trueAnswer = {},
+                    subjectId = req.session.user.currentSubject,
+                    courseId = req.session.user.currentCourse;
+                questions.forEach(item => {
+                    questionMapper[item._id] = item;
+                    trueAnswer[item._id] = item.trueAnswer;
+                });
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
                         if (questionMapper[key]) {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
-                                trueAnswer[key] = value;
                             }
                         } else {
                             error = 'Không tìm thấy câu hỏi!';
                         }
                     }
                 }
-                res.send({ error, result: { score, trueAnswer } });
+                app.model.student.getAll({ user: req.session.user._id, course: courseId }, (error, students) => {
+                    if (error || !students.length) {
+                        res.send({ error });
+                    } else {
+                        const data = { studentId: students[0]._id, subjectId, lessonId, trueAnswer, answers, score };
+                        app.model.student.addStudiedLesson(data, (error, item) => {
+                            res.send({ error, result: { score }, item });
+                        });
+                    }
+                });
             }
         });
     });

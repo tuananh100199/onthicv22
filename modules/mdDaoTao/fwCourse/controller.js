@@ -118,55 +118,23 @@ module.exports = (app) => {
         });
     });
 
-    // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
-        const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            if (students.length) {
-                const coursePromises = students.map((student) => {
-                    return new Promise((resolve, reject) => {
-                        if (student.course) {
-                            app.model.course.getByUser({ _id: student.course, active: true }, (error, course) => {
-                                if (error) {
-                                    reject(error);
-                                } else if (!course) {
-                                    resolve();
-                                } else {
-                                    resolve(course);
-                                }
-                            });
-                        } else {
-                            resolve();
-                        }
-                    });
-                });
-                Promise.all(coursePromises).then(courses => {
-                    res.send({ courses: courses.filter(item => item != null) });
-                }).catch(error => res.send({ error }));
-            } else {
-                res.send({ error });
-            }
-        });
-    });
-
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
-        const { _id } = req.query,
-            studentId = req.session.user._id;
-        req.session.user.currentCourse = _id;
-        app.model.student.getAll({ user: studentId }, (error, students) => {
+    app.get('/api/student/course', app.permission.check('course:read'), (req, res) => {
+        const _courseId = req.query._id,
+            _studentId = req.session.user._id;
+        req.session.user.currentCourse = _courseId;
+        app.model.student.getAll({ user: _studentId, course: _courseId }, (error, students) => {
             if (error) {
                 res.send({ error });
+            } else if (students.length == 0) {
+                res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
-                const studentMapper = {};
-                students.forEach(item => studentMapper[item.course._id] = item._id);
-                if (studentMapper[_id]) {
-                    app.model.course.get(_id, (error, item) => res.send({ error, item }));
+                if (students[0].course && students[0].course.active) {
+                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId }));
                 } else {
-                    res.send({ notify: 'Bạn không thuộc khóa học này!' });
+                    res.send({ notify: 'Khóa học chưa được kích hoạt!' });
                 }
             }
         });
-
     });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------

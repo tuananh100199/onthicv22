@@ -46,10 +46,10 @@ class UserCourseInfo extends AdminPage {
                             Tên môn học: <b>{this.state.title}</b>
                         </div>
                         <div className='form-group'>
-                            <label>Mô tả ngắn gọn: <b>{this.state.shortDescription}</b></label>
+                            {this.state.shortDescription ? <><label>Giới thiệu ngắn khóa học:</label> <b>{this.state.shortDescription}</b></> : <></>}
                         </div>
                         <div className='form-group'>
-                            <label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} />
+                            {this.state.detailDescription ? <><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </> : <></>}
                         </div>
                     </div>
                     <div className='tile-footer' style={{ textAlign: 'right' }}>
