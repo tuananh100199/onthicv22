@@ -61,9 +61,7 @@ module.exports = (app) => {
                 if (req.session.user) data.user = req.session.user;
                 if (data.user) {
                     app.model.student.getAll({ user: data.user._id }, (error, students) => {
-                        if (error) {
-                            res.send(error);
-                        } else {
+                        if (students) {
                             const courses = students.map(student => ({ courseId: student.course && student.course._id, name: student.course && student.course.name }));
                             courses.map((course, index) => {
                                 const menuName = 5000 + index + 1;
@@ -72,7 +70,7 @@ module.exports = (app) => {
                                     link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
                                     permissions: ['studentCourse:read']
                                 };
-                            })
+                            });
                         }
                     });
                 }

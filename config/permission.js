@@ -236,6 +236,18 @@ module.exports = app => {
                         resolve();
                     }
                 }))
+                    // .then(() => new Promise(resolve => { // Check và add course vào session user
+                    //     app.model.student.getAll({ user: user._id }, (error, students) => {
+                    //         if (error || students.length == 0) {
+                    //             reject(error);
+                    //         } else {
+                    //             if (req.session.user) {
+                    //                 req.session.user.courses = students.map(student => ({ courseId: student.course && student.course._id, name: student.course && student.course.name }));
+                    //             }
+                    //             resolve();
+                    //         }
+                    //     });
+                    // }))
                     .then(() => {  // Build menu tree
                         user.menu = app.permission.tree();
                         Object.keys(user.menu).forEach(parentMenuIndex => {
@@ -258,7 +270,17 @@ module.exports = app => {
                                     delete menuItem.menus[menuIndex];
                                     if (Object.keys(menuItem.menus).length == 0) delete user.menu[parentMenuIndex];
                                 }
-
+                                // if (req.session.user && req.session.user.courses) {
+                                //     const courses = req.session.user.courses;
+                                //     courses.map((course, index) => {
+                                //         const menuName = 5000 + index + 1;
+                                //         user.menu['5000'].menus[menuName] = {
+                                //             title: 'Khóa học ' + course.name,
+                                //             link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
+                                //             permissions: ['studentCourse:read']
+                                //         };
+                                //     });
+                                // }
                             });
                         });
 
