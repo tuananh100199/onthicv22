@@ -64,7 +64,7 @@ class UserPageRandomDriveTest extends AdminPage {
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { score, trueAnswer, answers } = this.state.result ? this.state.result : { score: 0, trueAnswer: {} };
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state._courseId;
-        console.log('this.state', this.state)
+        
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -88,58 +88,57 @@ class UserPageRandomDriveTest extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, 'Đề thi ngẫu nhiên'],
             backRoute: userPageLink,
             content: (
-                <>
-                    {questions && questions.length ? (
-                        <div>
-                            <div className='tile'>
-                                <div className='tile-body row'>
-                                    {activeQuestion ?
-                                        (<div className='col-md-12 pb-5'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1}: {activeQuestion.title}</h6>
-                                            {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: '30px', marginBottom: '30px' }} /> : null}
-                                            <div className='form-check'>
-                                                {activeQuestion.answers.split('\n').map((answer, index) => (
-                                                    <div key={index} style={{ marginTop: '5px', marginBottom: '5px' }}>
-                                                        <input className='custom-control-input'
-                                                            type='radio'
-                                                            name={activeQuestion._id}
-                                                            id={activeQuestion._id + index}
-                                                            value={index}
-                                                            onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
-                                                        <label className={'custom-control-label ' +
-                                                            (trueAnswer && answers && trueAnswer[activeQuestion._id] == answers[activeQuestion._id] && answers[activeQuestion._id] == index ? 'text-success valid ' :
-                                                                (trueAnswer && trueAnswer[activeQuestion._id] == index ? 'text-success ' :
-                                                                    (answers && answers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
-                                                        } htmlFor={activeQuestion._id + index} >
-                                                            {answer}
-                                                        </label>
-                                                    </div>
-                                                ))}
+                <div className='tile'>
+                    <div className='tile-body row'>
+                        {activeQuestion ?
+                            (
+                                <div className='col-md-12 pb-5'>
+                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
+                                    <div className='form-check'>
+                                        {activeQuestion.answers.split('\n').map((answer, index) => (
+                                            <div key={index} className='custom-control custom-radio'>
+                                                <input className='custom-control-input'
+                                                    type='radio'
+                                                    name={activeQuestion._id}
+                                                    id={activeQuestion._id + index}
+                                                    value={index}
+                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+
+                                                <label className={'custom-control-label ' +
+                                                    (trueAnswer && answers && trueAnswer[activeQuestion._id] == answers[activeQuestion._id] && answers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                        (trueAnswer && trueAnswer[activeQuestion._id] == index ? 'text-success ' :
+                                                            (answers && answers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                                } htmlFor={activeQuestion._id + index} >
+                                                    {answer}
+                                                </label>
                                             </div>
-                                        </div>)
-                                        : <>Không có câu hỏi</>}
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                    <p id='trueAnswer'>Điểm của câu hỏi: <b>{trueAnswer[activeQuestion && activeQuestion._id] ? 1 : 0} / 1</b></p>
-                                    <nav aria-label='...'>
-                                        <ul className='pagination'>
-                                            <li className='page-item' id='prev-btn'>
-                                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
-                                            </li>
-                                            <li className='page-item' id='next-btn'>
-                                                <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                    <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
-                                </div>
-                            </div>
+                            ) : <></>
+                        }
+                    </div>
+                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <nav aria-label='...'>
+                            <ul className='pagination'>
+                                <li className='page-item' id='prev-btn'>
+                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                </li>
+                                <li className='page-item' id='next-btn'>
+                                    <a className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                </li>
+                            </ul>
+                        </nav>
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
                             </button>
-                        </div>
-                    ) : <div className='tile'>Không có câu hỏi</div>}
-                </>
+                            <button className='btn btn-circle' id='refresh-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Làm kiểm tra lại' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
+                                <i className='fa fa-lg fa-refresh' />
+                            </button>
+                        <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
+                    </div>
+                </div>
             ),
         });
     }

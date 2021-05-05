@@ -125,13 +125,15 @@ module.exports = app => {
             } else {
                 const questionMapper = {},
                     trueAnswer = {};
-                test.questions && test.questions.forEach(item => questionMapper[item._id] = item);
+                test.questions && test.questions.forEach(item => {
+                    questionMapper[item._id] = item;
+                    trueAnswer[item._id] = item.trueAnswer;
+                });
                 if (answers) {
                     for (const [key, value] of Object.entries(answers)) {
                         if (questionMapper[key]) {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
-                                trueAnswer[key] = value;
                             }
                             else {
                                 if (questionMapper[key]._id == key) {
@@ -162,13 +164,15 @@ module.exports = app => {
             err = null;
         const questionMapper = {},
             trueAnswer = {};
-        randomTest.questions && randomTest.questions.forEach(item => questionMapper[item._id] = item);
+        randomTest.questions && randomTest.questions.forEach(item => {
+            questionMapper[item._id] = item;
+            trueAnswer[item._id] = item.trueAnswer;
+        });
         if (answers) {
             for (const [key, value] of Object.entries(answers)) {
                 if (questionMapper[key]) {
                     if (questionMapper[key].trueAnswer == value) {
                         score = score + 1;
-                        trueAnswer[key] = value;
                     }
                 } else {
                     err = 'Không tìm thấy câu hỏi!';

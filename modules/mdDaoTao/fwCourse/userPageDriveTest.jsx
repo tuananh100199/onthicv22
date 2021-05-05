@@ -24,7 +24,6 @@ class UserPageDriveTest extends AdminPage {
                                         importanceScore: value.importanceScore,
                                         score: value.score,
                                         showSubmitButton: value ? false : true
-
                                     });
                                 }
                             });
@@ -90,6 +89,7 @@ class UserPageDriveTest extends AdminPage {
         const { score } = this.state.result ? this.state.result : { score: 0 };
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { prevTrueAnswers, prevAnswers, showSubmitButton } = this.state;
+
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
