@@ -43,7 +43,7 @@ module.exports = app => {
             if (item && item.questions) {
                 item.questions.forEach(question => question.trueAnswer = null);
             }
-            res.send({ error, item});
+            res.send({ error, item });
         });
     });
 

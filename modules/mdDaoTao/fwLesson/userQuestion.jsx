@@ -51,6 +51,15 @@ class adminEditPage extends AdminPage {
         });
     }
 
+    refreshQuestion = (e) => {
+        e.preventDefault();
+        this.setState({
+            prevAnswers: null,
+            prevTrueAnswers: null,
+            showSubmitButton: true,
+        });
+    }
+
     changeQuestion = (e, index) => {
         e.preventDefault();
         this.setState({ activeQuestionIndex: index }, () => {
@@ -62,9 +71,7 @@ class adminEditPage extends AdminPage {
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
-                    if (this.state.prevAnswers[questionId] == this.state.prevTrueAnswers[questionId]) {
-                        $(':radio').click(() => false);
-                    }
+
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -118,8 +125,11 @@ class adminEditPage extends AdminPage {
                         {activeQuestion ?
                             (
                                 <div className='col-md-12 pb-5'>
-                                     <div className='row'>
-                                        <h6 className='col-md-8'>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                                    <div className='row'>
+                                        <div className='col-md-8'>
+                                            <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: </h6>
+                                            <h6>{activeQuestion.title}</h6>
+                                        </div>
                                         <nav aria-label='...' className='col-md-4'>
                                             <ul className='pagination'>
                                                 <li className='page-item' id='prev-btn'>
@@ -130,8 +140,9 @@ class adminEditPage extends AdminPage {
                                                 </li>
                                             </ul>
                                         </nav>
+
                                     </div>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index} className='custom-control custom-radio'>
@@ -161,6 +172,9 @@ class adminEditPage extends AdminPage {
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
                             </button> :
+                            // <button className='btn btn-info' id='refresh-btn' disabled={showSubmitButton} onClick={e => this.refreshQuestion(e)} data-toggle='tooltip' title='Làm lại bài kiểm tra'>
+                            //     <i className='fa fa-lg fa-refresh' /> Làm lại bài kiểm tra
+                            // </button>
                             null}
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>

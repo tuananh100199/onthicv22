@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-import { getAllDriveTests } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
 
@@ -25,11 +24,6 @@ class UserCoursePageDetail extends AdminPage {
                         T.alert(data.notify, 'error', false, 2000);
                         this.props.history.push(previousRoute);
                     } else if (data.item && data._studentId) {
-                        this.props.getStudent(data._studentId, data => {
-                            if (data) {
-                                this.setState({ diemBoDeThi: data.diemBoDeThi });
-                            }
-                        });
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
@@ -40,7 +34,7 @@ class UserCoursePageDetail extends AdminPage {
             this.props.history.push(previousRoute);
         }
     }
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (prevProps.match.url != this.props.match.url) {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
                 _id = route.parse(window.location.pathname)._id;
@@ -64,10 +58,6 @@ class UserCoursePageDetail extends AdminPage {
             } else {
                 this.props.history.push('/user');
             }
-        }
-        if (this.state.courseType && this.state.courseType !== prevState.courseType) {
-            this.setState({ _courseTypeId: this.state.courseType._id });
-            this.props.getAllDriveTests({ courseType: this.state.courseType._id });
         }
     }
 
@@ -120,5 +110,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.course, driveTest: state.driveTest });
-const mapActionsToProps = { getCourseByStudent, getAllDriveTests, getStudent };
+const mapActionsToProps = { getCourseByStudent, getStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
