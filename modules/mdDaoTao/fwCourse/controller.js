@@ -13,12 +13,12 @@ module.exports = (app) => {
         menus: {},
     };
 
-    app.permission.add({
-        name: 'course:read'
-    },
+    app.permission.add(
+        { name: 'course:read' },
         { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
+        { name: 'course:export' },
         { name: 'studentCourse:read', menu: courseMenu }
     );
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
@@ -92,6 +92,101 @@ module.exports = (app) => {
         }
         delete changes.courseFee;
         app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+    });
+    // app.permission.check('course:export'),
+    app.get('/api/course/export', (req, res) => {
+        const currentCourse = req.session.user.currentCourse;
+        app.model.course.get(currentCourse, (error, course) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const numOfLesson = course.subjects.reduce((a, b) => (b.lessons ? b.lessons.length : 0) + a, 0);
+
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Student');
+                const cells = [
+                    { cell: 'A1', border: '1234', value: 'STT', font: { size: 12, align: 'center' }, bold: true },
+                    { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
+                    { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
+                ];
+                // ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item, index) => worksheet.mergeCells(item));
+                // let countIndex = 0;
+                // const mergeCells = course.subjects.map((item, index) => {
+                //     cells.push({
+                //         cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
+                //         border: '1234',
+                //         value: item.title,
+                //         font: { size: 12, align: 'center' }, bold: true
+                //     });
+                //     const currentCountIndex = countIndex;
+                //     countIndex += item.lessons.length;
+                //     return `${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`;
+                // })
+                // mergeCells.forEach((item, index) => worksheet.mergeCells(item));
+                new Promise((resolve, reject) => {
+                    let count = 0;
+                    let countIndex = 0;
+                    const mergeCells = course.subjects.map((item) => {
+                        cells.push({
+                            cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
+                            border: '1234',
+                            value: item.title,
+                            font: { size: 12, align: 'center' }, bold: true
+                        });
+                        const currentCountIndex = countIndex;
+                        countIndex += item.lessons.length;
+                        return `${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`;
+                    });
+                    mergeCells.forEach((item) => worksheet.mergeCells(item));
+                    ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item) => worksheet.mergeCells(item));
+                    for (const item of course.subjects) {
+                        if (item) {
+                            app.model.subject.get(item._id, (error, subject) => {
+                                if (error) {
+                                    reject(error);
+                                } else {
+                                    for (const lesson of subject.lessons) {
+                                        cells.push(
+                                            {
+                                                cell: `${String.fromCharCode('D'.charCodeAt() + (cells.length - course.subjects.length - 3))}2`,
+                                                border: '1234',
+                                                value: lesson.title,
+                                                font: { size: 12, align: 'center' },
+                                                bold: true
+                                            }
+                                        );
+                                        count++;
+                                        if (count == numOfLesson) {
+                                            resolve();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }).then(() => {
+                    app.excel.write(worksheet, cells);
+                    app.excel.attachment(workbook, res, 'Student.xlsx');
+                }).catch(error => res.send(error));
+                // worksheet.columns = [
+                //     { header: 'STT', key: 'id', width: 15 },
+                //     { header: 'Họ', key: 'lastname', width: 20 },
+                //     { header: 'Tên', key: 'firstname', width: 20 },
+                // ];
+                // worksheet.mergeCells
+                // list.forEach((item, index) => {
+                //     worksheet.addRow({
+                //         id: index + 1,
+                //         lastname: item.lastname,
+                //         firstname: item.firstname,
+                //         email: item.email,
+                //         phoneNumber: item.phoneNumber,
+                //         courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký',
+                //         state: item.state,
+                //         createdDate: item.createdDate
+                //     });
+                // });
+            }
+        });
     });
 
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {

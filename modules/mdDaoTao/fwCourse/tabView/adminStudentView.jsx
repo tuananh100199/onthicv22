@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { exportScore } from '../redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-import { FormTextBox, FormCheckbox, AdminModal, FormSelect } from 'view/component/AdminPage';
+import { FormTextBox, FormCheckbox, AdminModal, FormSelect, CirclePageButton } from 'view/component/AdminPage';
 
 class TeacherModal extends AdminModal {
     onShow = () => {
@@ -317,6 +318,9 @@ class AdminStudentView extends React.Component {
                         {renderGroups(this.state.outsideGroups.filter(item1 => item._id == item1.teacher.division))}
                     </div>)] : result, []) : 'Không có thông tin'}
                 </div>
+                <CirclePageButton type='export' onClick={exportScore} />
+                <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} />
+                {/* {permission.export ? <CirclePageButton type='export' style={{}} /> : null} */}
             </div>
         );
     }

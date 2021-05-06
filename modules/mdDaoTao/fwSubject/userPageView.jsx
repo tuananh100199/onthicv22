@@ -87,6 +87,6 @@ class AdminEditPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, subject: state.subject, student: state.student });
+const mapStateToProps = state => ({ system: state.system, subject: state.subject });
 const mapActionsToProps = { getSubjectByStudent, getStudentScore };
 export default connect(mapStateToProps, mapActionsToProps)(AdminEditPage);
