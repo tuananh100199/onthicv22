@@ -117,7 +117,18 @@ module.exports = (app) => {
             res.send({ error, students });
         });
     });
-
+    // APIs Get Course Of Student -------------------------------------------------------------------------------------
+    app.get('/api/student/course/mobile', app.permission.check('user:login'), (req, res) => {
+        const _userId = req.session.user._id;
+        app.model.student.getAll({ user: _userId }, (error, students) => {
+            if (error || students.length == 0) {
+                res.send({error});
+            } else {
+                res.send({students});
+                // res.send({ courses: students.filter(student => student.course.active == true) });
+            }
+        });
+    });
     app.get('/api/student/course', app.permission.check('course:read'), (req, res) => {
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
