@@ -66,6 +66,7 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', (req, res) => {
+        req.session.driveTest = null;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.driveTest,
             today = new Date().getTime();
@@ -77,18 +78,20 @@ module.exports = app => {
                     res.send({ error });
                 } else {
                     if (item.questionTypes) {
-                        const randomQuestions = item.questionTypes.map((type) => {
+                        const randomQuestions = item.questionTypes.map(type => {
                             return new Promise((resolve, reject) => {
+                                const condition = {};
+                                condition.categories = [type.category];
                                 app.model.driveQuestion.getAll({ categories: type.category }, (error, list) => {
-                                    if (error || list == null) {
-                                        reject(error);
+                                    if (error || list.length == 0) {
+                                        reject({ error, condition });
                                     } else {
                                         resolve(app.getRandom(list, type.amount));
                                     }
                                 });
                             });
                         });
-                        Promise.all(randomQuestions).then(questions => {
+                        Promise.all(randomQuestions).then((questions) => {
                             const driveTest = req.session.driveTest = {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
@@ -100,7 +103,6 @@ module.exports = app => {
             });
         }
     });
-
     app.post('/api/drive-test/student/submit', (req, res) => {
         const { answers } = req.body,
             _driveTestId = req.body._id;

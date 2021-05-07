@@ -59,9 +59,14 @@ module.exports = (app) => {
                   path : 'subjects'
                 }
               }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
-            model.find(condition).populate('course').populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec((err, res) => {
+            model.find(condition).populate({
+                path : 'course',
+                populate : {
+                  path : 'subjects'
+                }
+              }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec((err, res) => {
                 done(err, res);
-            }),
+            }), 
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
