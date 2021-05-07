@@ -118,7 +118,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/student/course', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
         req.session.user.currentCourse = _courseId;
