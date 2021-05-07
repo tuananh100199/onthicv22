@@ -5,12 +5,12 @@ import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/input.scss';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet';
+const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
 class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher(backRoute + '/:_id'),
+            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
@@ -28,10 +28,10 @@ class UserPageDriveTestDetail extends AdminPage {
     componentDidUpdate(prevProps) {
         const driveTest = this.props.driveTest;
         if (driveTest !== prevProps.driveTest) {
-            if(driveTest.courseType) {
+            if (driveTest.courseType) {
                 const _courseTypeId = driveTest.courseType._id;
                 this.setState({ _courseTypeId: _courseTypeId });
-            }      
+            }
         }
     }
 
@@ -97,7 +97,7 @@ class UserPageDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' +this.state && this.state._courseTypeId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + this.state && this.state._courseTypeId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -158,7 +158,7 @@ class UserPageDriveTestDetail extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <div style={{width: '100%'}}>
+                        <div style={{ width: '100%' }}>
                             <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                 <ul className='pagination'>
                                     <li className='page-item' id='prev-btn'>
@@ -167,11 +167,11 @@ class UserPageDriveTestDetail extends AdminPage {
                                     <li className='page-item' id='next-btn'>
                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
                                     </li>
-                                    
+
                                 </ul>
                             </nav>
                             <div>
-                                <h4 id='totalScore' style={{marginLeft: '15px'}}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
+                                <h4 id='totalScore' style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
                                 <div style={{ float: 'right', marginRight: '10px' }}>
                                     {showSubmitButton ?
                                         <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
@@ -183,7 +183,7 @@ class UserPageDriveTestDetail extends AdminPage {
                                     }
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>

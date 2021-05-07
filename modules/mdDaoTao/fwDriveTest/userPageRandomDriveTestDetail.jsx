@@ -147,7 +147,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                         }
                     </div>
                     <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <div style={{width: '100%'}}>
+                        <div style={{ width: '100%' }}>
                             <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                 <ul className='pagination'>
                                     <li className='page-item' id='prev-btn'>
@@ -156,11 +156,11 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     <li className='page-item' id='next-btn'>
                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
                                     </li>
-                                    
+
                                 </ul>
                             </nav>
                             <div>
-                                <h4 id='totalScore' style={{marginLeft: '15px'}}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
+                                <h4 id='totalScore' style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
                                 <div style={{ float: 'right', marginRight: '10px' }}>
                                     {showSubmitButton ?
                                         <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
@@ -172,7 +172,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     }
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
