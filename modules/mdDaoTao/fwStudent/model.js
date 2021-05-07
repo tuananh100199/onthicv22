@@ -56,13 +56,13 @@ module.exports = (app) => {
             model.find({}).populate({
                 path : 'course',
                 populate : {
-                  path : 'subjects'
+                  path : 'subjects courseType'
                 }
               }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
             model.find(condition).populate({
                 path : 'course',
                 populate : {
-                  path : 'subjects'
+                  path : 'subjects courseType'
                 }
               }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec((err, res) => {
                 done(err, res);
