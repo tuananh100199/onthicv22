@@ -90,6 +90,20 @@ export function checkQuestion(lessonId, answers, done) {
     };
 }
 
+export function resetStudentScore(lessonId, courseId, done) {
+    return () => {
+        const url = '/api/question/student/reset';
+        T.put(url, { lessonId, courseId }, data => {
+            if (data.error) {
+                T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger'));
+    };
+}
+
 export function createLesson(data, done) {
     return dispatch => {
         const url = '/api/lesson';
