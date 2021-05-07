@@ -21,7 +21,8 @@ import AdminMenu from 'view/component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { modules } from './modules.jsx';
-const reducers = {}, routeMapper = {}, addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
+const reducers = {}, routeMapper = {},
+    addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
     module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
