@@ -87,7 +87,6 @@ module.exports = (app) => {
                                 Object.assign(changes.tienDoHocTap, obj);
                             }
                         });
-
                         changes.modifiedDate = new Date();
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
                     }
@@ -96,6 +95,11 @@ module.exports = (app) => {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
             }
+        },
+
+        resetLesson: (_id, changes, done) => {
+            const modifiedDate = { modifiedDate: new Date() };
+            model.findOneAndUpdate({ _id }, { $unset: changes, $set: modifiedDate }, { new: true }).exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

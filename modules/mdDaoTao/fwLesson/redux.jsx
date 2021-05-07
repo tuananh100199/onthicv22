@@ -90,10 +90,10 @@ export function checkQuestion(lessonId, answers, done) {
     };
 }
 
-export function resetStudentScore(lessonId, courseId, done) {
+export function resetStudentScore(lessonId, subjectId, courseId, done) {
     return () => {
         const url = '/api/question/student/reset';
-        T.put(url, { lessonId, courseId }, data => {
+        T.put(url, { lessonId, subjectId, courseId }, data => {
             if (data.error) {
                 T.notify('Làm lại câu hỏi ôn tập bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);

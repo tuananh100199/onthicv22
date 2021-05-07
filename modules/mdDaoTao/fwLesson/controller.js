@@ -86,14 +86,18 @@ module.exports = (app) => {
     });
 
     app.put('/api/question/student/reset', app.permission.check('lesson:read'), (req, res) => {
-        const { courseId } = req.body,
+        const { courseId, subjectId, lessonId } = req.body,
             userId = req.session.user._id;
         app.model.student.getAll({ user: userId, course: courseId }, (error, students) => {
             if (error) {
                 res.send({ error });
             } else {
-                console.log(students);
-                res.send(students);
+                const key = 'tienDoHocTap.' + subjectId + '.' + lessonId,
+                    changes = {};
+                changes[key] = {};
+                app.model.student.resetLesson({ _id: students[0]._id }, changes, (error, item) => {
+                    res.send({ error, item });
+                });
             }
         });
     });

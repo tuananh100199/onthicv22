@@ -21,6 +21,7 @@ class adminEditPage extends AdminPage {
                     this.props.getStudentScore(data.currentCourse, item => {
                         if (item) {
                             this.setState({
+                                subjectId: data.currentSubject,
                                 courseId: data.currentCourse,
                                 prevTrueAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].trueAnswers : null,
                                 prevAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].answers : null,
@@ -59,7 +60,7 @@ class adminEditPage extends AdminPage {
 
     refreshQuestion = (e, questionId) => {
         e.preventDefault();
-
+        this.props.resetStudentScore(this.state.lessonId, this.state.subjectId, this.state.courseId);
         this.setState({
             activeQuestionIndex: 0,
             prevAnswers: null,
