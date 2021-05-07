@@ -21,7 +21,7 @@ class UserPageRandomDriveTest extends AdminPage {
             content: (
                 <div className='row'>
                     <div className='col-12'>
-                        <h4>Loại khóa học</h4>
+                        <h4>Loại đề thi</h4>
                         <div className='row'>
                             {courseTypes && courseTypes.map((type, index) => (
                                 <div key={index} className='col-md-4'>
@@ -29,7 +29,7 @@ class UserPageRandomDriveTest extends AdminPage {
                                         <div className='widget-small coloured-icon info'>
                                             <i className='icon fa fa-3x fa fa-cubes' />
                                             <div className='info'>
-                                                <h4>Loại khóa học {type.title}</h4>
+                                                <h4>Loại {type.title}</h4>
                                             </div>
                                         </div>
                                     </Link>
