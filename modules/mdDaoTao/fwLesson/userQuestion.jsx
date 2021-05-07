@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLessonByStudent, checkQuestion } from './redux';
+import { getLessonByStudent, checkQuestion, resetStudentScore } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
@@ -21,6 +21,7 @@ class adminEditPage extends AdminPage {
                     this.props.getStudentScore(data.currentCourse, item => {
                         if (item) {
                             this.setState({
+                                courseId: data.currentCourse,
                                 prevTrueAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].trueAnswers : null,
                                 prevAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].answers : null,
                                 showSubmitButton: item[data.currentSubject][params._id] ? false : true
@@ -58,6 +59,7 @@ class adminEditPage extends AdminPage {
 
     refreshQuestion = (e, questionId) => {
         e.preventDefault();
+
         this.setState({
             activeQuestionIndex: 0,
             prevAnswers: null,
@@ -206,5 +208,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
-const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore };
+const mapActionsToProps = { getLessonByStudent, checkQuestion, getStudentScore, resetStudentScore };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

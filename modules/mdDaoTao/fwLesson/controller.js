@@ -85,6 +85,19 @@ module.exports = (app) => {
         });
     });
 
+    app.put('/api/question/student/reset', app.permission.check('lesson:read'), (req, res) => {
+        const { courseId } = req.body,
+            userId = req.session.user._id;
+        app.model.student.getAll({ user: userId, course: courseId }, (error, students) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                console.log(students);
+                res.send(students);
+            }
+        });
+    });
+
     app.post('/api/lesson', app.permission.check('lesson:write'), (req, res) => {
         const { data } = req.body;
         data.author = req.session.user._id;
