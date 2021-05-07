@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getDriveTestItemByStudent, checkDriveTestScore, getDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
+import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/input.scss';
 
@@ -44,20 +44,22 @@ class UserPageDriveTest extends AdminPage {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
-            this.setState({ prevTrueAnswers: result.trueAnswer,
-                            prevAnswers: result.answers,
-                            score: result.score,
-                            showSubmitButton: true
-                        });
+            this.setState({
+                prevTrueAnswers: result.trueAnswer,
+                prevAnswers: result.answers,
+                score: result.score,
+                showSubmitButton: true
+            });
             $('#totalScore').css('display', 'block');
             $('#trueAnswer').css('display', 'block');
         });
     }
 
     rework = (e) => T.confirm('Làm lại bài thi', 'Bạn có chắc bạn muốn làm lại bài thi này?', true, isConfirm => {
-        if(isConfirm) {
+        if (isConfirm) {
             e.preventDefault();
-            this.setState({ prevTrueAnswers: null,
+            this.setState({
+                prevTrueAnswers: null,
                 prevAnswers: null,
                 score: 0,
                 showSubmitButton: true
@@ -103,7 +105,7 @@ class UserPageDriveTest extends AdminPage {
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { prevTrueAnswers, prevAnswers, showSubmitButton, score } = this.state;
-        
+
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
@@ -124,7 +126,7 @@ class UserPageDriveTest extends AdminPage {
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + (this.state.title || '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, this.state.title],
-            backRoute: userPageLink, 
+            backRoute: userPageLink,
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
@@ -132,7 +134,7 @@ class UserPageDriveTest extends AdminPage {
                             (
                                 <div className='col-md-12 pb-5'>
                                     <div className='row'>
-                                        <h6 className='col-md-8'>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{color: 'red'}}> *câu điểm liệt</span> : null}</h6>
+                                        <h6 className='col-md-8'>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title} {activeQuestion.importance ? <span style={{ color: 'red' }}> *câu điểm liệt</span> : null}</h6>
                                         <nav aria-label='...' className='col-md-4'>
                                             <ul className='pagination'>
                                                 <li className='page-item' id='prev-btn'>
@@ -144,7 +146,7 @@ class UserPageDriveTest extends AdminPage {
                                             </ul>
                                         </nav>
                                     </div>
-                                    
+
                                     {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
@@ -178,7 +180,7 @@ class UserPageDriveTest extends AdminPage {
                         {showSubmitButton ?
                             <button className='btn btn-circle' id='submit-btn' onClick={e => this.submitAnswer(e)} data-toggle='tooltip' title='Chấm điểm' style={{ position: 'fixed', right: '10px', bottom: '10px', zIndex: 500 }}>
                                 <i className='fa fa-lg fa-paper-plane-o' />
-                            </button> : null }
+                            </button> : null}
                         <p id='totalScore'>Số câu đúng của bạn: <b>{score} / {questions && questions.length}</b></p>
                     </div>
                 </div>
@@ -187,5 +189,5 @@ class UserPageDriveTest extends AdminPage {
     }
 }
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
-const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore, getDriveTestScore };
+const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTest);

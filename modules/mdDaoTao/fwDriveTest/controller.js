@@ -5,13 +5,19 @@ module.exports = app => {
             4006: { title: 'Bộ đề thi', link: '/user/drive-test' },
         },
     };
-    app.permission.add({ name: 'driveTest:read', menu }, { name: 'driveTest:write' }, { name: 'driveTest:delete' });
+    const driveTest = {
+        parentMenu: app.parentMenu.driveTest,
+        menus: {
+            6010: { title: 'Bộ đề thi', link: '/user/drive-test' },
+        },
+    };
+    app.permission.add({ name: 'driveTest:read', menu }, { name: 'driveTest:write', menu: driveTest }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
-    app.get('/api/drive-test/all', app.permission.check('studentCourse:read'), (req, res) => {
+    app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
         app.model.driveTest.getAll(condition, (error, list) => {
             res.send({ error, list });
@@ -34,7 +40,7 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/drive-test', app.permission.check('driveTest:read'), (req, res) => {
+    app.get('/api/drive-test', (req, res) => {
         app.model.driveTest.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
@@ -77,10 +83,12 @@ module.exports = app => {
                     res.send({ error });
                 } else {
                     if (item.questionTypes) {
-                        const randomQuestions = item.questionTypes.map((type) => {
+                        const randomQuestions = item.questionTypes.map(type => {
                             return new Promise((resolve, reject) => {
-                                app.model.driveQuestion.getAll({ categories: type.category }, (error, list) => {
-                                    if (error || list == null) {
+                                const condition = {};
+                                condition.categories = [type.category];
+                                app.model.driveQuestion.getAll(condition, (error, list) => {
+                                    if (error || list.length == 0) {
                                         reject(error);
                                     } else {
                                         resolve(app.getRandom(list, type.amount));
@@ -89,10 +97,11 @@ module.exports = app => {
                             });
                         });
                         Promise.all(randomQuestions).then(questions => {
-                            const driveTest = req.session.driveTest = {
-                                questions: questions.filter(item => item).flat(),
+                            const driveTest = {
+                                questions: questions.flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
                             };
+                            req.session.driveTest = driveTest;
                             res.send({ driveTest });
                         }).catch(error => res.send({ error }));
                     }
@@ -100,12 +109,11 @@ module.exports = app => {
             });
         }
     });
-
     app.post('/api/drive-test/student/submit', (req, res) => {
         const { answers } = req.body,
             _driveTestId = req.body._id;
         let score = 0,
-            importanceScore = false;
+            importanceScore = null;
 
         app.model.driveTest.get(_driveTestId, (error, test) => {
             if (error) {
@@ -125,7 +133,7 @@ module.exports = app => {
                             }
                             else {
                                 if (questionMapper[key]._id == key) {
-                                    importanceScore = true;
+                                    importanceScore = key;
                                 }
                             }
                         } else {
@@ -142,7 +150,7 @@ module.exports = app => {
             randomTest = req.session.driveTest;
         let score = 0,
             error = null,
-            importanceScore = false;
+            importanceScore = null;
 
         const questionMapper = {},
             trueAnswer = {};
@@ -158,7 +166,7 @@ module.exports = app => {
                     }
                     else {
                         if (questionMapper[key]._id == key) {
-                            importanceScore = true;
+                            importanceScore = key;
                         }
                     }
                 } else {

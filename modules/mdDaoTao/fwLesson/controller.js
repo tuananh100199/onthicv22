@@ -77,10 +77,23 @@ module.exports = (app) => {
                     } else {
                         const data = { studentId: students[0]._id, subjectId, lessonId, trueAnswer, answers, score };
                         app.model.student.addStudiedLesson(data, (error, item) => {
-                            res.send({ error, result: { score }, item });
+                            res.send({ error, result: { score, trueAnswer, answers }, item });
                         });
                     }
                 });
+            }
+        });
+    });
+
+    app.put('/api/question/student/reset', app.permission.check('lesson:read'), (req, res) => {
+        const { courseId } = req.body,
+            userId = req.session.user._id;
+        app.model.student.getAll({ user: userId, course: courseId }, (error, students) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                console.log(students);
+                res.send(students);
             }
         });
     });
