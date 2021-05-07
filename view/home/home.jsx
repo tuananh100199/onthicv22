@@ -20,7 +20,7 @@ import CandidateModal from 'view/component/CandidateModal';
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
 import { modules } from './modules.jsx';
 const reducers = {}, routeMapper = {},
-    addRoute = (route) => routeMapper[route.path] = <Route key={route.path} {...route} />;
+    addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
     module.init && module.init();
     Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
@@ -93,7 +93,7 @@ class App extends React.Component {
                         <HomeFooter />
                         <LoginModal ref={e => this.loginModal = e} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />
-                        <CandidateModal ref={e => this.candidateModal = e}/>
+                        <CandidateModal ref={e => this.candidateModal = e} />
                         <Loader ref={e => this.loader = e} />
                     </React.Fragment> :
                     <React.Fragment>
