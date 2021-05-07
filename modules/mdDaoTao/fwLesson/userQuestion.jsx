@@ -63,7 +63,7 @@ class adminEditPage extends AdminPage {
             prevAnswers: null,
             prevTrueAnswers: null,
             showSubmitButton: true
-        })
+        });
         setTimeout(() => {
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
             $('#next-btn').css({ 'visibility': 'visible' });
