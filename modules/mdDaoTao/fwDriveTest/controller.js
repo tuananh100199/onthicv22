@@ -150,7 +150,7 @@ module.exports = app => {
             randomTest = req.session.driveTest;
         let score = 0,
             error = null,
-            importanceScore = false;
+            importanceScore = null;
 
         const questionMapper = {},
             trueAnswer = {};
@@ -166,7 +166,7 @@ module.exports = app => {
                     }
                     else {
                         if (questionMapper[key]._id == key) {
-                            importanceScore = true;
+                            importanceScore = key;
                         }
                     }
                 } else {
