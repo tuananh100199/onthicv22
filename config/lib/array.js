@@ -33,4 +33,12 @@ module.exports = app => {
     Array.prototype.removeByIndex = function (index) {
         0 <= index && index < this.length && this.splice(index, 1);
     };
+    
+    if (!Array.prototype.flat) {
+        Array.prototype.flat = function (depth = 1) {
+            return this.reduce(function (flat, toFlatten) {
+                return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
+            }, []);
+        };
+    }
 };

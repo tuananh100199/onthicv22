@@ -17,7 +17,7 @@ class AdminEditPage extends AdminPage {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user');
                 } else if (data.item && data.currentCourse) {
-                    this.props.getStudentScore(data => {
+                    this.props.getStudentScore(data.currentCourse, data => {
                         if (data.error) {
                             this.props.history.push('/user');
                         } else {

@@ -101,10 +101,10 @@ export function getStudent(_id, done) {
     };
 }
 
-export function getStudentScore(done) {
+export function getStudentScore(courseId, done) {
     return dispatch => {
         const url = '/api/student/score';
-        T.get(url, data => {
+        T.get(url, { courseId }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);

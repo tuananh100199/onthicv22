@@ -17,10 +17,10 @@
   border-color: #7B1FA2;
 }
 
-.custom-control-input:checked~.custom-control-label.invalid::before {
+.custom-control-input:disabled.custom-control-input:checked~.custom-control-label.invalid::before {
   background-color:#dc3545;
 }
 
-.custom-control-input:checked~.custom-control-label.valid::before {
+.custom-control-input:disabled.custom-control-input:checked~.custom-control-label.valid::before {
   background-color: #28a745;
 }
