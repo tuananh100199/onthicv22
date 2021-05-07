@@ -91,7 +91,7 @@ module.exports = app => {
                                 });
                             });
                         });
-                        Promise.all(randomQuestions).then((questions) => {
+                        Promise.all(randomQuestions).then(questions => {
                             const driveTest = req.session.driveTest = {
                                 questions: questions.filter(item => item).flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
