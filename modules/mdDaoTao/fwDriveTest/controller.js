@@ -5,10 +5,21 @@ module.exports = app => {
             4006: { title: 'Bộ đề thi', link: '/user/drive-test' },
         },
     };
-    app.permission.add({ name: 'driveTest:read', menu }, { name: 'driveTest:write' }, { name: 'driveTest:delete' });
+
+    const driveTest = {
+        parentMenu: app.parentMenu.driveTest,
+        menus: {
+            6010: { title: 'Bộ đề thi ngẫu nhiên', link: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/606158804971df4b60dcced2' },//Fix lai courseType
+            6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/606158804971df4b60dcced2' },
+        },
+    };
+
+    app.permission.add({ name: 'driveTest:read', menu: driveTest }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {
@@ -66,6 +77,7 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', (req, res) => {
+        req.session.driveTest = null;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.driveTest,
             today = new Date().getTime();

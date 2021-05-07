@@ -12,13 +12,15 @@ class UserPageRandomDriveTest extends AdminPage {
             const route = T.routeMatcher(backRoute + '/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.createRandomDriveTest(params._id, data => {
-                if (data.driveTest) {
-                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
-                    const { _id, title, questions } = data.driveTest;
-                    this.setState({ _id, title, questions, _courseId: data.currentCourse });
-                } else {
-                    this.props.history.push(backRoute);
-                }
+                // if (data.driveTest) {
+                //     console.log(data.driveTest)
+                //     T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
+                //     const { _id, title, questions } = data.driveTest;
+                //     this.setState({ _id, title, questions, _courseId: data.currentCourse });
+                // } else {
+                //     this.props.history.push(backRoute);
+                // }
+                console.log(data);
                 $('#totalScore').css('display', 'none');
                 $('#trueAnswer').css('display', 'none');
             });
