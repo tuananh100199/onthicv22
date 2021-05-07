@@ -5,7 +5,13 @@ module.exports = app => {
             4006: { title: 'Bộ đề thi', link: '/user/drive-test' },
         },
     };
-    app.permission.add({ name: 'driveTest:read', menu }, { name: 'driveTest:write' }, { name: 'driveTest:delete' });
+    const driveTest = {
+        parentMenu: app.parentMenu.driveTest,
+        menus: {
+            6010: { title: 'Bộ đề thi', link: '/user/drive-test' },
+        },
+    };
+    app.permission.add({ name: 'driveTest:read', menu }, { name: 'driveTest:write', menu: driveTest }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);

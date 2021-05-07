@@ -8,13 +8,6 @@ module.exports = (app) => {
         },
     };
 
-    const driveTest = {
-        parentMenu: app.parentMenu.driveTest,
-        menus: {
-            4045: { title: 'Khóa học', link: '/user/course' }
-        },
-    };
-
     const courseMenu = {
         parentMenu: app.parentMenu.studentCourse,
         menus: {},
@@ -24,7 +17,7 @@ module.exports = (app) => {
         name: 'course:read'
     },
         { name: 'course:write', menu },
-        { name: 'course:delete', menu: driveTest },
+        { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'studentCourse:read', menu: courseMenu }
     );

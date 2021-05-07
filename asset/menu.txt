@@ -29,4 +29,4 @@
 	4045 - Khóa học (/user/course)
 5000. Khóa học của bạn (undefined)
 6000. Test (undefined)
-	4045 - Khóa học (/user/course)
+	6010 - Bộ đề thi (/user/drive-test)
