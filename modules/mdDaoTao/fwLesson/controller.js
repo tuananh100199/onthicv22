@@ -71,11 +71,11 @@ module.exports = (app) => {
                         }
                     }
                 }
-                app.model.student.getAll({ user: req.session.user._id, course: courseId }, (error, students) => {
-                    if (error || !students.length) {
+                app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+                    if (error) {
                         res.send({ error });
                     } else {
-                        const data = { studentId: students[0]._id, subjectId, lessonId, trueAnswer, answers, score };
+                        const data = { studentId: student._id, subjectId, lessonId, trueAnswer, answers, score };
                         app.model.student.addStudiedLesson(data, (error, item) => {
                             res.send({ error, result: { score, trueAnswer, answers }, item });
                         });

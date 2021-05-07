@@ -45,7 +45,7 @@ class AdminStudentView extends React.Component {
             this.setState({ studentSelecteds: [] });
             this.props.getPreStudentAll({ courseType: this.props.courseType && this.props.courseType._id });
             this.props.getDivisionAll(list => {
-                const _idOutsideDivisions = list.reduce((result, item) => item.isOutside ? [...result, item._id] : result, []),
+                const _idOutsideDivisions = list.reduce((result, item) => item && item.isOutside ? [...result, item._id] : result, []),
                     groups = course.item.groups || [],
                     outsideGroups = groups.filter(group => _idOutsideDivisions.includes(group.teacher.division)),
                     insideGroups = groups.filter(group => !outsideGroups.includes(group));
@@ -183,7 +183,7 @@ class AdminStudentView extends React.Component {
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
-                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 0 }}
+                        {studentInsides.length ? divisionStudents.reduce((result, item, index) => item && !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 0 }}
                             onMouseEnter={() => {
                                 const index = divisions.findIndex(item1 => item1._id == item._id);
                                 if (divisions[index]) divisions[index].isHide = true;
@@ -242,7 +242,7 @@ class AdminStudentView extends React.Component {
                             )}
                         </div>)] : result, []) : 'Không có thông tin'}
                         <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
-                        {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 0 }}
+                        {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item && item.isOutside ? [...result, (<div key={index} style={{ marginTop: 0 }}
                             onMouseEnter={() => {
                                 const index = divisions.findIndex(item1 => item1._id == item._id);
                                 if (divisions[index]) divisions[index].isHide = true;
@@ -308,12 +308,12 @@ class AdminStudentView extends React.Component {
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Nhóm học viên</h3>
                     <h5>Nhóm học viên thuộc cơ sở Hiệp Phát</h5>
-                    {this.state.insideGroups.length ? divisionTeachers.reduce((result, item, index) => !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                    {this.state.insideGroups.length ? divisionTeachers.reduce((result, item, index) => item && !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
                         <h6>{item.title}</h6>
                         {renderGroups(this.state.insideGroups.filter(item1 => item._id == item1.teacher.division))}
                     </div>)] : result, []) : 'Không có thông tin'}
                     <h5>Nhóm học viên thuộc cơ sở ngoài</h5>
-                    {this.state.outsideGroups.length ? divisionTeachers.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                    {this.state.outsideGroups.length ? divisionTeachers.reduce((result, item, index) => item && item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
                         <h6>{item.title}</h6>
                         {renderGroups(this.state.outsideGroups.filter(item1 => item._id == item1.teacher.division))}
                     </div>)] : result, []) : 'Không có thông tin'}

@@ -108,11 +108,6 @@ module.exports = (app) => {
                     { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
                     { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
                 ];
-                // worksheet.columns = [
-                //     { header: 'STT', key: 'id', width: 15 },
-                //     { header: 'Họ', key: 'lastname', width: 20 },
-                //     { header: 'Tên', key: 'firstname', width: 20 },
-                // ];
                 let row = 2;
                 course.groups.forEach(group => {
                     group.student.forEach(item => {
@@ -120,11 +115,9 @@ module.exports = (app) => {
                         worksheet.insertRow(row, [row - 2, item.lastname, item.firstname]);
                     });
                 });
-                // row = 2;
                 new Promise((resolve, reject) => {
                     let count = 0;
                     let countIndex = 0;
-                    // let cols = [];
                     ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item) => worksheet.mergeCells(item));
                     for (const item of course.subjects) {
                         if (item) {
@@ -155,23 +148,12 @@ module.exports = (app) => {
                                         course.groups.forEach(group => {
                                             group.student.forEach(item => {
                                                 rowCell++;
-                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell.toString()}`).value = item.tienDoHocTap && item.tienDoHocTap[lesson._id];
+                                                const value = item.tienDoHocTap && item.tienDoHocTap[subject._id] && item.tienDoHocTap[subject._id][lesson._id] && item.tienDoHocTap[subject._id][lesson._id].score || 0;
+                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell.toString()}`).value = `${value}/${lesson.questions.length}`;
                                             });
                                         });
-                                        // cols.push({
-                                        //     header: subject.title,
-                                        //     key: lesson._id.toString(),
-                                        //     width: 15
-                                        // });
-                                        // cols.push({
-                                        //     header: lesson._id,
-                                        //     key: lesson._id,
-                                        //     width: 15
-                                        // });
-                                        // console.log(cols, 'cols');
                                         count++;
                                         if (count == numOfLesson) {
-                                            // worksheet.columns = [...worksheet.columns, ...cols];
                                             resolve();
                                         }
                                     }
@@ -180,29 +162,9 @@ module.exports = (app) => {
                         }
                     }
                 }).then(() => {
-                    // worksheet.columns = [...worksheet.columns, ...cols];
-                    // console.log(worksheet.columns, 'djsdj');
                     app.excel.write(worksheet, cells);
                     app.excel.attachment(workbook, res, 'Student.xlsx');
                 }).catch(error => res.send(error));
-                // worksheet.columns = [
-                //     { header: 'STT', key: 'id', width: 15 },
-                //     { header: 'Họ', key: 'lastname', width: 20 },
-                //     { header: 'Tên', key: 'firstname', width: 20 },
-                // ];
-                // worksheet.mergeCells
-                // list.forEach((item, index) => {
-                //     worksheet.addRow({
-                //         id: index + 1,
-                //         lastname: item.lastname,
-                //         firstname: item.firstname,
-                //         email: item.email,
-                //         phoneNumber: item.phoneNumber,
-                //         courseType: item.courseType ? item.courseType.title : 'Chưa đăng ký',
-                //         state: item.state,
-                //         createdDate: item.createdDate
-                //     });
-                // });
             }
         });
     });
