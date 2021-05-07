@@ -66,7 +66,6 @@ module.exports = app => {
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
     app.post('/api/drive-test/random', (req, res) => {
-        req.session.driveTest = null;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.driveTest,
             today = new Date().getTime();
@@ -82,9 +81,9 @@ module.exports = app => {
                             return new Promise((resolve, reject) => {
                                 const condition = {};
                                 condition.categories = [type.category];
-                                app.model.driveQuestion.getAll({ categories: type.category }, (error, list) => {
+                                app.model.driveQuestion.getAll(condition, (error, list) => {
                                     if (error || list.length == 0) {
-                                        reject({ error, condition });
+                                        reject(error);
                                     } else {
                                         resolve(app.getRandom(list, type.amount));
                                     }
@@ -92,10 +91,11 @@ module.exports = app => {
                             });
                         });
                         Promise.all(randomQuestions).then(questions => {
-                            const driveTest = req.session.driveTest = {
-                                questions: questions.filter(item => item).flat(),
+                            const driveTest = {
+                                questions: questions.flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
                             };
+                            req.session.driveTest = driveTest;
                             res.send({ driveTest });
                         }).catch(error => res.send({ error }));
                     }
