@@ -70,7 +70,6 @@ module.exports = (app, appName) => {
         communication: { index: 3000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
         studentCourse: { index: 5000, title: 'Khóa học của bạn', icon: 'fa-graduation-cap' },
-        driveTest: { index: 6000, title: 'Test', icon: 'fa-graduation-cap' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------
