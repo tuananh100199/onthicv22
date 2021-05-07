@@ -83,7 +83,7 @@ module.exports = app => {
                                 condition.categories = [type.category];
                                 app.model.driveQuestion.getAll(condition, (error, list) => {
                                     if (error || list.length == 0) {
-                                        reject({ error });
+                                        reject(error);
                                     } else {
                                         resolve(app.getRandom(list, type.amount));
                                     }
