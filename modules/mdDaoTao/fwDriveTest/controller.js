@@ -81,7 +81,7 @@ module.exports = app => {
                             return new Promise((resolve, reject) => {
                                 const condition = {};
                                 condition.categories = [type.category];
-                                app.model.driveQuestion.getAll({ categories: type.category }, (error, list) => {
+                                app.model.driveQuestion.getAll(condition, (error, list) => {
                                     if (error || list.length == 0) {
                                         reject({ error });
                                     } else {
@@ -92,7 +92,7 @@ module.exports = app => {
                         });
                         Promise.all(randomQuestions).then(questions => {
                             const driveTest = {
-                                questions: questions.filter(item => item).flat(),
+                                questions: questions.flat(),
                                 expireDay: new Date().setHours(new Date().getHours() + 2),
                             };
                             req.session.driveTest = driveTest;
