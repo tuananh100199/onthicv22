@@ -9,8 +9,8 @@ module.exports = app => {
     const driveTest = {
         parentMenu: app.parentMenu.driveTest,
         menus: {
-            6010: { title: 'Bộ đề thi ngẫu nhiên', link: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/606158804971df4b60dcced2' },//Fix lai courseType
-            6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/606158804971df4b60dcced2' },
+            6010: { title: 'Bộ đề thi ngẫu nhiên', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' },
+            6020: { title: 'Bộ đề thi thử', link: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu' },
         },
     };
 
@@ -18,8 +18,12 @@ module.exports = app => {
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id', app.templates.admin);
+
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {

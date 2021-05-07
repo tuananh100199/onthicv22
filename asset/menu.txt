@@ -29,5 +29,5 @@
 	4045 - Khóa học (/user/course)
 5000. Khóa học của bạn (undefined)
 6000. Ôn tập đề thi (undefined)
-	6010 - Bộ đề thi ngẫu nhiên (/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/606158804971df4b60dcced2)
-	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu/606158804971df4b60dcced2)
+	6010 - Bộ đề thi ngẫu nhiên (/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien)
+	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu)

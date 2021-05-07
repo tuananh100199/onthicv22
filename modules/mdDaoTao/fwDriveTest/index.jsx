@@ -17,16 +17,24 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-thu/:_id/',
-            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
-        },
-        {
-            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id/',
+            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id',
+            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id/',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestDetail') })
+        },      
+        {
+            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien',
             component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTestDetail') })
         },
     ]
 };
