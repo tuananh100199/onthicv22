@@ -149,7 +149,7 @@ module.exports = (app) => {
                                             group.student.forEach(item => {
                                                 rowCell++;
                                                 const value = item.tienDoHocTap && item.tienDoHocTap[subject._id] && item.tienDoHocTap[subject._id][lesson._id] && item.tienDoHocTap[subject._id][lesson._id].score || 0;
-                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell.toString()}`).value = `${value}/${lesson.questions.length}`;
+                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell}`).value = `${value}/${lesson.questions.length}`;
                                             });
                                         });
                                         count++;
