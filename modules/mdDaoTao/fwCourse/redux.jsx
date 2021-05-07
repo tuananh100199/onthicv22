@@ -187,7 +187,7 @@ export function getUserCourse(done) {
 
 export function getCourseByStudent(_id, done) {
     return dispatch => {
-        const url = '/api/student/course';
+        const url = '/api/course/student';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');

@@ -6,8 +6,6 @@ import Loading from 'view/component/Loading';
 import student from './redux';
 
 export default {
-    init: () => {
-    },
     redux: {
         student,
     },
