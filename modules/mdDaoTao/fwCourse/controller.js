@@ -108,47 +108,23 @@ module.exports = (app) => {
                     { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
                     { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
                 ];
-                worksheet.columns = [
-                    { header: 'STT', key: 'id', width: 15 },
-                    { header: 'Họ', key: 'lastname', width: 20 },
-                    { header: 'Tên', key: 'firstname', width: 20 },
-                ];
-                let row = 1;
+                // worksheet.columns = [
+                //     { header: 'STT', key: 'id', width: 15 },
+                //     { header: 'Họ', key: 'lastname', width: 20 },
+                //     { header: 'Tên', key: 'firstname', width: 20 },
+                // ];
+                let row = 2;
                 course.groups.forEach(group => {
                     group.student.forEach(item => {
                         row++;
-                        worksheet.insertRow(row, [row - 1, item.lastname, item.firstname]);
+                        worksheet.insertRow(row, [row - 2, item.lastname, item.firstname]);
                     });
                 });
-                // ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item, index) => worksheet.mergeCells(item));
-                // let countIndex = 0;
-                // const mergeCells = course.subjects.map((item, index) => {
-                //     cells.push({
-                //         cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
-                //         border: '1234',
-                //         value: item.title,
-                //         font: { size: 12, align: 'center' }, bold: true
-                //     });
-                //     const currentCountIndex = countIndex;
-                //     countIndex += item.lessons.length;
-                //     return `${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`;
-                // })
-                // mergeCells.forEach((item, index) => worksheet.mergeCells(item));
+                // row = 2;
                 new Promise((resolve, reject) => {
                     let count = 0;
                     let countIndex = 0;
-                    // const mergeCells = course.subjects.map((item) => {
-                    //     cells.push({
-                    //         cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
-                    //         border: '1234',
-                    //         value: item.title,
-                    //         font: { size: 12, align: 'center' }, bold: true
-                    //     });
-                    //     const currentCountIndex = countIndex;
-                    //     countIndex += item.lessons.length;
-                    //     return `${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`;
-                    // });
-                    // mergeCells.forEach((item) => worksheet.mergeCells(item));
+                    // let cols = [];
                     ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item) => worksheet.mergeCells(item));
                     for (const item of course.subjects) {
                         if (item) {
@@ -175,8 +151,27 @@ module.exports = (app) => {
                                                 bold: true
                                             }
                                         );
+                                        let rowCell = 2;
+                                        course.groups.forEach(group => {
+                                            group.student.forEach(item => {
+                                                rowCell++;
+                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell.toString()}`).value = item.tienDoHocTap && item.tienDoHocTap[lesson._id];
+                                            });
+                                        });
+                                        // cols.push({
+                                        //     header: subject.title,
+                                        //     key: lesson._id.toString(),
+                                        //     width: 15
+                                        // });
+                                        // cols.push({
+                                        //     header: lesson._id,
+                                        //     key: lesson._id,
+                                        //     width: 15
+                                        // });
+                                        // console.log(cols, 'cols');
                                         count++;
                                         if (count == numOfLesson) {
+                                            // worksheet.columns = [...worksheet.columns, ...cols];
                                             resolve();
                                         }
                                     }
@@ -185,6 +180,8 @@ module.exports = (app) => {
                         }
                     }
                 }).then(() => {
+                    // worksheet.columns = [...worksheet.columns, ...cols];
+                    // console.log(worksheet.columns, 'djsdj');
                     app.excel.write(worksheet, cells);
                     app.excel.attachment(workbook, res, 'Student.xlsx');
                 }).catch(error => res.send(error));
