@@ -7,12 +7,12 @@ import '../../../view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
 class UserPageRandomDriveTestDetail extends AdminPage {
-    state = {};
+    state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'),
-                params = route.parse(window.location.pathname);
-            this.props.createRandomDriveTest(params._id, data => {
+                _id = route.parse(window.location.pathname)._id;
+            this.props.createRandomDriveTest(_id, data => {
                 if (data.driveTest) {
                     const { _id, title, questions } = data.driveTest;
                     this.setState({ _id, title, questions });
@@ -26,7 +26,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
     }
     submitAnswer = (e) => {
         e.preventDefault();
-        this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
+        this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,
@@ -39,6 +39,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         });
     }
 
+  
     refreshQuestion = (e, questionId) => {
         e.preventDefault();
         this.setState({
@@ -86,7 +87,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + this.state && this.state._courseTypeId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -112,7 +113,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: Đề thi ngẫu nhiên',
-            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, this.state.title],
+            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>,'Đề thi ngẫu nhiên'],
             backRoute: userPageLink,
             content: (
                 <div className='tile'>

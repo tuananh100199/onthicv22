@@ -14,6 +14,7 @@ class UserPageDriveTestDetail extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
+                    T.ready('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + params._id);
                     const { _id, title, questions } = data.item;
                     this.setState({ _id, title, questions });
                 } else {
@@ -25,15 +26,6 @@ class UserPageDriveTestDetail extends AdminPage {
         });
     }
 
-    componentDidUpdate(prevProps) {
-        const driveTest = this.props.driveTest;
-        if (driveTest !== prevProps.driveTest) {
-            if(driveTest.courseType) {
-                const _courseTypeId = driveTest.courseType._id;
-                this.setState({ _courseTypeId: _courseTypeId });
-            }      
-        }
-    }
 
     submitAnswer = (e) => {
         e.preventDefault();
@@ -97,7 +89,9 @@ class UserPageDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' +this.state && this.state._courseTypeId;
+        const _courseTypeId = this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id ?
+        this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id : null ;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + _courseTypeId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -111,7 +105,6 @@ class UserPageDriveTestDetail extends AdminPage {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
-
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);

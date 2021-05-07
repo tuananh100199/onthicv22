@@ -11,7 +11,6 @@ class UserPageDriveTest extends AdminPage {
         T.ready(previousRoute, () => {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
                 _id = route.parse(window.location.pathname)._id;
-            this.setState({ courseTypeId: _id });
             if (_id) {
                 T.ready('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + _id, () => {
                     this.props.getAllDriveTests({ courseType: _id });
@@ -24,11 +23,13 @@ class UserPageDriveTest extends AdminPage {
    
 
     render() {
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/';
         const { list } = this.props.driveTest ? this.props.driveTest : [];
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Tất cả bộ đề thi thử: ',
-            breadcrumb: ['Tất cả bộ đề thi thử'],
+            title: 'Tất cả bộ đề: ',
+            breadcrumb: [<Link key={0} to={userPageLink}>Loại bộ đề thi thử</Link>, 'Tất cả bộ đề'],
+            backRoute: userPageLink,
             content: (
                 <div className='row'>
                     <div className='col-12'>
