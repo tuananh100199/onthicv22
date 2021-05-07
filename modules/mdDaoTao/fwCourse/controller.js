@@ -108,6 +108,11 @@ module.exports = (app) => {
                     { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
                     { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
                 ];
+                worksheet.columns = [
+                    { header: 'STT', key: 'id', width: 15 },
+                    { header: 'Họ', key: 'lastname', width: 20 },
+                    { header: 'Tên', key: 'firstname', width: 20 },
+                ];
                 // ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item, index) => worksheet.mergeCells(item));
                 // let countIndex = 0;
                 // const mergeCells = course.subjects.map((item, index) => {
