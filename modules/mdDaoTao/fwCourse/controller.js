@@ -129,7 +129,7 @@ module.exports = (app) => {
                    if(student.course && student.course.active) {
                     courses.push(student.course);
                    }
-                }) 
+                });
                 res.send({ courses });
             }
         });
