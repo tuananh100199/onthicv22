@@ -17,7 +17,7 @@ module.exports = app => {
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
-    app.get('/api/drive-test/all', app.permission.check('studentCourse:read'), (req, res) => {
+    app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
         app.model.driveTest.getAll(condition, (error, list) => {
             res.send({ error, list });
@@ -40,7 +40,7 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/drive-test', app.permission.check('driveTest:read'), (req, res) => {
+    app.get('/api/drive-test', (req, res) => {
         app.model.driveTest.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
@@ -113,7 +113,7 @@ module.exports = app => {
         const { answers } = req.body,
             _driveTestId = req.body._id;
         let score = 0,
-            importanceScore = false;
+            importanceScore = null;
 
         app.model.driveTest.get(_driveTestId, (error, test) => {
             if (error) {
@@ -133,7 +133,7 @@ module.exports = app => {
                             }
                             else {
                                 if (questionMapper[key]._id == key) {
-                                    importanceScore = true;
+                                    importanceScore = key;
                                 }
                             }
                         } else {
