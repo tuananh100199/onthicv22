@@ -124,11 +124,17 @@ module.exports = (app) => {
             if (error || students.length == 0) {
                 res.send({error});
             } else {
-                res.send({ courses: students.filter(student => student.course.active == true) });
+                const courses = [];
+                students.map(student => {
+                   if(student.course && student.course.active) {
+                    courses.push(student.course);
+                   }
+                }) 
+                res.send({ courses });
             }
         });
     });
-    
+
     app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
