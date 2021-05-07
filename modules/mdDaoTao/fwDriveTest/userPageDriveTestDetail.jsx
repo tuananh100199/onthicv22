@@ -125,10 +125,10 @@ class UserPageDriveTestDetail extends AdminPage {
                             (
                                 <div className='col-md-12 pb-5'>
                                     <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }}  /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
-                                            <div key={index} className='custom-control custom-radio'>
+                                            <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
                                                 <input className='custom-control-input'
                                                     type='radio'
                                                     name={activeQuestion._id}
