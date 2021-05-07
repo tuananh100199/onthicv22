@@ -113,6 +113,13 @@ module.exports = (app) => {
                     { header: 'Họ', key: 'lastname', width: 20 },
                     { header: 'Tên', key: 'firstname', width: 20 },
                 ];
+                let row = 1;
+                course.groups.forEach(group => {
+                    group.student.forEach(item => {
+                        row++;
+                        worksheet.insertRow(row, [row - 1, item.lastname, item.firstname]);
+                    });
+                });
                 // ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item, index) => worksheet.mergeCells(item));
                 // let countIndex = 0;
                 // const mergeCells = course.subjects.map((item, index) => {
@@ -130,18 +137,18 @@ module.exports = (app) => {
                 new Promise((resolve, reject) => {
                     let count = 0;
                     let countIndex = 0;
-                    const mergeCells = course.subjects.map((item) => {
-                        cells.push({
-                            cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
-                            border: '1234',
-                            value: item.title,
-                            font: { size: 12, align: 'center' }, bold: true
-                        });
-                        const currentCountIndex = countIndex;
-                        countIndex += item.lessons.length;
-                        return `${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`;
-                    });
-                    mergeCells.forEach((item) => worksheet.mergeCells(item));
+                    // const mergeCells = course.subjects.map((item) => {
+                    //     cells.push({
+                    //         cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
+                    //         border: '1234',
+                    //         value: item.title,
+                    //         font: { size: 12, align: 'center' }, bold: true
+                    //     });
+                    //     const currentCountIndex = countIndex;
+                    //     countIndex += item.lessons.length;
+                    //     return `${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`;
+                    // });
+                    // mergeCells.forEach((item) => worksheet.mergeCells(item));
                     ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item) => worksheet.mergeCells(item));
                     for (const item of course.subjects) {
                         if (item) {
@@ -149,10 +156,19 @@ module.exports = (app) => {
                                 if (error) {
                                     reject(error);
                                 } else {
+                                    cells.push({
+                                        cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
+                                        border: '1234',
+                                        value: subject.title,
+                                        font: { size: 12, align: 'center' }, bold: true
+                                    });
+                                    const currentCountIndex = countIndex;
+                                    countIndex += subject.lessons.length;
+                                    worksheet.mergeCells(`${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`);
                                     for (const lesson of subject.lessons) {
                                         cells.push(
                                             {
-                                                cell: `${String.fromCharCode('D'.charCodeAt() + (cells.length - course.subjects.length - 3))}2`,
+                                                cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
                                                 border: '1234',
                                                 value: lesson.title,
                                                 font: { size: 12, align: 'center' },
@@ -222,13 +238,13 @@ module.exports = (app) => {
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {
-                res.send({error});
+                res.send({ error });
             } else {
                 const courses = [];
                 students.map(student => {
-                   if(student.course && student.course.active) {
-                    courses.push(student.course);
-                   }
+                    if (student.course && student.course.active) {
+                        courses.push(student.course);
+                    }
                 });
                 res.send({ courses });
             }
