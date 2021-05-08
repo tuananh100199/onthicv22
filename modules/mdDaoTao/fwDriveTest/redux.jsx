@@ -164,7 +164,7 @@ export function deleteDriveTest(_id, done) {
 }
 
 export function checkDriveTestScore(_id, answers, done) {
-    return dispatch => {
+    return () => {
         const url = '/api/drive-test/student/submit';
         T.post(url, { _id, answers }, data => {
             if (data.error) {
@@ -172,8 +172,6 @@ export function checkDriveTestScore(_id, answers, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 if (done) done(data.result);
-                dispatch({ type: DriveTestGet, item: data.item });
-
             }
         }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     };

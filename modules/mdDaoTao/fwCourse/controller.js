@@ -27,8 +27,6 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/de-thi-thu/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/de-thi-ngau-nhien/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
@@ -122,13 +120,13 @@ module.exports = (app) => {
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {
-                res.send({error});
+                res.send({ error });
             } else {
                 const courses = [];
                 students.map(student => {
-                   if(student.course && student.course.active) {
-                    courses.push(student.course);
-                   }
+                    if (student.course && student.course.active) {
+                        courses.push(student.course);
+                    }
                 });
                 res.send({ courses });
             }
