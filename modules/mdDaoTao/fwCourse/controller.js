@@ -102,7 +102,7 @@ module.exports = (app) => {
             } else {
                 const numOfLesson = course.subjects.reduce((a, b) => (b.lessons ? b.lessons.length : 0) + a, 0);
 
-                const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Student');
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(`Danh sách điểm của học viên lớp ${course.name}`);
                 const cells = [
                     { cell: 'A1', border: '1234', value: 'STT', font: { size: 12, align: 'center' }, bold: true },
                     { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
@@ -163,7 +163,7 @@ module.exports = (app) => {
                     }
                 }).then(() => {
                     app.excel.write(worksheet, cells);
-                    app.excel.attachment(workbook, res, 'Student.xlsx');
+                    app.excel.attachment(workbook, res, `Danh sách điểm của học viên lớp ${course.name}.xlsx`);
                 }).catch(error => res.send(error));
             }
         });
