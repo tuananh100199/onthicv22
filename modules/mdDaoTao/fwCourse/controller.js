@@ -28,6 +28,7 @@ module.exports = (app) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             pageCondition = {};
+        pageCondition.courseType = req.query.courseTypeId;
         if (req.session.user.division && req.session.user.division.isOutside) {
             pageCondition.admins = req.session.user._id;
             pageCondition.active = true;

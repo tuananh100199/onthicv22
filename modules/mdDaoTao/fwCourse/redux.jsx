@@ -38,16 +38,16 @@ export default function courseReducer(state = null, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageCourse');
-export function getCoursePage(pageNumber, pageSize, done) {
+export function getCoursePage(courseTypeId, pageNumber, pageSize, done) {
     const page = T.updatePage('pageCourse', pageNumber, pageSize);
     return (dispatch) => {
         const url = '/api/course/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        T.get(url, { courseTypeId }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                if (done) done(data);
                 dispatch({ type: CourseGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
@@ -107,7 +107,7 @@ export function updateCourse(_id, changes, done) {
     };
 }
 
-export function deleteCourse(_id) {
+export function deleteCourse(_id, courseType) {
     return dispatch => {
         const url = '/api/course';
         T.delete(url, { _id }, data => {
@@ -116,7 +116,7 @@ export function deleteCourse(_id) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Khóa học được xóa thành công!', 'error', false, 800);
-                dispatch(getCoursePage());
+                dispatch(getCoursePage(courseType));
             }
         }, error => console.error(error) || T.notify('Xóa khóa học bị lỗi!', 'danger'));
     };

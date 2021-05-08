@@ -111,7 +111,7 @@ class CandidateModal extends AdminModal {
         buttons:
             this.props.permission.write &&
             <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>
-                <i className='fa fa-lg fa-paper-plane' />
+                <i className='fa fa-lg fa-paper-plane' /> Chuyển thành ứng viên
             </a>
     });
 }
