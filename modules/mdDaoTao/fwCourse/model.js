@@ -10,6 +10,7 @@ module.exports = app => {
             fee: { type: Number, default: 0 },
         }],
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
+        maxStudent: { type: Number },                                       // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
         active: { type: Boolean, default: false },
@@ -23,8 +24,12 @@ module.exports = app => {
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
         admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
-        groups: [{
+        groups: [{ //TODO: teacherGroups
             teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
+            student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
+        }],
+        representerGroups: [{
+            representer: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
