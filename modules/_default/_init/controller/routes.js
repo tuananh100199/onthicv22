@@ -68,14 +68,25 @@ module.exports = (app) => {
                                     courses.push({ courseId: student.course._id, name: student.course.name });
                                 }
                             });
-                            courses.map((course, index) => {
-                                const menuName = 5000 + index + 1;
-                                data.user.menu['5000'].menus[menuName] = {
-                                    title: 'Khóa học ' + course.name,
-                                    link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
-                                    permissions: ['studentCourse:read']
+                            if (courses.length) {
+                                data.user.menu['5000'] = {
+                                    parentMenu: {
+                                        index: 5000,
+                                        title: 'Khóa học của bạn',
+                                        icon: 'fa-graduation-cap',
+                                        subMenusRender: true
+                                    },
+                                    menus: {}
                                 };
-                            });
+                                courses.map((course, index) => {
+                                    const menuName = 5000 + index + 1;
+                                    data.user.menu['5000'].menus[menuName] = {
+                                        title: 'Khóa học ' + course.name,
+                                        link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
+                                        permissions: ['studentCourse:read']
+                                    };
+                                });
+                            }
                         }
                     });
                 }

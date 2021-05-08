@@ -40,7 +40,7 @@ class UserProfilePage extends AdminPage {
                     <div className='col-12'>
                         <h4>Khóa học của bạn</h4>
                         <div className='row'>
-                            {students && students.map((student, index) => (
+                            {students.length ? students.map((student, index) => (
                                 <div key={index} className='col-md-6 col-lg-6'>
                                     <Link to='#'>
                                         <div className='widget-small coloured-icon info'>
@@ -56,7 +56,7 @@ class UserProfilePage extends AdminPage {
                                         </div>
                                     </Link>
                                 </div>
-                            ))
+                            )) : <div className='col-md-6'>Chưa có khóa học!</div>
                             }
                         </div>
                     </div>
