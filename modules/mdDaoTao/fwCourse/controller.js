@@ -152,6 +152,34 @@ module.exports = (app) => {
                                         });
                                         count++;
                                         if (count == numOfLesson) {
+                                            const colAvgWord = String.fromCharCode('D'.charCodeAt() + numOfLesson);
+                                            cells.push({
+                                                cell: `${colAvgWord}1`,
+                                                border: '1234',
+                                                value: 'Điểm trung bình',
+                                                font: { size: 12, align: 'center' }, bold: true
+                                            });
+                                            worksheet.mergeCells(`${colAvgWord}1:${colAvgWord}2`);
+                                            let rowSum = 2;
+                                            course.groups.forEach(group => {
+                                                group.student.forEach(() => {
+                                                    rowSum++;
+                                                    let sum = 0;
+                                                    for (let i = 0; i < numOfLesson; i++) {
+                                                        const scoreText = worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + i)}${rowSum}`).text;
+                                                        const scoreSplitted = scoreText.split('/');
+                                                        let score = parseInt(scoreSplitted[0]);
+                                                        let sumOfQuestion = parseInt(scoreSplitted[1]);
+                                                        let div = 0;
+                                                        if (sumOfQuestion > 0) {
+                                                            div = score / sumOfQuestion;
+                                                        }
+                                                        sum += div;
+                                                    }
+                                                    sum /= numOfLesson;
+                                                    worksheet.getCell(`${colAvgWord}${rowSum}`).value = parseFloat(sum).toFixed(2);
+                                                });
+                                            });
                                             resolve();
                                         }
                                     }
