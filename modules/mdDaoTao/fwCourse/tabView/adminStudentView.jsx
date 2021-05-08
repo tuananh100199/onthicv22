@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { exportScore } from '../redux';
+// import { exportScore, exportSubject } from '../redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox, FormCheckbox, AdminModal, FormSelect, CirclePageButton } from 'view/component/AdminPage';
 
@@ -216,7 +217,6 @@ class AdminStudentView extends React.Component {
                                                     }
                                                     this.setState({ studentSelecteds: students });
                                                 });
-                                                // this.setState({ studentSelecteds: students })
                                             }
                                             _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
                                         }} style={{ display: 'flex' }} />
@@ -299,10 +299,6 @@ class AdminStudentView extends React.Component {
                                 divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide
                             )}
                         </div>)] : result, []) : 'Không có thông tin'}
-                        {/* {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
-                            <h6>{item.title}</h6>
-                            {renderStudents(studentOutsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
-                        </div>)] : result, []) : 'Không có thông tin'} */}
                     </div>
                 </div>
                 <div className='col-md-6'>
@@ -319,7 +315,7 @@ class AdminStudentView extends React.Component {
                     </div>)] : result, []) : 'Không có thông tin'}
                 </div>
                 <CirclePageButton type='export' onClick={exportScore} />
-                <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} />
+                {/* <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} onClick={exportSubject} /> */}
                 {/* {permission.export ? <CirclePageButton type='export' style={{}} /> : null} */}
             </div>
         );

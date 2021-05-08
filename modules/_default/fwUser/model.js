@@ -16,7 +16,8 @@ module.exports = (app) => {
         createdDate: Date,
 
         isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khóa học
-        isLecturer: { type: Boolean, default: false },                                              // Là giảng viên
+        isLecturer: { type: Boolean, default: false },                                              // La co van hoc tap
+        isRepresenter: { type: Boolean, default: false },                                           // Là nguoi dai dien
         isStaff: { type: Boolean, default: false },                                                 // Là nhân viên
 
         token: String,
@@ -158,7 +159,7 @@ module.exports = (app) => {
                 item.remove(done);
             }
         }),
-        
+
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
