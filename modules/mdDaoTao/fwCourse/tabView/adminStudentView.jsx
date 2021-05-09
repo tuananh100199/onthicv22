@@ -27,7 +27,7 @@ class AdminStudentView extends React.Component {
     }
     onClick = (_studentId, typeOnClick) => {
         if (typeOnClick == 'add') {
-            this.props.updateStudent(_studentId, { course: this.props.course.item._id });
+            this.props.updateStudent(_studentId, { course: this.props.course && this.props.course.item && this.props.course.item._id });
         } else if (typeOnClick == 'remove') {
             this.props.updateStudent(_studentId, { $unset: { course: 1 } });
         }
