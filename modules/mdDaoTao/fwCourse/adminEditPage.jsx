@@ -22,12 +22,13 @@ class EditCoursePage extends AdminPage {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
-                        const { name, shortDescription, detailDescription, courseType, courseFee,
+                        const { name, maxStudent, shortDescription, detailDescription, courseType, courseFee,
                             thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc } = data.item;
 
                         this.name.value(name);
                         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
                         this.courseFee.value(courseFee);
+                        this.maxStudent.value(maxStudent);
                         this.shortDescription.value(shortDescription);
                         this.detailDescription.html(detailDescription);
 
@@ -53,6 +54,7 @@ class EditCoursePage extends AdminPage {
     saveInfo = () => {
         const changes = {
             name: this.name.value().trim(),
+            maxStudent: this.maxStudent.value(),
             courseType: this.courseType.value(),
             courseFee: this.courseFee.value(),
             shortDescription: this.shortDescription.value(),
@@ -78,8 +80,9 @@ class EditCoursePage extends AdminPage {
             permissionDivision = this.getUserPermission('division'),
             readOnly = !permissionCourse.write;
         const tabInfo = <div className='row'>
-            <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-6' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+            <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
+            <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
             <FormTextBox ref={e => this.courseFee = e} type='number' label='Học phí' className='col-md-3' readOnly={readOnly} />
 
             <FormDatePicker type='time' ref={e => this.thoiGianKhaiGiang = e} label='Thời gian khai giảng' className='col-md-4' readOnly={readOnly} />

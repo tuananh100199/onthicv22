@@ -14,7 +14,7 @@ class AdminStudentView extends React.Component {
         }
     };
     componentDidUpdate(prevProps) {
-        if (this.props.student !== prevProps.student) {
+        if (JSON.stringify(this.props.course) !== JSON.stringify(prevProps.course)) {
             this.props.getPreStudentPage(1, 50, { courseType: this.props.courseType && this.props.courseType._id });
             const route = T.routeMatcher('/user/course/:_id'),
                 _id = route.parse(window.location.pathname)._id;

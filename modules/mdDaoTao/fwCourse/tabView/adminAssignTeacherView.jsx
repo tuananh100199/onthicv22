@@ -43,7 +43,7 @@ class AdminAssignTeacherView extends React.Component {
     state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [], studentSelecteds: [] };
     componentDidUpdate(prevProps) {
         const course = this.props.course;
-        if (course !== prevProps.course) {
+        if (JSON.stringify(course) !== JSON.stringify(prevProps.course)) {
             this.setState({ studentSelecteds: [] });
             this.props.getPreStudentAll({ courseType: this.props.courseType && this.props.courseType._id });
             this.props.getDivisionAll(list => {

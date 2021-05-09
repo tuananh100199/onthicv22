@@ -36,6 +36,8 @@ module.exports = app => {
                     pageCondition.$or.push({ isStaff: true });
                 } else if (condition.userType == 'isLecturer') {
                     pageCondition.$or.push({ isLecturer: true });
+                } else if (condition.userType == 'isRepresenter') {
+                    pageCondition.$or.push({ isRepresenter: true });
                 }
 
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
