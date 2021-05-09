@@ -17,12 +17,11 @@ module.exports = (app) => {
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.condition || {},
-            pageCondition = {};
+            pageCondition = req.query.pageCondition || {};        // pageCondition = {};
         try {
-            if (condition) {
-                if (condition.searchText) {
-                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            if (pageCondition) {
+                if (pageCondition.searchText) {
+                    const value = { $regex: `.*${pageCondition.searchText}.*`, $options: 'i' };
                     pageCondition['$or'] = [
                         { phoneNumber: value },
                         { email: value },
@@ -31,6 +30,7 @@ module.exports = (app) => {
                     ];
                 }
             }
+            delete pageCondition.searchText;
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -78,6 +78,8 @@ module.exports = (app) => {
                     { lastname: value },
                 ];
             }
+            delete condition.searchText;
+            pageCondition = app.clone(pageCondition, condition);
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });

@@ -42,7 +42,7 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
     const page = T.updatePage('adminStudent', pageNumber, pageSize);
     return dispatch => {
         const url = `/api/student/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { condition: pageCondition }, data => {
+        T.get(url, { pageCondition: pageCondition }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);

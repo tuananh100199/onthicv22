@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { exportScore } from '../redux';
+// import { exportScore, exportSubject } from '../redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox, FormCheckbox, AdminModal, FormSelect, CirclePageButton } from 'view/component/AdminPage';
 
