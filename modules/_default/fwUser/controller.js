@@ -19,21 +19,26 @@ module.exports = app => {
             pageCondition = {};
         try {
             if (condition) {
+                pageCondition.$or = [];
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-                    pageCondition['$or'] = [
+                    pageCondition.$or.push(
                         { phoneNumber: value },
                         { email: value },
                         { firstname: value },
                         { lastname: value },
-                    ];
+                    );
                 }
-                if (condition.type) {
-                    pageCondition['$or'] = [];
-                    condition.type.forEach((item) => {
-                        pageCondition['$or'].push(JSON.parse(`{ "${item}":true}`));
-                    });
+
+                if (condition.userType == 'isCourseAdmin') {
+                    pageCondition.$or.push({ isCourseAdmin: true });
+                } else if (condition.userType == 'isStaff') {
+                    pageCondition.$or.push({ isStaff: true });
+                } else if (condition.userType == 'isLecturer') {
+                    pageCondition.$or.push({ isLecturer: true });
                 }
+
+                if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
             app.model.user.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
