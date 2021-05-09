@@ -63,10 +63,11 @@ class AdminMenu extends React.Component {
                     } else {
                         menus.push(
                             <li key={menus.length}>
-                                <Link className='app-menu__item' to={parentMenu.link}>
+                                <a className='app-menu__item' href='#' data-toggle='treeview'>
                                     <i className={'app-menu__icon fa ' + parentMenu.icon} />
                                     <span className='app-menu__label'>{parentMenu.title}</span>
-                                </Link>
+                                    {parentMenu.link == undefined ? 213 : ''}
+                                </a>
                             </li>
                         );
                     }
@@ -84,9 +85,7 @@ class AdminMenu extends React.Component {
                     </div>
                     <p className='app-sidebar__user-designation'>{user.email}</p>
                 </Link>
-                <ul className='app-menu'>
-                    {menus}
-                </ul>
+                <ul className='app-menu'>{menus}</ul>
             </aside>
         </>;
     }
