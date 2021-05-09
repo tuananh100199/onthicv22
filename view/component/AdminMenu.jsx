@@ -58,8 +58,7 @@ class AdminMenu extends React.Component {
                                         </li>
                                     ))}
                                 </ul>
-                            </li>
-                        );
+                            </li>);
                     } else {
                         menus.push(
                             <li key={menus.length}>
@@ -67,8 +66,7 @@ class AdminMenu extends React.Component {
                                     <i className={'app-menu__icon fa ' + parentMenu.icon} />
                                     <span className='app-menu__label'>{parentMenu.title}</span>
                                 </a>
-                            </li>
-                        );
+                            </li>);
                     }
                 }
             });

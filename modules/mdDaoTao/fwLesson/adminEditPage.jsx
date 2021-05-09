@@ -71,8 +71,7 @@ class adminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(adminPageLink, () => {
-            let url = window.location.pathname,
-                params = T.routeMatcher('/user/dao-tao/bai-hoc/:_id').parse(url);
+            const params = T.routeMatcher('/user/dao-tao/bai-hoc/:_id').parse(window.location.pathname);
             if (params._id) {
                 this.props.getLesson(params._id, data => {
                     if (data.error) {

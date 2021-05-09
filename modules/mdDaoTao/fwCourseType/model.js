@@ -8,9 +8,9 @@ module.exports = app => {
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],
         questionTypes: [{
             category: { type: app.db.Schema.ObjectId, ref: 'Category' },
-            amount: Number
+            amount: Number,
         }],
-        isPriceDisplayed: { type: Boolean, default: false }
+        isPriceDisplayed: { type: Boolean, default: false },
     });
     const model = app.db.model('CourseType', schema);
 
@@ -22,9 +22,7 @@ module.exports = app => {
                 item.image = `/img/course-type/${item._id}.jpg`;
                 const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
                     destPath = app.path.join(app.publicPath, item.image);
-                app.fs.copyFile(srcPath, destPath, error => {
-                    error ? done(error) : item.save(done);
-                });
+                app.fs.copyFile(srcPath, destPath, error => error ? done(error) : item.save(done));
             }
         }),
 
@@ -35,7 +33,6 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-
                 model.find(condition).sort({ title: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);

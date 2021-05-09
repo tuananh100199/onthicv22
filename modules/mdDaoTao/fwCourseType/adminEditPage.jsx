@@ -14,6 +14,7 @@ class CourseTypeModal extends AdminModal {
             getSubjectAll({ _id: { $nin: _subjectIds } }, list => this.setState({ subjects: list.map(item => ({ id: item._id, text: item.title })) }));
         }
     }
+
     onShow = () => this.subjectSelect.value(null);
 
     onSubmit = () => {
@@ -25,13 +26,10 @@ class CourseTypeModal extends AdminModal {
         }
     }
 
-    render = () => {
-
-        return this.renderModal({
-            title: 'Môn học',
-            body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={this.state.subjects} readOnly={this.props.readOnly} />
-        });
-    };
+    render = () => this.renderModal({
+        title: 'Môn học',
+        body: <FormSelect ref={e => this.subjectSelect = e} label='Môn học' data={this.state.subjects} readOnly={this.props.readOnly} />,
+    });
 }
 
 const backRoute = '/user/course-type';
@@ -39,34 +37,30 @@ class CourseTypeEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         this.props.getCategoryAll('drive-question', null, (items) =>
-                this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title })) }));
+            this.setState({ types: (items || []).map(item => ({ _id: item._id, text: item.title })) }));
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'), params = route.parse(window.location.pathname);
             this.props.getCourseType(params._id, item => {
                 if (item) {
-                    this.setState(item, ()=> {
+                    this.setState(item, () => {
                         this.itemTitle.value(item.title);
                         this.itemShortDescription.value(item.shortDescription);
                         this.itemDetailDescription.html(item.detailDescription);
                         this.itemPrice.value(item.price);
                         this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
                         this.itemImage.setData('course-type:' + item._id);
-    
+
                         this.itemTitle.focus();
-                        item.questionTypes && item.questionTypes.forEach(type => {
-                            type.amount ? 
-                            this[type.category] && this[type.category].value(type.amount)
-                            : this[type.category] && this[type.category].value(0);
-                        });
+                        item.questionTypes && item.questionTypes.forEach(type => type.amount ?
+                            this[type.category] && this[type.category].value(type.amount) : this[type.category] && this[type.category].value(0));
                     });
-                  
+
                 } else {
                     this.props.history.push(backRoute);
                 }
             });
-            
         });
-        }
+    }
 
     remove = (e, subject) => e.preventDefault() || T.confirm('Xoá môn học ', `Bạn có chắc muốn xoá môn học '${subject.title}' khỏi loại khóa học này?`, true, isConfirm =>
         isConfirm && this.props.deleteCourseTypeSubject(this.state._id, subject._id));
@@ -81,7 +75,7 @@ class CourseTypeEditPage extends AdminPage {
             questionTypes: this.state.types.map(type => ({
                 category: type._id,
                 amount: this[type._id].value(),
-            }))
+            })),
         };
         if (changes.title == '') {
             T.notify('Tên loại khóa học không được trống!', 'danger');
@@ -96,55 +90,55 @@ class CourseTypeEditPage extends AdminPage {
         const permissionSubject = this.getUserPermission('subject'),
             permissionCourseType = this.getUserPermission('course-type'),
             readOnly = !permissionCourseType.write,
-            item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjects: [] },
-            table = renderTable({
-                getDataSource: () => item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
-                renderHead: () => (
-                    <tr>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Tên môn học</th>
-                        {readOnly ? null : <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
-                    </tr>),
-                renderRow: (item, index) => (
-                    <tr key={index}>
-                        <TableCell type='number' content={index + 1} />
-                        <TableCell type={permissionSubject.read ? 'link' : 'text'} content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
-                        {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
-                    </tr>),
-            }),
-            driveQuestionTypes = types.map((item, index) => {
-                return (
-                    <FormTextBox className='col-md-6' key={index} type='number' ref={e => this[item._id] = e } label={item.text} readOnly={this.props.readOnly} />
-                );
-            })
-            ,
-            componentInfo = <>
-                <div className='row'>
-                    <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
-                    <div className='col-md-9 order-md-1'>
-                        <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                        <div className='row'>
-                            <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
-                            <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
-                        </div>
+            item = this.props.courseType && this.props.courseType.item ? this.props.courseType.item : { title: '', subjects: [] };
+
+        const tableSubject = renderTable({
+            getDataSource: () => item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên môn học</th>
+                    {readOnly ? null : <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>}
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type={permissionSubject.read ? 'link' : 'text'} content={item.title} url={`/user/dao-tao/mon-hoc/${item._id}`} />
+                    {readOnly ? null : <TableCell type='buttons' content={item} permission={permissionCourseType} onDelete={this.remove} />}
+                </tr>),
+        });
+
+        const componentInfo = (
+            <div className='row'>
+                <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
+                <div className='col-md-9 order-md-1'>
+                    <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                    <div className='row'>
+                        <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
+                        <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
                     </div>
                 </div>
-                <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
-                <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+                <FormRichTextBox ref={e => this.itemShortDescription = e} className='col-md-12' label='Mô tả ngắn gọn' readOnly={readOnly} />
+                <FormEditor ref={e => this.itemDetailDescription = e} className='col-md-12' label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
-            </>,
-            componentSubject = <>
-                {table}
-                {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
-            </>,
-             componentSetRandomDriveTest = <>
-                <div className='row'>
-                    {driveQuestionTypes}
-                </div>
+            </div>);
+        const componentSubject = <>
+            {tableSubject}
+            {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
+            <CourseTypeModal ref={e => this.modal = e} readOnly={!permissionCourseType.write} add={this.props.addCourseTypeSubject} item={item} />
+        </>;
+        const componentSetRandomDriveTest = (
+            <div className='row'>
+                {types.map((item, index) =>
+                    <FormTextBox className='col-xl-4 col-md-6' key={index} type='number' ref={e => this[item._id] = e} label={item.text} readOnly={this.props.readOnly} />)}
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
-             </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Môn học', component: componentSubject }, { title: 'Thiết lập bộ đề ngẫu nhiên', component: componentSetRandomDriveTest }];
+            </div>);
+
+        const tabs = [
+            { title: 'Thông tin chung', component: componentInfo },
+            { title: 'Môn học', component: componentSubject },
+            { title: 'Thiết lập bộ đề ngẫu nhiên', component: componentSetRandomDriveTest },
+        ];
 
         return this.renderPage({
             icon: 'fa fa-file',

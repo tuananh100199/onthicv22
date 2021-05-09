@@ -4,15 +4,14 @@ import { getLessonByStudent, checkQuestion, resetStudentScore } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-import '../../../view/component/input.scss';
+import 'view/component/input.scss';
 
 class adminEditPage extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
-        let url = window.location.pathname,
-            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(url);
-        this.setState({ lessonId: params._id });
+        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(window.location.pathname);
         if (params._id) {
+            this.setState({ lessonId: params._id });
             this.props.getLessonByStudent(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
@@ -72,7 +71,6 @@ class adminEditPage extends AdminPage {
             $('#next-btn').css({ 'visibility': 'visible' });
             $('input[name="' + questionId + '"]').prop('checked', false);
         }, 50);
-
     }
 
     changeQuestion = (e, index) => {
@@ -86,7 +84,6 @@ class adminEditPage extends AdminPage {
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
-
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -94,7 +91,6 @@ class adminEditPage extends AdminPage {
                         $('input[name="' + questionId + '"]').prop('checked', false);
                     }
                 }
-
             }
         });
     }
@@ -105,12 +101,6 @@ class adminEditPage extends AdminPage {
             prevAnswers: { ...prevState.prevAnswers, [_questionId]: null }
         }));
     }
-
-    // handleKeyPress = (event) => {
-    //     if (event.key === 'Enter') {
-    //         console.log('enter press here! ')
-    //     }
-    // }
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + this.state.lessonId;

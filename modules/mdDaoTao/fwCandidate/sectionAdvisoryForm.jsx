@@ -9,9 +9,8 @@ class SectionAdvisoryForm extends React.Component {
     componentDidMount() {
         $(document).ready(() => {
             this.props.viewId ?
-             ajaxGetCourseType(this.props.viewId, data =>
-                this.courseType.value( data && data.item && { id: data.item._id, text: data.item.title })) : this.courseType.value(null);
-            
+                ajaxGetCourseType(this.props.viewId, data =>
+                    this.courseType.value(data && data.item && { id: data.item._id, text: data.item.title })) : this.courseType.value(null);
 
             const { firstname, lastname, email, phoneNumber } = this.props.system && this.props.system.user ?
                 this.props.system.user : { firstname: '', lastname: '', email: '', phoneNumber: '' };

@@ -66,6 +66,7 @@ class CourseTypePage extends AdminPage {
                         <TableCell type='buttons' content={item} permission={permission} onEdit={() => this.props.history.push('/user/course-type/' + item._id)} onDelete={this.delete} />
                     </tr>),
             });
+
         return this.renderPage({
             icon: 'fa fa-file',
             title: 'Loại khóa học',
