@@ -58,18 +58,15 @@ class AdminMenu extends React.Component {
                                         </li>
                                     ))}
                                 </ul>
-                            </li>
-                        );
+                            </li>);
                     } else {
                         menus.push(
                             <li key={menus.length}>
                                 <a className='app-menu__item' href='#' data-toggle='treeview'>
                                     <i className={'app-menu__icon fa ' + parentMenu.icon} />
                                     <span className='app-menu__label'>{parentMenu.title}</span>
-                                    {parentMenu.link == undefined ? 213 : ''}
                                 </a>
-                            </li>
-                        );
+                            </li>);
                     }
                 }
             });

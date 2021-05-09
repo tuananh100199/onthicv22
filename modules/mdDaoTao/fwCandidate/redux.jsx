@@ -67,7 +67,7 @@ export function getCandidate(_id, done) {
                 T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.item);
+                done && done(data.item);
                 dispatch({ type: CandidateUpdate, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy đăng ký tư vấn bị lỗi!', 'danger'));
@@ -120,7 +120,7 @@ export function createCandidate(candidate, done) {
             } else if (data.notify) {
                 T.alert(data.notify, 'error', false, 2000);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Gửi đăng ký tư vấn bị lỗi!', 'danger'));
     };

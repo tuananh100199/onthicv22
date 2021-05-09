@@ -6,7 +6,6 @@ import { AdminPage, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, Form
 
 class DivisionEditPage extends AdminPage {
     state = {};
-
     componentDidMount() {
         T.ready('/user/division', () => {
             const route = T.routeMatcher('/user/division/:_id'), params = route.parse(window.location.pathname);

@@ -5,41 +5,34 @@ import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
 class UserPageDriveTestDetail extends AdminPage {
-    state = { name: '...' };
+    state = {};
     componentDidMount() {
         this.props.getCourseTypeAll(list => {
-            const courseTypes = list.map(item => ({ _id: item._id, title: item.title }));
-            this.setState({ courseTypes });
+            this.setState({ courseTypes: list.map(({ _id, title }) => ({ _id, title })) });
         });
     }
+
     render() {
-        const { courseTypes } = this.state ? this.state : [];
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Loại bộ đề thi thử ',
             breadcrumb: ['Loại bộ đề thi thử'],
             content: (
                 <div className='row'>
-                    <div className='col-12'>
-                        <h4>Loại bộ đề thi </h4>
-                        <div className='row'>
-                            {courseTypes && courseTypes.map((type, index) => (
-                                <div key={index} className='col-md-4'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + type._id}>
-                                        <div className='widget-small coloured-icon info'>
-                                            <i className='icon fa fa-3x fa fa-cubes' />
-                                            <div className='info'>
-                                                <h4>Loại {type.title}</h4>
-                                            </div>
-                                        </div>
-                                    </Link>
+                    <h4 className='col-12'>Loại bộ đề thi </h4>
+                    {(this.state.courseTypes || []).map((type, index) => (
+                        <div key={index} className='col-md-4'>
+                            <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + type._id}>
+                                <div className='widget-small coloured-icon info'>
+                                    <i className='icon fa fa-3x fa fa-cubes' />
+                                    <div className='info'>
+                                        <h4>Loại {type.title}</h4>
+                                    </div>
                                 </div>
-                            ))
-                            }
+                            </Link>
                         </div>
-                    </div>
-                </div>
-            ),
+                    ))}
+                </div>),
         });
     }
 }

@@ -57,7 +57,6 @@ module.exports = (app) => {
         });
     });
 
-
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),

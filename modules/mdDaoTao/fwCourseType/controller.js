@@ -59,6 +59,7 @@ module.exports = (app) => {
             }
         });
     });
+
     app.delete('/api/course-type/subject', app.permission.check('course-type:write'), (req, res) => {
         const { _courseTypeId, _subjectId } = req.body;
         app.model.courseType.deleteSubject(_courseTypeId, _subjectId, (error, item) => res.send({ error, item }));

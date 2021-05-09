@@ -26,15 +26,6 @@ class adminEditPage extends AdminPage {
         }
     }
 
-    // checkElapsedTime = (e, _id, index) => {
-    //     if (e.target.playerInfo.playerState == 1) {
-    //         this.setState(prevState => ({ viewed: { ...prevState.viewed, [_id]: index } }), () => {
-    //             const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
-    //             this.setState({ showQuestionButton: Object.keys(this.state.viewed).length == videos.length });
-    //         });
-    //     }
-    // };
-
     render() {
         const { lessonId, subjectId, title } = this.state;
         const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];

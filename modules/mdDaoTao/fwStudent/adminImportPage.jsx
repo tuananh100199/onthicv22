@@ -138,12 +138,14 @@ class EditModal extends AdminModal {
             </div>),
     });
 }
+
 class ImportPage extends AdminPage {
     fileBox = React.createRef();
     state = {};
     componentDidMount() {
         T.ready('/user/pre-student');
     }
+
     onUploadSuccess = (data) => {
         this.setState(data);
         this.itemDivision.value(null);

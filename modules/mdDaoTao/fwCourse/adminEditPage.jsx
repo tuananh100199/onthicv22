@@ -62,6 +62,7 @@ class EditCoursePage extends AdminPage {
             courseFees: this.state.courseFees
         };
         if (changes.courseFee == null) changes.courseFee = 0;
+
         if (changes.name == '') {
             T.notify('Tên khóa học trống!', 'danger');
             this.name.focus();

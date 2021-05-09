@@ -171,7 +171,7 @@ class AdminAssignTeacherView extends React.Component {
                                             }}
                                         >
                                             {student.lastname} {student.firstname}
-                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} style={{ float: 'right', color: 'red' }} className="fa fa-user-times"></i> : ''}
+                                            {list[index].student[indexStudent].isHide && permission.write ? <i onClick={e => this.remove(e, item._id, student._id, indexStudent)} style={{ float: 'right', color: 'red' }} className='fa fa-user-times'></i> : ''}
                                         </li>
                                     ))}
                                 </ol> </> : 'Chưa có học viên'}
