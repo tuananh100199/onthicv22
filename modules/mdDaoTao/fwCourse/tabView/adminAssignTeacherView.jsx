@@ -321,7 +321,7 @@ class AdminAssignTeacherView extends React.Component {
                     </div>)] : result, []) : 'Không có thông tin'}
                 </div>
                 <CirclePageButton type='export' onClick={exportScore} />
-                <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} />
+                {/* <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} /> */}
                 {/* {permission.export ? <CirclePageButton type='export' style={{}} /> : null} */}
             </div>
         );

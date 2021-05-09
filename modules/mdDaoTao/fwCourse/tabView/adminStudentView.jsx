@@ -47,7 +47,7 @@ class AdminStudentView extends React.Component {
                 page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] }),
             page = pageInfo(this.props.student.page),
             prePage = pageInfo(this.props.student.prePage),
-            renderPagination = (name, page, action) => <Pagination name={name} pageCondition={page.pageCondition} pageNumber={page.pageNumber} pageSize={page.pageSize} pageTotal={page.pageTotal} totalItem={page.totalItem}
+            renderPagination = (name, page, action, pos) => <Pagination style={{ left: pos }} name={name} pageCondition={page.pageCondition} pageNumber={page.pageNumber} pageSize={page.pageSize} pageTotal={page.pageTotal} totalItem={page.totalItem}
                 getPage={action} />;
         const renderStudents = (list, division, typeOnClick) =>
             <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
@@ -75,7 +75,7 @@ class AdminStudentView extends React.Component {
                             {renderDivisions(outsides(prePage.list, false), false, 'add')}
                             <h5 style={{ marginTop: 10 }}>Ứng viên thuộc cơ sở ngoài</h5>
                             {renderDivisions(outsides(prePage.list, true), true, 'add')}
-                            {renderPagination('adminPreStudent', prePage, this.props.getPreStudentPage)}
+                            {renderPagination('adminPreStudent', prePage, this.props.getPreStudentPage, 320)}
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ class AdminStudentView extends React.Component {
                             {renderDivisions(outsides(page.list, false), false, 'remove')}
                             <h5>Học viên thuộc cơ sở ngoài</h5>
                             {renderDivisions(outsides(page.list, true), true, 'remove')}
-                            {renderPagination('adminStudent', page, this.props.getStudentPage)}
+                            {renderPagination('adminStudent', page, this.props.getStudentPage, 850)}
                         </div>
                     </div>
                 </div>
