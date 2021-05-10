@@ -116,13 +116,13 @@ class DriveTestEditPage extends AdminPage {
                 <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
                 <FormRichTextBox ref={e => this.itemDescription = e} className='col-md-12' label='Mô tả' rows='6' readOnly={readOnly} />
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
-            </div>),
-            componentQuestion = <>
-                {table}
-                {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} getCategoryAll={this.props.getCategoryAll} item={item} />
-            </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
+            </div>);
+        const componentQuestion = <>
+            {table}
+            {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
+            <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} getCategoryAll={this.props.getCategoryAll} item={item} />
+        </>;
+        const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
         return this.renderPage({
             icon: 'fa fa-file',

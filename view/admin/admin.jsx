@@ -21,13 +21,22 @@ import AdminMenu from 'view/component/AdminMenu';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { modules } from './modules.jsx';
-const reducers = {}, routeMapper = {},
+const reducers = {}, reducerContainer = {}, routeMapper = {},
     addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
     module.init && module.init();
-    Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
+
+    if (module.redux.parent && module.redux.reducers) {
+        if (!reducerContainer[module.redux.parent]) reducerContainer[module.redux.parent] = {};
+        reducerContainer[module.redux.parent] = Object.assign({}, reducerContainer[module.redux.parent], module.redux.reducers);
+    } else {
+        Object.keys(module.redux).length && console.log('Warning: Cần chỉnh sửa index.jsx của modules: ', Object.keys(module.redux).toString());
+        Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
+    }
+
     module.routes.forEach(route => route.path.startsWith('/user') && addRoute(route));
 });
+Object.keys(reducerContainer).forEach(key => reducers[key] = combineReducers(reducerContainer[key]));
 
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());

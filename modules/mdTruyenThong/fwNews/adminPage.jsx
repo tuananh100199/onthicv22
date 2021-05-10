@@ -55,6 +55,6 @@ class NewsPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, news: state.news });
+const mapStateToProps = state => ({ system: state.system, news: state.communication.news });
 const mapActionsToProps = { getNewsPage, createNews, updateNews, swapNews, deleteNews };
 export default connect(mapStateToProps, mapActionsToProps)(NewsPage);

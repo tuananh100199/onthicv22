@@ -73,7 +73,8 @@ export default {
         };
     },
     redux: {
-        component: combineReducers({ carousel, content, listContent, staffGroup, statistic, video, listVideo }),
+        parent: 'component',
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo },
     },
     routes: [
         {

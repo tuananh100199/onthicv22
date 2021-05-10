@@ -65,6 +65,6 @@ class ContactPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contact: state.contact });
+const mapStateToProps = state => ({ system: state.system, contact: state.communication.contact });
 const mapActionsToProps = { getContactPage, getContact, updateContact, deleteContact };
 export default connect(mapStateToProps, mapActionsToProps)(ContactPage);

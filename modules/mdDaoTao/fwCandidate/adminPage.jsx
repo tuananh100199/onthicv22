@@ -159,6 +159,6 @@ class CandidatePage extends AdminPage {
         });
     }
 }
-const mapStateToProps = state => ({ system: state.system, candidate: state.candidate });
+const mapStateToProps = state => ({ system: state.system, candidate: state.communication.candidate });
 const mapActionsToProps = { getCourseTypeAll, getCandidatePage, getCandidate, updateCandidate, deleteCandidate };
 export default connect(mapStateToProps, mapActionsToProps)(CandidatePage);

@@ -14,7 +14,8 @@ export default {
         };
     },
     redux: {
-        contact,
+        parent: 'communication',
+        reducers: { contact },
     },
     routes: [
         {
