@@ -63,15 +63,17 @@ module.exports = (app) => {
                 if (data.user) {
                     app.model.student.getAll({ user: data.user._id }, (error, students) => {
                         if (error == null && students) {
-                            data.user.menu['5000'] = {
-                                parentMenu: {
-                                    index: 5000,
-                                    title: 'Khóa học của bạn',
-                                    icon: 'fa-graduation-cap',
-                                    subMenusRender: true
-                                },
-                                menus: {}
-                            };
+                            if (!data.user.menu['5000']) {
+                                data.user.menu['5000'] = {
+                                    parentMenu: {
+                                        index: 5000,
+                                        title: 'Khóa học của bạn',
+                                        icon: 'fa-graduation-cap',
+                                        subMenusRender: true
+                                    },
+                                    menus: {}
+                                };
+                            }
                             let index = 0;
                             students.forEach(student => {
                                 if (student.course) {
