@@ -156,6 +156,6 @@ class AdminManagerView extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, division: state.division, course: state.course });
+const mapStateToProps = state => ({ system: state.system, division: state.trainning.division, course: state.trainning.course });
 const mapActionsToProps = { getDivisionAll, getCourse, updateCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminManagerView);

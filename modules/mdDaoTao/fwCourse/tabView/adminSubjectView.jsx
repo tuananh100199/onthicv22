@@ -75,6 +75,6 @@ class AdminSubjectView extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.course });
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCourse, updateCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminSubjectView);

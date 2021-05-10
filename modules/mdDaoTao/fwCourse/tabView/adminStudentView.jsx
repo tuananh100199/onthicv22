@@ -97,6 +97,6 @@ class AdminStudentView extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.student, course: state.course });
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
 const mapActionsToProps = { getDivisionAll, getPreStudentPage, updateStudent, getStudentPage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);

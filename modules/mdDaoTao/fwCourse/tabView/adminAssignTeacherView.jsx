@@ -328,6 +328,6 @@ class AdminAssignTeacherView extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.student, course: state.course });
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
 const mapActionsToProps = { getDivisionAll, getPreStudentAll, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminAssignTeacherView);

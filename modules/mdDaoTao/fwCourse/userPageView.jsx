@@ -109,6 +109,6 @@ class UserCoursePageDetail extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.course, driveTest: state.driveTest });
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest });
 const mapActionsToProps = { getCourseByStudent, getStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);

@@ -5,7 +5,8 @@ import driveQuestion from './redux';
 
 export default {
     redux: {
-        driveQuestion
+        parent: 'trainning',
+        reducers: { driveQuestion },
     },
     routes: [
         {

@@ -5,7 +5,8 @@ import sign from './redux';
 
 export default {
     redux: {
-        sign
+        parent: 'trainning',
+        reducers: { sign },
     },
     routes: [
         {

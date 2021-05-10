@@ -21,7 +21,8 @@ export default {
         // };
     },
     redux: {
-        course, driveTest
+        parent: 'trainning',
+        reducers: { course, driveTest },
     },
     routes: [
         {
