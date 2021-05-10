@@ -62,10 +62,10 @@ class AdminMenu extends React.Component {
                     } else {
                         menus.push(
                             <li key={menus.length}>
-                                <a className='app-menu__item' href='#' data-toggle='treeview'>
+                                <Link className='app-menu__item' to={parentMenu.link}>
                                     <i className={'app-menu__icon fa ' + parentMenu.icon} />
                                     <span className='app-menu__label'>{parentMenu.title}</span>
-                                </a>
+                                </Link>
                             </li>);
                     }
                 }

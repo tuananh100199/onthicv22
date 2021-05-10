@@ -7,59 +7,45 @@ import { AdminPage } from 'view/component/AdminPage';
 class UserProfilePage extends AdminPage {
     componentDidMount() {
         if (this.props.system && this.props.system.user) {
-            this.props.getUserCourse(data => {
-                this.setState(data);
-            });
+            this.props.getUserCourse(data => this.setState(data));
             T.ready();
         }
     }
-    //To do: chưa có lớp cho học viên
+
+    //TODO:TuanAnh: chưa có lớp cho học viên
     render() {
         const { students } = this.state ? this.state : { students: [] };
         return this.renderPage({
-            icon: 'fa fa-dashboard',
+            icon: 'fa fa-user',
             title: 'Trang cá nhân: ',
             breadcrumb: ['Trang cá nhân'],
             content: (
                 <div className='row'>
-                    <div className='col-12'>
-                        <h4>Thông tin chung</h4>
-                        <div className='row'>
-                            <div className='col-md-6'>
-                                <Link to='/user/profile'>
+                    <h4 style={{ width: '100%' }}>Thông tin chung</h4>
+                    <Link to='/user/profile' className='col-md-6 col-lg-4'>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-user' />
+                            <div className='info'>
+                                <h4>Thông tin chung</h4>
+                            </div>
+                        </div>
+                    </Link>
+                    {students && students.length ? <>
+                        <h4 style={{ width: '100%' }}>Khóa học của bạn</h4>
+                        {students.map((student, index) => (
+                            <div key={index} className='col-md-6 col-lg-4'>
+                                <Link to='#'>
                                     <div className='widget-small coloured-icon info'>
-                                        <i className='icon fa fa-3x fa-user' />
+                                        <i className='icon fa fa-3x fa fa-cubes' />
                                         <div className='info'>
-                                            <h4>Thông tin chung</h4>
+                                            <h4>Khóa học hạng {student && student.courseType ? student.courseType.title : ''}</h4>
+                                            <p style={{ fontWeight: 'bold' }}>{student.course ? `Lớp: ${student.course.name}` : `Đang chờ khóa`}</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                        </div>
-                    </div>
-                    <div className='col-12'>
-                        <h4>Khóa học của bạn</h4>
-                        <div className='row'>
-                            {students && students.map((student, index) => (
-                                <div key={index} className='col-md-6 col-lg-6'>
-                                    <Link to='#'>
-                                        <div className='widget-small coloured-icon info'>
-                                            <i className='icon fa fa-3x fa fa-cubes' />
-                                            <div className='info'>
-                                                <h4>Khóa học hạng {student && student.courseType ? student.courseType.title : ''}</h4>
-                                                {student.course ?
-                                                    <p style={{ fontWeight: 'bold' }}>Lớp: {student.course.name}</p>
-                                                    :
-                                                    <p style={{ fontWeight: 'bold' }}> Đang chờ khóa </p>
-                                                }
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>
-                            ))
-                            }
-                        </div>
-                    </div>
+                        ))}
+                    </> : null}
                 </div>),
         });
     }
