@@ -47,14 +47,7 @@ class CoursePage extends AdminPage {
     componentDidMount() {
         this.props.getCourseTypeAll(list => {
             const courseTypes = list.map(item => ({ id: item._id, text: item.title }));
-            this.setState({ courseTypes }, () => {
-                const courseTypes = this.state.courseTypes;
-                courseTypes.length && courseTypes.map((courseType, index) => {
-                    this.props.getCoursePage(courseType.id, undefined, undefined, data => {
-                        this.state.courseTypes[index]['course'] = data.page.list;
-                    });
-                });
-            });
+            this.setState({ courseTypes });
         });
         T.ready();
     }
