@@ -10,6 +10,7 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },                     // Ngày tạo
         modifiedDate: { type: Date, default: null },                        // Ngày cập nhật cuối cùng
         courseType: { type: app.db.Schema.Types.ObjectId, ref: 'CourseType' },
+        division: { type: app.db.Schema.ObjectId, ref: 'Division' },
     });
     const model = app.db.model('Candidate', schema);
 
@@ -27,7 +28,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('courseType', 'title').populate('user', 'firstname lastname').populate('staff', 'firstname lastname').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('courseType', 'title').populate('division', 'title').populate('user', 'firstname lastname').populate('staff', 'firstname lastname').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });

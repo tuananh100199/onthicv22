@@ -69,7 +69,6 @@ module.exports = (app, appName) => {
         setting: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
         communication: { index: 3000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
-        studentCourse: { index: 5000, title: 'Khóa học của bạn', icon: 'fa-graduation-cap' },
         driveTest: { index: 6000, title: 'Ôn tập đề thi', icon: 'fa-graduation-cap' },
     };
 

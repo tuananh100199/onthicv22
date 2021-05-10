@@ -8,18 +8,13 @@ module.exports = (app) => {
         },
     };
 
-    const courseMenu = {
-        parentMenu: app.parentMenu.studentCourse,
-        menus: {},
-    };
-
     app.permission.add(
         { name: 'course:read' },
         { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
-        { name: 'studentCourse:read', menu: courseMenu }
+        { name: 'studentCourse:read' }
     );
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
@@ -32,12 +27,15 @@ module.exports = (app) => {
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            pageCondition = {};
+            { pageCondition, courseType } = req.query;
+
+        const condition = { courseType, ...pageCondition };
         if (req.session.user.division && req.session.user.division.isOutside) {
-            pageCondition.admins = req.session.user._id;
-            pageCondition.active = true;
+            condition.admins = req.session.user._id;
+            condition.active = true;
         }
-        app.model.course.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+
+        app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
             res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
         });
     });

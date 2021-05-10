@@ -46,40 +46,30 @@ class AdminEditPage extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Môn học'],
             content: (
                 <div className='row'>
-                    <div className='col-12'>
-                        <h4>Thông tin chung</h4>
-                        <div className='row'>
-                            <div className='col-md-6'>
-                                <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/' + this.state.subjectId}>
-                                    <div className='widget-small coloured-icon info'>
-                                        <i className='icon fa fa-3x fa-info' />
-                                        <div className='info'>
-                                            <h4>Thông tin môn học</h4>
-                                        </div>
-                                    </div>
-                                </Link>
+                    <h4 style={{ width: '100%' }}>Thông tin chung</h4>
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/' + this.state.subjectId}>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-info' />
+                            <div className='info'>
+                                <h4>Thông tin môn học</h4>
                             </div>
                         </div>
-                    </div>
-                    <div className='col-12'>
-                        <h4>Bài học</h4>
-                        <div className='row'>
-                            {lessons.length ? lessons.map((lesson, index) => (
-                                <div key={index} className='col-md-6 col-lg-6'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + lesson._id}>
-                                        <div className='widget-small coloured-icon primary'>
-                                            <i className='icon fa fa-3x fa fa-briefcase' />
-                                            <div className='info'>
-                                                <h4>{lesson && lesson.title}</h4>
-                                                {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}
-                                            </div>
-                                        </div>
-                                    </Link>
+                    </Link>
+                    <h4 style={{ width: '100%' }}>Bài học</h4>
+                    {lessons.length ? lessons.map((lesson, index) => (
+                        <div key={index} className='col-md-6 col-lg-6'>
+                            <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + lesson._id}>
+                                <div className='widget-small coloured-icon primary'>
+                                    <i className='icon fa fa-3x fa fa-briefcase' />
+                                    <div className='info'>
+                                        <h4>{lesson && lesson.title}</h4>
+                                        {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}
+                                    </div>
                                 </div>
-                            )) : <div className='col-md-4'>Chưa có bài học</div>
-                            }
+                            </Link>
                         </div>
-                    </div>
+                    )) : <div className='col-md-4'>Chưa có bài học</div>
+                    }
                 </div>
             ),
             backRoute: userPageLink,
