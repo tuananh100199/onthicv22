@@ -26,7 +26,6 @@ class UserPageDriveTestDetail extends AdminPage {
         });
     }
 
-
     submitAnswer = (e) => {
         e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {

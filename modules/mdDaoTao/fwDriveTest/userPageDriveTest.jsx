@@ -20,7 +20,6 @@ class UserPageDriveTest extends AdminPage {
             }
         });
     }
-   
 
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/';

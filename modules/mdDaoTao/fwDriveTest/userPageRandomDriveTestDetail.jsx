@@ -38,7 +38,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             $('#trueAnswer').css('display', 'block');
         });
     }
-
   
     refreshQuestion = (e, questionId) => {
         e.preventDefault();
@@ -86,6 +85,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             prevAnswers: { ...prevState.prevAnswers, [_questionId]: null }
         }));
     }
+    
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
         const { questions } = this.state ? this.state : { questions: [] };
