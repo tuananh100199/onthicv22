@@ -5,7 +5,8 @@ import role from './redux';
 
 export default {
     redux: {
-        role,
+        parent: 'framework',
+        reducers: { role },
     },
     routes: [
         {

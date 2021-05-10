@@ -175,6 +175,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         });
     }
 }
-const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
+const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
 const mapActionsToProps = { checkRandomDriveTestScore, createRandomDriveTest };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageRandomDriveTestDetail);

@@ -5,7 +5,8 @@ import category from './redux';
 
 export default {
     redux: {
-        category,
+        parent: 'framework',
+        reducers: { category },
     },
     routes: [],
 };

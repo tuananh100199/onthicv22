@@ -185,6 +185,6 @@ class AdminDonDeNghiHocEditPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ donDeNghiHoc: state.donDeNghiHoc, system: state.system });
+const mapStateToProps = state => ({ donDeNghiHoc: state.trainning.donDeNghiHoc, system: state.system });
 const mapActionsToProps = { getForm, updateForm, updateProfile, denyApplicationForm };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDonDeNghiHocEditPage);

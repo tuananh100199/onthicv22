@@ -117,6 +117,6 @@ class AdminHeader extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contact: state.contact, role: state.role });
+const mapStateToProps = state => ({ system: state.system, contact: state.contact, role: state.framework.role });
 const mapActionsToProps = { getUnreadContacts, getContact, changeRole, updateSystemState, logout, switchUser };
 export default connect(mapStateToProps, mapActionsToProps)(AdminHeader);

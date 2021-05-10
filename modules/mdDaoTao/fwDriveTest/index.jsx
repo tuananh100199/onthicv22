@@ -5,7 +5,8 @@ import driveTest from './redux';
 
 export default {
     redux: {
-        driveTest
+        parent: 'trainning',
+        reducers: { driveTest },
     },
     routes: [
         {
@@ -27,7 +28,7 @@ export default {
         {
             path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id/',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestDetail') })
-        },      
+        },
         {
             path: '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien',
             component: Loadable({ loading: Loading, loader: () => import('./userPageRandomDriveTest') })

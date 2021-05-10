@@ -5,7 +5,8 @@ import division from './redux';
 
 export default {
     redux: {
-        division
+        parent: 'trainning',
+        reducers: { division },
     },
     routes: [
         {

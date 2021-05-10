@@ -5,7 +5,8 @@ import cluster from './redux';
 
 export default {
     redux: {
-        cluster,
+        parent: 'framework',
+        reducers: { cluster },
     },
     routes: [
         {

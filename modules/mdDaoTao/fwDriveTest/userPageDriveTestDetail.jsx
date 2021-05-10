@@ -177,6 +177,6 @@ class UserPageDriveTestDetail extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
+const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
 const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTestDetail);

@@ -5,7 +5,8 @@ import user from './redux';
 
 export default {
     redux: {
-        user
+        parent: 'framework',
+        reducers: { user },
     },
     routes: [
         {

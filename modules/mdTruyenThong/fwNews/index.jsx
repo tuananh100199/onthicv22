@@ -21,7 +21,8 @@ export default {
         };
     },
     redux: {
-        news,
+        parent: 'communication',
+        reducers: { news },
     },
     routes: [
         {

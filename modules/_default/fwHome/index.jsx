@@ -2,7 +2,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import { combineReducers } from 'redux';
 
 import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
 import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
@@ -73,7 +72,8 @@ export default {
         };
     },
     redux: {
-        component: combineReducers({ carousel, content, listContent, staffGroup, statistic, video, listVideo }),
+        parent: 'component',
+        reducers: { carousel, content, listContent, staffGroup, statistic, video, listVideo },
     },
     routes: [
         {

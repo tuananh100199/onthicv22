@@ -19,7 +19,9 @@ export default {
         // };
     },
     redux: {
-        course,
+        parent: 'trainning',
+        reducers: { course },
+    },
     routes: [
         {
             path: '/user/course',

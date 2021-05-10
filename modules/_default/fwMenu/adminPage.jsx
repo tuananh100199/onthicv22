@@ -96,6 +96,6 @@ class MenuPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, menu: state.menu });
+const mapStateToProps = state => ({ system: state.system, menu: state.framework.menu });
 const mapActionsToProps = { getAll, createMenu, updateMenuPriorities, updateMenu, deleteMenu };
 export default connect(mapStateToProps, mapActionsToProps)(MenuPage);

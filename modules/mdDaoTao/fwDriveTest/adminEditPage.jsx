@@ -135,6 +135,6 @@ class DriveTestEditPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
+const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
 const mapActionsToProps = { createDriveTestQuestion, updateDriveTest, deleteDriveTestQuestion, getDriveTestItem, swapDriveTestQuestion, getCategoryAll };
 export default connect(mapStateToProps, mapActionsToProps)(DriveTestEditPage);

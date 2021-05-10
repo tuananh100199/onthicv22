@@ -7,7 +7,8 @@ import student from './redux';
 
 export default {
     redux: {
-        student,
+        parent: 'trainning',
+        reducers: { student },
     },
     routes: [
         {

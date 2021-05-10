@@ -94,6 +94,6 @@ class DriveTestPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
+const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
 const mapActionsToProps = { getDriveTestPage, createDriveTest, updateDriveTest, deleteDriveTest, swapDriveTest };
 export default connect(mapStateToProps, mapActionsToProps)(DriveTestPage);
