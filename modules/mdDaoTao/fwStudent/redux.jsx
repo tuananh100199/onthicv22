@@ -48,7 +48,7 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
-                if (done) done(data.page);
+                done && done(data.page);
                 dispatch({ type: StudentGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
@@ -213,4 +213,3 @@ export function getPreStudentAll(condition, done) {
         }, error => console.error(error) || T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
     };
 }
-
