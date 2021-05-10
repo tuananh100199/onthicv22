@@ -70,39 +70,29 @@ class UserCoursePageDetail extends AdminPage {
             breadcrumb: ['Khóa học'],
             content: (
                 <div className='row'>
-                    <div className='col-12'>
-                        <h4>Thông tin chung</h4>
-                        <div className='row'>
-                            <div className='col-md-6'>
-                                <Link to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
-                                    <div className='widget-small coloured-icon info'>
-                                        <i className='icon fa fa-3x fa-info' />
-                                        <div className='info'>
-                                            <h4>Thông tin khóa học</h4>
-                                        </div>
-                                    </div>
-                                </Link>
+                    <h4 style={{ width: '100%' }}>Thông tin chung</h4>
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/' + this.state.subjectId}>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-info' />
+                            <div className='info'>
+                                <h4>Thông tin khóa học</h4>
                             </div>
                         </div>
-                    </div>
-                    <div className='col-12'>
-                        <h4>Môn học</h4>
-                        <div className='row'>
-                            {subjects.length ? subjects.map((subject, index) => (
-                                <div key={index} className='col-md-6 col-lg-4'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/' + subject._id}>
-                                        <div className='widget-small coloured-icon primary'>
-                                            <i className='icon fa fa-3x fa fa-briefcase' />
-                                            <div className='info'>
-                                                <h4>{subject && subject.title}</h4>
-                                            </div>
-                                        </div>
-                                    </Link>
+                    </Link>
+                    <h4 style={{ width: '100%' }}>Môn học</h4>
+                    {subjects.length ? subjects.map((subject, index) => (
+                        <div key={index} className='col-md-6 col-lg-4'>
+                            <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/' + subject._id}>
+                                <div className='widget-small coloured-icon primary'>
+                                    <i className='icon fa fa-3x fa fa-briefcase' />
+                                    <div className='info'>
+                                        <h4>{subject && subject.title}</h4>
+                                    </div>
                                 </div>
-                            )) : <div className='col-md-4'>Chưa có môn học!</div>
-                            }
+                            </Link>
                         </div>
-                    </div>
+                    )) : <div className='col-md-4'>Chưa có môn học!</div>
+                    }
                 </div>
             ),
         });
