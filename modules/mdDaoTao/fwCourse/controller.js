@@ -13,6 +13,7 @@ module.exports = (app) => {
         { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
+        { name: 'course:export' },
         { name: 'studentCourse:read' }
     );
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);

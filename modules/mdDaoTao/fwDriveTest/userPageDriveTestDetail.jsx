@@ -5,12 +5,12 @@ import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao
 import { AdminPage } from 'view/component/AdminPage';
 import 'view/component/input.scss';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
+const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet';
 class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id'),
+            const route = T.routeMatcher(backRoute + '/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
