@@ -7,7 +7,8 @@ import lesson from './redux';
 
 export default {
     redux: {
-        lesson
+        parent: 'trainning',
+        reducers: { lesson },
     },
     routes: [
         {

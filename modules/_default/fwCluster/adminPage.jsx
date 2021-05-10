@@ -128,6 +128,6 @@ class ClusterPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, cluster: state.cluster });
+const mapStateToProps = state => ({ system: state.system, cluster: state.framework.cluster });
 const mapActionsToProps = { getClusterAll, createCluster, resetCluster, deleteCluster, getSystemImageAll, applySystemImage, deleteSystemImage };
 export default connect(mapStateToProps, mapActionsToProps)(ClusterPage);

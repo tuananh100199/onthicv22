@@ -161,6 +161,6 @@ class adminEditPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, lesson: state.lesson });
+const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
 const mapActionsToProps = { getLesson, updateLesson, createLessonVideo, swapLessonVideo, deleteLessonVideo, updateLessonVideo, changeLessonQuestions };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

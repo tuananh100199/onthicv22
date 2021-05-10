@@ -154,6 +154,6 @@ class AdminQuestionPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, driveQuestion: state.driveQuestion, category: state.category });
+const mapStateToProps = state => ({ system: state.system, driveQuestion: state.driveQuestion, category: state.framework.category });
 const mapActionsToProps = { getCategoryAll, getDriveQuestionPage, createDriveQuestion, updateDriveQuestion, swapDriveQuestion, deleteDriveQuestion, deleteDriveQuestionImage, changeDriveQuestion };
 export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);

@@ -130,6 +130,6 @@ class AdminQuestionPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, sign: state.sign, category: state.category });
+const mapStateToProps = state => ({ system: state.system, sign: state.sign, category: state.framework.category });
 const mapActionsToProps = { getCategoryAll, getSignPage, createSign, updateSign, swapSign, deleteSign, deleteSignImage, changeSign };
 export default connect(mapStateToProps, mapActionsToProps)(AdminQuestionPage);

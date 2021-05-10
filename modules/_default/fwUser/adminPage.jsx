@@ -252,6 +252,6 @@ class UserPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, user: state.user, role: state.role });
+const mapStateToProps = state => ({ system: state.system, user: state.framework.user, role: state.framework.role });
 const mapActionsToProps = { getUserPage, createUser, updateUser, deleteUser, changeUser, changeSystemState, getRoleAll };
 export default connect(mapStateToProps, mapActionsToProps)(UserPage);

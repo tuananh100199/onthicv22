@@ -98,6 +98,6 @@ class CategorySection extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, category: state.category });
+const mapStateToProps = state => ({ system: state.system, category: state.framework.category });
 const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, changeCategory, deleteCategory };
 export default connect(mapStateToProps, mapActionsToProps)(CategorySection);

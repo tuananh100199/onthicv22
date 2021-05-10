@@ -5,7 +5,8 @@ import subject from './redux';
 
 export default {
     redux: {
-        subject
+        parent: 'trainning',
+        reducers: { subject },
     },
     routes: [
         {
