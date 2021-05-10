@@ -5,7 +5,8 @@ import menu from './redux';
 
 export default {
     redux: {
-        menu,
+        parent: 'framework',
+        reducers: { menu },
     },
     routes: [
         {

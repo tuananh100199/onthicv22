@@ -81,6 +81,6 @@ class AdminListSubject extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, subject: state.subject });
+const mapStateToProps = state => ({ system: state.system, subject: state.trainning.subject });
 const mapActionsToProps = { getSubjectPage, createSubject, deleteSubject };
 export default connect(mapStateToProps, mapActionsToProps)(AdminListSubject);

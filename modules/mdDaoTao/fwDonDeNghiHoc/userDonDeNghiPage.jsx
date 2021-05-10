@@ -439,6 +439,6 @@ class UserDonDeNghiPage extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.donDeNghiHoc, courseType: state.courseType });
+const mapStateToProps = state => ({ system: state.system, donDeNghiHoc: state.trainning.donDeNghiHoc, courseType: state.framework.courseType });
 const mapActionsToProps = { getDonDeNghiHocByUser, userUpdateDonDeNghiHoc, updateProfile, exportDonDeNghiHocToWord, exportBienNhanLanDauToWord, exportBanCamKetToWord, updateForm, getCourseTypePage };
 export default connect(mapStateToProps, mapActionsToProps)(UserDonDeNghiPage,);

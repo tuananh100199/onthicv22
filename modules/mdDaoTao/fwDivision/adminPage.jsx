@@ -78,6 +78,6 @@ class DivisionPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, division: state.division });
+const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
 const mapActionsToProps = { getDivisionAll, createDivision, deleteDivision, updateDivision };
 export default connect(mapStateToProps, mapActionsToProps)(DivisionPage);

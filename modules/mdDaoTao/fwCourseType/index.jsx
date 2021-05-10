@@ -14,7 +14,8 @@ export default {
         };
     },
     redux: {
-        courseType,
+        parent: 'trainning',
+        reducers: { courseType },
     },
     routes: [
         {

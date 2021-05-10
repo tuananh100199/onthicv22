@@ -7,7 +7,8 @@ import donDeNghiHoc from './redux';
 
 export default {
     redux: {
-        donDeNghiHoc
+        parent: 'trainning',
+        reducers: { donDeNghiHoc },
     },
     routes: [
         {

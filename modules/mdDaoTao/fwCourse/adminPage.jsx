@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCoursePage, createCourse } from './redux';
+import { getCoursePage, createCourse, updateCourse, deleteCourse } from './redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, FormTabs } from 'view/component/AdminPage';
 import AdminCourseFilterView from './tabView/adminCourseFilterView';
@@ -71,6 +71,6 @@ class CoursePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.course });
-const mapActionsToProps = { getCoursePage, createCourse, getCourseTypeAll };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
+const mapActionsToProps = { getCoursePage, createCourse, updateCourse, deleteCourse, getCourseTypeAll };
 export default connect(mapStateToProps, mapActionsToProps)(CoursePage);

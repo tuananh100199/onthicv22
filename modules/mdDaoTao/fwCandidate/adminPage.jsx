@@ -106,7 +106,7 @@ class CandidateModal extends AdminModal {
             <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
             <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
-            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào t' data={ajaxSelectDivision} />
+            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
         </div>,
         buttons:
             this.props.permission.write &&

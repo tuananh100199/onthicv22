@@ -6,7 +6,6 @@ import Loading from 'view/component/Loading';
 // import SectionCourseList from './sectionCourseList';
 // import SectionCourse from './sectionCourse';
 import course from './redux';
-import driveTest from 'modules/mdDaoTao/fwDriveTest/redux';
 
 
 export default {
@@ -21,7 +20,8 @@ export default {
         // };
     },
     redux: {
-        course, driveTest
+        parent: 'trainning',
+        reducers: { course },
     },
     routes: [
         {

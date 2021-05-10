@@ -120,6 +120,6 @@ class Footer extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, division: state.division });
+const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
 const mapActionsToProps = { getAllDivisionByUser };
 export default connect(mapStateToProps, mapActionsToProps)(Footer);

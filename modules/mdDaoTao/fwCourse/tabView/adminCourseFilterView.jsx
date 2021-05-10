@@ -61,6 +61,6 @@ class CoursePageFilter extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.course });
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCoursePage, updateCourse, deleteCourse };
 export default connect(mapStateToProps, mapActionsToProps)(CoursePageFilter);

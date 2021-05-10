@@ -102,6 +102,6 @@ class RolePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, role: state.role });
+const mapStateToProps = state => ({ system: state.system, role: state.framework.role });
 const mapActionsToProps = { getRolePage, createRole, updateRole, deleteRole };
 export default connect(mapStateToProps, mapActionsToProps)(RolePage);
