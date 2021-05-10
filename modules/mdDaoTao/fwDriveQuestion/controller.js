@@ -18,10 +18,10 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-question/all', app.permission.check('driveQuestion:read'), (req, res) => {
-        const { _idSelectedType, _questionIds, title } = req.query.condition,
+        const { _idSelectedType, questionIds, title } = req.query.condition,
             condition = {};
         condition.categories = [_idSelectedType];
-        condition._id = { $nin: _questionIds };
+        condition._id = { $nin: questionIds };
         if (title) {
             condition.title = new RegExp(title, 'i');
         }

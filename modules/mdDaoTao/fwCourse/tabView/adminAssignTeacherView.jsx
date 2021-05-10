@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { exportScore } from '../redux';
-// import { exportScore, exportSubject } from '../redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox, FormCheckbox, AdminModal, FormSelect, CirclePageButton } from 'view/component/AdminPage';
 
@@ -38,7 +37,8 @@ class TeacherModal extends AdminModal {
         });
     };
 }
-class AdminStudentView extends React.Component {
+
+class AdminAssignTeacherView extends React.Component {
     state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [], studentSelecteds: [] };
     componentDidUpdate(prevProps) {
         const course = this.props.course;
@@ -180,7 +180,7 @@ class AdminStudentView extends React.Component {
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Ứng viên</h3>
+                    <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentAll({ searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <h5>Ứng viên thuộc cơ sở Hiệp Phát</h5>
@@ -217,6 +217,7 @@ class AdminStudentView extends React.Component {
                                                     }
                                                     this.setState({ studentSelecteds: students });
                                                 });
+                                                // this.setState({ studentSelecteds: students })
                                             }
                                             _idStudents.forEach(item2 => this[item2._id] && this[item2._id].value(value));
                                         }} style={{ display: 'flex' }} />
@@ -299,10 +300,14 @@ class AdminStudentView extends React.Component {
                                 divisions[divisions.findIndex(item1 => item1._id == item._id)] && divisions[divisions.findIndex(item1 => item1._id == item._id)].isHide
                             )}
                         </div>)] : result, []) : 'Không có thông tin'}
+                        {/* {studentOutsides.length ? divisionStudents.reduce((result, item, index) => item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
+                            <h6>{item.title}</h6>
+                            {renderStudents(studentOutsides.filter(item1 => JSON.stringify(item) == JSON.stringify(item1.division)))}
+                        </div>)] : result, []) : 'Không có thông tin'} */}
                     </div>
                 </div>
                 <div className='col-md-6'>
-                    <h3 className='tile-title'>Học viên</h3>
+                    <h3 className='tile-title'>Cố vấn học tập</h3>
                     <h5>Nhóm học viên thuộc cơ sở Hiệp Phát</h5>
                     {this.state.insideGroups.length ? divisionTeachers.reduce((result, item, index) => item && !item.isOutside ? [...result, (<div key={index} style={{ marginTop: 10 }}>
                         <h6>{item.title}</h6>
@@ -315,7 +320,7 @@ class AdminStudentView extends React.Component {
                     </div>)] : result, []) : 'Không có thông tin'}
                 </div>
                 <CirclePageButton type='export' onClick={exportScore} />
-                {/* <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} onClick={exportSubject} /> */}
+                <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} />
                 {/* {permission.export ? <CirclePageButton type='export' style={{}} /> : null} */}
             </div>
         );
@@ -324,4 +329,4 @@ class AdminStudentView extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, student: state.student, course: state.course });
 const mapActionsToProps = { getDivisionAll, getPreStudentAll, updateStudent };
-export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
+export default connect(mapStateToProps, mapActionsToProps)(AdminAssignTeacherView);

@@ -27,7 +27,7 @@ module.exports = (app) => {
         giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                 // Khoá học
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khoá học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
@@ -54,19 +54,19 @@ module.exports = (app) => {
 
         getAll: (condition, done) => typeof condition == 'function' ?
             model.find({}).populate({
-                path : 'course',
-                populate : {
-                  path : 'subjects courseType'
+                path: 'course',
+                populate: {
+                    path: 'subjects courseType'
                 }
-              }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
+            }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
             model.find(condition).populate({
-                path : 'course',
-                populate : {
-                  path : 'subjects courseType'
+                path: 'course',
+                populate: {
+                    path: 'subjects courseType'
                 }
-              }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec((err, res) => {
+            }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec((err, res) => {
                 done(err, res);
-            }), 
+            }),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {

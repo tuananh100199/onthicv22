@@ -4,17 +4,15 @@ import { getLessonByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
-
 const previousRoute = '/user';
 class UserCourseInfo extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id'),
-            _id = route.parse(window.location.pathname)._id;
-        this.setState({ lessonId: _id });
-        if (_id) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-                this.props.getLessonByStudent(_id, data => {
+        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id').parse(window.location.pathname);
+        if (params._id) {
+            this.setState({ lessonId: params._id });
+            T.ready('/user/hoc-vien/khoa-hoc/' + params._id, () => {
+                this.props.getLessonByStudent(params._id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
                         this.props.history.push(previousRoute);
@@ -52,8 +50,6 @@ class UserCourseInfo extends AdminPage {
                         <div className='form-group'>
                             {this.state.detailDescription ? <><label >Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </> : <></>}
                         </div>
-                    </div>
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
                     </div>
                 </div>
             ),

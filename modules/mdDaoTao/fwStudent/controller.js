@@ -52,8 +52,8 @@ module.exports = (app) => {
     app.get('/api/student/score', app.permission.check('student:read'), (req, res) => {
         const userId = req.session.user._id,
             courseId = req.query.courseId;
-        app.model.student.getAll({ user: userId, course: courseId }, (error, item) => {
-            res.send({ error, item: item[0].tienDoHocTap });
+        app.model.student.get({ user: userId, course: courseId }, (error, item) => {
+            res.send({ error, item: item.tienDoHocTap });
         });
     });
 

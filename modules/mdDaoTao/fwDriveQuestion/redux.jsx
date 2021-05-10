@@ -176,8 +176,8 @@ export function deleteDriveQuestionImage(_id, done) {
     };
 }
 
-export const ajaxSelectDriveQuestion = (_idSelectedType, _questionIds) => T.createAjaxAdapter(
+export const ajaxSelectDriveQuestion = (_idSelectedType, questionIds) => T.createAjaxAdapter(
     '/api/drive-question/all',
-    params => ({ condition: { _idSelectedType, _questionIds, title: params.term } }),
+    params => ({ condition: { _idSelectedType, questionIds, title: params.term } }),
     response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );

@@ -32,9 +32,7 @@ module.exports = app => {
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');
         }
-        app.model.sign.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-            res.send({ error, page });
-        });
+        app.model.sign.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/sign', app.permission.check('sign:read'), (req, res) => {

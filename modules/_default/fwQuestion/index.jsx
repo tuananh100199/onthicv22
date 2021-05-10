@@ -47,7 +47,7 @@ class QuestionModal extends AdminModal {
             T.notify('Upload hình ảnh thất bại!', 'danger');
         } else {
             image && this.setState({ image });
-            image && this.state._id && this.props.change && this.props.change({ _questionId: this.state._id, image });
+            image && this.state._id && this.props.change && this.props.change({ questionId: this.state._id, image });
         }
     }
 
@@ -93,9 +93,9 @@ export class QuestionView extends React.Component {
     showQuestionModal = (e, question) => e.preventDefault() || this.modalQuestion.show(question);
 
     createQuestion = (data, done) => {
-        const { type, changeQuestions, parentId: _parentId } = this.props;
+        const { type, changeQuestions, parentId: parentId } = this.props;
         const url = `/api/question/${type}`;
-        T.post(url, { _parentId, data }, data => {
+        T.post(url, { parentId, data }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
@@ -107,10 +107,10 @@ export class QuestionView extends React.Component {
     }
 
     updateQuestion = (question, data, done) => {
-        const { type, changeQuestions, parentId: _parentId } = this.props,
-            _questionId = question._id;
+        const { type, changeQuestions, parentId: parentId } = this.props,
+            questionId = question._id;
         const url = `/api/question/${type}`;
-        T.put(url, { _parentId, _questionId, data }, data => {
+        T.put(url, { parentId, questionId, data }, data => {
             if (data.error) {
                 T.notify('Cập nhật câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -124,10 +124,10 @@ export class QuestionView extends React.Component {
 
     swapQuestion = (e, question, isMoveUp) => {
         e.preventDefault();
-        const { type, changeQuestions, parentId: _parentId } = this.props,
-            _questionId = question._id;
+        const { type, changeQuestions, parentId: parentId } = this.props,
+            questionId = question._id;
         const url = `/api/question/${type}/swap`;
-        T.put(url, { _parentId, _questionId, isMoveUp }, data => {
+        T.put(url, { parentId, questionId, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -139,10 +139,10 @@ export class QuestionView extends React.Component {
 
     deleteQuestion = (e, question) => e.preventDefault() || T.confirm('Xóa Câu hỏi', `Bạn có chắc bạn muốn xóa câu hỏi <strong>${question.title}</strong>?`, true, isConfirm => {
         if (isConfirm) {
-            const { type, changeQuestions, parentId: _parentId } = this.props,
-                _questionId = question._id;
+            const { type, changeQuestions, parentId: parentId } = this.props,
+                questionId = question._id;
             const url = `/api/question/${type}`;
-            T.delete(url, { _parentId, _questionId }, data => {
+            T.delete(url, { parentId, questionId }, data => {
                 if (data.error) {
                     T.notify('Xóa câu hỏi bị lỗi!', 'danger');
                     console.error('DELETE: ' + url + '.', data.error);
@@ -154,8 +154,8 @@ export class QuestionView extends React.Component {
         }
     });
 
-    changeQuestionImage = ({ _questionId, image }) => {
-        const questions = this.props.questions.map(item => item._id == _questionId ? Object.assign({}, item, { image }) : Object.assign({}, item));
+    changeQuestionImage = ({ questionId, image }) => {
+        const questions = this.props.questions.map(item => item._id == questionId ? Object.assign({}, item, { image }) : Object.assign({}, item));
         this.props.changeQuestions && this.props.changeQuestions({ questions });
     }
 

@@ -12,26 +12,29 @@ class QuestionModal extends AdminModal {
     componentDidMount() {
         this.props.getCategoryAll('drive-question', null, items => this.setState({ questionTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
     }
+
     onShow = () => {
         this.category.value(null);
         this.setState({ _idSelectedType: null });
     }
+
     viewTypeChanged = (_idSelectedType) => {
         this.setState({ _idSelectedType });
         this.questionSelect.value(null);
     }
 
     onSubmit = () => {
-        const _questionId = this.questionSelect.value();
-        if (!_questionId) T.notify('Tên câu hỏi thi bị trống!', 'danger');
-        else {
-            this.props.create(this.props.item._id, _questionId, this.hide);
+        const questionId = this.questionSelect.value();
+        if (!questionId) {
+            T.notify('Tên câu hỏi thi bị trống!', 'danger');
+        } else {
+            this.props.create(this.props.item._id, questionId, this.hide);
         }
     }
 
     render = () => {
         const questions = this.props.item.questions,
-            _questionIds = questions.map(item => item._id);
+            questionIds = questions.map(item => item._id);
         let _idSelectedType = this.state._idSelectedType,
             numberOfQuestionsByType = questions.filter(item => item.categories && item.categories.includes(_idSelectedType)).length;
         return this.renderModal({
@@ -40,8 +43,8 @@ class QuestionModal extends AdminModal {
                 <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
                 {this.state._idSelectedType ? <>
                     <div>Loại câu hỏi này đã có <b>{numberOfQuestionsByType}</b> câu hỏi trong bộ đề thi này</div>
-                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, _questionIds)} readOnly={this.props.readOnly} /></> : null}
-            </>
+                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, questionIds)} readOnly={this.props.readOnly} /></> : null}
+            </>,
         });
     };
 }
@@ -90,36 +93,36 @@ class DriveTestEditPage extends AdminPage {
     render() {
         const permission = this.getUserPermission('driveTest'),
             readOnly = !permission.write,
-            item = this.props.driveTest && this.props.driveTest.item ? this.props.driveTest.item : { title: '', questions: [] },
-            table = renderTable({
-                getDataSource: () => item.questions ? item.questions : [],
-                renderHead: () => (
-                    <tr>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Tên câu hỏi thi</th>
-                        {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
-                    </tr>),
-                renderRow: (item, index) => (
-                    <tr key={index}>
-                        <TableCell type='number' content={index + 1} />
-                        <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
-                        <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onDelete={this.delete} />
-                    </tr>),
-            }),
-            componentInfo = <>
-                <div className='row'>
-                    <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên bộ đề thi' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                    <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
-                </div>
-                <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả' rows='6' readOnly={readOnly} />
+            item = this.props.driveTest && this.props.driveTest.item ? this.props.driveTest.item : { title: '', questions: [] };
+        const table = renderTable({
+            getDataSource: () => item.questions ? item.questions : [],
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên câu hỏi thi</th>
+                    {readOnly ? null : <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type={permission.read ? 'link' : 'text'} content={item.title} url={`/user/drive-question/${item._id}`} />
+                    <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onDelete={this.delete} />
+                </tr>),
+        });
+
+        const componentInfo = (
+            <div className='row'>
+                <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên bộ đề thi' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                <FormSelect className='col-md-4' ref={e => this.itemCourseType = e} label='Loại khóa học' data={ajaxSelectCourseType} readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemDescription = e} className='col-md-12' label='Mô tả' rows='6' readOnly={readOnly} />
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
-            </>,
-            componentQuestion = <>
-                {table}
-                {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
-                <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} getCategoryAll={this.props.getCategoryAll} item={item} />
-            </>,
-            tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
+            </div>);
+        const componentQuestion = <>
+            {table}
+            {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}
+            <QuestionModal ref={e => this.modal = e} readOnly={!permission.write} create={this.props.createDriveTestQuestion} getCategoryAll={this.props.getCategoryAll} item={item} />
+        </>;
+        const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bộ đề thi', component: componentQuestion }];
 
         return this.renderPage({
             icon: 'fa fa-file',

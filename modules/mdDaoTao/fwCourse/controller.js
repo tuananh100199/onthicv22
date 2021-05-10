@@ -13,12 +13,12 @@ module.exports = (app) => {
         menus: {},
     };
 
-    app.permission.add({
-        name: 'course:read'
-    },
+    app.permission.add(
+        { name: 'course:read' },
         { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
+        { name: 'course:export' },
         { name: 'studentCourse:read', menu: courseMenu }
     );
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
@@ -90,6 +90,109 @@ module.exports = (app) => {
         }
         delete changes.courseFee;
         app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+    });
+    // app.permission.check('course:export'),
+    app.get('/api/course/export', (req, res) => {
+        const currentCourse = req.session.user.currentCourse;
+        app.model.course.get(currentCourse, (error, course) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const numOfLesson = course.subjects.reduce((a, b) => (b.lessons ? b.lessons.length : 0) + a, 0);
+
+                const workbook = app.excel.create(), worksheet = workbook.addWorksheet(`Danh sách điểm của học viên lớp ${course.name}`);
+                const cells = [
+                    { cell: 'A1', border: '1234', value: 'STT', font: { size: 12, align: 'center' }, bold: true },
+                    { cell: 'B1', border: '1234', value: 'Họ', font: { size: 12, align: 'center' }, bold: true },
+                    { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
+                ];
+                let row = 2;
+                course.groups.forEach(group => {
+                    group.student.forEach(item => {
+                        row++;
+                        worksheet.insertRow(row, [row - 2, item.lastname, item.firstname]);
+                    });
+                });
+                new Promise((resolve, reject) => {
+                    let count = 0;
+                    let countIndex = 0;
+                    ['A1:A2', 'B1:B2', 'C1:C2'].forEach((item) => worksheet.mergeCells(item));
+                    for (const item of course.subjects) {
+                        if (item) {
+                            app.model.subject.get(item._id, (error, subject) => {
+                                if (error) {
+                                    reject(error);
+                                } else {
+                                    cells.push({
+                                        cell: `${String.fromCharCode('D'.charCodeAt() + countIndex)}1`,
+                                        border: '1234',
+                                        value: subject.title,
+                                        font: { size: 12, align: 'center' }, bold: true
+                                    });
+                                    const currentCountIndex = countIndex;
+                                    countIndex += subject.lessons.length;
+                                    worksheet.mergeCells(`${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`);
+                                    for (const lesson of subject.lessons) {
+                                        cells.push(
+                                            {
+                                                cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
+                                                border: '1234',
+                                                value: lesson.title,
+                                                font: { size: 12, align: 'center' },
+                                                bold: true
+                                            }
+                                        );
+                                        let rowCell = 2;
+                                        course.groups.forEach(group => {
+                                            group.student.forEach(item => {
+                                                rowCell++;
+                                                const value = item.tienDoHocTap && item.tienDoHocTap[subject._id] && item.tienDoHocTap[subject._id][lesson._id] && item.tienDoHocTap[subject._id][lesson._id].score || 0;
+                                                worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + count)}${rowCell}`).value = `${value}/${lesson.questions.length}`;
+                                            });
+                                        });
+                                        count++;
+                                        if (count == numOfLesson) {
+                                            const colAvgWord = String.fromCharCode('D'.charCodeAt() + numOfLesson);
+                                            cells.push({
+                                                cell: `${colAvgWord}1`,
+                                                border: '1234',
+                                                value: 'Điểm trung bình',
+                                                font: { size: 12, align: 'center' }, bold: true
+                                            });
+                                            worksheet.mergeCells(`${colAvgWord}1:${colAvgWord}2`);
+                                            let rowSum = 2;
+                                            course.groups.forEach(group => {
+                                                group.student.forEach(() => {
+                                                    rowSum++;
+                                                    let sum = 0;
+                                                    for (let i = 0; i < numOfLesson; i++) {
+                                                        const scoreText = worksheet.getCell(`${String.fromCharCode('D'.charCodeAt() + i)}${rowSum}`).text;
+                                                        const scoreSplitted = scoreText.split('/');
+                                                        let score = parseInt(scoreSplitted[0]);
+                                                        let sumOfQuestion = parseInt(scoreSplitted[1]);
+                                                        let div = 0;
+                                                        if (sumOfQuestion > 0) {
+                                                            div = score / sumOfQuestion;
+                                                        }
+                                                        sum += div;
+                                                    }
+                                                    sum /= numOfLesson;
+                                                    worksheet.getCell(`${colAvgWord}${rowSum}`).value = parseFloat(sum).toFixed(2);
+                                                });
+                                            });
+                                            resolve();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }).then(() => {
+                    app.excel.write(worksheet, cells);
+                    app.excel.attachment(workbook, res, `Danh sách điểm của học viên lớp ${course.name}.xlsx`);
+                }).catch(error => res.send(error));
+            }
+        });
     });
 
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {

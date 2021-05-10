@@ -108,7 +108,7 @@ class AdminQuestionPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    swap = (e, _questionId, isMoveUp) => e.preventDefault() || this.props.swapDriveQuestion(_questionId, isMoveUp);
+    swap = (e, questionId, isMoveUp) => e.preventDefault() || this.props.swapDriveQuestion(questionId, isMoveUp);
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa câu hỏi thi', 'Bạn có chắc bạn muốn xóa câu hỏi thi này?', true, isConfirm =>
         isConfirm && this.props.deleteDriveQuestion(item._id));
 

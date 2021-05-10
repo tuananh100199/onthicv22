@@ -122,6 +122,15 @@ export function deleteCourse(_id) {
     };
 }
 
+export function exportScore() {
+    T.download(T.url('/api/course/export'));
+}
+
+export function exportSubject() {
+    T.download(T.url('/api/course/export/subject'));
+}
+
+
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getCoursePageByUser(pageNumber, pageSize, done) {
     return dispatch => {
