@@ -19,13 +19,23 @@ import CandidateModal from 'view/component/CandidateModal';
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
 import { modules } from './modules.jsx';
-const reducers = {}, routeMapper = {},
-    addRoute = (route) => routeMapper[route.path] = <Route key={route.path} {...route} />;
+const reducers = {}, reducerContainer = {}, routeMapper = {},
+    addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
 modules.forEach(module => {
     module.init && module.init();
-    Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
+
+    if (module.redux.parent && module.redux.reducers) {
+        if (reducerContainer[module.redux.parent] == undefined) reducerContainer[module.redux.parent] = {};
+        reducerContainer[module.redux.parent] = Object.assign({}, reducerContainer[module.redux.parent], module.redux.reducers);
+    } else {
+        Object.keys(module.redux).length && console.log('Warning: Cần chỉnh sửa index.jsx của modules: ', Object.keys(module.redux).toString());
+        Object.keys(module.redux).forEach(key => reducers[key] = module.redux[key]);
+    }
+
     module.routes.forEach(route => !route.path.startsWith('/user') && addRoute(route));
 });
+Object.keys(reducerContainer).forEach(key => reducers[key] = combineReducers(reducerContainer[key]));
+
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
 store.dispatch(getSystemState());
 
@@ -93,7 +103,7 @@ class App extends React.Component {
                         <HomeFooter />
                         <LoginModal ref={e => this.loginModal = e} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />
-                        <CandidateModal ref={e => this.candidateModal = e}/>
+                        <CandidateModal ref={e => this.candidateModal = e} />
                         <Loader ref={e => this.loader = e} />
                     </React.Fragment> :
                     <React.Fragment>

@@ -42,7 +42,7 @@ const T = {
         }
     }, 250)),
 
-    url: (url) => url + (url.indexOf('?') === -1 ? '?t=' : '&t=') + new Date().getTime(),
+    url: (url) => url + (url && url.indexOf('?') === -1 ? '?t=' : '&t=') + new Date().getTime(),
     download: (url, name) => {
         let link = document.createElement('a');
         link.target = '_blank';

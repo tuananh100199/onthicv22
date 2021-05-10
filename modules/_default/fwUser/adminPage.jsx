@@ -7,6 +7,14 @@ import { ajaxSelectDivision } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormCheckbox, FormImageBox, FormDatePicker, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
+const UserTypeData = [
+    { id: 'all', text: 'Tất cả' },
+    { id: 'isCourseAdmin', text: 'Quản trị viên khóa học' },
+    { id: 'isStaff', text: 'Nhân viên' },
+    { id: 'isLecturer', text: 'Cố vấn học tập' },
+    { id: 'isRepresenter', text: 'Giáo viên' },
+];
+
 class UserModal extends AdminModal {
     state = { allRoles: [] };
     componentDidMount() {
@@ -23,6 +31,7 @@ class UserModal extends AdminModal {
         this.itemIsCourseAdmin.value(item.isCourseAdmin);
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
+        this.itemIsRepresenter.value(item.isRepresenter);
         this.itemSex.value(item.sex);
         this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
         this.itemActive.value(item.active);
@@ -44,6 +53,7 @@ class UserModal extends AdminModal {
             isCourseAdmin: this.itemIsCourseAdmin.value(),
             isStaff: this.itemIsStaff.value(),
             isLecturer: this.itemIsLecturer.value(),
+            isRepresenter: this.itemIsRepresenter.value(),
             roles: this.itemRoles.value(),
             birthday: this.itemBirthday.value(),
             division: this.itemDivision.value(),
@@ -101,8 +111,9 @@ class UserModal extends AdminModal {
                     <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
 
                     <FormCheckbox ref={e => this.itemIsCourseAdmin = e} className='col-md-4' label='Quản trị viên khóa học' readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsStaff = e} className='col-md-4' label='Nhân viên' readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsLecturer = e} className='col-md-4' label='Giáo viên' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsStaff = e} className='col-md-2' label='Nhân viên' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsLecturer = e} className='col-md-4' label='Cố vấn học tập' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsRepresenter = e} className='col-md-2' label='Giáo viên' readOnly={readOnly} />
 
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
                     <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
@@ -149,92 +160,14 @@ class UserPasswordModal extends AdminModal {
     });
 }
 
-export class RoleFilter extends React.Component {
-    state = {}
-    render() {
-        let { isCourseAdmin, isStaff, isLecturer, isAll } = this.props.filter;
-        const pageNumber = this.props.pageNumber,
-            pageSize = this.props.pageSize;
-        return (
-            <div style={{ display: 'flex' }}>
-                <label>All:</label>
-                <div className='toggle'>
-                    <label>
-                        <input type='checkbox' checked={isAll} onChange={() => {
-                            const changes = {
-                                isCourseAdmin: isCourseAdmin,
-                                isStaff: isStaff,
-                                isLecturer: isLecturer,
-                                isAll: !isAll
-                            };
-                            this.props.getUserPage(pageNumber, pageSize, changes);
-                            this.props.setRoleFilter(changes);
-                        }} />
-                        <span className='button-indecator' />
-                    </label>
-                </div>
-                <label>Quản trị khóa học:</label>
-                <div className='toggle'>
-                    <label>
-                        <input type='checkbox' checked={isCourseAdmin} onChange={() => {
-                            const changes = {
-                                isCourseAdmin: !isCourseAdmin,
-                                isStaff: isStaff,
-                                isLecturer: isLecturer,
-                                isAll: isAll
-                            };
-                            this.props.getUserPage(pageNumber, pageSize, changes);
-                            this.props.setRoleFilter(changes);
-                        }} />
-                        <span className='button-indecator' />
-                    </label>
-                </div>
-                <label>Nhân viên:</label>
-                <div className='toggle'>
-                    <label>
-                        <input type='checkbox' checked={isStaff} onChange={() => {
-                            const changes = {
-                                isCourseAdmin: isCourseAdmin,
-                                isStaff: !isStaff,
-                                isLecturer: isLecturer,
-                                isAll: isAll
-                            };
-                            this.props.getUserPage(pageNumber, pageSize, changes);
-                            this.props.setRoleFilter(changes);
-                        }} />
-                        <span className='button-indecator' />
-                    </label>
-                </div>
-                <label>Giáo viên:</label>
-                <div className='toggle'>
-                    <label>
-                        <input type='checkbox' checked={isLecturer} onChange={() => {
-                            const changes = {
-                                isCourseAdmin: isCourseAdmin,
-                                isStaff: isStaff,
-                                isLecturer: !isLecturer,
-                                isAll: isAll
-                            };
-                            this.props.getUserPage(pageNumber, pageSize, changes);
-                            this.props.setRoleFilter(changes);
-                        }} />
-                        <span className='button-indecator' />
-                    </label>
-                </div>
-            </div>
-
-        );
-    }
-}
-
-const roleFilter = (T.cookie('roleFilter') ? T.cookie('roleFilter') : { isCourseAdmin: false, isStaff: false, isLecturer: false, isAll: true });
 class UserPage extends AdminPage {
-    state = { searchText: '', isSearching: false, roleFilter };
+    state = { isSearching: false, searchText: '', userType: 'all' };
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
+        this.userType.value(this.state.userType);
         this.props.getRoleAll();
-        this.props.getUserPage(1, null, this.state.roleFilter, (page) => {
+        this.onSearch({}, (page) => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('user')) {
                 const _userId = urlParams.get('user');
@@ -242,19 +175,19 @@ class UserPage extends AdminPage {
             }
         });
 
-        T.onSearch = (searchText) => this.props.getUserPage(undefined, undefined, searchText ? { searchText } : null, () => {
-            this.setState({ searchText, isSearching: searchText != '' });
-        });
+        T.onSearch = (searchText) => this.onSearch({ searchText });
     }
 
-    setRoleFilter = (roleFilter) => {
-        this.setState({ roleFilter: roleFilter });
-        T.cookie('roleFilter', roleFilter);
+    onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
+        if (searchText == undefined) searchText = this.state.searchText;
+        if (userType == undefined) userType = this.state.userType;
+        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType }, (page) => {
+            this.setState({ searchText, userType, isSearching: false });
+            done && done(page);
+        }));
     }
 
     edit = (e, item) => e.preventDefault() || this.userModal.show(item);
-
-    // create = (e) => e.preventDefault() || this.userModal.show();
 
     changePassword = (e, item) => e.preventDefault() || this.passwordModal.show(item);
 
@@ -295,15 +228,20 @@ class UserPage extends AdminPage {
                 </tr>),
         });
 
+        const header = <>
+            <label style={{ lineHeight: '40px' }}>Loại người dùng:</label>&nbsp;&nbsp;
+            <FormSelect ref={e => this.userType = e} data={UserTypeData} onChange={value => this.onSearch({ userType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
+        </>;
+
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Người dùng',
-            header: <RoleFilter getUserPage={this.props.getUserPage} setRoleFilter={this.setRoleFilter} filter={this.state.roleFilter} pageNumber={pageNumber} pageSize={pageSize} />,
+            header: header,
             breadcrumb: ['Người dùng'],
             content: <>
                 <div className='tile tile-table-fix-head'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getUserPage} />
+                    getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
                 <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles} user={this.props.system ? this.props.system.user : null}
                     update={this.props.updateUser} create={this.props.createUser} change={this.props.changeUser} getPage={this.props.getUserPage}
                     changeSystemState={this.props.changeSystemState} />

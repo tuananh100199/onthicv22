@@ -3,16 +3,16 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { checkRandomDriveTestScore, createRandomDriveTest } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
-import '../../../view/component/input.scss';
+import 'view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
 class UserPageRandomDriveTestDetail extends AdminPage {
-    state = {};
+    state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'),
-                params = route.parse(window.location.pathname);
-            this.props.createRandomDriveTest(params._id, data => {
+                _id = route.parse(window.location.pathname)._id;
+            this.props.createRandomDriveTest(_id, data => {
                 if (data.driveTest) {
                     const { _id, title, questions } = data.driveTest;
                     this.setState({ _id, title, questions });
@@ -24,9 +24,10 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             });
         });
     }
+
     submitAnswer = (e) => {
         e.preventDefault();
-        this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
+        this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,
@@ -52,7 +53,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             $('#next-btn').css({ 'visibility': 'visible' });
             $('input[name="' + questionId + '"]').prop('checked', false);
         }, 50);
-
     }
 
     changeQuestion = (e, index) => {
@@ -66,7 +66,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
-
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -74,7 +73,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                         $('input[name="' + questionId + '"]').prop('checked', false);
                     }
                 }
-
             }
         });
     }
@@ -86,7 +84,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + this.state && this.state._courseTypeId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -112,41 +110,39 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: Đề thi ngẫu nhiên',
-            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, this.state.title],
+            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, 'Đề thi ngẫu nhiên'],
             backRoute: userPageLink,
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
-                        {activeQuestion ?
-                            (
-                                <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
-                                    <div className='form-check'>
-                                        {activeQuestion.answers.split('\n').map((answer, index) => (
-                                            <div key={index} className='custom-control custom-radio'>
-                                                <input className='custom-control-input'
-                                                    type='radio'
-                                                    name={activeQuestion._id}
-                                                    id={activeQuestion._id + index}
-                                                    value={index}
-                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+                        {activeQuestion ? (
+                            <div className='col-md-12 pb-5'>
+                                <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                                {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
+                                <div className='form-check'>
+                                    {activeQuestion.answers.split('\n').map((answer, index) => (
+                                        <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
+                                            <input className='custom-control-input'
+                                                type='radio'
+                                                name={activeQuestion._id}
+                                                id={activeQuestion._id + index}
+                                                value={index}
+                                                onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
 
-                                                <label className={'custom-control-label ' +
-                                                    (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
-                                                        (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
-                                                            (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
-                                                } htmlFor={activeQuestion._id + index} >
-                                                    {answer}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            <label className={'custom-control-label ' +
+                                                (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                    (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
+                                                        (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                            } htmlFor={activeQuestion._id + index} >
+                                                {answer}
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
-                            ) : <></>
-                        }
+                            </div>
+                        ) : null}
                     </div>
-                    <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={{ width: '100%' }}>
                             <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                 <ul className='pagination'>
@@ -156,7 +152,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     <li className='page-item' id='next-btn'>
                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
                                     </li>
-
                                 </ul>
                             </nav>
                             <div>
@@ -165,14 +160,13 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     {showSubmitButton ?
                                         <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                             <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
-                                                </button> :
+                                        </button> :
                                         <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.refreshQuestion(e, questions[0]._id)} disabled={false}>
                                             <i className='fa fa-lg fa-refresh' /> Làm lại
                                         </button>
                                     }
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

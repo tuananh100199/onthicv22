@@ -24,7 +24,6 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id', app.templates.admin);
 
-
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
@@ -119,6 +118,7 @@ module.exports = app => {
             });
         }
     });
+
     app.post('/api/drive-test/student/submit', (req, res) => {
         const { answers } = req.body,
             _driveTestId = req.body._id;
@@ -155,6 +155,7 @@ module.exports = app => {
             }
         });
     });
+
     app.post('/api/drive-test/random/submit', (req, res) => {
         const { answers } = req.body,
             randomTest = req.session.driveTest;

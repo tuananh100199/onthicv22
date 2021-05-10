@@ -54,50 +54,45 @@ module.exports = (app) => {
 
     app.get('/api/state', (req, res) => {
         app.state.get((error, data) => {
-            if (error) {
-                res.send({ error });
+            if (error || data == null) {
+                res.send({ error: error || 'Hệ thống bị lỗi!' });
             } else {
+                delete data.emailPassword;
                 if (app.isDebug) data.isDebug = true;
                 if (req.session.user) data.user = req.session.user;
                 if (data.user) {
                     app.model.student.getAll({ user: data.user._id }, (error, students) => {
-                        if (students) {
-                            const courses = [];
-                            students.map(student => {
+                        if (error == null && students) {
+                            data.user.menu['5000'] = {
+                                parentMenu: {
+                                    index: 5000,
+                                    title: 'Khóa học của bạn',
+                                    icon: 'fa-graduation-cap',
+                                    subMenusRender: true
+                                },
+                                menus: {}
+                            };
+                            let index = 0;
+                            students.forEach(student => {
                                 if (student.course) {
-                                    courses.push({ courseId: student.course._id, name: student.course.name });
-                                }
-                            });
-                            if (courses.length) {
-                                data.user.menu['5000'] = {
-                                    parentMenu: {
-                                        index: 5000,
-                                        title: 'Khóa học của bạn',
-                                        icon: 'fa-graduation-cap',
-                                        subMenusRender: true
-                                    },
-                                    menus: {}
-                                };
-                                courses.map((course, index) => {
-                                    const menuName = 5000 + index + 1;
-                                    data.user.menu['5000'].menus[menuName] = {
-                                        title: 'Khóa học ' + course.name,
-                                        link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
+                                    index++;
+                                    data.user.menu['5000'].menus[5000 + index] = {
+                                        title: 'Khóa học ' + student.course.name,
+                                        link: '/user/hoc-vien/khoa-hoc/' + student.course._id,
                                         permissions: ['studentCourse:read']
                                     };
-                                });
-                            }
+                                }
+                            });
+                            if (index == 0) delete data.user.menu['5000'];
                         }
                     });
                 }
-                app.model.menu.getAll({ active: true }, (_, menus) => {
-                    if (menus) {
+                app.model.menu.getAll({ active: true }, (error, menus) => {
+                    if (error == null && menus) {
                         data.menus = menus.slice();
                         data.menus.forEach((menu) => {
                             menu.content = '';
-                            if (menu.submenus) {
-                                menu.submenus.forEach((submenu) => (submenu.content = ''));
-                            }
+                            menu.submenus && menu.submenus.forEach(submenu => submenu.content = '');
                         });
                     }
                     if (app.isDebug) {

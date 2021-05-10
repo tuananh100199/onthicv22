@@ -127,6 +127,6 @@ class SectionContact extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, contact: state.contact, division: state.division });
+const mapStateToProps = state => ({ system: state.system, contact: state.communication.contact, division: state.division });
 const mapActionsToProps = { createContact, getAllDivisionByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionContact);

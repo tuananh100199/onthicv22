@@ -83,6 +83,6 @@ class SectionNewsList extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, news: state.news });
+const mapStateToProps = state => ({ system: state.system, news: state.communication.news });
 const mapActionsToProps = { getNewsPageByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionNewsList);

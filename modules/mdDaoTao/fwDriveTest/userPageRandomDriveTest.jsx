@@ -12,6 +12,7 @@ class UserPageRandomDriveTest extends AdminPage {
             this.setState({ courseTypes });
         });
     }
+
     render() {
         const { courseTypes } = this.state ? this.state : [];
         return this.renderPage({
@@ -20,24 +21,19 @@ class UserPageRandomDriveTest extends AdminPage {
             breadcrumb: ['Bộ đề thi ngẫu nhiên'],
             content: (
                 <div className='row'>
-                    <div className='col-12'>
-                        <h4>Loại khóa học</h4>
-                        <div className='row'>
-                            {courseTypes && courseTypes.map((type, index) => (
-                                <div key={index} className='col-md-4'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/' + type._id}>
-                                        <div className='widget-small coloured-icon info'>
-                                            <i className='icon fa fa-3x fa fa-cubes' />
-                                            <div className='info'>
-                                                <h4>Loại khóa học {type.title}</h4>
-                                            </div>
-                                        </div>
-                                    </Link>
+                    <h4 className='col-12'>Loại đề thi</h4>
+                    {courseTypes && courseTypes.map((type, index) => (
+                        <div key={index} className='col-md-4'>
+                            <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/' + type._id}>
+                                <div className='widget-small coloured-icon info'>
+                                    <i className='icon fa fa-3x fa fa-cubes' />
+                                    <div className='info'>
+                                        <h4>Loại {type.title}</h4>
+                                    </div>
                                 </div>
-                            ))
-                            }
+                            </Link>
                         </div>
-                    </div>
+                    ))}
                 </div>
             ),
         });

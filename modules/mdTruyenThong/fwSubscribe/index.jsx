@@ -16,7 +16,8 @@ export default {
         };
     },
     redux: {
-        subscribe
+        parent: 'communication',
+        reducers: { subscribe },
     },
     routes: [
         {

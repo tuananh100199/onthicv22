@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao/fwDriveTest/redux';
 import { AdminPage } from 'view/component/AdminPage';
-import '../../../view/component/input.scss';
+import 'view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
 class UserPageDriveTestDetail extends AdminPage {
@@ -14,6 +14,7 @@ class UserPageDriveTestDetail extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
+                    T.ready('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + params._id);
                     const { _id, title, questions } = data.item;
                     this.setState({ _id, title, questions });
                 } else {
@@ -23,16 +24,6 @@ class UserPageDriveTestDetail extends AdminPage {
                 $('#trueAnswer').css('display', 'none');
             });
         });
-    }
-
-    componentDidUpdate(prevProps) {
-        const driveTest = this.props.driveTest;
-        if (driveTest !== prevProps.driveTest) {
-            if (driveTest.courseType) {
-                const _courseTypeId = driveTest.courseType._id;
-                this.setState({ _courseTypeId: _courseTypeId });
-            }
-        }
     }
 
     submitAnswer = (e) => {
@@ -63,7 +54,6 @@ class UserPageDriveTestDetail extends AdminPage {
             $('#next-btn').css({ 'visibility': 'visible' });
             $('input[name="' + questionId + '"]').prop('checked', false);
         }, 50);
-
     }
 
     changeQuestion = (e, index) => {
@@ -77,7 +67,6 @@ class UserPageDriveTestDetail extends AdminPage {
                     this.setState(prevState => ({
                         studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() }
                     }));
-
                 } else {
                     if (this.state.studentAnswer && this.state.studentAnswer[activeQuestion._id]) {
                         $('#' + questionId + this.state.studentAnswer[activeQuestion._id]).prop('checked', true);
@@ -85,7 +74,6 @@ class UserPageDriveTestDetail extends AdminPage {
                         $('input[name="' + questionId + '"]').prop('checked', false);
                     }
                 }
-
             }
         });
     }
@@ -97,7 +85,9 @@ class UserPageDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + this.state && this.state._courseTypeId;
+        const _courseTypeId = this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id ?
+            this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id : null;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + _courseTypeId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -111,7 +101,6 @@ class UserPageDriveTestDetail extends AdminPage {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
-
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
             $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
@@ -128,34 +117,32 @@ class UserPageDriveTestDetail extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
-                        {activeQuestion ?
-                            (
-                                <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto' }} /> : null}
-                                    <div className='form-check'>
-                                        {activeQuestion.answers.split('\n').map((answer, index) => (
-                                            <div key={index} className='custom-control custom-radio'>
-                                                <input className='custom-control-input'
-                                                    type='radio'
-                                                    name={activeQuestion._id}
-                                                    id={activeQuestion._id + index}
-                                                    value={index}
-                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+                        {activeQuestion ? (
+                            <div className='col-md-12 pb-5'>
+                                <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                                {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
+                                <div className='form-check'>
+                                    {activeQuestion.answers.split('\n').map((answer, index) => (
+                                        <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
+                                            <input className='custom-control-input'
+                                                type='radio'
+                                                name={activeQuestion._id}
+                                                id={activeQuestion._id + index}
+                                                value={index}
+                                                onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
 
-                                                <label className={'custom-control-label ' +
-                                                    (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
-                                                        (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
-                                                            (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
-                                                } htmlFor={activeQuestion._id + index} >
-                                                    {answer}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            <label className={'custom-control-label ' +
+                                                (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                    (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
+                                                        (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                            } htmlFor={activeQuestion._id + index} >
+                                                {answer}
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
-                            ) : <></>
-                        }
+                            </div>
+                        ) : null}
                     </div>
                     <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={{ width: '100%' }}>
@@ -167,7 +154,6 @@ class UserPageDriveTestDetail extends AdminPage {
                                     <li className='page-item' id='next-btn'>
                                         <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
                                     </li>
-
                                 </ul>
                             </nav>
                             <div>
@@ -183,7 +169,6 @@ class UserPageDriveTestDetail extends AdminPage {
                                     }
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -191,6 +176,7 @@ class UserPageDriveTestDetail extends AdminPage {
         });
     }
 }
+
 const mapStateToProps = state => ({ system: state.system, driveTest: state.driveTest });
 const mapActionsToProps = { getDriveTestItemByStudent, checkDriveTestScore };
 export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTestDetail);

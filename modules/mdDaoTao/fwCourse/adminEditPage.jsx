@@ -7,6 +7,7 @@ import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelec
 import AdminSubjectView from './tabView/adminSubjectView';
 import AdminManagerView from './tabView/adminManagerView';
 import AdminStudentView from './tabView/adminStudentView';
+import AdminAssignTeacherView from './tabView/AdminAssignTeacherView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -59,6 +60,7 @@ class EditCoursePage extends AdminPage {
             courseFees: this.state.courseFees
         };
         if (changes.courseFee == null) changes.courseFee = 0;
+
         if (changes.name == '') {
             T.notify('Tên khóa học trống!', 'danger');
             this.name.focus();
@@ -101,6 +103,8 @@ class EditCoursePage extends AdminPage {
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
             { title: 'Quản trị - Cố vấn học tập', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
             { title: 'Học viên', component: <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} updateCourse={this.props.updateCourse} /> },
+            { title: 'Gán cố vấn học tập', component: <AdminAssignTeacherView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} updateCourse={this.props.updateCourse} /> },
+            { title: 'Gán giáo viên', component: 'TODO: gán học viên vào group Representer' },
         ];
         return this.renderPage({
             icon: 'fa fa-cubes',
