@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentAll, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { exportScore } from '../redux';
+// import { exportScore, exportSubject } from '../redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import { FormTextBox, FormCheckbox, AdminModal, FormSelect, CirclePageButton } from 'view/component/AdminPage';
 
@@ -42,7 +43,7 @@ class AdminAssignTeacherView extends React.Component {
     state = { outsideGroups: [], insideGroups: [], divisions: [], groups: [], studentSelecteds: [] };
     componentDidUpdate(prevProps) {
         const course = this.props.course;
-        if (course !== prevProps.course) {
+        if (JSON.stringify(course) !== JSON.stringify(prevProps.course)) {
             this.setState({ studentSelecteds: [] });
             this.props.getPreStudentAll({ courseType: this.props.courseType && this.props.courseType._id });
             this.props.getDivisionAll(list => {
@@ -320,7 +321,7 @@ class AdminAssignTeacherView extends React.Component {
                     </div>)] : result, []) : 'Không có thông tin'}
                 </div>
                 <CirclePageButton type='export' onClick={exportScore} />
-                <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} />
+                {/* <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} /> */}
                 {/* {permission.export ? <CirclePageButton type='export' style={{}} /> : null} */}
             </div>
         );

@@ -64,9 +64,7 @@ module.exports = (app) => {
                 populate: {
                     path: 'subjects courseType'
                 }
-            }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec((err, res) => {
-                done(err, res);
-            }),
+            }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
@@ -76,7 +74,7 @@ module.exports = (app) => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).sort({ modifiedDate: 1, lastname: 1, firstname: 1 }).skip(skipNumber).limit(result.pageSize)
-                    .populate('user', '-password').populate('division', '_id title').populate('courseType').populate('course').exec((error, list) => {
+                    .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
                         result.list = list;
                         done(error, result);
                     });

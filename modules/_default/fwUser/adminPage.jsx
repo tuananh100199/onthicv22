@@ -181,7 +181,6 @@ class UserPage extends AdminPage {
     onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
         if (userType == undefined) userType = this.state.userType;
-        console.log(pageNumber, pageSize, searchText, userType)
         this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType }, (page) => {
             this.setState({ searchText, userType, isSearching: false });
             done && done(page);

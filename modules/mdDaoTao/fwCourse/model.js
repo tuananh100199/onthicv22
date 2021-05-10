@@ -10,7 +10,7 @@ module.exports = app => {
             fee: { type: Number, default: 0 },
         }],
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
-        maxStudent: { type: Number },                                       // Số lượng học viên tối đa
+        maxStudent: { type: Number, default: 100 },                                       // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
         active: { type: Boolean, default: false },
