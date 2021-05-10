@@ -17,7 +17,8 @@ export default {
         };
     },
     redux: {
-        candidate
+        parent: 'communication',
+        reducers: { candidate },
     },
     routes: [
         {

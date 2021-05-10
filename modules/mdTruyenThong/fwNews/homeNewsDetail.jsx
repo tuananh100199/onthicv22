@@ -87,6 +87,6 @@ class NewsDetail extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ news: state.news });
+const mapStateToProps = state => ({ news: state.communication.news });
 const mapActionsToProps = { getNewsByUser };
 export default connect(mapStateToProps, mapActionsToProps)(NewsDetail);

@@ -53,6 +53,6 @@ class SubscribePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, subscribe: state.subscribe });
+const mapStateToProps = state => ({ system: state.system, subscribe: state.communication.subscribe });
 const mapActionsToProps = { getSubscribePage, deleteSubscribe };
 export default connect(mapStateToProps, mapActionsToProps)(SubscribePage);
