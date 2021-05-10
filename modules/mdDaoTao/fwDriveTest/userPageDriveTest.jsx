@@ -12,9 +12,7 @@ class UserPageDriveTest extends AdminPage {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
                 _id = route.parse(window.location.pathname)._id;
             if (_id) {
-                T.ready('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + _id, () => {
-                    this.props.getAllDriveTests({ courseType: _id });
-                });
+                this.props.getAllDriveTests({ courseType: _id });
             } else {
                 this.props.history.push(previousRoute);
             }
