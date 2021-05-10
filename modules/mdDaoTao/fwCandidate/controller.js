@@ -123,6 +123,7 @@ module.exports = app => {
                         firstname: item.firstname,
                         lastname: item.lastname,
                         courseType: item.courseType,
+                        division: item.division,
                     };
                     app.model.student.create(dataStudent, (error) => res.send({ error, item }));
                 }).catch(error => res.send({ error }));

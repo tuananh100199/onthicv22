@@ -27,7 +27,6 @@
 	4030 - Bài học (/user/dao-tao/bai-hoc)
 	4040 - Ứng viên (/user/pre-student)
 	4045 - Khóa học (/user/course)
-5000. Khóa học của bạn (undefined)
 6000. Ôn tập đề thi (undefined)
 	6010 - Bộ đề thi ngẫu nhiên (/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien)
 	6020 - Bộ đề thi thử (/user/hoc-vien/khoa-hoc/bo-de-thi-thu)

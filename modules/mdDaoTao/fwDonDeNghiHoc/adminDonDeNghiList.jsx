@@ -42,6 +42,6 @@ class AdminDonDeNghiList extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({ donDeNghiHoc: state.trainning.donDeNghiHoc, system: state.system, courseType: state.framework.courseType });
+const mapStateToProps = state => ({ donDeNghiHoc: state.trainning.donDeNghiHoc, system: state.system, courseType: state.trainning.courseType });
 const mapActionsToProps = { getCourseTypePage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminDonDeNghiList);

@@ -39,7 +39,7 @@ class UserProfilePage extends AdminPage {
                                         <i className='icon fa fa-3x fa fa-cubes' />
                                         <div className='info'>
                                             <h4>Khóa học hạng {student && student.courseType ? student.courseType.title : ''}</h4>
-                                            <p style={{ fontWeight: 'bold' }}>{student.course ? `Lớp: ${student.course.name}` : `Đang chờ khóa`}</p>
+                                            <p style={{ fontWeight: 'bold' }}>{student.course ? `Lớp: ${student.course.name}` : 'Đang chờ khóa'}</p>
                                         </div>
                                     </div>
                                 </Link>
