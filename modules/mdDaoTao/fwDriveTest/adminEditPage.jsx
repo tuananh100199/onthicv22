@@ -24,17 +24,17 @@ class QuestionModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const _questionId = this.questionSelect.value();
-        if (!_questionId) {
+        const questionId = this.questionSelect.value();
+        if (!questionId) {
             T.notify('Tên câu hỏi thi bị trống!', 'danger');
         } else {
-            this.props.create(this.props.item._id, _questionId, this.hide);
+            this.props.create(this.props.item._id, questionId, this.hide);
         }
     }
 
     render = () => {
         const questions = this.props.item.questions,
-            _questionIds = questions.map(item => item._id);
+            questionIds = questions.map(item => item._id);
         let _idSelectedType = this.state._idSelectedType,
             numberOfQuestionsByType = questions.filter(item => item.categories && item.categories.includes(_idSelectedType)).length;
         return this.renderModal({
@@ -43,7 +43,7 @@ class QuestionModal extends AdminModal {
                 <FormSelect ref={e => this.category = e} label='Loại câu hỏi' data={this.state.questionTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
                 {this.state._idSelectedType ? <>
                     <div>Loại câu hỏi này đã có <b>{numberOfQuestionsByType}</b> câu hỏi trong bộ đề thi này</div>
-                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, _questionIds)} readOnly={this.props.readOnly} /></> : null}
+                    <FormSelect ref={e => this.questionSelect = e} label='Câu hỏi thi' data={ajaxSelectDriveQuestion(_idSelectedType, questionIds)} readOnly={this.props.readOnly} /></> : null}
             </>,
         });
     };

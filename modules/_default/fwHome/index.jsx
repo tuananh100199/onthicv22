@@ -3,7 +3,6 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 
-
 import carousel, { ajaxSelectCarousel, ajaxGetCarousel } from './redux/reduxCarousel';
 import content, { ajaxSelectContent, ajaxGetContent } from './redux/reduxContent';
 import listContent, { ajaxSelectListContent, ajaxGetListContent } from './redux/reduxListContent';

@@ -14,13 +14,14 @@ module.exports = app => {
 
     app.get('/user/drive-question/category', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/drive-question', app.permission.check('driveQuestion:read'), app.templates.admin);
+    app.get('/user/drive-question/:_id', app.permission.check('driveQuestion:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-question/all', app.permission.check('driveQuestion:read'), (req, res) => {
-        const { _idSelectedType, _questionIds, title } = req.query.condition,
+        const { _idSelectedType, questionIds, title } = req.query.condition,
             condition = {};
         condition.categories = [_idSelectedType];
-        condition._id = { $nin: _questionIds };
+        condition._id = { $nin: questionIds };
         if (title) {
             condition.title = new RegExp(title, 'i');
         }

@@ -7,7 +7,6 @@ import Loading from 'view/component/Loading';
 // import SectionCourse from './sectionCourse';
 import course from './redux';
 
-
 export default {
     init: () => {
         // T.component['all courses'] = {

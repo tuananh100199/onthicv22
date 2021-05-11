@@ -4,6 +4,21 @@ import { Link } from 'react-router-dom';
 import { getUserCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
 
+class CourseUser extends React.Component {
+    render() {
+        const content = (<>
+            <div className='widget-small coloured-icon info'>
+                <i className='icon fa fa-3x fa fa-cubes' />
+                <div className='info'>
+                    <h4>Khóa học hạng {this.props.courseTypeName}</h4>
+                    <p style={{ fontWeight: 'bold' }}>{this.props.courseName}</p>
+                </div>
+            </div>
+        </>
+        );
+        return this.props.link ? <Link to={this.props.link}>{content}</Link> : content;
+    }
+}
 class UserProfilePage extends AdminPage {
     componentDidMount() {
         if (this.props.system && this.props.system.user) {
@@ -12,9 +27,9 @@ class UserProfilePage extends AdminPage {
         }
     }
 
-    //TODO:TuanAnh: chưa có lớp cho học viên
     render() {
         const { students } = this.state ? this.state : { students: [] };
+
         return this.renderPage({
             icon: 'fa fa-user',
             title: 'Trang cá nhân: ',
@@ -34,15 +49,9 @@ class UserProfilePage extends AdminPage {
                         <h4 style={{ width: '100%' }}>Khóa học của bạn</h4>
                         {students.map((student, index) => (
                             <div key={index} className='col-md-6 col-lg-4'>
-                                <Link to='#'>
-                                    <div className='widget-small coloured-icon info'>
-                                        <i className='icon fa fa-3x fa fa-cubes' />
-                                        <div className='info'>
-                                            <h4>Khóa học hạng {student && student.courseType ? student.courseType.title : ''}</h4>
-                                            <p style={{ fontWeight: 'bold' }}>{student.course ? `Lớp: ${student.course.name}` : 'Đang chờ khóa'}</p>
-                                        </div>
-                                    </div>
-                                </Link>
+                                <CourseUser courseTypeName={student.courseType && student.courseType.title? student.courseType.title : ''} 
+                                            link={student.course ? '/user/hoc-vien/khoa-hoc/' + student.course._id : null}
+                                            courseName={student.course? 'Lớp: ' + student.course.name : 'Đang chờ khóa'} />
                             </div>
                         ))}
                     </> : null}

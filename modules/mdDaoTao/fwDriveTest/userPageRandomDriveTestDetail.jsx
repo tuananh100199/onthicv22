@@ -39,7 +39,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             $('#trueAnswer').css('display', 'block');
         });
     }
-
+  
     refreshQuestion = (e, questionId) => {
         e.preventDefault();
         this.setState({
@@ -77,12 +77,13 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         });
     }
 
-    onAnswerChanged = (e, _questionId) => {
+    onAnswerChanged = (e, questionId) => {
         this.setState(prevState => ({
-            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() },
-            prevAnswers: { ...prevState.prevAnswers, [_questionId]: null }
+            studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
+            prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
         }));
     }
+    
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
         const { questions } = this.state ? this.state : { questions: [] };
