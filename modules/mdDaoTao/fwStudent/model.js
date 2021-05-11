@@ -32,7 +32,7 @@ module.exports = (app) => {
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
         hocPhiMienGiam: Number,                                                                     // Số tiển được miễn giảm
-        hocPhiDaDong: Number,   // Học phí đã đóng
+        hocPhiDaDong: Number,                                                                       // Học phí đã đóng
 
         tienDoHocTap: {},
         diemBoDeThi: {},
@@ -52,19 +52,15 @@ module.exports = (app) => {
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
 
-        getAll: (condition, done) => typeof condition == 'function' ?
-            model.find({}).populate({
-                path: 'course',
-                populate: {
-                    path: 'subjects courseType'
-                }
-            }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(condition) :
-            model.find(condition).populate({
-                path: 'course',
-                populate: {
-                    path: 'subjects courseType'
-                }
-            }).populate('division').populate('courseType', 'title').sort({ lastname: 1, firstname: 1 }).exec(done),
+        getAll: (condition, done) => {
+            if (typeof condition == 'function') {
+                done = condition;
+                condition = {};
+            }
+            model.find(condition)
+                .populate('course', 'subjects courseType').populate('division').populate('courseType', 'title')
+                .sort({ lastname: 1, firstname: 1 }).exec(done);
+        },
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
