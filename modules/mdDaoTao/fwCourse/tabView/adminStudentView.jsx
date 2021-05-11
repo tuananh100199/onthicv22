@@ -1,12 +1,64 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPreStudentPage, updateStudent, getStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
+import { getPreStudentPage, updateStudent, getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
 
 const previousRoute = '/user/course';
 class AdminStudentView extends React.Component {
+    state = {};
+    componentDidMount() {
+        this.props.getPreStudentPage(1, 50, { courseType: this.props.courseType && this.props.courseType._id });
+        const params = T.routeMatcher('/user/course/:_id').parse(window.location.pathname);
+        if (params._id) {
+            this.props.getStudentCourse(params._id);
+        } else {
+            this.props.history.push(previousRoute);
+        }
+    }
+
+    render() {
+        const { pageNumber, pageSize, pageTotal, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
+            this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
+
+        return (
+            <div className='row'>
+                <div className='col-md-6' >
+                    <h3 className='tile-title'>Ứng viên</h3>
+                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                        <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentPage(1, 50, { searchText: e.target.value, courseType: this.props.courseType._id })} />
+                        <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                            {preStudentList.map((item, index) => (
+                                <li key={index}>
+                                    <a href='#' style={{ color: 'black' }}>{item.lastname} {item.firstname}</a>
+                                </li>
+                            ))}
+                        </ol>
+                        <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                            getPage={this.props.getSignPage} />
+                    </div>
+                </div>
+                <div className='col-md-6'>
+                    <h3 className='tile-title'>Học viên</h3>
+                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse(this.props.course.item._id, e.target.value)} />
+                        <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                            {courseList.map((item, index) => (
+                                <li key={index}>
+                                    <a href='#' style={{ color: 'black' }}>{item.lastname} {item.firstname}</a>
+                                </li>
+                            ))}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class AdminStudentView1 extends React.Component {
     state = {};
     componentDidMount() {
         this.props.getPreStudentPage(1, 50, { courseType: this.props.courseType && this.props.courseType._id });
@@ -47,8 +99,6 @@ class AdminStudentView extends React.Component {
                     </ol>
                 </div>)] : result, []) : 'Không có thông tin';
 
-        console.log(prePage);
-
         return (
             <div className='row'>
                 <div className='col-md-6' >
@@ -57,10 +107,13 @@ class AdminStudentView extends React.Component {
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentPage(1, 50, { searchText: e.target.value, courseType: this.props.courseType._id })} />
                         <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {(prePage && prePage.list ? prePage.list : []).map((item, index) => (
-                                <li key={index}>{item.lastname} {item.firstname}</li>
+                                <li key={index}>
+                                    <a href='#' style={{ color: 'black' }}>{item.lastname} {item.firstname}</a>
+                                </li>
                             ))}
                         </ol>
-                        <Pagination name='adminPreStudent' {...prePage} getPage={this.props.getPreStudentPage} style={{ left: 320 }} />
+                        <Pagination name='adminPreStudent' pageCondition={prePage.pageCondition} pageNumber={prePage.pageNumber} pageSize={prePage.pageSize} pageTotal={prePage.pageTotal} totalItem={prePage.totalItem}
+                            getPage={this.props.getPreStudentPage} style={{ left: 320 }} />
                     </div>
                 </div>
                 <div className='col-md-6'>
@@ -82,5 +135,5 @@ class AdminStudentView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getDivisionAll, getPreStudentPage, updateStudent, getStudentPage };
+const mapActionsToProps = { getDivisionAll, getPreStudentPage, updateStudent, getStudentCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
