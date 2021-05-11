@@ -1,51 +1,48 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAllDriveTests } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage } from 'view/component/AdminPage';
+import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
+import { getAllDriveTests } from './redux';
+import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
+import { AdminPage, FormSelect } from 'view/component/AdminPage';
 
-const previousRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
-class UserPageDriveTest extends AdminPage {
-    state = { name: '...' };
+class UserPageDriveTestDetail extends AdminPage {
+    state = {};
     componentDidMount() {
-        T.ready(previousRoute, () => {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
-                _id = route.parse(window.location.pathname)._id;
-            if (_id) {
-                this.props.getAllDriveTests({ courseType: _id });
-            } else {
-                this.props.history.push(previousRoute);
-            }
-        });
+        // T.ready( () => {
+        //     this.props.getCourseTypeAll(list => {
+        //         if (list.length > 0) {
+        //             this.courseType.value({ id: list[0]._id, text: list[0].title });
+        //         }
+        //     });
+        // })
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/';
         const { list } = this.props.driveTest ? this.props.driveTest : [];
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Tất cả bộ đề: ',
-            breadcrumb: [<Link key={0} to={userPageLink}>Loại bộ đề thi thử</Link>, 'Tất cả bộ đề'],
-            backRoute: userPageLink,
+            title: 'Loại bộ đề thi thử ',
+            breadcrumb: ['Loại bộ đề thi thử'],
             content: (
-                <div className='row'>
-                    <div className='col-12'>
-                        <h4>Ôn tập đề thi</h4>
-                        <div className='row'>
-                            {list && list.map((driveTest, index) => (
-                                <div key={index} className='col-md-4'>
-                                    <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/' + driveTest._id}>
-                                        <div className='widget-small coloured-icon info'>
-                                            <i className='icon fa fa-3x fa fa-cubes' />
-                                            <div className='info'>
-                                                <h4>{driveTest.title}</h4>
-                                            </div>
+                <div className='tile'>
+                    <div className="row">
+                        <h4 className='col-12'>Loại bộ đề thi </h4>
+                        <FormSelect ref={e => this.courseType = e} label='Loại bộ đề thi' data={ajaxSelectCourseType} onChange={data => this.props.getAllDriveTests({ courseType: data.id })} className='col-md-4' />
+                    </div>
+                   <div className='row'>
+                        {list && list.map((driveTest, index) => (
+                            <div key={index} className='col-md-4'>
+                                <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + driveTest._id}>
+                                    <div className='widget-small coloured-icon info border'>
+                                        <i className='icon fa fa-3x fa fa-cubes' />
+                                        <div className='info'>
+                                            <h4>{driveTest.title}</h4>
                                         </div>
-                                    </Link>
-                                </div>
-                            ))
-                            }
-                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
                     </div>
                 </div>
             ),
@@ -54,5 +51,5 @@ class UserPageDriveTest extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, driveTest: state.trainning.driveTest });
-const mapActionsToProps = { getAllDriveTests };
-export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTest);
+const mapActionsToProps = { getCourseTypeAll, getAllDriveTests };
+export default connect(mapStateToProps, mapActionsToProps)(UserPageDriveTestDetail);

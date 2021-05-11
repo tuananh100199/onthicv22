@@ -5,7 +5,7 @@ import { getDriveTestItemByStudent, checkDriveTestScore } from 'modules/mdDaoTao
 import { AdminPage } from 'view/component/AdminPage';
 import 'view/component/input.scss';
 
-const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet';
+const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
 class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
@@ -85,9 +85,7 @@ class UserPageDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const _courseTypeId = this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id ?
-            this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id : null;
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + _courseTypeId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
