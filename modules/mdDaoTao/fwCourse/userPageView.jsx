@@ -63,7 +63,6 @@ class UserCoursePageDetail extends AdminPage {
 
     render() {
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
-
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
@@ -71,7 +70,7 @@ class UserCoursePageDetail extends AdminPage {
             content: (
                 <div className='row'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/' + this.state.subjectId}>
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
                         <div className='widget-small coloured-icon info'>
                             <i className='icon fa fa-3x fa-info' />
                             <div className='info'>
@@ -82,7 +81,7 @@ class UserCoursePageDetail extends AdminPage {
                     <h4 style={{ width: '100%' }}>Môn học</h4>
                     {subjects.length ? subjects.map((subject, index) => (
                         <div key={index} className='col-md-6 col-lg-4'>
-                            <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/' + subject._id}>
+                            <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id}>
                                 <div className='widget-small coloured-icon primary'>
                                     <i className='icon fa fa-3x fa fa-briefcase' />
                                     <div className='info'>

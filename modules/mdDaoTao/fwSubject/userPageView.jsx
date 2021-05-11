@@ -9,24 +9,24 @@ class AdminEditPage extends AdminPage {
     state = {};
     componentDidMount() {
         let url = window.location.pathname,
-            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/:_id').parse(url);
-        this.setState({ subjectId: params._id });
+            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id').parse(url);
+        this.setState({ subjectId: params._id, courseId: params.courseId });
         if (params._id) {
             this.props.getSubjectByStudent(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy môn học bị lỗi!', 'danger');
                     this.props.history.push('/user');
-                } else if (data.item && data.currentCourse) {
-                    this.props.getStudentScore(data.currentCourse, data => {
+                } else if (data.item) {
+                    this.props.getStudentScore(this.state.courseId, data => {
                         if (data.error) {
                             this.props.history.push('/user');
                         } else {
                             this.setState({ tienDoHocTap: data[params._id] });
                         }
                     });
-                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
+                    T.ready('/user/hoc-vien/khoa-hoc/' + this.state.courseId);
                     const { _id, title, shortDescription, detailDescription } = data.item;
-                    this.setState({ _id, title, shortDescription, detailDescription, courseId: data.currentCourse });
+                    this.setState({ _id, title, shortDescription, detailDescription });
                 } else {
                     this.props.history.push('/user');
                 }
@@ -40,6 +40,12 @@ class AdminEditPage extends AdminPage {
         const tienDoHocTap = this.state.tienDoHocTap;
         const lessons = this.props.subject && this.props.subject.item && this.props.subject.item.lessons ? this.props.subject.item.lessons : [];
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
+        let finishedLesson = 0;
+        lessons.length && lessons.forEach((lesson, index) => {
+            if (tienDoHocTap && tienDoHocTap[lesson._id]) {
+                finishedLesson = index + 1;
+            }
+        });
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Môn học: ' + (this.state.title || '...'),
@@ -47,8 +53,8 @@ class AdminEditPage extends AdminPage {
             content: (
                 <div className='row'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/' + this.state.subjectId}>
-                        <div className='widget-small coloured-icon info'>
+                    <Link className='col-md-6 ' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
+                        <div className={'widget-small coloured-icon info'}>
                             <i className='icon fa fa-3x fa-info' />
                             <div className='info'>
                                 <h4>Thông tin môn học</h4>
@@ -58,9 +64,9 @@ class AdminEditPage extends AdminPage {
                     <h4 style={{ width: '100%' }}>Bài học</h4>
                     {lessons.length ? lessons.map((lesson, index) => (
                         <div key={index} className='col-md-6 col-lg-6'>
-                            <Link to={'/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + lesson._id}>
-                                <div className='widget-small coloured-icon primary'>
-                                    <i className='icon fa fa-3x fa fa-briefcase' />
+                            <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + lesson._id}>
+                                <div className='widget-small coloured-icon info'>
+                                    <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: (finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d')) }} />
                                     <div className='info'>
                                         <h4>{lesson && lesson.title}</h4>
                                         {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}

@@ -237,7 +237,7 @@ module.exports = (app) => {
     app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
-        req.session.user.currentCourse = _courseId;
+        // req.session.user.currentCourse = _courseId;
         app.model.student.getAll({ user: _studentId, course: _courseId }, (error, students) => {
             if (error) {
                 res.send({ error });

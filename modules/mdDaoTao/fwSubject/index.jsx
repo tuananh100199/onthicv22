@@ -18,11 +18,11 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/mon-hoc/:_id',
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/:_id',
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userSubjectInfo') })
         },
     ],
