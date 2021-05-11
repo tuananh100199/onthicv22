@@ -58,7 +58,7 @@ module.exports = (app) => {
                 condition = {};
             }
             model.find(condition)
-                .populate('course', 'subjects courseType').populate('division').populate('courseType', 'title')
+                .populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
                 .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
