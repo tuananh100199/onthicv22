@@ -36,7 +36,7 @@ class AdminStudentView extends React.Component {
                                 </li>
                             ))}
                         </ol>
-                        <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                        <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                             getPage={this.props.getSignPage} />
                     </div>
                 </div>
