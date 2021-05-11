@@ -5,21 +5,14 @@ import { FormSelect } from 'view/component/AdminPage';
 import { createCandidate } from './redux';
 
 class SectionAdvisoryForm extends React.Component {
-    state = {};
     componentDidMount() {
         $(document).ready(() => {
             this.props.viewId ?
                 ajaxGetCourseType(this.props.viewId, data =>
                     this.courseType.value(data && data.item && { id: data.item._id, text: data.item.title })) : this.courseType.value(null);
-
-            const { firstname, lastname, email, phoneNumber } = this.props.system && this.props.system.user ?
-                this.props.system.user : { firstname: '', lastname: '', email: '', phoneNumber: '' };
-            if (this.firstname) this.firstname.value = lastname;
-            if (this.lastname) this.lastname.value = lastname;
-            if (this.email) this.email.value = lastname;
+            const { phoneNumber } = this.props.system && this.props.system.user ?
+            this.props.system.user : { phoneNumber: '' };
             this.phoneNumber.value = phoneNumber || '';
-
-            this.setState({ lastname, firstname, email });
         });
     }
 
@@ -59,7 +52,13 @@ class SectionAdvisoryForm extends React.Component {
 
     render() {
         const readOnly = this.props.system && this.props.system.user;
-        const { lastname, firstname, email } = this.state;
+        const { firstname, lastname, email, phoneNumber } = this.props.system && this.props.system.user ?
+            this.props.system.user : { firstname: '', lastname: '', email: '', phoneNumber: '' };
+        if (this.firstname) this.firstname.value = firstname;
+        if (this.lastname) this.lastname.value = lastname;
+        if (this.email) this.email.value = email;
+        if (this.phoneNumber) this.phoneNumber.value = phoneNumber;
+
         return (
             <div className='intro'>
                 <div className='intro_col'>

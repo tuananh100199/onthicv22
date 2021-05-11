@@ -50,11 +50,25 @@ module.exports = (app) => {
     });
 
     app.get('/api/student/score', app.permission.check('student:read'), (req, res) => {
-        const userId = req.session.user._id,
-            courseId = req.query.courseId;
-        app.model.student.get({ user: userId, course: courseId }, (error, item) => {
+        const _userId = req.session.user._id,
+            _courseId = req.query.courseId;
+        app.model.student.get({ user: _userId, course: _courseId }, (error, item) => {
             res.send({ error, item: item.tienDoHocTap });
         });
+    });
+
+    app.get('/api/student/course/:_courseId', app.permission.check('student:read'), (req, res) => {
+        const condition = { _courseId: req.params._courseId },
+            searchText = req.query.searchText;
+        if (searchText) {
+            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+            condition.$or = [
+                { email: value },
+                { firstname: value },
+                { lastname: value },
+            ];
+        }
+        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------

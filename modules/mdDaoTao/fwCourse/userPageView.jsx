@@ -5,8 +5,6 @@ import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
-
-
 const previousRoute = '/user';
 class UserCoursePageDetail extends AdminPage {
     state = { name: '...' };

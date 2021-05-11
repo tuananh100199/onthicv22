@@ -95,10 +95,10 @@ class adminEditPage extends AdminPage {
         });
     }
 
-    onAnswerChanged = (e, _questionId) => {
+    onAnswerChanged = (e, questionId) => {
         this.setState(prevState => ({
-            studentAnswer: { ...prevState.studentAnswer, [_questionId]: $('input[name=' + _questionId + ']:checked').val() },
-            prevAnswers: { ...prevState.prevAnswers, [_questionId]: null }
+            studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
+            prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
         }));
     }
 

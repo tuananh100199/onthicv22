@@ -191,10 +191,10 @@ export function checkRandomDriveTestScore(answers, done) {
 }
 
 // Questions ----------------------------------------------------------------------------------------------------------
-export function createDriveTestQuestion(_driveTestId, _questionId, done) {
+export function createDriveTestQuestion(driveTestId, questionId, done) {
     return dispatch => {
         const url = '/api/drive-test/question';
-        T.post(url, { _driveTestId, _questionId }, data => {
+        T.post(url, { driveTestId, questionId }, data => {
             if (data.error) {
                 T.notify('Tạo câu hỏi thi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
@@ -207,10 +207,10 @@ export function createDriveTestQuestion(_driveTestId, _questionId, done) {
     };
 }
 
-export function swapDriveTestQuestion(_driveTestId, _questionId, isMoveUp, done) {
+export function swapDriveTestQuestion(driveTestId, questionId, isMoveUp, done) {
     return dispatch => {
         const url = '/api/drive-test/question/swap';
-        T.put(url, { _driveTestId, _questionId, isMoveUp }, data => {
+        T.put(url, { driveTestId, questionId, isMoveUp }, data => {
             if (data.error) {
                 T.notify('Thay đổi thứ tự câu hỏi bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -223,10 +223,10 @@ export function swapDriveTestQuestion(_driveTestId, _questionId, isMoveUp, done)
     };
 }
 
-export function deleteDriveTestQuestion(_driveTestId, _questionId, done) {
+export function deleteDriveTestQuestion(driveTestId, questionId, done) {
     return dispatch => {
         const url = '/api/drive-test/question';
-        T.delete(url, { _driveTestId, _questionId }, data => {
+        T.delete(url, { driveTestId, questionId }, data => {
             if (data.error) {
                 T.notify('Xóa câu hỏi thi bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);

@@ -14,7 +14,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'driveTest:read', menu: driveTest }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
+    app.permission.add({ name: 'driveTestUser:read', menu: driveTest }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
@@ -120,12 +120,11 @@ module.exports = app => {
     });
 
     app.post('/api/drive-test/student/submit', (req, res) => {
-        const { answers } = req.body,
-            _driveTestId = req.body._id;
+        const { _id, answers } = req.body;
         let score = 0,
             importanceScore = null;
 
-        app.model.driveTest.get(_driveTestId, (error, test) => {
+        app.model.driveTest.get(_id, (error, test) => {
             if (error) {
                 res.send({ error });
             } else {
@@ -191,25 +190,25 @@ module.exports = app => {
 
     // Question APIs -----------------------------------------------------------------------------------------------------
     app.post('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
-        const { _driveTestId, _questionId } = req.body;
-        app.model.driveQuestion.get(_questionId, (error, question) => {
+        const { driveTestId, questionId } = req.body;
+        app.model.driveQuestion.get(questionId, (error, question) => {
             if (error || question == null) {
                 res.send({ error: error || 'Invalid Id!' });
             } else {
-                app.model.driveTest.addQuestion(_driveTestId, question, (error, item) => res.send({ error, item }));
+                app.model.driveTest.addQuestion(driveTestId, question, (error, item) => res.send({ error, item }));
             }
         });
     });
 
     app.put('/api/drive-test/question/swap', app.permission.check('driveTest:write'), (req, res) => {
-        const { _driveTestId, _questionId, isMoveUp } = req.body;
-        app.model.driveTest.get(_driveTestId, (error, item) => {
+        const { driveTestId, questionId, isMoveUp } = req.body;
+        app.model.driveTest.get(driveTestId, (error, item) => {
             if (error) {
                 res.send({ error });
             } else {
                 for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
                     const questionTest = item.questions[index];
-                    if (questionTest._id == _questionId) {
+                    if (questionTest._id == questionId) {
                         const newIndex = index + (isMoveUp == 'true' ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
                             item.questions.splice(index, 1);
@@ -225,7 +224,7 @@ module.exports = app => {
     });
 
     app.delete('/api/drive-test/question', app.permission.check('driveTest:write'), (req, res) => {
-        const { _driveTestId, _questionId } = req.body;
-        app.model.driveTest.deleteQuestion(_driveTestId, _questionId, (error, item) => res.send({ error, item }));
+        const { driveTestId, questionId } = req.body;
+        app.model.driveTest.deleteQuestion(driveTestId, questionId, (error, item) => res.send({ error, item }));
     });
 };

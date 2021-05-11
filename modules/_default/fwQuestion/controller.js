@@ -3,7 +3,7 @@ module.exports = (app) => {
     app.hookQuestion = (type, parentModel) => parentModelContainer[type] = parentModel;
 
     app.post('/api/question/:type', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
-        const { _parentId, data } = req.body,
+        const { parentId, data } = req.body,
             parentModel = parentModelContainer[req.params.type];
         new Promise((resolve, reject) => {
             app.model.question.create(data, (error, item) => {
@@ -17,32 +17,32 @@ module.exports = (app) => {
                 }
             });
         }).then(item => {
-            parentModel.update(_parentId, { $push: { questions: item } }, (error) => {
-                error ? res.send({ error }) : parentModel.get(_parentId, (error, item) => res.send({ error, questions: item ? item.questions : [] }));
+            parentModel.update(parentId, { $push: { questions: item } }, (error) => {
+                error ? res.send({ error }) : parentModel.get(parentId, (error, item) => res.send({ error, questions: item ? item.questions : [] }));
             });
         }).catch(error => res.send({ error }));
     });
 
     app.put('/api/question/:type', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
-        const { _parentId, _questionId, data } = req.body,
+        const { parentId, questionId, data } = req.body,
             parentModel = parentModelContainer[req.params.type];
-        app.model.question.update(_questionId, data, error => {
-            error ? res.send({ error }) : parentModel.get(_parentId, (error, item) => {
+        app.model.question.update(questionId, data, error => {
+            error ? res.send({ error }) : parentModel.get(parentId, (error, item) => {
                 res.send({ error, questions: item ? item.questions : [] });
             });
         });
     });
 
     app.put('/api/question/:type/swap', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
-        const { _parentId, _questionId, isMoveUp } = req.body,
+        const { parentId, questionId, isMoveUp } = req.body,
             parentModel = parentModelContainer[req.params.type];
-        parentModel.get(_parentId, (error, item) => {
+        parentModel.get(parentId, (error, item) => {
             if (error) {
                 res.send({ error });
             } else {
                 for (let index = 0, length = item.questions.length; index < item.questions.length; index++) {
                     const question = item.questions[index];
-                    if (question._id == _questionId) {
+                    if (question._id == questionId) {
                         const newIndex = index + (isMoveUp.toString() == 'true' ? -1 : +1);
                         if (0 <= index && index < length && 0 <= newIndex && newIndex < length) {
                             item.questions.splice(index, 1);
@@ -58,11 +58,11 @@ module.exports = (app) => {
     });
 
     app.delete('/api/question/:type', (req, res, next) => app.permission.check(req.params.type + ':write')(req, res, next), (req, res) => {
-        const { _parentId, _questionId } = req.body,
+        const { parentId, questionId } = req.body,
             parentModel = parentModelContainer[req.params.type];
-        app.model.question.delete(_questionId, error => {
-            error ? res.send({ error }) : parentModel.update(_parentId, { $pull: { questions: _questionId } }, (error) => {
-                error ? res.send({ error }) : parentModel.get(_parentId, (error, item) => res.send({ error, questions: item ? item.questions : [] }));
+        app.model.question.delete(questionId, error => {
+            error ? res.send({ error }) : parentModel.update(parentId, { $pull: { questions: questionId } }, (error) => {
+                error ? res.send({ error }) : parentModel.get(parentId, (error, item) => res.send({ error, questions: item ? item.questions : [] }));
             });
         });
     });

@@ -4,7 +4,7 @@ export default class Dropdown extends React.Component {
     state = { selectedItem: null }
 
     componentDidMount() {
-        T.ready(() => {
+        $(document).ready(() => {
             this.props.item && this.setState({ selectedItem: this.props.item });
         });
     }
