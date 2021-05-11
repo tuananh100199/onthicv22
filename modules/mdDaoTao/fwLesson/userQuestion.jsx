@@ -44,7 +44,7 @@ class adminEditPage extends AdminPage {
 
     submitAnswer = (e) => {
         e.preventDefault();
-        this.props.checkQuestion(this.state.lessonId, this.state.studentAnswer, result => {
+        this.props.checkQuestion(this.state.lessonId, this.state.subjectId, this.state.courseId, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,

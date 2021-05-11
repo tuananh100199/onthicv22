@@ -43,7 +43,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
-        const { lessonId, answers } = req.body;
+        const { courseId, subjectId, lessonId, answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
             score = 0;
         app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
@@ -51,9 +51,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const questionMapper = {},
-                    trueAnswer = {},
-                    subjectId = req.session.user.currentSubject,
-                    courseId = req.session.user.currentCourse;
+                    trueAnswer = {};
                 questions.forEach(item => {
                     questionMapper[item._id] = item;
                     trueAnswer[item._id] = item.trueAnswer;
