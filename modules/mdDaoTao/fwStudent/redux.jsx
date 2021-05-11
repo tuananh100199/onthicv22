@@ -3,6 +3,7 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const StudentGetPage = 'StudentGetPage';
 const StudentUpdate = 'StudentUpdate';
+const StudentGetCourse = 'StudentGetCourse';
 const PreStudentGetPage = 'PreStudentGetPage';
 const PreStudentGetAll = 'PreStudentGetAll';
 
@@ -13,6 +14,9 @@ export default function studentReducer(state = {}, data) {
 
         case StudentGetPage:
             return Object.assign({}, state, { page: data.page });
+
+        case StudentGetCourse:
+            return Object.assign({}, state, { courseList: data.list });
 
         case StudentUpdate: {
             let updatedPage = Object.assign({}, state.page),
@@ -48,7 +52,7 @@ export function getStudentPage(pageNumber, pageSize, pageCondition, done) {
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
-                if (done) done(data.page);
+                done && done(data.page);
                 dispatch({ type: StudentGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
@@ -117,6 +121,21 @@ export function getStudentScore(courseId, done) {
     };
 }
 
+export function getStudentCourse(courseId, searchText, done) {
+    return dispatch => {
+        const url = `/api/student/course/${courseId}`;
+        T.get(url, { searchText }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.list);
+                dispatch({ type: StudentGetCourse, list: data.list });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger'));
+    };
+}
+
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
 export function getPreStudentPage(pageNumber, pageSize, pageCondition, done) {
@@ -129,7 +148,7 @@ export function getPreStudentPage(pageNumber, pageSize, pageCondition, done) {
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
-                if (done) done(data.page);
+                done && done(data.page);
                 dispatch({ type: PreStudentGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
@@ -199,7 +218,7 @@ export function importPreStudent(students, division, courseType, done) {
 }
 
 // Get All PreStudent ------------------------------------------------------------------------------------------
-export function getPreStudentAll(condition, done) {
+export function getPreStudentAll(condition, done) { //TODO: delete
     return dispatch => {
         const url = '/api/course/pre-student/all';
         T.get(url, condition, data => {
@@ -213,4 +232,3 @@ export function getPreStudentAll(condition, done) {
         }, error => console.error(error) || T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
     };
 }
-

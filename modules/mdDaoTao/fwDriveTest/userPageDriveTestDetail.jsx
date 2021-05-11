@@ -10,11 +10,10 @@ class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher(backRoute + '/:_id'),
+            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
-                    T.ready('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + params._id);
                     const { _id, title, questions } = data.item;
                     this.setState({ _id, title, questions });
                 } else {
