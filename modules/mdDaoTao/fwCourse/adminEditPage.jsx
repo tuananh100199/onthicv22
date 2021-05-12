@@ -16,7 +16,6 @@ class EditCoursePage extends AdminPage {
         T.ready('/user/course', () => {
             const route = T.routeMatcher('/user/course/:_id'),
                 _id = route.parse(window.location.pathname)._id;
-            //this.setState({ _id });
             if (_id) {
                 this.props.getCourse(_id, data => {
                     if (data.error) {
