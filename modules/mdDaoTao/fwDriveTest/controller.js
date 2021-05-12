@@ -35,10 +35,10 @@ module.exports = app => {
     app.get('/api/drive-test/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { searchText, categories } = req.query,
+            { searchText, courseType } = req.query,
             pageCondition = {};
-        if (categories) {
-            pageCondition.categories = [categories];
+        if (courseType) {
+            pageCondition.courseType = courseType;
         }
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');

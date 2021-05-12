@@ -10,7 +10,7 @@ class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id'),
+            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
@@ -109,9 +109,10 @@ class UserPageDriveTestDetail extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + (this.state.title || '...'),
-            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, this.state.title],
+            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
-            content: (
+            content: (<>
+            {questions && questions.length ? (
                 <div className='tile'>
                     <div className='tile-body row'>
                         {activeQuestion ? (
@@ -169,7 +170,8 @@ class UserPageDriveTestDetail extends AdminPage {
                         </div>
                     </div>
                 </div>
-            ),
+            ) : <div className='tile'>Không có dữ liệu</div>}
+            </>),
         });
     }
 }
