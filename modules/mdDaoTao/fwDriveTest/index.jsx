@@ -19,14 +19,10 @@ export default {
         },
         {
             path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu',
-            component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
-        },
-        {
-            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTest') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id/',
+            path: '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageDriveTestDetail') })
         },
         {

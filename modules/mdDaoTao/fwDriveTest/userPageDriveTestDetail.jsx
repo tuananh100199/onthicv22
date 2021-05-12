@@ -10,7 +10,7 @@ class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
         T.ready(backRoute, () => {
-            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id'),
+            const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
@@ -84,9 +84,7 @@ class UserPageDriveTestDetail extends AdminPage {
         }));
     }
     render() {
-        const _courseTypeId = this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id ?
-            this.props && this.props.driveTest && this.props.driveTest.item && this.props.driveTest.item.courseType && this.props.driveTest.item.courseType._id : null;
-        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + _courseTypeId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
@@ -111,9 +109,10 @@ class UserPageDriveTestDetail extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + (this.state.title || '...'),
-            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, this.state.title],
+            breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
-            content: (
+            content: (<>
+            {questions && questions.length ? (
                 <div className='tile'>
                     <div className='tile-body row'>
                         {activeQuestion ? (
@@ -171,7 +170,8 @@ class UserPageDriveTestDetail extends AdminPage {
                         </div>
                     </div>
                 </div>
-            ),
+            ) : <div className='tile'>Không có dữ liệu</div>}
+            </>),
         });
     }
 }
