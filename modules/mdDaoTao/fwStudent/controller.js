@@ -77,9 +77,9 @@ module.exports = (app) => {
         app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-    app.put('/api/student/course', app.permission.check('student:read'), (req, res) => {
-        const changes = req.body.changes;
-    });
+    // app.put('/api/student/course', app.permission.check('student:read'), (req, res) => {
+    //     const changes = req.body.changes;
+    // });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
