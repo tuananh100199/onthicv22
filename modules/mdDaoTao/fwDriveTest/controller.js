@@ -139,8 +139,7 @@ module.exports = app => {
                         if (questionMapper[key]) {
                             if (questionMapper[key].trueAnswer == value) {
                                 score = score + 1;
-                            }
-                            else {
+                            } else {
                                 if (questionMapper[key]._id == key) {
                                     importanceScore = key;
                                 }
@@ -173,8 +172,7 @@ module.exports = app => {
                 if (questionMapper[key]) {
                     if (questionMapper[key].trueAnswer == value) {
                         score = score + 1;
-                    }
-                    else {
+                    } else {
                         if (questionMapper[key]._id == key) {
                             importanceScore = key;
                         }
@@ -185,7 +183,6 @@ module.exports = app => {
             }
         }
         res.send({ error, result: { score, trueAnswer, answers, importanceScore } });
-
     });
 
     // Question APIs -----------------------------------------------------------------------------------------------------
