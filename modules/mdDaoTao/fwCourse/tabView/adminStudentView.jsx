@@ -45,9 +45,9 @@ class AdminStudentView extends React.Component {
                     <h3 className='tile-title'>Ứng viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentPage(1, 50, { searchText: e.target.value, courseType: this.props.courseType._id })} />
-                        {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                        {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 210 }}>
                             {preStudentList.map((item, index) => (
-                                <li key={index}>
+                                <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }}
                                         onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}</a>
                                 </li>
@@ -61,9 +61,9 @@ class AdminStudentView extends React.Component {
                     <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse(this.props.course.item._id, e.target.value)} />
-                        {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                        {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 210 }}>
                             {courseList.map((item, index) => (
-                                <li key={index}>
+                                <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }}
                                         onClick={e => _courseId && this.removeStudentCourse(e, item, { $unset: { course: 1 } })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}</a>
                                 </li>
