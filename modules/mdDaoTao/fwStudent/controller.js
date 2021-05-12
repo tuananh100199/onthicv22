@@ -82,6 +82,32 @@ module.exports = (app) => {
         app.model.student.update(_studentId, changes, (error, item) => res.send({ error, item }));
     });
 
+    app.put('/api/student/course/remove', app.permission.check('student:write'), (req, res) => {
+        const { _studentId, _courseId } = req.body;
+        app.model.student.update(_studentId, { $unset: { course: 1 } }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.course.get(_courseId, (error, course) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        course.groups = course.groups.reduce((result, group) => {
+                            group.student.forEach((item, indexStudent) => {
+                                if (item._id == _studentId) {
+                                    group.student.splice(indexStudent, 1);
+                                }
+                            });
+                            return [...result, group];
+                        }, []);
+                        course.save();
+                        res.send({ student });
+                    }
+                });
+            }
+        });
+    });
+
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
