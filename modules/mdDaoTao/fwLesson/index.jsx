@@ -20,15 +20,15 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id',
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id',
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userLessonInfo') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id',
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userQuestion') })
         },
     ],
