@@ -13,13 +13,16 @@ class AdminStudentView extends React.Component {
 
     updateStudentCourse = (e, student, changes) => {
         e.preventDefault();
-        this.props.updateStudentCourse(student._id, changes, () => {
+        this.props.updateStudentCourse(student._id, changes, null, (item) => {
+            this.props.getPreStudentPage(1, 50, { courseType: item.courseType });
         });
     }
 
     removeStudentCourse = (e, student, changes) => {
         e.preventDefault();
-        this.props.updateStudentCourse(student._id, changes, this.props.course.item._id, () => { });
+        this.props.updateStudentCourse(student._id, changes, this.props.course.item._id, (item) => {
+            this.props.getPreStudentPage(1, 50, { courseType: item.courseType });
+        });
         let { _id, groups = [] } = this.props.course.item;
         // remove student from groups in course
         groups = groups.reduce((result, group) => {
@@ -42,7 +45,9 @@ class AdminStudentView extends React.Component {
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Ứng viên</h3>
+                    <h3 className='tile-title'>Ứng viên<h6 style={{ float: 'right' }}>Sắp xếp theo:<i style={{ marginRight: 10 }} className='fa fa-sort-alpha-asc'></i>
+                        <i className='fa fa-university'></i>
+                    </h6></h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentPage(1, 50, { searchText: e.target.value, courseType: this.props.courseType._id })} />
                         {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 210 }}>
