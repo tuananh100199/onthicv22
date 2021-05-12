@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getPreStudentPage, updateStudent, getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
-import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
 
@@ -135,5 +134,5 @@ class AdminStudentView extends React.Component {
 // }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getDivisionAll, getPreStudentPage, updateStudent, getStudentCourse };
+const mapActionsToProps = { getPreStudentPage, updateStudent, getStudentCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
