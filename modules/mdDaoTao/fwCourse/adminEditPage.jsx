@@ -7,7 +7,7 @@ import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelec
 import AdminSubjectView from './tabView/adminSubjectView';
 import AdminManagerView from './tabView/adminManagerView';
 import AdminStudentView from './tabView/adminStudentView';
-import AdminAssignTeacherView from './tabView/adminAssignTeacherView';
+// import AdminAssignTeacherView from './tabView/adminAssignTeacherView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
