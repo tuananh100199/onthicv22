@@ -9,6 +9,7 @@ import 'view/component/input.scss';
 class adminEditPage extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
+        document.addEventListener('keydown', this.logKey);
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id').parse(window.location.pathname);
         if (params._id) {
             this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId });
@@ -20,6 +21,7 @@ class adminEditPage extends AdminPage {
                     this.props.getStudentScore(params.courseId, item => {
                         if (item) {
                             this.setState({
+                                activeQuestionIndex: 0,
                                 subjectId: params.subjectId,
                                 courseId: params.courseId,
                                 prevTrueAnswers: item[params.subjectId][params._id] ? item[params.subjectId][params._id].trueAnswers : null,
@@ -40,6 +42,16 @@ class adminEditPage extends AdminPage {
         }
         $('#totalScore').css('display', 'none');
         $('#trueAnswer').css('display', 'none');
+    }
+
+    logKey = (e) => {
+        const activeQuestionIndex = this.state.activeQuestionIndex,
+            maxIndex = this.state.questions.length - 1;
+        if (e.code == 'ArrowRight' && activeQuestionIndex < maxIndex) {
+            this.changeQuestion(e, this.state.activeQuestionIndex + 1);
+        } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
+            this.changeQuestion(e, this.state.activeQuestionIndex - 1);
+        }
     }
 
     submitAnswer = (e) => {
