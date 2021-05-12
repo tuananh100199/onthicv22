@@ -9,7 +9,7 @@ import 'view/component/input.scss';
 class adminEditPage extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
-        document.addEventListener('keydown', this.logKey);
+        window.addEventListener('keydown', this.logKey);
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id').parse(window.location.pathname);
         if (params._id) {
             this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId });
