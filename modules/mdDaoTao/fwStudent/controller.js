@@ -17,20 +17,22 @@ module.exports = (app) => {
     app.get('/api/student/page/:pageNumber/:pageSize', app.permission.check('student:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            pageCondition = req.query.pageCondition || {};        // pageCondition = {};
+            condition = req.query.pageCondition || {},
+            pageCondition = { course: { $ne: null } };
         try {
-            if (pageCondition) {
-                if (pageCondition.searchText) {
-                    const value = { $regex: `.*${pageCondition.searchText}.*`, $options: 'i' };
-                    pageCondition['$or'] = [
-                        { phoneNumber: value },
-                        { email: value },
-                        { firstname: value },
-                        { lastname: value },
-                    ];
-                }
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
+                pageCondition.division = req.session.user.division._id;
             }
-            delete pageCondition.searchText;
+
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition.$or = [
+                    { phoneNumber: value },
+                    { email: value },
+                    { firstname: value },
+                    { lastname: value },
+                ];
+            }
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -57,9 +59,13 @@ module.exports = (app) => {
         });
     });
 
+
     app.get('/api/student/course/:_courseId', app.permission.check('student:read'), (req, res) => {
         const condition = { _courseId: req.params._courseId },
             searchText = req.query.searchText;
+        if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
+            condition.division = req.session.user.division._id;
+        }
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition.$or = [
@@ -70,6 +76,10 @@ module.exports = (app) => {
         }
         app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
+
+    // app.put('/api/student/course', app.permission.check('student:read'), (req, res) => {
+    //     const changes = req.body.changes;
+    // });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {
@@ -250,7 +260,6 @@ module.exports = (app) => {
     // Hook upload images student ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/student'));
 
-
     const uploadStudentImage = (fields, files, done) => {
         if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
             console.log('Hook: uploadStudent => student image upload');
@@ -260,6 +269,7 @@ module.exports = (app) => {
     };
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
+
     // Hook upload images pre-student ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/pre-student'));
     const uploadPreStudentImage = (fields, files, done) => {

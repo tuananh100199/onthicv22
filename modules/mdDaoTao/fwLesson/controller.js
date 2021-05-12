@@ -9,9 +9,9 @@ module.exports = (app) => {
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/thong-tin/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id', app.permission.check('lesson:read'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -34,18 +34,16 @@ module.exports = (app) => {
 
     app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
         const { _id } = req.query;
-        const currentCourse = req.session.user.currentCourse,
-            currentSubject = req.session.user.currentSubject;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
                 item.questions.forEach(question => question.trueAnswer = null);
             }
-            res.send({ error, item, currentCourse, currentSubject });
+            res.send({ error, item });
         });
     });
 
     app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
-        const { lessonId, answers } = req.body;
+        const { courseId, subjectId, lessonId, answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
             score = 0;
         app.model.question.getAll({ _id: { $in: questionIds } }, (error, questions) => {
@@ -53,9 +51,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const questionMapper = {},
-                    trueAnswer = {},
-                    subjectId = req.session.user.currentSubject,
-                    courseId = req.session.user.currentCourse;
+                    trueAnswer = {};
                 questions.forEach(item => {
                     questionMapper[item._id] = item;
                     trueAnswer[item._id] = item.trueAnswer;

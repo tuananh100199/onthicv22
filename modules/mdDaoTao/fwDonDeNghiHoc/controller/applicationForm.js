@@ -20,7 +20,7 @@ module.exports = app => {
             pageCondition = {};
         if (condition) {
             const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-            pageCondition['$or'] = [
+            pageCondition.$or = [
                 { firstname: value },
                 { lastname: value },
             ];

@@ -121,21 +121,6 @@ export function getStudentScore(courseId, done) {
     };
 }
 
-export function getStudentCourse(courseId, searchText, done) {
-    return dispatch => {
-        const url = `/api/student/course/${courseId}`;
-        T.get(url, { searchText }, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data.list);
-                dispatch({ type: StudentGetCourse, list: data.list });
-            }
-        }, error => console.error(error) || T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger'));
-    };
-}
-
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
 export function getPreStudentPage(pageNumber, pageSize, pageCondition, done) {
@@ -217,18 +202,37 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
-// Get All PreStudent ------------------------------------------------------------------------------------------
-export function getPreStudentAll(condition, done) { //TODO: delete
+
+
+
+
+// Course student Actions ---------------------------------------------------------------------------------------------
+export function getStudentCourse(_courseId, searchText, done) {
     return dispatch => {
-        const url = '/api/course/pre-student/all';
-        T.get(url, condition, data => {
+        const url = `/api/student/course/${_courseId}`;
+        T.get(url, { searchText }, data => {
             if (data.error) {
-                T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
+                T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data.list);
-                dispatch({ type: PreStudentGetAll, list: data.list });
+                done && done(data.list);
+                dispatch({ type: StudentGetCourse, list: data.list });
             }
-        }, error => console.error(error) || T.notify('Lấy tất cả danh sách học viên bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger'));
     };
 }
+
+// export function updateStudentCourse(_studentId, changes, done) {
+//     return dispatch => {
+//         const url = '/api/student/course';
+//         T.put(url, { _id, changes }, data => {
+//             if (data.error) {
+//                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
+//                 console.error(`PUT: ${url}. ${data.error}`);
+//             } else {
+//                 dispatch();
+//             }
+//             done && done(data.error);
+//         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
+//     };
+// }

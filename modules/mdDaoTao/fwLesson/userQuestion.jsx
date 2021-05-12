@@ -9,34 +9,34 @@ import 'view/component/input.scss';
 class adminEditPage extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
-        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/cau-hoi/:_id').parse(window.location.pathname);
+        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id').parse(window.location.pathname);
         if (params._id) {
-            this.setState({ lessonId: params._id });
+            this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId });
             this.props.getLessonByStudent(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
-                    this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
-                } else if (data.item && data.currentCourse && data.currentSubject) {
-                    this.props.getStudentScore(data.currentCourse, item => {
+                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
+                } else if (data.item) {
+                    this.props.getStudentScore(params.courseId, item => {
                         if (item) {
                             this.setState({
-                                subjectId: data.currentSubject,
-                                courseId: data.currentCourse,
-                                prevTrueAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].trueAnswers : null,
-                                prevAnswers: item[data.currentSubject][params._id] ? item[data.currentSubject][params._id].answers : null,
-                                showSubmitButton: item[data.currentSubject][params._id] ? false : true
+                                subjectId: params.subjectId,
+                                courseId: params.courseId,
+                                prevTrueAnswers: item[params.subjectId][params._id] ? item[params.subjectId][params._id].trueAnswers : null,
+                                prevAnswers: item[params.subjectId][params._id] ? item[params.subjectId][params._id].answers : null,
+                                showSubmitButton: item[params.subjectId][params._id] ? false : true
                             });
                         }
                     });
-                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
+                    T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
                     this.setState({ _id, title, shortDescription, detailDescription, questions });
                 } else {
-                    this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
+                    this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
                 }
             });
         } else {
-            this.props.history.push('/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + params._id);
+            this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
         }
         $('#totalScore').css('display', 'none');
         $('#trueAnswer').css('display', 'none');
@@ -44,7 +44,7 @@ class adminEditPage extends AdminPage {
 
     submitAnswer = (e) => {
         e.preventDefault();
-        this.props.checkQuestion(this.state.lessonId, this.state.studentAnswer, result => {
+        this.props.checkQuestion(this.state.lessonId, this.state.subjectId, this.state.courseId, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
                 prevTrueAnswers: result.trueAnswer,
@@ -103,7 +103,7 @@ class adminEditPage extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/bai-hoc/' + this.state.lessonId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + this.state.lessonId;
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
