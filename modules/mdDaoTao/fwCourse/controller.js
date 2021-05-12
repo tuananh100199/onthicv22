@@ -66,7 +66,9 @@ module.exports = (app) => {
 
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
         let changes = req.body.changes || {};
-        const sessionUser = req.session.user, courseFees = changes.courseFees, division = sessionUser.division;
+        const sessionUser = req.session.user,
+            courseFees = changes.courseFees,
+            division = sessionUser.division;
         if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
             if (courseFees) {
                 const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
@@ -89,8 +91,8 @@ module.exports = (app) => {
         delete changes.courseFee;
         app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
-    // app.permission.check('course:export'),
-    app.get('/api/course/export', (req, res) => {
+
+    app.get('/api/course/export', app.permission.check('course:read'), (req, res) => {
         const currentCourse = req.session.user.currentCourse;
         app.model.course.get(currentCourse, (error, course) => {
             if (error) {
@@ -209,6 +211,7 @@ module.exports = (app) => {
     app.get('/home/course', (req, res) => {
         app.model.course.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
     });
+
     // Get courses by user
     app.get('/api/user-course', app.permission.check('course:read'), (req, res) => {
         const _userId = req.session.user._id;
@@ -216,8 +219,9 @@ module.exports = (app) => {
             res.send({ error, students });
         });
     });
+
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    app.get('/api/student/course', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/student/course', app.permission.check('user:login'), (req, res) => { //TODO: Cần sửa lại route
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {
@@ -225,16 +229,14 @@ module.exports = (app) => {
             } else {
                 const courses = [];
                 students.map(student => {
-                    if (student.course && student.course.active) {
-                        courses.push(student.course);
-                    }
+                    student.course && student.course.active && courses.push(student.course);
                 });
                 res.send({ courses });
             }
         });
     });
 
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => { //TODO: Hàm cần phải sửa
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
         req.session.user.currentCourse = _courseId;

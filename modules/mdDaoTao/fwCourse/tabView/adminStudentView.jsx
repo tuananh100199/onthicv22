@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPreStudentPage, updateStudent, getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
+import { getPreStudentPage, getStudentCourse, updateStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
@@ -10,18 +10,26 @@ class AdminStudentView extends React.Component {
     state = {};
     componentDidMount() {
         this.props.getPreStudentPage(1, 50, { courseType: this.props.courseType && this.props.courseType._id });
-        const params = T.routeMatcher('/user/course/:_id').parse(window.location.pathname);
-        if (params._id) {
-            this.props.getStudentCourse(params._id);
+        const params = T.routeMatcher('/user/course/:_courseId').parse(window.location.pathname);
+        if (params._courseId) {
+            this.props.getStudentCourse(params._courseId);
         } else {
             this.props.history.push(previousRoute);
         }
+    }
+
+    updateStudentCourse = (e, student, changes) => {
+        e.preventDefault();
+        this.props.updateStudentCourse(student._id, changes, error => {
+
+        });
     }
 
     render() {
         const { pageNumber, pageSize, pageTotal, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
+        const _courseId = this.props.course ? this.props.course._id : null;
 
         return (
             <div className='row'>
@@ -32,7 +40,7 @@ class AdminStudentView extends React.Component {
                         <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {preStudentList.map((item, index) => (
                                 <li key={index}>
-                                    <a href='#' style={{ color: 'black' }}>{item.lastname} {item.firstname}</a>
+                                    <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>{item.lastname} {item.firstname}</a>
                                 </li>
                             ))}
                         </ol>
@@ -135,5 +143,5 @@ class AdminStudentView extends React.Component {
 // }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getDivisionAll, getPreStudentPage, updateStudent, getStudentCourse };
+const mapActionsToProps = { getDivisionAll, getPreStudentPage, updateStudentCourse, getStudentCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
