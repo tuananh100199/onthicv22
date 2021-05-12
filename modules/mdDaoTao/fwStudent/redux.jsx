@@ -222,7 +222,7 @@ export function getStudentCourse(_courseId, searchText, done) {
     };
 }
 
-export function updateStudentCourse(_studentId, changes, done) {
+export function updateStudentCourse(_studentId, changes, _courseId, done) {
     return dispatch => {
         const url = '/api/student/course';
         T.put(url, { _studentId, changes }, data => {
@@ -231,7 +231,7 @@ export function updateStudentCourse(_studentId, changes, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
                 done && done(data.item);
-                dispatch(getStudentCourse(data.item.course));
+                dispatch(getStudentCourse(data.item.course || _courseId));
                 dispatch(getPreStudentPage());
             }
             done && done(data.error);

@@ -8,14 +8,29 @@ class AdminStudentView extends React.Component {
     state = {};
     componentDidMount() {
         this.props.getPreStudentPage(1, 50, { courseType: this.props.courseType && this.props.courseType._id });
-        this.props.getStudentCourse(this.props.course.item._id);
+        this.props.getStudentCourse(this.props.course && this.props.course.item && this.props.course.item._id);
     }
 
     updateStudentCourse = (e, student, changes) => {
         e.preventDefault();
         this.props.updateStudentCourse(student._id, changes, () => {
-
         });
+    }
+
+    removeStudentCourse = (e, student, changes) => {
+        e.preventDefault();
+        this.props.updateStudentCourse(student._id, changes, this.props.course.item._id, () => { });
+        let { _id, groups = [] } = this.props.course.item;
+        // remove student from groups in course
+        groups = groups.reduce((result, group) => {
+            group.student.forEach((item, indexStudent) => {
+                if (item._id == student._id) {
+                    group.student.splice(indexStudent, 1);
+                }
+            });
+            return [...result, group];
+        }, []);
+        this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' }, () => { });
     }
 
     render() {
@@ -33,12 +48,13 @@ class AdminStudentView extends React.Component {
                         {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {preStudentList.map((item, index) => (
                                 <li key={index}>
-                                    <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>{item.lastname} {item.firstname}</a>
+                                    <a href='#' style={{ color: 'black' }}
+                                        onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? '(cơ sở ngoài)' : ''}</a>
                                 </li>
                             ))}
                         </ol> : 'Không có thông tin'}
                         <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
-                            getPage={this.props.getSignPage} />
+                            getPage={this.props.getPreStudentPage} />
                     </div>
                 </div>
                 <div className='col-md-6'>
@@ -48,7 +64,8 @@ class AdminStudentView extends React.Component {
                         {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {courseList.map((item, index) => (
                                 <li key={index}>
-                                    <a href='#' style={{ color: 'black' }}>{item.lastname} {item.firstname}</a>
+                                    <a href='#' style={{ color: 'black' }}
+                                        onClick={e => _courseId && this.removeStudentCourse(e, item, { $unset: { course: 1 } })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? '(cơ sở ngoài)' : ''}</a>
                                 </li>
                             ))}
                         </ol> : 'Không có thông tin'}
