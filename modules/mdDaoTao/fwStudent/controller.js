@@ -61,7 +61,7 @@ module.exports = (app) => {
 
 
     app.get('/api/student/course/:_courseId', app.permission.check('student:read'), (req, res) => {
-        const condition = { _courseId: req.params._courseId },
+        const condition = { course: req.params._courseId },
             searchText = req.query.searchText;
         if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
             condition.division = req.session.user.division._id;
@@ -77,9 +77,10 @@ module.exports = (app) => {
         app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-    // app.put('/api/student/course', app.permission.check('student:read'), (req, res) => {
-    //     const changes = req.body.changes;
-    // });
+    app.put('/api/student/course', app.permission.check('student:write'), (req, res) => {
+        const { _studentId, changes } = req.body;
+        app.model.student.update(_studentId, changes, (error, item) => res.send({ error, item }));
+    });
 
     // Pre-student APIs -----------------------------------------------------------------------------------------------
     app.get('/api/pre-student/page/:pageNumber/:pageSize', app.permission.check('pre-student:read'), (req, res) => {

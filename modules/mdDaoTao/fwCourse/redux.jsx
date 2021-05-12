@@ -126,8 +126,8 @@ export function deleteCourse(item) {
     };
 }
 
-export function exportScore() {
-    T.download(T.url('/api/course/export'));
+export function exportScore(_courseId) {
+    T.download(T.url(`api/course/export/${_courseId}`));
 }
 
 export function exportSubject() {
