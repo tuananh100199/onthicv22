@@ -232,7 +232,6 @@ export function updateStudentCourse(_studentId, changes, _courseId, done) {
             } else {
                 done && done(data.item);
                 dispatch(getStudentCourse(data.item.course || _courseId));
-                dispatch(getPreStudentPage());
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
