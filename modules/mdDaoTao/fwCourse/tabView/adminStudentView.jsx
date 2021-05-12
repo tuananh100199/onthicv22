@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+// import { updateCourse } from '../redux';
 import { getPreStudentPage, getStudentCourse, updateStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
@@ -23,17 +24,17 @@ class AdminStudentView extends React.Component {
         this.props.updateStudentCourse(student._id, changes, this.props.course.item._id, (item) => {
             this.props.getPreStudentPage(1, 50, { courseType: item.courseType });
         });
-        let { _id, groups = [] } = this.props.course.item;
-        // remove student from groups in course
-        groups = groups.reduce((result, group) => {
-            group.student.forEach((item, indexStudent) => {
-                if (item._id == student._id) {
-                    group.student.splice(indexStudent, 1);
-                }
-            });
-            return [...result, group];
-        }, []);
-        this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' }, () => { });
+        // let { _id, groups = [] } = this.props.course.item;
+        // // remove student from groups in course
+        // groups = groups.reduce((result, group) => {
+        //     group.student.forEach((item, indexStudent) => {
+        //         if (item._id == student._id) {
+        //             group.student.splice(indexStudent, 1);
+        //         }
+        //     });
+        //     return [...result, group];
+        // }, []);
+        // this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' }, () => { });
     }
 
     render() {
