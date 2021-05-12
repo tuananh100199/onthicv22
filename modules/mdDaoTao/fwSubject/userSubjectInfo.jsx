@@ -9,19 +9,20 @@ const previousRoute = '/user';
 class UserCourseInfo extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/mon-hoc/thong-tin/:_id'),
-            _id = route.parse(window.location.pathname)._id;
-        this.setState({ subjectId: _id });
-        if (_id) {
-            this.props.getSubjectByStudent(_id, data => {
+        let url = window.location.pathname,
+            params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id').parse(url);
+        this.setState({ subjectId: params._id, courseId: params.courseId });
+
+        if (params._id) {
+            this.props.getSubjectByStudent(params._id, data => {
                 if (data.error) {
                     T.notify('Lấy khóa học bị lỗi!', 'danger');
                     this.props.history.push(previousRoute);
                 } else if (data.notify) {
                     T.alert(data.notify, 'error', false, 2000);
                     this.props.history.push(previousRoute);
-                } else if (data.item && data.currentCourse) {
-                    T.ready('/user/hoc-vien/khoa-hoc/' + data.currentCourse);
+                } else if (data.item) {
+                    T.ready('/user/hoc-vien/khoa-hoc/' + this.state.courseId);
                     this.setState(data.item);
                 } else {
                     this.props.history.push(previousRoute);
@@ -33,7 +34,7 @@ class UserCourseInfo extends AdminPage {
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/mon-hoc/' + this.state.subjectId;
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Môn học: ' + (this.state.title),
