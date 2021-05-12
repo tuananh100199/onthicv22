@@ -20,7 +20,7 @@ class AdminStudentView extends React.Component {
 
     updateStudentCourse = (e, student, changes) => {
         e.preventDefault();
-        this.props.updateStudentCourse(student._id, changes, error => {
+        this.props.updateStudentCourse(student._id, changes, () => {
 
         });
     }

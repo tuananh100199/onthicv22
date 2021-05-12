@@ -225,7 +225,7 @@ export function getStudentCourse(_courseId, searchText, done) {
 export function updateStudentCourse(_studentId, changes, done) {
     return dispatch => {
         const url = '/api/student/course';
-        T.put(url, { _id, changes }, data => {
+        T.put(url, { _studentId, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
