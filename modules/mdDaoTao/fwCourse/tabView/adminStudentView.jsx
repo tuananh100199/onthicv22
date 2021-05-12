@@ -49,7 +49,7 @@ class AdminStudentView extends React.Component {
                             {preStudentList.map((item, index) => (
                                 <li key={index}>
                                     <a href='#' style={{ color: 'black' }}
-                                        onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? '(cơ sở ngoài)' : ''}</a>
+                                        onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span style={{ color: '#696969' }}>( cơ sở ngoài )</span> : ''}</a>
                                 </li>
                             ))}
                         </ol> : 'Không có thông tin'}
@@ -65,7 +65,7 @@ class AdminStudentView extends React.Component {
                             {courseList.map((item, index) => (
                                 <li key={index}>
                                     <a href='#' style={{ color: 'black' }}
-                                        onClick={e => _courseId && this.removeStudentCourse(e, item, { $unset: { course: 1 } })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? '(cơ sở ngoài)' : ''}</a>
+                                        onClick={e => _courseId && this.removeStudentCourse(e, item, { $unset: { course: 1 } })}>{item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span style={{ color: '#696969' }}>( cơ sở ngoài )</span> : ''}</a>
                                 </li>
                             ))}
                         </ol> : 'Không có thông tin'}
