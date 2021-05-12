@@ -10,8 +10,11 @@ export default function driveTestReducer(state = {}, data) {
         case DriveTestGetAll:
             return Object.assign({}, state, { list: data.items });
 
-        case DriveTestGetPage:
-            return Object.assign({}, state, { page: data.page });
+        case DriveTestGetPage: {
+            const newState = state || {};
+            newState[data.courseType] = data.page;
+            return Object.assign({}, state, newState);
+        }
 
         case DriveTestGet:
             return Object.assign({}, state, { item: data.item });
@@ -37,17 +40,17 @@ export function getAllDriveTests(condition, done) {
     };
 }
 
-export function getDriveTestPage(pageNumber, pageSize, searchText, done) {
+export function getDriveTestPage(pageNumber, pageSize, searchText, courseType, done) {
     const page = T.updatePage('pageDriveTest', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/drive-test/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { searchText }, data => {
+        T.get(url, { searchText, courseType }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách bộ đề thi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
-                dispatch({ type: DriveTestGetPage, page: data.page });
+                if (done) done(data);
+                dispatch({ type: DriveTestGetPage, courseType, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách bộ đề thi bị lỗi!', 'danger'));
     };
