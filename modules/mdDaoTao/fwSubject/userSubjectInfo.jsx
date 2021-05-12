@@ -53,8 +53,6 @@ class UserCourseInfo extends AdminPage {
                             {this.state.detailDescription ? <><label>Mô tả chi tiết: </label><p dangerouslySetInnerHTML={{ __html: this.state.detailDescription }} /> </> : <></>}
                         </div>
                     </div>
-                    <div className='tile-footer' style={{ textAlign: 'right' }}>
-                    </div>
                 </div>
             ),
             backRoute: userPageLink,
