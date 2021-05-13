@@ -17,10 +17,10 @@ class AdminStudentsToRepresentersView extends React.Component {
     }
 
     render() {
-        const { pageNumber, pageSize, pageTotal, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
-            this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
+        // const { pageNumber, pageSize, pageTotal, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
+        //     this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
-        const _courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
+        // const _courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
 
         return (
             <div className='row'>

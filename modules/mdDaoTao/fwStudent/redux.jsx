@@ -222,7 +222,7 @@ export function getStudentCourse(_courseId, searchText, done) {
     };
 }
 
-export function updateStudentCourse(_studentId, changes, _courseId, done) {
+export function updateStudentCourse(_studentId, changes, done) {
     return dispatch => {
         const url = '/api/student/course';
         T.put(url, { _studentId, changes }, data => {
@@ -231,7 +231,23 @@ export function updateStudentCourse(_studentId, changes, _courseId, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
                 done && done(data.item);
-                dispatch(getStudentCourse(data.item.course || _courseId));
+                dispatch(getStudentCourse(data.item.course));
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
+    };
+}
+
+export function removeStudentCourse(_studentId, _courseId, done) {
+    return dispatch => {
+        const url = '/api/student/course/remove';
+        T.put(url, { _studentId, _courseId }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                done && done(data.student);
+                dispatch(getStudentCourse(_courseId));
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
