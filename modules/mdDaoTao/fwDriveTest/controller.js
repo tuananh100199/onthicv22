@@ -14,7 +14,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'driveTestUser:read', menu: driveTest }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
+    app.permission.add({ name: 'driveTestUser:read', menu: driveTest },  { name: 'driveTest:read', menu }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
@@ -92,27 +92,29 @@ module.exports = app => {
                     res.send({ error });
                 } else {
                     if (item.questionTypes) {
-                        const randomQuestions = item.questionTypes.map(type => {
-                            return new Promise((resolve, reject) => {
-                                const condition = {};
-                                condition.categories = [type.category];
-                                app.model.driveQuestion.getAll(condition, (error, list) => {
-                                    if (error || list.length == 0) {
-                                        reject(error);
-                                    } else {
-                                        resolve(app.getRandom(list, type.amount));
-                                    }
+                        const randomQuestions = [];
+                        app.model.driveQuestion.getAll((error, list) => {
+                            if (error || list.length == 0) {
+                                res.sed('Get all question failed');
+                            } else {
+                                const questionMapper = {};
+                                item.questionTypes.forEach(type => {
+                                    questionMapper[type.category] = [];
                                 });
-                            });
+                                list.forEach(question => {
+                                    questionMapper[question.categories[0]] && questionMapper[question.categories[0]].push(question);
+                                });
+                                item.questionTypes.forEach(type => {
+                                    randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
+                                });
+                                const driveTest = {
+                                    questions: randomQuestions.filter(item => item != null).flat(),
+                                    expireDay: new Date().setHours(new Date().getHours() + 2),
+                                };
+                                req.session.driveTest = driveTest;
+                                res.send({ driveTest });
+                            }
                         });
-                        Promise.all(randomQuestions).then(questions => {
-                            const driveTest = {
-                                questions: questions.flat(),
-                                expireDay: new Date().setHours(new Date().getHours() + 2),
-                            };
-                            req.session.driveTest = driveTest;
-                            res.send({ driveTest });
-                        }).catch(error => res.send({ error }));
                     }
                 }
             });

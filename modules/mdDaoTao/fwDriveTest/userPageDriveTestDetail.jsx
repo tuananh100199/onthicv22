@@ -9,13 +9,14 @@ const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
 class UserPageDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
+        window.addEventListener('keydown', this.logKey);
         T.ready(backRoute, () => {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id'),
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
                     const { _id, title, questions } = data.item;
-                    this.setState({ _id, title, questions });
+                    this.setState({ activeQuestionIndex: 0, _id, title, questions });
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -23,6 +24,16 @@ class UserPageDriveTestDetail extends AdminPage {
                 $('#trueAnswer').css('display', 'none');
             });
         });
+    }
+
+    logKey = (e) => {
+        const activeQuestionIndex = this.state.activeQuestionIndex,
+            maxIndex = this.state.questions.length - 1;
+        if (e.code == 'ArrowRight' && activeQuestionIndex < maxIndex) {
+            this.changeQuestion(e, this.state.activeQuestionIndex + 1);
+        } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
+            this.changeQuestion(e, this.state.activeQuestionIndex - 1);
+        }
     }
 
     submitAnswer = (e) => {
