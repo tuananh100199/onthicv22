@@ -27,8 +27,8 @@ module.exports = (app) => {
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [
-                    { phoneNumber: value },
-                    { email: value },
+                    // { phoneNumber: value },
+                    // { email: value },
                     { firstname: value },
                     { lastname: value },
                 ];
@@ -69,7 +69,7 @@ module.exports = (app) => {
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition.$or = [
-                { email: value },
+                // { email: value },
                 { firstname: value },
                 { lastname: value },
             ];
@@ -122,8 +122,8 @@ module.exports = (app) => {
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition['$or'] = [
-                    { phoneNumber: value },
-                    { email: value },
+                    // { phoneNumber: value },
+                    // { email: value },
                     { firstname: value },
                     { lastname: value },
                 ];
