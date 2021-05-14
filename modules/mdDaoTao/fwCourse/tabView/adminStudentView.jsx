@@ -11,9 +11,9 @@ class AdminStudentView extends React.Component {
         this.props.course && this.props.course.item && this.props.getStudentCourse(this.props.course.item._id);
     }
 
-    onSearch = ({ pageNumber, pageSize, searchText }, done) => {
+    onSearch = ({ pageNumber, pageSize, searchText }, sort, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
-        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, courseType: this.props.courseType && this.props.courseType._id }, (page) => {
+        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, courseType: this.props.courseType && this.props.courseType._id }, sort, (page) => {
             this.setState({ searchText });
             done && done(page);
         });
@@ -44,9 +44,9 @@ class AdminStudentView extends React.Component {
             <div className='row'>
                 <div className='col-md-6' >
                     <div className='row'>
-                        <h3 className='tile-title col-md-6'>Ứng viên</h3>
+                        <h3 className='tile-title col-6'>Ứng viên</h3>
                         <div style={{}}>Sắp xếp theo:
-                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 5 }} onClick={() => { }}>
+                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 5 }} onClick={() => this.onSearch({ pageNumber, pageSize }, { lastname: 1, firstname: 1 })}>
                                 Tên
                             </button>
                             <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 10 }} onClick={() => { }}>

@@ -130,7 +130,7 @@ module.exports = (app) => {
             }
             delete condition.searchText;
             pageCondition = app.clone(pageCondition, condition);
-            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }
