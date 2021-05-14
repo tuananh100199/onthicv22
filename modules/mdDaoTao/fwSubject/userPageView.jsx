@@ -62,19 +62,25 @@ class AdminEditPage extends AdminPage {
                         </div>
                     </Link>
                     <h4 style={{ width: '100%' }}>Bài học</h4>
-                    {lessons.length ? lessons.map((lesson, index) => (
-                        <div key={index} className='col-md-6 col-lg-6'>
-                            <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + lesson._id}>
-                                <div className='widget-small coloured-icon info'>
-                                    <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: (finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d')) }} />
-                                    <div className='info'>
-                                        <h4>{lesson && lesson.title}</h4>
-                                        {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-                    )) : <div className='col-md-4'>Chưa có bài học</div>
+                    {lessons.length ? lessons.map((lesson, index) => {
+                        const content = (<div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: (finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d')) }} />
+                            <div className='info'>
+                                <h4>{lesson && lesson.title}</h4>
+                                {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}
+                            </div>
+                        </div>);
+                        const show = (
+                            <div key={index} className='col-md-6 col-lg-6'>
+                                {
+                                    finishedLesson < index ? content :
+                                        <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + lesson._id}>
+                                            {content}
+                                        </Link>
+                                }
+                            </div>);
+                        return show;
+                    }) : <div className='col-md-4'>Chưa có bài học</div>
                     }
                 </div>
             ),

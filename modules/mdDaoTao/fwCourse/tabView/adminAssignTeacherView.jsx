@@ -320,7 +320,7 @@ class AdminAssignTeacherView extends React.Component {
                         {renderGroups(this.state.outsideGroups.filter(item1 => item._id == item1.teacher.division))}
                     </div>)] : result, []) : 'Không có thông tin'}
                 </div>
-                <CirclePageButton type='export' onClick={exportScore} />
+                <CirclePageButton type='export' onClick={exportScore(this.props.course && this.props.course.item && this.props.course.item._id)} />
                 {/* <CirclePageButton type='custom' customClassName='btn btn-success' customIcon='fa-file-excel-o' style={{ right: 70 }} /> */}
                 {/* {permission.export ? <CirclePageButton type='export' style={{}} /> : null} */}
             </div>

@@ -93,10 +93,9 @@ export function createCourse(data, done) {
     };
 }
 
-export function updateCourse(item, changes, done) {
+export function updateCourse(_id, changes, done) {
     return dispatch => {
-        const url = '/api/course',
-            _id = item._id;
+        const url = '/api/course';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger');
@@ -104,7 +103,7 @@ export function updateCourse(item, changes, done) {
                 done && done(data.error);
             } else {
                 dispatch({ type: CourseGetItem, item: data.item });
-                dispatch(getCoursePage(item.courseType));
+                dispatch(getCoursePage(changes.courseType));
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger'));
@@ -127,8 +126,8 @@ export function deleteCourse(item) {
     };
 }
 
-export function exportScore() {
-    T.download(T.url('/api/course/export'));
+export function exportScore(_courseId) {
+    T.download(T.url(`api/course/export/${_courseId}`));
 }
 
 export function exportSubject() {
