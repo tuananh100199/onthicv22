@@ -99,7 +99,7 @@ module.exports = app => {
             
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
-                    res.send({ error: 'Lấy loại câu hỏi thi bị lỗi!' });
+                    res.send({ error: 'Lấy loại khóa học bị lỗi!' });
                 } else {
                     if (item.questionTypes) {
                         app.model.driveQuestion.getAll((error, list) => {
