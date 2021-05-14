@@ -124,7 +124,8 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             title: 'Ôn tập: Đề thi ngẫu nhiên',
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, 'Đề thi ngẫu nhiên'],
             backRoute: userPageLink,
-            content: (
+            content: (<>
+            {questions && questions.length ? (
                 <div className='tile'>
                     <div className='tile-body row'>
                         {activeQuestion ? (
@@ -154,7 +155,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                             </div>
                         ) : null}
                     </div>
-                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={{ width: '100%' }}>
                             <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                 <ul className='pagination'>
@@ -172,7 +173,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     {showSubmitButton ?
                                         <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                             <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
-                                        </button> :
+                                                </button> :
                                         <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.refreshQuestion(e, questions[0]._id)} disabled={false}>
                                             <i className='fa fa-lg fa-refresh' /> Làm lại
                                         </button>
@@ -182,6 +183,8 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                         </div>
                     </div>
                 </div>
+            ) : <div className='tile'>Không có dữ liệu</div>}
+            </>
             ),
         });
     }
