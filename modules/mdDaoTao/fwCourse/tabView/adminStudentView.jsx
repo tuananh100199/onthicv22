@@ -43,9 +43,19 @@ class AdminStudentView extends React.Component {
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Ứng viên<h6 style={{ float: 'right' }}>Sắp xếp theo:<i style={{ marginRight: 10 }} className='fa fa-sort-alpha-asc'></i>
-                        <i className='fa fa-university'></i>
-                    </h6></h3>
+                    <div className='row'>
+                        <h3 className='tile-title col-md-6'>Ứng viên</h3>
+                        <div style={{}}>Sắp xếp theo:
+                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 5 }} onClick={() => { }}>
+                                Tên
+                            </button>
+                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 10 }} onClick={() => { }}>
+                                Cơ sở
+                            </button>
+                            {/* <i style={{ marginRight: 10 }} className='fa fa-sort-alpha-asc'></i>
+                        <i className='fa fa-university'></i> */}
+                        </div>
+                    </div>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.onSearch({ searchText: e.target.value })} />
                         {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
