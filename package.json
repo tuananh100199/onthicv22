@@ -1,6 +1,6 @@
 {
   "name": "hiep-phat",
-  "version": "1.0.40",
+  "version": "1.0.41",
   "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
