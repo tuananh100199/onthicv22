@@ -49,7 +49,7 @@ class AdminStudentView extends React.Component {
                             <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 5 }} onClick={() => this.onSearch({ pageNumber, pageSize }, { lastname: 1, firstname: 1 })}>
                                 Tên
                             </button>
-                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 10 }} onClick={() => { }}>
+                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 10 }} onClick={() => this.onSearch({ pageNumber, pageSize }, { division: 1, lastname: 1, firstname: 1 })}>
                                 Cơ sở
                             </button>
                             {/* <i style={{ marginRight: 10 }} className='fa fa-sort-alpha-asc'></i>
