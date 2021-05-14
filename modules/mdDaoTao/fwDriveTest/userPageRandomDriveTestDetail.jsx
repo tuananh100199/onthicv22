@@ -9,13 +9,14 @@ const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
 class UserPageRandomDriveTestDetail extends AdminPage {
     state = { showSubmitButton: true };
     componentDidMount() {
+        window.addEventListener('keydown', this.logKey);
         T.ready(backRoute, () => {
             const route = T.routeMatcher(backRoute + '/:_id'),
                 _id = route.parse(window.location.pathname)._id;
             this.props.createRandomDriveTest(_id, data => {
                 if (data.driveTest) {
                     const { _id, title, questions } = data.driveTest;
-                    this.setState({ _id, title, questions });
+                    this.setState({  activeQuestionIndex: 0, _id, title, questions });
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -23,6 +24,16 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                 $('#trueAnswer').css('display', 'none');
             });
         });
+    }
+
+    logKey = (e) => {
+        const activeQuestionIndex = this.state.activeQuestionIndex,
+            maxIndex = this.state.questions.length - 1;
+        if (e.code == 'ArrowRight' && activeQuestionIndex < maxIndex) {
+            this.changeQuestion(e, this.state.activeQuestionIndex + 1);
+        } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
+            this.changeQuestion(e, this.state.activeQuestionIndex - 1);
+        }
     }
 
     submitAnswer = (e) => {
