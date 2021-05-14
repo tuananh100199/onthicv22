@@ -87,15 +87,33 @@ module.exports = app => {
         if (driveTest && today < driveTest.expireDay) {
             res.send({ driveTest });
         } else {
+            app.getRandom = (arr, n) => {
+                if (n < 1) {
+                    return null;
+                }
+                let result = new Array(n),
+                    len = arr.length,
+                    taken = new Array(len);
+                if (n > len) {
+                    return null;
+                }
+                while (n--) {
+                    let x = Math.floor(Math.random() * len);
+                    result[n] = arr[x in taken ? taken[x] : x];
+                    taken[x] = --len in taken ? taken[len] : len;
+                }
+                return result;
+            };
+            
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
-                    res.send({ error });
+                    res.send({ error: 'Lấy loại câu hỏi thi bị lỗii' });
                 } else {
                     if (item.questionTypes) {
                         const randomQuestions = [];
                         app.model.driveQuestion.getAll((error, list) => {
                             if (error || list.length == 0) {
-                                res.sed('Get all question failed');
+                                res.send({error: 'Lấy câu hỏi thi bị lỗi!'});
                             } else {
                                 const questionMapper = {};
                                 item.questionTypes.forEach(type => {
@@ -115,6 +133,8 @@ module.exports = app => {
                                 res.send({ driveTest });
                             }
                         });
+                    } else {
+                        res.send({error: 'Lấy loại câu hỏi thi bị lỗi!'});
                     }
                 }
             });
