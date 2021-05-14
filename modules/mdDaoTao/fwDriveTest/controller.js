@@ -14,7 +14,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'driveTestUser:read', menu: driveTest },  { name: 'driveTest:read', menu }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
+    app.permission.add({ name: 'driveTestUser:read', menu: driveTest }, { name: 'driveTest:read', menu }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
@@ -27,9 +27,7 @@ module.exports = app => {
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
-        app.model.driveTest.getAll(condition, (error, list) => {
-            res.send({ error, list });
-        });
+        app.model.driveTest.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/drive-test/page/:pageNumber/:pageSize', (req, res) => {
@@ -37,15 +35,9 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { searchText, courseType } = req.query,
             pageCondition = {};
-        if (courseType) {
-            pageCondition.courseType = courseType;
-        }
-        if (searchText) {
-            pageCondition.title = new RegExp(searchText, 'i');
-        }
-        app.model.driveTest.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-            res.send({ error, page });
-        });
+        courseType && (pageCondition.courseType = courseType);
+        searchText && (pageCondition.title = new RegExp(searchText, 'i'));
+        app.model.driveTest.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/drive-test', (req, res) => {
@@ -110,18 +102,18 @@ module.exports = app => {
                     res.send({ error: 'Lấy loại câu hỏi thi bị lỗii' });
                 } else {
                     if (item.questionTypes) {
-                        const randomQuestions = [];
                         app.model.driveQuestion.getAll((error, list) => {
                             if (error || list.length == 0) {
                                 res.send({error: 'Lấy câu hỏi thi bị lỗi!'});
                             } else {
                                 const questionMapper = {};
-                                item.questionTypes.forEach(type => {
-                                    questionMapper[type.category] = [];
-                                });
                                 list.forEach(question => {
-                                    questionMapper[question.categories[0]] && questionMapper[question.categories[0]].push(question);
+                                    questionMapper[question.categories[0]] ?
+                                        questionMapper[question.categories[0]].push(question) :
+                                        (questionMapper[question.categories[0]] = [question]);
                                 });
+
+                                const randomQuestions = [];
                                 item.questionTypes.forEach(type => {
                                     randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
                                 });
