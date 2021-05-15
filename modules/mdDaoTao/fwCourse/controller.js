@@ -49,9 +49,9 @@ module.exports = (app) => {
                 const courseFee = courseFees.find(courseFee => courseFee.division == division._id);
                 if (courseFee) item.courseFee = courseFee.fee;
                 app.model.division.getAll({ isOutside: true }, (error, divisions) => {
-                    const groups = (item.groups || []).reduce((result, group) => group.teacher && group.teacher.division &&
+                    const teacherGroups = (item.teacherGroups || []).reduce((result, group) => group.teacher && group.teacher.division &&
                         divisions.findIndex(div => div._id.toString() == group.teacher.division.toString()) != -1 ? [...result, group] : result, []);
-                    res.send({ error, item: app.clone(item, { groups }) });
+                    res.send({ error, item: app.clone(item, { teacherGroups }) });
                 });
             } else {
                 item.courseFee = courseFees[0] && courseFees[0].fee;
@@ -79,13 +79,13 @@ module.exports = (app) => {
                 });
             }
             if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            const groups = changes.groups == null || changes.groups === 'empty' ? [] : changes.groups;
+            const teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
             //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
-            changes = { groups };
+            changes = { teacherGroups };
         } else {
             if (courseFees) courseFees[0].fee = changes.courseFee;
             if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            if (changes.groups && changes.groups === 'empty') changes.groups = [];
+            if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
             if (changes.admins && changes.admins === 'empty') changes.admins = [];
         }
         delete changes.courseFee;
@@ -107,7 +107,7 @@ module.exports = (app) => {
                     { cell: 'C1', border: '1234', value: 'Tên', font: { size: 12, align: 'center' }, bold: true },
                 ];
                 let row = 2;
-                course.groups.forEach(group => {
+                course.teacherGroups.forEach(group => {
                     group.student.forEach(item => {
                         row++;
                         worksheet.insertRow(row, [row - 2, item.lastname, item.firstname]);
@@ -143,7 +143,7 @@ module.exports = (app) => {
                                             }
                                         );
                                         let rowCell = 2;
-                                        course.groups.forEach(group => {
+                                        course.teacherGroups.forEach(group => {
                                             group.student.forEach(item => {
                                                 rowCell++;
                                                 const value = item.tienDoHocTap && item.tienDoHocTap[subject._id] && item.tienDoHocTap[subject._id][lesson._id] && item.tienDoHocTap[subject._id][lesson._id].score || 0;
@@ -161,7 +161,7 @@ module.exports = (app) => {
                                             });
                                             worksheet.mergeCells(`${colAvgWord}1:${colAvgWord}2`);
                                             let rowSum = 2;
-                                            course.groups.forEach(group => {
+                                            course.teacherGroups.forEach(group => {
                                                 group.student.forEach(() => {
                                                     rowSum++;
                                                     let sum = 0;
