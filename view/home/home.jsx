@@ -14,7 +14,6 @@ import Loader from 'view/component/Loader';
 import HomeMenu from 'view/component/HomeMenu';
 import HomeFooter from 'view/component/HomeFooter';
 import LoginModal from 'view/component/LoginModal';
-import CandidateModal from 'modules/mdDaoTao/fwCandidate/homeCandidateModal';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
@@ -83,14 +82,12 @@ class App extends React.Component {
         }
     }
 
-    showCandidateModal = (e) => e.preventDefault() || this.candidateModal.show();
-
     render() {
         return (
             <BrowserRouter>
                 {this.state.isMatch ?
                     <React.Fragment>
-                        <HomeMenu showLoginModal={this.showLoginModal} showCandidateModal={this.showCandidateModal} />
+                        <HomeMenu showLoginModal={this.showLoginModal} />
                         <Switch>
                             {this.state.routes}
                             <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
@@ -99,7 +96,6 @@ class App extends React.Component {
                         <HomeFooter />
                         <LoginModal ref={e => this.loginModal = e} register={this.props.register} login={this.props.login} forgotPassword={this.props.forgotPassword}
                             pushHistory={url => this.props.history.push(url)} />
-                        <CandidateModal ref={e => this.candidateModal = e} />
                         <Loader ref={e => this.loader = e} />
                     </React.Fragment> :
                     <React.Fragment>
