@@ -8,7 +8,7 @@ import AdminSubjectView from './tabView/adminSubjectView';
 import AdminManagerView from './tabView/adminManagerView';
 import AdminStudentView from './tabView/adminStudentView';
 // import AdminAssignTeacherView from './tabView/adminAssignTeacherView';
-import AdminStudentsToRepresentersView from './tabView/adminStudentsToRepresentersView';
+import AdminRepresentersView from './tabView/adminRepresentersView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -111,7 +111,7 @@ class EditCoursePage extends AdminPage {
             { title: 'Quản trị viên', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
             { title: 'Học viên', component: this.state.courseType && this.props.course ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
             // { title: 'Gán cố vấn học tập', component: <AdminAssignTeacherView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} updateCourse={this.props.updateCourse} /> },
-            { title: 'Gán giáo viên', component: <AdminStudentsToRepresentersView permission={permissionCourse} /> },
+            { title: 'Gán giáo viên', component: <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> },
         ];
 
         return this.renderPage({
