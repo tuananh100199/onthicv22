@@ -5,7 +5,7 @@ import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
 
 class AdminStudentView extends React.Component {
-    state = {};
+    state = { sortType: 'name' }; // name | division
     componentDidMount() {
         this.props.getPreStudentPage(1, 50, { courseType: this.props.courseType && this.props.courseType._id });
         this.props.getStudentCourse(this.props.course && this.props.course.item && this.props.course.item._id);
@@ -30,20 +30,23 @@ class AdminStudentView extends React.Component {
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
         const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
         const _courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
+        const { sortType } = this.state;
 
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Ứng viên<h6 style={{ float: 'right' }}>Sắp xếp theo:<i style={{ marginRight: 10 }} className='fa fa-sort-alpha-asc'></i>
-                        <i className='fa fa-university'></i>
-                    </h6></h3>
+                    <h3 className='tile-title'>Ứng viên</h3>
+                    <label style={{ float: 'right', marginTop: 12, marginRight: 12 }}>Sắp xếp theo:&nbsp;
+                            <a href='#' className={sortType == 'name' ? 'text-primary' : 'text-secondary'} onClick={e => e.preventDefault() || (sortType != 'name' && this.setState({ sortType: 'name' }))}>Họ & tên</a> |&nbsp;
+                            <a href='#' className={sortType == 'name' ? 'text-secondary' : 'text-primary'} onClick={e => e.preventDefault() || (sortType != 'division' && this.setState({ sortType: 'division' }))}>Cơ sở đào tạo</a>
+                    </label>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.props.getPreStudentPage(1, 50, { searchText: e.target.value, courseType: this.props.courseType._id })} />
                         {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
                             {preStudentList.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>
-                                        {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
+                                        {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
                                 </li>))}
                         </ol> : 'Không có thông tin'}
