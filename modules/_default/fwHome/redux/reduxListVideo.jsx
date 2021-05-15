@@ -114,7 +114,7 @@ export function getListVideoByUser(_id, done) {
 }
 export const ajaxSelectListVideo = T.createAjaxAdapter(
     '/api/list-video/all',
-    response => response && response.items ? response.items.map(item => ({ id: item._id, text: item.title })) : [],
+    response => response && response.list ? response.list.map(item => ({ id: item._id, text: item.title })) : [],
 );
 
 export function ajaxGetListVideo(_id, done) {

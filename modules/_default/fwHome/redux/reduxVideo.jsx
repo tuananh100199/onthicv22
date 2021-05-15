@@ -3,11 +3,16 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------------------------------------
 const VideoGetAll = 'VideoGetAll';
 const VideoChange = 'VideoChange';
+const VideoGet = 'VideoGet';
+
 
 export default function videoReducer(state = {}, data) {
     switch (data.type) {
         case VideoGetAll:
             return Object.assign({}, state, { list: data.list });
+
+        case VideoGet:
+            return Object.assign({}, state, { selectedItem: data.item });
 
         case VideoChange:
             state = Object.assign({}, state);
@@ -49,7 +54,7 @@ export function getVideo(_id, done) {
             T.notify('Lấy video bị lỗi!', 'danger');
             console.error(`GET: getVideo. ${data.error}`);
         } else {
-            dispatch({ type: VideoChange, item: data.item });
+            dispatch({ type: VideoGet, item: data.item });
             done && done(data);
         }
     });
@@ -124,7 +129,7 @@ export function homeGetVideo(_id, done) {
                 T.notify('Lấy danh sách video bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                dispatch({ type: VideoChange, item: data.item });
+                dispatch({ type: VideoGet, item: data.item });
                 if (done) done({ item: data.item });
             }
         }, error => console.error('GET: ' + url + '. ' + error));
