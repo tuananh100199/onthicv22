@@ -14,7 +14,7 @@ import Loader from 'view/component/Loader';
 import HomeMenu from 'view/component/HomeMenu';
 import HomeFooter from 'view/component/HomeFooter';
 import LoginModal from 'view/component/LoginModal';
-import CandidateModal from 'view/component/CandidateModal';
+import CandidateModal from 'modules/mdDaoTao/fwCandidate/homeCandidateModal';
 
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
@@ -39,8 +39,6 @@ store.dispatch(getSystemState());
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {
-    loginModal = React.createRef();
-    candidateModal = React.createRef();
     state = { routes: [], isMatch: true };
     componentDidMount() {
         const done = () => {
