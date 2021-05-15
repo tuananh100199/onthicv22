@@ -123,11 +123,11 @@ export function getStudentScore(courseId, done) {
 
 // Pre-student Actions ------------------------------------------------------------------------------------------------
 T.initCookiePage('adminPreStudent');
-export function getPreStudentPage(pageNumber, pageSize, pageCondition, done) {
+export function getPreStudentPage(pageNumber, pageSize, pageCondition, sort, done) {
     const page = T.updatePage('adminPreStudent', pageNumber, pageSize);
     return dispatch => {
         const url = `/api/pre-student/page/${page.pageNumber}/${page.pageSize}`;
-        T.get(url, { condition: pageCondition }, data => {
+        T.get(url, { condition: pageCondition, sort }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);

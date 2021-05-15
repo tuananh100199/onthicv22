@@ -27,8 +27,8 @@ module.exports = (app) => {
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition.$or = [
-                    { phoneNumber: value },
-                    { email: value },
+                    // { phoneNumber: value },
+                    // { email: value },
                     { firstname: value },
                     { lastname: value },
                 ];
@@ -69,7 +69,7 @@ module.exports = (app) => {
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition.$or = [
-                { email: value },
+                // { email: value },
                 { firstname: value },
                 { lastname: value },
             ];
@@ -122,15 +122,15 @@ module.exports = (app) => {
             if (condition.searchText) {
                 const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                 pageCondition['$or'] = [
-                    { phoneNumber: value },
-                    { email: value },
+                    // { phoneNumber: value },
+                    // { email: value },
                     { firstname: value },
                     { lastname: value },
                 ];
             }
             delete condition.searchText;
             pageCondition = app.clone(pageCondition, condition);
-            app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
         }
