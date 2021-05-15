@@ -45,8 +45,7 @@ class AdminStudentView extends React.Component {
                                     <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId })}>
                                         {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
                                     </a>
-                                </li>
-                            ))}
+                                </li>))}
                         </ol> : 'Không có thông tin'}
                         <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                             getPage={this.props.getPreStudentPage} />
@@ -62,8 +61,7 @@ class AdminStudentView extends React.Component {
                                     <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.removeStudentCourse(e, item)}>
                                         {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
                                     </a>
-                                </li>
-                            ))}
+                                </li>))}
                         </ol> : 'Không có thông tin'}
                     </div>
                 </div>

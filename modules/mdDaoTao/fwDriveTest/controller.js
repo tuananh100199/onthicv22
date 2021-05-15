@@ -27,9 +27,7 @@ module.exports = app => {
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
-        app.model.driveTest.getAll(condition, (error, list) => {
-            res.send({ error, list });
-        });
+        app.model.driveTest.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
     app.get('/api/drive-test/page/:pageNumber/:pageSize', (req, res) => {
@@ -37,15 +35,9 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { searchText, courseType } = req.query,
             pageCondition = {};
-        if (courseType) {
-            pageCondition.courseType = courseType;
-        }
-        if (searchText) {
-            pageCondition.title = new RegExp(searchText, 'i');
-        }
-        app.model.driveTest.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
-            res.send({ error, page });
-        });
+        courseType && (pageCondition.courseType = courseType);
+        searchText && (pageCondition.title = new RegExp(searchText, 'i'));
+        app.model.driveTest.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/drive-test', (req, res) => {
@@ -92,27 +84,29 @@ module.exports = app => {
                     res.send({ error });
                 } else {
                     if (item.questionTypes) {
-                        const randomQuestions = item.questionTypes.map(type => {
-                            return new Promise((resolve, reject) => {
-                                const condition = {};
-                                condition.categories = [type.category];
-                                app.model.driveQuestion.getAll(condition, (error, list) => {
-                                    if (error || list.length == 0) {
-                                        reject(error);
-                                    } else {
-                                        resolve(app.getRandom(list, type.amount));
-                                    }
+                        app.model.driveQuestion.getAll((error, list) => {
+                            if (error || list.length == 0) {
+                                res.sed('Get all question failed');
+                            } else {
+                                const questionMapper = {};
+                                list.forEach(question => {
+                                    questionMapper[question.categories[0]] ?
+                                        questionMapper[question.categories[0]].push(question) :
+                                        (questionMapper[question.categories[0]] = [question]);
                                 });
-                            });
+
+                                const randomQuestions = [];
+                                item.questionTypes.forEach(type => {
+                                    randomQuestions.push(app.getRandom(questionMapper[type.category], type.amount));
+                                });
+                                const driveTest = {
+                                    questions: randomQuestions.filter(item => item != null).flat(),
+                                    expireDay: new Date().setHours(new Date().getHours() + 2),
+                                };
+                                req.session.driveTest = driveTest;
+                                res.send({ driveTest });
+                            }
                         });
-                        Promise.all(randomQuestions).then(questions => {
-                            const driveTest = {
-                                questions: questions.flat(),
-                                expireDay: new Date().setHours(new Date().getHours() + 2),
-                            };
-                            req.session.driveTest = driveTest;
-                            res.send({ driveTest });
-                        }).catch(error => res.send({ error }));
                     }
                 }
             });
