@@ -22,8 +22,7 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id', app.templates.admin);
-
+    
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
