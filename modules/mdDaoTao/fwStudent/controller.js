@@ -119,18 +119,25 @@ module.exports = (app) => {
                 pageCondition.division = req.session.user.division._id;
             }
 
-            if (condition.searchText) {
-                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-                pageCondition['$or'] = [
-                    // { phoneNumber: value },
-                    // { email: value },
-                    { firstname: value },
-                    { lastname: value },
-                ];
-            }
-            delete condition.searchText;
+            // if (condition.searchText) {
+            //     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+            //     pageCondition['$or'] = [
+            //         // { phoneNumber: value },
+            //         // { email: value },
+            //         { firstname: value },
+            //         { lastname: value },
+            //     ];
+            // }
+            // delete condition.searchText;
             pageCondition = app.clone(pageCondition, condition);
-            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => res.send({ error, page }));
+            delete pageCondition.searchText;
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                if (condition.searchText) {
+                    const value = new RegExp(condition.searchText, 'i');
+                    page.list = page.list.reduce((res, item) => value.test(`${item.lastname} ${item.firstname}`) ? [...res, item] : res, []);
+                }
+                res.send({ error, page });
+            });
         } catch (error) {
             res.send({ error });
         }
