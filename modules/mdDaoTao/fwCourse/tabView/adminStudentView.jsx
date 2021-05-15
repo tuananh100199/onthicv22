@@ -5,7 +5,7 @@ import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
 
 class AdminStudentView extends React.Component {
-    state = { searchText: '' };
+    state = { searchText: '', sortType: 'name' }; // name | division
     componentDidMount() {
         this.onSearch({});
         this.props.course && this.props.course.item && this.props.getStudentCourse(this.props.course.item._id);
@@ -13,8 +13,12 @@ class AdminStudentView extends React.Component {
 
     onSearch = ({ pageNumber, pageSize, searchText }, sort, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
+        if (sort == undefined) {
+            sort = { lastname: 1, firstname: 1 };
+            if (this.state.sortType == 'division') sort.division = 1;
+        }
         this.props.getPreStudentPage(pageNumber, pageSize, { searchText, courseType: this.props.courseType && this.props.courseType._id }, sort, (page) => {
-            this.setState({ searchText });
+            this.setState({ searchText, sortType: sort.division ? 'division' : 'name' });
             done && done(page);
         });
     }
@@ -39,22 +43,19 @@ class AdminStudentView extends React.Component {
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
         const _courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
+        const { sortType } = this.state;
 
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <div className='row'>
-                        <h3 className='tile-title col-6'>Ứng viên</h3>
-                        <div style={{}}>Sắp xếp theo:
-                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 5 }} onClick={() => this.onSearch({ pageNumber, pageSize }, { lastname: 1, firstname: 1 })}>
-                                Tên
-                            </button>
-                            <button className='btn' type='button' style={{ marginBottom: 5, marginLeft: 10 }} onClick={() => this.onSearch({ pageNumber, pageSize }, { division: 1, lastname: 1, firstname: 1 })}>
-                                Cơ sở
-                            </button>
-                            {/* <i style={{ marginRight: 10 }} className='fa fa-sort-alpha-asc'></i>
-                        <i className='fa fa-university'></i> */}
-                        </div>
+                    <h3 className='tile-title'>Ứng viên</h3>
+                    <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>Sắp xếp theo:&nbsp;
+                        <a className={sortType == 'name' ? ' text-primary' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { lastname: 1, firstname: 1 })}>
+                            Tên
+                        </a> |&nbsp;
+                        <a className={sortType == 'division' ? ' text-primary' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { division: 1, lastname: 1, firstname: 1 })}>
+                            Cơ sở
+                        </a>
                     </div>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.onSearch({ searchText: e.target.value })} />
