@@ -59,17 +59,21 @@ module.exports = (app) => {
             }
             model.find(condition)
                 .populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
-                .sort({ lastname: 1, firstname: 1 }).exec(done);
+                .sort({ modifiedDate: -1, lastname: 1, firstname: 1 }).exec(done);
         },
 
-        getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+        getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
+            if (done == undefined) {
+                done = sort;
+                sort = { modifiedDate: -1, lastname: 1, firstname: 1 };
+            }
             if (error) {
                 done(error);
             } else {
                 const result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ modifiedDate: 1, lastname: 1, firstname: 1 }).skip(skipNumber).limit(result.pageSize)
+                model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
                     .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
                         result.list = list;
                         done(error, result);
