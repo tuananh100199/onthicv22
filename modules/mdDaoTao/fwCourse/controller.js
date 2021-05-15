@@ -198,6 +198,16 @@ module.exports = (app) => {
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
         app.model.course.delete(req.body._id, (error) => res.send({ error }));
     });
+    // TeacherGroups APIs -----------------------------------------------------------------------------------------------------
+    app.put('/api/course/teacher-group/teacher/:_teacherId', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, type } = req.body,
+            _teacherId = req.params._teacherId;
+        if (type == 'add') {
+            app.model.course.addTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
+        } else if (type == 'remove') {
+            app.model.course.removeTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
+        }
+    });
 
     // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/course/page/:pageNumber/:pageSize', (req, res) => {

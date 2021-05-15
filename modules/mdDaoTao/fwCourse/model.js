@@ -69,7 +69,17 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('teacherGroups.teacher', '-password').populate('teacherGroups.student', 'firstname lastname tienDoHocTap').exec(done);
+            findTask.populate('courseType').populate('subjects', '-detailDescription').populate({
+                path: 'teacherGroups.teacher',
+                populate: {
+                    path: 'division'
+                }
+            }).populate({
+                path: 'teacherGroups.student',
+                populate: {
+                    path: 'division'
+                }
+            }).exec(done);
         },
 
         getByUser: (condition, done) => {
@@ -113,6 +123,16 @@ module.exports = app => {
                 model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('teacherGroups.teacher', 'firstname lastname division').populate('teacherGroups.student', 'firstname lastname').exec(done);
             }).catch(error => done(error));
         },
+
+        addTeacherGroup: (_id, _teacherId, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { teacherGroups: { teacher: _teacherId, student: [] } } }, { new: true }).exec(done);
+        },
+
+        removeTeacherGroup: (_id, _teacherId, done) => {
+            console.log(_teacherId);
+            model.findOneAndUpdate({ _id }, { $pull: { teacherGroups: { teacher: _teacherId } } }, { new: true }).exec(done);
+        },
+
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

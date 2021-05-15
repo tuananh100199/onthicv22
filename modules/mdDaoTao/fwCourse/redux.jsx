@@ -134,6 +134,21 @@ export function exportSubject() {
     T.download(T.url('/api/course/export/subject'));
 }
 
+// Course teacherGroups -------------------------------------------------------------------------------------------------------
+export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
+    return dispatch => {
+        const url = `/api/course/teacher-group/teacher/${_teacherId}`;
+        T.put(url, { _courseId, type }, data => {
+            if (data.error) {
+                T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch(getCourse(data.item._id));
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
 
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getCoursePageByUser(pageNumber, pageSize, done) {

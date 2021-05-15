@@ -38,6 +38,10 @@ module.exports = app => {
                     pageCondition.$or.push({ isLecturer: true });
                 } else if (condition.userType == 'isRepresenter') {
                     pageCondition.$or.push({ isRepresenter: true });
+                } else if (Array.isArray(condition.userType)) {
+                    condition.userType.forEach((item) => {
+                        pageCondition.$or.push(JSON.parse(`{ "${item}":true}`));
+                    });
                 }
 
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
