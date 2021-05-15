@@ -63,7 +63,7 @@ class AdminStudentView extends React.Component {
                             {preStudentList.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId }, pageNumber, pageSize)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
+                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
                                     </a>
                                 </li>))}
                         </ol> : 'Không có thông tin'}

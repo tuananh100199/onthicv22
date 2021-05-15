@@ -68,7 +68,7 @@ export function getCourse(_id, done) {
                 if (data.item) {
                     if (data.item.admins) data.item.admins = data.item.admins.sort((a, b) =>
                         (a.firstname + ' ' + a.lastname).toLowerCase() > (b.firstname + ' ' + b.lastname).toLowerCase() ? +1 : -1);
-                    if (data.item.groups) data.item.groups = data.item.groups.sort((a, b) =>
+                    if (data.item.representerGroups) data.item.representerGroups = data.item.representerGroups.sort((a, b) =>
                         a.teacher == null || b.teacher == null || (a.teacher.firstname + ' ' + a.teacher.lastname).toLowerCase() > (b.teacher.firstname + ' ' + b.teacher.lastname).toLowerCase() ? +1 : -1);
                 }
                 done && done(data);

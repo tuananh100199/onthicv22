@@ -42,11 +42,11 @@ class AdminManagerView extends React.Component {
 
     addTeacher = e => {
         e.preventDefault();
-        const { _id, groups = [] } = this.props.course.item,
+        const { _id, teacherGroups = [] } = this.props.course.item,
             _teacherUserId = this.selectTeacher.value();
-        if (_teacherUserId && groups.find(({ teacher }) => teacher._id == _teacherUserId) == null) {
-            groups.push({ teacher: _teacherUserId });
-            this.props.updateCourse(_id, { groups }, () => {
+        if (_teacherUserId && teacherGroups.find(({ teacher }) => teacher._id == _teacherUserId) == null) {
+            teacherGroups.push({ teacher: _teacherUserId });
+            this.props.updateCourse(_id, { teacherGroups }, () => {
                 this.selectTeacher.value(null);
                 this.props.getCourse(_id);
             });
@@ -54,15 +54,15 @@ class AdminManagerView extends React.Component {
     };
     removeTeacher = (e, index) => e.preventDefault() || T.confirm('Xoá cố vấn học tập', 'Bạn có chắc muốn xoá cố vấn học tập khỏi khóa học này?', true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
-            const { _id, groups = [] } = this.props.course.item;
-            groups.splice(index, 1);
-            this.props.updateCourse(_id, { groups: groups.length ? groups : 'empty' }, () => this.props.getCourse(_id));
+            const { _id, teacherGroups = [] } = this.props.course.item;
+            teacherGroups.splice(index, 1);
+            this.props.updateCourse(_id, { teacherGroups: teacherGroups.length ? teacherGroups : 'empty' }, () => this.props.getCourse(_id));
         }
     });
 
     render() {
         const { permission, permissionUser, permissionDivision } = this.props,
-            item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [], groups: [] };
+            item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [], teacherGroups: [] };
         const permissionTeacherWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
 
         const tableAdmin = renderTable({
@@ -97,7 +97,7 @@ class AdminManagerView extends React.Component {
         });
 
         const tableTeacher = renderTable({
-            getDataSource: () => this.divisionMapper && item.groups,
+            getDataSource: () => this.divisionMapper && item.teacherGroups,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto' }}>#</th>

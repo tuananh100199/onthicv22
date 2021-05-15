@@ -24,7 +24,7 @@ module.exports = app => {
         thoiGianThiTotNghiepChinhThuc: { type: Date, default: Date.now },
 
         admins: [{ type: app.db.Schema.ObjectId, ref: 'User' }],            // Quản trị viên khóa học
-        groups: [{ //TODO: teacherGroups
+        teacherGroups: [{
             teacher: { type: app.db.Schema.Types.ObjectId, ref: 'User' },
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
@@ -69,21 +69,21 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('groups.teacher', '-password').populate('groups.student', 'firstname lastname tienDoHocTap').exec(done);
+            findTask.populate('courseType').populate('subjects', '-detailDescription').populate('admins', '-password').populate('teacherGroups.teacher', '-password').populate('teacherGroups.student', 'firstname lastname tienDoHocTap').exec(done);
         },
 
         getByUser: (condition, done) => {
-            (typeof condition == 'string' ? model.findById(condition) : model.findOne(condition)).select('-groups -admins -lock -modifiedDate').populate('courseType').populate('subjects').exec(done);
+            (typeof condition == 'string' ? model.findById(condition) : model.findOne(condition)).select('-teacherGroups -admins -lock -modifiedDate').populate('courseType').populate('subjects').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => {
+        update: (_id, changes, done) => { // Không cập nhật teacherGroups, representerGroups
             let isError = false;
             new Promise((resolve, reject) => {
                 app.model.division.getAll({ isOutside: true }, (error, list) => {
                     const _divisionOutsideIds = list.map(item => item._id);
-                    if (changes.groups) {
-                        for (const group of changes.groups) {
+                    if (changes.teacherGroups) {
+                        for (const group of changes.teacherGroups) {
                             if (group.student) {
                                 for (const student of group.student) {
                                     app.model.student.get(student._id || student, (error, item) => {
@@ -110,7 +110,7 @@ module.exports = app => {
                 });
             }).then(() => {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('groups.teacher', 'firstname lastname division').populate('groups.student', 'firstname lastname').exec(done);
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('admins', '-password').populate('subjects', '-detailDescription').populate('teacherGroups.teacher', 'firstname lastname division').populate('teacherGroups.student', 'firstname lastname').exec(done);
             }).catch(error => done(error));
         },
 
