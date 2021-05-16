@@ -92,7 +92,7 @@ module.exports = (app) => {
                     if (error) {
                         res.send({ error });
                     } else {
-                        course.representerGroups = course.representerGroups.reduce((result, group) => {
+                        course.teacherGroups = course.teacherGroups.reduce((result, group) => {
                             group.student.forEach((item, indexStudent) => {
                                 if (item._id == _studentId) {
                                     group.student.splice(indexStudent, 1);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { getCourse } from '../redux';
 import { getPreStudentPage, getStudentCourse, updateStudentCourse, removeStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { FormTextBox } from 'view/component/AdminPage';
@@ -32,9 +33,10 @@ class AdminStudentView extends React.Component {
 
     removeStudentCourse = (e, student, pageSize) => {
         e.preventDefault();
-        this.props.removeStudentCourse(student._id, this.props.course.item._id, () => {
+        const { _id } = this.props.course.item;
+        this.props.removeStudentCourse(student._id, _id, () => {
             this.searchBoxPre.value('');
-            this.setState({ searchText: '' }, () => this.onSearch({ pageSize }));
+            this.props.getCourse(_id, () => this.setState({ searchText: '' }, () => this.onSearch({ pageSize })));
         });
     }
 
@@ -91,5 +93,5 @@ class AdminStudentView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getPreStudentPage, updateStudentCourse, getStudentCourse, removeStudentCourse };
+const mapActionsToProps = { getCourse, getPreStudentPage, updateStudentCourse, getStudentCourse, removeStudentCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
