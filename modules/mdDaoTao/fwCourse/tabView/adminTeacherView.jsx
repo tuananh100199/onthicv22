@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourseTeacherGroup } from '../redux';
+import { getCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import { FormSelect, FormTextBox, AdminModal } from 'view/component/AdminPage';
@@ -10,28 +10,35 @@ class TeacherModal extends AdminModal {
         e.preventDefault();
     };
 
-    onSubmit = () => {
-        const _teacherId = this.teacherSelect.value();
-        if (!_teacherId) {
-            T.notify('Giáo viên không được trống!', 'danger');
-        } else {
-            const { _id, groups = [] } = this.props.course,
-                index = groups.findIndex(item => item.teacher._id == _teacherId);
-            const _studentIds = this.props.students.map(item => item._id).filter((item, idx, arr) => arr.indexOf(item) == idx);
-            _studentIds.forEach(item => groups[index].student.push(item));
-            _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }));
-            this.props.add(_id, { groups }, () => {
-                T.notify('Thêm ứng viên vào nhóm thành công!');
-                this.hide();
-            });
-        }
+    addStudent = (e, _teacherId) => {
+        e.preventDefault();
+        this.props.add(this.props.course._id, _teacherId, this.props.student._id, 'add', () => {
+            this.hide();
+        });
     }
+
+    // onSubmit = () => {
+    //     const _teacherId = this.teacherSelect.value();
+    //     if (!_teacherId) {
+    //         T.notify('Giáo viên không được trống!', 'danger');
+    //     } else {
+    //         const { _id, groups = [] } = this.props.course,
+    //             index = groups.findIndex(item => item.teacher._id == _teacherId);
+    //         const _studentIds = this.props.students.map(item => item._id).filter((item, idx, arr) => arr.indexOf(item) == idx);
+    //         _studentIds.forEach(item => groups[index].student.push(item));
+    //         _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }));
+    //         this.props.add(_id, { groups }, () => {
+    //             T.notify('Thêm ứng viên vào nhóm thành công!');
+    //             this.hide();
+    //         });
+    //     }
+    // }
 
     render = () => {
         const teachers = this.props.course.teacherGroups.reduce((result, item, index) => item.teacher.division._id == this.props.division._id ?
             [...result,
             <li style={{ margin: 10 }} key={index}>
-                <a href='#' style={{ color: 'black' }}>
+                <a href='#' style={{ color: 'black' }} onClick={e => this.addStudent(e, item.teacher._id)}>
                     {`${item.teacher.lastname} ${item.teacher.firstname}`}
                 </a>
             </li>
@@ -64,6 +71,11 @@ class AdminTeacherView extends React.Component {
         }
     });
 
+    removeStudent = (e, teacher, student) => {
+        e.preventDefault();
+        this.props.updateCourseTeacherGroupStudent(this.props.course.item._id, teacher._id, student._id, 'remove');
+    }
+
     render() {
         const permission = this.props.permission,
             permissionTeacherWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
@@ -84,7 +96,7 @@ class AdminTeacherView extends React.Component {
                                     <a href='#' style={{ color: 'black' }} onClick={e => _id && this[`modal${item._id}`].show(e)}>
                                         {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
                                     </a>
-                                    <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourse}
+                                    <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent}
                                         course={this.props.course.item} division={item.division}
                                         student={item}
                                     // students={this.state.studentSelecteds.filter(item1 => item._id == item1.division._id)}
@@ -112,7 +124,9 @@ class AdminTeacherView extends React.Component {
                                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                                     {item.student.length ? item.student.map((student, indexStudent) => (
                                         <li key={indexStudent} style={{ margin: 10 }}>
-                                            {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                            <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
+                                                {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                            </a>
                                         </li>
                                     )) : 'Chưa có học viên'}
                                 </ol>
@@ -128,5 +142,5 @@ class AdminTeacherView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getStudentCourse, updateCourseTeacherGroup };
+const mapActionsToProps = { getCourse, getStudentCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);

@@ -129,12 +129,15 @@ module.exports = app => {
         },
 
         removeTeacherGroup: (_id, _teacherId, done) => {
-            console.log(_teacherId);
             model.findOneAndUpdate({ _id }, { $pull: { teacherGroups: { teacher: _teacherId } } }, { new: true }).exec(done);
         },
 
         addStudentToTeacherGroup: (_id, _teacherId, _studentId, done) => {
-            model.findOneAndUpdate({ _id }, { $push: { teacherGroups: { teacher: _teacherId, student: [] } } }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id, 'teacherGroups.teacher': _teacherId }, { $push: { 'teacherGroups.$.student': _studentId } }, { new: true }).exec(done);
+        },
+
+        removeStudentFromTeacherGroup: (_id, _teacherId, _studentId, done) => {
+            model.findOneAndUpdate({ _id, 'teacherGroups.teacher': _teacherId }, { $pull: { 'teacherGroups.$.student': _studentId } }, { new: true }).exec(done);
         },
 
 

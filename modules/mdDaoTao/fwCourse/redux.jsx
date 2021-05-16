@@ -150,6 +150,21 @@ export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
     };
 }
 
+export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentId, type, done) {
+    return dispatch => {
+        const url = `/api/course/teacher-group/student/${_studentId}`;
+        T.put(url, { _courseId, _teacherId, type }, data => {
+            if (data.error) {
+                T.notify('Gán học viênbị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch(getCourse(data.item._id));
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getCoursePageByUser(pageNumber, pageSize, done) {
     return dispatch => {

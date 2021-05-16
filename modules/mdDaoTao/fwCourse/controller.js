@@ -209,6 +209,16 @@ module.exports = (app) => {
         }
     });
 
+    app.put('/api/course/teacher-group/student/:_studentId', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _teacherId, type } = req.body,
+            _studentId = req.params._studentId;
+        if (type == 'add') {
+            app.model.course.addStudentToTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
+        } else if (type == 'remove') {
+            app.model.course.removeStudentFromTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
+        }
+    });
+
     // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/course/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
