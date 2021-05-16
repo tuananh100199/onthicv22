@@ -133,6 +133,10 @@ module.exports = app => {
             model.findOneAndUpdate({ _id }, { $pull: { teacherGroups: { teacher: _teacherId } } }, { new: true }).exec(done);
         },
 
+        addStudentToTeacherGroup: (_id, _teacherId, _studentId, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { teacherGroups: { teacher: _teacherId, student: [] } } }, { new: true }).exec(done);
+        },
+
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

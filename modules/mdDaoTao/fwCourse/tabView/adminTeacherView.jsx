@@ -38,12 +38,7 @@ class TeacherModal extends AdminModal {
             ] : result, []);
         return this.renderModal({
             title: 'Gán cố vấn học tập',
-            body: <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                {teachers.length ?
-                    <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                        {teachers}
-                    </ol> : 'Không có thông tin'}
-            </div>
+            body: <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}> {teachers.length ? teachers : 'Không có thông tin'} </ol>
         });
     };
 }
