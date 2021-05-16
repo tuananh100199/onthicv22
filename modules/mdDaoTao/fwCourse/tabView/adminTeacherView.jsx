@@ -107,32 +107,34 @@ class AdminTeacherView extends React.Component {
                 </div>
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Cố vấn học tập</h3>
-                    <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
-                        <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
-                        <div style={{ width: 'auto', paddingLeft: 8 }}>
-                            <button className='btn btn-success' type='button' onClick={this.addTeacher}>
-                                <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
+                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                        <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
+                            <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
+                            <div style={{ width: 'auto', paddingLeft: 8 }}>
+                                <button className='btn btn-success' type='button' onClick={this.addTeacher}>
+                                    <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
                             </button>
+                            </div>
                         </div>
+                        {teacherGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 391px)' }}>
+                            {teacherGroups.map((item, index) =>
+                                item.teacher && <li style={{ margin: 10 }} key={index}>
+                                    <a href='#' className='text-primary' onClick={e => _id && this.removeTeacher(e, item.teacher)}>
+                                        {`${item.teacher.lastname} ${item.teacher.firstname}`} - {item.teacher.division && item.teacher.division.title}{item.teacher.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                    </a>
+                                    <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                        {item.student.length ? item.student.map((student, indexStudent) => (
+                                            <li key={indexStudent} style={{ margin: 10 }}>
+                                                <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
+                                                    {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                                </a>
+                                            </li>
+                                        )) : 'Chưa có học viên'}
+                                    </ol>
+                                </li>
+                            )}
+                        </ol> : 'Không có thông tin'}
                     </div>
-                    {teacherGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
-                        {teacherGroups.map((item, index) =>
-                            item.teacher && <li style={{ margin: 10 }} key={index}>
-                                <a href='#' className='text-primary' onClick={e => _id && this.removeTeacher(e, item.teacher)}>
-                                    {`${item.teacher.lastname} ${item.teacher.firstname}`} - {item.teacher.division && item.teacher.division.title}{item.teacher.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
-                                </a>
-                                <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                                    {item.student.length ? item.student.map((student, indexStudent) => (
-                                        <li key={indexStudent} style={{ margin: 10 }}>
-                                            <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
-                                                {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
-                                            </a>
-                                        </li>
-                                    )) : 'Chưa có học viên'}
-                                </ol>
-                            </li>
-                        )}
-                    </ol> : 'Không có thông tin'}
                     {/* <h5>Nhóm học viên thuộc cơ sở Hiệp Phát</h5> */}
                 </div>
                 {/* <CirclePageButton type='export' onClick={exportScore(this.props.course && this.props.course.item && this.props.course.item._id)} /> */}
