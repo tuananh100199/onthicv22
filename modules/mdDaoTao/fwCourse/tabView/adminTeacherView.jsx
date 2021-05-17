@@ -80,7 +80,11 @@ class AdminTeacherView extends React.Component {
         const permission = this.props.permission,
             permissionTeacherWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
         const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
-        const { _id, teacherGroups } = this.props.course ? this.props.course.item : null;
+        const _id = this.props.course && this.props.course.item ? this.props.course.item._id : null;
+        const teacherGroups = this.props.course && this.props.course.item ? this.props.course.item.teacherGroups : [];
+        // let _id, teacherGroups;
+        // ({ _id, teacherGroups } = this.props.course && this.props.course.item);
+        // const { _id, teacherGroups } = this.props.course.item;
         return (
             <div className='row'>
                 <div className='col-md-6' >
