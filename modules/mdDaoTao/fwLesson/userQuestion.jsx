@@ -144,40 +144,31 @@ class adminEditPage extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
-                        {activeQuestion ?
-                            (
-                                <div className='col-md-12 pb-5'>
-                                    <div className='row'>
-                                        <div className='col-md-8'>
-                                            <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: </h6>
-                                            <h6>{activeQuestion.title}</h6>
-                                        </div>
-                                    </div>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: 'auto', height: '300px', display: 'block', margin: 'auto', padding: '15px 0px' }} /> : null}
-                                    <div className='form-check'>
-                                        {activeQuestion.answers.split('\n').map((answer, index) => (
-                                            <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
-                                                <input className='custom-control-input'
-                                                    type='radio'
-                                                    name={activeQuestion._id}
-                                                    id={activeQuestion._id + index}
-                                                    value={index}
-                                                    disabled={prevAnswers && prevTrueAnswers}
-                                                    onChange={e => this.onAnswerChanged(e, activeQuestion._id)}
-                                                />
-
-                                                <label className={'custom-control-label ' +
-                                                    (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
-                                                        (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
-                                                            (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
-                                                } htmlFor={activeQuestion._id + index} style={{ cursor: 'pointer' }} >
-                                                    {answer}
-                                                </label>
-                                            </div>
-                                        ))}
+                        {activeQuestion ? (
+                            <div className='col-md-12 pb-5'>
+                                <div className='row'>
+                                    <div className='col-md-8'>
+                                        <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: </h6>
+                                        <h6>{activeQuestion.title}</h6>
                                     </div>
                                 </div>
-                            ) : <></>
+                                {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: 'auto', height: '300px', display: 'block', margin: 'auto', padding: '15px 0px' }} /> : null}
+                                <div className='form-check'>
+                                    {activeQuestion.answers.split('\n').map((answer, index) => (
+                                        <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
+                                            <input className='custom-control-input' type='radio' name={activeQuestion._id} id={activeQuestion._id + index} value={index} disabled={prevAnswers && prevTrueAnswers} onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+
+                                            <label className={'custom-control-label ' +
+                                                (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                    (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
+                                                        (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                            } htmlFor={activeQuestion._id + index} style={{ cursor: 'pointer' }} >
+                                                {answer}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>) : null
                         }
                     </div>
                     <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
@@ -194,7 +185,7 @@ class adminEditPage extends AdminPage {
                                     {showSubmitButton ?
                                         <button className='btn' id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                             <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
-                                                </button> :
+                                        </button> :
                                         <button className='btn btn-info' id='refresh-btn' onClick={e => this.refreshQuestion(e, questions[0]._id)} disabled={false}>
                                             <i className='fa fa-lg fa-refresh' /> Làm lại
                                         </button>
