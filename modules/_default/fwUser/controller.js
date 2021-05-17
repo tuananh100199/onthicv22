@@ -30,20 +30,8 @@ module.exports = app => {
                     );
                 }
 
-                if (condition.userType == 'isCourseAdmin') {
-                    pageCondition.$or.push({ isCourseAdmin: true });
-                } else if (condition.userType == 'isStaff') {
-                    pageCondition.$or.push({ isStaff: true });
-                } else if (condition.userType == 'isLecturer') {
-                    pageCondition.$or.push({ isLecturer: true });
-                } else if (condition.userType == 'isRepresenter') {
-                    pageCondition.$or.push({ isRepresenter: true });
-                } else if (Array.isArray(condition.userType)) {
-                    condition.userType.forEach((item) => {
-                        pageCondition.$or.push(JSON.parse(`{ "${item}":true}`));
-                    });
-                }
-
+                (condition.userType ? (Array.isArray(condition.userType) ? condition.userType : [condition.userType]) : []).forEach(item =>
+                    pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
