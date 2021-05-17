@@ -74,10 +74,10 @@ module.exports = (app) => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 if (condition.searchText) {
-                    model.aggregate([{ $project: { 'name': { $concat: ['$lastname', '', '$firstname'] } } },
+                    model.aggregate([{ $project: { 'name': { $concat: ['$lastname', ' ', '$firstname'] } } },
                     { $match: { 'name': { $regex: `.*${condition.searchText}.*`, $options: 'i' } } }
                     ]).exec((error, list) => {
-                        const _ids = list.map(item => item._id);
+                        _ids = list.map(item => item._id);
                         delete condition.searchText;
                         model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
                             .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
