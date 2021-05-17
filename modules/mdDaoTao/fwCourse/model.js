@@ -140,6 +140,22 @@ module.exports = app => {
             model.findOneAndUpdate({ _id, 'teacherGroups.teacher': _teacherId }, { $pull: { 'teacherGroups.$.student': _studentId } }, { new: true }).exec(done);
         },
 
+        addRepresenterGroup: (_id, _representerId, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { representerGroups: { representer: _representerId, student: [] } } }, { new: true }).exec(done);
+        },
+
+        removeRepresenterGroup: (_id, _representerId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { teacherGroups: { representer: _representerId } } }, { new: true }).exec(done);
+        },
+
+        addStudentToRepresenterGroup: (_id, _representerId, _studentId, done) => {
+            model.findOneAndUpdate({ _id, 'representerGroups.representer': _representerId }, { $push: { 'representerGroups.$.student': _studentId } }, { new: true }).exec(done);
+        },
+
+        removeStudentFromRepresenterGroup: (_id, _representerId, _studentId, done) => {
+            model.findOneAndUpdate({ _id, 'representerGroups.representer': _representerId }, { $pull: { 'representerGroups.$.student': _studentId } }, { new: true }).exec(done);
+        },
+
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

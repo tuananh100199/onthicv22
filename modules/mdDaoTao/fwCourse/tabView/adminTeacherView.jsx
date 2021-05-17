@@ -52,6 +52,7 @@ class TeacherModal extends AdminModal {
 class AdminTeacherView extends React.Component {
     state = {};
     componentDidMount() {
+
         this.props.course && this.props.course.item && this.props.getStudentCourse(this.props.course.item._id);
     }
 
