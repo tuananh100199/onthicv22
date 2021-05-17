@@ -55,6 +55,23 @@ class UserProfilePage extends AdminPage {
                             </div>
                         ))}
                     </> : null}
+                    <h4 style={{ width: '100%' }}>Ôn tập</h4>
+                    <Link to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' className='col-md-6 col-lg-4'>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-dashboard' />
+                            <div className='info'>
+                                <h4>Bộ đề thi thử</h4>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' className='col-md-6 col-lg-4'>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-dashboard' />
+                            <div className='info'>
+                                <h4>Bộ đề thi ngẫu nhiên</h4>
+                            </div>
+                        </div>
+                    </Link>
                 </div>),
         });
     }

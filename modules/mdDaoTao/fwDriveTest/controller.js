@@ -14,7 +14,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'driveTestUser:read', menu: driveTest }, { name: 'driveTest:read', menu }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' });
+    app.permission.add({ name: 'driveTestUser:read', menu: driveTest }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' }, { name: 'driveTest:read', menu });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
@@ -22,8 +22,7 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/chi-tiet/:_id', app.templates.admin);
-
+    
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/drive-test/all', (req, res) => {
         const condition = req.query.condition;
@@ -79,14 +78,32 @@ module.exports = app => {
         if (driveTest && today < driveTest.expireDay) {
             res.send({ driveTest });
         } else {
+            app.getRandom = (arr, n) => {
+                if (n < 1) {
+                    return null;
+                }
+                let result = new Array(n),
+                    len = arr.length,
+                    taken = new Array(len);
+                if (n > len) {
+                    return null;
+                }
+                while (n--) {
+                    let x = Math.floor(Math.random() * len);
+                    result[n] = arr[x in taken ? taken[x] : x];
+                    taken[x] = --len in taken ? taken[len] : len;
+                }
+                return result;
+            };
+            
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
-                    res.send({ error });
+                    res.send({ error: 'Lấy loại khóa học bị lỗi!' });
                 } else {
                     if (item.questionTypes) {
                         app.model.driveQuestion.getAll((error, list) => {
                             if (error || list.length == 0) {
-                                res.sed('Get all question failed');
+                                res.send({error: 'Lấy câu hỏi thi bị lỗi!'});
                             } else {
                                 const questionMapper = {};
                                 list.forEach(question => {
@@ -107,6 +124,8 @@ module.exports = app => {
                                 res.send({ driveTest });
                             }
                         });
+                    } else {
+                        res.send({error: 'Lấy loại câu hỏi thi bị lỗi!'});
                     }
                 }
             });

@@ -9,7 +9,7 @@ class SectionVideo extends React.Component {
         if (this.props.viewId) {
             this.props.homeGetVideo(this.props.viewId, item => {
                 if (item) {
-                    this.setState({ title: item.title, link: item.link, image: item.image });
+                    this.setState({ title: item.item.title, link: item.item.link, image: item.item.image });
                     const done = () => {
                         const elements = $('.popup-youtube, .popup-vimeo, .popup-gmaps');
                         if (elements.length > 0) {
@@ -35,7 +35,6 @@ class SectionVideo extends React.Component {
         let videoTitle = this.state.title ? this.state.title : '',
             videoUrl = this.state.link ? this.state.link : '',
             sectionStyle = Object.assign({ padding: '8em 0', marginBottom: '6em', position: 'relative' }, this.props.style, this.state.image ? { backgroundImage: 'url(' + T.baseUrl + this.state.image + ')' } : '');
-
         return (
             <section className='img' style={sectionStyle}>
                 <div className='overlay' />
@@ -44,7 +43,7 @@ class SectionVideo extends React.Component {
                         <div className='col-md-9 about-video text-center'>
                             <h2>{videoTitle}</h2>
                             <div className='video d-flex justify-content-center'>
-                                <a href={videoUrl} className='button popup-youtube d-flex justify-content-center align-items-center'>
+                                <a href={'https://www.youtube.com/watch?v=' + videoUrl} className='button popup-youtube d-flex justify-content-center align-items-center'>
                                     <span className='fa fa-play' />
                                 </a>
                             </div>

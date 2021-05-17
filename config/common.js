@@ -17,24 +17,6 @@ module.exports = (app, appName) => {
         return result;
     };
 
-    app.getRandom = (arr, n) => {
-        if (n < 1) {
-            return null;
-        }
-        let result = new Array(n),
-            len = arr.length,
-            taken = new Array(len);
-        if (n > len) {
-            return null;
-        }
-        while (n--) {
-            let x = Math.floor(Math.random() * len);
-            result[n] = arr[x in taken ? taken[x] : x];
-            taken[x] = --len in taken ? taken[len] : len;
-        }
-        return result;
-    };
-
     // Response template - html file ---------------------------------------------------------------------------------------------------------------------------
     app.templates = {};
     app.createTemplate = function () {
@@ -69,7 +51,7 @@ module.exports = (app, appName) => {
         setting: { index: 2000, title: 'Cấu hình', icon: 'fa-cog' },
         communication: { index: 3000, title: 'Truyền thông', icon: 'fa fa-bullhorn' },
         trainning: { index: 4000, title: 'Đào tạo', icon: 'fa-graduation-cap' },
-        driveTest: { index: 6000, title: 'Ôn tập đề thi', icon: 'fa-graduation-cap' },
+        driveTest: { index: 6000, title: 'Ôn tập', icon: 'fa-graduation-cap' },
     };
 
     // Upload Hook -----------------------------------------------------------------------------------------------------

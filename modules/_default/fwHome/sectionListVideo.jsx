@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getVideoAllByUser } from './redux/reduxVideo';
 import { getListVideoByUser } from './redux/reduxListVideo';
 
 class SectionListVideo extends React.Component {
@@ -37,32 +36,29 @@ class SectionListVideo extends React.Component {
                 this.props.getListVideoByUser(this.props.viewId, data => {
                     if (data.error) {
                         console.log('list các video trống');
-                    } else if (data.item) {
-                        this.props.getVideoAllByUser({ listVideoId: data.item._id }, (items) => {
-                            if (items) {
-                                this.setState({ item: data.item, items }, () => {
-                                    const done = () => {
-                                        const elements = $('.popup-youtube, .popup-vimeo, .popup-gmaps');
-                                        if (elements.length == 2 * items.length) {
-                                            this.handleResize();
-                                            setTimeout(() => {
-                                                $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
-                                                    disableOn: 700,
-                                                    type: 'iframe',
-                                                    mainClass: 'mfp-fade',
-                                                    removalDelay: 160,
-                                                    preloader: false,
-                                                    fixedContentPos: false,
-                                                    // closeOnBgClick: false
-                                                });
-                                            }, 50);
-                                        } else {
-                                            setTimeout(done, 100);
-                                        }
-                                    };
-                                    done();
-                                });
-                            }
+                    } else if (data.item && data.item.items) {
+                        const items = data.item.items;
+                        this.setState({ item: data.item, items: items }, () => {
+                            const done = () => {
+                                const elements = $('.popup-youtube, .popup-vimeo, .popup-gmaps');
+                                if (elements.length == 2 * items.length) {
+                                    this.handleResize();
+                                    setTimeout(() => {
+                                        $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
+                                            disableOn: 700,
+                                            type: 'iframe',
+                                            mainClass: 'mfp-fade',
+                                            removalDelay: 160,
+                                            preloader: false,
+                                            fixedContentPos: false,
+                                            // closeOnBgClick: false
+                                        });
+                                    }, 50);
+                                } else {
+                                    setTimeout(done, 100);
+                                }
+                            };
+                            done();
                         });
                     }
                 });
@@ -94,14 +90,14 @@ class SectionListVideo extends React.Component {
                                     <div className='service'>
                                         <div className='d-flex flex-column align-items-center justify-content-center ml-auto mr-auto'>
                                             <div>
-                                                <a href={_item.link} className='popup-youtube'>
+                                                <a href={'https://www.youtube.com/watch?v=' + _item.link} className='popup-youtube'>
                                                     <img src={_item.image} style={{ width: '100%' }} alt={_item.title} />
                                                 </a>
                                             </div>
                                         </div>
 
                                         <div className='service_title'>
-                                            <a href={_item.link} className='text-success popup-youtube'>
+                                            <a href={'https://www.youtube.com/watch?v=' + _item.link} className='text-success popup-youtube'>
                                                 {_item.title}
                                             </a>
                                         </div>
@@ -121,5 +117,5 @@ class SectionListVideo extends React.Component {
 }
 
 const mapStateToProps = () => ({});
-const mapActionsToProps = { getVideoAllByUser, getListVideoByUser };
+const mapActionsToProps = { getListVideoByUser };
 export default connect(mapStateToProps, mapActionsToProps)(SectionListVideo);
