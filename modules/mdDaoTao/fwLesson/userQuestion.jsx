@@ -153,7 +153,7 @@ class adminEditPage extends AdminPage {
                                             <h6>{activeQuestion.title}</h6>
                                         </div>
                                     </div>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
+                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: 'auto', height: '300px', display: 'block', margin: 'auto', padding: '15px 0px' }} /> : null}
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>

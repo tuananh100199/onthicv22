@@ -33,7 +33,7 @@ class Footer extends React.Component {
                                                 this.props.division.list.map((item, index) => (
                                                     <li key={index} className='mb-2'>
                                                         <div className='location_title'>{item.title}: {item.address ? item.address : ''}</div>
-                                                        <div className='location_text mt-0'>Điện thoại: {T.mobileDisplay(item.phoneNumber)}&nbsp;&nbsp;Di động:&nbsp;{T.mobileDisplay(item.mobile)}</div>
+                                                        <div className='location_text mt-0'>Điện thoại:<a href={'tel:' + item.phoneNumber}>{T.mobileDisplay(item.phoneNumber)}</a> &nbsp;&nbsp;Di động:&nbsp;<a href={'tel:' + item.mobile}>{T.mobileDisplay(item.mobile)}</a></div>
                                                         <div className='location_text mt-0'>Email:&nbsp;<a href={'mailto:' + item.email}>{item.email}</a></div>
                                                     </li>
                                                 )) : ''}
