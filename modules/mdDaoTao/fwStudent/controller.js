@@ -93,6 +93,7 @@ module.exports = (app) => {
                         res.send({ error });
                     } else {
                         course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == _studentId && group.student.splice(index, 1)));
+                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == _studentId && group.student.splice(index, 1)));
                         course.save();
                         res.send({ student });
                     }
