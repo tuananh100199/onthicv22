@@ -5,10 +5,11 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton } from 'view/component/AdminPage';
 import AdminSubjectView from './tabView/adminSubjectView';
+import AdminTeacherView from './tabView/adminTeacherView';
 import AdminManagerView from './tabView/adminManagerView';
 import AdminStudentView from './tabView/adminStudentView';
-import AdminTeacherView from './tabView/adminTeacherView';
-import AdminStudentsToRepresentersView from './tabView/adminStudentsToRepresentersView';
+// import AdminAssignTeacherView from './tabView/adminAssignTeacherView';
+import AdminRepresentersView from './tabView/adminRepresentersView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -111,8 +112,8 @@ class EditCoursePage extends AdminPage {
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
             { title: 'Quản trị viên', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
             { title: 'Học viên', component: this.state.courseType && this.props.course ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
-            { title: 'Gán cố vấn học tập', component: <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} updateCourse={this.props.updateCourse} /> },
-            { title: 'Gán giáo viên', component: <AdminStudentsToRepresentersView permission={permissionCourse} /> },
+            { title: 'Gán cố vấn học tập', component: this.props.course ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
+            { title: 'Gán giáo viên', component: <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> },
         ];
 
         return this.renderPage({

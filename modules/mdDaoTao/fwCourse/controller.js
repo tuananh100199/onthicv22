@@ -198,6 +198,26 @@ module.exports = (app) => {
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
         app.model.course.delete(req.body._id, (error) => res.send({ error }));
     });
+    // TeacherGroups APIs -----------------------------------------------------------------------------------------------------
+    app.put('/api/course/teacher-group/teacher/:_teacherId', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, type } = req.body,
+            _teacherId = req.params._teacherId;
+        if (type == 'add') {
+            app.model.course.addTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
+        } else if (type == 'remove') {
+            app.model.course.removeTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
+        }
+    });
+
+    app.put('/api/course/teacher-group/student/:_studentId', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _teacherId, type } = req.body,
+            _studentId = req.params._studentId;
+        if (type == 'add') {
+            app.model.course.addStudentToTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
+        } else if (type == 'remove') {
+            app.model.course.removeStudentFromTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
+        }
+    });
 
     // Home -----------------------------------------------------------------------------------------------------------
     app.get('/home/course/page/:pageNumber/:pageSize', (req, res) => {
