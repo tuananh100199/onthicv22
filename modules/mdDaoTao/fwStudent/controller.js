@@ -123,12 +123,19 @@ module.exports = (app) => {
             // }
             // delete condition.searchText;
             pageCondition = app.clone(pageCondition, condition);
-            delete pageCondition.searchText;
+            // delete pageCondition.searchText;
             app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
-                if (condition.searchText) {
-                    const value = new RegExp(condition.searchText, 'i');
-                    page.list = page.list.reduce((res, item) => value.test(`${item.lastname} ${item.firstname}`) ? [...res, item] : res, []);
-                }
+                // if (condition.searchText) {
+                //     console.log(condition.searchText, 'st');
+                //     const value = new RegExp(condition.searchText, 'u');
+                //     console.log(value, 'streerd');
+                //     page.list.forEach((item) => {
+                //         console.log(`${item.lastname} ${item.firstname}`, 'string');
+                //         console.log(value.test(`${item.lastname} ${item.firstname}`), ' value.test(`${item.lastname} ${item.firstname}`)');
+
+                //     });
+                //     page.list = page.list.reduce((res, item) => value.test(`${item.lastname} ${item.firstname}`.normalize('NFC')) ? [...res, item] : res, []);
+                // }
                 res.send({ error, page });
             });
         } catch (error) {
