@@ -16,7 +16,7 @@ class UserPageRandomDriveTest extends AdminPage {
     render() {
         const { courseTypes } = this.state ? this.state : [];
         return this.renderPage({
-            icon: 'fa fa-cubes',
+            icon: 'fa fa-dashboard',
             title: 'Bộ đề thi ngẫu nhiên ',
             breadcrumb: ['Bộ đề thi ngẫu nhiên'],
             content: (

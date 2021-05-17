@@ -58,7 +58,7 @@ class UserDriveTestPage extends AdminPage {
         const courseTypes = this.state.courseTypes ? this.state.courseTypes : [];
         const tabs = courseTypes.length ? courseTypes.map(courseType => ({ title: courseType.text, component: <DriveTestContent driveTest={this.props.driveTest} getDriveTestPage={this.props.getDriveTestPage} courseType={courseType.id} /> })) : [];
         return this.renderPage({
-            icon: 'fa fa-cubes',
+            icon: 'fa fa-dashboard',
             title: 'Bộ đề thi thử',
             breadcrumb: ['Bộ đề thi thử'],
             content: <>
