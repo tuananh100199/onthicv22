@@ -30,8 +30,10 @@ module.exports = app => {
                     );
                 }
 
-                (condition.userType ? (Array.isArray(condition.userType) ? condition.userType : [condition.userType]) : []).forEach(item =>
-                    pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
+                if (condition.userType != 'all') {
+                    (condition.userType ? (Array.isArray(condition.userType) ? condition.userType : [condition.userType]) : []).forEach(item =>
+                        pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
+                }
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;

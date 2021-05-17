@@ -64,7 +64,7 @@ class AdminTeacherView extends React.Component {
         }
     };
 
-    removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Cố vấn học tập', 'Bạn có chắc muốn xoá Cố vấn học tập khỏi khóa học này?', true, isConfirm => {
+    removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Cố vấn học tập', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id } = this.props.course.item;
             this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove');
@@ -82,64 +82,54 @@ class AdminTeacherView extends React.Component {
         const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
         const _id = this.props.course && this.props.course.item ? this.props.course.item._id : null;
         const teacherGroups = this.props.course && this.props.course.item ? this.props.course.item.teacherGroups : [];
-        // let _id, teacherGroups;
-        // ({ _id, teacherGroups } = this.props.course && this.props.course.item);
-        // const { _id, teacherGroups } = this.props.course.item;
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Học viên</h3>
-                    {/* <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <h5>Học viên thuộc cơ sở Hiệp Phát</h5>
-                    </div> */}
+                    <h3 className='tile-title'>Học viên chưa gán Cố vấn học tập</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse(this.props.course.item._id, e.target.value)} />
                         {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
                             {courseList.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }} onClick={e => _id && this[`modal${item._id}`].show(e)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
                                     <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent}
-                                        course={this.props.course.item} division={item.division}
-                                        student={item}
-                                    // students={this.state.studentSelecteds.filter(item1 => item._id == item1.division._id)}
-                                    />
+                                        course={this.props.course.item} division={item.division} student={item} />
                                 </li>))}
-                        </ol> : 'Không có thông tin'}
+                        </ol> : <label>Chưa có học viên!</label>}
                     </div>
                 </div>
                 <div className='col-md-6'>
-                    <h3 className='tile-title'>Cố vấn học tập</h3>
+                    <h3 className='tile-title'>Danh sách Cố vấn học tập</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                        <label>Tìm kiếm cố vấn học tập</label>
                         <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
                             <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
                             <div style={{ width: 'auto', paddingLeft: 8 }}>
                                 <button className='btn btn-success' type='button' onClick={this.addTeacher}>
                                     <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
-                            </button>
+                                </button>
                             </div>
                         </div>
                         {teacherGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 391px)' }}>
-                            {teacherGroups.map((item, index) =>
-                                item.teacher && <li style={{ margin: 10 }} key={index}>
+                            {teacherGroups.map((item, index) => item.teacher ?
+                                <li className='text-primary' style={{ margin: 10 }} key={index}>
                                     <a href='#' className='text-primary' onClick={e => _id && this.removeTeacher(e, item.teacher)}>
-                                        {`${item.teacher.lastname} ${item.teacher.firstname}`} - {item.teacher.division && item.teacher.division.title}{item.teacher.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                        {`${item.teacher.lastname} ${item.teacher.firstname}`} - {item.teacher.division && item.teacher.division.title}{item.teacher.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
-                                    <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                    <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                                         {item.student.length ? item.student.map((student, indexStudent) => (
-                                            <li key={indexStudent} style={{ margin: 10 }}>
+                                            <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
                                                 <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
-                                                    {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> ( cơ sở ngoài )</span> : ''}
+                                                    {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                                 </a>
                                             </li>
-                                        )) : 'Chưa có học viên'}
-                                    </ol>
-                                </li>
-                            )}
-                        </ol> : 'Không có thông tin'}
+                                        )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
+                                    </ul>
+                                </li> : null)}
+                        </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
-                    {/* <h5>Nhóm học viên thuộc cơ sở Hiệp Phát</h5> */}
                 </div>
                 {/* <CirclePageButton type='export' onClick={exportScore(this.props.course && this.props.course.item && this.props.course.item._id)} /> */}
             </div>

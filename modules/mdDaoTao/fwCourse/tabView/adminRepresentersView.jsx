@@ -66,7 +66,7 @@ class AdminRepresentersView extends React.Component {
                             {courseList.map((item, index) => (
                                 <li key={index}>
                                     <a href='#' style={{ color: 'black' }}>
-                                        {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
+                                        {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
                                     </a>
                                 </li>
                             ))}

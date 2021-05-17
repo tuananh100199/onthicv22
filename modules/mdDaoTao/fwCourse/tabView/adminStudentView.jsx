@@ -31,14 +31,15 @@ class AdminStudentView extends React.Component {
         });
     }
 
-    removeStudentCourse = (e, student, pageSize) => {
-        e.preventDefault();
-        const { _id } = this.props.course.item;
-        this.props.removeStudentCourse(student._id, _id, () => {
-            this.searchBoxPre.value('');
-            this.props.getCourse(_id, () => this.setState({ searchText: '' }, () => this.onSearch({ pageSize })));
-        });
-    }
+    removeStudentCourse = (e, student, pageSize) => e.preventDefault() || T.confirm('Xoá Học viên', `Bạn có chắc muốn xoá ${student.lastname} ${student.firstname} khỏi khóa học này?`, true, isConfirm => {
+        if (isConfirm) {
+            const { _id } = this.props.course.item;
+            this.props.removeStudentCourse(student._id, _id, () => {
+                this.searchBoxPre.value('');
+                this.props.getCourse(_id, () => this.setState({ searchText: '' }, () => this.onSearch({ pageSize })));
+            });
+        }
+    });
 
     render() {
         const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
@@ -65,7 +66,7 @@ class AdminStudentView extends React.Component {
                             {preStudentList.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId }, pageNumber, pageSize)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
+                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
                                 </li>))}
                         </ol> : 'Không có thông tin'}
@@ -81,7 +82,7 @@ class AdminStudentView extends React.Component {
                             {courseList.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index}>
                                     <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.removeStudentCourse(e, item, pageSize)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
+                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
                                 </li>))}
                         </ol> : 'Không có thông tin'}
