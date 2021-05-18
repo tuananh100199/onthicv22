@@ -12,27 +12,12 @@ class TeacherModal extends AdminModal {
 
     addStudent = (e, _teacherId) => {
         e.preventDefault();
-        this.props.add(this.props.course._id, _teacherId, this.props.student._id, 'add', () => {
+        const { _id } = this.props.course;
+        this.props.add(_id, _teacherId, this.props.student._id, 'add', () => {
+            this.props.getStudentCourse({ course: _id });
             this.hide();
         });
     }
-
-    // onSubmit = () => {
-    //     const _teacherId = this.teacherSelect.value();
-    //     if (!_teacherId) {
-    //         T.notify('Giáo viên không được trống!', 'danger');
-    //     } else {
-    //         const { _id, groups = [] } = this.props.course,
-    //             index = groups.findIndex(item => item.teacher._id == _teacherId);
-    //         const _studentIds = this.props.students.map(item => item._id).filter((item, idx, arr) => arr.indexOf(item) == idx);
-    //         _studentIds.forEach(item => groups[index].student.push(item));
-    //         _studentIds.forEach(item => this.props.updateStudent(item, { course: _id }));
-    //         this.props.add(_id, { groups }, () => {
-    //             T.notify('Thêm ứng viên vào nhóm thành công!');
-    //             this.hide();
-    //         });
-    //     }
-    // }
 
     render = () => {
         const teachers = this.props.course.teacherGroups.reduce((result, item, index) => item.teacher.division._id == this.props.division._id ?
@@ -52,7 +37,7 @@ class TeacherModal extends AdminModal {
 class AdminTeacherView extends React.Component {
     state = {};
     componentDidMount() {
-        this.props.course && this.props.course.item && this.props.getStudentCourse(this.props.course.item._id);
+        this.props.course && this.props.course.item && this.props.getStudentCourse({ course: this.props.course.item._id });
     }
 
     addTeacher = e => {
@@ -60,26 +45,31 @@ class AdminTeacherView extends React.Component {
         const { _id, teacherGroups = [] } = this.props.course.item,
             _teacherId = this.selectTeacher.value();
         if (_teacherId && teacherGroups.find(({ teacher }) => teacher._id == _teacherId) == null) {
-            this.props.updateCourseTeacherGroup(_id, _teacherId, 'add');
+            this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
         }
     };
 
     removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Cố vấn học tập', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id } = this.props.course.item;
-            this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove');
+            this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove', () => {
+                this.props.getStudentCourse({ course: _id });
+            });
         }
     });
 
     removeStudent = (e, teacher, student) => {
         e.preventDefault();
-        this.props.updateCourseTeacherGroupStudent(this.props.course.item._id, teacher._id, student._id, 'remove');
+        const { _id } = this.props.course.item;
+        this.props.updateCourseTeacherGroupStudent(_id, teacher._id, student._id, 'remove', () => {
+            this.props.getStudentCourse({ course: _id });
+        });
     }
 
     render() {
         const permission = this.props.permission,
             permissionTeacherWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
-        const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
+        const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList.teachers : [];
         const _id = this.props.course && this.props.course.item ? this.props.course.item._id : null;
         const teacherGroups = this.props.course && this.props.course.item ? this.props.course.item.teacherGroups : [];
         return (
@@ -95,7 +85,7 @@ class AdminTeacherView extends React.Component {
                                         {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
                                     <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent}
-                                        course={this.props.course.item} division={item.division} student={item} />
+                                        course={this.props.course.item} division={item.division} student={item} getStudentCourse={this.props.getStudentCourse} />
                                 </li>))}
                         </ol> : <label>Chưa có học viên!</label>}
                     </div>
