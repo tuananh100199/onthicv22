@@ -52,7 +52,9 @@ class AdminTeacherView extends React.Component {
     removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Cố vấn học tập', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id } = this.props.course.item;
-            this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove');
+            this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove', () => {
+                this.props.getStudentCourse({ course: _id });
+            });
         }
     });
 
