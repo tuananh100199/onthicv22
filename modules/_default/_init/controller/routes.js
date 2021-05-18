@@ -19,7 +19,7 @@ module.exports = (app) => {
 
     // API ------------------------------------------------------------------------------------------------------------------------------------------
     app.put('/api/system', app.permission.check('system:settings'), (req, res) => {
-        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram, dangKyTuVanLink } = req.body;
+        let { emailPassword, email, address, mobile, fax, facebook, youtube, twitter, instagram } = req.body;
         if (emailPassword) {
             app.model.setting.set({ emailPassword }, error => {
                 if (error) {
@@ -40,7 +40,6 @@ module.exports = (app) => {
             if (youtube || youtube == '') changes.push('youtube', youtube.trim() || '');
             if (twitter || twitter == '') changes.push('twitter', twitter.trim() || '');
             if (instagram || instagram == '') changes.push('instagram', instagram.trim() || '');
-            if (dangKyTuVanLink || dangKyTuVanLink == '') changes.push('dangKyTuVanLink', dangKyTuVanLink.trim() || '');
             app.state.set(...changes, error => {
                 error && console.log('Error when save system state!', error);
                 app.state.get((error, data) => {
@@ -139,7 +138,7 @@ module.exports = (app) => {
             console.log('Hook: uploadSettingImage => ' + fields.userData);
             const srcPath = files.SettingImage[0].path;
 
-            if (['logo', 'footer', 'contact', 'subscribe'].includes(fields.userData.toString())) {
+            if (['logo', 'contact', 'subscribe'].includes(fields.userData.toString())) {
                 app.state.get(fields.userData, (_, oldImage) => {
                     oldImage && app.deleteImage(oldImage);
                     let destPath = `/img/${fields.userData}${app.path.extname(srcPath)}`;

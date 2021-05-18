@@ -7,8 +7,8 @@ class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready();
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, dangKyTuVanLink, logo, footer, contact, subscribe } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', dangKyTuVanLink: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, contact, subscribe } = this.props.system ?
+            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
         this.systemAddress.value(address);
         this.systemEmail.value(email);
         this.systemMobile.value(mobile);
@@ -17,12 +17,10 @@ class SettingsPage extends AdminPage {
         this.systemYoutube.value(youtube);
         this.systemTwitter.value(twitter);
         this.systemInstagram.value(instagram);
-        this.systemDangKyTuVanLink.value(dangKyTuVanLink);
         this.systemLogo.setData('logo', logo);
-        this.systemFooter.setData('footer', footer);
         this.systemContact.setData('contact', contact);
         this.systemSubscribe.setData('subscribe', subscribe);
-        this.setState({ logo, footer, contact, subscribe });
+        this.setState({ logo, contact, subscribe });
     }
 
     saveCommonInfo = () => {
@@ -35,7 +33,6 @@ class SettingsPage extends AdminPage {
             youtube: this.systemYoutube.value(),
             twitter: this.systemTwitter.value(),
             instagram: this.systemInstagram.value(),
-            dangKyTuVanLink: this.systemDangKyTuVanLink.value(),
         });
     }
 
@@ -74,7 +71,6 @@ class SettingsPage extends AdminPage {
                                 <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemEmail = e} label='Email' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemDangKyTuVanLink = e} label='Đường dẫn đăng ký tư vấn' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemFax = e} label='Fax' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemYoutube = e} label='You tube' readOnly={readOnly} />
@@ -114,7 +110,6 @@ class SettingsPage extends AdminPage {
                             <div className='tile-body'>
                                 <div className='tile-body'>
                                     <FormImageBox ref={e => this.systemLogo = e} label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly} />
-                                    <FormImageBox ref={e => this.systemFooter = e} label='Hình nền cuối trang web' uploadType='SettingImage' image={this.state.footer} readOnly={readOnly} />
                                     <FormImageBox ref={e => this.systemContact = e} label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly} />
                                     <FormImageBox ref={e => this.systemSubscribe = e} label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly} />
                                 </div>

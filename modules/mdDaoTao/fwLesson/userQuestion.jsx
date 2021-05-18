@@ -141,7 +141,8 @@ class adminEditPage extends AdminPage {
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Bài học</Link>, 'Câu hỏi ôn tập'],
-            content: (
+            content: (<>
+             {questions && questions.length ? (
                 <div className='tile'>
                     <div className='tile-body row'>
                         {activeQuestion ? (
@@ -195,7 +196,8 @@ class adminEditPage extends AdminPage {
                         </div>
                     </div>
                 </div>
-            ),
+             ): <div className='tile'>Không có câu hỏi</div>}
+           </>),
             backRoute: userPageLink,
         });
     }

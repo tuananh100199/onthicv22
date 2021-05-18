@@ -42,7 +42,7 @@ class SectionSubscribe extends React.Component {
         let subscribe = this.props && this.props.system && this.props.system.subscribe ? this.props.system.subscribe : '/img/subscribe.jpg';
         return (
             <div className='newsletter'>
-                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8' />
+                <div ref={e => this.background = e} className='parallax_background parallax-window' data-parallax='scroll' data-image-src={subscribe} data-speed='0.8' style={{backgroundColor: 'black', opacity: '0.7'}}/>
                 <div className='container'>
                     <div className='row'>
                         <div className='col text-center'>
