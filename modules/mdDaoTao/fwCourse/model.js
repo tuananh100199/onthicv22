@@ -79,6 +79,16 @@ module.exports = app => {
                 populate: {
                     path: 'division'
                 }
+            }).populate({
+                path: 'representerGroups.representer',
+                populate: {
+                    path: 'division'
+                }
+            }).populate({
+                path: 'representerGroups.student',
+                populate: {
+                    path: 'division'
+                }
             }).exec(done);
         },
 
@@ -145,7 +155,7 @@ module.exports = app => {
         },
 
         removeRepresenterGroup: (_id, _representerId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { teacherGroups: { representer: _representerId } } }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { representerGroups: { representer: _representerId } } }, { new: true }).exec(done);
         },
 
         addStudentToRepresenterGroup: (_id, _representerId, _studentId, done) => {

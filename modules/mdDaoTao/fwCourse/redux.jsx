@@ -155,7 +155,38 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
         const url = `/api/course/teacher-group/student/${_studentId}`;
         T.put(url, { _courseId, _teacherId, type }, data => {
             if (data.error) {
-                T.notify('Gán học viênbị lỗi!', 'danger');
+                T.notify('Gán học viên bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch(getCourse(data.item._id));
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
+// Course representerGroups -------------------------------------------------------------------------------------------------------
+export function updateCourseRepresenterGroup(_courseId, _representerId, type, done) {
+    return dispatch => {
+        const url = `/api/course/representer-group/representer/${_representerId}`;
+        T.put(url, { _courseId, type }, data => {
+            if (data.error) {
+                T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch(getCourse(data.item._id));
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
+export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _studentId, type, done) {
+    return dispatch => {
+        const url = `/api/course/representer-group/student/${_studentId}`;
+        T.put(url, { _courseId, _representerId, type }, data => {
+            if (data.error) {
+                T.notify('Gán học viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);

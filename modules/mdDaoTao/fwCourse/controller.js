@@ -93,7 +93,6 @@ module.exports = (app) => {
     });
 
     app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {
-        // const currentCourse = req.session.user.currentCourse;
         app.model.course.get(req.params._courseId, (error, course) => {
             if (error) {
                 res.send({ error });

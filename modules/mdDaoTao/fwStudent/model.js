@@ -77,13 +77,17 @@ module.exports = (app) => {
                     model.aggregate([{ $project: { 'name': { $concat: ['$lastname', ' ', '$firstname'] } } },
                     { $match: { 'name': { $regex: `.*${condition.searchText}.*`, $options: 'i' } } }
                     ]).exec((error, list) => {
-                        const _ids = list.map(item => item._id);
-                        delete condition.searchText;
-                        model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
-                            .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
-                                result.list = list;
-                                done(error, result);
-                            });
+                        if (error) {
+                            done(error);
+                        } else {
+                            const _ids = list.map(item => item._id);
+                            delete condition.searchText;
+                            model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
+                                .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
+                                    result.list = list;
+                                    done(error, result);
+                                });
+                        }
                     });
                 } else {
                     delete condition.searchText;
