@@ -6,28 +6,41 @@ import { getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import { FormSelect, FormTextBox, AdminModal } from 'view/component/AdminPage';
 
 class TeacherModal extends AdminModal {
+    state = { teachers: [] };
     onShow = (e) => {
         e.preventDefault();
+        const teachers = this.props.course.teacherGroups.reduce((result, item) => item.teacher.division._id == this.props.division._id ? [...result, item.teacher] : result, []);
+        teachers.forEach(i => i.isSelected = false);
+        this.setState({ teachers });
     };
 
-    addStudent = (e, _teacherId) => {
+    onClick = (e, _id, index) => {
         e.preventDefault();
-        const { _id } = this.props.course;
-        this.props.add(_id, _teacherId, this.props.student._id, 'add', () => {
-            this.props.getStudentCourse({ course: _id });
-            this.hide();
-        });
+        const teachers = this.state.teachers;
+        teachers.forEach(i => i.isSelected = false);
+        teachers[index].isSelected = true;
+        this.setState({ teachers, _id });
+    }
+
+    onSubmit = () => {
+        if (this.state._id) {
+            const { _id } = this.props.course;
+            this.props.add(_id, this.state._id, this.props.student._id, 'add', () => {
+                this.props.getStudentCourse({ course: _id });
+                this.hide();
+            });
+        } else {
+            T.notify('Chưa chọn cố vấn học tập', 'danger');
+        }
     }
 
     render = () => {
-        const teachers = this.props.course.teacherGroups.reduce((result, item, index) => item.teacher.division._id == this.props.division._id ?
-            [...result,
-            <li style={{ margin: 10 }} key={index}>
-                <a href='#' style={{ color: 'black' }} onClick={e => this.addStudent(e, item.teacher._id)}>
-                    {`${item.teacher.lastname} ${item.teacher.firstname}`}
+        const teachers = this.state.teachers.map((item, index) =>
+            <li className={this.state.teachers[index].isSelected && 'text-primary'} style={{ margin: 10 }} key={index}>
+                <a onClick={e => this.onClick(e, item._id, index)}>
+                    {`${item.lastname} ${item.firstname}`}
                 </a>
-            </li>
-            ] : result, []);
+            </li>);
         return this.renderModal({
             title: 'Gán cố vấn học tập',
             body: <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}> {teachers.length ? teachers : 'Không có thông tin'} </ol>
@@ -46,6 +59,8 @@ class AdminTeacherView extends React.Component {
             _teacherId = this.selectTeacher.value();
         if (_teacherId && teacherGroups.find(({ teacher }) => teacher._id == _teacherId) == null) {
             this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
+        } else {
+            T.notify('Bạn chọn trùng cố vấn học tập', 'danger');
         }
     };
 
@@ -77,7 +92,7 @@ class AdminTeacherView extends React.Component {
                 <div className='col-md-6' >
                     <h3 className='tile-title'>Học viên chưa gán Cố vấn học tập</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse(this.props.course.item._id, e.target.value)} />
+                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse({ course: _id }, e.target.value)} />
                         {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
                             {courseList.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index}>
@@ -102,7 +117,7 @@ class AdminTeacherView extends React.Component {
                                 </button>
                             </div>
                         </div>
-                        {teacherGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 391px)' }}>
+                        {teacherGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
                             {teacherGroups.map((item, index) => item.teacher ?
                                 <li className='text-primary' style={{ margin: 10 }} key={index}>
                                     <a href='#' className='text-primary' onClick={e => _id && this.removeTeacher(e, item.teacher)}>

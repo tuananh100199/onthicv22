@@ -6,28 +6,41 @@ import { getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import { FormSelect, FormTextBox, AdminModal } from 'view/component/AdminPage';
 
 class RepresenterModal extends AdminModal {
+    state = { representers: [] };
     onShow = (e) => {
         e.preventDefault();
+        const representers = this.props.course.representerGroups.reduce((result, item) => item.representer.division._id == this.props.division._id ? [...result, item.representer] : result, []);
+        representers.forEach(i => i.isSelected = false);
+        this.setState({ representers });
     };
 
-    addStudent = (e, _representerId) => {
+    onClick = (e, _id, index) => {
         e.preventDefault();
-        const { _id } = this.props.course;
-        this.props.add(_id, _representerId, this.props.student._id, 'add', () => {
-            this.props.getStudentCourse({ course: _id });
-            this.hide();
-        });
+        const representers = this.state.representers;
+        representers.forEach(i => i.isSelected = false);
+        representers[index].isSelected = true;
+        this.setState({ representers, _id });
+    }
+
+    onSubmit = () => {
+        if (this.state._id) {
+            const { _id } = this.props.course;
+            this.props.add(_id, this.state._id, this.props.student._id, 'add', () => {
+                this.props.getStudentCourse({ course: _id });
+                this.hide();
+            });
+        } else {
+            T.notify('Chưa chọn giáo viên', 'danger');
+        }
     }
 
     render = () => {
-        const representers = this.props.course.representerGroups.reduce((result, item, index) => item.representer && item.representer.division && item.representer.division._id == this.props.division._id ?
-            [...result,
-            <li style={{ margin: 10 }} key={index}>
-                <a href='#' style={{ color: 'black' }} onClick={e => this.addStudent(e, item.representer._id)}>
-                    {`${item.representer.lastname} ${item.representer.firstname}`}
+        const representers = this.state.representers.map((item, index) =>
+            <li className={this.state.representers[index].isSelected && 'text-primary'} style={{ margin: 10 }} key={index}>
+                <a onClick={e => this.onClick(e, item._id, index)}>
+                    {`${item.lastname} ${item.firstname}`}
                 </a>
-            </li>
-            ] : result, []);
+            </li>);
         return this.renderModal({
             title: 'Gán giáo viên',
             body: <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}> {representers.length ? representers : 'Không có giáo viên'} </ol>
@@ -45,6 +58,8 @@ class AdminRepresentersView extends React.Component {
             _representerId = this.selectRepresenter.value();
         if (_representerId && representerGroups.find(({ representer }) => representer._id == _representerId) == null) {
             this.props.updateCourseRepresenterGroup(_id, _representerId, 'add', () => this.selectRepresenter.value(null));
+        } else {
+            T.notify('Bạn chọn trùng giáo viên', 'danger');
         }
     };
 
@@ -76,7 +91,7 @@ class AdminRepresentersView extends React.Component {
                 <div className='col-md-6' >
                     <h3 className='tile-title'>Học viên chưa gán Giáo viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse(this.props.course.item._id, e.target.value,
+                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse({ course: _id }, e.target.value,
                             list => this.setState({ courseList: list }))} />
                         {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
                             {courseList.map((item, index) => (
