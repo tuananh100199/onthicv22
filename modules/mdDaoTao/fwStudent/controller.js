@@ -323,6 +323,9 @@ module.exports = (app) => {
                         if (values.length == 0 || index == totalRow + 1) {
                             done({ data });
                         } else {
+                            const stringToDate = (values) => {
+                                return new Date(values.slice(6, 10), values.slice(3, 5) - 1, values.slice(0, 2));
+                            };
                             data.push({
                                 id: index - 1,
                                 lastname: values[2],
@@ -330,18 +333,20 @@ module.exports = (app) => {
                                 email: values[4],
                                 phoneNumber: values[5],
                                 sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
-                                birthday: values[7],
+                                birthday: stringToDate(values[7]),
                                 nationality: values[8],
                                 residence: values[9],
                                 regularResidence: values[10],
                                 identityCard: values[11],
                                 identityIssuedBy: values[12],
-                                identityDate: values[13],
+                                identityDate: stringToDate(values[13]),
                                 giayPhepLaiXe2BanhSo: values[14],
-                                giayPhepLaiXe2BanhNgay: values[15],
+                                giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
                                 giayPhepLaiXe2BanhNoiCap: values[16],
                                 giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
-                                giayKhamSucKhoeNgayKham: values[17].toLowerCase().trim() == 'có' ? values[18] : null,
+                                giayKhamSucKhoeNgayKham: values[17].toLowerCase().trim() == 'có' ? stringToDate(values[18]) : null,
+                                hinhThe3x4: values[19].toLowerCase().trim() == 'có' ? true : false,
+                                hinhChupTrucTiep: values[20].toLowerCase().trim() == 'có' ? true : false,
                             });
                             handleUpload(index + 1);
                         }
