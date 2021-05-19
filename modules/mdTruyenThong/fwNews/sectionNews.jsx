@@ -26,7 +26,7 @@ class SectionNews extends React.Component {
                         {newsFeed.map((item, index) => (
                             <div key={index} className='team_col ftco-animate col-md-4' style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                                 <div className='team_item text-center d-flex flex-column align-items-center justify-content'>
-                                    <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img style={{ objectFit: 'cover', width: '100%', height: '250px' }} src={item.image} alt='lastnews' /></Link></div>
+                                    <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
                                     <div className='team_content text-center'>
                                         <div className='team_name'>
                                             <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}>{item.title}</Link>
@@ -50,7 +50,7 @@ class SectionNews extends React.Component {
                                         <div className={'team_col carousel-item' + (index == 0 ? ' active' : '')}
                                             key={index}>
                                             <div className='team_item text-center d-flex flex-column align-items-center justify-content'>
-                                                <div className='team_image'><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img style={{ objectFit: 'cover', width: '100%', height: '200px' }} src={item.image} alt='lastnews' /></Link></div>
+                                                <div className='team_image' ><Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}><img src={item.image} alt='lastnews' /></Link></div>
                                                 <div className='team_content text-center'>
                                                     <div className='team_name'>
                                                         <Link to={item.link ? '/tintuc/' + item.link : '/news/' + item._id} style={{ color: '#4CA758' }}>{item.title}</Link>
