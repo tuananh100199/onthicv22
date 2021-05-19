@@ -61,7 +61,7 @@ class ProfilePage extends AdminPage {
     // eslint-disable-next-line no-unused-vars
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
-            T.notify('Upload hình ảnh thất bại!', 'danger');
+            T.notify(error, 'danger');
         } else {
             if (image) {
                 this.setState({ image });

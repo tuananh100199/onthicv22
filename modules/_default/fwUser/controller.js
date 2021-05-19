@@ -215,21 +215,29 @@ module.exports = app => {
     app.createFolder(app.path.join(app.publicPath, '/img/user'));
 
     app.uploadHooks.add('uploadYourAvatar', (req, fields, files, params, done) => {
-        if (req.session.user && fields.userData && fields.userData[0] == 'profile' && files.ProfileImage && files.ProfileImage.length > 0) {
-            console.log('Hook: uploadYourAvatar => your avatar upload');
-            const _id = req.session.user._id;
-            app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, data => {
-                if (data.error == null && data.image) req.session.user.image = data.image;
-                done(data);
-            });
+        if (files.ProfileImage && files.ProfileImage[0].size > 1024000) {
+            done({error: 'Vui lòng chọn ảnh có kích thước < 1 MB'});
+        } else {
+            if (req.session.user && fields.userData && fields.userData[0] == 'profile' && files.ProfileImage && files.ProfileImage.length > 0) {
+                console.log('Hook: uploadYourAvatar => your avatar upload');
+                const _id = req.session.user._id;
+                app.uploadImage('user', app.model.user.get, _id, files.ProfileImage[0].path, data => {
+                    if (data.error == null && data.image) req.session.user.image = data.image;
+                    done(data);
+                });
+            }
         }
     });
 
     const uploadUserAvatar = (fields, files, done) => {
-        if (fields.userData && fields.userData[0].startsWith('user:') && files.UserImage && files.UserImage.length > 0) {
-            console.log('Hook: uploadUserAvatar => user avatar upload');
-            const _id = fields.userData[0].substring('user:'.length);
-            app.uploadImage('user', app.model.user.get, _id, files.UserImage[0].path, done);
+        if (files.UserImage && files.UserImage[0].size > 1024000) {
+            done({error: 'Vui lòng chọn ảnh có kích thước < 1 MB'});
+        } else {
+            if (fields.userData && fields.userData[0].startsWith('user:') && files.UserImage && files.UserImage.length > 0) {
+                console.log('Hook: uploadUserAvatar => user avatar upload');
+                const _id = fields.userData[0].substring('user:'.length);
+                app.uploadImage('user', app.model.user.get, _id, files.UserImage[0].path, done);
+            }
         }
     };
     app.uploadHooks.add('uploadUserAvatar', (req, fields, files, params, done) =>
