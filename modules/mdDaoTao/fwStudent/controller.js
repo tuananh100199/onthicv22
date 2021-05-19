@@ -330,7 +330,7 @@ module.exports = (app) => {
                                 id: index - 1,
                                 lastname: values[2],
                                 firstname: values[3],
-                                email: values[4],
+                                email: typeof values[4] == 'string' ? values[4] : values[4].text,
                                 phoneNumber: values[5],
                                 sex: values[6].toLowerCase().trim() == 'nam' ? 'male' : 'female',
                                 birthday: stringToDate(values[7]),
