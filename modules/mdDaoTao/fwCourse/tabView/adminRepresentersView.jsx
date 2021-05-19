@@ -1,104 +1,147 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
-import { getPreStudentPage, getStudentCourse, updateStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
-import { FormTextBox, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { getCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
+import { getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
+import { FormSelect, FormTextBox, AdminModal } from 'view/component/AdminPage';
 
+class RepresenterModal extends AdminModal {
+    state = { representers: [] };
+    onShow = (e) => {
+        e.preventDefault();
+        const representers = this.props.course.representerGroups.reduce((result, item) => item.representer.division._id == this.props.division._id ? [...result, item.representer] : result, []);
+        representers.forEach(i => i.isSelected = false);
+        this.setState({ representers });
+    };
+
+    onClick = (e, _id, index) => {
+        e.preventDefault();
+        const representers = this.state.representers;
+        representers.forEach(i => i.isSelected = false);
+        representers[index].isSelected = true;
+        this.setState({ representers, _id });
+    }
+
+    onSubmit = () => {
+        if (this.state._id) {
+            const { _id } = this.props.course;
+            this.props.add(_id, this.state._id, this.props.student._id, 'add', () => {
+                this.props.getStudentCourse({ course: _id });
+                this.hide();
+            });
+        } else {
+            T.notify('Chưa chọn giáo viên', 'danger');
+        }
+    }
+
+    render = () => {
+        const representers = this.state.representers.map((item, index) =>
+            <li className={this.state.representers[index].isSelected && 'text-primary'} style={{ margin: 10 }} key={index}>
+                <a onClick={e => this.onClick(e, item._id, index)}>
+                    {`${item.lastname} ${item.firstname}`}
+                </a>
+            </li>);
+        return this.renderModal({
+            title: 'Gán giáo viên',
+            body: <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}> {representers.length ? representers : 'Không có giáo viên'} </ol>
+        });
+    };
+}
 class AdminRepresentersView extends React.Component {
     state = {};
     componentDidMount() {
-        this.props.getDivisionAll(list => {
-            const divisionMapper = {};
-            (list || []).map(item => divisionMapper[item._id] = item);
-            this.divisionMapper = divisionMapper;
-        });
-
-        $(document).ready(() => {
-            this.selectRepresenter.value(null);
-        });
+        this.props.course && this.props.course.item && this.props.getStudentCourse({ course: this.props.course.item._id });
     }
-
-
-    updateStudentCourse = (e, student, changes) => {
+    addRepresenter = e => {
         e.preventDefault();
-        this.props.updateStudentCourse(student._id, changes, () => {
+        const { _id, representerGroups = [] } = this.props.course.item,
+            _representerId = this.selectRepresenter.value();
+        if (_representerId && representerGroups.find(({ representer }) => representer._id == _representerId) == null) {
+            this.props.updateCourseRepresenterGroup(_id, _representerId, 'add', () => this.selectRepresenter.value(null));
+        } else {
+            T.notify('Bạn chọn trùng giáo viên', 'danger');
+        }
+    };
+
+    removeRepresenter = (e, representer) => e.preventDefault() || T.confirm('Xoá giáo viên', `Bạn có chắc muốn xoá giáo viên ${representer.lastname} ${representer.firstname} khỏi khóa học này?`, true, isConfirm => {
+        if (isConfirm && this.props.course && this.props.course.item) {
+            const { _id } = this.props.course.item;
+            this.props.updateCourseRepresenterGroup(_id, representer._id, 'remove', () => {
+                this.props.getStudentCourse({ course: _id });
+            });
+        }
+    });
+
+    removeStudent = (e, representer, student) => {
+        e.preventDefault();
+        const { _id } = this.props.course.item;
+        this.props.updateCourseRepresenterGroupStudent(_id, representer._id, student._id, 'remove', () => {
+            this.props.getStudentCourse({ course: _id });
         });
     }
 
     render() {
-        // const { pageNumber, pageSize, pageTotal, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
-        //     this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
-        const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList : [];
-        // const _courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
-        const { permission, permissionDivision } = this.props,
-            item = this.props.course && this.props.course.item ? this.props.course.item : { representerGroups: [] };
-        const permissionRepresenterWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
-        const tableRepresenter = renderTable({
-            getDataSource: () => this.divisionMapper && item.representerGroups,
-            renderHead: () => (
-                <tr>
-                    <th style={{ width: 'auto' }}>#</th>
-                    <th style={{ width: '60%' }}>Họ và Tên</th>
-                    <th style={{ width: '40%' }} nowrap='true'>Cơ sở đào tạo</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                </tr>),
-            renderRow: (item, index) => {
-                const teacher = item.representer || { lastname: 'Không có thông tin!' };
-                let division = teacher.division ? this.divisionMapper[teacher.division] : null,
-                    divisionText = division ? `${division.title} ${division.isOutside ? '(CS ngoài)' : ''}` : '';
-                return (
-                    <tr key={index}>
-                        <TableCell type='number' content={index + 1} />
-                        <TableCell content={teacher.lastname + ' ' + teacher.firstname} />
-                        {permissionDivision.read ?
-                            <TableCell type='link' content={divisionText} url={division && division._id ? '/user/division/' + division._id : ''} /> :
-                            <TableCell content={divisionText} />}
-                        <td>
-                            <div className='btn-group'>
-                                <a className='btn btn-danger' href='#' onClick={e => this.removeTeacher(e, index)}><i className='fa fa-lg fa-trash' /></a>
-                            </div>
-                        </td>
-                    </tr>);
-            },
-        });
+        const permission = this.props.permission,
+            permissionRepresenterWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
+        const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList.representers : [];
+        const _id = this.props.course && this.props.course.item ? this.props.course.item._id : null;
+        const representerGroups = this.props.course && this.props.course.item ? this.props.course.item.representerGroups : [];
         return (
             <div className='row'>
-                <div className='col-md-6'>
-                    <h3 className='tile-title'>Học viên</h3>
-                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse(this.props.course.item._id, e.target.value)} />
-                        {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                            {courseList.map((item, index) => (
-                                <li key={index}>
-                                    <a href='#' style={{ color: 'black' }}>
-                                        {item.lastname} {item.firstname} - {item.division && item.division.title}{item.division.isOutside ? <span className='text-secondary'>( cơ sở ngoài )</span> : ''}
-                                    </a>
-                                </li>
-                            ))}
-                        </ol> : 'Không có thông tin'}
-                    </div>
-                </div>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Giáo viên</h3>
+                    <h3 className='tile-title'>Học viên chưa gán Giáo viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm giáo viên' onChange={e => this.props.getPreStudentPage(1, 50, { searchText: e.target.value, courseType: this.props.courseType._id })} />
+                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse({ course: _id }, e.target.value,
+                            list => this.setState({ courseList: list }))} />
+                        {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
+                            {courseList.map((item, index) => (
+                                <li style={{ margin: 10 }} key={index}>
+                                    <a href='#' style={{ color: 'black' }} onClick={e => _id && this[`modal${item._id}`].show(e)}>
+                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                    </a>
+                                    <RepresenterModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourseRepresenterGroupStudent}
+                                        course={this.props.course.item} division={item.division} student={item} getStudentCourse={this.props.getStudentCourse} />
+                                </li>))}
+                        </ol> : <label>Chưa có học viên!</label>}
                     </div>
-                    <div style={{ display: permissionRepresenterWrite ? 'flex' : 'none' }}>
-                        <FormSelect ref={e => this.selectRepresenter = e} data={ajaxSelectUserType(['isRepresenter'])} style={{ width: '100%' }} />
-                        <div style={{ width: 'auto', paddingLeft: 8 }}>
-                            <button className='btn btn-success' type='button' onClick={this.addRepresenter}>
-                                <i className='fa fa-fw fa-lg fa-plus' /> Thêm giáo viên
-                            </button>
-                        </div>
-                    </div>
-                    {tableRepresenter}
                 </div>
+                <div className='col-md-6'>
+                    <h3 className='tile-title'>Danh sách Giáo viên</h3>
+                    <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
+                        <label>Tìm kiếm giáo viên</label>
+                        <div style={{ display: permissionRepresenterWrite ? 'flex' : 'none' }}>
+                            <FormSelect ref={e => this.selectRepresenter = e} data={ajaxSelectUserType(['isRepresenter'])} style={{ width: '100%' }} />
+                            <div style={{ width: 'auto', paddingLeft: 8 }}>
+                                <button className='btn btn-success' type='button' onClick={this.addRepresenter}>
+                                    <i className='fa fa-fw fa-lg fa-plus' /> Giáo viên
+                                </button>
+                            </div>
+                        </div>
+                        {representerGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
+                            {representerGroups.map((item, index) => item.representer ?
+                                <li className='text-primary' style={{ margin: 10 }} key={index}>
+                                    <a href='#' className='text-primary' onClick={e => _id && this.removeRepresenter(e, item.representer)}>
+                                        {`${item.representer.lastname} ${item.representer.firstname}`} - {item.representer.division && item.representer.division.title}{item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                    </a>
+                                    <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                        {item.student.length ? item.student.map((student, indexStudent) => (
+                                            <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
+                                                <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.representer, student)}>
+                                                    {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                                </a>
+                                            </li>
+                                        )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
+                                    </ul>
+                                </li> : null)}
+                        </ol> : <label style={{ color: 'black' }}>Chưa có giáo viên!</label>}
+                    </div>
+                </div>
+                {/* <CirclePageButton type='export' onClick={exportScore(this.props.course && this.props.course.item && this.props.course.item._id)} /> */}
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { getPreStudentPage, updateStudentCourse, getStudentCourse, getDivisionAll };
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
+const mapActionsToProps = { getCourse, getStudentCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminRepresentersView);

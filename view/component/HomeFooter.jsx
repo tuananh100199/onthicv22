@@ -101,7 +101,7 @@ class Footer extends React.Component {
                         <div className='row'>
                             <div className='col'>
                                 <div className='footer_bar_content  d-flex flex-md-row flex-column align-items-md-center justify-content-start'>
-                                    <div className='copyright'>
+                                    <div className='copyright' style={{width: '100%', textAlign: 'center'}}>
                                         Copyright &copy; {new Date().getFullYear()}. Bản quyền thuộc về <a href='#' onClick={e => e.preventDefault()}>Trung tâm dạy nghề lái xe Hiệp Phát.</a>
                                     </div>
                                     <nav className='footer_nav ml-md-auto'>

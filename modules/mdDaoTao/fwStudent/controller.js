@@ -61,20 +61,45 @@ module.exports = (app) => {
 
 
     app.get('/api/student/course/:_courseId', app.permission.check('student:read'), (req, res) => {
-        const condition = { course: req.params._courseId },
-            searchText = req.query.searchText;
+        const { condition, searchText } = req.query;
         if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
             condition.division = req.session.user.division._id;
         }
         if (searchText) {
             const value = { $regex: `.*${searchText}.*`, $options: 'i' };
             condition.$or = [
-                // { email: value },
                 { firstname: value },
                 { lastname: value },
             ];
         }
-        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
+        app.model.course.get(req.params._courseId, (error, item) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                condition._id = { $nin: item.teacherGroups.flatMap(item => item.student).map(i => i._id) };
+                app.model.student.getAll(condition, (error, listTeacher) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        condition._id = { $nin: item.representerGroups.flatMap(item => item.student).map(i => i._id) };
+                        app.model.student.getAll(condition, (error, listRepresenter) => {
+                            if (error) {
+                                res.send({ error });
+                            } else {
+                                delete condition._id;
+                                app.model.student.getAll(condition, (error, listAll) => {
+                                    if (error) {
+                                        res.send({ error });
+                                    } else {
+                                        res.send({ listAll, listRepresenter, listTeacher });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
     });
 
     app.put('/api/student/course', app.permission.check('student:write'), (req, res) => {
@@ -93,6 +118,7 @@ module.exports = (app) => {
                         res.send({ error });
                     } else {
                         course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == _studentId && group.student.splice(index, 1)));
+                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == _studentId && group.student.splice(index, 1)));
                         course.save();
                         res.send({ student });
                     }
@@ -123,12 +149,19 @@ module.exports = (app) => {
             // }
             // delete condition.searchText;
             pageCondition = app.clone(pageCondition, condition);
-            delete pageCondition.searchText;
+            // delete pageCondition.searchText;
             app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
-                if (condition.searchText) {
-                    const value = new RegExp(condition.searchText, 'i');
-                    page.list = page.list.reduce((res, item) => value.test(`${item.lastname} ${item.firstname}`) ? [...res, item] : res, []);
-                }
+                // if (condition.searchText) {
+                //     console.log(condition.searchText, 'st');
+                //     const value = new RegExp(condition.searchText, 'u');
+                //     console.log(value, 'streerd');
+                //     page.list.forEach((item) => {
+                //         console.log(`${item.lastname} ${item.firstname}`, 'string');
+                //         console.log(value.test(`${item.lastname} ${item.firstname}`), ' value.test(`${item.lastname} ${item.firstname}`)');
+
+                //     });
+                //     page.list = page.list.reduce((res, item) => value.test(`${item.lastname} ${item.firstname}`.normalize('NFC')) ? [...res, item] : res, []);
+                // }
                 res.send({ error, page });
             });
         } catch (error) {

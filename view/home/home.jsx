@@ -19,7 +19,7 @@ import LoginModal from 'view/component/LoginModal';
 import { getSystemState, register, login, forgotPassword, logout } from 'modules/_default/_init/redux';
 import { modules } from './modules.jsx';
 const reducers = {}, reducerContainer = {}, routeMapper = {},
-    addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
+    addRoute = route => routeMapper[route.path] = <Route key={route.path} exact {...route} />;
 modules.forEach(module => {
     module.init && module.init();
     module.routes.forEach(route => !route.path.startsWith('/user') && addRoute(route));
@@ -32,45 +32,37 @@ modules.forEach(module => {
     }
 });
 Object.keys(reducerContainer).forEach(key => reducers[key] = combineReducers(reducerContainer[key]));
-
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
-store.dispatch(getSystemState());
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {
     state = { routes: [], isMatch: true };
     componentDidMount() {
-        const done = () => {
-            if ($(this.loader).length > 0 && this.props.system && this.props.system.menus) { // Finished loading
-                const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
-                handlePaddingFooter();
-                setTimeout(handlePaddingFooter, 250);
-                $(window).on('resize', handlePaddingFooter);
-                this.loader.isShown() && this.loader.hide();
-                let menuList = [...this.props.system.menus];
-                while (menuList.length) {
-                    const currentMenu = menuList.pop();
-                    const link = currentMenu.link ? currentMenu.link.toLowerCase() : '/';
-                    if (!link.startsWith('http://') && !link.startsWith('https://') && routeMapper[link] == undefined) {
-                        addRoute({
-                            path: link,
-                            component: Loadable({ loading: Loading, loader: () => import('modules/_default/fwMenu/MenuPage') })
-                        });
-                    }
-                    if (currentMenu.submenus && currentMenu.submenus.length) {
-                        menuList.push(...currentMenu.submenus);
-                    }
-                }
+        this.props.getSystemState(() => {
+            const handlePaddingFooter = () => $('#paddingFooterSection').css('padding-bottom', $('footer').height() + 'px');
+            handlePaddingFooter();
+            setTimeout(handlePaddingFooter, 250);
+            $(window).on('resize', handlePaddingFooter);
 
-                const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
-                const pathname = window.location.pathname;
-                const isMatch = routes.some(route => T.routeMatcher(route.props.path).parse(pathname));
-                this.setState({ routes, isMatch });
-            } else {
-                setTimeout(done, 200);
+            let menuList = [...this.props.system.menus];
+            while (menuList.length) {
+                const currentMenu = menuList.pop();
+                const link = currentMenu.link ? currentMenu.link.toLowerCase() : '/';
+                if (!link.startsWith('http://') && !link.startsWith('https://') && routeMapper[link] == undefined) {
+                    addRoute({
+                        path: link,
+                        component: Loadable({ loading: Loading, loader: () => import('modules/_default/fwMenu/MenuPage') }),
+                    });
+                }
+                if (currentMenu.submenus && currentMenu.submenus.length) {
+                    menuList.push(...currentMenu.submenus);
+                }
             }
-        };
-        $(document).ready(done);
+
+            const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
+            const isMatch = routes.some(route => T.routeMatcher(route.props.path).parse(window.location.pathname));
+            this.setState({ routes, isMatch }, () => this.loader.isShown() && this.loader.hide());
+        });
     }
 
     showLoginModal = e => {
@@ -109,5 +101,5 @@ class App extends React.Component {
     }
 }
 
-const Main = connect(state => ({ system: state.system }), { register, login, forgotPassword, logout })(App);
+const Main = connect(state => ({ system: state.system }), { getSystemState, register, login, forgotPassword, logout })(App);
 ReactDOM.render(<Provider store={store}><Main /></Provider>, document.getElementById('app'));

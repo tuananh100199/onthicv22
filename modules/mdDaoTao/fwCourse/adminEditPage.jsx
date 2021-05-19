@@ -114,9 +114,9 @@ class EditCoursePage extends AdminPage {
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
             { title: 'Quản trị viên', component: <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> },
-            { title: 'Học viên', component: this.state.courseType && this.props.course ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
-            { title: 'Gán cố vấn học tập', component: this.props.course ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
-            { title: 'Gán giáo viên', component: <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> },
+            { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
+            { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
+            { title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null },
         ];
 
         return this.renderPage({

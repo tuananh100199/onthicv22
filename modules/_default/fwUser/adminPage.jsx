@@ -78,7 +78,7 @@ class UserModal extends AdminModal {
 
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
-            T.notify('Upload hình ảnh thất bại!', 'danger');
+            T.notify(error, 'danger');
         } else {
             image && this.setState({ image });
             item && this.props.change(item);

@@ -79,7 +79,17 @@ module.exports = app => {
                 populate: {
                     path: 'division'
                 }
-            }).exec(done);
+            }).populate({
+                path: 'representerGroups.representer',
+                populate: {
+                    path: 'division'
+                }
+            }).populate({
+                path: 'representerGroups.student',
+                populate: {
+                    path: 'division'
+                }
+            }).populate('admins', '-password').exec(done);
         },
 
         getByUser: (condition, done) => {
@@ -138,6 +148,22 @@ module.exports = app => {
 
         removeStudentFromTeacherGroup: (_id, _teacherId, _studentId, done) => {
             model.findOneAndUpdate({ _id, 'teacherGroups.teacher': _teacherId }, { $pull: { 'teacherGroups.$.student': _studentId } }, { new: true }).exec(done);
+        },
+
+        addRepresenterGroup: (_id, _representerId, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { representerGroups: { representer: _representerId, student: [] } } }, { new: true }).exec(done);
+        },
+
+        removeRepresenterGroup: (_id, _representerId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { representerGroups: { representer: _representerId } } }, { new: true }).exec(done);
+        },
+
+        addStudentToRepresenterGroup: (_id, _representerId, _studentId, done) => {
+            model.findOneAndUpdate({ _id, 'representerGroups.representer': _representerId }, { $push: { 'representerGroups.$.student': _studentId } }, { new: true }).exec(done);
+        },
+
+        removeStudentFromRepresenterGroup: (_id, _representerId, _studentId, done) => {
+            model.findOneAndUpdate({ _id, 'representerGroups.representer': _representerId }, { $pull: { 'representerGroups.$.student': _studentId } }, { new: true }).exec(done);
         },
 
 
