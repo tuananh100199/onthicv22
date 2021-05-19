@@ -343,10 +343,10 @@ module.exports = (app) => {
                                 giayPhepLaiXe2BanhSo: values[14],
                                 giayPhepLaiXe2BanhNgay: stringToDate(values[15]),
                                 giayPhepLaiXe2BanhNoiCap: values[16],
-                                giayKhamSucKhoe: values[17].toLowerCase().trim() == 'có' ? true : false,
-                                giayKhamSucKhoeNgayKham: values[17].toLowerCase().trim() == 'có' ? stringToDate(values[18]) : null,
-                                hinhThe3x4: values[19].toLowerCase().trim() == 'có' ? true : false,
-                                hinhChupTrucTiep: values[20].toLowerCase().trim() == 'có' ? true : false,
+                                giayKhamSucKhoe: values[17] ? (values[17].toLowerCase().trim() == 'x' ? true : false) : false,
+                                giayKhamSucKhoeNgayKham: values[17] ? (values[17].toLowerCase().trim() == 'có' ? stringToDate(values[18]) : null) : null,
+                                hinhThe3x4: values[19] ? (values[19].toLowerCase().trim() == 'x' ? true : false) : false,
+                                hinhChupTrucTiep: values[20] ? (values[20].toLowerCase().trim() == 'x' ? true : false) : false,
                             });
                             handleUpload(index + 1);
                         }
