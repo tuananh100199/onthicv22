@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import { getCourse } from '../redux';
 import { getPreStudentPage, getStudentCourse, updateStudentCourse, removeStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
-import { FormTextBox } from 'view/component/AdminPage';
+import { FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 
 class AdminStudentView extends React.Component {
     state = { searchText: '', sortType: 'name' }; // name | division
     componentDidMount() {
+        this.itemSelectAll.value(true);
         this.onSearch({});
         this.props.course && this.props.course.item && this.props.getStudentCourse({ course: this.props.course.item._id });
     }
@@ -62,14 +63,19 @@ class AdminStudentView extends React.Component {
                     </div>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.onSearch({ searchText: e.target.value })} />
-                        {preStudentList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
-                            {preStudentList.map((item, index) => (
-                                <li style={{ margin: 10 }} key={index}>
-                                    <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId }, pageNumber, pageSize)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
-                                    </a>
-                                </li>))}
-                        </ol> : 'Không có thông tin'}
+                        <div style={{ display: preStudentList.length ? 'block' : 'none' }}>
+                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.itemSelectAll.value(true)} style={{ display: 'inline-block' }} />
+                            <FormCheckbox ref={e => this.itemDeselectAll = e} label='Không chọn tất cả' onChange={() => this.itemDeselectAll.value(false)} style={{ display: 'inline-block', marginLeft: 12 }} />
+                        </div>
+                        {preStudentList.length ?
+                            <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
+                                {preStudentList.map((item, index) => (
+                                    <li style={{ margin: 10 }} key={index}>
+                                        <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.updateStudentCourse(e, item, { course: _courseId }, pageNumber, pageSize)}>
+                                            {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                        </a>
+                                    </li>))}
+                            </ol> : 'Không có thông tin'}
                         <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                             pageCondition={pageCondition} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
                     </div>
