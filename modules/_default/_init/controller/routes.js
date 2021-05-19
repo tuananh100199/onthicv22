@@ -76,7 +76,7 @@ module.exports = (app) => {
                             }
                             let index = 0;
                             students.forEach(student => {
-                                if (student.course) {
+                                if (student.course && student.course.active) {
                                     index++;
                                     data.user.menu['5000'].menus[5000 + index] = {
                                         title: 'Khóa học ' + student.course.name,

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCourse, updateCourse } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
-import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton } from 'view/component/AdminPage';
+import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton, FormCheckbox } from 'view/component/AdminPage';
 import AdminSubjectView from './tabView/adminSubjectView';
 import AdminTeacherView from './tabView/adminTeacherView';
 import AdminManagerView from './tabView/adminManagerView';
@@ -25,7 +25,7 @@ class EditCoursePage extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
                         const { name, maxStudent, shortDescription, detailDescription, courseType, courseFee,
-                            thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc } = data.item;
+                            thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active } = data.item;
 
                         this.name.value(name);
                         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
@@ -41,7 +41,7 @@ class EditCoursePage extends AdminPage {
                         this.thoiGianThiKetThucMonChinhThuc.value(thoiGianThiKetThucMonChinhThuc);
                         this.thoiGianThiTotNghiepDuKien.value(thoiGianThiTotNghiepDuKien);
                         this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
-
+                        this.active.value(active);
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
@@ -83,7 +83,10 @@ class EditCoursePage extends AdminPage {
             permissionDivision = this.getUserPermission('division'),
             readOnly = !permissionCourse.write;
         const tabInfo = <div className='row'>
-            <h3 className='tile-title' style={{ width: '100%', paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
+            <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
+            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Kích hoạt' onChange={active => this.props.updateCourse(this.state._id, { active, courseType: this.courseType.value() }, () => {
+                T.notify('Cập nhật thông tin khóa học thành công!');
+            })} />
             <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
             <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
