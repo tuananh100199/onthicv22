@@ -99,7 +99,7 @@ class AdminManagerView extends React.Component {
                             {item.admins.map((item, index) => (
                                 <li style={{ margin: 10 }} key={index} onMouseEnter={(e) => this.onHover(e, index, 'onHover')}
                                     onMouseLeave={(e) => this.onHover(e, index, undefined)}>
-                                    <a href='#' style={{ color: 'black' }} onClick={e => _id && this[`modal${item._id}`].show(e)}>
+                                    <a href='#' style={{ color: 'black' }}>
                                         {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                     </a>
                                     {this.state.admins && this.state.admins[index] && this.state.admins[index].isSelected && permission.write ? <i onClick={e => this.removeAdmin(e, index)} style={{ marginLeft: 10, color: 'red' }} className='fa fa-times' /> : ''}
