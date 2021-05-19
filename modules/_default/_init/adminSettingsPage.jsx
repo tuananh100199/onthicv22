@@ -6,21 +6,22 @@ import { AdminPage, FormTextBox, FormImageBox } from 'view/component/AdminPage';
 class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready();
-        let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, contact, subscribe } = this.props.system ?
-            this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
-        this.systemAddress.value(address);
-        this.systemEmail.value(email);
-        this.systemMobile.value(mobile);
-        this.systemFax.value(fax);
-        this.systemFacebook.value(facebook);
-        this.systemYoutube.value(youtube);
-        this.systemTwitter.value(twitter);
-        this.systemInstagram.value(instagram);
-        this.systemLogo.setData('logo', logo);
-        this.systemContact.setData('contact', contact);
-        this.systemSubscribe.setData('subscribe', subscribe);
-        this.setState({ logo, contact, subscribe });
+        T.ready(() => {
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
+                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+            this.systemAddress.value(address);
+            this.systemEmail.value(email);
+            this.systemMobile.value(mobile);
+            this.systemFax.value(fax);
+            this.systemFacebook.value(facebook);
+            this.systemYoutube.value(youtube);
+            this.systemTwitter.value(twitter);
+            this.systemInstagram.value(instagram);
+            this.systemLogo.setData('logo', logo);
+            this.systemContact.setData('contact', contact);
+            this.systemSubscribe.setData('subscribe', subscribe);
+            this.setState({ logo, footer, contact, subscribe });
+        });
     }
 
     saveCommonInfo = () => {
@@ -50,8 +51,8 @@ class SettingsPage extends AdminPage {
             this.emailPassword1.focus();
         } else {
             this.props.saveSystemState({ emailPassword: emailPassword1 });
-            this.emailPassword1.value(''),
-                this.emailPassword2.value('');
+            this.emailPassword1.value('');
+            this.emailPassword2.value('');
         }
     }
 
@@ -77,12 +78,12 @@ class SettingsPage extends AdminPage {
                                 <FormTextBox ref={e => this.systemTwitter = e} label='Twitter' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemInstagram = e} label='Instagram' readOnly={readOnly} />
                             </div>
-                            {!readOnly ?
+                            {readOnly ? null :
                                 <div className='tile-footer' style={{ textAlign: 'right' }}>
                                     <button className='btn btn-primary' type='button' onClick={this.saveCommonInfo}>
                                         <i className='fa fa-fw fa-lg fa-save' /> Lưu
-                                </button>
-                                </div> : null}
+                                    </button>
+                                </div>}
                         </div>
                     </div>
 
@@ -93,26 +94,20 @@ class SettingsPage extends AdminPage {
                                 <FormTextBox ref={e => this.emailPassword1 = e} label='Mật khẩu mới' type='password' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.emailPassword2 = e} label='Nhập lại mật khẩu mới' type='password' readOnly={readOnly} />
                             </div>
-                            {!readOnly ?
-                                <div className='tile-footer'>
-                                    <div className='row'>
-                                        <div className='col-md-12' style={{ textAlign: 'right' }}>
-                                            <button className='btn btn-primary' type='button' onClick={this.changePassword}>
-                                                <i className='fa fa-fw fa-lg fa-check-circle' />Thay đổi mật khẩu
-                                        </button>
-                                        </div>
-                                    </div>
-                                </div> : null}
+                            {readOnly ? null :
+                                <div className='tile-footer' style={{ textAlign: 'right' }}>
+                                    <button className='btn btn-primary' type='button' onClick={this.changePassword}>
+                                        <i className='fa fa-fw fa-lg fa-check-circle' />Thay đổi mật khẩu
+                                    </button>
+                                </div>}
                         </div>
 
                         <div className='tile'>
                             <h3 className='tile-title'>Hình ảnh</h3>
                             <div className='tile-body'>
-                                <div className='tile-body'>
-                                    <FormImageBox ref={e => this.systemLogo = e} label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly} />
-                                    <FormImageBox ref={e => this.systemContact = e} label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly} />
-                                    <FormImageBox ref={e => this.systemSubscribe = e} label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly} />
-                                </div>
+                                <FormImageBox ref={e => this.systemLogo = e} label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly} />
+                                <FormImageBox ref={e => this.systemContact = e} label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly} />
+                                <FormImageBox ref={e => this.systemSubscribe = e} label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly} />
                             </div>
                         </div>
                     </div>

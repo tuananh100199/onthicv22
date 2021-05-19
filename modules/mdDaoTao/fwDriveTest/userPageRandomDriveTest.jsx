@@ -7,6 +7,7 @@ import { AdminPage } from 'view/component/AdminPage';
 class UserPageRandomDriveTest extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
+        T.ready();
         this.props.getCourseTypeAll(list => {
             const courseTypes = list.map(item => ({ _id: item._id, title: item.title }));
             this.setState({ courseTypes });
@@ -16,7 +17,7 @@ class UserPageRandomDriveTest extends AdminPage {
     render() {
         const { courseTypes } = this.state ? this.state : [];
         return this.renderPage({
-            icon: 'fa fa-dashboard',
+            icon: 'fa fa-graduation-cap',
             title: 'Bộ đề thi ngẫu nhiên ',
             breadcrumb: ['Bộ đề thi ngẫu nhiên'],
             content: (

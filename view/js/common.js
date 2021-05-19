@@ -177,7 +177,7 @@ const T = {
             done = dangerMode;
             dangerMode = false;
         }
-        var content = document.createElement('div');
+        const content = document.createElement('div');
         content.innerHTML = html;
         swal({ icon, title, content, dangerMode, buttons: { cancel: true, confirm: true }, }).then(done);
     },
@@ -259,9 +259,9 @@ T.ftcoAnimate = (timeOut = 250) => {
                 $(this.element ? this.element : this).addClass('item-animate');
                 setTimeout(function () {
                     $('body .ftco-animate.item-animate').each(function (k) {
-                        var el = $(this);
+                        let el = $(this);
                         setTimeout(function () {
-                            var effect = el.data('animate-effect');
+                            let effect = el.data('animate-effect');
                             if (effect === 'fadeIn') {
                                 el.addClass('fadeIn ftco-animated');
                             } else if (effect === 'fadeInLeft') {
