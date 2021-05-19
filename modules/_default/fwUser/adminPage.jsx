@@ -229,7 +229,7 @@ class UserPage extends AdminPage {
         });
 
         const header = <>
-            <label style={{ lineHeight: '40px' }}>Loại người dùng:</label>&nbsp;&nbsp;
+            <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại người dùng:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.userType = e} data={UserTypeData} onChange={value => this.onSearch({ userType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
 
@@ -239,7 +239,7 @@ class UserPage extends AdminPage {
             header: header,
             breadcrumb: ['Người dùng'],
             content: <>
-                <div className='tile tile-table-fix-head'>{table}</div>
+                <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
                 <UserModal ref={e => this.userModal = e} readOnly={!permission.write} allRoles={allRoles} user={this.props.system ? this.props.system.user : null}
