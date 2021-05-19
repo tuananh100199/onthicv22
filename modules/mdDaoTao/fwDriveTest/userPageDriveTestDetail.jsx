@@ -7,7 +7,7 @@ import 'view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-thu';
 class UserPageDriveTestDetail extends AdminPage {
-    state = { showSubmitButton: true };
+    state = { showSubmitButton: true, showTotalScore: false };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         T.ready(backRoute, () => {
@@ -21,7 +21,7 @@ class UserPageDriveTestDetail extends AdminPage {
                     this.props.history.push(backRoute);
                 }
                 $('#totalScore').css('display', 'none');
-                $('#trueAnswer').css('display', 'none');
+                // $('#trueAnswer').css('display', 'none');
             });
         });
     }
@@ -47,7 +47,7 @@ class UserPageDriveTestDetail extends AdminPage {
                 showSubmitButton: false
             });
             $('#totalScore').css('display', 'block');
-            $('#trueAnswer').css('display', 'block');
+            // $('#trueAnswer').css('display', 'block');
         });
     }
 

@@ -13,7 +13,9 @@ class Footer extends React.Component {
         youtube = youtube ? <li><a href={youtube} target='_blank' rel='noreferrer'><i className='fa fa-youtube' aria-hidden='true' /></a></li> : '';
         twitter = twitter ? <li><a href={twitter} target='_blank' rel='noreferrer'><i className='fa fa-twitter' aria-hidden='true' /></a></li> : '';
         instagram = instagram ? <li><a href={instagram} target='_blank' rel='noreferrer'><i className='fa fa-instagram' aria-hidden='true' /></a></li> : '';
-
+        const divisionsInside = this.props.division && this.props.division.list ?
+            this.props.division.list.filter(division => !division.isOutside)
+            : [];
         return (
             <footer className='footer' style={{ position: 'absolute', bottom: 0, width: '100%' }}>
                 <div className='footer_content'>
@@ -29,8 +31,8 @@ class Footer extends React.Component {
                                     </div>
                                     <div className='footer_about_text'>
                                         <ul className=''>
-                                            {this.props.division && this.props.division.list && this.props.division.list.length > 0 ?
-                                                this.props.division.list.map((item, index) => (
+                                            {divisionsInside.length > 0 ?
+                                                divisionsInside.map((item, index) => (
                                                     <li key={index} className='mb-2'>
                                                         <div className='location_title'>{item.title}: {item.address ? item.address : ''}</div>
                                                         <div className='location_text mt-0'>Điện thoại:<a href={'tel:' + item.phoneNumber}>{T.mobileDisplay(item.phoneNumber)}</a> &nbsp;&nbsp;Di động:&nbsp;<a href={'tel:' + item.mobile}>{T.mobileDisplay(item.mobile)}</a></div>
@@ -63,7 +65,7 @@ class Footer extends React.Component {
                                     <div className='google_map_row'>
                                         <div id='carouselFooter' className='carousel slide col' data-ride='carousel' data-interval='5000' style={{ height: 'auto' }}>
                                             <div className='carousel-inner'>
-                                                {this.props.division.list.map((item, index) => (
+                                                {divisionsInside.map((item, index) => (
                                                     <div className={'carousel-item' + (index == 0 ? ' active' : '')}
                                                         key={index}
                                                         style={{

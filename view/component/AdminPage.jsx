@@ -151,7 +151,7 @@ export class FormCheckbox extends React.Component {
         }
     }
 
-    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || this.props.onChange(!this.state.checked);
+    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || this.props.onChange && this.props.onChange(!this.state.checked);
 
     render() {
         let { className, label, style } = this.props;
@@ -412,10 +412,10 @@ export class FormDatePicker extends React.Component {
                         formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
                         value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
-                        <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                            inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                            value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
-                    )}
+                    <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
+                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                        value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                )}
             </div>);
     }
 }

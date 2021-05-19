@@ -26,7 +26,9 @@ class EditModal extends AdminModal {
             giayPhepLaiXe2BanhNgay,
             giayPhepLaiXe2BanhNoiCap,
             giayKhamSucKhoe,
-            giayKhamSucKhoeNgayKham } = item ||
+            giayKhamSucKhoeNgayKham,
+            hinhThe3x4,
+            hinhChupTrucTiep } = item ||
             {
                 firstname: '',
                 lastname: '',
@@ -44,7 +46,9 @@ class EditModal extends AdminModal {
                 giayPhepLaiXe2BanhNgay: '',
                 giayPhepLaiXe2BanhNoiCap: '',
                 giayKhamSucKhoe: '',
-                giayKhamSucKhoeNgayKham: ''
+                giayKhamSucKhoeNgayKham: '',
+                hinhThe3x4: '',
+                hinhChupTrucTiep: ''
             };
         this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'd-none' });
         this.itemFirstname.value(firstname);
@@ -64,10 +68,12 @@ class EditModal extends AdminModal {
         this.itemLincenseIssuedBy.value(giayPhepLaiXe2BanhNoiCap);
         this.itemGiayKhamSucKhoe.value(giayKhamSucKhoe);
         this.itemGiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham);
+        this.itemHinhThe3x4.value(hinhThe3x4);
+        this.itemHinhChupTrucTiep.value(hinhChupTrucTiep);
     }
 
     isChecked = (checked) => {
-        this.setState({ className: checked ? 'col-md-6' : 'd-none' });
+        this.setState({ className: checked ? 'col-md-6' : 'invisible' });
     }
 
     onSubmit = () => {
@@ -90,6 +96,8 @@ class EditModal extends AdminModal {
             giayPhepLaiXe2BanhNoiCap: this.itemLincenseIssuedBy.value(),
             giayKhamSucKhoe: this.itemGiayKhamSucKhoe.value(),
             giayKhamSucKhoeNgayKham: this.itemGiayKhamSucKhoe.value() ? this.itemGiayKhamSucKhoeNgayKham.value() : null,
+            hinhThe3x4: this.itemHinhThe3x4.value(),
+            hinhChupTrucTiep: this.itemHinhChupTrucTiep.value(),
         };
         if (data.lastname == '') {
             T.notify('Họ không được trống!', 'danger');
@@ -135,6 +143,8 @@ class EditModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' className='col-md-4' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-6' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
                 <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
+                <FormCheckbox ref={e => this.itemHinhChupTrucTiep = e} className='col-md-6' label='Hình chụp trực tiếp' readOnly={this.props.readOnly} />
             </div>),
     });
 }
@@ -197,17 +207,8 @@ class ImportPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giới tính</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày sinh</th>
-                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Quốc tịch</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi cư trú</th>
-                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi đăng ký hộ khẩu thường trú</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số CMND, CCCD</th>
-                    {/* <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nơi cấp CMND, CCCD</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày cấp CMND, CCCD</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giấy phép lái xe 2 bánh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày trúng truyển giấy phép lái xe 2 bánh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'> Nơi cấp giấy phép lái xe 2 bánh</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Đã có giấy khám sức khoẻ</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày khám sức khoẻ</th> */}
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -218,17 +219,8 @@ class ImportPage extends AdminPage {
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.mobileDisplay(item.phoneNumber)} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.sex.toLowerCase().trim() == 'male' ? 'Nam' : 'Nữ'} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.birthday, 'dd/mm/yyyy')} />
-                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.nationality} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.residence} />
-                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.regularResidence} /> */}
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityCard} />
-                    {/* <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.identityIssuedBy} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.identityDate, 'dd/mm/yyyy')} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhSo} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.giayPhepLaiXe2BanhNgay, 'dd/mm/yyyy')} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayPhepLaiXe2BanhNoiCap} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.giayKhamSucKhoe ? 'Có' : 'Không'} />
-                    <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={T.dateToText(item.giayKhamSucKhoeNgayKham, 'dd/mm/yyyy')} /> */}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.showEditModal} onDelete={this.delete} />
                 </tr>),
         });
