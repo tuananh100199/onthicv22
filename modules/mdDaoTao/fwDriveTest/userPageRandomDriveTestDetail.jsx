@@ -7,7 +7,7 @@ import 'view/component/input.scss';
 
 const backRoute = '/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien';
 class UserPageRandomDriveTestDetail extends AdminPage {
-    state = { showSubmitButton: true };
+    state = { showSubmitButton: true, showTotalScore: false };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         T.ready(backRoute, () => {
@@ -20,8 +20,6 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                 } else {
                     this.props.history.push(backRoute);
                 }
-                $('#totalScore').css('display', 'none');
-                $('#trueAnswer').css('display', 'none');
             });
         });
     }
@@ -44,10 +42,9 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                 prevTrueAnswers: result.trueAnswer,
                 prevAnswers: result.answers,
                 score: result.score,
-                showSubmitButton: false
+                showSubmitButton: false,
+                showTotalScore: true
             });
-            $('#totalScore').css('display', 'block');
-            $('#trueAnswer').css('display', 'block');
         });
     }
 
@@ -57,7 +54,8 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             activeQuestionIndex: 0,
             prevAnswers: null,
             prevTrueAnswers: null,
-            showSubmitButton: true
+            showSubmitButton: true,
+            showTotalScore: false
         });
         setTimeout(() => {
             $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
@@ -100,7 +98,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         const { questions } = this.state ? this.state : { questions: [] };
         const activeQuestionIndex = this.state.activeQuestionIndex ? this.state.activeQuestionIndex : 0;
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
-        const { prevTrueAnswers, prevAnswers, showSubmitButton, score } = this.state;
+        const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score } = this.state;
 
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
@@ -150,7 +148,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                 </div>
                             ) : null}
                         </div>
-                        <div className='tile-footer row' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
                             <div style={{ width: '100%' }}>
                                 <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                     <ul className='pagination'>
@@ -163,7 +161,9 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     </ul>
                                 </nav>
                                 <div>
-                                    <h4 id='totalScore' style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
+                                    {showTotalScore ?
+                                        <h4 id='totalScore' style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
+                                        : null}
                                     <div style={{ float: 'right', marginRight: '10px' }}>
                                         {showSubmitButton ?
                                             <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
