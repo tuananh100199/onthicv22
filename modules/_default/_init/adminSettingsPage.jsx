@@ -7,24 +7,20 @@ class SettingsPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready(() => {
-            if (this.props.system) {
-                let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
-                    this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
-                this.systemAddress.value(address);
-                this.systemEmail.value(email);
-                this.systemMobile.value(mobile);
-                this.systemFax.value(fax);
-                this.systemFacebook.value(facebook);
-                this.systemYoutube.value(youtube);
-                this.systemTwitter.value(twitter);
-                this.systemInstagram.value(instagram);
-                this.systemLogo.setData('logo', logo);
-                this.systemContact.setData('contact', contact);
-                this.systemSubscribe.setData('subscribe', subscribe);
-                this.setState({ logo, footer, contact, subscribe });
-            } else {
-                setTimeout(() => ready(), 200);
-            }
+            let { address, email, mobile, fax, facebook, youtube, twitter, instagram, logo, footer, contact, subscribe } = this.props.system ?
+                this.props.system : { address: '', email: '', mobile: '', fax: '', facebook: '', youtube: '', twitter: '', instagram: '', logo: '/img/logo.jpg', footer: '/img/footer.jpg', contact: '/img/contact.jpg', subscribe: '/img/subscribe.jpg' };
+            this.systemAddress.value(address);
+            this.systemEmail.value(email);
+            this.systemMobile.value(mobile);
+            this.systemFax.value(fax);
+            this.systemFacebook.value(facebook);
+            this.systemYoutube.value(youtube);
+            this.systemTwitter.value(twitter);
+            this.systemInstagram.value(instagram);
+            this.systemLogo.setData('logo', logo);
+            this.systemContact.setData('contact', contact);
+            this.systemSubscribe.setData('subscribe', subscribe);
+            this.setState({ logo, footer, contact, subscribe });
         });
     }
 
