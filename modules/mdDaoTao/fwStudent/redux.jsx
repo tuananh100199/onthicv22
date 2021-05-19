@@ -16,7 +16,13 @@ export default function studentReducer(state = {}, data) {
             return Object.assign({}, state, { page: data.page });
 
         case StudentGetCourse:
-            return Object.assign({}, state, { courseList: data.list });
+            return Object.assign({}, state, {
+                courseList: {
+                    all: data.all,
+                    teachers: data.teachers,
+                    representers: data.representers
+                }
+            });
 
         case StudentUpdate: {
             let updatedPage = Object.assign({}, state.page),
@@ -207,16 +213,20 @@ export function importPreStudent(students, division, courseType, done) {
 
 
 // Course student Actions ---------------------------------------------------------------------------------------------
-export function getStudentCourse(_courseId, searchText, done) {
+export function getStudentCourse(condition, searchText, done) {
     return dispatch => {
-        const url = `/api/student/course/${_courseId}`;
-        T.get(url, { searchText }, data => {
+        const _courseId = condition.course,
+            url = `/api/student/course/${_courseId}`;
+        T.get(url, { condition, searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                done && done(data.list);
-                dispatch({ type: StudentGetCourse, list: data.list });
+                done && done(data);
+                dispatch({
+                    type: StudentGetCourse, all: data.listAll, teachers: data.listTeacher,
+                    representers: data.listRepresenter
+                });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách học viên của khoá học bị lỗi!', 'danger'));
     };
@@ -231,7 +241,7 @@ export function updateStudentCourse(_studentId, changes, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
                 done && done(data.item);
-                dispatch(getStudentCourse(data.item.course));
+                dispatch(getStudentCourse({ course: data.item.course }));
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
@@ -247,7 +257,7 @@ export function removeStudentCourse(_studentId, _courseId, done) {
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
                 done && done(data.student);
-                dispatch(getStudentCourse(_courseId));
+                dispatch(getStudentCourse({ course: _courseId }));
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));

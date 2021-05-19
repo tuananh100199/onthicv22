@@ -93,7 +93,6 @@ module.exports = (app) => {
     });
 
     app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {
-        // const currentCourse = req.session.user.currentCourse;
         app.model.course.get(req.params._courseId, (error, course) => {
             if (error) {
                 res.send({ error });
@@ -216,6 +215,27 @@ module.exports = (app) => {
             app.model.course.addStudentToTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
         } else if (type == 'remove') {
             app.model.course.removeStudentFromTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
+        }
+    });
+
+    // RepresenterGroups APIs -----------------------------------------------------------------------------------------------------
+    app.put('/api/course/representer-group/representer/:_representerId', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, type } = req.body,
+            _representerId = req.params._representerId;
+        if (type == 'add') {
+            app.model.course.addRepresenterGroup(_courseId, _representerId, (error, item) => res.send({ error, item }));
+        } else if (type == 'remove') {
+            app.model.course.removeRepresenterGroup(_courseId, _representerId, (error, item) => res.send({ error, item }));
+        }
+    });
+
+    app.put('/api/course/representer-group/student/:_studentId', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _representerId, type } = req.body,
+            _studentId = req.params._studentId;
+        if (type == 'add') {
+            app.model.course.addStudentToRepresenterGroup(_courseId, _representerId, _studentId, (error, item) => res.send({ error, item }));
+        } else if (type == 'remove') {
+            app.model.course.removeStudentFromRepresenterGroup(_courseId, _representerId, _studentId, (error, item) => res.send({ error, item }));
         }
     });
 
