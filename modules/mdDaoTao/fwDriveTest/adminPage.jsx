@@ -42,12 +42,13 @@ class DriveTestModal extends AdminModal {
         </>,
     });
 }
+
 class DriveTestContent extends AdminPage {
     state = { courseType: null };
     componentDidMount() {
         T.ready(() => {
             const courseType = this.props.courseType;
-            this.props.getDriveTestPage( undefined, undefined, {}, courseType);
+            this.props.getDriveTestPage(undefined, undefined, {}, courseType);
             this.setState({ courseType });
         });
 
@@ -62,36 +63,36 @@ class DriveTestContent extends AdminPage {
         isConfirm && this.props.deleteDriveTest(item._id, this.state.courseType));
 
     render() {
-            const permission = this.props.permission;
-            const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.driveTest && this.props.driveTest[this.state.courseType] ?
+        const permission = this.props.permission;
+        const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.driveTest && this.props.driveTest[this.state.courseType] ?
             this.props.driveTest[this.state.courseType] : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
-            const table = renderTable({
-                getDataSource: () => list, stickyHead: true,
-                renderHead: () => (
-                    <tr>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '100%' }}>Tên bộ đề thi</th>
-                        <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
-                        <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                    </tr>),
-                renderRow: (item, index) => (
-                    <tr key={index}>
-                        <TableCell type='number' content={index + 1} />
-                        <TableCell type='link' content={item.title} url={'/user/drive-test/' + item._id} />
-                        <TableCell type='text' content={item.courseType ? item.courseType.title : 'Không có loại khóa học'} />
-                        <TableCell type='checkbox' content={item.active} permission={permission} onChanged={() => this.props.updateDriveTest(item._id, { active: !item.active, courseType: item.courseType._id  })} />
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/drive-test/' + item._id} onSwap={this.swap} onDelete={this.delete} />
-                    </tr>),
-            });
-    
-            return(
-                <div className='tile-body'>
-                    {table}
-                    <Pagination name='pageDriveTest' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getDriveTestPage} />
-                </div>
-            );
-        }
+        const table = renderTable({
+            getDataSource: () => list, stickyHead: true,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '100%' }}>Tên bộ đề thi</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={item.title} url={'/user/drive-test/' + item._id} />
+                    <TableCell type='text' content={item.courseType ? item.courseType.title : 'Không có loại khóa học'} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={() => this.props.updateDriveTest(item._id, { active: !item.active, courseType: item.courseType._id })} />
+                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/drive-test/' + item._id} onSwap={this.swap} onDelete={this.delete} />
+                </tr>),
+        });
+
+        return (
+            <div className='tile-body'>
+                {table}
+                <Pagination name='pageDriveTest' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.props.getDriveTestPage} />
+            </div>
+        );
+    }
 }
 
 class DriveTestPage extends AdminPage {
@@ -103,20 +104,22 @@ class DriveTestPage extends AdminPage {
         });
         T.ready();
     }
+
     create = e => e.preventDefault() || this.modal.show();
 
     render() {
         const permission = this.getUserPermission('driveTest');
         const courseTypes = this.state.courseTypes ? this.state.courseTypes : [];
-        const tabs = courseTypes.length ? courseTypes.map(courseType => ({ 
-            title: courseType.text, 
-            component: <DriveTestContent driveTest={this.props.driveTest} 
-                                        getDriveTestPage={this.props.getDriveTestPage} 
-                                        courseType={courseType.id} 
-                                        swapDriveTest={this.props.swapDriveTest} 
-                                        deleteDriveTest={this.props.deleteDriveTest} 
-                                        updateDriveTest={this.props.updateDriveTest}
-                                        permission={permission}/> })) : [];
+        const tabs = courseTypes.length ? courseTypes.map(courseType => ({
+            title: courseType.text,
+            component: <DriveTestContent driveTest={this.props.driveTest}
+                getDriveTestPage={this.props.getDriveTestPage}
+                courseType={courseType.id}
+                swapDriveTest={this.props.swapDriveTest}
+                deleteDriveTest={this.props.deleteDriveTest}
+                updateDriveTest={this.props.updateDriveTest}
+                permission={permission} />
+        })) : [];
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Bộ đề thi thử',
@@ -125,7 +128,7 @@ class DriveTestPage extends AdminPage {
                 <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />
                 <DriveTestModal create={this.props.createDriveTest} ref={e => this.modal = e} history={this.props.history} readOnly={!permission.write} />
             </>,
-             onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? this.create : null,
         });
     }
 }
