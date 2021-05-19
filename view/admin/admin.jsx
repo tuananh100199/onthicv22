@@ -37,13 +37,14 @@ modules.forEach(module => {
 Object.keys(reducerContainer).forEach(key => reducers[key] = combineReducers(reducerContainer[key]));
 
 const store = createStore(combineReducers(reducers), {}, composeWithDevTools(applyMiddleware(thunk)));
-store.dispatch(getSystemState());
 
 // Main DOM render ----------------------------------------------------------------------------------------------------------------------------------
 class App extends React.Component {
-    routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
-
+    state = { routes: [] };
     componentDidMount() {
+        const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
+        this.props.getSystemState(() => this.setState({ routes }));
+
         T.socket.on('user-changed', user => {
             if (this.props.system && this.props.system.user && this.props.system.user._id == user._id) {
                 store.dispatch(updateSystemState({ user: Object.assign({}, this.props.system.user, user) }));
@@ -63,7 +64,7 @@ class App extends React.Component {
                     <AdminMenu />
                     <div className='site-content'>
                         <Switch>
-                            {this.routes}
+                            {this.state.routes}
                             <Route path='**' component={Loadable({ loading: Loading, loader: () => import('view/component/MessagePage') })} />
                         </Switch>
                     </div>
@@ -73,5 +74,5 @@ class App extends React.Component {
     }
 }
 
-const Main = connect(state => ({ system: state.system }), { updateSystemState })(App);
+const Main = connect(state => ({ system: state.system }), { getSystemState, updateSystemState })(App);
 ReactDOM.render(<Provider store={store}><Main /></Provider>, document.getElementById('app'));

@@ -21,10 +21,9 @@ class CourseUser extends React.Component {
 }
 class UserProfilePage extends AdminPage {
     componentDidMount() {
-        if (this.props.system && this.props.system.user) {
-            this.props.getUserCourse(data => this.setState(data));
-            T.ready();
-        }
+        T.ready(() => {
+            this.props.system && this.props.system.user && this.props.getUserCourse(data => this.setState(data));
+        });
     }
 
     render() {

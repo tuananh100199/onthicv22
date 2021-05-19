@@ -121,7 +121,6 @@ module.exports = (app) => {
             youtube: '',
             twitter: '',
             instagram: '',
-            dangKyTuVanLink: '',
             email: app.email.from,
             emailPassword: app.email.password,
             mobile: '(08) 2214 6555',
