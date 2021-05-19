@@ -15,8 +15,8 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                 _id = route.parse(window.location.pathname)._id;
             this.props.createRandomDriveTest(_id, data => {
                 if (data.driveTest) {
-                    const { _id, title, questions } = data.driveTest;
-                    this.setState({ activeQuestionIndex: 0, _id, title, questions });
+                    const { questions } = data.driveTest;
+                    this.setState({ activeQuestionIndex: 0, questions });
                 } else {
                     this.props.history.push(backRoute);
                 }

@@ -121,7 +121,6 @@ class UserPageDriveTestDetail extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
             content: (<>
-                {questions && questions.length ? (
                     <div className='tile'>
                         <div className='tile-body row'>
                             {activeQuestion ? (
@@ -176,7 +175,6 @@ class UserPageDriveTestDetail extends AdminPage {
                             </div>
                         </div>
                     </div>
-                ) : <div className='tile'>Không có dữ liệu</div>}
             </>),
         });
     }
