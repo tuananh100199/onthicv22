@@ -50,7 +50,7 @@ class EditModal extends AdminModal {
                 hinhThe3x4: '',
                 hinhChupTrucTiep: ''
             };
-        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'd-none' });
+        this.setState({ id: id, className: giayKhamSucKhoe ? 'col-md-6' : 'invisible' });
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
