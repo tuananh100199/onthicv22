@@ -51,7 +51,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         });
     }
 
-    refreshQuestion = (e, questionId) => {
+    resetQuestion = (e, questionId) => {
         e.preventDefault();
         this.setState({
             activeQuestionIndex: 0,
@@ -169,7 +169,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                             <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                                 <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
                                             </button> :
-                                            <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.refreshQuestion(e, questions[0]._id)} disabled={false}>
+                                            <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
                                     </div>

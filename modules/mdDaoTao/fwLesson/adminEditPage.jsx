@@ -78,11 +78,11 @@ class adminEditPage extends AdminPage {
                         T.notify('Lấy bài học bị lỗi!', 'danger');
                         this.props.history.push(adminPageLink);
                     } else if (data.item) {
-                        const { _id, title, shortDescription, detailDescription } = data.item;
+                        const { _id, title, shortDescription, detailDescription, numQuestion } = data.item;
                         this.itemTitle.value(title);
                         this.itemDescription.value(shortDescription);
                         this.itemEditor.html(detailDescription);
-
+                        this.itemNumQuestion.value(numQuestion);
                         this.setState({ _id, title });
                         this.itemTitle.focus();
                     } else {
@@ -99,6 +99,7 @@ class adminEditPage extends AdminPage {
         title: this.itemTitle.value(),
         shortDescription: this.itemDescription.value(),
         detailDescription: this.itemEditor.html(),
+        numQuestion: this.itemNumQuestion.value(),
     });
 
     showVideoModal = (e, video) => e.preventDefault() || this.modalVideo.show(video);
@@ -135,6 +136,7 @@ class adminEditPage extends AdminPage {
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='3' readOnly={!permission.write} />
+                <FormTextBox ref={e => this.itemNumQuestion = e} label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion} readOnly={!permission.write}></FormTextBox>
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={!permission.write} />
                 {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
             </div>);

@@ -61,10 +61,10 @@ export function getLesson(_id, done) {
     };
 }
 
-export function getLessonByStudent(_id, done) {
+export function getLessonByStudent(_id, courseId, subjectId, done) {
     return dispatch => {
         const url = '/api/lesson/student';
-        T.get(url, { _id }, data => {
+        T.get(url, { _id, courseId, subjectId }, data => {
             if (data.error) {
                 T.notify('Lấy loại khóa học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
