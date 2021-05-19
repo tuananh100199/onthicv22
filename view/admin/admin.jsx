@@ -22,7 +22,7 @@ import AdminMenu from 'view/component/AdminMenu';
 // Load modules -------------------------------------------------------------------------------------------------------------------------------------
 import { modules } from './modules.jsx';
 const reducers = {}, reducerContainer = {}, routeMapper = {},
-    addRoute = route => routeMapper[route.path] = <Route key={route.path} {...route} />;
+    addRoute = route => routeMapper[route.path] = <Route key={route.path} exact {...route} />;
 modules.forEach(module => {
     module.init && module.init();
     module.routes.forEach(route => route.path.startsWith('/user') && addRoute(route));
