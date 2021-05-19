@@ -10,7 +10,7 @@ class DriveTestContent extends AdminPage {
     componentDidMount() {
         T.ready(() => {
             const courseType = this.props.courseType;
-            this.props.getDriveTestPage( undefined, undefined, {}, courseType);
+            this.props.getDriveTestPage(undefined, undefined, {}, courseType);
             this.setState({ courseType });
         });
 
@@ -20,27 +20,27 @@ class DriveTestContent extends AdminPage {
     }
 
     render() {
-            const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.driveTest && this.props.driveTest[this.state.courseType] ?
+        const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.driveTest && this.props.driveTest[this.state.courseType] ?
             this.props.driveTest[this.state.courseType] : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, pageCondition: '', list: [] };
-            return (
-                <div className='tile-body'>
-                    <div className='row'>
-                        {list && list.length ? list.map((driveTest, index) => (
-                            <div key={index} className='col-md-4'>
-                                <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + driveTest._id}>
-                                    <div className='widget-small coloured-icon info border'>
-                                        <i className='icon fa fa-3x fa fa-cubes' />
-                                        <div className='info'>
-                                            <h4>{driveTest.title}</h4>
-                                        </div>
+        return (
+            <div className='tile-body'>
+                <div className='row'>
+                    {list && list.length ? list.map((driveTest, index) => (
+                        <div key={index} className='col-md-4'>
+                            <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + driveTest._id}>
+                                <div className='widget-small coloured-icon info border'>
+                                    <i className='icon fa fa-3x fa fa-cubes' />
+                                    <div className='info'>
+                                        <h4>{driveTest.title}</h4>
                                     </div>
-                                </Link>
-                            </div>
-                            )):'Không có dữ liệu'}
-                    </div>       
-                    <Pagination name='pageDriveTest' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} pageCondition={pageCondition} />
-                </div>);
-        }
+                                </div>
+                            </Link>
+                        </div>
+                    )) : 'Không có dữ liệu'}
+                </div>
+                <Pagination name='pageDriveTest' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} pageCondition={pageCondition} />
+            </div>);
+    }
 }
 class UserDriveTestPage extends AdminPage {
     state = {};
@@ -58,7 +58,7 @@ class UserDriveTestPage extends AdminPage {
         const courseTypes = this.state.courseTypes ? this.state.courseTypes : [];
         const tabs = courseTypes.length ? courseTypes.map(courseType => ({ title: courseType.text, component: <DriveTestContent driveTest={this.props.driveTest} getDriveTestPage={this.props.getDriveTestPage} courseType={courseType.id} /> })) : [];
         return this.renderPage({
-            icon: 'fa fa-dashboard',
+            icon: 'fa fa-graduation-cap',
             title: 'Bộ đề thi thử',
             breadcrumb: ['Bộ đề thi thử'],
             content: <>

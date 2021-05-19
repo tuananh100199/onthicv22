@@ -15,7 +15,7 @@ class UserProfilePage extends AdminPage {
         const { students } = this.state ? this.state : { students: [] };
         return this.renderPage({
             icon: 'fa fa-user',
-            title: 'Trang cá nhân: ',
+            title: 'Trang cá nhân',
             breadcrumb: ['Trang cá nhân'],
             content: (
                 <div className='row'>
