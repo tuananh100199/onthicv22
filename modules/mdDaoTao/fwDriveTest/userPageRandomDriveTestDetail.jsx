@@ -155,10 +155,10 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                 <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
                                     <ul className='pagination'>
                                         <li className='page-item' id='prev-btn'>
-                                            <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true'></i> Câu trước</a>
+                                            <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true' /> Câu trước</a>
                                         </li>
                                         <li className='page-item' id='next-btn'>
-                                            <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true'></i></a>
+                                            <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
                                         </li>
                                     </ul>
                                 </nav>

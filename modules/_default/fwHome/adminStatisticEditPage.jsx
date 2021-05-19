@@ -153,7 +153,7 @@ class StatisticEditPage extends AdminPage {
                         {permission.write && items && (items.length < 12) &&
                             <div style={{ textAlign: 'right' }}>
                                 <button className='btn btn-success' type='button' onClick={this.createItem}>
-                                    <i className='fa fa-fw fa-lg fa-plus'></i> Thêm
+                                    <i className='fa fa-fw fa-lg fa-plus' /> Thêm
                                 </button>
                             </div>}
                     </div>

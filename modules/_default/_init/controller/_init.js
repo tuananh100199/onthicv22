@@ -113,7 +113,6 @@ module.exports = (app) => {
             allViews: 0,
             logo: '/img/favicon.ico',
             map: '/img/map.png',
-            footer: '/img/footer.jpg',
             contact: '/img/contact.jpg',
             subscribe: '/img/subscribe.jpg',
             facebook: 'https://www.facebook.com',

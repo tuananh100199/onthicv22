@@ -329,15 +329,15 @@ class UserDonDeNghiPage extends React.Component {
                 </button>
                 <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '75px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
-                    <i className='fa fa-file-word-o'></i>
+                    <i className='fa fa-file-word-o' />
                 </button>
                 <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
                     style={{ position: 'fixed', right: '130px', bottom: '10px' }} onClick={this.exportBienNhan}>
-                    <i className='fa fa-file-text-o'></i>
+                    <i className='fa fa-file-text-o' />
                 </button>
                 <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
                     style={{ position: 'fixed', right: '185px', bottom: '10px' }} onClick={this.exportBanCamKet}>
-                    <i className='fa fa-file-text-o'></i>
+                    <i className='fa fa-file-text-o' />
                 </button>
             </main>
         );
@@ -423,15 +423,15 @@ class UserDonDeNghiPage extends React.Component {
                 </Link>
                 <button type='button' className='btn btn-success btn-circle' data-toggle='tooltip' title='Xuất đơn đề nghị học'
                     style={{ position: 'fixed', right: '75px', bottom: '10px' }} onClick={this.exportDonDeNghiHoc}>
-                    <i className='fa fa-file-word-o'></i>
+                    <i className='fa fa-file-word-o' />
                 </button>
                 <button type='button' className='btn btn-info btn-circle' data-toggle='tooltip' title='Xuất biên nhận học viên'
                     style={{ position: 'fixed', right: '130px', bottom: '10px' }} onClick={this.exportBienNhan}>
-                    <i className='fa fa-file-text-o'></i>
+                    <i className='fa fa-file-text-o' />
                 </button>
                 <button type='button' className='btn btn-secondary btn-circle' data-toggle='tooltip' title='Xuất bản cam kết'
                     style={{ position: 'fixed', right: '185px', bottom: '10px' }} onClick={this.exportBanCamKet}>
-                    <i className='fa fa-file-text-o'></i>
+                    <i className='fa fa-file-text-o' />
                 </button>
             </main>
         );

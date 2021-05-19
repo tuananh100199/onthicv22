@@ -62,6 +62,7 @@ class ProfilePage extends AdminPage {
     onUploadSuccess = ({ error, item, image }) => {
         if (error) {
             T.notify('Upload hình ảnh thất bại!', 'danger');
+            console.error(error);
         } else {
             if (image) {
                 this.setState({ image });
