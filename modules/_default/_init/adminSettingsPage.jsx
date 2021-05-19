@@ -19,7 +19,6 @@ class SettingsPage extends AdminPage {
                 this.systemTwitter.value(twitter);
                 this.systemInstagram.value(instagram);
                 this.systemLogo.setData('logo', logo);
-                this.systemFooter.setData('footer', footer);
                 this.systemContact.setData('contact', contact);
                 this.systemSubscribe.setData('subscribe', subscribe);
                 this.setState({ logo, footer, contact, subscribe });
@@ -56,8 +55,8 @@ class SettingsPage extends AdminPage {
             this.emailPassword1.focus();
         } else {
             this.props.saveSystemState({ emailPassword: emailPassword1 });
-            this.emailPassword1.value(''),
-                this.emailPassword2.value('');
+            this.emailPassword1.value('');
+            this.emailPassword2.value('');
         }
     }
 
@@ -77,7 +76,6 @@ class SettingsPage extends AdminPage {
                                 <FormTextBox ref={e => this.systemAddress = e} label='Địa chỉ' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemEmail = e} label='Email' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemMobile = e} label='Số điện thoại' readOnly={readOnly} />
-                                <FormTextBox ref={e => this.systemDangKyTuVanLink = e} label='Đường dẫn đăng ký tư vấn' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemFax = e} label='Fax' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemFacebook = e} label='Facebook' readOnly={readOnly} />
                                 <FormTextBox ref={e => this.systemYoutube = e} label='You tube' readOnly={readOnly} />
@@ -112,7 +110,6 @@ class SettingsPage extends AdminPage {
                             <h3 className='tile-title'>Hình ảnh</h3>
                             <div className='tile-body'>
                                 <FormImageBox ref={e => this.systemLogo = e} label='Logo công ty' uploadType='SettingImage' image={this.state.logo} readOnly={readOnly} />
-                                <FormImageBox ref={e => this.systemFooter = e} label='Hình nền cuối trang web' uploadType='SettingImage' image={this.state.footer} readOnly={readOnly} />
                                 <FormImageBox ref={e => this.systemContact = e} label='Hình nền phần liên hệ' uploadType='SettingImage' image={this.state.contact} readOnly={readOnly} />
                                 <FormImageBox ref={e => this.systemSubscribe = e} label='Hình nền phần đăng ký nhận tin' uploadType='SettingImage' image={this.state.subscribe} readOnly={readOnly} />
                             </div>
