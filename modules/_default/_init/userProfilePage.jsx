@@ -28,7 +28,6 @@ class UserProfilePage extends AdminPage {
 
     render() {
         const { students } = this.state ? this.state : { students: [] };
-
         return this.renderPage({
             icon: 'fa fa-user',
             title: 'Trang cá nhân: ',
@@ -49,8 +48,8 @@ class UserProfilePage extends AdminPage {
                         {students.map((student, index) => (
                             <div key={index} className='col-md-6 col-lg-4'>
                                 <CourseUser courseTypeName={student.courseType && student.courseType.title ? student.courseType.title : ''}
-                                    link={student.course ? '/user/hoc-vien/khoa-hoc/' + student.course._id : null}
-                                    courseName={student.course ? 'Lớp: ' + student.course.name : 'Đang chờ khóa'} />
+                                    link={student.course && student.course.active ? '/user/hoc-vien/khoa-hoc/' + student.course._id : null}
+                                    courseName={student.course && student.course.active ? 'Lớp: ' + student.course.name : 'Đang chờ khóa'} />
                             </div>
                         ))}
                     </> : null}

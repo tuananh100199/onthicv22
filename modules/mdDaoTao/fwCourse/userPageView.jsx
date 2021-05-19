@@ -78,7 +78,7 @@ class UserCoursePageDetail extends AdminPage {
                     </Link>
                     <h4 style={{ width: '100%' }}>Môn học</h4>
                     {subjects.length ? subjects.map((subject, index) => (
-                        <div key={index} className='col-md-6 col-lg-4'>
+                        <div key={index} className='col-md-6'>
                             <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id}>
                                 <div className='widget-small coloured-icon primary'>
                                     <i className='icon fa fa-3x fa fa-briefcase' />

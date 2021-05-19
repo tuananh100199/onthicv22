@@ -49,11 +49,11 @@ module.exports = (app) => {
             let email = req.body.email.trim(), password = req.body.password;
             app.model.user.auth(email, password, user => {
                 if (user == null) {
-                    res.send({ error: 'Invalid email or password!' });
+                    res.send({ error: 'Thông tin đăng nhập không chính xác!' });
                 } else if (user.active) {
                     app.updateSessionUser(req, user, sessionUser => res.send({ user: sessionUser }));
                 } else {
-                    res.send({ error: 'Your account is inactive!' });
+                    res.send({ error: 'Tài khoản của bạn chưa được kích hoạt!' });
                 }
             });
         }
@@ -96,7 +96,7 @@ module.exports = (app) => {
                 };
                 getUserToken();
             } else {
-                res.send({ error: 'Your account is inactive!' });
+                res.send({ error: 'Tài khoản của bạn chưa được kích hoạt!' });
             }
         });
     };

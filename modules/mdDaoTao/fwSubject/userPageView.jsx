@@ -53,7 +53,7 @@ class AdminEditPage extends AdminPage {
             content: (
                 <div className='row'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6 ' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
+                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/thong-tin/' + this.state.subjectId}>
                         <div className={'widget-small coloured-icon info'}>
                             <i className='icon fa fa-3x fa-info' />
                             <div className='info'>
@@ -71,7 +71,7 @@ class AdminEditPage extends AdminPage {
                             </div>
                         </div>);
                         const show = (
-                            <div key={index} className='col-md-6 col-lg-6'>
+                            <div key={index} className='col-md-6'>
                                 {
                                     finishedLesson < index ? content :
                                         <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + this.state.subjectId + '/bai-hoc/' + lesson._id}>
