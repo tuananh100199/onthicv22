@@ -229,7 +229,7 @@ class UserPage extends AdminPage {
         });
 
         const header = <>
-            <label style={{ lineHeight: '40px' }}>Loại người dùng:</label>&nbsp;&nbsp;
+            <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại người dùng:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.userType = e} data={UserTypeData} onChange={value => this.onSearch({ userType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
 
