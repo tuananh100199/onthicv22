@@ -6,6 +6,7 @@ module.exports = app => {
         author: { type: app.db.Schema.ObjectId, ref: 'User' },
         videos: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'LessonVideo' }], default: [] },
         questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
+        numQuestion: { type: Number, default: 5 },
     });
     const model = app.db.model('Lesson', schema);
 

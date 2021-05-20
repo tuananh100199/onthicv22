@@ -12,7 +12,7 @@ class UserCourseInfo extends AdminPage {
         if (params._id) {
             this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId });
             T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId, () => {
-                this.props.getLessonByStudent(params._id, data => {
+                this.props.getLessonByStudent(params._id, params.courseId, params.subjectId, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
                         this.props.history.push(previousRoute);

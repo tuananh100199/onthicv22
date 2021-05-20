@@ -64,8 +64,8 @@ class AdminStudentView extends React.Component {
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBoxPre = e} label='Tìm kiếm ứng viên' onChange={e => this.onSearch({ searchText: e.target.value })} />
                         <div style={{ display: preStudentList.length ? 'block' : 'none' }}>
-                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={value => this.itemSelectAll.value(true)} style={{ display: 'inline-block' }} />
-                            <FormCheckbox ref={e => this.itemDeselectAll = e} label='Không chọn tất cả' onChange={value => this.itemDeselectAll.value(false)} style={{ display: 'inline-block', marginLeft: 12 }} />
+                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.itemSelectAll.value(true)} style={{ display: 'inline-block' }} />
+                            <FormCheckbox ref={e => this.itemDeselectAll = e} label='Không chọn tất cả' onChange={() => this.itemDeselectAll.value(false)} style={{ display: 'inline-block', marginLeft: 12 }} />
                         </div>
                         {preStudentList.length ?
                             <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
