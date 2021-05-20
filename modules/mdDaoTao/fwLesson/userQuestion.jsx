@@ -48,11 +48,18 @@ class adminEditPage extends AdminPage {
 
     logKey = (e) => {
         const activeQuestionIndex = this.state.activeQuestionIndex,
-            maxIndex = this.state.questions.length - 1;
+            maxIndex = this.state.questions.length - 1,
+            questionId = this.state.questions && this.state.questions[activeQuestionIndex] && this.state.questions[activeQuestionIndex]._id;
         if (e.code == 'ArrowRight' && activeQuestionIndex < maxIndex) {
             this.changeQuestion(e, this.state.activeQuestionIndex + 1);
         } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
             this.changeQuestion(e, this.state.activeQuestionIndex - 1);
+        } else if (e.code.startsWith('Digit') && e.code.slice(5) < this.state.questions.length + 2) {
+            $('#' + questionId + (e.code.slice(5) - 1)).prop('checked', true);
+            this.setState(prevState => ({
+                studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
+                prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
+            }));
         }
     }
 
