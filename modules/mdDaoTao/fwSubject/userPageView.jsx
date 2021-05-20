@@ -67,7 +67,7 @@ class AdminEditPage extends AdminPage {
                             <i className='icon fa fa-3x fa fa-briefcase' style={{ backgroundColor: (finishedLesson == index ? '#007bff' : (finishedLesson > index ? '#17a2b8' : '#6c757d')) }} />
                             <div className='info'>
                                 <h4>{lesson && lesson.title}</h4>
-                                {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.questions.length)}</p></div> : <p>Chưa hoàn thành</p>}
+                                {tienDoHocTap && tienDoHocTap[lesson._id] ? <div><p>Đã hoàn thành</p><p> Số câu đúng:{((tienDoHocTap[lesson._id].score ? tienDoHocTap[lesson._id].score : 0) + '/' + lesson.numQuestion)}</p></div> : <p>Chưa hoàn thành</p>}
                             </div>
                         </div>);
                         const show = (
