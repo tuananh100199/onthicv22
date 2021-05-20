@@ -161,7 +161,7 @@ class UserPasswordModal extends AdminModal {
 }
 
 class UserPage extends AdminPage {
-    state = { isSearching: false, searchText: '', userType: 'all' };
+    state = { isSearching: false, searchText: '', userType: 'all', filterByTime: false };
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
@@ -194,6 +194,19 @@ class UserPage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
         isConfirm && this.props.deleteUser(item._id));
 
+    handleFilterByTime = (e, done) => {
+        e.preventDefault();
+        const dateStart = this.dateStart ? this.dateStart.value() : '';
+        const dateEnd = this.dateEnd ? this.dateEnd.value() : '';
+        if(dateStart > dateEnd ){
+            T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+        } else {
+            this.props.getUserPage(undefined, undefined, { dateStart, dateEnd}, (page) => {
+                done && done(page);
+            });
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('user');
         const allRoles = this.props.role && this.props.role.list ? this.props.role.list : [];
@@ -204,10 +217,11 @@ class UserPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Tên</th>
+                    <th style={{ width: '30%' }}>Tên</th>
                     <th style={{ width: '30%' }}>Email</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                    <th style={{ width: '30%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: '20%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: '20%' }}>Thời gian tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -218,6 +232,7 @@ class UserPage extends AdminPage {
                     <TableCell type='text' content={item.email} />
                     <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='text' content={item.division ? `${item.division.title} ${item.division.isOutside ? '(ngoài)' : ''}` : ''} />
+                    <TableCell type='text' content={new Date(item.createdDate).getShortText()} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateUser(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={e => !item.default && this.delete(e, item)}>
                         {permission.write ?
@@ -229,6 +244,7 @@ class UserPage extends AdminPage {
         });
 
         const header = <>
+            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Lọc theo thời gian' onChange={active => this.setState({ filterByTime: active })} />
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại người dùng:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.userType = e} data={UserTypeData} onChange={value => this.onSearch({ userType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
@@ -239,6 +255,19 @@ class UserPage extends AdminPage {
             header: header,
             breadcrumb: ['Người dùng'],
             content: <>
+                {this.state.filterByTime ?
+                    <div className='tile'>
+                        <div className="tile-body row">
+                            <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5'  />
+                            <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
+                            <div className='m-auto'>
+                                <button className='btn btn-success' style={{marginTop: '11px'}} type='button' onClick={this.handleFilterByTime}>
+                                    <i className='fa fa-filter' /> Lọc danh sách
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                    :null}
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
