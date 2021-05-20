@@ -54,7 +54,7 @@ class adminEditPage extends AdminPage {
             this.changeQuestion(e, this.state.activeQuestionIndex + 1);
         } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
             this.changeQuestion(e, this.state.activeQuestionIndex - 1);
-        } else if (e.code.startsWith('Digit') && e.code.slice(5) < this.state.questions.length + 2) {
+        } else if (e.code.startsWith('Digit') && e.code.slice(5) < this.state.questions.length + 2 && !(this.state.prevAnswers && this.state.prevTrueAnswers)) {
             $('#' + questionId + (e.code.slice(5) - 1)).prop('checked', true);
             this.setState(prevState => ({
                 studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
