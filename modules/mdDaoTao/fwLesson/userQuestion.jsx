@@ -60,6 +60,9 @@ class adminEditPage extends AdminPage {
                 studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
                 prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
             }));
+        } else if (e.code == 'Enter') {
+            !this.state.showSubmitButton ? this.resetQuestion(e)
+                : (activeQuestionIndex == this.state.questions.length - 1) && this.submitAnswer(e);
         }
     }
 
@@ -212,7 +215,7 @@ class adminEditPage extends AdminPage {
                                             <button className='btn' id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                                 <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
                                             </button> :
-                                            <button className='btn btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
+                                            <button className='btn btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e)} disabled={false}>
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
                                     </ul>
