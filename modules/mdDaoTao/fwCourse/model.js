@@ -89,7 +89,12 @@ module.exports = app => {
                 populate: {
                     path: 'division'
                 }
-            }).populate('admins', '-password').exec(done);
+            }).populate({
+                path: 'admins',
+                populate: {
+                    path: 'division'
+                }
+            }).exec(done);
         },
 
         getByUser: (condition, done) => {

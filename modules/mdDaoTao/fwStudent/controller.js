@@ -61,7 +61,7 @@ module.exports = (app) => {
 
 
     app.get('/api/student/course/:_courseId', app.permission.check('student:read'), (req, res) => {
-        const { condition, searchText } = req.query;
+        const { condition, searchText } = req.query, _courseId = req.params._courseId;
         if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
             condition.division = req.session.user.division._id;
         }
@@ -72,28 +72,22 @@ module.exports = (app) => {
                 { lastname: value },
             ];
         }
-        app.model.course.get(req.params._courseId, (error, item) => {
+        //  const listRepresenter = listAll.filter(student => course.representerGroups.find(group => group.student.find(item => item._id == student._id) == null) != null);
+        app.model.student.getAll(condition, (error, listAll) => {
             if (error) {
                 res.send({ error });
             } else {
-                condition._id = { $nin: item.teacherGroups.flatMap(item => item.student).map(i => i._id) };
-                app.model.student.getAll(condition, (error, listTeacher) => {
+                app.model.course.get(_courseId, (error, course) => {
                     if (error) {
                         res.send({ error });
                     } else {
-                        condition._id = { $nin: item.representerGroups.flatMap(item => item.student).map(i => i._id) };
-                        app.model.student.getAll(condition, (error, listRepresenter) => {
+                        condition._id = { $nin: course.teacherGroups.reduce((res, item) => [...res, ...item.student.map(i => i._id)], []) };
+                        app.model.student.getAll(condition, (error, listTeacher) => {
                             if (error) {
                                 res.send({ error });
                             } else {
-                                delete condition._id;
-                                app.model.student.getAll(condition, (error, listAll) => {
-                                    if (error) {
-                                        res.send({ error });
-                                    } else {
-                                        res.send({ listAll, listRepresenter, listTeacher });
-                                    }
-                                });
+                                condition._id = { $nin: course.representerGroups.reduce((res, item) => [...res, ...item.student.map(i => i._id)], []) };
+                                app.model.student.getAll(condition, (error, listRepresenter) => res.send({ error, listAll, listRepresenter, listTeacher }));
                             }
                         });
                     }
