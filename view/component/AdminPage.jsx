@@ -10,7 +10,7 @@ import 'react-datetime/css/react-datetime.css';
 // Table components ---------------------------------------------------------------------------------------------------
 export class TableCell extends React.Component { // type = number | date | link | image | checkbox | buttons | text (default)
     render() {
-        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1 } = this.props;
+        let { type = 'text', content = '', permission = {}, className = '', style = {}, contentStyle = {}, alt = '', display = true, rowSpan = 1, dateFormat } = this.props;
         if (style == null) style = {};
 
         if (display != true) {
@@ -18,7 +18,7 @@ export class TableCell extends React.Component { // type = number | date | link 
         } else if (type == 'number') {
             return <td className={className} style={{ textAlign: 'right', ...style }} rowSpan={rowSpan}>{content && !isNaN(content) ? T.numberDisplay(content) : content}</td>;
         } else if (type == 'date') {
-            return <td className={className} style={{ ...style }} rowSpan={rowSpan}>{new Date(content).getText()}</td>;
+            return <td className={className} style={{ ...style }} rowSpan={rowSpan}>{dateFormat ? T.dateToText(content, dateFormat) : new Date(content).getText()}</td>;
         } else if (type == 'link') {
             let url = this.props.url ? this.props.url.trim() : '',
                 onClick = this.props.onClick;
@@ -151,7 +151,7 @@ export class FormCheckbox extends React.Component {
         }
     }
 
-    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || this.props.onChange(!this.state.checked);
+    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || (this.props.onChange && this.props.onChange(!this.state.checked));
 
     render() {
         let { className, label, style, isSwitch = false, trueClassName = 'text-primary', falseClassName = 'text-secondary' } = this.props;
@@ -280,7 +280,8 @@ export class FormSelect extends React.Component {
     state = { valueText: '', hasInit: false };
     hasInit = false;
     componentDidMount() {
-        $(this.input).select2();
+        const { label, placeholder } = this.props;
+        $(this.input).select2({ placeholder: placeholder || label });
         $(this.input).on('select2:select', e => this.props.onChange && this.props.onChange(e.params.data));
         $(this.input).on('select2:unselect', e => this.props.onChange && this.props.onChange(e.params.data));
         $(this.input).on('select2:open', () => {
@@ -290,27 +291,27 @@ export class FormSelect extends React.Component {
             }, 50);
         });
     }
-
+    
     componentWillUnmount() {
         $(this.input).off('select2:select');
         $(this.input).off('select2:unselect');
         $(this.input).off('select2:open');
     }
-
+    
     focus = () => $(this.input).select2('open');
-
+    
     clear = () => $(this.input).val('').trigger('change') && $(this.input).html('');
-
+    
     value = function (value) {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
             this.clear();
             let hasInit = this.hasInit;
             if (!hasInit) this.hasInit = true;
-
+            
             const { data, label, placeholder, minimumResultsForSearch = 1, allowClear = false } = this.props,
                 options = { placeholder: placeholder || label, dropdownParent, minimumResultsForSearch, allowClear };
-
+            
             if (Array.isArray(data)) {
                 options.data = data;
                 $(this.input).select2(options).val(value).trigger('change');
@@ -322,7 +323,7 @@ export class FormSelect extends React.Component {
                         if (!Array.isArray(value)) {
                             value = [value];
                         }
-
+                        
                         const promiseList = value.map(item => {
                             return new Promise(resolve => {
                                 if (item.hasOwnProperty('id') && item.hasOwnProperty('text')) {
@@ -349,7 +350,8 @@ export class FormSelect extends React.Component {
                     } else {
                         if ((typeof value == 'string' || typeof value == 'number') && data.fetchOne) {
                             data.fetchOne(value, _item => {
-                                $(this.input).select2('trigger', 'select', { data: _item });
+                                const option = new Option(_item.text, _item.id, true, true);
+                                $(this.input).append(option).trigger('change');
                                 // Async set readOnlyText
                                 this.setState({ valueText: _item.text });
                             });
@@ -363,7 +365,7 @@ export class FormSelect extends React.Component {
                     $(this.input).val(null).trigger('change');
                 }
             }
-
+            
             // Set readOnly text
             if (!this.props.multiple) {
                 if (!data || !data.fetchOne) {
@@ -374,7 +376,7 @@ export class FormSelect extends React.Component {
             return $(this.input).val();
         }
     }
-
+    
     render = () => {
         const { className = '', style = {}, labelStyle = {}, label = '', multiple = false, readOnly = false, required = false } = this.props;
         return (
@@ -390,19 +392,26 @@ export class FormSelect extends React.Component {
 
 export class FormDatePicker extends React.Component {
     static defaultProps = { type: 'date' };
-
+    
     mask = {
         'time-mask': '39/19/2099 h9:59',
-        'date-mask': '39/19/2099'
+        'date-mask': '39/19/2099',
+        'month-mask': '19/2099'
     };
-
+    
+    format = {
+        'time-mask': 'dd/mm/yyyy HH:MM',
+        'date-mask': 'dd/mm/yyyy',
+        'month-mask': 'mm/yyyy'
+    };
+    
     state = { value: '', readOnlyText: '' };
-
+    
     value = function (date) {
         const type = this.props.type;
         if (arguments.length) {
             if (type.endsWith('-mask')) {
-                const value = date ? T.dateToText(new Date(date), type == 'date-mask' ? 'dd/mm/yyyy' : 'dd/mm/yyyy HH:MM') : '';
+                const value = date ? T.dateToText(new Date(date), this.format[type]) : '';
                 this.setState({ value, readOnlyText: value });
             } else {
                 this.setState({
@@ -412,7 +421,7 @@ export class FormDatePicker extends React.Component {
             }
         } else {
             if (type.endsWith('-mask')) {
-                const date = T.formatDate(this.state.value);
+                const date = T.formatDate((type == 'month-mask' ? '01/' : '') + this.state.value);
                 if (date == null || Number.isNaN(date.getTime())) return '';
                 return date;
             } else {
@@ -420,7 +429,7 @@ export class FormDatePicker extends React.Component {
             }
         }
     }
-
+    
     focus = () => {
         const type = this.props.type;
         if (type.endsWith('-mask')) {
@@ -429,7 +438,7 @@ export class FormDatePicker extends React.Component {
             $(this.inputRef).focus();
         }
     }
-
+    
     handleChange = event => {
         const type = this.props.type;
         event.preventDefault && event.preventDefault();
@@ -437,20 +446,20 @@ export class FormDatePicker extends React.Component {
             this.props.onChange && this.props.onChange(this.value());
         });
     }
-
+    
     render() {
-        let { label = '', type = 'date', className = '', readOnly = false, required = false } = this.props; // type = date || time || date-mask || time-mask
+        let { label = '', type = 'date', className = '', readOnly = false, required = false } = this.props; // type = date || time || date-mask || time-mask || month-mask
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={() => this.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <b>{this.state.readOnlyText}</b></> : ''}
                 {type.endsWith('-mask') ? (
                     <InputMask ref={e => this.input = e} className='form-control' mask={this.mask[type]} onChange={this.handleChange} style={{ display: readOnly ? 'none' : '' }}
-                        formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
-                        value={this.state.value} readOnly={readOnly} placeholder={label} />
+                               formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
+                               value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
                     <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                        value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                              inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                              value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
                 )}
             </div>);
     }
@@ -527,7 +536,7 @@ export class AdminModal extends React.Component {
     componentWillUnmount() {
         this.hide();
     }
-
+    
     onShown = (modalShown) => {
         $(this.modal).on('shown.bs.modal', () => modalShown());
     }
@@ -572,7 +581,7 @@ export class AdminModal extends React.Component {
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'>
                                 <i className='fa fa-fw fa-lg fa-times' />Đóng
                             </button>
-                            {readOnly == true ? null :
+                            {readOnly == true || !this.onSubmit ? null :
                                 <button type='submit' className='btn btn-primary' disabled={isLoading}>
                                     {isLoading ? <i className='fa fa-spin fa-lg fa-spinner' /> : <i className='fa fa-fw fa-lg fa-save' />} Lưu
                                 </button>}
