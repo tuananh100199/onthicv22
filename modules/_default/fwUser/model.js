@@ -41,11 +41,14 @@ module.exports = (app) => {
             done(error == null && user && user.equalPassword(password) ? user : null)),
 
         create: (data, done) =>
-            app.model.user.get({ email: data.email }, (error, user) => {
+            app.model.user.get({$or: [
+                {email: data.email},
+                {identityCard: data.identityCard}
+            ]}, (error, user) => {
                 if (error) {
                     if (done) done(error);
                 } else if (user) {
-                    if (done) done('Email bạn dùng đã được đăng ký!', user);
+                    if (done) done('Email hoặc số CMND/CCCD bạn dùng đã được đăng ký!', user);
                 } else {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();
