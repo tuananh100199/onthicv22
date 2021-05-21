@@ -161,10 +161,13 @@ class UserPasswordModal extends AdminModal {
 }
 
 class UserPage extends AdminPage {
-    state = { isSearching: false, searchText: '', userType: 'all', filterByTime: false, dateStart: '', dateEnd: ''};
+    state = { isSearching: false, searchText: '', userType: 'all', dateStart: '', dateEnd: ''};
 
     componentDidMount() {
-        T.ready(() => T.showSearchBox());
+        T.ready(() => {
+            T.showSearchBox( () => this.setState({dateStart: '', dateEnd: ''}) );
+            T.onSearch = (searchText) => this.onSearch({ searchText });
+        });
         this.userType.value(this.state.userType);
         this.props.getRoleAll();
         this.onSearch({}, (page) => {
@@ -173,9 +176,7 @@ class UserPage extends AdminPage {
                 const _userId = urlParams.get('user');
                 page && page.list && page.list.forEach(user => user._id == _userId && this.userModal.show(user));
             }
-        });
-
-        T.onSearch = (searchText) => this.onSearch({ searchText });
+        });   
     }
 
     onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
@@ -195,17 +196,15 @@ class UserPage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
         isConfirm && this.props.deleteUser(item._id));
 
-    handleFilterByTime = (e, done) => {
-        e.preventDefault();
+    handleFilterByTime = () => {
         const searchText = this.state.searchText, userType = this.state.userType;
         const dateStart = this.dateStart ? this.dateStart.value() : '';
         const dateEnd = this.dateEnd ? this.dateEnd.value() : '';
         if(dateStart > dateEnd ){
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
-            this.props.getUserPage(undefined, undefined, { searchText, userType, dateStart, dateEnd}, (page) => {
+            this.props.getUserPage(undefined, undefined, { searchText, userType, dateStart, dateEnd}, () => {
                 this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
-                done && done(page);
             });
         }
     }
@@ -247,12 +246,6 @@ class UserPage extends AdminPage {
         });
 
         const header = <>
-            <FormCheckbox ref={e => this.active = e} style={{ alignItems: 'center' }} label='Lọc theo thời gian' 
-                isSwitch={true}
-                onChange={active => {
-                    active ?
-                    this.setState({ filterByTime: active }) :  
-                    this.setState({ dateStart: '', dateEnd: '', filterByTime: active }); }} />
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại người dùng:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.userType = e} data={UserTypeData} onChange={value => this.onSearch({ userType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;
@@ -262,20 +255,19 @@ class UserPage extends AdminPage {
             title: 'Người dùng',
             header: header,
             breadcrumb: ['Người dùng'],
-            content: <>
-                {this.state.filterByTime ?
-                    <div className='tile'>
-                        <div className="tile-body row">
-                            <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5'  />
-                            <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
-                            <div className='m-auto'>
-                                <button className='btn btn-success' style={{marginTop: '11px'}} type='button' onClick={this.handleFilterByTime}>
-                                    <i className='fa fa-filter' /> Lọc danh sách
-                            </button>
-                            </div>
-                        </div>
+            advanceSearch: <>
+                <h6 className='tile-title mt-3'>Lọc theo thời gian</h6>
+                <div className="tile-body row">
+                    <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5'  />
+                    <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
+                    <div className='m-auto'>
+                        <button className='btn btn-success' style={{marginTop: '11px'}} type='button' onClick={this.handleFilterByTime}>
+                            <i className='fa fa-filter' /> Lọc danh sách
+                    </button>
                     </div>
-                    :null}
+                </div>
+            </>,
+            content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
