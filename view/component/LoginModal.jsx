@@ -112,6 +112,9 @@ export default class LoginModal extends React.Component {
 
                 function validate(input) {
                     if ($(input).attr('type') == 'email' || $(input).attr('name') == 'email') {
+                        if ($(input).val().trim().match(/^[0-9]+$/)) {
+                            return true;
+                        }
                         if ($(input).val().trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
                             return false;
                         }
@@ -170,8 +173,7 @@ export default class LoginModal extends React.Component {
                 email: this.txtEmail.current.value.trim(),
                 password: this.txtPassword.current.value
             };
-
-        if (data.email !== '' && data.password !== '' && T.validateEmail(data.email)) {
+        if (data.email !== '' && data.password !== '' && (data.email.match(/^[0-9]+$/) || T.validateEmail(data.email))) {
             this.props.login(data, result => {
                 errorMessage.html(result.error);
 
