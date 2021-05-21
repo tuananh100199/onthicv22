@@ -247,7 +247,8 @@ class UserPage extends AdminPage {
         });
 
         const header = <>
-            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Lọc theo thời gian' 
+            <FormCheckbox ref={e => this.active = e} style={{ alignItems: 'center' }} label='Lọc theo thời gian' 
+                isSwitch={true}
                 onChange={active => {
                     active ?
                     this.setState({ filterByTime: active }) :  
