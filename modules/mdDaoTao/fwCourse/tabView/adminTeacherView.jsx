@@ -127,7 +127,7 @@ class AdminTeacherView extends React.Component {
                                         {item.student.length ? item.student.map((student, indexStudent) => (
                                             <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
                                                 <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
-                                                    {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                                    {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division && student.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
                                                 </a>
                                             </li>
                                         )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
