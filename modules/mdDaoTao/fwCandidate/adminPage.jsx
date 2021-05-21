@@ -90,6 +90,7 @@ class CandidateModal extends AdminModal {
             T.notify('Cơ sở đào tạo không được trống', 'danger');
             this.division.focus();
         } else {
+            data.state = 'UngVien';
             this.props.upStudent(e, data, this.state.courseTypeTitle);
             this.hide();
         }
@@ -151,7 +152,7 @@ class CandidatePage extends AdminPage {
         isConfirm && this.props.deleteCandidate(item._id));
 
     upStudent = (e, item, courseTypeText) => e.preventDefault() || T.confirm('Trở thành ứng viên ', `Bạn có chắc muốn ${item.lastname + ' ' + item.firstname} trở thành ứng viên ${courseTypeText}?`, true, isConfirm =>
-        isConfirm && this.props.updateCandidate(item._id, { state: 'UngVien' }));
+        isConfirm && this.props.updateCandidate(item._id, item));
 
     render() {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
