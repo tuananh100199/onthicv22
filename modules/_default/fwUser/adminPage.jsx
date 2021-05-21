@@ -161,7 +161,7 @@ class UserPasswordModal extends AdminModal {
 }
 
 class UserPage extends AdminPage {
-    state = { isSearching: false, searchText: '', userType: 'all', filterByTime: false };
+    state = { isSearching: false, searchText: '', userType: 'all', filterByTime: false, dateStart: '', dateEnd: ''};
 
     componentDidMount() {
         T.ready(() => T.showSearchBox());
@@ -181,8 +181,9 @@ class UserPage extends AdminPage {
     onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
         if (userType == undefined) userType = this.state.userType;
-        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType }, (page) => {
-            this.setState({ searchText, userType, isSearching: false });
+        const dateStart = this.state.dateStart, dateEnd = this.state.dateEnd;
+        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType, dateStart, dateEnd }, (page) => {
+            this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
             done && done(page);
         }));
     }
@@ -196,12 +197,14 @@ class UserPage extends AdminPage {
 
     handleFilterByTime = (e, done) => {
         e.preventDefault();
+        const searchText = this.state.searchText, userType = this.state.userType;
         const dateStart = this.dateStart ? this.dateStart.value() : '';
         const dateEnd = this.dateEnd ? this.dateEnd.value() : '';
         if(dateStart > dateEnd ){
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
-            this.props.getUserPage(undefined, undefined, { dateStart, dateEnd}, (page) => {
+            this.props.getUserPage(undefined, undefined, { searchText, userType, dateStart, dateEnd}, (page) => {
+                this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
                 done && done(page);
             });
         }
@@ -244,7 +247,11 @@ class UserPage extends AdminPage {
         });
 
         const header = <>
-            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Lọc theo thời gian' onChange={active => this.setState({ filterByTime: active })} />
+            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Lọc theo thời gian' 
+                onChange={active => {
+                    active ?
+                    this.setState({ filterByTime: active }) :  
+                    this.setState({ dateStart: '', dateEnd: '', filterByTime: active }); }} />
             <label style={{ lineHeight: '40px', marginBottom: 0 }}>Loại người dùng:</label>&nbsp;&nbsp;
             <FormSelect ref={e => this.userType = e} data={UserTypeData} onChange={value => this.onSearch({ userType: value.id })} style={{ minWidth: '200px', marginBottom: 0, marginRight: 12 }} />
         </>;

@@ -34,14 +34,14 @@ module.exports = app => {
                     (condition.userType ? (Array.isArray(condition.userType) ? condition.userType : [condition.userType]) : []).forEach(item =>
                         pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
                 }
+
                 if (condition.dateStart && condition.dateEnd) {
-                    pageCondition.$or.push({
-                        createdDate: {
-                            $gte: new Date(condition.dateStart), 
-                            $lt: new Date(condition.dateEnd)
-                        }
-                    });
+                    pageCondition.createdDate =  {
+                        $gte: new Date(condition.dateStart), 
+                        $lt: new Date(condition.dateEnd)
+                    };
                 }
+                
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
