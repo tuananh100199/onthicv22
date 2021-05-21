@@ -39,6 +39,7 @@ export default class LoginModal extends React.Component {
         this.txtFirstname = React.createRef();
         this.txtLastname = React.createRef();
         this.txtEmail = React.createRef();
+        this.txtIdentityCard = React.createRef();
         this.txtPassword = React.createRef();
         this.signUpEmail = React.createRef();
         this.signUpPhone = React.createRef();
@@ -191,6 +192,7 @@ export default class LoginModal extends React.Component {
                 lastname: this.txtFirstname.current.value.trim(),
                 firstname: this.txtLastname.current.value.trim(),
                 email: this.signUpEmail.current.value.trim(),
+                identityCard: this.txtIdentityCard.current.value.trim(),
                 phoneNumber: this.signUpPhone.current.value.trim(),
                 password: this.signUpPassword.current.value
             };
@@ -227,7 +229,7 @@ export default class LoginModal extends React.Component {
                                             <div className='wrap-input100 validate-input login-validate-input'
                                                 data-validate='Valid email is required: ex@org.com'>
                                                 <input className='input100' type='text' name='email' id='loginModalEmail' ref={this.txtEmail}
-                                                    placeholder='Email' autoComplete='off' />
+                                                    placeholder='Email/CMND/CCCD' autoComplete='off' />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
                                             </div>
@@ -271,6 +273,12 @@ export default class LoginModal extends React.Component {
                                                 <input className='input100' type='text' name='email' autoComplete='off' placeholder='Email' ref={this.signUpEmail} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
+                                            </div>
+
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Identity card is required'>
+                                                <input className='input100' type='text' autoComplete='off' placeholder='CMND/CCCD' ref={this.txtIdentityCard} />
+                                                <span className='focus-input100' />
+                                                <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
                                             <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Phone number is required'>

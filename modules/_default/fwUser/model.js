@@ -7,6 +7,7 @@ module.exports = (app) => {
         lastname: String,
         sex: { type: String, enum: ['male', 'female'], default: 'male' },
         birthday: Date,
+        identityCard: String,
         email: String,
         password: String,
         phoneNumber: String,
@@ -33,7 +34,10 @@ module.exports = (app) => {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
-        auth: (email, password, done) => model.findOne({ email }).populate('roles').populate('division').exec((error, user) =>
+        auth: (emailOrIdentityCard, password, done) => model.findOne({$or: [
+            {email: emailOrIdentityCard},
+            {identityCard: emailOrIdentityCard}
+        ]}).populate('roles').populate('division').exec((error, user) =>
             done(error == null && user && user.equalPassword(password) ? user : null)),
 
         create: (data, done) =>
