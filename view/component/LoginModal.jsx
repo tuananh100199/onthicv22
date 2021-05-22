@@ -176,7 +176,6 @@ export default class LoginModal extends React.Component {
         if (data.email !== '' && data.password !== '' && (data.email.match(/^[0-9]+$/) || T.validateEmail(data.email))) {
             this.props.login(data, result => {
                 errorMessage.html(result.error);
-
                 if (result.user) {
                     $(this.modal.current).modal('hide');
                     window.location = '/user';
@@ -191,14 +190,14 @@ export default class LoginModal extends React.Component {
         e.preventDefault();
         let errorMessage = $(this.signUpErrorMessage.current),
             data = {
-                lastname: this.txtFirstname.current.value.trim(),
-                firstname: this.txtLastname.current.value.trim(),
+                lastname: this.txtLastname.current.value.trim(),
+                firstname: this.txtFirstname.current.value.trim(),
                 email: this.signUpEmail.current.value.trim(),
                 identityCard: this.txtIdentityCard.current.value.trim(),
                 phoneNumber: this.signUpPhone.current.value.trim(),
                 password: this.signUpPassword.current.value
             };
-        if (data.firstname !== '' && data.lastname !== '' && data.email !== '' && data.password !== '' && data.phoneNumber !== '') {
+        if (data.firstname !== '' && data.lastname !== '' && (data.email == '' || T.validateEmail(data.email)) && data.password !== '' && data.phoneNumber !== '') {
             this.props.register(data, result => {
                 errorMessage.html(result.error);
                 if (result.user) {
@@ -206,6 +205,8 @@ export default class LoginModal extends React.Component {
                     T.alert('Please check your email to active account.');
                 }
             });
+        } else {
+            T.notify('error', 'danger');
         }
     }
 
@@ -259,37 +260,37 @@ export default class LoginModal extends React.Component {
                                 <TabPanel value={this.state.value} index={1} className='d-flex justify-content-center'>
                                     <div className='wrap-login100 align-self-center'>
                                         <form className='login100-form validate-form signUp-validate-form' onSubmit={this.onSignUp}>
-                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Firstname is required'>
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Họ bắt buộc'>
+                                                <input className='input100' type='text' autoComplete='off' placeholder='Họ' ref={this.txtLastname}/>
+                                                <span className='focus-input100' />
+                                                <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
+                                            </div>
+                                            
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Tên bắt buộc'>
                                                 <input className='input100' type='text' autoComplete='off' placeholder='Tên' ref={this.txtFirstname} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
-                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Lastname is required'>
-                                                <input className='input100' type='text' autoComplete='off' placeholder='Họ' ref={this.txtLastname} />
-                                                <span className='focus-input100' />
-                                                <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
-                                            </div>
-
-                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Valid email is required: ex@org.com'>
+                                            <div className='wrap-input100 validate-input' data-validate='email hợp lệ có dạng: ex@org.com'>
                                                 <input className='input100' type='text' name='email' autoComplete='off' placeholder='Email' ref={this.signUpEmail} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
                                             </div>
 
-                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Identity card is required'>
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='CMND/CCCD bắt buộc'>
                                                 <input className='input100' type='text' autoComplete='off' placeholder='CMND/CCCD' ref={this.txtIdentityCard} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
-                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Phone number is required'>
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Số điện thoại bắt buộc'>
                                                 <input className='input100' type='text' autoComplete='off' placeholder='Số điện thoại' ref={this.signUpPhone} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-user' aria-hidden='true' /></span>
                                             </div>
 
-                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Password is required'>
+                                            <div className='wrap-input100 validate-input signUp-validate-input' data-validate='Mật khẩu bắt buộc'>
                                                 <input className='input100' type='password' autoComplete='off' placeholder='Mật khẩu' ref={this.signUpPassword} />
                                                 <span className='focus-input100' />
                                                 <span className='symbol-input100'><i className='icon icon-lock' aria-hidden='true' /></span>

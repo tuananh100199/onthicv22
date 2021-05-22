@@ -82,18 +82,40 @@ module.exports = app => {
                 res.send({ error });
             } else if (changes.state == 'UngVien') {
                 new Promise((resolve, reject) => { // Tạo user cho candidate
-                    app.model.user.get({ email: item.email }, (error, user) => {
+                    const condition = {};
+                    condition.$or = [];
+                    if (item.email) {
+                        condition.$or.push(
+                            {email: item.email},
+                        );
+                    }
+            
+                    if (item.identityCard) {
+                        condition.$or.push(
+                            {identityCard: item.identityCard}
+                        );
+                    }
+                    if (condition.$or.length == 0) delete condition.$or;
+                    app.model.user.get(condition, (error, user) => {
+                        function convert(str) {
+                            let date = new Date(str),
+                              mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+                              day = ('0' + date.getDate()).slice(-2);
+                            return [day,mnth,date.getFullYear()].join('');
+                        }
                         if (error) {
                             reject('Lỗi khi đọc thông tin người dùng!');
                         } else if (user) { // Candidate đã là user
                             resolve(user._id);
                         } else { // Candidate chưa là user
-                            const dataPassword = app.randomPassword(8),
+                            const dataPassword = convert(item.birthday),
                                 newUser = {
+                                    identityCard: item.identityCard,
                                     email: item.email,
                                     firstname: item.firstname,
                                     lastname: item.lastname,
                                     phoneNumber: item.phoneNumber,
+                                    birthday: item.birthday,
                                     password: dataPassword
                                 };
                             app.model.user.create(newUser, (error, user) => {
@@ -101,16 +123,18 @@ module.exports = app => {
                                     reject('Lỗi khi tạo người dùng!');
                                 } else { // Tạo user thành công. Gửi email & password đến người dùng!
                                     resolve(user._id);
-                                    app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                                        const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
-                                            fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
-                                                .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                                                .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
-                                            mailTitle = result.emailCreateMemberByAdminTitle,
-                                            mailText = fillParams(result.emailCreateMemberByAdminText),
-                                            mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
-                                        app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                                    });
+                                    if(user.email) {
+                                        app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+                                            const url = `${app.isDebug || app.rootUrl}/active-user/${user._id}`,
+                                                fillParams = (data) => data.replaceAll('{name}', `${user.lastname} ${user.firstname}`)
+                                                    .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+                                                    .replaceAll('{email}', user.email).replaceAll('{password}', dataPassword).replaceAll('{url}', url),
+                                                mailTitle = result.emailCreateMemberByAdminTitle,
+                                                mailText = fillParams(result.emailCreateMemberByAdminText),
+                                                mailHtml = fillParams(result.emailCreateMemberByAdminHtml);
+                                            app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                                        });
+                                    }
                                 }
                             });
                         }

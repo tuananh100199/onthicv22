@@ -67,13 +67,20 @@ module.exports = app => {
     });
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
-        const data = req.body.user;
-        if (!data.password) data.password = app.randomPassword(8);
-        const password = data.password;
+        const data = req.body.user; function convert(str) {
+            let date = new Date(str),
+              mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+              day = ('0' + date.getDate()).slice(-2);
+            return [day,mnth,date.getFullYear()].join('');
+        }
+        if (!data.password){
+            data.password = convert(data.birthday);
+        }
         if (data.roles == 'empty') data.roles = [];
+        const password = data.password;
         app.model.user.create(data, (error, user) => {
             res.send({ error, user });
-            if (user) {
+            if (user.email) {
                 app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                     const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                         mailTitle = result.emailCreateMemberByAdminTitle,

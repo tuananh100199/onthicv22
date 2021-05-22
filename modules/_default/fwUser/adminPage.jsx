@@ -22,7 +22,7 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', birthday: '', identityCard: '' , division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '' , division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
         this.itemFirstname.value(item.firstname || '');
         this.itemLastname.value(item.lastname || '');
         this.itemBirthday.value(item.birthday || '');
@@ -33,7 +33,7 @@ class UserModal extends AdminModal {
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
         this.itemIsRepresenter.value(item.isRepresenter);
-        this.itemSex.value(item.sex || null);
+        this.itemSex.value(item.sex || 'male');
         this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
         this.itemActive.value(item.active);
         this.imageBox.setData(`user:${item._id ? item._id : 'new'}`);
@@ -61,16 +61,13 @@ class UserModal extends AdminModal {
             division: this.itemDivision.value(),
             active: this.itemActive.value(),
         };
-
+        
         if (changes.lastname == '') {
             T.notify('Họ người dùng bị trống!', 'danger');
             this.itemLastname.focus();
         } else if (changes.firstname == '') {
             T.notify('Tên người dùng bị trống!', 'danger');
             this.itemFirstname.focus();
-        } else  if (changes.email == '') {
-            T.notify('Email người dùng bị trống!', 'danger');
-            this.itemEmail.focus();
         } else if (changes.identityCard == '') {
             T.notify('Chứng minh nhân dân hoặc căn cước công dân người dùng bị trống!', 'danger');
             this.itemIdentityCard.focus();
@@ -80,9 +77,6 @@ class UserModal extends AdminModal {
         } else if (changes.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (changes.sex == null) {
-            T.notify('Giới tính không được trống', 'danger');
-            this.itemSex.focus();
         } else if (changes.division == null) {
             T.notify('Cơ sở đào tạo không được trống', 'danger');
             this.itemDivision.focus();
@@ -116,16 +110,16 @@ class UserModal extends AdminModal {
                 <div className='row'>
                     <div className={this.state._id ? 'col-md-8' : 'col-md-12'}>
                         <div className='row'>
-                            <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} />
-                            <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} />
+                            <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} required />
+                            <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} required />
                         </div>
-                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
+                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email'/>
                     </div>
                     <FormImageBox ref={e => this.imageBox = e} className='col-md-4' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly}
                         onSuccess={this.onUploadSuccess} />
-                    <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-6' label='CMND/CCCD' readOnly={readOnly} />
-                    <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={readOnly} />
-                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-6' label='Ngày sinh' readOnly={readOnly} />
+                    <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-6' label='CMND/CCCD' readOnly={readOnly}  required />
+                    <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={readOnly} required />
+                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-6' label='Ngày sinh' readOnly={readOnly} required />
                     <FormSelect ref={e => this.itemSex = e} className='col-md-6' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
 
                     <FormCheckbox ref={e => this.itemIsCourseAdmin = e} isSwitch={true} className='col-md-4' label='Quản trị viên khóa học' readOnly={readOnly} />
@@ -134,7 +128,7 @@ class UserModal extends AdminModal {
                     <FormCheckbox ref={e => this.itemIsRepresenter = e}  isSwitch={true} className='col-md-2' label='Giáo viên' readOnly={readOnly} />
 
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
-                    <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
+                    <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
                     <FormCheckbox ref={e => this.itemActive = e} isSwitch={true} className='col-md-4' label='Kích hoạt' readOnly={readOnly} />
                 </div>),
         });

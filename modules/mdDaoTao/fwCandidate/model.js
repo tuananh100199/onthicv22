@@ -4,6 +4,9 @@ module.exports = app => {
         lastname: String,
         email: String,
         phoneNumber: String,
+        birthday: Date,
+        identityCard: String,
+        planCourse: String,
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         staff: { type: app.db.Schema.ObjectId, ref: 'User' },               // Nhân viên cập nhật dữ liệu
         state: { type: String, enum: ['MoiDangKy', 'DangLienHe', 'Huy', 'UngVien'], default: 'MoiDangKy' },

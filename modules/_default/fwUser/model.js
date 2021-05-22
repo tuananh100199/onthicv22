@@ -40,11 +40,22 @@ module.exports = (app) => {
         ]}).populate('roles').populate('division').exec((error, user) =>
             done(error == null && user && user.equalPassword(password) ? user : null)),
 
-        create: (data, done) =>
-            app.model.user.get({$or: [
-                {email: data.email},
-                {identityCard: data.identityCard}
-            ]}, (error, user) => {
+        create: (data, done) => {
+            const condition = {};
+            condition.$or = [];
+            if (data.email) {
+                condition.$or.push(
+                    {email: data.email},
+                );
+            }
+    
+            if (data.identityCard) {
+                condition.$or.push(
+                    {identityCard: data.identityCard}
+                );
+            }
+            if (condition.$or.length == 0) delete condition.$or;
+            app.model.user.get(condition, (error, user) => {
                 if (error) {
                     if (done) done(error);
                 } else if (user) {
@@ -93,8 +104,9 @@ module.exports = (app) => {
                         }
                     });
                 }
-            }),
-
+            });
+        },
+            
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .select('-password -token -tokenDate').populate('roles').populate('division').exec(done),
 
