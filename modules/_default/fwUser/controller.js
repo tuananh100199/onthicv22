@@ -68,8 +68,8 @@ module.exports = app => {
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
         const data = req.body.user;
-        const password = data.password;
         if (!data.password) data.password = app.randomPassword(8);
+        const password = data.password;
         if (data.roles == 'empty') data.roles = [];
         app.model.user.create(data, (error, user) => {
             res.send({ error, user });
@@ -79,10 +79,10 @@ module.exports = app => {
                         mailTitle = result.emailCreateMemberByAdminTitle,
                         mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
+                            .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url),
                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
+                            .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url);
                     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                 });
             }
