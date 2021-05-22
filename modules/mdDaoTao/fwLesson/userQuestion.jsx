@@ -109,7 +109,6 @@ class adminEditPage extends AdminPage {
                 });
                 setTimeout(() => {
                     $('#submit-btn').addClass('btn-secondary');
-                    $('#next-btn').css({ 'visibility': 'visible' });
                     $('input[name="' + this.state.questions[0]._id + '"]').prop('checked', false);
                 }, 50);
             } else {
