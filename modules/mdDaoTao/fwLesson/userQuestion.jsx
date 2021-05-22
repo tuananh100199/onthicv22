@@ -181,7 +181,7 @@ class adminEditPage extends AdminPage {
                 {questions && questions.length ? (
                     <div className='tile'>
                         <div className='tile-header'>
-                            {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={() => { prevAnswers && this.setState({ activeQuestionIndex: index }); }}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
+                            {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
                         </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
