@@ -161,10 +161,13 @@ class UserPasswordModal extends AdminModal {
 }
 
 class UserPage extends AdminPage {
-    state = { isSearching: false, searchText: '', userType: 'all' };
+    state = { isSearching: false, searchText: '', userType: 'all', dateStart: '', dateEnd: ''};
 
     componentDidMount() {
-        T.ready(() => T.showSearchBox());
+        T.ready(() => {
+            T.showSearchBox( () => this.setState({dateStart: '', dateEnd: ''}) );
+            T.onSearch = (searchText) => this.onSearch({ searchText });
+        });
         this.userType.value(this.state.userType);
         this.props.getRoleAll();
         this.onSearch({}, (page) => {
@@ -173,16 +176,15 @@ class UserPage extends AdminPage {
                 const _userId = urlParams.get('user');
                 page && page.list && page.list.forEach(user => user._id == _userId && this.userModal.show(user));
             }
-        });
-
-        T.onSearch = (searchText) => this.onSearch({ searchText });
+        });   
     }
 
     onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
         if (searchText == undefined) searchText = this.state.searchText;
         if (userType == undefined) userType = this.state.userType;
-        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType }, (page) => {
-            this.setState({ searchText, userType, isSearching: false });
+        const dateStart = this.state.dateStart, dateEnd = this.state.dateEnd;
+        this.setState({ isSearching: true }, () => this.props.getUserPage(pageNumber, pageSize, { searchText, userType, dateStart, dateEnd }, (page) => {
+            this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
             done && done(page);
         }));
     }
@@ -194,6 +196,19 @@ class UserPage extends AdminPage {
     delete = (e, item) => e.preventDefault() || T.confirm('Người dùng: Xóa người dùng', 'Bạn có chắc bạn muốn xóa người dùng này?', true, isConfirm =>
         isConfirm && this.props.deleteUser(item._id));
 
+    handleFilterByTime = () => {
+        const searchText = this.state.searchText, userType = this.state.userType;
+        const dateStart = this.dateStart ? this.dateStart.value() : '';
+        const dateEnd = this.dateEnd ? this.dateEnd.value() : '';
+        if(dateStart > dateEnd ){
+            T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
+        } else {
+            this.props.getUserPage(undefined, undefined, { searchText, userType, dateStart, dateEnd}, () => {
+                this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
+            });
+        }
+    }
+
     render() {
         const permission = this.getUserPermission('user');
         const allRoles = this.props.role && this.props.role.list ? this.props.role.list : [];
@@ -204,10 +219,11 @@ class UserPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Tên</th>
+                    <th style={{ width: '30%' }}>Tên</th>
                     <th style={{ width: '30%' }}>Email</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                    <th style={{ width: '30%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: '20%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: '20%' }}>Thời gian tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -218,6 +234,7 @@ class UserPage extends AdminPage {
                     <TableCell type='text' content={item.email} />
                     <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='text' content={item.division ? `${item.division.title} ${item.division.isOutside ? '(ngoài)' : ''}` : ''} />
+                    <TableCell type='text' content={new Date(item.createdDate).getShortText()} />
                     <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateUser(item._id, { active })} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={e => !item.default && this.delete(e, item)}>
                         {permission.write ?
@@ -238,6 +255,18 @@ class UserPage extends AdminPage {
             title: 'Người dùng',
             header: header,
             breadcrumb: ['Người dùng'],
+            advanceSearch: <>
+                <h6 className='tile-title mt-3'>Lọc theo thời gian</h6>
+                <div className="tile-body row">
+                    <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5'  />
+                    <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
+                    <div className='m-auto'>
+                        <button className='btn btn-success' style={{marginTop: '11px'}} type='button' onClick={this.handleFilterByTime}>
+                            <i className='fa fa-filter' /> Lọc danh sách
+                    </button>
+                    </div>
+                </div>
+            </>,
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='adminUser' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}

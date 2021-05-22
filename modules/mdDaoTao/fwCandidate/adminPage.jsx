@@ -104,15 +104,14 @@ class CandidateModal extends AdminModal {
             <FormTextBox className='col-md-6' ref={e => this.itemFirstname = e} label='Tên' />
             <FormTextBox className='col-md-6' ref={e => this.itemEmail = e} type='email' label='Email' />
             <FormTextBox className='col-md-6' ref={e => this.itemPhoneNumber = e} type='phone' label='Số điện thoại' />
+            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
             <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
-            <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
         </div>,
-        buttons:
-            this.props.permission.write &&
+        buttons: this.props.permission.write ?
             <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>
                 <i className='fa fa-lg fa-paper-plane' /> Chuyển thành ứng viên
-            </a>
+            </a> : null
     });
 }
 
@@ -176,8 +175,8 @@ class CandidatePage extends AdminPage {
                     dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
                 const courseTypeText = item.courseType ? item.courseType.title : '',
                     dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />;
-                const divisionText = item.division ? item.division.title : '',
-                    dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => this.updateDivision(item, e.id)} />;
+                const divisionText = item.division ? item.division.title : 'Chưa gán',
+                    dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => alert(e.id) || this.updateDivision(item, e.id)} />;
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>
@@ -187,7 +186,7 @@ class CandidatePage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
-                        <TableCell content={item.email + '\n' + item.phoneNumber} />
+                        <TableCell content={<>{item.email}<br />{item.phoneNumber}</>} />
                         <TableCell content={dropdownDivision} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={item.state == 'UngVien' ? <span style={{ color: '#28A745' }}>Ứng viên</span> : dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
