@@ -13,12 +13,14 @@ class PreStudenModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '' };
+        const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, identityCard, planCourse } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '' };
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
+        this.itemIdentityCard.value(identityCard);
+        this.itemPlanCourse.value(planCourse);
         this.itemSex.value(sex ? sex : 'male');
         this.itemResidence.value(residence);
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
@@ -36,6 +38,8 @@ class PreStudenModal extends AdminModal {
             birthday: this.itemBirthday.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
+            identityCard: this.itemIdentityCard.value(),
+            planCourse: this.itemPlanCourse.value(),
             sex: this.itemSex.value(),
             residence: this.itemResidence.value(),
             regularResidence: this.itemRegularResidence.value(),
@@ -61,6 +65,15 @@ class PreStudenModal extends AdminModal {
         } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.itemDivision.focus();
+        } else if (data.identityCard == '') {
+            T.notify('Số CMND/CCCD không được trống!', 'danger');
+            this.itemIdentityCard.focus();
+        } else if (data.birthday == '') {
+            T.notify('Ngày sinh người dùng bị trống!', 'danger');
+            this.itemBirthday.focus();
+        } else if (data.planCourse== '') {
+            T.notify('Khóa dự kiến không được trống!', 'danger');
+            this.itemPlanCourse.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
@@ -96,7 +109,8 @@ class PreStudenModal extends AdminModal {
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
-
+                <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
+                <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
             </div>

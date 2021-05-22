@@ -144,6 +144,9 @@ module.exports = app => {
                     item.save();
                     const dataStudent = {
                         user: _userId,
+                        identityCard: item.identityCard,
+                        birthday: item.birthday,
+                        planCourse: item.planCourse,
                         firstname: item.firstname,
                         lastname: item.lastname,
                         courseType: item.courseType,
