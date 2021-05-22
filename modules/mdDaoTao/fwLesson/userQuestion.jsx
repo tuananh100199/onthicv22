@@ -59,7 +59,13 @@ class adminEditPage extends AdminPage {
             this.setState(prevState => ({
                 studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
                 prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
-            }));
+            }), () => {
+                if (Object.keys(this.state.studentAnswer).length == this.state.questions.length) {
+                    !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
+                } else {
+                    $('#submit-btn').addClass('btn-secondary');
+                }
+            });
         } else if (e.code == 'Enter') {
             !this.state.showSubmitButton ? this.resetQuestion(e)
                 : (activeQuestionIndex == this.state.questions.length - 1) && this.submitAnswer(e);
@@ -102,7 +108,7 @@ class adminEditPage extends AdminPage {
                     studentAnswer: null
                 });
                 setTimeout(() => {
-                    $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
+                    $('#submit-btn').addClass('btn-secondary');
                     $('#next-btn').css({ 'visibility': 'visible' });
                     $('input[name="' + this.state.questions[0]._id + '"]').prop('checked', false);
                 }, 50);
@@ -138,7 +144,13 @@ class adminEditPage extends AdminPage {
         this.setState(prevState => ({
             studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
             prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
-        }));
+        }), () => {
+            if (Object.keys(this.state.studentAnswer).length == this.state.questions.length) {
+                !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success');
+            } else {
+                $('#submit-btn').addClass('btn-secondary');
+            }
+        });
     }
 
     render() {
@@ -150,19 +162,16 @@ class adminEditPage extends AdminPage {
         if (questions && questions.length == 1) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').addClass('btn-success').removeAttr('disabled', true);
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
             $('#prev-btn').css({ 'visibility': 'hidden' });
-            $('#submit-btn').addClass('btn-secondary').attr('disabled', true);
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == questions.length - 1) {
             $('#next-btn').css({ 'visibility': 'hidden' });
-            !this.state.result && $('#submit-btn').removeClass('btn-secondary').addClass('btn-success').removeAttr('disabled', true);
         } else {
             $('#prev-btn').css({ 'visibility': 'visible' });
             $('#next-btn').css({ 'visibility': 'visible' });
-            $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
+            // $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         }
         return this.renderPage({
             icon: 'fa fa-book',
@@ -171,6 +180,9 @@ class adminEditPage extends AdminPage {
             content: (<>
                 {questions && questions.length ? (
                     <div className='tile'>
+                        <div className='tile-header'>
+                            {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={() => { prevAnswers && this.setState({ activeQuestionIndex: index }); }}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
+                        </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
                                 <div className='col-md-12 pb-5'>
@@ -212,7 +224,7 @@ class adminEditPage extends AdminPage {
                                             <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
                                         </li>
                                         {showSubmitButton ?
-                                            <button className='btn' id='submit-btn' onClick={e => this.submitAnswer(e)} >
+                                            <button className='btn btn-secondary' disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                                 <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
                                             </button> :
                                             <button className='btn btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e)} disabled={false}>
