@@ -318,6 +318,7 @@ export class FormSelect extends React.Component {
                 options.ajax = { ...data, delay: 500 };
                 $(this.input).select2(options);
                 if (value) {
+                    const hasOwnProperty = (object, property) => Object.prototype.hasOwnProperty.call(object, property);
                     if (this.props.multiple) {
                         if (!Array.isArray(value)) {
                             value = [value];
@@ -325,7 +326,7 @@ export class FormSelect extends React.Component {
 
                         const promiseList = value.map(item => {
                             return new Promise(resolve => {
-                                if (item.hasOwnProperty('id') && item.hasOwnProperty('text')) {
+                                if (hasOwnProperty(item, 'id') && hasOwnProperty(item, 'text')) {
                                     const option = new Option(item.text, item.id, true, true);
                                     $(this.input).append(option).trigger('change');
                                     resolve(item.text);
@@ -353,7 +354,7 @@ export class FormSelect extends React.Component {
                                 // Async set readOnlyText
                                 this.setState({ valueText: _item.text });
                             });
-                        } else if (value.hasOwnProperty('id') && value.hasOwnProperty('text')) {
+                        } else if (hasOwnProperty(value, 'id') && hasOwnProperty(value, 'text')) {
                             $(this.input).select2('trigger', 'select', { data: value });
                         } else {
                             $(this.input).select2('trigger', 'select', { data: { id: value, text: value } });

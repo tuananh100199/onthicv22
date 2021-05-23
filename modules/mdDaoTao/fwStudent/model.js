@@ -129,6 +129,31 @@ module.exports = (app) => {
             }
         },
 
+        updateMany: (_ids, changes, done) => {
+            if (changes.course) {
+                app.model.course.get(changes.course, (error, item) => {
+                    if (error) {
+                        done(error);
+                    } else {
+                        changes.tienDoHocTap = {};
+                        changes.diemBoDeThi = {};
+                        item.subjects.forEach(subject => {
+                            {
+                                const obj = {};
+                                obj[subject._id] = {};
+                                Object.assign(changes.tienDoHocTap, obj);
+                            }
+                        });
+                        changes.modifiedDate = new Date();
+                        model.updateMany({ _id: { $in: _ids } }, { $set: changes }).exec(done);
+                    }
+                });
+            } else {
+                changes.modifiedDate = new Date();
+                model.updateMany({ _id: { $in: _ids } }, { $set: changes }).exec(done);
+            }
+        },
+
         resetLesson: (_id, changes, done) => {
             const modifiedDate = { modifiedDate: new Date() };
             model.findOneAndUpdate({ _id }, { $unset: changes, $set: modifiedDate }, { new: true }).exec(done);
