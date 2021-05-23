@@ -17,6 +17,7 @@ module.exports = (app) => {
                 firstname: req.body.firstname.trim(),
                 lastname: req.body.lastname.trim(),
                 email: req.body.email.trim(),
+                identityCard: req.body.identityCard.trim(),
                 password: req.body.password,
                 phoneNumber: req.body.phoneNumber.trim(),
                 active: req.body.active !== undefined && req.body.active != null ? req.body.active : false
@@ -46,8 +47,8 @@ module.exports = (app) => {
         if (req.session.user) {
             res.send({ error: 'You are logged in!' });
         } else {
-            let email = req.body.email.trim(), password = req.body.password;
-            app.model.user.auth(email, password, user => {
+            let emailOrIdentityCard = req.body.email.trim(), password = req.body.password;
+            app.model.user.auth(emailOrIdentityCard, password, user => {
                 if (user == null) {
                     res.send({ error: 'Thông tin đăng nhập không chính xác!' });
                 } else if (user.active) {

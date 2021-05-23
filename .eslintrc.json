@@ -20,7 +20,7 @@
     },
     "plugins": ["react"],
     "parser": "babel-eslint",
-    "ignorePatterns": ["view/js/*", "public/*", "asset/*"],
+    "ignorePatterns": ["view/js/*", "public/*", "asset/*", "asset/**"],
     "rules": {
         "no-constant-condition": "off",
         "no-unused-vars": ["error"],
@@ -30,7 +30,8 @@
         "semi": ["error", "always"],
         "react/prop-types": "off",
         "react/display-name": [0],
-        "no-useless-escape": "off"
+        "no-useless-escape": "off",
+        "no-prototype-builtins": "off"
     },
     "settings": {
         "react": {

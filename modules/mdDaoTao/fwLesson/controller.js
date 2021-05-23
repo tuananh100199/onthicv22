@@ -33,12 +33,41 @@ module.exports = (app) => {
     });
 
     app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
-        const { _id } = req.query;
+        const { _id, courseId, subjectId } = req.query;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
                 item.questions.forEach(question => question.trueAnswer = null);
+                if (item.numQuestion < item.questions.length) {
+                    app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+                        if (error) {
+                            res.send({ error });
+                        } else {
+                            if (student.tienDoHocTap && student.tienDoHocTap[subjectId] && student.tienDoHocTap[subjectId][_id]) {
+                                const listIdQuestion = Object.keys(student.tienDoHocTap[subjectId][_id].answers);
+                                const newQuestion = item.questions.filter(question => listIdQuestion.indexOf(question._id.toString()) != -1);
+                                item.questions = newQuestion;
+                                res.send({ error, item });
+                            } else {
+                                let { numQuestion, questions } = item;
+                                let result = new Array(numQuestion),
+                                    len = questions.length,
+                                    taken = new Array(len);
+                                while (numQuestion--) {
+                                    let x = Math.floor(Math.random() * len);
+                                    result[numQuestion] = questions[x in taken ? taken[x] : x];
+                                    taken[x] = --len in taken ? taken[len] : len;
+                                }
+                                item.questions = result;
+                                res.send({ error, item });
+                            }
+                        }
+                    });
+                } else {
+                    res.send({ error, item });
+                }
+            } else {
+                res.send({ error });
             }
-            res.send({ error, item });
         });
     });
 

@@ -23,14 +23,30 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             });
         });
     }
-
+    
     logKey = (e) => {
         const activeQuestionIndex = this.state.activeQuestionIndex,
-            maxIndex = this.state.questions.length - 1;
+            maxIndex = this.state.questions.length - 1,
+            questionId = this.state.questions && this.state.questions[activeQuestionIndex] && this.state.questions[activeQuestionIndex]._id;
         if (e.code == 'ArrowRight' && activeQuestionIndex < maxIndex) {
             this.changeQuestion(e, this.state.activeQuestionIndex + 1);
         } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
             this.changeQuestion(e, this.state.activeQuestionIndex - 1);
+        } else if (e.code.startsWith('Digit') && e.code.slice(5) < this.state.questions.length + 2 && !(this.state.prevAnswers && this.state.prevTrueAnswers)) {
+            $('#' + questionId + (e.code.slice(5) - 1)).prop('checked', true);
+            this.setState(prevState => ({
+                studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
+                prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
+            }));
+        } else if (e.code.startsWith('Numpad') && e.code.slice(6) < this.state.questions.length + 2 && !(this.state.prevAnswers && this.state.prevTrueAnswers)) {
+            $('#' + questionId + (e.code.slice(6) - 1)).prop('checked', true);
+            this.setState(prevState => ({
+                studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
+                prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
+            }));
+        } else if (e.code == 'Enter') {
+            !this.state.showSubmitButton ? this.resetQuestion(e)
+                : (activeQuestionIndex == this.state.questions.length - 1) && this.submitAnswer(e);
         }
     }
 
@@ -48,7 +64,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         });
     }
 
-    refreshQuestion = (e, questionId) => {
+    resetQuestion = (e, questionId) => {
         e.preventDefault();
         this.setState({
             activeQuestionIndex: 0,
@@ -169,7 +185,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                             <button className='btn btn-lg' id='submit-btn' onClick={e => this.submitAnswer(e)} >
                                                 <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
                                             </button> :
-                                            <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.refreshQuestion(e, questions[0]._id)} disabled={false}>
+                                            <button className='btn btn-lg btn-info' id='refresh-btn' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
                                             </button>}
                                     </div>

@@ -30,6 +30,7 @@ module.exports = (app) => {
         hinhChupTrucTiep: { type: Boolean, default: false },
 
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
+        planCourse: String,                                                                      // Khoá học dự kiến
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khoá học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 

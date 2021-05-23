@@ -25,7 +25,7 @@ class EmailItem extends React.Component {
 class EmailPage extends AdminPage {
     emailItems = [
         { title: 'Người dùng mới', id: 'emailRegisterMember', params: '{name}, {url}' },
-        { title: 'Tạo người dùng mới', id: 'emailCreateMemberByAdmin', params: '{name}, {email}, {password}, {url}' },
+        { title: 'Tạo người dùng mới', id: 'emailCreateMemberByAdmin', params: '{name}, {identityCard}, {email}, {password}, {url}' },
         { title: 'Mật khẩu mới', id: 'emailNewPassword', params: '{name}, {email}, {password}' },
         { title: 'Quên mật khẩu', id: 'emailForgotPassword', params: '{name}, {email}, {url}' },
         { title: 'Liên hệ', id: 'emailContact', params: '{name}, {subject}, {message}' },

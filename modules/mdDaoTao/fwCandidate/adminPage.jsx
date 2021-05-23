@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCandidatePage, getCandidate, updateCandidate, deleteCandidate, exportCandidateToExcel } from './redux';
 import Pagination from 'view/component/Pagination';
 import { getCourseTypeAll, ajaxSelectCourseType, ajaxGetCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
-import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable, FormSelect, FormDatePicker } from 'view/component/AdminPage';
 import Dropdown from 'view/component/Dropdown';
 import { ajaxSelectDivision, ajaxGetDivision, getDivisionAll } from 'modules/mdDaoTao/fwDivision/redux';
 
@@ -13,12 +13,15 @@ class CandidateModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemLastname.focus()));
     }
 
-    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', onUpdated, courseType = '', state = '', division = '' }) => {
+    onShow = ({ _id, firstname = '', lastname = '', email = '', phoneNumber = '', identityCard = '', birthday = null, planCourse = '', onUpdated, courseType = '', state = '', division = '' }) => {
         this.onUpdated = onUpdated;
         this.itemFirstname.value(firstname);
         this.itemLastname.value(lastname);
         this.itemEmail.value(email);
         this.itemPhoneNumber.value(phoneNumber);
+        this.itemIdentityCard.value(identityCard);
+        this.itemBirthday.value(birthday);
+        this.itemPlanCourse.value(planCourse);
         ajaxGetCourseType(courseType, data => {
             this.setState({ courseTypeTitle: data.item.title });
             this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null);
@@ -35,6 +38,9 @@ class CandidateModal extends AdminModal {
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
+            identityCard: this.itemIdentityCard.value(),
+            birthday: this.itemBirthday.value(),
+            planCourse: this.itemPlanCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
@@ -48,12 +54,21 @@ class CandidateModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (data.email == '' || !T.validateEmail(data.email)) {
+        } else if (data.email !== '' && !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else if (data.division == null) {
-            T.notify('Cơ sở đào tạo không được trống', 'danger');
+            T.notify('Cơ sở đào tạo không được trống!', 'danger');
             this.division.focus();
+        } else if (data.identityCard == '') {
+            T.notify('Số CMND/CCCD không được trống!', 'danger');
+            this.itemIdentityCard.focus();
+        } else if (data.birthday == '') {
+            T.notify('Ngày sinh người dùng bị trống!', 'danger');
+            this.itemBirthday.focus();
+        } else if (data.planCourse== '') {
+            T.notify('Khóa dự kiến không được trống!', 'danger');
+            this.itemPlanCourse.focus();
         } else {
             this.props.update(this.state._id, data, (error) => {
                 this.onUpdated && this.onUpdated(error);
@@ -69,6 +84,9 @@ class CandidateModal extends AdminModal {
             lastname: this.itemLastname.value(),
             email: this.itemEmail.value(),
             phoneNumber: this.itemPhoneNumber.value(),
+            identityCard: this.itemIdentityCard.value(),
+            birthday: this.itemBirthday.value(),
+            planCourse: this.itemPlanCourse.value(),
             courseType: this.courseType.value(),
             division: this.division.value(),
             state: this.states.value(),
@@ -83,13 +101,23 @@ class CandidateModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (data.email == '' || !T.validateEmail(data.email)) {
+        } else if (data.email !== '' && !T.validateEmail(data.email)) {
             T.notify('Email không hợp lệ!', 'danger');
             this.itemEmail.focus();
         } else if (data.division == null) {
             T.notify('Cơ sở đào tạo không được trống', 'danger');
             this.division.focus();
+        } else if (data.identityCard == '') {
+            T.notify('Số CMND/CCCD không được trống!', 'danger');
+            this.itemIdentityCard.focus();
+        } else if (data.birthday == '') {
+            T.notify('Ngày sinh người dùng bị trống!', 'danger');
+            this.itemBirthday.focus();
+        } else if (data.planCourse== '') {
+            T.notify('Khóa dự kiến không được trống!', 'danger');
+            this.itemPlanCourse.focus();
         } else {
+            data.state = 'UngVien';
             this.props.upStudent(e, data, this.state.courseTypeTitle);
             this.hide();
         }
@@ -106,12 +134,14 @@ class CandidateModal extends AdminModal {
             <FormSelect className='col-md-6' ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} />
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
             <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
+            <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
+            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e}  label='Ngày sinh' />
+            <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
         </div>,
-        buttons:
-            this.props.permission.write &&
+        buttons: this.props.permission.write ?
             <a className='btn btn-warning' href='#' onClick={e => this.onUpStudent(e)} style={{ color: 'white' }}>
                 <i className='fa fa-lg fa-paper-plane' /> Chuyển thành ứng viên
-            </a>
+            </a> : null
     });
 }
 
@@ -151,7 +181,7 @@ class CandidatePage extends AdminPage {
         isConfirm && this.props.deleteCandidate(item._id));
 
     upStudent = (e, item, courseTypeText) => e.preventDefault() || T.confirm('Trở thành ứng viên ', `Bạn có chắc muốn ${item.lastname + ' ' + item.firstname} trở thành ứng viên ${courseTypeText}?`, true, isConfirm =>
-        isConfirm && this.props.updateCandidate(item._id, { state: 'UngVien' }));
+        isConfirm && this.props.updateCandidate(item._id, item));
 
     render() {
         const permission = this.getUserPermission('candidate', ['read', 'write', 'delete', 'export']);
@@ -175,8 +205,8 @@ class CandidatePage extends AdminPage {
                     dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
                 const courseTypeText = item.courseType ? item.courseType.title : '',
                     dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />;
-                const divisionText = item.division ? item.division.title : '',
-                    dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => this.updateDivision(item, e.id)} />;
+                const divisionText = item.division ? item.division.title : 'Chưa gán',
+                    dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => alert(e.id) || this.updateDivision(item, e.id)} />;
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>
@@ -186,7 +216,7 @@ class CandidatePage extends AdminPage {
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                         <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
-                        <TableCell content={item.email + '\n' + item.phoneNumber} />
+                        <TableCell content={<>{item.email}<br />{item.phoneNumber}</>} />
                         <TableCell content={dropdownDivision} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={item.state == 'UngVien' ? <span style={{ color: '#28A745' }}>Ứng viên</span> : dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />

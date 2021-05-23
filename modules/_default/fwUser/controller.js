@@ -34,6 +34,14 @@ module.exports = app => {
                     (condition.userType ? (Array.isArray(condition.userType) ? condition.userType : [condition.userType]) : []).forEach(item =>
                         pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
                 }
+
+                if (condition.dateStart && condition.dateEnd) {
+                    pageCondition.createdDate =  {
+                        $gte: new Date(condition.dateStart), 
+                        $lt: new Date(condition.dateEnd)
+                    };
+                }
+                
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
@@ -59,22 +67,29 @@ module.exports = app => {
     });
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
-        const data = req.body.user;
-        const password = data.password;
-        if (!data.password) data.password = app.randomPassword(8);
+        const data = req.body.user; function convert(str) {
+            let date = new Date(str),
+              mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+              day = ('0' + date.getDate()).slice(-2);
+            return [day,mnth,date.getFullYear()].join('');
+        }
+        if (!data.password){
+            data.password = convert(data.birthday);
+        }
         if (data.roles == 'empty') data.roles = [];
+        const password = data.password;
         app.model.user.create(data, (error, user) => {
             res.send({ error, user });
-            if (user) {
+            if (user.email) {
                 app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
                     const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
                         mailTitle = result.emailCreateMemberByAdminTitle,
                         mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url),
+                            .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url),
                         mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
                             .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{password}', password).replaceAll('{url}', url);
+                            .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url);
                     app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
                 });
             }

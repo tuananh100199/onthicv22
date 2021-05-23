@@ -7,6 +7,7 @@ module.exports = (app) => {
         lastname: String,
         sex: { type: String, enum: ['male', 'female'], default: 'male' },
         birthday: Date,
+        identityCard: String,
         email: String,
         password: String,
         phoneNumber: String,
@@ -33,15 +34,32 @@ module.exports = (app) => {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
-        auth: (email, password, done) => model.findOne({ email }).populate('roles').populate('division').exec((error, user) =>
+        auth: (emailOrIdentityCard, password, done) => model.findOne({$or: [
+            {email: emailOrIdentityCard},
+            {identityCard: emailOrIdentityCard}
+        ]}).populate('roles').populate('division').exec((error, user) =>
             done(error == null && user && user.equalPassword(password) ? user : null)),
 
-        create: (data, done) =>
-            app.model.user.get({ email: data.email }, (error, user) => {
+        create: (data, done) => {
+            const condition = {};
+            condition.$or = [];
+            if (data.email) {
+                condition.$or.push(
+                    {email: data.email},
+                );
+            }
+    
+            if (data.identityCard) {
+                condition.$or.push(
+                    {identityCard: data.identityCard}
+                );
+            }
+            if (condition.$or.length == 0) delete condition.$or;
+            app.model.user.get(condition, (error, user) => {
                 if (error) {
                     if (done) done(error);
                 } else if (user) {
-                    if (done) done('Email bạn dùng đã được đăng ký!', user);
+                    if (done) done('Email hoặc số CMND/CCCD bạn dùng đã được đăng ký!', user);
                 } else {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();
@@ -86,8 +104,9 @@ module.exports = (app) => {
                         }
                     });
                 }
-            }),
-
+            });
+        },
+            
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .select('-password -token -tokenDate').populate('roles').populate('division').exec(done),
 

@@ -26,9 +26,20 @@ class AdminHeader extends React.Component {
         const currentPermissions = this.props.system && this.props.system.user && this.props.system.user.permissions ? this.props.system.user.permissions : [];
         const showContact = currentPermissions.contains('contact:read');
         if (showContact) this.props.getUnreadContacts((_, error) => error && this.setState({ showContact: true }));
-
-        T.showSearchBox = () => this.searchBox && $(this.searchBox).parent().css('display', 'flex');
-        T.hideSearchBox = () => this.searchBox && $(this.searchBox).parent().css('display', 'none');
+        
+        T.showSearchBox = (onSearchHide = null) => {
+            this.searchBox && $(this.searchBox).parent().css('display', 'flex');
+            this.advancedSearch && $(this.advancedSearch).css('display', onSearchHide ? 'flex' : 'none');
+            if (onSearchHide && typeof onSearchHide == 'function') {
+                T.onAdvanceSearchHide = onSearchHide;
+            } else {
+                T.onAdvanceSearchHide = null;
+            }
+        };
+        T.hideSearchBox = () => {
+            this.searchBox && $(this.searchBox).parent().css('display', 'none');
+            this.advancedSearch && $(this.advancedSearch).css('display', 'none');
+        };
         T.clearSearchBox = () => {
             if (this.searchBox) this.searchBox.value = '';
         };
@@ -39,6 +50,18 @@ class AdminHeader extends React.Component {
     logout = (e) => e.preventDefault() || this.props.logout();
 
     search = (e) => e.preventDefault() || T.onSearch && T.onSearch(this.searchBox.value);
+    
+    onAdvanceSearch = (e) => {
+        e.preventDefault();
+        if ($('.app-advance-search')) {
+            // Close advance search
+            if ($('.app-advance-search').hasClass('show')) {
+                T.onAdvanceSearchHide && T.onAdvanceSearchHide();
+            }
+            
+            $('.app-advance-search').toggleClass('show');
+        }
+    }
 
     debugAsRole = (e, role) => e.preventDefault() || this.props.changeRole(role, user => this.props.updateSystemState({ user }));
 
@@ -97,6 +120,11 @@ class AdminHeader extends React.Component {
                     <li className='app-search' style={{ display: 'none' }}>
                         <input ref={e => this.searchBox = e} className='app-search__input' type='search' placeholder='Tìm kiếm' onKeyUp={e => e.keyCode == 13 && this.search(e)} />
                         <button className='app-search__button' onClick={this.search}><i className='fa fa-search' /></button>
+                    </li>
+                    <li ref={e => this.advancedSearch = e} style={{ display: 'none' }} onClick={this.onAdvanceSearch}>
+                        <a className='app-nav__item' href='#'>
+                            <i className='fa fa-search-plus fa-lg' />
+                        </a>
                     </li>
                     {this.state.showContact ? this.renderContact(currentPermissions) : null}
                     <li>

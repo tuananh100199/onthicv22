@@ -10,7 +10,7 @@ class adminEditPage extends AdminPage {
     componentDidMount() {
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id').parse(window.location.pathname);
         if (params._id) {
-            this.props.getLessonByStudent(params._id, data => {
+            this.props.getLessonByStudent(params._id, params.courseId, params.subjectId, data => {
                 if (data.error) {
                     T.notify('Lấy bài học bị lỗi!', 'danger');
                     this.props.history.push('/user');
