@@ -32,6 +32,11 @@ class userQuestion extends AdminPage {
                     });
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
                     const { _id, title, shortDescription, detailDescription, questions } = data.item;
+                    if (questions && questions.length == 1) {
+                        this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
+                    } else {
+                        this.setState({ prevButton: 'invisible' });
+                    }
                     this.setState({ _id, title, shortDescription, detailDescription, questions });
                 } else {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId + '/bai-hoc/' + params._id);
@@ -54,7 +59,7 @@ class userQuestion extends AdminPage {
             this.changeQuestion(e, this.state.activeQuestionIndex + 1);
         } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
             this.changeQuestion(e, this.state.activeQuestionIndex - 1);
-        } else if (e.code.startsWith('Digit') && e.code.slice(5) < this.state.questions.length + 2 && !(this.state.prevAnswers && this.state.prevTrueAnswers)) {
+        } else if (e.code.startsWith('Digit') && e.code.slice(5) < (this.state.questions[activeQuestionIndex].answers.split('\n').length + 1) && !(this.state.prevAnswers && this.state.prevTrueAnswers)) {
             $('#' + questionId + (e.code.slice(5) - 1)).prop('checked', true);
             this.setState(prevState => ({
                 studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
@@ -68,7 +73,7 @@ class userQuestion extends AdminPage {
             });
         } else if (e.code == 'Enter') {
             !this.state.showSubmitButton ? this.resetQuestion(e)
-                : (activeQuestionIndex == this.state.questions.length - 1) && this.submitAnswer(e);
+                : (this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == this.state.questions.length) && this.submitAnswer(e);
         }
     }
 
@@ -118,6 +123,7 @@ class userQuestion extends AdminPage {
     }
 
     changeQuestion = (e, index) => {
+        const questions = this.state.questions ? this.state.questions : [];
         e.preventDefault();
         this.setState({ activeQuestionIndex: index }, () => {
             const activeQuestion = this.state.questions[index],
@@ -134,6 +140,15 @@ class userQuestion extends AdminPage {
                     } else {
                         $('input[name="' + questionId + '"]').prop('checked', false);
                     }
+                }
+                if (index == 0 && questions.length != 1) {
+                    this.setState({ prevButton: 'invisible', nextButton: 'visible' });
+                } else if (questions.length == 2 && index == 1) {
+                    this.setState({ prevButton: 'visible', nextButton: 'invisible' });
+                } else if (index == questions.length - 1) {
+                    this.setState({ nextButton: 'invisible' });
+                } else {
+                    this.setState({ nextButton: 'visible', prevButton: 'visible' });
                 }
             }
         });
@@ -159,18 +174,9 @@ class userQuestion extends AdminPage {
         const activeQuestion = questions ? questions[activeQuestionIndex] : null;
         const { prevTrueAnswers, prevAnswers, showSubmitButton, showTotalScore, score } = this.state;
         if (questions && questions.length == 1) {
-            $('#prev-btn').css({ 'visibility': 'hidden' });
-            $('#next-btn').css({ 'visibility': 'hidden' });
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         } else if (activeQuestionIndex == 0) {
-            $('#prev-btn').css({ 'visibility': 'hidden' });
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
-        } else if (activeQuestionIndex == questions.length - 1) {
-            $('#next-btn').css({ 'visibility': 'hidden' });
-        } else {
-            $('#prev-btn').css({ 'visibility': 'visible' });
-            $('#next-btn').css({ 'visibility': 'visible' });
-            // $('#submit-btn').addClass('btn-secondary').removeClass('btn-success').attr('disabled', true);
         }
         return this.renderPage({
             icon: 'fa fa-book',
@@ -216,10 +222,10 @@ class userQuestion extends AdminPage {
                             <div>
                                 <nav aria-label='...' >
                                     <ul className='pagination'>
-                                        <li className='page-item' id='prev-btn'>
+                                        <li className={'page-item ' + this.state.prevButton} id='prev-btn'>
                                             <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true' />Câu trước</a>
                                         </li>
-                                        <li className='page-item' id='next-btn'>
+                                        <li className={'page-item ' + this.state.nextButton} id='next-btn'>
                                             <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
                                         </li>
                                         {showSubmitButton ?

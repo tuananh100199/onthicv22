@@ -24,7 +24,7 @@ class userFeedbackQuestion extends AdminPage {
                     } else {
                         this.setState({ prevButton: 'invisible' });
                     }
-                    this.setState({ _id, title, shortDescription, detailDescription, questions });
+                    this.setState({ _id, title, shortDescription, detailDescription, questions, activeQuestionIndex: 0 });
                 } else {
                     this.props.history.push('/user/hoc-vien/khoa-hoc/' + params.courseId + '/mon-hoc/' + params.subjectId);
                 }
@@ -46,7 +46,7 @@ class userFeedbackQuestion extends AdminPage {
             this.changeQuestion(e, this.state.activeQuestionIndex + 1);
         } else if (e.code == 'ArrowLeft' && activeQuestionIndex > 0) {
             this.changeQuestion(e, this.state.activeQuestionIndex - 1);
-        } else if (e.code.startsWith('Digit') && e.code.slice(5) < this.state.questions.length + 2 && !(this.state.prevAnswers)) {
+        } else if (e.code.startsWith('Digit') && e.code.slice(5) < (this.state.questions[activeQuestionIndex].answers.split('\n').length + 1)) {
             $('#' + questionId + (e.code.slice(5) - 1)).prop('checked', true);
             this.setState(prevState => ({
                 studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
