@@ -7,6 +7,7 @@ module.exports = (app) => {
         lastname: String,
         sex: { type: String, enum: ['male', 'female'], default: 'male' },
         birthday: Date,
+        identityCard: String,
         email: String,
         password: String,
         phoneNumber: String,
@@ -36,7 +37,7 @@ module.exports = (app) => {
         auth: (identityCard, password, done) => model.findOne({ identityCard }).populate('roles').populate('division').exec((error, user) =>
             done(error == null && user && user.equalPassword(password) ? user : null)),
 
-        create: (data, done) =>
+        create: (data, done) => {
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
                     if (done) done(error);
@@ -86,7 +87,8 @@ module.exports = (app) => {
                         }
                     });
                 }
-            }),
+            });
+        },
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .select('-password -token -tokenDate').populate('roles').populate('division').exec(done),

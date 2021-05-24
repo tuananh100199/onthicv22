@@ -38,6 +38,12 @@ class UserPageDriveTestDetail extends AdminPage {
                 studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
                 prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
             }));
+        } else if (e.code.startsWith('Numpad') && e.code.slice(6) < this.state.questions.length + 2 && !(this.state.prevAnswers && this.state.prevTrueAnswers)) {
+            $('#' + questionId + (e.code.slice(6) - 1)).prop('checked', true);
+            this.setState(prevState => ({
+                studentAnswer: { ...prevState.studentAnswer, [questionId]: $('input[name=' + questionId + ']:checked').val() },
+                prevAnswers: { ...prevState.prevAnswers, [questionId]: null }
+            }));
         } else if (e.code == 'Enter') {
             !this.state.showSubmitButton ? this.resetQuestion(e)
                 : (activeQuestionIndex == this.state.questions.length - 1) && this.submitAnswer(e);

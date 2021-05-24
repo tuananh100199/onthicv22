@@ -8,10 +8,11 @@ class ProfilePage extends AdminPage {
     componentDidMount() {
         T.ready('/user', () => {
             if (this.props.system && this.props.system.user) {
-                const { firstname, lastname, phoneNumber, image, email } = this.props.system && this.props.system.user ? this.props.system.user : { firstname: '', lastname: '', phoneNumber: '', image: '/img/avatar.png', email: '' };
+                const { firstname, lastname, phoneNumber, image, email, identityCard } = this.props.system && this.props.system.user ? this.props.system.user : { firstname: '', lastname: '', phoneNumber: '', image: '/img/avatar.png', email: '' };
                 this.lastname.value(lastname);
                 this.firstname.value(firstname);
                 this.email.value(email);
+                this.identityCard.value(identityCard);
                 this.phoneNumber.value(phoneNumber);
                 this.password1.value('');
                 this.password2.value('');
@@ -27,6 +28,7 @@ class ProfilePage extends AdminPage {
             firstname: this.firstname.value(),
             lastname: this.lastname.value(),
             phoneNumber: this.phoneNumber.value(),
+            identityCard: this.identityCard.value()
         };
         if (changes.lastname == '') {
             T.notify('Họ và tên lót bị trống', 'danger');
@@ -84,6 +86,7 @@ class ProfilePage extends AdminPage {
                             <FormTextBox ref={e => this.lastname = e} label='Họ và tên lót' />
                             <FormTextBox ref={e => this.firstname = e} label='Tên' />
                             <FormTextBox ref={e => this.email = e} type='email' label='Email' readOnly={true} />
+                            <FormTextBox ref={e => this.identityCard = e} type='text' label='Chứng minh nhân dân hoặc căn cước công dân' />
                             <FormTextBox ref={e => this.phoneNumber = e} type='phone' label='Số điện thoại' />
                         </div>
                         <div className='tile-footer' style={{ textAlign: 'right' }}>

@@ -17,6 +17,7 @@ module.exports = (app) => {
                 firstname: req.body.firstname.trim(),
                 lastname: req.body.lastname.trim(),
                 email: req.body.email.trim(),
+                identityCard: req.body.identityCard.trim(),
                 password: req.body.password,
                 phoneNumber: req.body.phoneNumber.trim(),
                 active: req.body.active !== undefined && req.body.active != null ? req.body.active : false

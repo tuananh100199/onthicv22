@@ -22,7 +22,6 @@ export default class LoginModal extends React.Component {
         if (data.username !== '' && data.password !== '') {
             this.props.login(data, result => {
                 errorMessage.html(result.error);
-
                 if (result.user) {
                     $(this.modal.current).modal('hide');
                     window.location = '/user';
