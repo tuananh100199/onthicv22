@@ -97,8 +97,8 @@ module.exports = (app) => {
     });
 
     app.put('/api/student/course', app.permission.check('student:write'), (req, res) => {
-        const { _studentId, changes } = req.body;
-        app.model.student.update(_studentId, changes, (error, item) => res.send({ error, item }));
+        const { _studentIds, changes } = req.body;
+        app.model.student.updateMany(_studentIds, changes, (error, item) => res.send({ error, item }));
     });
 
     app.put('/api/student/course/remove', app.permission.check('student:write'), (req, res) => {
