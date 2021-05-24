@@ -46,8 +46,8 @@ module.exports = (app) => {
         if (req.session.user) {
             res.send({ error: 'You are logged in!' });
         } else {
-            let email = req.body.email.trim(), password = req.body.password;
-            app.model.user.auth(email, password, user => {
+            let username = req.body.username, password = req.body.password;
+            app.model.user.auth(username, password, user => {
                 if (user == null) {
                     res.send({ error: 'Thông tin đăng nhập không chính xác!' });
                 } else if (user.active) {
