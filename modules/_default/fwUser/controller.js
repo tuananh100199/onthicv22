@@ -36,12 +36,12 @@ module.exports = app => {
                 }
 
                 if (condition.dateStart && condition.dateEnd) {
-                    pageCondition.createdDate =  {
-                        $gte: new Date(condition.dateStart), 
+                    pageCondition.createdDate = {
+                        $gte: new Date(condition.dateStart),
                         $lt: new Date(condition.dateEnd)
                     };
                 }
-                
+
                 if (pageCondition.$or.length == 0) delete pageCondition.$or;
             }
             if (req.session.user.division && req.session.user.division.isOutside) pageCondition.division = req.session.user.division._id;
@@ -67,32 +67,33 @@ module.exports = app => {
     });
 
     app.post('/api/user', app.permission.check('user:write'), (req, res) => {
-        const data = req.body.user; function convert(str) {
+        const data = req.body.user;
+        function convert(str) {
             let date = new Date(str),
-              mnth = ('0' + (date.getMonth() + 1)).slice(-2),
-              day = ('0' + date.getDate()).slice(-2);
-            return [day,mnth,date.getFullYear()].join('');
+                mnth = ('0' + (date.getMonth() + 1)).slice(-2),
+                day = ('0' + date.getDate()).slice(-2);
+            return [day, mnth, date.getFullYear()].join('');
         }
-        if (!data.password){
+        if (!data.password) {
             data.password = convert(data.birthday);
         }
         if (data.roles == 'empty') data.roles = [];
-        const password = data.password;
+        // const password = data.password;
         app.model.user.create(data, (error, user) => {
             res.send({ error, user });
-            if (user.email) {
-                app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
-                    const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                        mailTitle = result.emailCreateMemberByAdminTitle,
-                        mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url),
-                        mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
-                            .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
-                            .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url);
-                    app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                });
-            }
+            // if (user.email) {
+            //     app.model.setting.get('email', 'emailPassword', 'emailCreateMemberByAdminTitle', 'emailCreateMemberByAdminText', 'emailCreateMemberByAdminHtml', result => {
+            //         const url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
+            //             mailTitle = result.emailCreateMemberByAdminTitle,
+            //             mailText = result.emailCreateMemberByAdminText.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+            //                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+            //                 .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url),
+            //             mailHtml = result.emailCreateMemberByAdminHtml.replaceAll('{name}', user.firstname + ' ' + user.lastname)
+            //                 .replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname)
+            //                 .replaceAll('{email}', user.email).replaceAll('{identityCard}', user.identityCard).replaceAll('{password}', password).replaceAll('{url}', url);
+            //         app.email.sendEmail(result.email, result.emailPassword, user.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+            //     });
+            // }
         });
     });
 
@@ -231,7 +232,7 @@ module.exports = app => {
 
     app.uploadHooks.add('uploadYourAvatar', (req, fields, files, params, done) => {
         if (files.ProfileImage && files.ProfileImage[0].size > 1024000) {
-            done({error: 'Vui lòng chọn ảnh có kích thước < 1 MB'});
+            done({ error: 'Vui lòng chọn ảnh có kích thước < 1 MB' });
         } else {
             if (req.session.user && fields.userData && fields.userData[0] == 'profile' && files.ProfileImage && files.ProfileImage.length > 0) {
                 console.log('Hook: uploadYourAvatar => your avatar upload');
@@ -246,7 +247,7 @@ module.exports = app => {
 
     const uploadUserAvatar = (fields, files, done) => {
         if (files.UserImage && files.UserImage[0].size > 1024000) {
-            done({error: 'Vui lòng chọn ảnh có kích thước < 1 MB'});
+            done({ error: 'Vui lòng chọn ảnh có kích thước < 1 MB' });
         } else {
             if (fields.userData && fields.userData[0].startsWith('user:') && files.UserImage && files.UserImage.length > 0) {
                 console.log('Hook: uploadUserAvatar => user avatar upload');

@@ -66,7 +66,7 @@ class CandidateModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse== '') {
+        } else if (data.planCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
             this.itemPlanCourse.focus();
         } else {
@@ -113,7 +113,7 @@ class CandidateModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse== '') {
+        } else if (data.planCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
             this.itemPlanCourse.focus();
         } else {
@@ -135,7 +135,7 @@ class CandidateModal extends AdminModal {
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
             <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
             <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
-            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e}  label='Ngày sinh' />
+            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' />
             <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
         </div>,
         buttons: this.props.permission.write ?
@@ -206,7 +206,7 @@ class CandidatePage extends AdminPage {
                 const courseTypeText = item.courseType ? item.courseType.title : '',
                     dropdownCourseType = <Dropdown items={this.state.courseTypes} item={courseTypeText} onSelected={e => this.updateCourseType(item, e.id)} />;
                 const divisionText = item.division ? item.division.title : 'Chưa gán',
-                    dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => alert(e.id) || this.updateDivision(item, e.id)} />;
+                    dropdownDivision = <Dropdown items={this.state.division} item={divisionText} onSelected={e => this.updateDivision(item, e.id)} />;
                 const dates = <>
                     <p style={{ margin: 0 }}>{item.staff ? item.staff.lastname + ' ' + item.staff.firstname : 'Chưa xử lý!'}</p>
                     <p style={{ margin: 0 }} className='text-secondary'>{new Date(item.createdDate).getText()}</p>

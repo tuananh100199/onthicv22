@@ -47,7 +47,7 @@ module.exports = (app) => {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();
                     data.token = 'new'; //app.getToken(8);
-                    data.password = data.birthday;
+                    data.password = app.model.user.hashPassword(data.password);
                     if (data.active === undefined) data.active = false;
 
                     model.create(data, (error, user) => {
