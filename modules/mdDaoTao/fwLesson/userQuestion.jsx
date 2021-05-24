@@ -112,6 +112,11 @@ class userQuestion extends AdminPage {
                     activeQuestionIndex: 0,
                     studentAnswer: null
                 });
+                if (questions && questions.length == 1) {
+                    this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
+                } else {
+                    this.setState({ prevButton: 'invisible', nextButton: 'visible' });
+                }
                 setTimeout(() => {
                     $('#submit-btn').addClass('btn-secondary');
                     $('input[name="' + this.state.questions[0]._id + '"]').prop('checked', false);
