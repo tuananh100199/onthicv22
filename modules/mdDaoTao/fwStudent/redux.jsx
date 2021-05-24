@@ -232,16 +232,17 @@ export function getStudentCourse(condition, searchText, done) {
     };
 }
 
-export function updateStudentCourse(_studentId, changes, done) {
-    return dispatch => {
+export function updateStudentCourse(_studentIds, changes, done) {
+    return () => {
         const url = '/api/student/course';
-        T.put(url, { _studentId, changes }, data => {
+        T.put(url, { _studentIds, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
-            } else {
-                done && done(data.item);
-                dispatch(getStudentCourse({ course: data.item.course }));
+            } else { //data.item ?
+                done && done();
+                // done && done(data.item);
+                // dispatch(getStudentCourse({ course: data.item.course }));
             }
             done && done(data.error);
         }, error => console.error(error) || T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger'));
