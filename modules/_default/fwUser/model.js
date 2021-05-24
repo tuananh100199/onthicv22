@@ -33,20 +33,20 @@ module.exports = (app) => {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
-        auth: (email, password, done) => model.findOne({ email }).populate('roles').populate('division').exec((error, user) =>
+        auth: (identityCard, password, done) => model.findOne({ identityCard }).populate('roles').populate('division').exec((error, user) =>
             done(error == null && user && user.equalPassword(password) ? user : null)),
 
         create: (data, done) =>
-            app.model.user.get({ email: data.email }, (error, user) => {
+            app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
                     if (done) done(error);
                 } else if (user) {
-                    if (done) done('Email bạn dùng đã được đăng ký!', user);
+                    if (done) done('CMND/CCCD của bạn đã được đăng ký!', user);
                 } else {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();
                     data.token = 'new'; //app.getToken(8);
-                    data.password = app.model.user.hashPassword(data.password);
+                    data.password = data.birthday;
                     if (data.active === undefined) data.active = false;
 
                     model.create(data, (error, user) => {
