@@ -23,6 +23,66 @@ module.exports = (app) => {
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
+    const getCourseData = (_id, sessionUser, done) => {
+        app.model.course.get(_id, (error, item) => {
+            if (error || !item) {
+                done('Khoá học không tồn tại!');
+            } else {
+                const division = sessionUser.division,
+                    courseFees = item.courseFees;
+                item = app.clone(item);
+                delete item.courseFees;
+
+                if (item && sessionUser.isCourseAdmin && division && division.isOutside) {
+                    // Với user là isCourseAdmin + isOutside: chỉ hiện teacherGroups, representerGroups, students thuộc cơ sở của họ
+                    app.model.student.getAll({ course: _id, division: division._id }, (error, students) => {
+                        if (error) {
+                            done('Hệ thống bị lỗi!');
+                        } else {
+                            const courseFee = courseFees.find(courseFee => courseFee.division == division._id);
+                            item.courseFee = courseFee && courseFee.fee ? courseFee.fee : 0;
+                            item.students = students || [];
+
+                            let i = 0;
+                            if (!item.teacherGroups) item.teacherGroups = [];
+                            while (i < item.teacherGroups.length) {
+                                const teacher = item.teacherGroups[i].teacher;
+                                if (!teacher.division || teacher.division._id != division._id) {
+                                    item.teacherGroups.splice(i, 1);
+                                } else {
+                                    i++;
+                                }
+                            }
+
+                            i = 0;
+                            if (!item.representerGroups) item.representerGroups = [];
+                            while (i < item.representerGroups.length) {
+                                const teacher = item.representerGroups[i].teacher;
+                                if (!teacher.division || teacher.division._id != division._id) {
+                                    item.representerGroups.splice(i, 1);
+                                } else {
+                                    i++;
+                                }
+                            }
+
+                            done(null, item);
+                        }
+                    });
+                } else {
+                    app.model.student.getAll({ course: _id }, (error, students) => {
+                        if (error) {
+                            done('Hệ thống bị lỗi!');
+                        } else {
+                            item.courseFee = courseFees[0] && courseFees[0].fee ? courseFees[0].fee : 0;
+                            item.students = students || [];
+                            done(null, item);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
@@ -40,25 +100,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course', app.permission.check('course:read'), (req, res) => {
-        const { _id } = req.query, sessionUser = req.session.user;
-        app.model.course.get(_id, (error, item) => {
-            const division = sessionUser.division, courseFees = item.courseFees;
-            if (item && sessionUser.isCourseAdmin && division && division.isOutside) {
-                // Với user là isCourseAdmin + isOutside: ẩn đi các lecturer, student thuộc cơ sở của họ
-                const courseFee = courseFees.find(courseFee => courseFee.division == division._id);
-                if (courseFee) item.courseFee = courseFee.fee;
-                app.model.division.getAll({ isOutside: true }, (error, divisions) => {
-                    const teacherGroups = (item.teacherGroups || []).reduce((result, group) => group.teacher && group.teacher.division &&
-                        divisions.findIndex(div => div._id.toString() == group.teacher.division.toString()) != -1 ? [...result, group] : result, []);
-                    res.send({ error, item: app.clone(item, { teacherGroups }) });
-                });
-            } else {
-                item.courseFee = courseFees[0] && courseFees[0].fee;
-                res.send({ error, item });
-            }
-        });
-    });
+    app.get('/api/course', app.permission.check('course:read'), (req, res) => getCourseData(req.query._id, req.session.user, (error, item) => res.send({ error, item })));
 
     app.post('/api/course', app.permission.check('course:write'), (req, res) => {
         app.model.course.create(req.body.data || {}, (error, item) => res.send({ error, item }));
@@ -89,7 +131,11 @@ module.exports = (app) => {
             if (changes.admins && changes.admins === 'empty') changes.admins = [];
         }
         delete changes.courseFee;
-        app.model.course.update(req.body._id, changes, (error, item) => res.send({ error, item }));
+        app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
+            const item = {};
+            course && Object.keys(changes).forEach(key => item[key] = course[key]);
+            res.send({ error, item });
+        }));
     });
 
     app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {

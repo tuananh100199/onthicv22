@@ -14,9 +14,10 @@ class CoursePageFilter extends AdminPage {
         });
 
     }
-    getPage = (pageNumber, pageSize) => {
-        this.props.getCoursePage(this.state.courseType, pageNumber, pageSize, {});
-    }
+
+    changeActive = (item, active) => this.props.updateCourse(item._id, { active, courseType: item.courseType }, () => {
+        this.props.getCoursePage(this.state.courseType, undefined, undefined, {});
+    });
 
     delete = (e, item) => e.preventDefault() || T.confirm('Khóa học', 'Bạn có chắc bạn muốn xóa khóa học này?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteCourse(item));
@@ -46,9 +47,7 @@ class CoursePageFilter extends AdminPage {
                     <TableCell type='number' content={item.admins ? item.admins.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.reduce((a, b) => (b.student ? b.student.length : 0) + a, 0) : 0} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateCourse(item._id, { active, courseType: item.courseType }, () => {
-                        T.notify('Cập nhật thông tin khóa học thành công!');
-                    })} />
+                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, active)} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
@@ -56,7 +55,8 @@ class CoursePageFilter extends AdminPage {
         return (
             <div className='tile-body'>
                 {table}
-                <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} pageCondition={pageCondition} />
+                <Pagination name='pageCourse' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} pageCondition={pageCondition}
+                    getPage={(pageNumber, pageSize) => this.props.getCoursePage(this.state.courseType, pageNumber, pageSize, {})} />
             </div>);
     }
 }

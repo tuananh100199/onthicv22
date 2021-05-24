@@ -143,18 +143,20 @@ class AdminStudentView extends React.Component {
                             pageCondition={pageCondition} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
                     </div>
                 </div>
+
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse({ course: _courseId }, e.target.value)} />
-                        {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
-                            {courseList.map((item, index) => (
-                                <li style={{ margin: 10 }} key={index}>
-                                    <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.removeStudentCourse(e, item, pageSize)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
-                                    </a>
-                                </li>))}
-                        </ol> : 'Không có thông tin'}
+                        {courseList.length ?
+                            <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
+                                {courseList.map((item, index) => (
+                                    <li style={{ margin: 10 }} key={index}>
+                                        <a href='#' style={{ color: 'black' }} onClick={e => _courseId && this.removeStudentCourse(e, item, pageSize)}>
+                                            {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                        </a>
+                                    </li>))}
+                            </ol> : 'Không có thông tin'}
                     </div>
                 </div>
             </div>

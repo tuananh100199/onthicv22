@@ -61,7 +61,9 @@ module.exports = (app) => {
 
 
     app.get('/api/student/course/:_courseId', app.permission.check('student:read'), (req, res) => {
-        const { condition, searchText } = req.query, _courseId = req.params._courseId;
+        let { condition, searchText } = req.query,
+            _courseId = req.params._courseId;
+        if (!condition) condition = {};
         if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
             condition.division = req.session.user.division._id;
         }

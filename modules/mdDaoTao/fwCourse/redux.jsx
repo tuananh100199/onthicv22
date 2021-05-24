@@ -5,19 +5,20 @@ const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetPageByUser = 'CourseGetPageByUser';
 
-export default function courseReducer(state = null, data) {
+export default function courseReducer(state = {}, data) {
     switch (data.type) {
         case CourseGetPage: {
-            const newState = state || {};
+            const newState = {};
             newState[data.courseType] = data.page;
             return Object.assign({}, state, newState);
         }
 
-        case CourseGetItem:
-            return Object.assign({}, state, { item: data.item });
+        case CourseGetItem: {
+            return Object.assign({}, state, { item: Object.assign({}, state.item || {}, data.item) });
+        }
 
         case CourseGetPageByUser:
-            if (state == null || state.userCondition != data.condition) {
+            if (state.userCondition != data.condition) {
                 return Object.assign({}, state, { userCondition: data.condition, userPage: data.page });
             } else {
                 const userPage = Object.assign({}, data.page);
@@ -102,8 +103,8 @@ export function updateCourse(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
+                T.notify('Cập nhật thông tin khóa học thành công!');
                 dispatch({ type: CourseGetItem, item: data.item });
-                dispatch(getCoursePage(changes.courseType));
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật thông tin khóa học bị lỗi!', 'danger'));

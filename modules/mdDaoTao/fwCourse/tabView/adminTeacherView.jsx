@@ -112,9 +112,7 @@ class AdminTeacherView extends React.Component {
                         <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>
                             <FormSelect ref={e => this.selectTeacher = e} data={ajaxSelectUserType(['isLecturer'])} style={{ width: '100%' }} />
                             <div style={{ width: 'auto', paddingLeft: 8 }}>
-                                <button className='btn btn-success' type='button' onClick={this.addTeacher}>
-                                    <i className='fa fa-fw fa-lg fa-plus' /> Cố vấn học tập
-                                </button>
+                                <button className='btn btn-success' type='button' onClick={this.addTeacher}><i className='fa fa-fw fa-lg fa-plus' /></button>
                             </div>
                         </div>
                         {teacherGroups.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
@@ -136,7 +134,7 @@ class AdminTeacherView extends React.Component {
                         </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
                 </div>
-                {/* <CirclePageButton type='export' onClick={exportScore(this.props.course && this.props.course.item && this.props.course.item._id)} /> */}
+                {/* <CirclePageButton type='export' onClick={TODO} /> */}
             </div>
         );
     }
