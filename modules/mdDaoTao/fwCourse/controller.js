@@ -261,7 +261,7 @@ module.exports = (app) => {
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    app.get('/api/student/course', app.permission.check('user:login'), (req, res) => { //TODO: Cần sửa lại route
+    app.get('/api/course-active/student', app.permission.check('user:login'), (req, res) => { 
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {
