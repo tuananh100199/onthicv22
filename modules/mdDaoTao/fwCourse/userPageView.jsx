@@ -66,7 +66,7 @@ class UserCoursePageDetail extends AdminPage {
             title: 'Khóa học: ' + (this.state.name),
             breadcrumb: ['Khóa học'],
             content: (
-                <div className='row'>
+                <div className='row user-course'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
                     <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
                         <div className='widget-small coloured-icon info'>
