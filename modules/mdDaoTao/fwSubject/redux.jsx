@@ -137,6 +137,20 @@ export function deleteSubject(_id) {
     };
 }
 
+export function submitFeedback(subjectId, courseId, answers, done) {
+    return () => {
+        const url = '/api/subject/student/submit';
+        T.post(url, { subjectId, courseId, answers }, data => {
+            if (data.error) {
+                T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
+    };
+}
+
 export const ajaxSelectSubject = T.createAjaxAdapter(
     '/api/subject/page/1/20',
     response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: item.title })) : []

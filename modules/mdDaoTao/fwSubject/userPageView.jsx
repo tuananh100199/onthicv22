@@ -82,6 +82,18 @@ class AdminEditPage extends AdminPage {
                         return show;
                     }) : <div className='col-md-4'>Chưa có bài học</div>
                     }
+                    {lessons && tienDoHocTap && Object.keys(tienDoHocTap).length == lessons.length ?
+                        <><h4 style={{ width: '100%' }}>Câu hỏi phản hồi</h4>
+                            <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/phan-hoi/' + this.state.subjectId}>
+                                <div className={'widget-small coloured-icon info'}>
+                                    <i className='icon fa fa-3x fa-info' />
+                                    <div className='info'>
+                                        <h4>Câu hỏi phản hồi</h4>
+                                    </div>
+                                </div>
+                            </Link>
+                        </> : <></>
+                    }
                 </div>
             ),
             backRoute: userPageLink,
