@@ -16,9 +16,9 @@ class AdminStudentView extends React.Component {
         if (searchText == undefined) searchText = this.state.searchPreStudentText;
         if (sort == undefined) sort = { lastname: 1, firstname: 1 };
         if (this.state.sortType == 'division') sort.division = 1;
-        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, courseType: this.props.courseType && this.props.courseType._id }, sort, (page) => {
+        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, courseType: this.props.courseType && this.props.courseType._id }, sort, () => {// page unused
             this.preStudents = {}; // Xoá hết các chọn trước khi search
-            console.log('this.preStudents', this.preStudents)
+            console.log('this.preStudents', this.preStudents);
             this.setState({ searchPreStudentText: searchText, sortType: sort.division ? 'division' : 'name' });
             done && done();
         });
@@ -63,7 +63,7 @@ class AdminStudentView extends React.Component {
                                 </a>
                             </div>
                         </div>
-                    </li>)
+                    </li>);
             }
         });
 
