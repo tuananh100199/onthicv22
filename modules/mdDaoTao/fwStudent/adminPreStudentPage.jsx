@@ -153,7 +153,7 @@ class PreStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    < TableCell type='text' content={item.identityCard} />
+                    <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={<label>{permissionUser.read ?
                         <a href={`/user/member?user=${item.user && item.user._id}`}>{item.user && item.user.email}</a> : item.user && item.user.email}<br />{T.mobileDisplay(item.user && item.user.phoneNumber)}</label>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
