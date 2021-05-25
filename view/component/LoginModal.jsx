@@ -41,7 +41,7 @@ export default class LoginModal extends React.Component {
                         <div className='modal-header text-center'>
                             <h4 className='modal-title w-100 font-weight-bold'>Đăng nhập</h4>
                         </div>
-                        <div className=''>
+                        {/* <div className=''>
                             <div className='wrap-login100 align-self-center'>
                                 <form className='login100-form validate-form login-validate-form' onSubmit={this.onLogin}>
                                     <div className='wrap-input100 validate-input login-validate-input'>
@@ -70,6 +70,22 @@ export default class LoginModal extends React.Component {
                                     </div>
                                 </form>
                             </div>
+                        </div> */}
+                        <div className='modal-body mx-3'>
+                            <div className='md-form mb-5'>
+                                <i className='fa fa-envelope prefix grey-text'></i>
+                                <label data-error='wrong' data-success='right' htmlFor='defaultForm-email'>Your email</label>
+                                <input type='email' id='defaultForm-email' className='form-control validate' />
+
+                            </div>
+
+                            <div className='md-form mb-4'>
+                                <i className='fa fa-lock prefix grey-text'></i>
+                                <label data-error='wrong' data-success='right' htmlFor='defaultForm-pass'>Your password</label>
+                                <input type='password' id='defaultForm-pass' className='form-control validate'></input>
+
+                            </div>
+
                         </div>
                         <div className='modal-footer' style={{ display: 'block' }}>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'
