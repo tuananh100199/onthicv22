@@ -1,5 +1,4 @@
 import React from 'react';
-import './loginModal.scss';
 export default class LoginModal extends React.Component {
     txtUser = React.createRef();
     txtPassword = React.createRef();
@@ -33,58 +32,31 @@ export default class LoginModal extends React.Component {
     }
     render() {
         return (
-            <div ref={e => this.modal = e} className='modal fade' id='elegantModalForm' tabIndex='-1' role='dialog'
-                aria-labelledby='myModalLabel' style={{ zIndex: 2000 }}
-                aria-hidden='true' >
+
+            <div ref={e => this.modal = e} className='modal fade' id='modalLoginForm' tabIndex='-1' role='dialog' aria-labelledby='myModalLabel'
+                aria-hidden='true'>
                 <div className='modal-dialog ' role='document'>
                     <div className='modal-content d-flex justify-content-center'>
                         <div className='modal-header text-center'>
                             <h4 className='modal-title w-100 font-weight-bold'>Đăng nhập</h4>
                         </div>
-                        {/* <div className=''>
-                            <div className='wrap-login100 align-self-center'>
-                                <form className='login100-form validate-form login-validate-form' onSubmit={this.onLogin}>
-                                    <div className='wrap-input100 validate-input login-validate-input'>
-                                        <input className='input100' type='text' name='username' id='loginModalUsername' ref={this.txtUser}
-                                            placeholder='CMND/CCCD' autoComplete='off' />
-                                        <span className='focus-input100' />
-                                        <span className='symbol-input100'><i className='icon icon-envelope' aria-hidden='true' /></span>
-                                    </div>
-
-                                    <div className='wrap-input100 validate-input login-validate-input'
-                                        data-validate='Password is required'>
-                                        <input className='input100' type='password' name='pass' id='loginModalPassword'
-                                            ref={this.txtPassword} placeholder='Mật khẩu' />
-                                        <span className='focus-input100' />
-                                        <span className='symbol-input100'><i className='icon icon-lock' aria-hidden='true' /></span>
-                                    </div>
-
-                                    <p ref={this.errorMessage} className='text-danger text-center'>&nbsp;</p>
-
-                                    <div className='container-login100-form-btn' style={{ padding: '0' }}>
-                                        <button className='login100-form-btn' type='submit'>Đăng nhập</button>
-                                    </div>
-
-                                    <div className='text-center p-t-12'>
-                                        <a className='txt2' href='#' onClick={this.onForgotPasswordClick}>Quên mật khẩu</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div> */}
                         <div className='modal-body mx-3'>
-                            <div className='md-form mb-5'>
-                                <i className='fa fa-envelope prefix grey-text'></i>
-                                <label data-error='wrong' data-success='right' htmlFor='defaultForm-email'>Your email</label>
-                                <input type='email' id='defaultForm-email' className='form-control validate' />
-
+                            <div className='form-group'>
+                                <input className='form-control text-secondary' type='text' ref={this.txtUser} placeholder='CMND/CCCD' autoComplete='off' />
+                            </div>
+                            <div className='form-group'>
+                                <input className='form-control text-secondary' type='password' ref={this.txtPassword} placeholder='Mật khẩu' />
                             </div>
 
-                            <div className='md-form mb-4'>
-                                <i className='fa fa-lock prefix grey-text'></i>
-                                <label data-error='wrong' data-success='right' htmlFor='defaultForm-pass'>Your password</label>
-                                <input type='password' id='defaultForm-pass' className='form-control validate'></input>
+                            <p ref={this.errorMessage} className='text-danger text-center'>&nbsp;</p>
 
+                            <div className='d-flex justify-content-center'>
+                                <button className='btn btn-success' type='submit' onClick={this.onLogin}>Đăng nhập</button>
                             </div>
+                            <div className='text-center p-t-12'>
+                                <a className='text-secondary' href='#' onClick={this.onForgotPasswordClick} >Quên mật khẩu</a>
+                            </div>
+
 
                         </div>
                         <div className='modal-footer' style={{ display: 'block' }}>

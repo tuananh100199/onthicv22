@@ -81,7 +81,7 @@ module.exports = (app) => {
                 }
             }
         });
-    }
+    };
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
@@ -278,7 +278,7 @@ module.exports = (app) => {
                                 console.log('course.representerGroups', 'end', course.representerGroups.length);
                                 course.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
                             }
-                        }
+                        };
                         solve();
                     } else {
                         reject('Dữ liệu không hợp lệ!');

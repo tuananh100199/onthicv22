@@ -23,7 +23,7 @@ class TeacherModal extends AdminModal {
     }
 
     onSubmit = () => {
-        const { _courseId, _representerId, _studentIds } = this.state;
+        // const { _courseId, _representerId, _studentIds } = this.state;
         if (this.state._id) {
             const { _id } = this.props.course;
             this.props.add(_id, this.state._id, this.props.student._id, 'add', this.hide);
@@ -113,7 +113,7 @@ class AdminTeacherView extends React.Component {
                                 </a>
                             </div>
                         </div>
-                    </li>)
+                    </li>);
             }
         });
 
