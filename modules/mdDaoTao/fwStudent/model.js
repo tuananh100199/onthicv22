@@ -86,6 +86,7 @@ module.exports = (app) => {
                         } else {
                             const _ids = list.map(item => item._id);
                             delete condition.searchText;
+                            if (sort && sort.division == 0) delete sort.division;
                             model.find({ _id: { $in: _ids }, ...condition }).sort(sort).skip(skipNumber).limit(result.pageSize)
                                 .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
                                     result.list = list;
@@ -95,6 +96,7 @@ module.exports = (app) => {
                     });
                 } else {
                     delete condition.searchText;
+                    if (sort && sort.division == 0) delete sort.division;
                     model.find(condition).sort(sort).skip(skipNumber).limit(result.pageSize)
                         .populate('user', '-password').populate('division', '_id title isOutside').populate('courseType').populate('course').exec((error, list) => {
                             result.list = list;

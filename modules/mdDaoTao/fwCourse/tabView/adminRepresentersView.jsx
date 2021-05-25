@@ -27,7 +27,7 @@ class RepresenterModal extends AdminModal {
     onSubmit = () => {
         const { _courseId, _representerId, _studentIds } = this.state;
         if (_representerId) {
-            this.props.add(_courseId, _representerId, _studentIds, 'add', this.hide);
+            this.props.add(_courseId, _representerId, _studentIds, 'add', () => this.hide() || !this.props.onSuccess || this.props.onSuccess());
         } else {
             T.notify('Chưa chọn giáo viên', 'danger');
         }
@@ -73,20 +73,39 @@ class AdminRepresentersView extends React.Component {
         alert('TODO: ' + JSON.stringify(student));
     }
 
-    selectOneStudent = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId].value()).length > 0 });
+    selectOneStudent = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId] && this.students[_studentId].value()).length > 0 });
     selectManyStudents = selected => {
         this.itemSelectAll.value(true);
         this.itemDeSelectAll.value(false);
-        Object.keys(this.students).forEach(_id => this.students[_id].value(selected));
+        Object.keys(this.students).forEach(_id => this.students[_id] && this.students[_id].value(selected));
         this.setState({ assignedButtonVisible: selected });
     }
 
     showAssignedModal = (e, course, student) => {
         e.preventDefault();
         student && this.students[student._id].value(true);
-        const _studentIds = Object.keys(this.students).filter(_studentId => this.students[_studentId].value());
+        const _studentIds = [];
+        Object.keys(this.students).forEach(_studentId => {
+            if (!this.students[_studentId]) {
+                delete this.students[_studentId];
+            } else if (this.students[_studentId].value()) {
+                _studentIds.push(_studentId);
+            }
+        });
+
         student && !_studentIds.includes(student._id) && _studentIds.push(student._id);
         _studentIds.length && this.modal.show({ course, _studentIds });
+    }
+
+    onAssignSuccess = () => {
+        Object.keys(this.students).forEach(_studentId => {
+            if (!this.students[_studentId]) {
+                delete this.students[_studentId];
+            } else {
+                this.students[_studentId].value(false);
+            }
+            this.setState({ assignedButtonVisible: false });
+        });
     }
 
     render() {
@@ -128,7 +147,7 @@ class AdminRepresentersView extends React.Component {
                         </div>
                         {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
-                    <RepresenterModal ref={e => this.modal = e} readOnly={!permission.write} add={this.props.updateCourseRepresenterGroupStudent} />
+                    <RepresenterModal ref={e => this.modal = e} readOnly={!permission.write} add={this.props.updateCourseRepresenterGroupStudent} onSuccess={this.onAssignSuccess} />
                 </div>
 
                 <div className='col-md-6'>

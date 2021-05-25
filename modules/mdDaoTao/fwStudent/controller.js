@@ -70,30 +70,19 @@ module.exports = (app) => {
                 pageCondition.division = req.session.user.division._id;
             }
 
-            // if (condition.searchText) {
-            //     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-            //     pageCondition['$or'] = [
-            //         // { phoneNumber: value },
-            //         // { email: value },
-            //         { firstname: value },
-            //         { lastname: value },
-            //     ];
-            // }
-            // delete condition.searchText;
-            pageCondition = app.clone(pageCondition, condition);
-            // delete pageCondition.searchText;
-            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
-                // if (condition.searchText) {
-                //     console.log(condition.searchText, 'st');
-                //     const value = new RegExp(condition.searchText, 'u');
-                //     console.log(value, 'streerd');
-                //     page.list.forEach((item) => {
-                //         console.log(`${item.lastname} ${item.firstname}`, 'string');
-                //         console.log(value.test(`${item.lastname} ${item.firstname}`), ' value.test(`${item.lastname} ${item.firstname}`)');
+            if (condition.courseType) pageCondition.courseType = condition.courseType;
+            if (condition.searchPlanCourse) pageCondition.planCourse = { $regex: `.*${condition.searchPlanCourse}.*`, $options: 'i' };
+            if (condition.searchText) {
+                const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                pageCondition['$or'] = [
+                    { firstname: value },
+                    { lastname: value },
+                    { identityCard: value },
+                ];
+            }
 
-                //     });
-                //     page.list = page.list.reduce((res, item) => value.test(`${item.lastname} ${item.firstname}`.normalize('NFC')) ? [...res, item] : res, []);
-                // }
+            app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
+                console.log(pageCondition, condition);
                 res.send({ error, page });
             });
         } catch (error) {

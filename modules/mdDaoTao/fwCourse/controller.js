@@ -178,15 +178,13 @@ module.exports = (app) => {
                                     countIndex += subject.lessons.length;
                                     worksheet.mergeCells(`${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`);
                                     for (const lesson of subject.lessons) {
-                                        cells.push(
-                                            {
-                                                cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
-                                                border: '1234',
-                                                value: lesson.title,
-                                                font: { size: 12, align: 'center' },
-                                                bold: true
-                                            }
-                                        );
+                                        cells.push({
+                                            cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
+                                            border: '1234',
+                                            value: lesson.title,
+                                            font: { size: 12, align: 'center' },
+                                            bold: true
+                                        });
                                         let rowCell = 2;
                                         course.teacherGroups.forEach(group => {
                                             group.student.forEach(item => {
