@@ -100,7 +100,7 @@ class AdminStudentView extends React.Component {
                             <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyPreStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} />
                             <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyPreStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
                             <a href='#' onClick={e => this.addCourseStudents(e, _courseId)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
-                                Trở thành Học viên <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
                             </a>
                         </div>
 
@@ -110,7 +110,7 @@ class AdminStudentView extends React.Component {
                                     <li style={{ margin: 0, display: 'block' }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
                                             <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOnePreStudent}
-                                                label={`${index + 1}. ${preStudent.lastname} ${preStudent.firstname} (${preStudent.identityCard}) - ${preStudent.division && preStudent.division.title} ${preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
+                                                label={<>{index + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
                                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />

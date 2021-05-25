@@ -110,7 +110,8 @@ class AdminRepresentersView extends React.Component {
 
     render() {
         const permission = this.props.permission,
-            permissionRepresenterWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
+            currentUser = this.props.system ? this.props.system.user : null,
+            permissionRepresenterWrite = permission.write || (currentUser && currentUser.isCourseAdmin);
         const { _id, students, representerGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
         const { searchStudentText, assignedButtonVisible } = this.state,
             studentList = [], assignedStudents = [];
@@ -142,7 +143,7 @@ class AdminRepresentersView extends React.Component {
                             <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} />
                             <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
                             <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
-                                Gán Giáo viên <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
                             </a>
                         </div>
                         {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
