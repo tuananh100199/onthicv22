@@ -30,14 +30,14 @@ module.exports = (app) => {
                 } else {
                     res.send({ error: null, user: app.clone({}, user, { password: null }) });
 
-                    app.model.setting.get('email', 'emailPassword', 'emailRegisterMemberTitle', 'emailRegisterMemberText', 'emailRegisterMemberHtml', result => {
-                        let url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
-                            name = user.firstname + ' ' + user.lastname,
-                            mailTitle = result.emailRegisterMemberTitle,
-                            mailText = result.emailRegisterMemberText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{url}', url),
-                            mailHtml = result.emailRegisterMemberHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{url}', url);
-                        app.email.sendEmail(result.email, result.emailPassword, data.email, app.email.cc, mailTitle, mailText, mailHtml, null);
-                    });
+                    // app.model.setting.get('email', 'emailPassword', 'emailRegisterMemberTitle', 'emailRegisterMemberText', 'emailRegisterMemberHtml', result => {
+                    //     let url = (app.isDebug ? app.debugUrl : app.rootUrl) + '/active-user/' + user._id,
+                    //         name = user.firstname + ' ' + user.lastname,
+                    //         mailTitle = result.emailRegisterMemberTitle,
+                    //         mailText = result.emailRegisterMemberText.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{url}', url),
+                    //         mailHtml = result.emailRegisterMemberHtml.replaceAll('{name}', name).replaceAll('{firstname}', user.firstname).replaceAll('{lastname}', user.lastname).replaceAll('{url}', url);
+                    //     app.email.sendEmail(result.email, result.emailPassword, data.email, app.email.cc, mailTitle, mailText, mailHtml, null);
+                    // });
                 }
             });
         }
@@ -47,8 +47,8 @@ module.exports = (app) => {
         if (req.session.user) {
             res.send({ error: 'You are logged in!' });
         } else {
-            let emailOrIdentityCard = req.body.email.trim(), password = req.body.password;
-            app.model.user.auth(emailOrIdentityCard, password, user => {
+            let username = req.body.username, password = req.body.password;
+            app.model.user.auth(username, password, user => {
                 if (user == null) {
                     res.send({ error: 'Thông tin đăng nhập không chính xác!' });
                 } else if (user.active) {

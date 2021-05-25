@@ -182,6 +182,18 @@ module.exports = (app) => {
             });
         },
 
+        addFeedback: (data, done) => {
+            app.model.student.get(data.studentId, (error, student) => {
+                if (error) {
+                    done(error);
+                } else {
+                    const obj = { answers: data.answers };
+                    Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                }
+            });
+        },
+
         addDriveTestScore: (studentId, driveTestId, trueAnswers, answers, importanceScore, score, done) => {
             app.model.student.get(studentId, (error, student) => {
                 if (error) {

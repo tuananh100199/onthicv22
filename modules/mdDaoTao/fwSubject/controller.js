@@ -12,6 +12,7 @@ module.exports = (app) => {
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {
@@ -51,6 +52,20 @@ module.exports = (app) => {
 
     app.delete('/api/subject', app.permission.check('subject:delete'), (req, res) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
+    });
+
+    app.post('/api/subject/student/submit', app.permission.check('subject:read'), (req, res) => {
+        const { courseId, subjectId, answers } = req.body;
+        app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const data = { studentId: student._id, subjectId, answers };
+                app.model.student.addFeedback(data, (error, item) => {
+                    res.send({ error, result: { answers }, item });
+                });
+            }
+        });
     });
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------

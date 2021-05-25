@@ -34,33 +34,15 @@ module.exports = (app) => {
         hashPassword: (password) =>
             app.crypt.hashSync(password, app.crypt.genSaltSync(8), null),
 
-        auth: (emailOrIdentityCard, password, done) => {
-            model.findOne({
-                $or: [{ email: emailOrIdentityCard }, { identityCard: emailOrIdentityCard }]
-            }).populate('roles').populate('division').exec((error, user) =>
-                done(error == null && user && user.equalPassword(password) ? user : null))
-        },
+        auth: (identityCard, password, done) => model.findOne({ identityCard }).populate('roles').populate('division').exec((error, user) =>
+            done(error == null && user && user.equalPassword(password) ? user : null)),
 
         create: (data, done) => {
-            const condition = {};
-            condition.$or = [];
-            if (data.email) {
-                condition.$or.push(
-                    { email: data.email },
-                );
-            }
-
-            if (data.identityCard) {
-                condition.$or.push(
-                    { identityCard: data.identityCard }
-                );
-            }
-            if (condition.$or.length == 0) delete condition.$or;
-            app.model.user.get(condition, (error, user) => {
+            app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
                     if (done) done(error);
                 } else if (user) {
-                    if (done) done('Email hoặc số CMND/CCCD bạn dùng đã được đăng ký!', user);
+                    if (done) done('CMND/CCCD của bạn đã được đăng ký!', user);
                 } else {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();
