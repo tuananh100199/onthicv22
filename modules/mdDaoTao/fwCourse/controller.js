@@ -81,7 +81,7 @@ module.exports = (app) => {
                 }
             }
         });
-    }
+    };
 
     // APIs ------------------------------------------------------------------------------------------------------------
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
@@ -261,13 +261,12 @@ module.exports = (app) => {
                     } else if (type == 'remove') {
                         const solve = (index = 0) => {
                             if (index < _studentIds.length) {
-                                console.log('solve', index);
                                 app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
                                     if (error) {
                                         reject('Lỗi khi cập nhật khoá học!');
                                     } else if (student) {
-                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id && group.student.splice(index, 1)));
-                                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id && group.student.splice(index, 1)));
+                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
+                                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         student.course = null;
                                         student.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1));
                                     } else {
@@ -275,10 +274,9 @@ module.exports = (app) => {
                                     }
                                 });
                             } else {
-                                console.log('course.representerGroups', 'end', course.representerGroups.length);
                                 course.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
                             }
-                        }
+                        };
                         solve();
                     } else {
                         reject('Dữ liệu không hợp lệ!');

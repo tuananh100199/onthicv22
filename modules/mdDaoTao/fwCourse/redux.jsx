@@ -138,7 +138,7 @@ export function exportSubject() {
 // Course students ----------------------------------------------------------------------------------------------------
 export function updateCourseStudents(_courseId, _studentIds, type, done) {
     return dispatch => {
-        const url = `/api/course/student`;
+        const url = '/api/course/student';
         T.put(url, { _courseId, _studentIds, type }, data => {
             if (data.error) {
                 T.notify('Gán học viên bị lỗi!', 'danger');
@@ -185,7 +185,7 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
 // Course representerGroups -------------------------------------------------------------------------------------------
 export function updateCourseRepresenterGroup(_courseId, _representerId, type, done) {
     return dispatch => {
-        const url = `/api/course/representer-group/representer`;
+        const url = '/api/course/representer-group/representer';
         T.put(url, { _courseId, _representerId, type }, data => {
             if (data.error) {
                 T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
@@ -200,7 +200,7 @@ export function updateCourseRepresenterGroup(_courseId, _representerId, type, do
 
 export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _studentIds, type, done) {
     return dispatch => {
-        const url = `/api/course/representer-group/student`;
+        const url = '/api/course/representer-group/student';
         T.put(url, { _courseId, _representerId, _studentIds, type }, data => {
             if (data.error) {
                 T.notify('Gán học viên bị lỗi!', 'danger');
