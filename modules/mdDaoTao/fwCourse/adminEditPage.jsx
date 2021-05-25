@@ -5,10 +5,9 @@ import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton, FormCheckbox } from 'view/component/AdminPage';
 import AdminSubjectView from './tabView/adminSubjectView';
-import AdminTeacherView from './tabView/adminTeacherView';
 import AdminManagerView from './tabView/adminManagerView';
 import AdminStudentView from './tabView/adminStudentView';
-// import AdminAssignTeacherView from './tabView/adminAssignTeacherView';
+import AdminTeacherView from './tabView/adminTeacherView';
 import AdminRepresentersView from './tabView/adminRepresentersView';
 
 const previousRoute = '/user/course';
@@ -61,7 +60,8 @@ class EditCoursePage extends AdminPage {
             courseFee: this.courseFee.value(),
             shortDescription: this.shortDescription.value(),
             detailDescription: this.detailDescription.html(),
-            courseFees: this.state.courseFees
+            courseFees: this.state.courseFees,
+            active: this.active.value(),
         };
         if (changes.courseFee == null) changes.courseFee = 0;
 
@@ -69,24 +69,19 @@ class EditCoursePage extends AdminPage {
             T.notify('Tên khóa học trống!', 'danger');
             this.name.focus();
         } else {
-            this.props.updateCourse(this.state._id, changes, () => {
-                T.notify('Cập nhật thông tin khóa học thành công!');
-            });
+            this.props.updateCourse(this.state._id, changes);
         }
     }
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
-            // currentPermissions = this.getCurrentPermissions(),
             permissionCourse = this.getUserPermission('course'),
             permissionUser = this.getUserPermission('user'),
             permissionDivision = this.getUserPermission('division'),
             readOnly = !permissionCourse.write;
         const tabInfo = <div className='row'>
             <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
-            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Kích hoạt' onChange={active => this.props.updateCourse(this.state._id, { active, courseType: this.courseType.value() }, () => {
-                T.notify('Cập nhật thông tin khóa học thành công!');
-            })} />
+            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Kích hoạt' isSwitch={true} />
             <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
             <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
@@ -116,8 +111,10 @@ class EditCoursePage extends AdminPage {
             { title: 'Quản trị viên', component: this.props.course && this.props.course.item ? <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> : null },
             { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
             { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
-            { title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null },
         ];
+        if (currentUser && currentUser.division && !currentUser.division.isOutside) {
+            tabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null });
+        }
 
         return this.renderPage({
             icon: 'fa fa-cubes',

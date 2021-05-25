@@ -29,8 +29,8 @@ module.exports = (app) => {
         hinhThe3x4: { type: Boolean, default: false },
         hinhChupTrucTiep: { type: Boolean, default: false },
 
+        planCourse: String,                                                                         // Khoá học dự kiến
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
-        planCourse: String,                                                                      // Khoá học dự kiến
         course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khoá học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
@@ -63,13 +63,13 @@ module.exports = (app) => {
             }
             model.find(condition)
                 .populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
-                .sort({ modifiedDate: -1, lastname: 1, firstname: 1 }).exec(done);
+                .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
         getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (done == undefined) {
                 done = sort;
-                sort = { modifiedDate: -1, lastname: 1, firstname: 1 };
+                sort = { lastname: 1, firstname: 1 };
             }
             if (error) {
                 done(error);
@@ -108,20 +108,21 @@ module.exports = (app) => {
         update: (_id, changes, done) => {
             if (changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
+                    console.log('changes.course', changes.course, item);
                     if (error) {
                         done(error);
-                    } else {
+                    } else if (item) {
                         changes.tienDoHocTap = {};
                         changes.diemBoDeThi = {};
-                        item.subjects.forEach(subject => {
-                            {
-                                const obj = {};
-                                obj[subject._id] = {};
-                                Object.assign(changes.tienDoHocTap, obj);
-                            }
+                        item.subjects && item.subjects.forEach(subject => {
+                            const obj = {};
+                            obj[subject._id] = {};
+                            Object.assign(changes.tienDoHocTap, obj);
                         });
                         changes.modifiedDate = new Date();
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+                    } else {
+                        done();
                     }
                 });
             } else {
@@ -130,34 +131,8 @@ module.exports = (app) => {
             }
         },
 
-        updateMany: (_ids, changes, done) => {
-            if (changes.course) {
-                app.model.course.get(changes.course, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else {
-                        changes.tienDoHocTap = {};
-                        changes.diemBoDeThi = {};
-                        item.subjects.forEach(subject => {
-                            {
-                                const obj = {};
-                                obj[subject._id] = {};
-                                Object.assign(changes.tienDoHocTap, obj);
-                            }
-                        });
-                        changes.modifiedDate = new Date();
-                        model.updateMany({ _id: { $in: _ids } }, { $set: changes }).exec(done);
-                    }
-                });
-            } else {
-                changes.modifiedDate = new Date();
-                model.updateMany({ _id: { $in: _ids } }, { $set: changes }).exec(done);
-            }
-        },
-
         resetLesson: (_id, changes, done) => {
-            const modifiedDate = { modifiedDate: new Date() };
-            model.findOneAndUpdate({ _id }, { $unset: changes, $set: modifiedDate }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id }, { $unset: changes, $set: { modifiedDate: new Date() } }, { new: true }).exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

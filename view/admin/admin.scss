@@ -37,7 +37,7 @@
 }
 
 .menuList>li {
-    width: '100%';
+    width: 100%;
     margin-top: 10px;
     margin-bottom: 10px;
     .buttons {
@@ -574,8 +574,15 @@
     background-color: #FFF;
     margin: -30px -30px 30px;
     padding: 0 30px 20px 30px;
-
     &.show {
         display: block;
     }
+}
+
+.user-course .widget-small .info h4 {
+    text-transform: none;
+    margin: 0;
+    margin-bottom: 5px;
+    font-weight: 400;
+    font-size: 1.1rem;
 }
