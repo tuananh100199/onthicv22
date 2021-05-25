@@ -56,9 +56,6 @@ class PreStudenModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (data.email == '' || !T.validateEmail(data.email)) {
-            T.notify('Email không hợp lệ!', 'danger');
-            this.itemEmail.focus();
         } else if (!data.courseType) {
             T.notify('Hạng đăng ký không được trống!', 'danger');
             this.itemCourseType.focus();
@@ -71,11 +68,11 @@ class PreStudenModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse== '') {
+        } else if (data.planCourse == '') {
             T.notify('Khóa dự kiến không được trống!', 'danger');
             this.itemPlanCourse.focus();
         } else {
-            this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
+            this.state._id ? this.props.update(this.state._id, data, this.hide()) : T.notify('Tạo ứng viên thành công!', 'success') && this.props.create(data, this.hide());
         }
     }
 
@@ -104,12 +101,12 @@ class PreStudenModal extends AdminModal {
                 <FormImageBox ref={e => this.imageBox = e} className='col-md-4' label='Hình đại diện' uploadType='PreStudentImage' image={this.state.image} readOnly={readOnly}
                     onSuccess={this.onUploadSuccess} />
 
-                <FormTextBox type='phone' ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' readOnly={this.state._id ? true : readOnly} />
+                <FormTextBox type='phone' ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' />
                 <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
-                <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
+                <FormTextBox type='number' className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
                 <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
@@ -155,8 +152,8 @@ class PreStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    <TableCell type='text' content={<label>{permissionUser.read ? 
-                                                        <a href={`/user/member?user=${item.user && item.user._id}`}>{item.user && item.user.email}</a> : item.user && item.user.email}<br />{T.mobileDisplay(item.user && item.user.phoneNumber)}</label>} />
+                    <TableCell type='text' content={<label>{permissionUser.read ?
+                        <a href={`/user/member?user=${item.user && item.user._id}`}>{item.user && item.user.email}</a> : item.user && item.user.email}<br />{T.mobileDisplay(item.user && item.user.phoneNumber)}</label>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />

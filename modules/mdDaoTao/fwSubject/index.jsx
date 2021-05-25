@@ -25,5 +25,9 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userSubjectInfo') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./userFeedbackQuestion') })
+        },
     ],
 };
