@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
+import { updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
-import { getStudentCourse } from 'modules/mdDaoTao/fwStudent/redux';
-import { FormSelect, FormTextBox, AdminModal } from 'view/component/AdminPage';
+import { FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
-    onShow = (e) => {
-        e.preventDefault();
-        const teachers = this.props.course.teacherGroups.reduce((result, item) => item.teacher.division._id == this.props.division._id ? [...result, item.teacher] : result, []);
-        teachers.forEach(i => i.isSelected = false);
-        this.setState({ teachers });
+    onShow = ({ course, _studentIds }) => {
+        let teachers = course.teacherGroups.map(group => {
+            group.teacher.isSelected = false;
+            return group.teacher;
+        });
+        this.setState({ _courseId: course._id, _studentIds, teachers });
     };
 
     onClick = (e, _id, index) => {
@@ -23,35 +23,36 @@ class TeacherModal extends AdminModal {
     }
 
     onSubmit = () => {
+        const { _courseId, _representerId, _studentIds } = this.state;
         if (this.state._id) {
             const { _id } = this.props.course;
-            this.props.add(_id, this.state._id, this.props.student._id, 'add', () => {
-                this.props.getStudentCourse({ course: _id });
-                this.hide();
-            });
+            this.props.add(_id, this.state._id, this.props.student._id, 'add', this.hide);
         } else {
-            T.notify('Chưa chọn cố vấn học tập', 'danger');
+            T.notify('Chưa chọn Cố vấn học tập', 'danger');
         }
     }
 
     render = () => {
-        const teachers = this.state.teachers.map((item, index) =>
-            <li className={this.state.teachers[index].isSelected && 'text-primary'} style={{ margin: 10 }} key={index}>
-                <a onClick={e => this.onClick(e, item._id, index)}>
-                    {`${item.lastname} ${item.firstname}`}
-                </a>
-            </li>);
+        const { teachers } = this.state;
         return this.renderModal({
-            title: 'Gán cố vấn học tập',
-            body: <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}> {teachers.length ? teachers : 'Không có thông tin'} </ol>
+            title: 'Gán Cố vấn học tập',
+            body: teachers && teachers.length ?
+                <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                    {teachers.map((teacher, index) =>
+                        <li style={{ margin: 10 }} key={index}>
+                            <a href='#' onClick={e => this.onClick(e, teacher._id, index)} style={teachers[index].isSelected ? { color: '#1488db', fontWeight: 'bold', fontStyle: 'italic' } : { color: 'black' }}>
+                                {teacher.lastname} {teacher.firstname} - {teacher.division ? teacher.division.title : ''}
+                            </a>
+                        </li>)
+                    }
+                </ol> : 'Không có Cố vấn học tập',
         });
-    };
-}
-class AdminTeacherView extends React.Component {
-    state = {};
-    componentDidMount() {
-        this.props.course && this.props.course.item && this.props.getStudentCourse({ course: this.props.course.item._id });
     }
+}
+
+class AdminTeacherView extends React.Component {
+    state = { searchStudentText: '', assignedButtonVisible: false };
+    students = {};
 
     addTeacher = e => {
         e.preventDefault();
@@ -62,49 +63,78 @@ class AdminTeacherView extends React.Component {
         } else {
             T.notify('Bạn chọn trùng cố vấn học tập', 'danger');
         }
-    };
-
+    }
     removeTeacher = (e, teacher) => e.preventDefault() || T.confirm('Xoá Cố vấn học tập', `Bạn có chắc muốn xoá ${teacher.lastname} ${teacher.firstname} khỏi khóa học này?`, true, isConfirm => {
         if (isConfirm && this.props.course && this.props.course.item) {
             const { _id } = this.props.course.item;
-            this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove', () => {
-                this.props.getStudentCourse({ course: _id });
-            });
+            this.props.updateCourseTeacherGroup(_id, teacher._id, 'remove');
         }
     });
 
     removeStudent = (e, teacher, student) => {
         e.preventDefault();
         const { _id } = this.props.course.item;
-        this.props.updateCourseTeacherGroupStudent(_id, teacher._id, student._id, 'remove', () => {
-            this.props.getStudentCourse({ course: _id });
-        });
+        this.props.updateCourseTeacherGroupStudent(_id, teacher._id, student._id, 'remove');
+    }
+
+    handleSelectAll = selected => {
+        this.itemSelectAll.value(true);
+        this.itemDeSelectAll.value(false);
+        Object.keys(this.students).forEach(_id => this.students[_id].value(selected));
+        this.setState({ assignedButtonVisible: selected });
+    }
+
+    changeAssignedButtonVisible = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId].value()).length > 0 });
+
+    showAssignedModal = (e, course, student) => {
+        e.preventDefault();
+        student && this.students[student._id].value(true);
+        const _studentIds = Object.keys(this.students).filter(_studentId => this.students[_studentId].value());
+        _studentIds.length && this.modal.show({ course, _studentIds });
     }
 
     render() {
         const permission = this.props.permission,
             permissionTeacherWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
-        const courseList = this.props.student && this.props.student.courseList ? this.props.student.courseList.teachers : [];
-        const _id = this.props.course && this.props.course.item ? this.props.course.item._id : null;
-        const teacherGroups = this.props.course && this.props.course.item ? this.props.course.item.teacherGroups : [];
+        const { _id, students, teacherGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const { searchStudentText, assignedButtonVisible } = this.state,
+            studentList = [], assignedStudents = [];
+        (teacherGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
+        (students || []).forEach((student, index) => {
+            if ((searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) && !assignedStudents.includes(student._id)) {
+                studentList.push(
+                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={this.changeAssignedButtonVisible}
+                                label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division && student.division.title} ${student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
+                            <div className='buttons'>
+                                <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
+                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                </a>
+                            </div>
+                        </div>
+                    </li>)
+            }
+        });
+
         return (
             <div className='row'>
                 <div className='col-md-6' >
                     <h3 className='tile-title'>Học viên chưa gán Cố vấn học tập</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.props.getStudentCourse({ course: _id }, e.target.value)} />
-                        {courseList.length ? <ol style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 420px)' }}>
-                            {courseList.map((item, index) => (
-                                <li style={{ margin: 10 }} key={index}>
-                                    <a href='#' style={{ color: 'black' }} onClick={e => _id && this[`modal${item._id}`].show(e)}>
-                                        {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
-                                    </a>
-                                    <TeacherModal ref={e => this[`modal${item._id}`] = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent}
-                                        course={this.props.course.item} division={item.division} student={item} getStudentCourse={this.props.getStudentCourse} />
-                                </li>))}
-                        </ol> : <label>Chưa có học viên!</label>}
+                        <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
+                        <div style={{ width: '100%', display: studentList.length ? 'block' : 'none' }}>
+                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.handleSelectAll(true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                            <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.handleSelectAll(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
+                                Gán Cố vấn học tập <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                            </a>
+                        </div>
+                        {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
+                    <TeacherModal ref={e => this.modal = e} readOnly={!permission.write} add={this.props.updateCourseTeacherGroupStudent} />
                 </div>
+
                 <div className='col-md-6'>
                     <h3 className='tile-title'>Danh sách Cố vấn học tập</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
@@ -141,5 +171,5 @@ class AdminTeacherView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getStudentCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent };
+const mapActionsToProps = { updateCourseTeacherGroup, updateCourseTeacherGroupStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);

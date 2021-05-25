@@ -265,24 +265,39 @@ module.exports = (app) => {
     });
 
     // RepresenterGroups APIs -----------------------------------------------------------------------------------------------------
-    app.put('/api/course/representer-group/representer/:_representerId', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, type } = req.body,
-            _representerId = req.params._representerId;
-        if (type == 'add') {
-            app.model.course.addRepresenterGroup(_courseId, _representerId, (error, item) => res.send({ error, item }));
-        } else if (type == 'remove') {
-            app.model.course.removeRepresenterGroup(_courseId, _representerId, (error, item) => res.send({ error, item }));
-        }
+    app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _representerId, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add') {
+                app.model.course.addRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
+            } else if (type == 'remove') {
+                app.model.course.removeRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { representerGroups: item.representerGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
     });
 
-    app.put('/api/course/representer-group/student/:_studentId', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _representerId, type } = req.body,
-            _studentId = req.params._studentId;
-        if (type == 'add') {
-            app.model.course.addStudentToRepresenterGroup(_courseId, _representerId, _studentId, (error, item) => res.send({ error, item }));
-        } else if (type == 'remove') {
-            app.model.course.removeStudentFromRepresenterGroup(_courseId, _representerId, _studentId, (error, item) => res.send({ error, item }));
-        }
+    app.put('/api/course/representer-group/student', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _representerId, _studentIds, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add' || type == 'remove') {
+                const changeGroup = type == 'add' ? app.model.course.addStudentToRepresenterGroup : app.model.course.removeStudentFromRepresenterGroup;
+                const solve = (index = 0) => (index < _studentIds.length) ?
+                    changeGroup(_courseId, _representerId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
+                solve();
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { representerGroups: item.representerGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
     });
 
     // Home -----------------------------------------------------------------------------------------------------------

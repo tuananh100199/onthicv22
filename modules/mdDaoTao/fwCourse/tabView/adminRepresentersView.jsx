@@ -1,55 +1,58 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent } from '../redux';
+import { updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
-import { FormSelect, FormTextBox, AdminModal } from 'view/component/AdminPage';
+import { FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 
 class RepresenterModal extends AdminModal {
     state = { representers: [] };
-    onShow = (e) => {
-        e.preventDefault();
-        const representers = this.props.course.representerGroups.reduce((result, item) => item.representer.division._id == this.props.division._id ? [...result, item.representer] : result, []);
-        representers.forEach(i => i.isSelected = false);
-        this.setState({ representers });
+    onShow = ({ course, _studentIds }) => {
+        let _representerId = null,
+            representers = course.representerGroups.map(group => {
+                group.representer.isSelected = _representerId == null;
+                _representerId = _representerId || group.representer._id;
+                return group.representer;
+            });
+        this.setState({ _courseId: course._id, _studentIds, _representerId, representers });
     };
 
-    onClick = (e, _id, index) => {
+    onClick = (e, _representerId, index) => {
         e.preventDefault();
         const representers = this.state.representers;
-        representers.forEach(i => i.isSelected = false);
+        representers.forEach(item => item.isSelected = false);
         representers[index].isSelected = true;
-        this.setState({ representers, _id });
+        this.setState({ representers, _representerId });
     }
 
     onSubmit = () => {
-        if (this.state._id) {
-            const { _id } = this.props.course;
-            this.props.add(_id, this.state._id, this.props.student._id, 'add', () => {
-                this.props.getCourse({ course: _id });
-                this.hide();
-            });
+        const { _courseId, _representerId, _studentIds } = this.state;
+        if (_representerId) {
+            this.props.add(_courseId, _representerId, _studentIds, 'add', this.hide);
         } else {
             T.notify('Chưa chọn giáo viên', 'danger');
         }
     }
 
     render = () => {
-        const representers = this.state.representers.map((item, index) =>
-            <li className={this.state.representers[index].isSelected && 'text-primary'} style={{ margin: 10 }} key={index}>
-                <a onClick={e => this.onClick(e, item._id, index)}>
-                    {`${item.lastname} ${item.firstname}`}
-                </a>
-            </li>);
+        const { representers } = this.state;
         return this.renderModal({
             title: 'Gán giáo viên',
-            body: <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}> {representers.length ? representers : 'Không có giáo viên'} </ol>
+            body: representers && representers.length ?
+                <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                    {representers.map((representer, index) =>
+                        <li style={{ margin: 10 }} key={index}>
+                            <a href='#' onClick={e => this.onClick(e, representer._id, index)} style={representers[index].isSelected ? { color: '#1488db', fontWeight: 'bold', fontStyle: 'italic' } : { color: 'black' }}>
+                                {representer.lastname} {representer.firstname} - {representer.division ? representer.division.title : ''}
+                            </a>
+                        </li>)}
+                </ol> : 'Không có Giáo viên',
         });
-    };
+    }
 }
 
 class AdminRepresentersView extends React.Component {
-    state = { searchStudentText: '' };
-    componentDidMount() { }
+    state = { searchStudentText: '', assignedButtonVisible: false };
+    students = {};
 
     addRepresenter = e => {
         e.preventDefault();
@@ -59,33 +62,55 @@ class AdminRepresentersView extends React.Component {
             this.props.updateCourseRepresenterGroup(_id, _representerId, 'add', () => this.selectRepresenter.value(null));
         }
     }
+    removeRepresenter = (e, representer) => e.preventDefault() || T.confirm('Xoá giáo viên', `Bạn có chắc muốn xoá giáo viên '${representer.lastname} ${representer.firstname}' khỏi khóa học này?`, true, isConfirm =>
+        isConfirm && this.props.course && this.props.course.item && this.props.updateCourseRepresenterGroup(this.props.course.item._id, representer._id, 'remove'));
 
-    removeRepresenter = (e, representer) => e.preventDefault() || T.confirm('Xoá giáo viên', `Bạn có chắc muốn xoá giáo viên ${representer.lastname} ${representer.firstname} khỏi khóa học này?`, true, isConfirm => {
-        if (isConfirm && this.props.course && this.props.course.item) {
-            const { _id } = this.props.course.item;
-            this.props.updateCourseRepresenterGroup(_id, representer._id, 'remove', () => this.props.getCourse(_id));
-        }
-    });
+    removeStudent = (e, representer, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi giáo viên '${representer.lastname} ${representer.firstname}'?`, true, isConfirm =>
+        isConfirm && this.props.updateCourseRepresenterGroupStudent(this.props.course.item._id, representer._id, [student._id], 'remove'));
 
-    removeStudent = (e, representer, student) => e.preventDefault() ||
-        this.props.updateCourseRepresenterGroupStudent(this.props.course.item._id, representer._id, student._id, 'remove', () => this.props.getCourse(this.props.course.item._id));
+    showStudentInfo = (e, student) => {
+        e.preventDefault();
+        alert('TODO: ' + JSON.stringify(student));
+    }
+
+    handleSelectAll = selected => {
+        this.itemSelectAll.value(true);
+        this.itemDeSelectAll.value(false);
+        Object.keys(this.students).forEach(_id => this.students[_id].value(selected));
+        this.setState({ assignedButtonVisible: selected });
+    }
+
+    changeAssignedButtonVisible = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId].value()).length > 0 });
+
+    showAssignedModal = (e, course, student) => {
+        e.preventDefault();
+        student && this.students[student._id].value(true);
+        const _studentIds = Object.keys(this.students).filter(_studentId => this.students[_studentId].value());
+        alert('_studentIds: ' + JSON.stringify(_studentIds) + ' - ' + student._id);
+        _studentIds.length && this.modal.show({ course, _studentIds });
+    }
 
     render() {
         const permission = this.props.permission,
             permissionRepresenterWrite = permission.write || (this.props.currentUser && this.props.currentUser.isCourseAdmin);
         const { _id, students, representerGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const { searchStudentText } = this.state,
-            studentList = [];
+        const { searchStudentText, assignedButtonVisible } = this.state,
+            studentList = [], assignedStudents = [];
+        (representerGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
         (students || []).forEach((student, index) => {
-            if ((searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) && student.division && !student.division.isOutside) {
+            if ((searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) && student.division && !student.division.isOutside && !assignedStudents.includes(student._id)) {
                 studentList.push(
-                    <li style={{ margin: 10 }} key={index}>
-                        <a href='#' style={{ color: 'black' }} onClick={e => _id && this[`modal${student._id}`].show(e)}>
-                            {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}{student.division && student.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
-                        </a>
-                        <RepresenterModal ref={e => this[`modal${student._id}`] = e} readOnly={!permission.write} add={this.props.updateCourseRepresenterGroupStudent}
-                            course={this.props.course.item} division={student.division} student={student} getCourse={this.props.getCourse} />
-                    </li>)
+                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={this.changeAssignedButtonVisible}
+                                label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard})`} />
+                            <div className='buttons'>
+                                <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
+                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                </a>
+                            </div>
+                        </div>
+                    </li>);
             }
         });
 
@@ -95,8 +120,16 @@ class AdminRepresentersView extends React.Component {
                     <h3 className='tile-title'>Học viên chưa gán Giáo viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
-                        {studentList.length ? studentList : <label>Chưa có học viên!</label>}
+                        <div style={{ width: '100%', display: studentList.length ? 'block' : 'none' }}>
+                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.handleSelectAll(true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                            <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.handleSelectAll(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
+                                Gán Giáo viên <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                            </a>
+                        </div>
+                        {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
+                    <RepresenterModal ref={e => this.modal = e} readOnly={!permission.write} add={this.props.updateCourseRepresenterGroupStudent} />
                 </div>
 
                 <div className='col-md-6'>
@@ -118,17 +151,24 @@ class AdminRepresentersView extends React.Component {
                                             {item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => _id && this.removeRepresenter(e, item.representer)}>
-                                                    <i style={{ marginLeft: 10 }} className='fa fa-times text-danger' />
+                                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
                                                 </a>
                                             </div>
                                         </div>
                                         <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                                             {item.student.length ? item.student.map((student, indexStudent) => (
                                                 <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
-                                                    <a href='#' style={{ color: 'black' }} onClick={e => _id && this.removeStudent(e, item.representer, student)}>
-                                                        {`${student.lastname} ${student.firstname}`} - {student.division && student.division.title}
-                                                        {student.division && student.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
-                                                    </a>
+                                                    <div style={{ display: 'inline-flex' }}>
+                                                        <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
+                                                            {student.lastname} {student.firstname} ({student.identityCard}) - {student.division ? student.division.title : ''}
+                                                            {student.division && student.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
+                                                        </a>
+                                                        <div className='buttons'>
+                                                            <a href='#' onClick={e => _id && this.removeStudent(e, item.representer, student)}>
+                                                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 </li>
                                             )) : <label style={{ color: 'black' }}>Chưa có học viên!</label>}
                                         </ul>
@@ -143,5 +183,5 @@ class AdminRepresentersView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { getCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent };
+const mapActionsToProps = { updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminRepresentersView);

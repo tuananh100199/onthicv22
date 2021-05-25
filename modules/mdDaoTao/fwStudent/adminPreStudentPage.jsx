@@ -14,18 +14,18 @@ class PreStudenModal extends AdminModal {
 
     onShow = (item) => {
         const { _id, firstname, lastname, birthday, user, image, residence, regularResidence, courseType, sex, division, identityCard, planCourse } = item || { _id: null, firstname: '', lastname: '', birthday: '', user: {}, image, residence: '', regularResidence: '', identityCard: '', planCourse: '' };
-        this.itemFirstname.value(firstname);
-        this.itemLastname.value(lastname);
+        this.itemFirstname.value(firstname || '');
+        this.itemLastname.value(lastname || '');
         this.itemBirthday.value(birthday);
         this.itemEmail.value(user.email || '');
         this.itemPhoneNumber.value(user.phoneNumber || '');
-        this.itemIdentityCard.value(identityCard);
-        this.itemPlanCourse.value(planCourse);
+        this.itemIdentityCard.value(identityCard || '');
+        this.itemPlanCourse.value(planCourse || '');
         this.itemSex.value(sex ? sex : 'male');
-        this.itemResidence.value(residence);
+        this.itemResidence.value(residence || '');
         this.itemCourseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
         this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
-        this.itemRegularResidence.value(regularResidence);
+        this.itemRegularResidence.value(regularResidence || '');
         this.imageBox.setData(`pre-student:${_id || 'new'}`);
 
         this.setState({ _id, image });
@@ -56,9 +56,9 @@ class PreStudenModal extends AdminModal {
         } else if (data.phoneNumber == '') {
             T.notify('Số điện thoại không được trống!', 'danger');
             this.itemPhoneNumber.focus();
-        } else if (data.email == '' || !T.validateEmail(data.email)) {
-            T.notify('Email không hợp lệ!', 'danger');
-            this.itemEmail.focus();
+            // } else if (data.email == '' || !T.validateEmail(data.email)) {
+            //     T.notify('Email không hợp lệ!', 'danger');
+            //     this.itemEmail.focus();
         } else if (!data.courseType) {
             T.notify('Hạng đăng ký không được trống!', 'danger');
             this.itemCourseType.focus();
@@ -71,9 +71,9 @@ class PreStudenModal extends AdminModal {
         } else if (data.birthday == '') {
             T.notify('Ngày sinh người dùng bị trống!', 'danger');
             this.itemBirthday.focus();
-        } else if (data.planCourse== '') {
-            T.notify('Khóa dự kiến không được trống!', 'danger');
-            this.itemPlanCourse.focus();
+            // } else if (data.planCourse == '') {
+            //     T.notify('Khóa dự kiến không được trống!', 'danger');
+            //     this.itemPlanCourse.focus();
         } else {
             this.state._id ? this.props.update(this.state._id, data, this.hide()) : this.props.create(data, this.hide());
         }
@@ -109,8 +109,8 @@ class PreStudenModal extends AdminModal {
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
-                <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
-                <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
+                <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' readOnly={readOnly} />
+                <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' readOnly={readOnly} />
                 <FormRichTextBox ref={e => this.itemResidence = e} className='col-md-12' label='Nơi cư trú' readOnly={readOnly} rows='2' />
                 <FormRichTextBox ref={e => this.itemRegularResidence = e} className='col-md-12' label='Nơi đăng ký hộ khẩu thường trú' readOnly={readOnly} rows='2' />
             </div>
@@ -146,6 +146,7 @@ class PreStudentPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Họ và Tên</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên hệ</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
@@ -155,8 +156,9 @@ class PreStudentPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    <TableCell type='text' content={<label>{permissionUser.read ? 
-                                                        <a href={`/user/member?user=${item.user && item.user._id}`}>{item.user && item.user.email}</a> : item.user && item.user.email}<br />{T.mobileDisplay(item.user && item.user.phoneNumber)}</label>} />
+                    <TableCell type='text' content={item.identityCard} />
+                    <TableCell type='text' content={<label>{permissionUser.read ?
+                        <a href={`/user/member?user=${item.user && item.user._id}`}>{item.user && item.user.email}</a> : item.user && item.user.email}<br />{T.mobileDisplay(item.user && item.user.phoneNumber)}</label>} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.courseType && item.courseType.title} />
                     <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />

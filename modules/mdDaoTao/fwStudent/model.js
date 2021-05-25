@@ -63,13 +63,13 @@ module.exports = (app) => {
             }
             model.find(condition)
                 .populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
-                .sort({ modifiedDate: -1, lastname: 1, firstname: 1 }).exec(done);
+                .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
         getPage: (pageNumber, pageSize, condition, sort, done) => model.countDocuments(condition, (error, totalItem) => {
             if (done == undefined) {
                 done = sort;
-                sort = { modifiedDate: -1, lastname: 1, firstname: 1 };
+                sort = { lastname: 1, firstname: 1 };
             }
             if (error) {
                 done(error);
@@ -156,8 +156,7 @@ module.exports = (app) => {
         },
 
         resetLesson: (_id, changes, done) => {
-            const modifiedDate = { modifiedDate: new Date() };
-            model.findOneAndUpdate({ _id }, { $unset: changes, $set: modifiedDate }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id }, { $unset: changes, $set: { modifiedDate: new Date() } }, { new: true }).exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

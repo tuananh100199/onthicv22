@@ -143,6 +143,10 @@ export class FormTabs extends React.Component {
 export class FormCheckbox extends React.Component {
     state = { checked: false };
 
+    componentDidMount() {
+        if (this.props.defaultValue != null) this.setState({ checked: this.props.defaultValue });
+    }
+
     value = (checked) => {
         if (checked != null) {
             this.setState({ checked });
@@ -151,7 +155,7 @@ export class FormCheckbox extends React.Component {
         }
     }
 
-    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }) || (this.props.onChange && this.props.onChange(!this.state.checked));
+    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }, () => this.props.onChange && this.props.onChange(!this.state.checked));
 
     render() {
         let { className, label, style, isSwitch = false, trueClassName = 'text-primary', falseClassName = 'text-secondary' } = this.props;
@@ -291,27 +295,27 @@ export class FormSelect extends React.Component {
             }, 50);
         });
     }
-    
+
     componentWillUnmount() {
         $(this.input).off('select2:select');
         $(this.input).off('select2:unselect');
         $(this.input).off('select2:open');
     }
-    
+
     focus = () => $(this.input).select2('open');
-    
+
     clear = () => $(this.input).val('').trigger('change') && $(this.input).html('');
-    
+
     value = function (value) {
         const dropdownParent = this.props.dropdownParent || $('.modal-body').has(this.input)[0] || $('.tile-body').has(this.input)[0];
         if (arguments.length) {
             this.clear();
             let hasInit = this.hasInit;
             if (!hasInit) this.hasInit = true;
-            
+
             const { data, label, placeholder, minimumResultsForSearch = 1, allowClear = false } = this.props,
                 options = { placeholder: placeholder || label, dropdownParent, minimumResultsForSearch, allowClear };
-            
+
             if (Array.isArray(data)) {
                 options.data = data;
                 $(this.input).select2(options).val(value).trigger('change');
@@ -324,7 +328,7 @@ export class FormSelect extends React.Component {
                         if (!Array.isArray(value)) {
                             value = [value];
                         }
-                        
+
                         const promiseList = value.map(item => {
                             return new Promise(resolve => {
                                 if (hasOwnProperty(item, 'id') && hasOwnProperty(item, 'text')) {
@@ -366,7 +370,7 @@ export class FormSelect extends React.Component {
                     $(this.input).val(null).trigger('change');
                 }
             }
-            
+
             // Set readOnly text
             if (!this.props.multiple) {
                 if (!data || !data.fetchOne) {
@@ -377,7 +381,7 @@ export class FormSelect extends React.Component {
             return $(this.input).val();
         }
     }
-    
+
     render = () => {
         const { className = '', style = {}, labelStyle = {}, label = '', multiple = false, readOnly = false, required = false } = this.props;
         return (
@@ -393,21 +397,21 @@ export class FormSelect extends React.Component {
 
 export class FormDatePicker extends React.Component {
     static defaultProps = { type: 'date' };
-    
+
     mask = {
         'time-mask': '39/19/2099 h9:59',
         'date-mask': '39/19/2099',
         'month-mask': '19/2099'
     };
-    
+
     format = {
         'time-mask': 'dd/mm/yyyy HH:MM',
         'date-mask': 'dd/mm/yyyy',
         'month-mask': 'mm/yyyy'
     };
-    
+
     state = { value: '', readOnlyText: '' };
-    
+
     value = function (date) {
         const type = this.props.type;
         if (arguments.length) {
@@ -430,7 +434,7 @@ export class FormDatePicker extends React.Component {
             }
         }
     }
-    
+
     focus = () => {
         const type = this.props.type;
         if (type.endsWith('-mask')) {
@@ -439,7 +443,7 @@ export class FormDatePicker extends React.Component {
             $(this.inputRef).focus();
         }
     }
-    
+
     handleChange = event => {
         const type = this.props.type;
         event.preventDefault && event.preventDefault();
@@ -447,7 +451,7 @@ export class FormDatePicker extends React.Component {
             this.props.onChange && this.props.onChange(this.value());
         });
     }
-    
+
     render() {
         let { label = '', type = 'date', className = '', readOnly = false, required = false } = this.props; // type = date || time || date-mask || time-mask || month-mask
         return (
@@ -455,12 +459,12 @@ export class FormDatePicker extends React.Component {
                 <label onClick={() => this.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <b>{this.state.readOnlyText}</b></> : ''}
                 {type.endsWith('-mask') ? (
                     <InputMask ref={e => this.input = e} className='form-control' mask={this.mask[type]} onChange={this.handleChange} style={{ display: readOnly ? 'none' : '' }}
-                               formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
-                               value={this.state.value} readOnly={readOnly} placeholder={label} />
+                        formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
+                        value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
                     <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                              inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                              value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                        value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
                 )}
             </div>);
     }
@@ -537,7 +541,7 @@ export class AdminModal extends React.Component {
     componentWillUnmount() {
         this.hide();
     }
-    
+
     onShown = (modalShown) => {
         $(this.modal).on('shown.bs.modal', () => modalShown());
     }

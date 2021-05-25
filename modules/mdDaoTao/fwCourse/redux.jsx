@@ -145,7 +145,7 @@ export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);
-                dispatch(getCourse(data.item._id));
+                dispatch({ type: CourseGetItem, item: data.item });
             }
         }, error => console.error('PUT: ' + url + '.', error));
     };
@@ -160,7 +160,7 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);
-                dispatch(getCourse(data.item._id));
+                dispatch({ type: CourseGetItem, item: data.item });
             }
         }, error => console.error('PUT: ' + url + '.', error));
     };
@@ -169,29 +169,29 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
 // Course representerGroups -------------------------------------------------------------------------------------------------------
 export function updateCourseRepresenterGroup(_courseId, _representerId, type, done) {
     return dispatch => {
-        const url = `/api/course/representer-group/representer/${_representerId}`;
-        T.put(url, { _courseId, type }, data => {
+        const url = `/api/course/representer-group/representer`;
+        T.put(url, { _courseId, _representerId, type }, data => {
             if (data.error) {
                 T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);
-                dispatch(getCourse(data.item._id));
+                dispatch({ type: CourseGetItem, item: data.item });
             }
         }, error => console.error('PUT: ' + url + '.', error));
     };
 }
 
-export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _studentId, type, done) {
+export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _studentIds, type, done) {
     return dispatch => {
-        const url = `/api/course/representer-group/student/${_studentId}`;
-        T.put(url, { _courseId, _representerId, type }, data => {
+        const url = `/api/course/representer-group/student`;
+        T.put(url, { _courseId, _representerId, _studentIds, type }, data => {
             if (data.error) {
                 T.notify('Gán học viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
                 done && done(data.item);
-                dispatch(getCourse(data.item._id));
+                dispatch({ type: CourseGetItem, item: data.item });
             }
         }, error => console.error('PUT: ' + url + '.', error));
     };

@@ -128,8 +128,7 @@ class AdminStudentView extends React.Component {
                         {preStudentList.length ?
                             <ul style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 450px)' }}>
                                 {preStudentList.map((item, index) =>
-                                    <li style={{ margin: 0, display: 'block' }} key={index} onMouseEnter={(e) => this.onHover(e, item, 'onHover')}
-                                        onMouseLeave={(e) => this.onHover(e, item, undefined)} >
+                                    <li style={{ margin: 0, display: 'block' }} key={index} onMouseEnter={(e) => this.onHover(e, item, 'onHover')} onMouseLeave={(e) => this.onHover(e, item, undefined)} >
                                         <FormCheckbox ref={e => this[item._id] = e} onChange={value => this.handleSelectOne(value, item)} style={{ display: 'inline-block' }} />
                                         <a href='#' onClick={e => _courseId && this.updateStudentCourse(e, JSON.parse(`{"${item._id}":{"isChecked":true}}`), { course: _courseId }, pageNumber, pageSize)} style={{ color: 'black' }}>
                                             {`${index + 1}. ${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
