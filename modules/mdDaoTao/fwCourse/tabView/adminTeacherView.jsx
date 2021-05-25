@@ -77,19 +77,19 @@ class AdminTeacherView extends React.Component {
         this.props.updateCourseTeacherGroupStudent(_id, teacher._id, student._id, 'remove');
     }
 
-    handleSelectAll = selected => {
+    selectOneStudent = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId].value()).length > 0 });
+    selectManyStudents = selected => {
         this.itemSelectAll.value(true);
         this.itemDeSelectAll.value(false);
         Object.keys(this.students).forEach(_id => this.students[_id].value(selected));
         this.setState({ assignedButtonVisible: selected });
     }
 
-    changeAssignedButtonVisible = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId].value()).length > 0 });
-
     showAssignedModal = (e, course, student) => {
         e.preventDefault();
         student && this.students[student._id].value(true);
         const _studentIds = Object.keys(this.students).filter(_studentId => this.students[_studentId].value());
+        student && !_studentIds.includes(student._id) && _studentIds.push(student._id);
         _studentIds.length && this.modal.show({ course, _studentIds });
     }
 
@@ -105,7 +105,7 @@ class AdminTeacherView extends React.Component {
                 studentList.push(
                     <li style={{ margin: 0, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
-                            <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={this.changeAssignedButtonVisible}
+                            <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOneStudent}
                                 label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division && student.division.title} ${student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
                             <div className='buttons'>
                                 <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
@@ -120,12 +120,12 @@ class AdminTeacherView extends React.Component {
         return (
             <div className='row'>
                 <div className='col-md-6' >
-                    <h3 className='tile-title'>Học viên chưa gán Cố vấn học tập</h3>
+                    <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
                         <div style={{ width: '100%', display: studentList.length ? 'block' : 'none' }}>
-                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.handleSelectAll(true)} style={{ display: 'inline-block' }} defaultValue={true} />
-                            <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.handleSelectAll(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                            <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
                             <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
                                 Gán Cố vấn học tập <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
                             </a>
@@ -136,7 +136,7 @@ class AdminTeacherView extends React.Component {
                 </div>
 
                 <div className='col-md-6'>
-                    <h3 className='tile-title'>Danh sách Cố vấn học tập</h3>
+                    <h3 className='tile-title'>Cố vấn học tập</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <label>Tìm kiếm cố vấn học tập</label>
                         <div style={{ display: permissionTeacherWrite ? 'flex' : 'none' }}>

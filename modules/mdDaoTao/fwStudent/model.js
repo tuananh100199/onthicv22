@@ -108,50 +108,26 @@ module.exports = (app) => {
         update: (_id, changes, done) => {
             if (changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
+                    console.log('changes.course', changes.course, item);
                     if (error) {
                         done(error);
-                    } else {
+                    } else if (item) {
                         changes.tienDoHocTap = {};
                         changes.diemBoDeThi = {};
-                        item.subjects.forEach(subject => {
-                            {
-                                const obj = {};
-                                obj[subject._id] = {};
-                                Object.assign(changes.tienDoHocTap, obj);
-                            }
+                        item.subjects && item.subjects.forEach(subject => {
+                            const obj = {};
+                            obj[subject._id] = {};
+                            Object.assign(changes.tienDoHocTap, obj);
                         });
                         changes.modifiedDate = new Date();
                         model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+                    } else {
+                        done();
                     }
                 });
             } else {
                 changes.modifiedDate = new Date();
                 model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
-            }
-        },
-
-        updateMany: (_ids, changes, done) => {
-            if (changes.course) {
-                app.model.course.get(changes.course, (error, item) => {
-                    if (error) {
-                        done(error);
-                    } else {
-                        changes.tienDoHocTap = {};
-                        changes.diemBoDeThi = {};
-                        item.subjects.forEach(subject => {
-                            {
-                                const obj = {};
-                                obj[subject._id] = {};
-                                Object.assign(changes.tienDoHocTap, obj);
-                            }
-                        });
-                        changes.modifiedDate = new Date();
-                        model.updateMany({ _id: { $in: _ids } }, { $set: changes }).exec(done);
-                    }
-                });
-            } else {
-                changes.modifiedDate = new Date();
-                model.updateMany({ _id: { $in: _ids } }, { $set: changes }).exec(done);
             }
         },
 

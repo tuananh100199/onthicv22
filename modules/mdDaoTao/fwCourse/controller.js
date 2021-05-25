@@ -243,7 +243,58 @@ module.exports = (app) => {
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
         app.model.course.delete(req.body._id, (error) => res.send({ error }));
     });
-    // TeacherGroups APIs -----------------------------------------------------------------------------------------------------
+
+    // Students APIs --------------------------------------------------------------------------------------------------
+    app.put('/api/course/student', app.permission.check('course:read'), (req, res) => {
+        const { _courseId, _studentIds, type } = req.body,
+            sessionUser = req.session.user;
+        new Promise((resolve, reject) => {
+            app.model.course.get(_courseId, (error, course) => {
+                if (error || course == null) {
+                    reject('Khoá học không hợp lệ!');
+                } else if (sessionUser.permissions.includes('course:write') || (sessionUser.isCourseAdmin && course.admins.find(admin => admin._id == sessionUser._id))) {
+                    if (type == 'add') {
+                        const solve = (index = 0) => index < _studentIds.length ?
+                            app.model.student.update(_studentIds[index], { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1)) :
+                            resolve();
+                        solve();
+                    } else if (type == 'remove') {
+                        const solve = (index = 0) => {
+                            if (index < _studentIds.length) {
+                                console.log('solve', index);
+                                app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
+                                    if (error) {
+                                        reject('Lỗi khi cập nhật khoá học!');
+                                    } else if (student) {
+                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id && group.student.splice(index, 1)));
+                                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id && group.student.splice(index, 1)));
+                                        student.course = null;
+                                        student.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1));
+                                    } else {
+                                        solve(index + 1);
+                                    }
+                                });
+                            } else {
+                                console.log('course.representerGroups', 'end', course.representerGroups.length);
+                                course.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
+                            }
+                        }
+                        solve();
+                    } else {
+                        reject('Dữ liệu không hợp lệ!');
+                    }
+                } else {
+                    reject('Khoá học không được phép truy cập!');
+                }
+            });
+        }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { students: item.students } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    // TeacherGroups APIs ---------------------------------------------------------------------------------------------
     app.put('/api/course/teacher-group/teacher/:_teacherId', app.permission.check('course:write'), (req, res) => {
         const { _courseId, type } = req.body,
             _teacherId = req.params._teacherId;
@@ -251,6 +302,8 @@ module.exports = (app) => {
             app.model.course.addTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
         } else if (type == 'remove') {
             app.model.course.removeTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
+        } else {
+            res.send({ error: 'Dữ liệu không hợp lệ!' });
         }
     });
 
@@ -261,10 +314,12 @@ module.exports = (app) => {
             app.model.course.addStudentToTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
         } else if (type == 'remove') {
             app.model.course.removeStudentFromTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
+        } else {
+            res.send({ error: 'Dữ liệu không hợp lệ!' });
         }
     });
 
-    // RepresenterGroups APIs -----------------------------------------------------------------------------------------------------
+    // RepresenterGroups APIs -----------------------------------------------------------------------------------------
     app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
         const { _courseId, _representerId, type } = req.body;
         new Promise((resolve, reject) => {
@@ -314,7 +369,7 @@ module.exports = (app) => {
     });
 
     // Get courses by user
-    app.get('/api/user-course', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/user-course', app.permission.check('course:read'), (req, res) => { //TODO: Cần sửa lại route
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             res.send({ error, students });
@@ -322,7 +377,7 @@ module.exports = (app) => {
     });
 
     // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    app.get('/api/course-active/student', app.permission.check('user:login'), (req, res) => { 
+    app.get('/api/course-active/student', app.permission.check('user:login'), (req, res) => { //TODO: Cần sửa lại route
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {

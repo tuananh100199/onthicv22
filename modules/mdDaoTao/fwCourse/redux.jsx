@@ -135,7 +135,23 @@ export function exportSubject() {
     T.download(T.url('/api/course/export/subject'));
 }
 
-// Course teacherGroups -------------------------------------------------------------------------------------------------------
+// Course students ----------------------------------------------------------------------------------------------------
+export function updateCourseStudents(_courseId, _studentIds, type, done) {
+    return dispatch => {
+        const url = `/api/course/student`;
+        T.put(url, { _courseId, _studentIds, type }, data => {
+            if (data.error) {
+                T.notify('Gán học viên bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+            } else {
+                done && done(data.item);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error('PUT: ' + url + '.', error));
+    };
+}
+
+// Course teacherGroups -----------------------------------------------------------------------------------------------
 export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
     return dispatch => {
         const url = `/api/course/teacher-group/teacher/${_teacherId}`;
@@ -166,7 +182,7 @@ export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentI
     };
 }
 
-// Course representerGroups -------------------------------------------------------------------------------------------------------
+// Course representerGroups -------------------------------------------------------------------------------------------
 export function updateCourseRepresenterGroup(_courseId, _representerId, type, done) {
     return dispatch => {
         const url = `/api/course/representer-group/representer`;
