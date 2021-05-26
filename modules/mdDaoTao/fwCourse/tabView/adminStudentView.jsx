@@ -69,24 +69,21 @@ class AdminStudentView extends React.Component {
         const { _id: _courseId, students } = this.props.course && this.props.course.item ? this.props.course.item : {};
         const studentList = [];
 
-        (students || []).forEach((student, index) => {
-            if ((searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText))) {
-                studentList.push(
-                    <li style={{ margin: 10, display: 'block' }} key={index}>
-                        <div style={{ display: 'inline-flex' }}>
-                            <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
-                                {studentList.length + 1}. {student.lastname} {student.firstname}
+        (students || []).forEach((student, index) =>
+            (searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) && studentList.push(
+                <li style={{ margin: 10, display: 'block' }} key={index}>
+                    <div style={{ display: 'inline-flex' }}>
+                        <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
+                            {studentList.length + 1}. {student.lastname} {student.firstname}
                                 ({student.identityCard}) - {student.division && student.division.title} {student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}
+                        </a>
+                        <div className='buttons'>
+                            <a href='#' onClick={e => this.removeCourseStudent(e, student)}>
+                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
                             </a>
-                            <div className='buttons'>
-                                <a href='#' onClick={e => this.removeCourseStudent(e, student)}>
-                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
-                                </a>
-                            </div>
                         </div>
-                    </li>);
-            }
-        });
+                    </div>
+                </li>));
 
         return (
             <div className='row'>
@@ -140,8 +137,8 @@ class AdminStudentView extends React.Component {
                         {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
                 </div>
-            </div>
-        );
+                {/* <CirclePageButton type='export' onClick={TODO} /> */}
+            </div>);
     }
 }
 

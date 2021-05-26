@@ -196,8 +196,7 @@ class AdminRepresentersView extends React.Component {
                     </div>
                 </div>
                 {/* <CirclePageButton type='export' onClick={TODO} /> */}
-            </div>
-        );
+            </div>);
     }
 }
 

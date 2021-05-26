@@ -95,16 +95,10 @@ class AdminTeacherView extends React.Component {
             }, () => done && done());
         }
     }
-    // selectManyStudents = selected => { //TODO: delete
-    //     this.itemSelectAll.value(true);
-    //     this.itemDeSelectAll.value(false);
-    //     Object.keys(this.students).forEach(_id => this.students[_id] && this.students[_id].value(selected));
-    //     this.setState({ assignedButtonVisible: selected });
-    // }
 
     showAssignedModal = (e, course, student) => {
         e.preventDefault();
-        new Promise((resolve, reject) => {
+        new Promise(resolve => {
             if (student) {
                 this.students[student._id].value(true);
                 this.selectOneStudent(student, true, resolve);
@@ -187,9 +181,6 @@ class AdminTeacherView extends React.Component {
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
                         <div style={{ width: '100%', display: studentList.length ? 'block' : 'none' }}>
-                            {/* <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} /> */}
-                            {/* <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} /> */}
-
                             <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
                                 Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
                             </a>
@@ -244,8 +235,7 @@ class AdminTeacherView extends React.Component {
                     </div>
                 </div>
                 {/* <CirclePageButton type='export' onClick={TODO} /> */}
-            </div>
-        );
+            </div>);
     }
 }
 
