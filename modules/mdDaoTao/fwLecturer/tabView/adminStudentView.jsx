@@ -7,27 +7,10 @@ class AdminStudentView extends AdminPage {
     state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', sortType: 'name', assignedButtonVisible: false }; // sortType = name | division
     preStudents = {};
     componentDidMount() {
-        // this.onSearch({}, { division: 0 });
         this.props.getStudentByLecturer(this.props.courseId, data => {
             this.setState({ listStudent: data.item });
         });
     }
-
-    // onSearch = ({ pageNumber, pageSize, searchText, searchPlanCourse }, sort, done) => {
-    //     if (searchText == undefined) searchText = this.state.searchPreStudentText;
-    //     if (searchPlanCourse == undefined) searchPlanCourse = this.state.searchPreStudentCourse;
-    //     if (sort == undefined) sort = { lastname: 1, firstname: 1 };
-    //     if (sort.division == undefined) sort.division = this.state.sortType == 'division' ? 1 : 0;
-    //     this.props.getPreStudentPage(pageNumber, pageSize, { searchText, searchPlanCourse, courseType: this.props.courseType && this.props.courseType._id }, sort, () => {
-    //         this.setState({
-    //             searchPreStudentText: searchText,
-    //             searchPreStudentPlanCourse: searchPlanCourse,
-    //             sortType: sort.division ? 'division' : 'name',
-    //             assignedButtonVisible: false,
-    //         });
-    //         done && done();
-    //     });
-    // }
 
     render() {
         const data = this.state.listStudent ? this.state.listStudent : [];
