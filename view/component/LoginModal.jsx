@@ -53,9 +53,9 @@ export default class LoginModal extends React.Component {
                             <div className='d-flex justify-content-center'>
                                 <button className='btn btn-success' type='submit' onClick={this.onLogin}>Đăng nhập</button>
                             </div>
-                            <div className='text-center p-t-12'>
+                            {/* <div className='text-center p-t-12'>
                                 <a className='text-secondary' href='#' onClick={this.onForgotPasswordClick} >Quên mật khẩu</a>
-                            </div>
+                            </div> */}
 
 
                         </div>

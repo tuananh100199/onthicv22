@@ -110,7 +110,7 @@ export function createUser(user, done) {
         const url = '/api/user';
         T.post(url, { user }, data => {
             if (data.error) {
-                T.notify('Tạo người dùng bị lỗi!', 'danger');
+                T.notify(data.error, 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 T.notify('Tạo người dùng thành công!', 'success');
@@ -126,7 +126,7 @@ export function updateUser(_id, changes, done) {
         const url = '/api/user';
         T.put(url, { _id, changes }, data => {
             if (data.error || data.user == null) {
-                T.notify('Cập nhật thông tin người dùng bị lỗi!', 'danger');
+                T.notify(data.error, 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
