@@ -4,7 +4,6 @@ import { updateCourseStudents } from '../redux';
 import { getPreStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
-import AdminInfoModal from '../adminInfoModal';
 
 class AdminStudentView extends React.Component {
     state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', sortType: 'name', assignedButtonVisible: false }; // sortType = name | division
@@ -60,8 +59,7 @@ class AdminStudentView extends React.Component {
 
     showStudentInfo = (e, student) => {
         e.preventDefault();
-        this.modal.show(student);
-        // alert('TODO: ' + JSON.stringify(student));
+        alert('TODO: ' + JSON.stringify(student));
     }
 
     render() {
@@ -143,7 +141,6 @@ class AdminStudentView extends React.Component {
                     </div>
                 </div>
                 <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Học viên: họ, tên, cmnd, sdt, email, cơ sở, loại khoá học, khoá học. Lưu ý: AdminCourse mà division.isOutside không hiện nút này => kiểm tra cả controller!')} />
-                <AdminInfoModal ref={e => this.modal = e} permission={this.props.permissionCourse}/>
             </div>);
     }
 }
