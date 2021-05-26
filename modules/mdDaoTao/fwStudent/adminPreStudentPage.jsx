@@ -102,7 +102,7 @@ class PreStudenModal extends AdminModal {
                     onSuccess={this.onUploadSuccess} />
 
                 <FormTextBox type='phone' ref={e => this.itemPhoneNumber = e} className='col-md-4' label='Số điện thoại' />
-                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} />
+                <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-4' label='Ngày sinh' readOnly={readOnly} type='date-mask' />
                 <FormSelect ref={e => this.itemSex = e} className='col-md-4' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemCourseType = e} label='Hạng đăng ký' data={ajaxSelectCourseType} readOnly={readOnly} />
                 <FormSelect className='col-md-6' ref={e => this.itemDivision = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} />
@@ -142,17 +142,17 @@ class PreStudentPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }}>Họ và Tên</th>
+                    <th style={{ width: '50%' }}>Họ và Tên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>CMND/CCCD</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thông tin liên hệ</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hạng đăng ký</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
+                    <th style={{ width: '50%' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
+                    <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={item.identityCard} />
                     <TableCell type='text' content={<label>{permissionUser.read ?
                         <a href={`/user/member?user=${item.user && item.user._id}`}>{item.user && item.user.email}</a> : item.user && item.user.email}<br />{T.mobileDisplay(item.user && item.user.phoneNumber)}</label>} />
