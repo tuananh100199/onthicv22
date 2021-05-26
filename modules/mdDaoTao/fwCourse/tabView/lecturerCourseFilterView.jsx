@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLecturerCoursePage, updateCourse, deleteCourse } from '../../fwCourse/redux';
+import { getLecturerCoursePage } from '../../fwCourse/redux';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
@@ -14,13 +14,6 @@ class CoursePageFilter extends AdminPage {
         });
 
     }
-
-    changeActive = (item, active) => this.props.updateCourse(item._id, { active, courseType: item.courseType }, () => {
-        this.props.getCoursePage(this.state.courseType, undefined, undefined, {});
-    });
-
-    delete = (e, item) => e.preventDefault() || T.confirm('Khóa học', 'Bạn có chắc bạn muốn xóa khóa học này?', 'warning', true, isConfirm =>
-        isConfirm && this.props.deleteCourse(item));
 
     render() {
         const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.course && this.props.course[this.state.courseType] ?
@@ -58,5 +51,5 @@ class CoursePageFilter extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { updateCourse, deleteCourse, getLecturerCoursePage };
+const mapActionsToProps = { getLecturerCoursePage };
 export default connect(mapStateToProps, mapActionsToProps)(CoursePageFilter);

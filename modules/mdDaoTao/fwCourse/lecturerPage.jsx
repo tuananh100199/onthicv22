@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse, updateCourse } from '../fwCourse/redux';
+import { getCourse } from '../fwCourse/redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton } from 'view/component/AdminPage';
-import AdminSubjectView from './tabView/adminSubjectView';
-import AdminStudentView from './tabView/adminStudentView';
+import LecturerSubjectView from './tabView/lecturerSubjectView';
+import LecturerStudentView from './tabView/lecturerStudentView';
 
 const previousRoute = '/user/lecturer';
 class EditCoursePage extends AdminPage {
@@ -48,26 +48,6 @@ class EditCoursePage extends AdminPage {
         });
     }
 
-    saveInfo = () => {
-        const changes = {
-            name: this.name.value().trim(),
-            maxStudent: this.maxStudent.value(),
-            courseType: this.courseType.value(),
-            courseFee: this.courseFee.value(),
-            shortDescription: this.shortDescription.value(),
-            detailDescription: this.detailDescription.html(),
-            courseFees: this.state.courseFees,
-        };
-        if (changes.courseFee == null) changes.courseFee = 0;
-
-        if (changes.name == '') {
-            T.notify('Tên khóa học trống!', 'danger');
-            this.name.focus();
-        } else {
-            this.props.updateCourse(this.state._id, changes);
-        }
-    }
-
     render() {
         const permissionCourse = this.getUserPermission('course'),
             permissionUser = this.getUserPermission('user'),
@@ -99,8 +79,8 @@ class EditCoursePage extends AdminPage {
 
         const tabs = [
             { title: 'Thông tin chung', component: tabInfo },
-            { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
-            { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={this.props.course._id} /> : null },
+            { title: 'Môn học', component: <LecturerSubjectView permission={permissionCourse} /> },
+            { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={this.props.course._id} /> : null },
         ];
 
         return this.renderPage({
@@ -114,5 +94,5 @@ class EditCoursePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, updateCourse };
+const mapActionsToProps = { getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(EditCoursePage);
