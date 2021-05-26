@@ -134,12 +134,12 @@ module.exports = (app) => {
                 model.findOneAndUpdate({ _id }, { $set, $unset }, { new: true }).populate('roles').exec(done);
             };
 
-            if ($set.email) {
-                model.findOne({ email: $set.email }, (error, user) => {
+            if ($set.identityCard) {
+                model.findOne({ identityCard: $set.identityCard }, (error, user) => {
                     if (error) {
                         done('Có lỗi xảy ra khi thay đổi mật khẩu!');
                     } else if (user && user._id != _id) {
-                        done('Email của bạn đã được sử dụng!');
+                        done('CMND/CCCD của bạn đã được sử dụng');
                     } else {
                         updateProfile();
                     }
