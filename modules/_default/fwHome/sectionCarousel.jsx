@@ -31,8 +31,7 @@ class SectionCarousel extends React.Component {
             //const logo_id = 'logo_carousel_' + this.props.viewId;
             this.props.homeGetCarousel(this.props.viewId, carousel => {
                 this.setState(carousel, () => {
-                    let singleCarousel = $('#' + single_id);
-                    // let singleCarousel = $('#' + single_id) = $('#' + logo_id); TODO: Nguyên mẫu
+                    let singleCarousel = $('#' + single_id); // let singleCarousel = $('#' + single_id) = $('#' + logo_id);
                     const getRandomAnimationEntrance = () => inComing[Math.floor(Math.random() * inComing.length)];
                     const getRandomAnimationExit = () => outGoing[Math.floor(Math.random() * outGoing.length)];
                     this.handleResize();

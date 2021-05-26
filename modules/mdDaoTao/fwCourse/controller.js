@@ -291,28 +291,39 @@ module.exports = (app) => {
     });
 
     // TeacherGroups APIs ---------------------------------------------------------------------------------------------
-    app.put('/api/course/teacher-group/teacher/:_teacherId', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, type } = req.body,
-            _teacherId = req.params._teacherId;
-        if (type == 'add') {
-            app.model.course.addTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
-        } else if (type == 'remove') {
-            app.model.course.removeTeacherGroup(_courseId, _teacherId, (error, item) => res.send({ error, item }));
-        } else {
-            res.send({ error: 'Dữ liệu không hợp lệ!' });
-        }
+    app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _teacherId, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add') {
+                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+            } else if (type == 'remove') {
+                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { teacherGroups: item.teacherGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
     });
 
-    app.put('/api/course/teacher-group/student/:_studentId', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _teacherId, type } = req.body,
-            _studentId = req.params._studentId;
-        if (type == 'add') {
-            app.model.course.addStudentToTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
-        } else if (type == 'remove') {
-            app.model.course.removeStudentFromTeacherGroup(_courseId, _teacherId, _studentId, (error, item) => res.send({ error, item }));
-        } else {
-            res.send({ error: 'Dữ liệu không hợp lệ!' });
-        }
+    app.put('/api/course/teacher-group/student', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _teacherId, _studentIds, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add' || type == 'remove') {
+                const changeGroup = type == 'add' ? app.model.course.addStudentToTeacherGroup : app.model.course.removeStudentFromTeacherGroup;
+                const solve = (index = 0) => (index < _studentIds.length) ?
+                    changeGroup(_courseId, _teacherId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
+                solve();
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { teacherGroups: item.teacherGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
     });
 
     // RepresenterGroups APIs -----------------------------------------------------------------------------------------

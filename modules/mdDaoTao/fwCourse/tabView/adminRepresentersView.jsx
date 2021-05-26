@@ -36,7 +36,7 @@ class RepresenterModal extends AdminModal {
     render = () => {
         const { representers } = this.state;
         return this.renderModal({
-            title: 'Gán giáo viên',
+            title: 'Gán Giáo viên',
             body: representers && representers.length ?
                 <ol style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                     {representers.map((representer, index) =>
@@ -166,7 +166,7 @@ class AdminRepresentersView extends React.Component {
                                 {representerGroups.map((item, index) => item.representer ?
                                     <li className='text-primary' style={{ margin: 10 }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
-                                            {`${item.representer.lastname} ${item.representer.firstname}`} - {item.representer.division && item.representer.division.title}
+                                            {item.representer.lastname} {item.representer.firstname} - {item.representer.division && item.representer.division.title}
                                             {item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => _id && this.removeRepresenter(e, item.representer)}>
@@ -196,8 +196,7 @@ class AdminRepresentersView extends React.Component {
                     </div>
                 </div>
                 {/* <CirclePageButton type='export' onClick={TODO} /> */}
-            </div>
-        );
+            </div>);
     }
 }
 
