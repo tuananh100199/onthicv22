@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
-import { FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
+import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
@@ -234,7 +234,7 @@ class AdminTeacherView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
                 </div>
-                {/* <CirclePageButton type='export' onClick={TODO} /> */}
+                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} />
             </div>);
     }
 }
