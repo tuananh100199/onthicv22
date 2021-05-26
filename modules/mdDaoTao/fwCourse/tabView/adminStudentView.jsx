@@ -4,6 +4,8 @@ import { updateCourseStudents } from '../redux';
 import { getPreStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import AdminInfoModal from '../adminInfoModal';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
 class AdminStudentView extends React.Component {
     state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', sortType: 'name', assignedButtonVisible: false }; // sortType = name | division
@@ -59,7 +61,20 @@ class AdminStudentView extends React.Component {
 
     showStudentInfo = (e, student) => {
         e.preventDefault();
-        alert('TODO: ' + JSON.stringify(student));
+        const courseId = student.course && student.course._id;
+        this.setState({courseId: courseId});
+        this.modal.show(student);
+    }
+
+    updateStudent = (studentId, changes) => {
+        this.props.updateStudent(studentId, changes, ()  => {
+            this.props.updateCourseStudents(this.state.courseId, [studentId], 'update', () => {
+                // $(this.modal).modal('hide');
+                this.onSearch({});
+            });
+        });
+        this.onHide && this.onHide();
+        $(this.modal).modal('hide');
     }
 
     render() {
@@ -141,10 +156,11 @@ class AdminStudentView extends React.Component {
                     </div>
                 </div>
                 <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Học viên: họ, tên, cmnd, sdt, email, cơ sở, loại khoá học, khoá học. Lưu ý: AdminCourse mà division.isOutside không hiện nút này => kiểm tra cả controller!')} />
+                <AdminInfoModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { updateCourseStudents, getPreStudentPage };
+const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);

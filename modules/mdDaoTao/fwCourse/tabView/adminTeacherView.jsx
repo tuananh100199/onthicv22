@@ -116,8 +116,6 @@ class AdminTeacherView extends React.Component {
                         _studentIds.push(_studentId);
                     }
                 });
-                console.log('_studentIds', _studentIds);
-
                 student && !_studentIds.includes(student._id) && _studentIds.push(student._id);
                 _studentIds.length && this.modal.show({ course, _divisionId, _studentIds });
             }

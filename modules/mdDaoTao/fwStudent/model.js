@@ -62,7 +62,7 @@ module.exports = (app) => {
                 condition = {};
             }
             model.find(condition)
-                .populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
+                .populate('user', 'email phoneNumber').populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
                 .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
@@ -110,7 +110,6 @@ module.exports = (app) => {
         update: (_id, changes, done) => {
             if (changes.course) {
                 app.model.course.get(changes.course, (error, item) => {
-                    console.log('changes.course', changes.course, item);
                     if (error) {
                         done(error);
                     } else if (item) {
@@ -168,24 +167,6 @@ module.exports = (app) => {
                     const obj = { answers: data.answers };
                     Object.assign(student.tienDoHocTap[data.subjectId], obj);
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
-                }
-            });
-        },
-
-        addDriveTestScore: (studentId, driveTestId, trueAnswers, answers, importanceScore, score, done) => {
-            app.model.student.get(studentId, (error, student) => {
-                if (error) {
-                    done(error);
-                } else {
-                    const obj = {};
-                    obj[driveTestId] = {
-                        score: score,
-                        importanceScore: importanceScore,
-                        trueAnswers: trueAnswers,
-                        answers: answers
-                    };
-                    Object.assign(student.diemBoDeThi, obj);
-                    model.findOneAndUpdate({ _id: studentId }, { diemBoDeThi: student.diemBoDeThi }, { new: true }).exec(done);
                 }
             });
         },

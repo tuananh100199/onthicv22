@@ -73,6 +73,7 @@ export function updateStudent(_id, changes, done) {
                 T.notify('Cập nhật thông tin học viên bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
+                T.notify('Cập nhật thông tin học viên thành công!', 'success');
                 dispatch(getStudentPage());
             }
             done && done(data.error);

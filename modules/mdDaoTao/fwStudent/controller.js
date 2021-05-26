@@ -263,6 +263,19 @@ module.exports = (app) => {
     app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
         app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
 
+    // // Hook upload images identityCardImage1 ---------------------------------------------------------------------------------------------
+    // app.createFolder(app.path.join(app.publicPath, '/img/student/identityCardImage1'));
+
+    // const uploadStudentImage = (fields, files, done) => {
+    //     if (fields.userData && fields.userData[0].startsWith('student:') && files.StudentImage && files.StudentImage.length > 0) {
+    //         console.log('Hook: uploadStudent => student image upload');
+    //         const _id = fields.userData[0].substring('student:'.length);
+    //         app.uploadImage('student', app.model.student.get, _id, files.StudentImage[0].path, done);
+    //     }
+    // };
+    // app.uploadHooks.add('uploadStudent', (req, fields, files, params, done) =>
+    //     app.permission.has(req, () => uploadStudentImage(fields, files, done), done, 'student:write'));
+
     // Hook upload images pre-student ---------------------------------------------------------------------------------------------
     app.createFolder(app.path.join(app.publicPath, '/img/pre-student'));
     const uploadPreStudentImage = (fields, files, done) => {
