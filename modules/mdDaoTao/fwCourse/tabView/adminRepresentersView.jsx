@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
-
+import AdminStudentModal from '../adminStudentModal';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 class RepresenterModal extends AdminModal {
     state = { representers: [] };
     onShow = ({ course, _studentIds }) => {
@@ -70,7 +71,17 @@ class AdminRepresentersView extends React.Component {
 
     showStudentInfo = (e, student) => {
         e.preventDefault();
-        alert('TODO: ' + JSON.stringify(student));
+        const courseId = student.course && student.course._id;
+        this.setState({courseId: courseId});
+        this.studentModal.show(student);
+    }
+
+    updateStudent = (studentId, changes) => {
+        this.props.updateStudent(studentId, changes, ()  => {
+            this.props.updateCourseStudents(this.state.courseId, [studentId], 'update', () => {
+                this.onSearch({});
+            });
+        });
     }
 
     selectOneStudent = () => this.setState({ assignedButtonVisible: Object.keys(this.students).filter(_studentId => this.students[_studentId] && this.students[_studentId].value()).length > 0 });
@@ -196,10 +207,11 @@ class AdminRepresentersView extends React.Component {
                     </div>
                 </div>
                 <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Giáo viên + Học viên')} />
+                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent };
+const mapActionsToProps = { updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminRepresentersView);

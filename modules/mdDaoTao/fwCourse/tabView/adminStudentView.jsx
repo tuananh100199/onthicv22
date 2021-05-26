@@ -4,7 +4,7 @@ import { updateCourseStudents } from '../redux';
 import { getPreStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
-import AdminInfoModal from '../adminInfoModal';
+import AdminStudentModal from '../adminStudentModal';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
 class AdminStudentView extends React.Component {
@@ -69,12 +69,9 @@ class AdminStudentView extends React.Component {
     updateStudent = (studentId, changes) => {
         this.props.updateStudent(studentId, changes, ()  => {
             this.props.updateCourseStudents(this.state.courseId, [studentId], 'update', () => {
-                // $(this.modal).modal('hide');
                 this.onSearch({});
             });
         });
-        this.onHide && this.onHide();
-        $(this.modal).modal('hide');
     }
 
     render() {
@@ -156,7 +153,7 @@ class AdminStudentView extends React.Component {
                     </div>
                 </div>
                 <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Học viên: họ, tên, cmnd, sdt, email, cơ sở, loại khoá học, khoá học. Lưu ý: AdminCourse mà division.isOutside không hiện nút này => kiểm tra cả controller!')} />
-                <AdminInfoModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
+                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
