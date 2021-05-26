@@ -77,7 +77,7 @@ class AdminStudentView extends React.Component {
                     <li style={{ margin: 10, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
                             <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
-                                {studentList.length + 1}. {student.lastname} {student.firstname}
+                                {studentList.length + 1}. {student.lastname} {student.firstname}&nbsp;
                                 ({student.identityCard}) - {student.division && student.division.title} {student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}
                             </a>
                             <div className='buttons'>

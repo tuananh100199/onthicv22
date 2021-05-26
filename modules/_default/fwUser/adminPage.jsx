@@ -22,7 +22,7 @@ class UserModal extends AdminModal {
     }
 
     onShow = (item) => {
-        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '' , division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
+        if (item == null) item = { _id: null, firstname: '', lastname: '', email: '', phoneNumber: '', sex: 'male', birthday: null, identityCard: '', division: null, roles: [], active: true, isCourseAdmin: false, isLecturer: false, isStaff: false };
         this.itemFirstname.value(item.firstname || '');
         this.itemLastname.value(item.lastname || '');
         this.itemBirthday.value(item.birthday || '');
@@ -61,7 +61,7 @@ class UserModal extends AdminModal {
             division: this.itemDivision.value(),
             active: this.itemActive.value(),
         };
-        
+
         if (changes.lastname == '') {
             T.notify('Họ người dùng bị trống!', 'danger');
             this.itemLastname.focus();
@@ -83,8 +83,12 @@ class UserModal extends AdminModal {
         } else {
             if (changes.roles.length == 0) changes.roles = 'empty';
             this.state._id ?
-                this.props.update(this.state._id, changes, this.hide) :
-                this.props.create(changes, this.hide);
+                this.props.update(this.state._id, changes, data => {
+                    !data.error && this.hide;
+                }) :
+                this.props.create(changes, data => {
+                    !data.error && this.hide;
+                });
         }
     }
 
@@ -113,19 +117,19 @@ class UserModal extends AdminModal {
                             <FormTextBox className='col-md-8' ref={e => this.itemLastname = e} label='Họ & tên đệm' readOnly={readOnly} required />
                             <FormTextBox className='col-md-4' ref={e => this.itemFirstname = e} label='Tên' readOnly={readOnly} required />
                         </div>
-                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email'/>
+                        <FormTextBox ref={e => this.itemEmail = e} label='Email' readOnly={readOnly} type='email' />
                     </div>
                     <FormImageBox ref={e => this.imageBox = e} className='col-md-4' style={{ display: this.state._id ? 'block' : 'none' }} label='Hình đại diện' uploadType='UserImage' image={this.state.image} readOnly={readOnly}
                         onSuccess={this.onUploadSuccess} />
-                    <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-6' label='CMND/CCCD' readOnly={readOnly}  required />
+                    <FormTextBox ref={e => this.itemIdentityCard = e} className='col-md-6' label='CMND/CCCD' readOnly={readOnly} required />
                     <FormTextBox ref={e => this.itemPhoneNumber = e} className='col-md-6' label='Số điện thoại' readOnly={readOnly} required />
-                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-6' label='Ngày sinh' readOnly={readOnly} required />
+                    <FormDatePicker ref={e => this.itemBirthday = e} className='col-md-6' label='Ngày sinh (dd/mm/yyyy)' readOnly={readOnly} required type='date-mask' />
                     <FormSelect ref={e => this.itemSex = e} className='col-md-6' label='Giới tính' data={[{ id: 'female', text: 'Nữ' }, { id: 'male', text: 'Nam' }]} readOnly={readOnly} />
 
                     <FormCheckbox ref={e => this.itemIsCourseAdmin = e} isSwitch={true} className='col-md-4' label='Quản trị viên khóa học' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsStaff = e} isSwitch={true} className='col-md-2' label='Nhân viên' readOnly={readOnly} />
                     <FormCheckbox ref={e => this.itemIsLecturer = e} isSwitch={true} className='col-md-4' label='Cố vấn học tập' readOnly={readOnly} />
-                    <FormCheckbox ref={e => this.itemIsRepresenter = e}  isSwitch={true} className='col-md-2' label='Giáo viên' readOnly={readOnly} />
+                    <FormCheckbox ref={e => this.itemIsRepresenter = e} isSwitch={true} className='col-md-2' label='Giáo viên' readOnly={readOnly} />
 
                     <FormSelect ref={e => this.itemRoles = e} className='col-md-12' label='Vai trò' data={this.state.allRoles} multiple={true} readOnly={readOnly} />
                     <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={readOnly} required />
@@ -173,11 +177,11 @@ class UserPasswordModal extends AdminModal {
 }
 
 class UserPage extends AdminPage {
-    state = { isSearching: false, searchText: '', userType: 'all', dateStart: '', dateEnd: ''};
+    state = { isSearching: false, searchText: '', userType: 'all', dateStart: '', dateEnd: '' };
 
     componentDidMount() {
         T.ready(() => {
-            T.showSearchBox( () => this.setState({dateStart: '', dateEnd: ''}) );
+            T.showSearchBox(() => this.setState({ dateStart: '', dateEnd: '' }));
             T.onSearch = (searchText) => this.onSearch({ searchText });
         });
         this.userType.value(this.state.userType);
@@ -188,7 +192,7 @@ class UserPage extends AdminPage {
                 const _userId = urlParams.get('user');
                 page && page.list && page.list.forEach(user => user._id == _userId && this.userModal.show(user));
             }
-        });   
+        });
     }
 
     onSearch = ({ pageNumber, pageSize, searchText, userType }, done) => {
@@ -212,10 +216,10 @@ class UserPage extends AdminPage {
         const searchText = this.state.searchText, userType = this.state.userType;
         const dateStart = this.dateStart ? this.dateStart.value() : '';
         const dateEnd = this.dateEnd ? this.dateEnd.value() : '';
-        if(dateStart > dateEnd ){
+        if (dateStart > dateEnd) {
             T.notify('Ngày bắt đầu phải nhỏ hơn ngày kết thúc !', 'danger');
         } else {
-            this.props.getUserPage(undefined, undefined, { searchText, userType, dateStart, dateEnd}, () => {
+            this.props.getUserPage(undefined, undefined, { searchText, userType, dateStart, dateEnd }, () => {
                 this.setState({ searchText, userType, isSearching: false, dateStart, dateEnd });
             });
         }
@@ -232,18 +236,18 @@ class UserPage extends AdminPage {
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '40%' }}>Tên</th>
-                    <th style={{ width: '20%' }}>Email</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                    <th style={{ width: '20%' }}>Cơ sở đào tạo</th>
-                    <th style={{ width: '20%' }}>Thời gian tạo</th>
+                    <th style={{ width: 'auto' }}>Thông tin liên hệ</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
+                    <th style={{ width: '40%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Thời gian tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<label>{item.lastname + ' ' +  item.firstname}<br />{T.mobileDisplay(item.identityCard)}</label>}  onClick={e => this.edit(e, item)} />
-                    <TableCell type='text' content={item.email} />
+                    <TableCell type='link' content={<>{item.lastname + ' ' + item.firstname}<br />{item.identityCard}</>} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={<>{item.email}<br />{item.phoneNumber}</>} />
                     <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='text' content={item.division ? `${item.division.title} ${item.division.isOutside ? '(ngoài)' : ''}` : ''} />
                     <TableCell type='text' content={new Date(item.createdDate).getShortText()} />
@@ -270,10 +274,10 @@ class UserPage extends AdminPage {
             advanceSearch: <>
                 <h6 className='tile-title mt-3'>Lọc theo thời gian</h6>
                 <div className="tile-body row">
-                    <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5'  />
+                    <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5' />
                     <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
                     <div className='m-auto'>
-                        <button className='btn btn-success' style={{marginTop: '11px'}} type='button' onClick={this.handleFilterByTime}>
+                        <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByTime}>
                             <i className='fa fa-filter' /> Lọc danh sách
                     </button>
                     </div>
