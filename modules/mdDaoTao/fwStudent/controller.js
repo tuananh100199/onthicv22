@@ -82,7 +82,6 @@ module.exports = (app) => {
             }
 
             app.model.student.getPage(pageNumber, pageSize, pageCondition, req.query.sort, (error, page) => {
-                console.log(pageCondition, condition);
                 res.send({ error, page });
             });
         } catch (error) {

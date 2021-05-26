@@ -57,6 +57,11 @@ class AdminStudentView extends React.Component {
         isConfirm && this.props.updateCourseStudents(student.course._id, [student._id], 'remove', () => this.onSearch({}));
     });
 
+    showStudentInfo = (e, student) => {
+        e.preventDefault();
+        alert('TODO: ' + JSON.stringify(student));
+    }
+
     render() {
         const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
@@ -69,7 +74,10 @@ class AdminStudentView extends React.Component {
                 studentList.push(
                     <li style={{ margin: 10, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
-                            {studentList.length + 1}. {student.lastname} {student.firstname} ({student.identityCard}) - {student.division && student.division.title} {student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}
+                            <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
+                                {studentList.length + 1}. {student.lastname} {student.firstname}
+                                ({student.identityCard}) - {student.division && student.division.title} {student.division && student.division.isOutside ? ' (cơ sở ngoài)' : ''}
+                            </a>
                             <div className='buttons'>
                                 <a href='#' onClick={e => this.removeCourseStudent(e, student)}>
                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />

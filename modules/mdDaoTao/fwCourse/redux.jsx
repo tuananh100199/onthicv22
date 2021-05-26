@@ -154,8 +154,8 @@ export function updateCourseStudents(_courseId, _studentIds, type, done) {
 // Course teacherGroups -----------------------------------------------------------------------------------------------
 export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
     return dispatch => {
-        const url = `/api/course/teacher-group/teacher/${_teacherId}`;
-        T.put(url, { _courseId, type }, data => {
+        const url = `/api/course/teacher-group/teacher`;
+        T.put(url, { _courseId, _teacherId, type }, data => {
             if (data.error) {
                 T.notify('Gán cố vấn học tập bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
@@ -167,10 +167,10 @@ export function updateCourseTeacherGroup(_courseId, _teacherId, type, done) {
     };
 }
 
-export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentId, type, done) {
+export function updateCourseTeacherGroupStudent(_courseId, _teacherId, _studentIds, type, done) {
     return dispatch => {
-        const url = `/api/course/teacher-group/student/${_studentId}`;
-        T.put(url, { _courseId, _teacherId, type }, data => {
+        const url = `/api/course/teacher-group/student`;
+        T.put(url, { _courseId, _teacherId, _studentIds, type }, data => {
             if (data.error) {
                 T.notify('Gán học viên bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
