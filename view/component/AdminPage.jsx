@@ -155,7 +155,7 @@ export class FormCheckbox extends React.Component {
         }
     }
 
-    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }, () => this.props.onChange && this.props.onChange(!this.state.checked));
+    onCheck = () => this.props.readOnly || this.setState({ checked: !this.state.checked }, () => this.props.onChange && this.props.onChange(this.state.checked));
 
     render() {
         let { className, label, style, isSwitch = false, trueClassName = 'text-primary', falseClassName = 'text-secondary' } = this.props;

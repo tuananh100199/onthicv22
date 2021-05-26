@@ -178,15 +178,13 @@ module.exports = (app) => {
                                     countIndex += subject.lessons.length;
                                     worksheet.mergeCells(`${String.fromCharCode('D'.charCodeAt() + currentCountIndex)}1:${String.fromCharCode('D'.charCodeAt() + (countIndex - 1))}1`);
                                     for (const lesson of subject.lessons) {
-                                        cells.push(
-                                            {
-                                                cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
-                                                border: '1234',
-                                                value: lesson.title,
-                                                font: { size: 12, align: 'center' },
-                                                bold: true
-                                            }
-                                        );
+                                        cells.push({
+                                            cell: `${String.fromCharCode('D'.charCodeAt() + count)}2`,
+                                            border: '1234',
+                                            value: lesson.title,
+                                            font: { size: 12, align: 'center' },
+                                            bold: true
+                                        });
                                         let rowCell = 2;
                                         course.teacherGroups.forEach(group => {
                                             group.student.forEach(item => {
@@ -261,13 +259,12 @@ module.exports = (app) => {
                     } else if (type == 'remove') {
                         const solve = (index = 0) => {
                             if (index < _studentIds.length) {
-                                console.log('solve', index);
                                 app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
                                     if (error) {
                                         reject('Lỗi khi cập nhật khoá học!');
                                     } else if (student) {
-                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id && group.student.splice(index, 1)));
-                                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id && group.student.splice(index, 1)));
+                                        course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
+                                        course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         student.course = null;
                                         student.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1));
                                     } else {
@@ -275,7 +272,6 @@ module.exports = (app) => {
                                     }
                                 });
                             } else {
-                                console.log('course.representerGroups', 'end', course.representerGroups.length);
                                 course.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
                             }
                         };
@@ -289,7 +285,7 @@ module.exports = (app) => {
             });
         }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
             error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
-            item = item ? { students: item.students } : null;
+            item = item ? { students: item.students, ...(type == 'remove' && { teacherGroups: item.teacherGroups, representerGroups: item.representerGroups }) } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
     });
