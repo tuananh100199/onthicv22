@@ -42,27 +42,30 @@ export default class LoginModal extends React.Component {
                         </div>
                         <div className='modal-body mx-3'>
                             <div className='form-group'>
-                                <input className='form-control text-secondary' type='text' ref={this.txtUser} placeholder='CMND/CCCD' autoComplete='off' />
+                                <label htmlFor='username'>CMND/CCCD</label>
+                                <input id='username' className='form-control text-secondary' type='text' ref={this.txtUser} placeholder='CMND/CCCD' autoComplete='off' />
                             </div>
                             <div className='form-group'>
-                                <input className='form-control text-secondary' type='password' ref={this.txtPassword} placeholder='Mật khẩu' />
+                                <label htmlFor='password'>Mật khẩu</label>
+                                <input id='password' className='form-control text-secondary' type='password' ref={this.txtPassword} placeholder='Mật khẩu' />
                             </div>
 
                             <p ref={this.errorMessage} className='text-danger text-center'>&nbsp;</p>
-
-                            <div className='d-flex justify-content-center'>
-                                <button className='btn btn-success' type='submit' onClick={this.onLogin}>Đăng nhập</button>
+                            <div className='float-right'>
+                                <button className='btn btn-success mr-2' type='submit' onClick={this.onLogin}>Đăng nhập</button>
+                                <button type='button' className='btn btn-secondary' data-dismiss='modal'>Đóng</button>
                             </div>
+
                             {/* <div className='text-center p-t-12'>
                                 <a className='text-secondary' href='#' onClick={this.onForgotPasswordClick} >Quên mật khẩu</a>
                             </div> */}
 
 
                         </div>
-                        <div className='modal-footer' style={{ display: 'block' }}>
+                        {/* <div className='modal-footer' style={{ display: 'block' }}>
                             <button type='button' className='btn btn-secondary' data-dismiss='modal'
                                 style={{ width: '100px', float: 'right' }}>Đóng</button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
