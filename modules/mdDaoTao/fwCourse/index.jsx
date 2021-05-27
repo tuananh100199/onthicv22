@@ -39,14 +39,6 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
         },
-        {
-            path: '/user/lecturer',
-            component: Loadable({ loading: Loading, loader: () => import('./lecturerCoursePage') })
-        },
-        {
-            path: '/user/lecturer/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./lecturerPage') })
-        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,

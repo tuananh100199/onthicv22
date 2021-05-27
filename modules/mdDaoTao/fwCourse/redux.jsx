@@ -304,7 +304,7 @@ export function getLecturerCoursePage(courseType, pageNumber, pageSize, pageCond
 }
 export function getStudentByLecturer(_id, done) {
     return dispatch => {
-        const url = '/api/lecturer-course/student';
+        const url = '/api/course/lecturer/student';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');

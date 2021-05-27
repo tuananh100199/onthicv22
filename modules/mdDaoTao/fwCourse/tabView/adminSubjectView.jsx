@@ -39,6 +39,7 @@ class AdminSubjectView extends React.Component {
 
     render() {
         const permission = this.props.permission || {},
+            isLecturer = this.props.isLecturer,
             item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
         const table = renderTable({
             getDataSource: () => item && item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
@@ -47,14 +48,14 @@ class AdminSubjectView extends React.Component {
                     <th style={{ width: 'auto' }}>#</th>
                     <th style={{ width: '100%' }}>Tên môn học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số bài học</th>
-                    {permission.write && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
+                    {permission.write && !isLecturer && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/' + item._id} />
                     <TableCell type='number' content={item.lessons ? item.lessons.length : 0} />
-                    {permission.write ?
+                    {permission.write && !isLecturer ?
                         <td>
                             <div className='btn-group'>
                                 <a className='btn btn-danger' href='#' onClick={e => this.removeSubject(e, index)}><i className='fa fa-lg fa-trash' /></a>

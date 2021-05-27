@@ -9,7 +9,7 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'course:read' },
+        { name: 'course:read', },
         { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
@@ -87,11 +87,12 @@ module.exports = (app) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             { pageCondition, courseType } = req.query;
-
-        const condition = { courseType, ...pageCondition };
+        const condition = { courseType, active: true, ...pageCondition };
+        if (req.session.user.isLecturer) {
+            condition.teacherGroups = { $elemMatch: { teacher: req.session.user._id } };
+        }
         if (req.session.user.division && req.session.user.division.isOutside) {
             condition.admins = req.session.user._id;
-            condition.active = true;
         }
 
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
@@ -403,9 +404,26 @@ module.exports = (app) => {
         })).catch(error => console.error(error) || res.send({ error }));
     });
 
+    // Lecturer API
+    app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
+        const userId = req.session.user._id;
+        app.model.course.get(req.body._id, (error, item) => {
+            if (error || !item) {
+                res.send({ error });
+            } else {
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
+                res.send({ error, item: listStudent[0].student });
+            }
+        });
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read');
+        resolve();
+    }));
+    app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'course:write');
         resolve();
     }));
 };

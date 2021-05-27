@@ -9,6 +9,7 @@ import AdminManagerView from './tabView/adminManagerView';
 import AdminStudentView from './tabView/adminStudentView';
 import AdminTeacherView from './tabView/adminTeacherView';
 import AdminRepresentersView from './tabView/adminRepresentersView';
+import LecturerStudentView from './tabView/lecturerStudentView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -78,10 +79,11 @@ class EditCoursePage extends AdminPage {
             permissionCourse = this.getUserPermission('course'),
             permissionUser = this.getUserPermission('user'),
             permissionDivision = this.getUserPermission('division'),
-            readOnly = !permissionCourse.write;
+            isLecturer = this.props.system.user.isLecturer,
+            readOnly = !permissionCourse.write || isLecturer;
         const tabInfo = <div className='row'>
             <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
-            <FormCheckbox ref={e => this.active = e} className='col-md-3' label='Kích hoạt' isSwitch={true} />
+            <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + readOnly ? 'invisible' : ''} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
             <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
             <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
@@ -102,25 +104,30 @@ class EditCoursePage extends AdminPage {
             <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
             <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
 
-            {permissionCourse.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+            {permissionCourse.write && !isLecturer ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
         </div>;
 
-        const tabs = [
+        const adminTabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
             { title: 'Quản trị viên', component: this.props.course && this.props.course.item ? <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> : null },
             { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
             { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
         ];
+        const lecturerTabs = [
+            { title: 'Thông tin chung', component: tabInfo },
+            { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} isLecturer={isLecturer} /> },
+            { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={this.props.course._id} /> : null },
+        ];
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
-            tabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null });
+            adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null });
         }
 
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
-            content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />,
+            content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={isLecturer ? lecturerTabs : adminTabs} />,
             backRoute: previousRoute,
         });
     }
