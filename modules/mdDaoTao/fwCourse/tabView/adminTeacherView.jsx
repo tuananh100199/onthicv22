@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
+import { updateCourseStudents, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
@@ -79,14 +79,12 @@ class AdminTeacherView extends React.Component {
         e.preventDefault();
         const courseId = student.course && student.course._id;
         this.setState({courseId: courseId});
-        this.modal.show(student);
+        this.studentModal.show(student);
     }
 
     updateStudent = (studentId, changes) => {
         this.props.updateStudent(studentId, changes, ()  => {
-            this.props.updateCourseStudents(this.state.courseId, [studentId], 'update', () => {
-                this.onSearch({});
-            });
+            this.props.updateCourseStudents(this.state.courseId, [studentId], 'update');
         });
     }
 
@@ -244,11 +242,11 @@ class AdminTeacherView extends React.Component {
                     </div>
                 </div>
                 <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} />
-                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
+                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent};
+const mapActionsToProps = { updateCourseStudents, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent};
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);

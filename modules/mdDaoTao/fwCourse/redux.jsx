@@ -4,6 +4,7 @@ import T from 'view/js/common';
 const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetPageByUser = 'CourseGetPageByUser';
+const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
@@ -15,6 +16,32 @@ export default function courseReducer(state = {}, data) {
 
         case CourseGetItem: {
             return Object.assign({}, state, { item: Object.assign({}, state.item || {}, data.item) });
+        }
+    
+        case CourseUpdateStudentInfoInCourse: {
+            const studentId = data.studentId;
+            const currentCoursePage = state,
+            students = currentCoursePage.item.students ? currentCoursePage.item.students  : [], 
+            representerGroups =  currentCoursePage.item.representerGroups ?  currentCoursePage.item.representerGroups : [];
+
+            for(let i = 0; i < students.length; i++ ) {
+                if (students[i]._id == studentId) {
+                    students.splice(i, 1, data.item);
+                    currentCoursePage.item.students = students;
+
+                    representerGroups.forEach(representerGroup => {
+                        for(let i = 0; i < representerGroup.student.length; i++ ) {
+                            if (representerGroup.student[i]._id == studentId) {
+                                representerGroup.student.splice(i, 1, data.item);
+                                currentCoursePage.item.representerGroups = representerGroups;
+                                break;
+                            }
+                        }
+                    });
+                    break;
+                }
+            }
+            return Object.assign({}, state, currentCoursePage);
         }
 
         case CourseGetPageByUser:
@@ -211,6 +238,9 @@ export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _
             }
         }, error => console.error('PUT: ' + url + '.', error));
     };
+}
+export function updateStudentInfoInCourse(studentId, representerId, item) {
+    return { type: CourseUpdateStudentInfoInCourse, studentId, representerId, item  };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------

@@ -121,14 +121,14 @@ module.exports = (app) => {
                             Object.assign(changes.tienDoHocTap, obj);
                         });
                         changes.modifiedDate = new Date();
-                        model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+                        model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').exec(done);
                     } else {
                         done();
                     }
                 });
             } else {
                 changes.modifiedDate = new Date();
-                model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
+                model.findOneAndUpdate({ _id }, changes, { new: true }).populate('user', 'email phoneNumber').exec(done);
             }
         },
 

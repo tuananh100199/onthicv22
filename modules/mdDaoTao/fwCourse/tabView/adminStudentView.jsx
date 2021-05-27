@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseStudents } from '../redux';
-import { getPreStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
+import { updateCourseStudents, updateStudentInfoInCourse } from '../redux';
+import { getPreStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
-import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
 class AdminStudentView extends React.Component {
     state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', sortType: 'name', assignedButtonVisible: false }; // sortType = name | division
@@ -62,15 +61,14 @@ class AdminStudentView extends React.Component {
     showStudentInfo = (e, student) => {
         e.preventDefault();
         const courseId = student.course && student.course._id;
-        this.setState({courseId: courseId});
+        this.setState({ courseId: courseId });
         this.modal.show(student);
     }
-
     updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, ()  => {
-            this.props.updateCourseStudents(this.state.courseId, [studentId], 'update', () => {
-                this.onSearch({});
-            });
+        this.props.updateStudent(studentId, changes, (data)  => {
+            if (data) {
+                this.props.updateStudentInfoInCourse(studentId, null, data);
+            }
         });
     }
 
@@ -159,5 +157,5 @@ class AdminStudentView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent };
+const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
