@@ -260,7 +260,7 @@ export function getCourseFeed(done) {
 //Get Course Of User
 export function getUserCourse(done) {
     return () => {
-        const url = '/api/user-course';
+        const url = '/api/course/user';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
