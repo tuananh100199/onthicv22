@@ -69,7 +69,7 @@ class AdminRepresentersView extends React.Component {
     removeStudent = (e, representer, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi giáo viên '${representer.lastname} ${representer.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseRepresenterGroupStudent(this.props.course.item._id, representer._id, [student._id], 'remove'));
     
-    showStudentInfo = (e, representer,student) => {
+    showStudentInfo = (e,student) => {
         e.preventDefault();
         this.studentModal.show(student);
     }
