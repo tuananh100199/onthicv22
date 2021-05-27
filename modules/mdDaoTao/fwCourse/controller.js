@@ -276,8 +276,6 @@ module.exports = (app) => {
                             }
                         };
                         solve();
-                    } else if (type == 'update') {
-                        app.model.student.update(_studentIds[0], { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
                     } else {
                         reject('Dữ liệu không hợp lệ!');
                     }

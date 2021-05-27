@@ -113,7 +113,7 @@ class EditCoursePage extends AdminPage {
             { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
         ];
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
-            tabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} course={this.props.course}/> : null });
+            tabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision}/> : null });
         }
 
         return this.renderPage({
