@@ -357,3 +357,7 @@ export function getStudentByLecturer(_id, done) {
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
+
+export function exportStudentInfoToExcel(_courseId) {
+    T.download(T.url(`/api/course/student/export/${_courseId}`));
+}

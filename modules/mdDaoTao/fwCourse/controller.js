@@ -417,6 +417,60 @@ module.exports = (app) => {
         });
     });
 
+    // Export excel student info---------------------------------------------------------------------------------------------------
+    
+    app.get('/api/course/student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
+        const sessionUser = req.session.user,
+        division = sessionUser.division,
+        courseId = req.params._courseId;
+        app.model.student.getAll({ course: courseId, division: division._id }, (error, students) => {
+            if (error) {
+                res.send({ error: 'Hệ thống bị lỗi!' });
+            } else {
+                if (sessionUser && sessionUser.isCourseAdmin && division && !division.isOutside) {
+                    const workbook = app.excel.create(), worksheet = workbook.addWorksheet('Student');
+                const cells = [
+                    { cell: 'A1', value: 'STT', bold: true, border: '1234' },
+                    { cell: 'B1', value: 'Họ', bold: true, border: '1234' },
+                    { cell: 'C1', value: 'Tên', bold: true, border: '1234' },
+                    { cell: 'D1', value: 'CMND/CCCD', bold: true, border: '1234' },
+                    { cell: 'E1', value: 'Cơ sở', bold: true, border: '1234' },
+                    { cell: 'F1', value: 'Email', bold: true, border: '1234' },
+                    { cell: 'G1', value: 'Loại khóa học', bold: true, border: '1234' },
+                    { cell: 'H1', value: 'Khóa học', bold: true, border: '1234' },
+                ];
+
+                worksheet.columns = [
+                    { header: 'STT', key: 'id', width: 15 },
+                    { header: 'Họ', key: 'lastname', width: 15 },
+                    { header: 'Tên', key: 'firstname', width: 15 },
+                    { header: 'CMND/CCCD', key: 'identityCard', width: 15 },
+                    { header: 'Cơ sở', key: 'division', width: 30 },
+                    { header: 'Email', key: 'email', width: 40 },
+                    { header: 'Loại khóa học', key: 'courseType', width: 40 },
+                    { header: 'Khóa học', key: 'course', width: 80 },
+                ];
+                students.forEach((student, index) => {
+                    worksheet.addRow({
+                        _id: index + 1,
+                        lastname: student.lastname,
+                        firstname: student.firstname,
+                        identityCard: student.identityCard,
+                        division: student.division ? student.division.title : '',
+                        email: student.email,
+                        courseType: student.courseType ? student.courseType.title : '',
+                        course: student.course ? student.course.name : '',
+                    });
+                });
+                app.excel.write(worksheet, cells);
+                app.excel.attachment(workbook, res, 'Student.xlsx');
+            } else {
+                res.send({ error: 'Bạn không có quyền xuất file excel này!' });
+            }
+            }
+        });
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseStudents, updateStudentInfoInCourse } from '../redux';
+import { updateCourseStudents, updateStudentInfoInCourse, exportStudentInfoToExcel } from '../redux';
 import { getPreStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
@@ -148,12 +148,12 @@ class AdminStudentView extends React.Component {
                         {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
                 </div>
-                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Học viên: họ, tên, cmnd, sdt, email, cơ sở, loại khoá học, khoá học. Lưu ý: AdminCourse mà division.isOutside không hiện nút này => kiểm tra cả controller!')} />
+                <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} />
                 <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse };
+const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
