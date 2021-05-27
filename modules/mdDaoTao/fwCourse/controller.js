@@ -437,12 +437,10 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             { pageCondition, courseType } = req.query,
             lecturerId = req.session.user._id;
-        const condition = { courseType, teacherGroups: { $elemMatch: { teacher: lecturerId } }, ...pageCondition };
+        const condition = { courseType, teacherGroups: { $elemMatch: { teacher: lecturerId } }, active: true, ...pageCondition };
         if (req.session.user.division && req.session.user.division.isOutside) {
             condition.admins = req.session.user._id;
-            condition.active = true;
         }
-
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
             res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
         });
