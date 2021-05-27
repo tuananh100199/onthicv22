@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
-import { FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
+import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
@@ -206,7 +206,7 @@ class AdminTeacherView extends React.Component {
                                     <li className='text-primary' style={{ margin: 10 }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
                                             {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
-                                            {item.teacher.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                            {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => _id && this.removeTeacher(e, item.teacher)}>
                                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
@@ -218,8 +218,8 @@ class AdminTeacherView extends React.Component {
                                                 <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
                                                     <div style={{ display: 'inline-flex' }}>
                                                         <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
-                                                            {student.lastname} {student.firstname} - {student.division && student.division.title}
-                                                            {student.division && student.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                                            {student.lastname} {student.firstname} - {student.division && student.division.title}&nbsp;
+                                                            {student.division && student.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
                                                         </a>
                                                         <div className='buttons'>
                                                             <a href='#' onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
@@ -234,7 +234,7 @@ class AdminTeacherView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
                 </div>
-                {/* <CirclePageButton type='export' onClick={TODO} /> */}
+                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} />
             </div>);
     }
 }

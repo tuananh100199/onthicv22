@@ -48,7 +48,8 @@ class AdminManagerView extends React.Component {
                                 {item.admins.map((item, index) => (
                                     <li key={index}>
                                         <div style={{ display: 'inline-flex' }}>
-                                            {`${item.lastname} ${item.firstname}`} - {item.division && item.division.title}{item.division && item.division.isOutside ? <span className='text-secondary'> (cơ sở ngoài)</span> : ''}
+                                            {item.lastname} {item.firstname} ({item.identityCard}) - {item.division && item.division.title}&nbsp;
+                                            {item.division && item.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => this.removeAdmin(e, index, item)}>
                                                     <i style={{ marginLeft: 10, color: 'red' }} className='fa fa-times' />
@@ -56,7 +57,7 @@ class AdminManagerView extends React.Component {
                                             </div>
                                         </div>
                                     </li>))}
-                            </ol> : <label>Chưa có quản trị viên!</label>}
+                            </ol> : <label>Chưa có Quản trị viên!</label>}
                     </div>
                 </div>
             </div>);
