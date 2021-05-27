@@ -13,6 +13,7 @@ import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwDriveQuestion from 'modules/mdDaoTao/fwDriveQuestion/index';
 import fwDriveTest from 'modules/mdDaoTao/fwDriveTest/index';
+import fwLecturer from 'modules/mdDaoTao/fwLecturer/index';
 import fwLesson from 'modules/mdDaoTao/fwLesson/index';
 import fwSign from 'modules/mdDaoTao/fwSign/index';
 import fwStudent from 'modules/mdDaoTao/fwStudent/index';
@@ -21,4 +22,4 @@ import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwCategory, fwCluster, fwEmail, fwHome, fwMenu, fwRole, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwSign, fwStudent, fwSubject, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwCategory, fwCluster, fwEmail, fwHome, fwMenu, fwRole, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLecturer, fwLesson, fwSign, fwStudent, fwSubject, fwContact, fwNews, fwSubscribe];

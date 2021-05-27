@@ -316,3 +316,33 @@ export function getCourseByStudent(_id, done) {
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
+// Lecturer
+export function getLecturerCoursePage(courseType, pageNumber, pageSize, pageCondition, done) {
+    const page = T.updatePage('pageLecturer', pageNumber, pageSize);
+    return (dispatch) => {
+        const url = '/api/lecturer-course/page/' + page.pageNumber + '/' + page.pageSize;
+        T.get(url, { courseType, pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: CourseGetPage, courseType, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
+    };
+}
+export function getStudentByLecturer(_id, done) {
+    return dispatch => {
+        const url = '/api/lecturer-course/student';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy khóa học bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+    };
+}
