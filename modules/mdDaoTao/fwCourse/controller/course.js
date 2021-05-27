@@ -14,13 +14,13 @@ module.exports = (app) => {
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
-        { name: 'course:student' }
+        { name: 'course:learn' }
     );
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('course:student'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('course:student'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('course:learn'), app.templates.admin);
 
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
