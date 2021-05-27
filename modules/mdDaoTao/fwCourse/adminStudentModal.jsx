@@ -64,7 +64,7 @@ export default class AdminStudentModal extends AdminModal {
         this.itemLincenseNumber.value(giayPhepLaiXe2BanhSo || '');
         this.itemLincenseDate.value(giayPhepLaiXe2BanhNgay || '');
         this.itemLincenseIssuedBy.value(giayPhepLaiXe2BanhNoiCap || '');
-        this.itemDivision.value(division ? { id: division._id, text: division.title + (division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
+        this.itemDivision.value(division ? { id: division._id, text: division.title } : null);
         this.itemGiayKhamSucKhoe.value(giayKhamSucKhoe || false);
         this.itemGiayKhamSucKhoeNgayKham.value(giayKhamSucKhoeNgayKham || '');
         this.itemHinhThe3x4.value(hinhThe3x4 || false);
@@ -135,7 +135,7 @@ export default class AdminStudentModal extends AdminModal {
         } else if (data.identityIssuedBy == '') {
             T.notify('Nơi cấp CMND/CCCD không được trống!', 'danger');
             this.itemIdentityIssuedBy.focus();
-        } else if (data.division == null) {
+        } else if (!data.division) {
             T.notify('Cơ sở đào tạo không được trống', 'danger');
             this.itemDivision.focus();
         } else if (data.giayKhamSucKhoe && data.giayKhamSucKhoeNgayKham == '') {
@@ -167,7 +167,7 @@ export default class AdminStudentModal extends AdminModal {
                 <FormTextBox ref={e => this.itemLincenseNumber = e} label='Số giấy phép lái xe 2 bánh' className='col-md-4' readOnly={this.props.readOnly} />
                 <FormDatePicker ref={e => this.itemLincenseDate = e} className='col-md-4' label='Ngày trúng tuyển' readOnly={this.props.readOnly} />
                 <FormTextBox ref={e => this.itemLincenseIssuedBy = e} label='Nơi cấp' className='col-md-4' readOnly={this.props.readOnly} />
-                <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={this.props.readOnly} required />
+                <FormSelect ref={e => this.itemDivision = e} className='col-md-8' label='Thuộc cơ sở đào tạo' data={ajaxSelectDivision} readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemGiayKhamSucKhoe = e} className='col-md-6' label='Đã có giấy khám sức khỏe' readOnly={this.props.readOnly} onChange={this.isChecked} />
                 <FormDatePicker ref={e => this.itemGiayKhamSucKhoeNgayKham = e} className={this.state.className} label='Ngày khám sức khỏe' readOnly={this.props.readOnly} />
                 <FormCheckbox ref={e => this.itemHinhThe3x4 = e} className='col-md-6' label='Hình thẻ 3x4' readOnly={this.props.readOnly} />
