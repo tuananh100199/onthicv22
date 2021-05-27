@@ -60,14 +60,12 @@ class AdminStudentView extends React.Component {
 
     showStudentInfo = (e, student) => {
         e.preventDefault();
-        const courseId = student.course && student.course._id;
-        this.setState({ courseId: courseId });
         this.modal.show(student);
     }
     updateStudent = (studentId, changes) => {
         this.props.updateStudent(studentId, changes, (data)  => {
             if (data) {
-                this.props.updateStudentInfoInCourse(studentId, null, data);
+                this.props.updateStudentInfoInCourse(studentId, data);
             }
         });
     }

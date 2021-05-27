@@ -22,7 +22,8 @@ export default function courseReducer(state = {}, data) {
             const studentId = data.studentId;
             const currentCoursePage = state,
             students = currentCoursePage.item.students ? currentCoursePage.item.students  : [], 
-            representerGroups =  currentCoursePage.item.representerGroups ?  currentCoursePage.item.representerGroups : [];
+            representerGroups =  currentCoursePage.item.representerGroups ?  currentCoursePage.item.representerGroups : [],
+            teacherGroups =  currentCoursePage.item.teacherGroups ?  currentCoursePage.item.teacherGroups : [];
 
             for(let i = 0; i < students.length; i++ ) {
                 if (students[i]._id == studentId) {
@@ -34,6 +35,16 @@ export default function courseReducer(state = {}, data) {
                             if (representerGroup.student[i]._id == studentId) {
                                 representerGroup.student.splice(i, 1, data.item);
                                 currentCoursePage.item.representerGroups = representerGroups;
+                                break;
+                            }
+                        }
+                    });
+
+                    teacherGroups.forEach(teacherGroup => {
+                        for(let i = 0; i < teacherGroup.student.length; i++ ) {
+                            if (teacherGroup.student[i]._id == studentId) {
+                                teacherGroup.student.splice(i, 1, data.item);
+                                currentCoursePage.item.teacherGroups = teacherGroups;
                                 break;
                             }
                         }
@@ -239,8 +250,8 @@ export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _
         }, error => console.error('PUT: ' + url + '.', error));
     };
 }
-export function updateStudentInfoInCourse(studentId, representerId, item) {
-    return { type: CourseUpdateStudentInfoInCourse, studentId, representerId, item  };
+export function updateStudentInfoInCourse(studentId, item) {
+    return { type: CourseUpdateStudentInfoInCourse, studentId, item  };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------

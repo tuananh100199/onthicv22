@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseStudents, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
+import { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
@@ -75,16 +75,16 @@ class AdminTeacherView extends React.Component {
     removeStudent = (e, teacher, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi cố vấn học tập '${teacher.lastname} ${teacher.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseTeacherGroupStudent(this.props.course.item._id, teacher._id, [student._id], 'remove'));
 
-    showStudentInfo = (e, student) => {
+    showStudentInfo = (e, student ) => {
         e.preventDefault();
-        const courseId = student.course && student.course._id;
-        this.setState({courseId: courseId});
         this.studentModal.show(student);
     }
 
     updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, ()  => {
-            this.props.updateCourseStudents(this.state.courseId, [studentId], 'update');
+        this.props.updateStudent(studentId, changes, (data)  => {
+            if (data) {
+                this.props.updateStudentInfoInCourse(studentId, this.state.teacherId, data);
+            }
         });
     }
 
@@ -248,5 +248,5 @@ class AdminTeacherView extends React.Component {
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateCourseStudents, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent};
+const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent};
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);

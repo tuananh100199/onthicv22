@@ -71,16 +71,13 @@ class AdminRepresentersView extends React.Component {
     
     showStudentInfo = (e, representer,student) => {
         e.preventDefault();
-        const courseId = student.course, 
-        representerId = representer._id;
-        this.setState({courseId: courseId, representerId: representerId});
         this.studentModal.show(student);
     }
 
     updateStudent = (studentId, changes) => {
         this.props.updateStudent(studentId, changes, (data)  => {
             if (data) {
-                this.props.updateStudentInfoInCourse(studentId, this.state.representerId, data);
+                this.props.updateStudentInfoInCourse(studentId, data);
             }
         });
     }
@@ -190,7 +187,7 @@ class AdminRepresentersView extends React.Component {
                                             {item.student.length ? item.student.map((student, indexStudent) => (
                                                 <li key={indexStudent} style={{ margin: 10, color: 'black' }}>
                                                     <div style={{ display: 'inline-flex' }}>
-                                                        <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, item.representer, student)}>
+                                                        <a href='#' style={{ color: 'black' }} onClick={e => this.showStudentInfo(e, student)}>
                                                             {student.lastname} {student.firstname} ({student.identityCard}) - {student.division ? student.division.title : ''}
                                                             {student.division && student.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
                                                         </a>
