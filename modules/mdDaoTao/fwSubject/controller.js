@@ -10,9 +10,9 @@ module.exports = (app) => {
     app.get('/user/dao-tao', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc', app.permission.check('subject:read'), app.templates.admin);
     app.get('/user/dao-tao/mon-hoc/:_id', app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:_id', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/thong-tin/:_id', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/phan-hoi/:_id', app.permission.check('course:learn'), app.templates.admin);
 
     // Subject APIs ---------------------------------------------------------------------------------------------------
     app.get('/api/subject/page/:pageNumber/:pageSize', app.permission.check('subject:read'), (req, res) => {

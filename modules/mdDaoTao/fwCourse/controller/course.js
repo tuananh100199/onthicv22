@@ -9,19 +9,18 @@ module.exports = (app) => {
     };
 
     app.permission.add(
-        { name: 'course:read' },
+        { name: 'course:read', },
         { name: 'course:write', menu },
         { name: 'course:delete' },
         { name: 'course:lock' },
         { name: 'course:export' },
-        { name: 'studentCourse:read' }
+        { name: 'course:learn' }
     );
+
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
-    app.get('/course/item/:_id', app.templates.home);
-    app.get('/user/hoc-vien/khoa-hoc', app.permission.check('studentCourse:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('studentCourse:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('course:learn'), app.templates.admin);
 
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
@@ -87,12 +86,14 @@ module.exports = (app) => {
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
+            sessionUser = req.session.user,
             { pageCondition, courseType } = req.query;
-
-        const condition = { courseType, ...pageCondition };
-        if (req.session.user.division && req.session.user.division.isOutside) {
-            condition.admins = req.session.user._id;
-            condition.active = true;
+        const condition = { courseType, active: true, ...pageCondition };
+        if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
+            condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
+        }
+        if (sessionUser.division && sessionUser.division.isOutside) {
+            condition.admins = sessionUser._id;
         }
 
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
@@ -290,93 +291,8 @@ module.exports = (app) => {
         })).catch(error => console.error(error) || res.send({ error }));
     });
 
-    // TeacherGroups APIs ---------------------------------------------------------------------------------------------
-    app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _teacherId, type } = req.body;
-        new Promise((resolve, reject) => {
-            if (type == 'add') {
-                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
-            } else if (type == 'remove') {
-                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
-            } else {
-                reject('Dữ liệu không hợp lệ!');
-            }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
-            item = item ? { teacherGroups: item.teacherGroups } : null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
-    });
-
-    app.put('/api/course/teacher-group/student', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _teacherId, _studentIds, type } = req.body;
-        new Promise((resolve, reject) => {
-            if (type == 'add' || type == 'remove') {
-                const changeGroup = type == 'add' ? app.model.course.addStudentToTeacherGroup : app.model.course.removeStudentFromTeacherGroup;
-                const solve = (index = 0) => (index < _studentIds.length) ?
-                    changeGroup(_courseId, _teacherId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
-                solve();
-            } else {
-                reject('Dữ liệu không hợp lệ!');
-            }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
-            item = item ? { teacherGroups: item.teacherGroups } : null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
-    });
-
-    // RepresenterGroups APIs -----------------------------------------------------------------------------------------
-    app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _representerId, type } = req.body;
-        new Promise((resolve, reject) => {
-            if (type == 'add') {
-                app.model.course.addRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
-            } else if (type == 'remove') {
-                app.model.course.removeRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
-            } else {
-                reject('Dữ liệu không hợp lệ!');
-            }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
-            item = item ? { representerGroups: item.representerGroups } : null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
-    });
-
-    app.put('/api/course/representer-group/student', app.permission.check('course:write'), (req, res) => {
-        const { _courseId, _representerId, _studentIds, type } = req.body;
-        new Promise((resolve, reject) => {
-            if (type == 'add' || type == 'remove') {
-                const changeGroup = type == 'add' ? app.model.course.addStudentToRepresenterGroup : app.model.course.removeStudentFromRepresenterGroup;
-                const solve = (index = 0) => (index < _studentIds.length) ?
-                    changeGroup(_courseId, _representerId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
-                solve();
-            } else {
-                reject('Dữ liệu không hợp lệ!');
-            }
-        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
-            item = item ? { representerGroups: item.representerGroups } : null;
-            res.send({ error, item });
-        })).catch(error => console.error(error) || res.send({ error }));
-    });
-
-    // Home -----------------------------------------------------------------------------------------------------------
-    app.get('/home/course/page/:pageNumber/:pageSize', (req, res) => {
-        const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.course.getPage(pageNumber, pageSize, { active: true }, (error, page) => {
-            res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
-        });
-    });
-
-    app.get('/home/course', (req, res) => {
-        app.model.course.get({ _id: req.query._id, active: true }, (error, item) => res.send({ error, item }));
-    });
-
     // Get courses by user
-    app.get('/api/user-course', app.permission.check('course:read'), (req, res) => { //TODO: Cần sửa lại route
+    app.get('/api/course/user', app.permission.check('course:read'), (req, res) => { //TODO: Cần sửa lại route
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             res.send({ error, students });
@@ -417,9 +333,98 @@ module.exports = (app) => {
         });
     });
 
+    //Representer API
+    app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _representerId, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add') {
+                app.model.course.addRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
+            } else if (type == 'remove') {
+                app.model.course.removeRepresenterGroup(_courseId, _representerId, error => error ? reject(error) : resolve());
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { representerGroups: item.representerGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    app.put('/api/course/representer-group/student', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _representerId, _studentIds, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add' || type == 'remove') {
+                const changeGroup = type == 'add' ? app.model.course.addStudentToRepresenterGroup : app.model.course.removeStudentFromRepresenterGroup;
+                const solve = (index = 0) => (index < _studentIds.length) ?
+                    changeGroup(_courseId, _representerId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
+                solve();
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { representerGroups: item.representerGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    //Teacher API
+    app.put('/api/course/teacher-group/teacher', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _teacherId, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add') {
+                app.model.course.addTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+            } else if (type == 'remove') {
+                app.model.course.removeTeacherGroup(_courseId, _teacherId, error => error ? reject(error) : resolve());
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { teacherGroups: item.teacherGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    app.put('/api/course/teacher-group/student', app.permission.check('course:write'), (req, res) => {
+        const { _courseId, _teacherId, _studentIds, type } = req.body;
+        new Promise((resolve, reject) => {
+            if (type == 'add' || type == 'remove') {
+                const changeGroup = type == 'add' ? app.model.course.addStudentToTeacherGroup : app.model.course.removeStudentFromTeacherGroup;
+                const solve = (index = 0) => (index < _studentIds.length) ?
+                    changeGroup(_courseId, _teacherId, _studentIds[index], error => error ? reject(error) : solve(index + 1)) : resolve();
+                solve();
+            } else {
+                reject('Dữ liệu không hợp lệ!');
+            }
+        }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
+            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            item = item ? { teacherGroups: item.teacherGroups } : null;
+            res.send({ error, item });
+        })).catch(error => console.error(error) || res.send({ error }));
+    });
+
+    // Lecturer API
+    app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
+        const userId = req.session.user._id;
+        app.model.course.get(req.query._id, (error, item) => {
+            if (error || !item) {
+                res.send({ error });
+            } else {
+                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
+                res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+            }
+        });
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read');
+        resolve();
+    }));
+    app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'course:write');
         resolve();
     }));
 };

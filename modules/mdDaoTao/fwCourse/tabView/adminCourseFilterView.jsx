@@ -25,7 +25,8 @@ class CoursePageFilter extends AdminPage {
     render() {
         const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.course && this.props.course[this.state.courseType] ?
             this.props.course[this.state.courseType] : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, pageCondition: '', list: [] };
-        const permission = this.getUserPermission('course');
+        const permission = this.getUserPermission('course'),
+            readOnly = this.props.readOnly;
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -36,8 +37,8 @@ class CoursePageFilter extends AdminPage {
                     <th style={{ width: 'auto' }} nowrap='true'>Quản trị viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cố vấn học tập</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Học viên</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                    {!readOnly && <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>}
+                    {!readOnly && <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>}
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -47,8 +48,8 @@ class CoursePageFilter extends AdminPage {
                     <TableCell type='number' content={item.admins ? item.admins.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.length : 0} />
                     <TableCell type='number' content={item.groups ? item.groups.reduce((a, b) => (b.student ? b.student.length : 0) + a, 0) : 0} />
-                    <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, active)} />
-                    <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />
+                    {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, active)} />}
+                    {!readOnly && <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + item._id} onDelete={this.delete} />}
                 </tr>),
         });
 

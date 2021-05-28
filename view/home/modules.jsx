@@ -7,9 +7,8 @@ import fwCandidate from 'modules/mdDaoTao/fwCandidate/index';
 import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
-import fwLecturer from 'modules/mdDaoTao/fwLecturer/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwHome, fwMenu, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwLecturer, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwHome, fwMenu, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwContact, fwNews, fwSubscribe];
