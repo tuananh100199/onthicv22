@@ -179,8 +179,6 @@ class AdminTeacherView extends React.Component {
                     division.students.push(student);
                 }
             });
-            console.log(divisionList)
-
             Object.values(divisionList).sort((a, b) => a.title - b.title).forEach((division, index) => {
                 studentList.push(
                     <li style={{ margin: 0, display: 'block' }} key={index}>
