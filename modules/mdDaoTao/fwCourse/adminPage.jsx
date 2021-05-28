@@ -56,7 +56,7 @@ class CoursePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('course'),
-            readOnly = (!permission.write || this.props.system.user.isLecturer) && !this.props.system.user.isCourseAdmin;
+            readOnly = (!permission.write || this.props.system.user.isLecturer) && (this.props.system.user && !this.props.system.user.isCourseAdmin);
         const courseTypes = this.state.courseTypes ? this.state.courseTypes : [];
         const tabs = courseTypes.length ? courseTypes.map(courseType => ({ title: courseType.text, component: <AdminCourseFilterView courseFilter={courseType.course} courseType={courseType.id} readOnly={readOnly} /> })) : [];
         return this.renderPage({
