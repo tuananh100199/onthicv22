@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateStudentInfoInCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent } from '../redux';
+import { updateStudentInfoInCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent, exportRepresenterAndStudentToExcel } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
@@ -124,6 +124,8 @@ class AdminRepresentersView extends React.Component {
         const { _id, students, representerGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
         const { searchStudentText, assignedButtonVisible } = this.state,
             studentList = [], assignedStudents = [];
+        // const isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
+
         (representerGroups || []).forEach(item => (item.student || []).forEach(student => assignedStudents.push(student._id)));
         (students || []).forEach((student, index) => {
             if ((searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) && student.division && !student.division.isOutside && !assignedStudents.includes(student._id)) {
@@ -204,12 +206,13 @@ class AdminRepresentersView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có giáo viên!</label>}
                     </div>
                 </div>
-                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Giáo viên + Học viên')} />
+                <CirclePageButton type='export' onClick={() => exportRepresenterAndStudentToExcel(_id)} />
+                {/* <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Giáo viên + Học viên')} /> */}
                 <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateStudentInfoInCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent, updateStudent };
+const mapActionsToProps = { updateStudentInfoInCourse, updateCourseRepresenterGroup, updateCourseRepresenterGroupStudent, updateStudent, exportRepresenterAndStudentToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminRepresentersView);
