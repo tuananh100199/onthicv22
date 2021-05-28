@@ -291,48 +291,6 @@ module.exports = (app) => {
         })).catch(error => console.error(error) || res.send({ error }));
     });
 
-    // Get courses by user
-    app.get('/api/course/user', app.permission.check('course:read'), (req, res) => { //TODO: Cần sửa lại route
-        const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            res.send({ error, students });
-        });
-    });
-
-    // APIs Get Course Of Student -------------------------------------------------------------------------------------
-    app.get('/api/course-active/student', app.permission.check('user:login'), (req, res) => { //TODO: Cần sửa lại route
-        const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            if (error || students.length == 0) {
-                res.send({ error });
-            } else {
-                const courses = [];
-                students.map(student => {
-                    student.course && student.course.active && courses.push(student.course);
-                });
-                res.send({ courses });
-            }
-        });
-    });
-
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => { //TODO: Hàm cần phải sửa
-        const _courseId = req.query._id,
-            _studentId = req.session.user._id;
-        app.model.student.getAll({ user: _studentId, course: _courseId }, (error, students) => {
-            if (error) {
-                res.send({ error });
-            } else if (students.length == 0) {
-                res.send({ notify: 'Bạn không thuộc khóa học này!' });
-            } else {
-                if (students[0].course && students[0].course.active) {
-                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId: students[0]._id }));
-                } else {
-                    res.send({ notify: 'Khóa học chưa được kích hoạt!' });
-                }
-            }
-        });
-    });
-
     //Representer API
     app.put('/api/course/representer-group/representer', app.permission.check('course:write'), (req, res) => {
         const { _courseId, _representerId, type } = req.body;
@@ -414,6 +372,48 @@ module.exports = (app) => {
             } else {
                 const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
                 res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+            }
+        });
+    });
+
+    // Get Course by Student API
+    // API: Mobile
+    app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {
+        const _userId = req.session.user._id;
+        app.model.student.getAll({ user: _userId }, (error, students) => {
+            if (error || students.length == 0) {
+                res.send({ error });
+            } else {
+                const courses = [];
+                students.map(student => {
+                    student.course && student.course.active && courses.push(student.course);
+                });
+                res.send({ courses });
+            }
+        });
+    });
+
+    app.get('/api/course/student/all', app.permission.check('course:read'), (req, res) => {
+        const _userId = req.session.user._id;
+        app.model.student.getAll({ user: _userId }, (error, students) => {
+            res.send({ error, students });
+        });
+    });
+
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+        const _courseId = req.query._id,
+            _studentId = req.session.user._id;
+        app.model.student.get({ user: _studentId, course: _courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else if (!student) {
+                res.send({ notify: 'Bạn không thuộc khóa học này!' });
+            } else {
+                if (student.course && student.course.active) {
+                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId: student._id }));
+                } else {
+                    res.send({ notify: 'Khóa học chưa được kích hoạt!' });
+                }
             }
         });
     });

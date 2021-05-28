@@ -227,19 +227,19 @@ module.exports = (app) => {
     });
 
     // Get All Student Have Course Null--------------------------------------------------------------------------------
-    app.get('/api/course/pre-student/all', app.permission.check('pre-student:read'), (req, res) => {
-        const { searchText, courseType } = req.query,
-            condition = { course: null, courseType };
-        if (searchText) {
-            const value = { $regex: `.*${searchText}.*`, $options: 'i' };
-            condition['$or'] = [
-                { firstname: value },
-                { lastname: value },
-                { email: value },
-            ];
-        }
-        app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
-    });
+    // app.get('/api/course/pre-student/all', app.permission.check('pre-student:read'), (req, res) => {
+    //     const { searchText, courseType } = req.query,
+    //         condition = { course: null, courseType };
+    //     if (searchText) {
+    //         const value = { $regex: `.*${searchText}.*`, $options: 'i' };
+    //         condition['$or'] = [
+    //             { firstname: value },
+    //             { lastname: value },
+    //             { email: value },
+    //         ];
+    //     }
+    //     app.model.student.getAll(condition, (error, list) => res.send({ error, list }));
+    // });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
