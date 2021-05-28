@@ -83,12 +83,8 @@ class UserModal extends AdminModal {
         } else {
             if (changes.roles.length == 0) changes.roles = 'empty';
             this.state._id ?
-                this.props.update(this.state._id, changes, data => {
-                    !data.error && this.hide;
-                }) :
-                this.props.create(changes, data => {
-                    !data.error && this.hide;
-                });
+                this.props.update(this.state._id, changes, data => !data.error && this.hide()) :
+                this.props.create(changes, data => !data.error && this.hide());
         }
     }
 

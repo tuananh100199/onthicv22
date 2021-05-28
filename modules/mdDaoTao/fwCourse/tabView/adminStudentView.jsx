@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseStudents } from '../redux';
-import { getPreStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
+import { updateCourseStudents, updateStudentInfoInCourse, exportStudentInfoToExcel } from '../redux';
+import { getPreStudentPage, updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
+import AdminStudentModal from '../adminStudentModal';
 
 class AdminStudentView extends React.Component {
     state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', sortType: 'name', assignedButtonVisible: false }; // sortType = name | division
@@ -59,7 +60,14 @@ class AdminStudentView extends React.Component {
 
     showStudentInfo = (e, student) => {
         e.preventDefault();
-        alert('TODO: ' + JSON.stringify(student));
+        this.modal.show(student);
+    }
+    updateStudent = (studentId, changes) => {
+        this.props.updateStudent(studentId, changes, (data)  => {
+            if (data) {
+                this.props.updateStudentInfoInCourse(studentId, data);
+            }
+        });
     }
 
     render() {
@@ -68,6 +76,8 @@ class AdminStudentView extends React.Component {
         const { sortType, searchStudentText, assignedButtonVisible } = this.state;
         const { _id: _courseId, students } = this.props.course && this.props.course.item ? this.props.course.item : {};
         const studentList = [];
+        // const currentUser = this.props.system ? this.props.system.user : null,
+        //     isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
 
         (students || []).forEach((student, index) => {
             if (searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) {
@@ -140,11 +150,13 @@ class AdminStudentView extends React.Component {
                         {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
                 </div>
-                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Học viên: họ, tên, cmnd, sdt, email, cơ sở, loại khoá học, khoá học. Lưu ý: AdminCourse mà division.isOutside không hiện nút này => kiểm tra cả controller!')} />
+                {/* {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null} */}
+                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
+                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
-const mapActionsToProps = { updateCourseStudents, getPreStudentPage };
+const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
