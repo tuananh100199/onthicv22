@@ -241,7 +241,8 @@ class AdminTeacherView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
                 </div>
-                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} />
+                {/* <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} /> */}
+                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
                 <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }

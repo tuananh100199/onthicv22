@@ -76,16 +76,8 @@ class AdminStudentView extends React.Component {
         const { sortType, searchStudentText, assignedButtonVisible } = this.state;
         const { _id: _courseId, students } = this.props.course && this.props.course.item ? this.props.course.item : {};
         const studentList = [];
-        const currentUser = this.props.system ? this.props.system.user : null,
-            isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
-        // console.log('isOutsideCourseAdmin',isOutsideCourseAdmin);
-        // console.log('currentUser',currentUser);
-
-        // console.log('currentUser.isCourseAdmin',currentUser && currentUser.isCourseAdmin);
-        // console.log('division.isOutside', currentUser.division && currentUser.division.isOutside);
-
-
-
+        // const currentUser = this.props.system ? this.props.system.user : null,
+        //     isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
 
         (students || []).forEach((student, index) => {
             if (searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) {
@@ -158,7 +150,8 @@ class AdminStudentView extends React.Component {
                         {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
                     </div>
                 </div>
-                {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null}
+                {/* {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null} */}
+                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
                 <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
