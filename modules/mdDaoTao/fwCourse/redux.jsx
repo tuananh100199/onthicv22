@@ -301,7 +301,7 @@ export function getCourseFeed(done) {
 //Get Course Of User
 export function getUserCourse(done) {
     return () => {
-        const url = '/api/user-course';
+        const url = '/api/course/user';
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
@@ -328,24 +328,9 @@ export function getCourseByStudent(_id, done) {
     };
 }
 // Lecturer
-export function getLecturerCoursePage(courseType, pageNumber, pageSize, pageCondition, done) {
-    const page = T.updatePage('pageLecturer', pageNumber, pageSize);
-    return (dispatch) => {
-        const url = '/api/lecturer-course/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { courseType, pageCondition }, data => {
-            if (data.error) {
-                T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data);
-                dispatch({ type: CourseGetPage, courseType, page: data.page });
-            }
-        }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
-    };
-}
 export function getStudentByLecturer(_id, done) {
     return dispatch => {
-        const url = '/api/lecturer-course/student';
+        const url = '/api/course/lecturer/student';
         T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy khóa học bị lỗi!', 'danger');
