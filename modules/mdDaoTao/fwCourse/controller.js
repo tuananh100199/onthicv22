@@ -138,6 +138,10 @@ module.exports = (app) => {
         }));
     });
 
+    app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
+        app.model.course.delete(req.body._id, (error) => res.send({ error }));
+    });
+
     app.get('/api/course/export/:_courseId', app.permission.check('course:read'), (req, res) => {
         app.model.course.get(req.params._courseId, (error, course) => {
             if (error) {
@@ -236,10 +240,6 @@ module.exports = (app) => {
                 }).catch(error => res.send(error));
             }
         });
-    });
-
-    app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
-        app.model.course.delete(req.body._id, (error) => res.send({ error }));
     });
 
     // Students APIs --------------------------------------------------------------------------------------------------
