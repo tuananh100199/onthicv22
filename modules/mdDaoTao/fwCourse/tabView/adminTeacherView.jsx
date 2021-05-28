@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
+import { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
-
+import AdminStudentModal from '../adminStudentModal';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
     onShow = ({ course, _divisionId, _studentIds }) => {
@@ -76,7 +77,15 @@ class AdminTeacherView extends React.Component {
 
     showStudentInfo = (e, student) => {
         e.preventDefault();
-        alert('TODO: ' + JSON.stringify(student));
+        this.studentModal.show(student);
+    }
+
+    updateStudent = (studentId, changes) => {
+        this.props.updateStudent(studentId, changes, (data)  => {
+            if (data) {
+                this.props.updateStudentInfoInCourse(studentId, data);
+            }
+        });
     }
 
     selectOneStudent = (student, value, done) => {
@@ -116,8 +125,6 @@ class AdminTeacherView extends React.Component {
                         _studentIds.push(_studentId);
                     }
                 });
-                console.log('_studentIds', _studentIds);
-
                 student && !_studentIds.includes(student._id) && _studentIds.push(student._id);
                 _studentIds.length && this.modal.show({ course, _divisionId, _studentIds });
             }
@@ -234,11 +241,13 @@ class AdminTeacherView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
                 </div>
-                <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} />
+                {/* <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} /> */}
+                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
+                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateCourseTeacherGroup, updateCourseTeacherGroupStudent };
+const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent};
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);

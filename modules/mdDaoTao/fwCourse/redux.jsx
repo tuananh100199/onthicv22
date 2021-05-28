@@ -4,6 +4,7 @@ import T from 'view/js/common';
 const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetPageByUser = 'CourseGetPageByUser';
+const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
@@ -15,6 +16,43 @@ export default function courseReducer(state = {}, data) {
 
         case CourseGetItem: {
             return Object.assign({}, state, { item: Object.assign({}, state.item || {}, data.item) });
+        }
+    
+        case CourseUpdateStudentInfoInCourse: {
+            const studentId = data.studentId;
+            const currentCoursePage = state,
+            students = currentCoursePage.item.students ? currentCoursePage.item.students  : [], 
+            representerGroups =  currentCoursePage.item.representerGroups ?  currentCoursePage.item.representerGroups : [],
+            teacherGroups =  currentCoursePage.item.teacherGroups ?  currentCoursePage.item.teacherGroups : [];
+
+            for(let i = 0; i < students.length; i++ ) {
+                if (students[i]._id == studentId) {
+                    students.splice(i, 1, data.item);
+                    currentCoursePage.item.students = students;
+
+                    representerGroups.forEach(representerGroup => {
+                        for(let i = 0; i < representerGroup.student.length; i++ ) {
+                            if (representerGroup.student[i]._id == studentId) {
+                                representerGroup.student.splice(i, 1, data.item);
+                                currentCoursePage.item.representerGroups = representerGroups;
+                                break;
+                            }
+                        }
+                    });
+
+                    teacherGroups.forEach(teacherGroup => {
+                        for(let i = 0; i < teacherGroup.student.length; i++ ) {
+                            if (teacherGroup.student[i]._id == studentId) {
+                                teacherGroup.student.splice(i, 1, data.item);
+                                currentCoursePage.item.teacherGroups = teacherGroups;
+                                break;
+                            }
+                        }
+                    });
+                    break;
+                }
+            }
+            return Object.assign({}, state, currentCoursePage);
         }
 
         case CourseGetPageByUser:
@@ -212,6 +250,9 @@ export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _
         }, error => console.error('PUT: ' + url + '.', error));
     };
 }
+export function updateStudentInfoInCourse(studentId, item) {
+    return { type: CourseUpdateStudentInfoInCourse, studentId, item  };
+}
 
 // Home ---------------------------------------------------------------------------------------------------------------
 export function getCoursePageByUser(pageNumber, pageSize, done) {
@@ -300,4 +341,11 @@ export function getStudentByLecturer(_id, done) {
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
+}
+
+export function exportStudentInfoToExcel(_courseId) {
+    T.download(T.url(`/api/course/student/export/${_courseId}`));
+}
+export function exportRepresenterAndStudentToExcel(_courseId) {
+    T.download(T.url(`/api/course/representer-student/export/${_courseId}`));
 }

@@ -132,7 +132,7 @@ export function updateUser(_id, changes, done) {
             } else {
                 T.notify('Cập nhật thông tin người dùng thành công!', 'success');
                 dispatch(changeUser(data.user));
-                done && done();
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Cập nhật thông tin người dùng bị lỗi!', 'danger'));
     };
