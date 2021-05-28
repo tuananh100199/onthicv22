@@ -80,7 +80,7 @@ module.exports = (app) => {
                                     data.user.menu['5000'].menus[5000 + index] = {
                                         title: 'Khóa học ' + student.course.name,
                                         link: '/user/hoc-vien/khoa-hoc/' + student.course._id,
-                                        permissions: ['studentCourse:read']
+                                        permissions: ['course:learn']
                                     };
                                 }
                             });

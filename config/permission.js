@@ -270,17 +270,6 @@ module.exports = app => {
                                     delete menuItem.menus[menuIndex];
                                     if (Object.keys(menuItem.menus).length == 0) delete user.menu[parentMenuIndex];
                                 }
-                                // if (req.session.user && req.session.user.courses) {
-                                //     const courses = req.session.user.courses;
-                                //     courses.map((course, index) => {
-                                //         const menuName = 5000 + index + 1;
-                                //         user.menu['5000'].menus[menuName] = {
-                                //             title: 'Khóa học ' + course.name,
-                                //             link: '/user/hoc-vien/khoa-hoc/' + course.courseId,
-                                //             permissions: ['studentCourse:read']
-                                //         };
-                                //     });
-                                // }
                             });
                         });
 
