@@ -408,7 +408,7 @@ module.exports = (app) => {
     // Lecturer API
     app.get('/api/course/lecturer/student', app.permission.check('course:read'), (req, res) => {
         const userId = req.session.user._id;
-        app.model.course.get(req.body._id, (error, item) => {
+        app.model.course.get(req.query._id, (error, item) => {
             if (error || !item) {
                 res.send({ error });
             } else {
