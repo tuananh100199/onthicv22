@@ -86,13 +86,14 @@ module.exports = (app) => {
     app.get('/api/course/page/:pageNumber/:pageSize', app.permission.check('course:read'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
+            sessionUser = req.session.user,
             { pageCondition, courseType } = req.query;
         const condition = { courseType, active: true, ...pageCondition };
-        if (req.session.user.isLecturer) {
-            condition.teacherGroups = { $elemMatch: { teacher: req.session.user._id } };
+        if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
+            condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
         }
-        if (req.session.user.division && req.session.user.division.isOutside) {
-            condition.admins = req.session.user._id;
+        if (sessionUser.division && sessionUser.division.isOutside) {
+            condition.admins = sessionUser._id;
         }
 
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
@@ -412,7 +413,7 @@ module.exports = (app) => {
                 res.send({ error });
             } else {
                 const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == userId);
-                res.send({ error, item: listStudent[0].student });
+                res.send({ error, item: listStudent.length ? listStudent[0].student : null });
             }
         });
     });
