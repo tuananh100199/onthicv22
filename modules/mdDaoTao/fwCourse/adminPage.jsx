@@ -55,9 +55,10 @@ class CoursePage extends AdminPage {
     create = e => e.preventDefault() || this.modal.show();
 
     render() {
-        const permission = this.getUserPermission('course');
+        const permission = this.getUserPermission('course'),
+            readOnly = (!permission.write || this.props.system.user.isLecturer) && !this.props.system.user.isCourseAdmin;
         const courseTypes = this.state.courseTypes ? this.state.courseTypes : [];
-        const tabs = courseTypes.length ? courseTypes.map(courseType => ({ title: courseType.text, component: <AdminCourseFilterView courseFilter={courseType.course} courseType={courseType.id} /> })) : [];
+        const tabs = courseTypes.length ? courseTypes.map(courseType => ({ title: courseType.text, component: <AdminCourseFilterView courseFilter={courseType.course} courseType={courseType.id} readOnly={readOnly} /> })) : [];
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học',
@@ -66,7 +67,7 @@ class CoursePage extends AdminPage {
                 <FormTabs id='coursePageTab' contentClassName='tile' tabs={tabs} />
                 <CourseModal create={this.props.createCourse} ref={e => this.modal = e} history={this.props.history} readOnly={!permission.write} />
             </>,
-            onCreate: permission.write ? this.create : null,
+            onCreate: !readOnly ? this.create : null,
         });
     }
 }
