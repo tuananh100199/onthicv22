@@ -58,15 +58,11 @@ class AdminStudentView extends React.Component {
         isConfirm && this.props.updateCourseStudents(student.course._id, [student._id], 'remove', () => this.onSearch({}));
     });
 
-    showStudentInfo = (e, student) => {
-        e.preventDefault();
-        this.modal.show(student);
-    }
+    showStudentInfo = (e, student) => e.preventDefault() || this.modal.show(student);
+
     updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, (data)  => {
-            if (data) {
-                this.props.updateStudentInfoInCourse(studentId, data);
-            }
+        this.props.updateStudent(studentId, changes, (data) => {
+            data && this.props.updateStudentInfoInCourse(studentId, data);
         });
     }
 
@@ -152,7 +148,7 @@ class AdminStudentView extends React.Component {
                 </div>
                 {/* {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null} */}
                 <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
-                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
+                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
             </div>);
     }
 }
