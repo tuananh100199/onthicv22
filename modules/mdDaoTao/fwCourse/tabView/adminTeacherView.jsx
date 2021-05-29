@@ -166,18 +166,17 @@ class AdminTeacherView extends React.Component {
                     </div>
                 </li>));
         } else {
-            const divisionList = {};
+            const divisionMapper = {};
             students.forEach(student => {
                 if (isValidStudent(student) && student.division) {
-                    if (!divisionList[student.division._id]) divisionList[student.division._id] = student.division;
-                    const division = divisionList[student.division._id];
-                    if (!division.students) division.students = [];
+                    if (!divisionMapper[student.division._id]) divisionMapper[student.division._id] = Object.assign({}, student.division);
+                    const division = divisionMapper[student.division._id];
+                    if (division.students == null) division.students = [];
                     division.students.push(student);
                 }
             });
-            console.log(divisionList);
 
-            Object.values(divisionList).sort((a, b) => a.title - b.title).forEach((division, index) => {
+            Object.values(divisionMapper).sort((a, b) => a.title - b.title).forEach((division, index) => {
                 studentList.push(
                     <li style={{ margin: 0, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
