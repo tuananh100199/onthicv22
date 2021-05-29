@@ -68,14 +68,14 @@ class AdminRepresentersView extends React.Component {
 
     removeStudent = (e, representer, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi giáo viên '${representer.lastname} ${representer.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseRepresenterGroupStudent(this.props.course.item._id, representer._id, [student._id], 'remove'));
-    
-    showStudentInfo = (e,student) => {
+
+    showStudentInfo = (e, student) => {
         e.preventDefault();
         this.studentModal.show(student);
     }
 
     updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, (data)  => {
+        this.props.updateStudent(studentId, changes, (data) => {
             if (data) {
                 this.props.updateStudentInfoInCourse(studentId, data);
             }
@@ -208,7 +208,7 @@ class AdminRepresentersView extends React.Component {
                 </div>
                 {/* <CirclePageButton type='export' onClick={() => exportRepresenterAndStudentToExcel(_id)} /> */}
                 <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
-                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
+                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
             </div>);
     }
 }

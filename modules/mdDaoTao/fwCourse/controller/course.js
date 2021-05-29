@@ -88,16 +88,18 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
             { pageCondition, courseType } = req.query;
-        const condition = { courseType, active: true, ...pageCondition };
+        const condition = { courseType, ...pageCondition };
         if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
+            condition.active = true;
         }
         if (sessionUser.division && sessionUser.division.isOutside) {
             condition.admins = sessionUser._id;
+            condition.active = true;
         }
 
         app.model.course.getPage(pageNumber, pageSize, condition, (error, page) => {
-            res.send({ page, error: error || page == null ? 'Danh sách khóa học không sẵn sàng!' : null });
+            res.send({ page, error: error || page == null ? 'Danh sách trống!' : null });
         });
     });
 
