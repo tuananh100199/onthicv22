@@ -59,6 +59,8 @@ class TeacherModal extends AdminModal {
 class AdminTeacherView extends React.Component {
     state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     students = {};
+    itemSelectAll = {};
+    itemDeSelectAll = {};
 
     addTeacher = e => {
         e.preventDefault();
@@ -82,6 +84,17 @@ class AdminTeacherView extends React.Component {
         this.props.updateStudent(studentId, changes, (data) => {
             data && this.props.updateStudentInfoInCourse(studentId, data);
         });
+    }
+
+    selectDivisionStudents = (_divisionId, selected) => {
+        this.itemSelectAll[_divisionId] && this.itemSelectAll[_divisionId].value(true);
+        this.itemDeSelectAll[_divisionId] && this.itemDeSelectAll[_divisionId].value(false);
+
+        const { students } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        (students || []).forEach(item =>
+            item.division && this.students[item._id] && this.students[item._id].value(selected && item.division._id == _divisionId));
+
+        this.setState({ _divisionId, assignedButtonVisible: selected });
     }
 
     selectOneStudent = (student, value, done) => {
@@ -166,27 +179,38 @@ class AdminTeacherView extends React.Component {
                     </div>
                 </li>));
         } else {
-            const divisionMapper = {};
+            const divisionContainer = {};
             students.forEach(student => {
                 if (isValidStudent(student) && student.division) {
-                    if (!divisionMapper[student.division._id]) divisionMapper[student.division._id] = Object.assign({}, student.division);
-                    const division = divisionMapper[student.division._id];
+                    if (!divisionContainer[student.division._id]) divisionContainer[student.division._id] = Object.assign({}, student.division);
+                    const division = divisionContainer[student.division._id];
                     if (division.students == null) division.students = [];
                     division.students.push(student);
                 }
             });
 
-            Object.values(divisionMapper).sort((a, b) => a.title - b.title).forEach((division, index) => {
+            Object.values(divisionContainer).sort((a, b) => a.title - b.title).forEach((division, index) => {
                 studentList.push(
                     <li style={{ margin: 0, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
                             {studentList.length + 1}. {division.title} {division.isOutside ? ' (cơ sở ngoài)' : ''}
+                            <div className='buttons'>
+                                <FormCheckbox ref={e => this.itemSelectAll[division._id] = e} label='Chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                                <FormCheckbox ref={e => this.itemDeSelectAll[division._id] = e} label='Không chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            </div>
                         </div>
-                        <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                        <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {division.students.map((student, index) => (
                                 <li style={{ margin: 0, display: 'block' }} key={index}>
-                                    <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOneStudent(student, value)}
-                                        label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division.title} ${student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
+                                    <div style={{ display: 'inline-flex' }}>
+                                        <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOneStudent(student, value)}
+                                            label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division.title} ${student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
+                                        <div className='buttons'>
+                                            <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
+                                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                            </a>
+                                        </div>
+                                    </div>
                                 </li>
                             ))}
                         </ul>

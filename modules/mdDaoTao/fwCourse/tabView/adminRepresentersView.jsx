@@ -5,6 +5,7 @@ import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+
 class RepresenterModal extends AdminModal {
     state = { representers: [] };
     onShow = ({ course, _studentIds }) => {
