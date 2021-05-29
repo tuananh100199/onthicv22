@@ -81,7 +81,7 @@ class AdminTeacherView extends React.Component {
     }
 
     updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, (data)  => {
+        this.props.updateStudent(studentId, changes, (data) => {
             if (data) {
                 this.props.updateStudentInfoInCourse(studentId, data);
             }
@@ -179,7 +179,7 @@ class AdminTeacherView extends React.Component {
                     division.students.push(student);
                 }
             });
-            console.log(divisionList)
+            console.log(divisionList);
 
             Object.values(divisionList).sort((a, b) => a.title - b.title).forEach((division, index) => {
                 studentList.push(
@@ -272,11 +272,11 @@ class AdminTeacherView extends React.Component {
                 </div>
                 {/* <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} /> */}
                 <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
-                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
+                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent};
+const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);
