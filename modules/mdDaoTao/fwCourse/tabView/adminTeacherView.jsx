@@ -157,7 +157,7 @@ class AdminTeacherView extends React.Component {
             permissionTeacherWrite = permission.write || (currentUser && currentUser.isCourseAdmin);
         const isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
 
-        let { _id, students, teacherGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        let { _id: _courseId, students, teacherGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
         let { searchStudentText, outsideStudentVisible, sortType, assignedButtonVisible } = this.state,
             studentList = [], assignedStudents = [];
         outsideStudentVisible = outsideStudentVisible || isOutsideCourseAdmin;
@@ -264,10 +264,12 @@ class AdminTeacherView extends React.Component {
                                 {teacherGroups.map((item, index) => item.teacher ?
                                     <li className='text-primary' style={{ margin: 10 }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
-                                            {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
-                                            {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
+                                            <h5>
+                                                {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
+                                                {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
+                                            </h5>
                                             <div className='buttons'>
-                                                <a href='#' onClick={e => _id && this.removeTeacher(e, item.teacher)}>
+                                                <a href='#' onClick={e => _courseId && this.removeTeacher(e, item.teacher)}>
                                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
                                                 </a>
                                             </div>
@@ -281,7 +283,7 @@ class AdminTeacherView extends React.Component {
                                                             {student.division && student.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
                                                         </a>
                                                         <div className='buttons'>
-                                                            <a href='#' onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
+                                                            <a href='#' onClick={e => _courseId && this.removeStudent(e, item.teacher, student)}>
                                                                 <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
                                                             </a>
                                                         </div>

@@ -173,8 +173,10 @@ class AdminRepresentersView extends React.Component {
                                 {representerGroups.map((item, index) => item.representer ?
                                     <li className='text-primary' style={{ margin: 10 }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
-                                            {item.representer.lastname} {item.representer.firstname} - {item.representer.division && item.representer.division.title}
-                                            {item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
+                                            <h5>
+                                                {item.representer.lastname} {item.representer.firstname} - {item.representer.division && item.representer.division.title}
+                                                {item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
+                                            </h5>
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => _id && this.removeRepresenter(e, item.representer)}>
                                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />

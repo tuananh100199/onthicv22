@@ -136,19 +136,21 @@ class AdminStudentView extends React.Component {
                             </div>
                         </div>
                         <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
-                            {division.preStudents.map((preStudent, index) => (
-                                <li style={{ margin: 0, display: 'block' }} key={index}>
-                                    <div style={{ display: 'inline-flex' }}>
-                                        <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOnePreStudent(preStudent, value)}
-                                            label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) =&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
-                                        <div className='buttons'>
-                                            <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
-                                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
-                                            </a>
+                            {division.preStudents.map((preStudent, index) => {
+                                const studentLabel = <>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard})
+                                    {preStudent.planCourse ? <>=&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></> : ''}</>;
+                                return (
+                                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                                        <div style={{ display: 'inline-flex' }}>
+                                            <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} label={studentLabel} onChange={value => this.selectOnePreStudent(preStudent, value)} style={{ display: 'inline-block' }} />
+                                            <div className='buttons'>
+                                                <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
+                                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                            ))}
+                                    </li>);
+                            })}
                         </ul>
                     </li>);
             });
