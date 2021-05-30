@@ -121,9 +121,11 @@ class EditCoursePage extends AdminPage {
             { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} readOnly={readOnly} /> },
             { title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={courseId} /> : null },
         ];
-        isCourseAdmin && isLecturer && adminTabs.push({ title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={courseId} /> : null });
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
             adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null });
+        }
+        if (isCourseAdmin && isLecturer) {
+            adminTabs.push({ title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
 
         return this.renderPage({
