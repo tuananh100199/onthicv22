@@ -129,7 +129,7 @@ class EditCoursePage extends AdminPage {
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
-            content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={isLecturer && !isCourseAdmin ? lecturerTabs : adminTabs} />,
+            content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={isLecturer && !isCourseAdmin ? lecturerTabs : adminTabs} />,
             backRoute: previousRoute,
         });
     }
