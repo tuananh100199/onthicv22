@@ -349,3 +349,6 @@ export function exportStudentInfoToExcel(_courseId) {
 export function exportRepresenterAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/representer-student/export/${_courseId}`));
 }
+export function exportTeacherAndStudentToExcel(_courseId) {
+    T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
+}
