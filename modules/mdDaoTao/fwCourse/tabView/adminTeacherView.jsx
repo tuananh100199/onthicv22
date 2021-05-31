@@ -5,6 +5,7 @@ import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+
 class TeacherModal extends AdminModal {
     state = { teachers: [] };
     onShow = ({ course, _divisionId, _studentIds }) => {
@@ -58,6 +59,8 @@ class TeacherModal extends AdminModal {
 class AdminTeacherView extends React.Component {
     state = { searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     students = {};
+    itemDivisionSelectAll = {};
+    itemDivisionDeSelectAll = {};
 
     addTeacher = e => {
         e.preventDefault();
@@ -75,17 +78,23 @@ class AdminTeacherView extends React.Component {
     removeStudent = (e, teacher, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi cố vấn học tập '${teacher.lastname} ${teacher.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseTeacherGroupStudent(this.props.course.item._id, teacher._id, [student._id], 'remove'));
 
-    showStudentInfo = (e, student) => {
-        e.preventDefault();
-        this.studentModal.show(student);
-    }
+    showStudentInfo = (e, student) => e.preventDefault() || this.studentModal.show(student);
 
     updateStudent = (studentId, changes) => {
         this.props.updateStudent(studentId, changes, (data) => {
-            if (data) {
-                this.props.updateStudentInfoInCourse(studentId, data);
-            }
+            data && this.props.updateStudentInfoInCourse(studentId, data);
         });
+    }
+
+    selectDivisionStudents = (_divisionId, selected) => {
+        this.itemDivisionSelectAll[_divisionId] && this.itemDivisionSelectAll[_divisionId].value(true);
+        this.itemDivisionDeSelectAll[_divisionId] && this.itemDivisionDeSelectAll[_divisionId].value(false);
+
+        const { students } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        (students || []).forEach(item =>
+            item.division && this.students[item._id] && this.students[item._id].value(selected && item.division._id == _divisionId));
+
+        this.setState({ _divisionId, assignedButtonVisible: selected });
     }
 
     selectOneStudent = (student, value, done) => {
@@ -148,7 +157,7 @@ class AdminTeacherView extends React.Component {
             permissionTeacherWrite = permission.write || (currentUser && currentUser.isCourseAdmin);
         const isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
 
-        let { _id, students, teacherGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
+        let { _id: _courseId, students, teacherGroups } = this.props.course && this.props.course.item ? this.props.course.item : {};
         let { searchStudentText, outsideStudentVisible, sortType, assignedButtonVisible } = this.state,
             studentList = [], assignedStudents = [];
         outsideStudentVisible = outsideStudentVisible || isOutsideCourseAdmin;
@@ -157,39 +166,55 @@ class AdminTeacherView extends React.Component {
         const isValidStudent = (student) => (searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) && !assignedStudents.includes(student._id) && student.division && (!student.division.isOutside || outsideStudentVisible);
         if (!students) students = [];
         if (sortType == 'name') {
-            students.forEach((student, index) => isValidStudent(student) && studentList.push(
-                <li style={{ margin: 0, display: 'block' }} key={index}>
-                    <div style={{ display: 'inline-flex' }}>
-                        <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOneStudent(student, value)}
-                            label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division.title} ${student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
-                        <div className='buttons'>
-                            <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
-                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
-                            </a>
-                        </div>
-                    </div>
-                </li>));
+            students.forEach((student, index) => {
+                if (isValidStudent(student)) {
+                    studentList.push(
+                        <li style={{ margin: 0, display: 'block' }} key={index}>
+                            <div style={{ display: 'inline-flex' }}>
+                                <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOneStudent(student, value)}
+                                    label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division.title} ${student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
+                                <div className='buttons'>
+                                    <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
+                                        <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                    </a>
+                                </div>
+                            </div>
+                        </li>);
+                }
+            });
         } else {
-            const divisionList = {};
+            const divisionContainer = {};
             students.forEach(student => {
-                if (isValidStudent(student) && student.division) {
-                    if (!divisionList[student.division._id]) divisionList[student.division._id] = student.division;
-                    const division = divisionList[student.division._id];
-                    if (!division.students) division.students = [];
+                if (isValidStudent(student)) {
+                    if (!divisionContainer[student.division._id]) divisionContainer[student.division._id] = Object.assign({}, student.division);
+                    const division = divisionContainer[student.division._id];
+                    if (division.students == null) division.students = [];
                     division.students.push(student);
                 }
             });
-            Object.values(divisionList).sort((a, b) => a.title - b.title).forEach((division, index) => {
+
+            Object.values(divisionContainer).sort((a, b) => a.title - b.title).forEach((division, index) => {
                 studentList.push(
                     <li style={{ margin: 0, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
-                            {studentList.length + 1}. {division.title} {division.isOutside ? ' (cơ sở ngoài)' : ''}
+                            <h5>{studentList.length + 1}. {division.title} {division.isOutside ? ' (cơ sở ngoài)' : ''}</h5>
+                            <div className='buttons'>
+                                <FormCheckbox ref={e => this.itemDivisionSelectAll[division._id] = e} label='Chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                                <FormCheckbox ref={e => this.itemDivisionDeSelectAll[division._id] = e} label='Không chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            </div>
                         </div>
-                        <ul style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                        <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {division.students.map((student, index) => (
                                 <li style={{ margin: 0, display: 'block' }} key={index}>
-                                    <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOneStudent(student, value)}
-                                        label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard}) - ${student.division.title} ${student.division.isOutside ? ' (cơ sở ngoài)' : ''}`} />
+                                    <div style={{ display: 'inline-flex' }}>
+                                        <FormCheckbox ref={e => this.students[student._id] = e} style={{ display: 'inline-block' }} onChange={value => this.selectOneStudent(student, value)}
+                                            label={`${studentList.length + 1}. ${student.lastname} ${student.firstname} (${student.identityCard})`} />
+                                        <div className='buttons'>
+                                            <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item, student)}>
+                                                <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                            </a>
+                                        </div>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -214,7 +239,7 @@ class AdminTeacherView extends React.Component {
 
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
-                        <div style={{ width: '100%', display: studentList.length ? 'block' : 'none' }}>
+                        <div style={{ display: studentList.length ? 'block' : 'none' }}>
                             <a href='#' onClick={e => this.showAssignedModal(e, this.props.course.item)} style={{ float: 'right', color: 'black', display: assignedButtonVisible ? 'block' : 'none' }}>
                                 Gán <i style={{ marginLeft: 5, fontSize: 20 }} className='fa fa-arrow-right text-success' />
                             </a>
@@ -239,10 +264,12 @@ class AdminTeacherView extends React.Component {
                                 {teacherGroups.map((item, index) => item.teacher ?
                                     <li className='text-primary' style={{ margin: 10 }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
-                                            {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
-                                            {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
+                                            <h5>
+                                                {item.teacher.lastname} {item.teacher.firstname} - {item.teacher.division && item.teacher.division.title}&nbsp;
+                                                {item.teacher.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
+                                            </h5>
                                             <div className='buttons'>
-                                                <a href='#' onClick={e => _id && this.removeTeacher(e, item.teacher)}>
+                                                <a href='#' onClick={e => _courseId && this.removeTeacher(e, item.teacher)}>
                                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
                                                 </a>
                                             </div>
@@ -256,7 +283,7 @@ class AdminTeacherView extends React.Component {
                                                             {student.division && student.division.isOutside ? <span className='text-secondary'>(cơ sở ngoài)</span> : ''}
                                                         </a>
                                                         <div className='buttons'>
-                                                            <a href='#' onClick={e => _id && this.removeStudent(e, item.teacher, student)}>
+                                                            <a href='#' onClick={e => _courseId && this.removeStudent(e, item.teacher, student)}>
                                                                 <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
                                                             </a>
                                                         </div>
