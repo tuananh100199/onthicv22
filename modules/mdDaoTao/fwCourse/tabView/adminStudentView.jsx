@@ -7,10 +7,13 @@ import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/Admi
 import AdminStudentModal from '../adminStudentModal';
 
 class AdminStudentView extends React.Component {
-    state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', sortType: 'name', assignedButtonVisible: false }; // sortType = name | division
+    state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     preStudents = {};
+    itemDivisionSelectAll = {};
+    itemDivisionDeSelectAll = {};
+
     componentDidMount() {
-        this.onSearch({}, { division: 0 });
+        this.onSearch({});
     }
 
     onSearch = ({ pageNumber, pageSize, searchText, searchPlanCourse }, sort, done) => {
@@ -27,6 +30,24 @@ class AdminStudentView extends React.Component {
             });
             done && done();
         });
+    }
+
+    selectDivisionStudents = (_divisionId, selected) => {
+        this.itemDivisionSelectAll[_divisionId] && this.itemDivisionSelectAll[_divisionId].value(true);
+        this.itemDivisionDeSelectAll[_divisionId] && this.itemDivisionDeSelectAll[_divisionId].value(false);
+
+        let assignedButtonVisible = selected;
+        if (this.props.student && this.props.student.prePage) {
+            (this.props.student.prePage.list || []).forEach(preStudent => {
+                if (preStudent.division && preStudent.division._id == _divisionId) {
+                    this.preStudents[preStudent._id].value(selected);
+                } else if (!assignedButtonVisible) {
+                    assignedButtonVisible = this.preStudents[preStudent._id].value();
+                }
+            });
+        }
+
+        this.setState({ assignedButtonVisible });
     }
 
     selectOnePreStudent = () => this.setState({ assignedButtonVisible: Object.keys(this.preStudents).filter(_preStudentId => this.preStudents[_preStudentId] && this.preStudents[_preStudentId].value()).length > 0 });
@@ -58,26 +79,82 @@ class AdminStudentView extends React.Component {
         isConfirm && this.props.updateCourseStudents(student.course._id, [student._id], 'remove', () => this.onSearch({}));
     });
 
-    showStudentInfo = (e, student) => {
-        e.preventDefault();
-        this.modal.show(student);
-    }
+    showStudentInfo = (e, student) => e.preventDefault() || this.modal.show(student);
+
     updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, (data)  => {
-            if (data) {
-                this.props.updateStudentInfoInCourse(studentId, data);
-            }
+        this.props.updateStudent(studentId, changes, (data) => {
+            data && this.props.updateStudentInfoInCourse(studentId, data);
         });
     }
 
     render() {
-        const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list: preStudentList } = this.props.student && this.props.student.prePage ?
+        const { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list: preStudents } = this.props.student && this.props.student.prePage ?
             this.props.student.prePage : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        const { sortType, searchStudentText, assignedButtonVisible } = this.state;
+        let { outsideStudentVisible, sortType, searchStudentText, assignedButtonVisible } = this.state;
         const { _id: _courseId, students } = this.props.course && this.props.course.item ? this.props.course.item : {};
-        const studentList = [];
+        const studentList = [], preStudentList = [];
         const currentUser = this.props.system ? this.props.system.user : null,
             isOutsideCourseAdmin = currentUser && currentUser.isCourseAdmin && currentUser.division && currentUser.division.isOutside ? true : false;
+        outsideStudentVisible = outsideStudentVisible || isOutsideCourseAdmin;
+        const isValidStudent = preStudent => preStudent.division && (!preStudent.division.isOutside || outsideStudentVisible);
+
+        if (sortType == 'name') {
+            (preStudents || []).forEach((preStudent, index) => {
+                if (isValidStudent(preStudent)) {
+                    preStudentList.push(<li style={{ margin: 0, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOnePreStudent}
+                                label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
+                            <div className='buttons'>
+                                <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
+                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                </a>
+                            </div>
+                        </div>
+                    </li>);
+                }
+            });
+        } else {
+            const divisionContainer = {};
+            preStudents.forEach(preStudent => {
+                if (isValidStudent(preStudent)) {
+                    if (!divisionContainer[preStudent.division._id]) divisionContainer[preStudent.division._id] = Object.assign({}, preStudent.division);
+                    const division = divisionContainer[preStudent.division._id];
+                    if (division.preStudents == null) division.preStudents = [];
+                    division.preStudents.push(preStudent);
+                }
+            });
+
+            Object.values(divisionContainer).sort((a, b) => a.title - b.title).forEach((division, index) => {
+                preStudentList.push(
+                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                        <div style={{ display: 'inline-flex' }}>
+                            <h5>{preStudentList.length + 1}. {division.title} {division.isOutside ? ' (cơ sở ngoài)' : ''}</h5>
+                            <div className='buttons'>
+                                <FormCheckbox ref={e => this.itemDivisionSelectAll[division._id] = e} label='Chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, true)} style={{ display: 'inline-block' }} defaultValue={true} />
+                                <FormCheckbox ref={e => this.itemDivisionDeSelectAll[division._id] = e} label='Không chọn tất cả' onChange={() => this.selectDivisionStudents(division._id, false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
+                            </div>
+                        </div>
+                        <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                            {division.preStudents.map((preStudent, index) => {
+                                const studentLabel = <>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard})
+                                    {preStudent.planCourse ? <>=&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></> : ''}</>;
+                                return (
+                                    <li style={{ margin: 0, display: 'block' }} key={index}>
+                                        <div style={{ display: 'inline-flex' }}>
+                                            <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} label={studentLabel} onChange={value => this.selectOnePreStudent(preStudent, value)} style={{ display: 'inline-block' }} />
+                                            <div className='buttons'>
+                                                <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
+                                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>);
+                            })}
+                        </ul>
+                    </li>);
+            });
+        }
 
         (students || []).forEach((student, index) => {
             if (searchStudentText == '' || (student.lastname + ' ' + student.firstname).toLowerCase().includes(searchStudentText)) {
@@ -102,7 +179,9 @@ class AdminStudentView extends React.Component {
             <div className='row'>
                 <div className='col-md-6' >
                     <h3 className='tile-title'>Ứng viên</h3>
-                    <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>Sắp xếp theo:&nbsp;
+                    <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>
+                        <FormCheckbox label='Hiện cơ sở ngoài' onChange={value => this.setState({ outsideStudentVisible: value })} style={{ display: isOutsideCourseAdmin ? 'none' : 'inline-block', marginRight: 16 }} defaultValue={true} />
+                        Sắp xếp theo:&nbsp;
                         <a className={sortType == 'name' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { division: 0, lastname: 1, firstname: 1 })}>
                             Tên
                         </a> |&nbsp;
@@ -124,19 +203,7 @@ class AdminStudentView extends React.Component {
 
                         {preStudentList.length ?
                             <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0, overflow: 'hidden', overflowY: 'scroll', height: 'calc(100vh - 450px)' }}>
-                                {preStudentList.map((preStudent, index) =>
-                                    <li style={{ margin: 0, display: 'block' }} key={index}>
-                                        <div style={{ display: 'inline-flex' }}>
-                                            <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOnePreStudent}
-                                                label={<>{index + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
-                                            <div className='buttons'>
-                                                <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
-                                                    <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                )}
+                                {preStudentList}
                             </ul> : 'Không có ứng viên!'}
                         <Pagination name='adminPreStudent' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
                             pageCondition={pageCondition} getPage={(pageNumber, pageSize) => this.onSearch({ pageNumber, pageSize })} />
@@ -147,7 +214,10 @@ class AdminStudentView extends React.Component {
                     <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
-                        {studentList.length ? <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>{studentList}</ul> : <label>Danh sách trống!</label>}
+                        {studentList.length ?
+                            <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
+                                {studentList}
+                            </ul> : 'Danh sách trống!'}
                     </div>
                 </div>
                 {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null}

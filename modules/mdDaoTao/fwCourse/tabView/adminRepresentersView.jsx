@@ -5,6 +5,7 @@ import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
+
 class RepresenterModal extends AdminModal {
     state = { representers: [] };
     onShow = ({ course, _studentIds }) => {
@@ -69,16 +70,11 @@ class AdminRepresentersView extends React.Component {
     removeStudent = (e, representer, student) => e.preventDefault() || T.confirm('Xoá học viên', `Bạn có chắc muốn xoá học viên '${student.lastname} ${student.firstname}' khỏi giáo viên '${representer.lastname} ${representer.firstname}'?`, true, isConfirm =>
         isConfirm && this.props.updateCourseRepresenterGroupStudent(this.props.course.item._id, representer._id, [student._id], 'remove'));
 
-    showStudentInfo = (e, student) => {
-        e.preventDefault();
-        this.studentModal.show(student);
-    }
+    showStudentInfo = (e, student) => e.preventDefault() || this.studentModal.show(student);
 
     updateStudent = (studentId, changes) => {
         this.props.updateStudent(studentId, changes, (data) => {
-            if (data) {
-                this.props.updateStudentInfoInCourse(studentId, data);
-            }
+            data && this.props.updateStudentInfoInCourse(studentId, data);
         });
     }
 
@@ -177,8 +173,10 @@ class AdminRepresentersView extends React.Component {
                                 {representerGroups.map((item, index) => item.representer ?
                                     <li className='text-primary' style={{ margin: 10 }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
-                                            {item.representer.lastname} {item.representer.firstname} - {item.representer.division && item.representer.division.title}
-                                            {item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
+                                            <h5>
+                                                {item.representer.lastname} {item.representer.firstname} - {item.representer.division && item.representer.division.title}
+                                                {item.representer.division && item.representer.division.isOutside ? <span className='text-secondary'>&nbsp;(cơ sở ngoài)</span> : ''}
+                                            </h5>
                                             <div className='buttons'>
                                                 <a href='#' onClick={e => _id && this.removeRepresenter(e, item.representer)}>
                                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-times text-danger' />
