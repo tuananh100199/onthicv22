@@ -220,9 +220,8 @@ class AdminStudentView extends React.Component {
                             </ul> : 'Danh sách trống!'}
                     </div>
                 </div>
-                {/* {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null} */}
-                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
-                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
+                {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null}
+                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }

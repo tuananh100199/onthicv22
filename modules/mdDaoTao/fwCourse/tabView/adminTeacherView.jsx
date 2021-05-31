@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent } from '../redux';
+import { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, exportTeacherAndStudentToExcel } from '../redux';
 import { ajaxSelectUserType } from 'modules/_default/fwUser/redux';
 import { CirclePageButton, FormSelect, FormTextBox, FormCheckbox, AdminModal } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
@@ -295,13 +295,12 @@ class AdminTeacherView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có cố vấn học tập!</label>}
                     </div>
                 </div>
-                {/* <CirclePageButton type='export' onClick={() => alert('TODO: export thông tin Cố vấn học tập + Học viên. Lưu ý: AdminCourse mà division.isOutside (biến isOutsideCourseAdmin) không hiện nút này => kiểm tra cả controller!')} /> */}
-                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
+                {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportTeacherAndStudentToExcel(_courseId)} /> : null}
                 <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
             </div>);
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student, course: state.trainning.course });
-const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent };
+const mapActionsToProps = { updateStudentInfoInCourse, updateCourseTeacherGroup, updateCourseTeacherGroupStudent, updateStudent, exportTeacherAndStudentToExcel };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherView);

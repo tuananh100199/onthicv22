@@ -204,9 +204,8 @@ class AdminRepresentersView extends React.Component {
                             </ol> : <label style={{ color: 'black' }}>Chưa có giáo viên!</label>}
                     </div>
                 </div>
-                {/* <CirclePageButton type='export' onClick={() => exportRepresenterAndStudentToExcel(_id)} /> */}
-                <CirclePageButton type='export' onClick={(e) => e.preventDefault()} />
-                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
+                <CirclePageButton type='export' onClick={() => exportRepresenterAndStudentToExcel(_id)} />
+                <AdminStudentModal ref={e => this.studentModal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
             </div>);
     }
 }
