@@ -269,13 +269,13 @@ class UserPage extends AdminPage {
             breadcrumb: ['Người dùng'],
             advanceSearch: <>
                 <h6 className='tile-title mt-3'>Lọc theo thời gian</h6>
-                <div className="tile-body row">
+                <div className='tile-body row'>
                     <FormDatePicker ref={e => this.dateStart = e} label='Thời gian bắt đầu' className='col-md-5' />
                     <FormDatePicker ref={e => this.dateEnd = e} label='Thời gian kết thúc' className='col-md-5' />
                     <div className='m-auto'>
                         <button className='btn btn-success' style={{ marginTop: '11px' }} type='button' onClick={this.handleFilterByTime}>
                             <i className='fa fa-filter' /> Lọc danh sách
-                    </button>
+                        </button>
                     </div>
                 </div>
             </>,
