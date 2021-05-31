@@ -50,6 +50,10 @@ module.exports = app => {
             console.log('Hook: uploadCategoryImage => sign');
             const _id = fields.userData[0].substring('signCategoryImage:'.length);
             app.uploadImage('signCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
+        } else if (fields.userData && fields.userData[0].startsWith('forumCategoryImage:') && files.CategoryImage && files.CategoryImage.length > 0) {
+            console.log('Hook: uploadCategoryImage => forum');
+            const _id = fields.userData[0].substring('forumCategoryImage:'.length);
+            app.uploadImage('forumCategory', app.model.category.get, _id, files.CategoryImage[0].path, done);
         }
     };
 
