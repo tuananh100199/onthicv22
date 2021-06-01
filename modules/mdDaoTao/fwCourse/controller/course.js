@@ -396,7 +396,7 @@ module.exports = (app) => {
     app.get('/api/course/student/all', app.permission.check('course:read'), (req, res) => {
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
-            res.send({ error, students });
+            res.send({ error, students: students.map(item => ({ courseType: item.courseType, course: item.course })) });
         });
     });
 
