@@ -27,13 +27,10 @@ class AdminStudentView extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.identityCard} />
-                    <TableCell type='text' content={item.user && item.user.phoneNumber} />
+                    <TableCell type='text' content={item.user ? item.user.phoneNumber : ''} />
                 </tr>),
         });
-        return (
-            <div className='tile-body'>
-                {table}
-            </div>);
+        return <div className='tile-body'>{table}</div>;
     }
 }
 

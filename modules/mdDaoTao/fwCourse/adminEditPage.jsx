@@ -76,13 +76,10 @@ class EditCoursePage extends AdminPage {
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
-            permissionCourse = this.getUserPermission('course'),
-            permissionUser = this.getUserPermission('user'),
-            permissionDivision = this.getUserPermission('division'),
-            isLecturer = this.props.system.user.isLecturer,
-            isCourseAdmin = this.props.system.user.isCourseAdmin,
-            readOnly = (!permissionCourse.write || isLecturer) && !isCourseAdmin,
-            courseId = this.props.course && this.props.course.item && this.props.course.item._id;
+            permission = this.getUserPermission('course'),
+            { isLecturer, isCourseAdmin } = currentUser,
+            readOnly = (!permission.write || isLecturer) && !isCourseAdmin, //TODO: xem lại !isCourseAdmin
+            courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
         const tabInfo = <div className='row'>
             <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
             <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + readOnly ? 'invisible' : ''} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
@@ -106,31 +103,33 @@ class EditCoursePage extends AdminPage {
             <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
             <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
 
-            {permissionCourse.write && !isLecturer ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+            {permission.write && !isLecturer ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
         </div>;
 
         const adminTabs = [
             { title: 'Thông tin chung', component: tabInfo },
-            { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} /> },
-            { title: 'Quản trị viên', component: this.props.course && this.props.course.item ? <AdminManagerView permission={permissionCourse} currentUser={currentUser} permissionUser={permissionUser} permissionDivision={permissionDivision} /> : null },
-            { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} course={this.props.course} /> : null },
-            { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permissionCourse} permissionUser={permissionUser} /> : null },
+            { title: 'Môn học', component: <AdminSubjectView permission={permission} /> },
+            { title: 'Quản trị viên', component: this.props.course && this.props.course.item ? <AdminManagerView permission={permission} /> : null },
+            { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permission} courseType={this.state.courseType} course={this.props.course} /> : null },
+            { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permission} /> : null },
         ];
         const lecturerTabs = [
             { title: 'Thông tin chung', component: tabInfo },
-            { title: 'Môn học', component: <AdminSubjectView permission={permissionCourse} readOnly={readOnly} /> },
-            { title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={courseId} /> : null },
+            { title: 'Môn học', component: <AdminSubjectView permission={permission} readOnly={readOnly} /> },
+            { title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
         ];
-        isCourseAdmin && isLecturer && adminTabs.push({ title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permissionCourse} permissionUser={permissionUser} courseType={this.state.courseType} courseId={courseId} /> : null });
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
-            adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permissionCourse} permissionDivision={permissionDivision} /> : null });
+            adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permission} /> : null });
+        }
+        if (isCourseAdmin && isLecturer) {
+            adminTabs.push({ title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
 
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
-            content: <FormTabs id='coursePageTab' contentClassName='tile' tabs={isLecturer && !isCourseAdmin ? lecturerTabs : adminTabs} />,
+            content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={isLecturer && !isCourseAdmin ? lecturerTabs : adminTabs} />,
             backRoute: previousRoute,
         });
     }

@@ -68,11 +68,29 @@ class UserCoursePageDetail extends AdminPage {
             content: (
                 <div className='row user-course'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
+                    <Link className='col-md-4' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
                         <div className='widget-small coloured-icon info'>
                             <i className='icon fa fa-3x fa-info' />
                             <div className='info'>
                                 <h4>Thông tin khóa học</h4>
+                            </div>
+                        </div>
+                    </Link>
+                    {/* //TODO chức năng chat */}
+                    <Link className='col-md-4' to='#'> 
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-comments-o' />
+                            <div className='info'>
+                                <h4>Chat</h4>
+                            </div>
+                        </div>
+                    </Link>
+                    {/* //TODO chức năng phản hồi */}
+                    <Link className='col-md-4' to='#'> 
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-commenting-o' />
+                            <div className='info'>
+                                <h4>Phản hồi</h4>
                             </div>
                         </div>
                     </Link>
