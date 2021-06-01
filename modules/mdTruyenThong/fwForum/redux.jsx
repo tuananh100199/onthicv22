@@ -168,15 +168,15 @@ export function updateForum(_id, changes, done) {
         const url = '/api/forum';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
-                T.notify('Cập nhật liên hệ bị lỗi', 'danger');
+                T.notify('Cập nhật forum bị lỗi', 'danger');
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật liên hệ thành công!', 'info');
+                T.notify('Cập nhật forum thành công!', 'info');
                 dispatch(getForumPage());
                 done && done();
             }
-        }, error => console.error(error) || T.notify('Cập nhật liên hệ bị lỗi', 'danger'));
+        }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };
 }
 

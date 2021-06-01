@@ -25,7 +25,11 @@ export default {
         {
             path: '/user/forum',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
-        }
+        },
+        {
+            path: '/user/forum/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
+        },
     ],
     Section: {
         // SectionForum,

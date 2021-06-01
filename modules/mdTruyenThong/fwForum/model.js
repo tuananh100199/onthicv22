@@ -2,7 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
-        status: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
+        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
         categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],            // Phân loại forum
         messages: [{
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
@@ -33,7 +33,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('user','firstname lastname').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });

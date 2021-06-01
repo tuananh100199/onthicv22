@@ -11,6 +11,7 @@ module.exports = app => {
 
     // app.get('/forum(.htm(l)?)?', app.templates.home);
     app.get('/user/forum', app.permission.check('forum:read'), app.templates.admin);
+    app.get('/user/forum/:_id', app.permission.check('forum:read'), app.templates.admin);
     app.get('/user/forum/category', app.permission.check('category:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
