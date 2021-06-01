@@ -8,7 +8,8 @@ import fwCourse from 'modules/mdDaoTao/fwCourse/index';
 import fwCourseType from 'modules/mdDaoTao/fwCourseType/index';
 import fwDivision from 'modules/mdDaoTao/fwDivision/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwForum from 'modules/mdTruyenThong/fwForum/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwHome, fwMenu, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwHome, fwMenu, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwContact, fwForum, fwNews, fwSubscribe];

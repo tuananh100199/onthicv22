@@ -18,7 +18,8 @@ import fwSign from 'modules/mdDaoTao/fwSign/index';
 import fwStudent from 'modules/mdDaoTao/fwStudent/index';
 import fwSubject from 'modules/mdDaoTao/fwSubject/index';
 import fwContact from 'modules/mdTruyenThong/fwContact/index';
+import fwForum from 'modules/mdTruyenThong/fwForum/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwCategory, fwCluster, fwEmail, fwHome, fwMenu, fwRole, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwSign, fwStudent, fwSubject, fwContact, fwNews, fwSubscribe];
+export const modules = [_init, fwCategory, fwCluster, fwEmail, fwHome, fwMenu, fwRole, fwUser, fwCandidate, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwSign, fwStudent, fwSubject, fwContact, fwForum, fwNews, fwSubscribe];
