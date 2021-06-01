@@ -1,9 +1,10 @@
 module.exports = app => {
     const schema = app.db.Schema({
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
+        priority: Number,
         title: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
-        categories: [{ type: app.db.Schema.ObjectId, ref: 'Category' }],            // Phân loại forum
+        categories: { type: app.db.Schema.ObjectId, ref: 'Category' },            // Phân loại forum
         messages: [{
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
             content: String,
@@ -15,7 +16,12 @@ module.exports = app => {
     const model = app.db.model('Forum', schema);
 
     app.model.forum = {
-        create: (data, done) => model.create(data, done),
+        create: (data, done) => {
+            model.find({}).sort({ priority: -1 }).limit(1).exec((error, items) => {
+                data.priority = error || items == null || items.length === 0 ? 1 : items[0].priority + 1;
+                model.create(data, done);
+            });
+        },
 
         getAll: (done) => model.find({}).sort({ _id: -1 }).exec(done),
 
@@ -33,20 +39,47 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('user','firstname lastname').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('user','firstname lastname').sort({ priority: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
             }
         }),
 
-        get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition, done) : model.findOne(condition, done),
-
-        read: (_id, done) => model.findOneAndUpdate({ _id }, { $set: { read: true } }, { new: true }, done),
+        get: (condition, done) => {
+            const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
+            findTask.populate('user','firstname lastname').populate({
+                path:'messages.user', select: 'firstname lastname'}) .exec(done);
+        },
+        
+        // read: (_id, done) => model.findOneAndUpdate({ _id }, { $set: { read: true } }, { new: true }, done),
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
+
+        swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
+            if (error || item1 === null) {
+                done('Invalid sign Id!');
+            } else {
+                console.log('item1', item1);
+                console.log('isMoveUp', isMoveUp);
+
+                model.find({ priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority } })
+                    .sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {
+                        if (error) {
+                            done(error);
+                        } else if (list == null || list.length === 0) {
+                            done(null);
+                        } else {
+                            let item2 = list[0],
+                                priority = item1.priority;
+                            item1.priority = item2.priority;
+                            item2.priority = priority;
+                            item1.save(error1 => item2.save(error2 => done(error1 ? error1 : error2)));
+                        }
+                    });
+            }
+        }),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {
@@ -57,6 +90,16 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
+
+        addMessage: (_id, messages, done) => {
+            model.findOneAndUpdate(_id, { $push: { messages: messages } }, { new: true }).exec(done);
+        },
+
+        updateMessage: (_id, messages, done) => model.findOneAndUpdate({ _id }, messages, { new: true }, done),
+
+        deleteMessage: (_id, messageId, done) => {
+            model.findOneAndUpdate({ _id }, { $pull: { messages: messageId } }, { new: true }).exec(done);
+        },
 
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };

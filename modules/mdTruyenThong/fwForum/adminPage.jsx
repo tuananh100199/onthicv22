@@ -62,6 +62,7 @@ class ForumPage extends AdminPage {
         this.props.getForumPage(1);
         T.onSearch = (searchText) => this.props.getForumPage(1, undefined, searchText);
     }
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
     swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapForum(item._id, isMoveUp);
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa biển báo', 'Bạn có chắc bạn muốn xóa biển báo này?', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id));
@@ -79,7 +80,7 @@ class ForumPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '40%' }}>Tên forum</th>
                     <th style={{ width: '20%' }} nowrap='true'>Người tạo</th>
-                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng tin nhắn</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng bài viết</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
@@ -89,12 +90,10 @@ class ForumPage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                        <TableCell type='link' content={item.title} onClick={e => this.edit(e, item)} />
+                        <TableCell type='link' content={item.title} url={'/user/forum/' + item._id} />
                         <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
                         <TableCell type='text' content={item.messages && item.messages.length} style={{textAlign: 'center'}}/>
                         <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-
-                        {/* <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.props.updateForum(item._id, { active })} /> */}
                         <TableCell type='buttons' content={item} permission={permission} onSwap={this.swap} onEdit={'/user/forum/' + item._id} onDelete={this.delete} />
                     </tr>
                 );
@@ -102,7 +101,7 @@ class ForumPage extends AdminPage {
         });
 
         return this.renderPage({
-            icon: 'fa fa-universal-access',
+            icon: 'fa fa-users',
             title: 'Forum',
             breadcrumb: ['Forum'],
             content: <>

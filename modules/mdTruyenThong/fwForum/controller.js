@@ -32,9 +32,8 @@ module.exports = app => {
         app.model.forum.getUnread((error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/forum/item/:_id', app.permission.check('forum:write'), (req, res) => {
-        app.model.forum.read(req.params._id, (error, item) => {
-            if (item) app.io.emit('forum-changed', item);
+    app.get('/api/forum/:_id', app.permission.check('forum:write'), (req, res) => {
+        app.model.forum.get(req.params._id, (error, item) => {
             res.send({ error, item });
         });
     });
@@ -63,4 +62,34 @@ module.exports = app => {
     });
 
     // User create forum-----------------------------------------------------------------------------------------------
+
+    // API Message ----------------------------------------------------------------------------------------------------
+    app.post('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
+        const { _id, messages } = req.body;
+        app.model.forum.addMessage(_id , messages, (error, item) => res.send({ error, item }));
+    });
+
+    app.put('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
+        const { _id, messages } = req.body;
+        app.model.forum.get(_id, (error, item) => {
+            if(error || item == null) {
+                res.send({error: 'Lấy thông tin forum bị lỗi'});
+            } else {
+                app.model.forum.updateMessage(_id, messages, (error, item) => res.send({ error, item }));
+
+            }
+        });
+    });
+
+    app.delete('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
+        const { _id, messageId } = req.body;
+        app.model.forum.deleteMessage(_id, messageId, (error) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                app.model.forum.get(_id, (error, item) => res.send({ error, item }));
+            }
+        });
+    });
+    
 };

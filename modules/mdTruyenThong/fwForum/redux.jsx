@@ -6,6 +6,7 @@ const ForumGetPage = 'ForumGetPage';
 const ForumGetUnread = 'ForumGetUnread';
 const ForumAdd = 'ForumAdd';
 const ForumUpdate = 'ForumUpdate';
+const ForumGetItem = 'ForumGetItem';
 
 export default function forumReducer(state = null, data) {
     switch (data.type) {
@@ -17,6 +18,10 @@ export default function forumReducer(state = null, data) {
 
         case ForumGetUnread:
             return Object.assign({}, state, { unreads: data.list });
+
+        case ForumGetItem: {
+            return Object.assign({}, state, { item: data.item });
+        }
 
         case ForumAdd:
             if (state) {
@@ -39,45 +44,45 @@ export default function forumReducer(state = null, data) {
                 return state;
             }
 
-        case ForumUpdate: {
-            if (state) {
-                let updatedList = Object.assign({}, state.list),
-                    updatedPage = Object.assign({}, state.page),
-                    updatedUnreads = Object.assign({}, state.unreads),
-                    updatedItem = data.item;
-                if (updatedList) {
-                    for (let i = 0, n = updatedList.length; i < n; i++) {
-                        if (updatedList[i]._id == updatedItem._id) {
-                            updatedList.splice(i, 1, updatedItem);
-                            break;
-                        }
-                    }
-                }
-                if (updatedPage) {
-                    for (let i = 0, n = updatedPage.list.length; i < n; i++) {
-                        if (updatedPage.list[i]._id == updatedItem._id) {
-                            updatedPage.list.splice(i, 1, updatedItem);
-                            break;
-                        }
-                    }
-                }
-                if (updatedUnreads) {
-                    if (updatedItem.read) {
-                        for (let i = 0, n = updatedUnreads.length; i < n; i++) {
-                            if (updatedUnreads[i]._id == updatedItem._id) {
-                                updatedUnreads.splice(i, 1);
-                                break;
-                            }
-                        }
-                    } else {
-                        updatedPage.list.splice(0, 1, updatedItem);
-                    }
-                }
-                return Object.assign({}, state, { list: updatedList, page: updatedPage, unreads: updatedUnreads });
-            } else {
-                return state;
-            }
-        }
+        // case ForumUpdate: {
+        //     if (state) {
+        //         let updatedList = Object.assign({}, state.list),
+        //             updatedPage = Object.assign({}, state.page),
+        //             updatedUnreads = Object.assign({}, state.unreads),
+        //             updatedItem = data.item;
+        //         if (updatedList) {
+        //             for (let i = 0, n = updatedList.length; i < n; i++) {
+        //                 if (updatedList[i]._id == updatedItem._id) {
+        //                     updatedList.splice(i, 1, updatedItem);
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //         if (updatedPage) {
+        //             for (let i = 0, n = updatedPage.list.length; i < n; i++) {
+        //                 if (updatedPage.list[i]._id == updatedItem._id) {
+        //                     updatedPage.list.splice(i, 1, updatedItem);
+        //                     break;
+        //                 }
+        //             }
+        //         }
+        //         if (updatedUnreads) {
+        //             if (updatedItem.read) {
+        //                 for (let i = 0, n = updatedUnreads.length; i < n; i++) {
+        //                     if (updatedUnreads[i]._id == updatedItem._id) {
+        //                         updatedUnreads.splice(i, 1);
+        //                         break;
+        //                     }
+        //                 }
+        //             } else {
+        //                 updatedPage.list.splice(0, 1, updatedItem);
+        //             }
+        //         }
+        //         return Object.assign({}, state, { list: updatedList, page: updatedPage, unreads: updatedUnreads });
+        //     } else {
+        //         return state;
+        //     }
+        // }
 
         default:
             return state;
@@ -117,16 +122,16 @@ export function getForumPage(pageNumber, pageSize, done) {
     };
 }
 
-export function getForum(forumId, done) {
+export function getForum(_id, done) {
     return dispatch => {
-        const url = '/api/forum/item/' + forumId;
+        const url = '/api/forum/' + _id;
         T.get(url, data => {
             if (data.error) {
                 T.notify('Lấy liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
-                dispatch({ type: ForumUpdate, item: data.item });
+                dispatch({ type: ForumGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy liên hệ bị lỗi!', 'danger'));
     };
@@ -229,5 +234,55 @@ export function createForumByUser(forum, done) {
                 if (done) done(data);
             }
         }, error => console.error(error) || T.notify('tạo forum bị lỗi!', 'danger'));
+    };
+}
+
+// Message -------------------------------------------------------------------------------------------------------
+export function addMessage(_id, messages, done) {
+    return dispatch => {
+        const url = '/api/forum/message';
+        T.post(url, { _id, messages }, data => {
+            if (data.error) {
+                T.notify('Thêm bài viết bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                T.notify('Cập nhật bài viết thành công!', 'info');
+                dispatch({ type: ForumGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error('POST: ' + url + '.', error));
+    };
+}
+
+export function updateMessage(_id, messages, done) {
+    return dispatch => {
+        const url = '/api/forum/message';
+        T.put(url, { _id, messages }, data => {
+            if (data.error) {
+                T.notify('Cập nhật bài viết bị lỗi', 'danger');
+                console.error('PUT: ' + url + '. ' + data.error);
+                done && done(data.error);
+            } else {
+                T.notify('Cập nhật bài viết thành công!', 'info');
+                dispatch({ type: ForumGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật bài viết bị lỗi', 'danger'));
+    };
+}
+
+export function deleteMessage(_id, messageId, done) {
+    return dispatch => {
+        const url = '/api/forum/message';
+        T.delete(url, { _id, messageId }, data => {
+            if (data.error) {
+                T.notify('Xóa tin nhắn bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
+            } else {
+                T.notify('Xóa bài viết thành công!', 'info');
+                dispatch({ type: ForumGetItem, item: data.item });
+                done && done();
+            }
+        }, error => console.error('POST: ' + url + '.', error));
     };
 }
