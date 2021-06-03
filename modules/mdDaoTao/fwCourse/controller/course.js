@@ -380,17 +380,7 @@ module.exports = (app) => {
 
     // Learning Progress API
     app.get('/api/course/learning-progress/admin', app.permission.check('course:write'), (req, res) => {
-        app.model.course.get(req.query._id, (error, item) => {
-            if (error || !item) {
-                res.send({ error });
-            } else {
-                let listStudent = [];
-                item.teacherGroups.forEach(teacherGroup => {
-                    listStudent = [...teacherGroup.student];
-                });
-                res.send({ error, item: listStudent });
-            }
-        });
+        app.model.student.getAll({ course: req.query._id }, (error, item) => res.send({ error, item }));
     });
 
     app.get('/api/course/learning-progress/lecturer', app.permission.check('course:write'), (req, res) => {
