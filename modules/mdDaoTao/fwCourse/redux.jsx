@@ -348,13 +348,13 @@ export function getLearingProgressByAdmin(_id, done) {
         const url = '/api/course/learning-progress/admin';
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
+                T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
             }
-        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
 }
 export function getLearingProgressByLecturer(_id, done) {
@@ -362,13 +362,13 @@ export function getLearingProgressByLecturer(_id, done) {
         const url = '/api/course/learning-progress/lecturer';
         T.get(url, { _id }, data => {
             if (data.error) {
-                T.notify('Lấy khóa học bị lỗi!', 'danger');
+                T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
                 dispatch({ type: CourseGetItem, item: data.item });
             }
-        }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
 }
 
