@@ -64,7 +64,7 @@ class ForumPage extends AdminPage {
     }
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
     swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapForum(item._id, isMoveUp);
-    delete = (e, item) => e.preventDefault() || T.confirm('Xóa biển báo', 'Bạn có chắc bạn muốn xóa biển báo này?', true, isConfirm =>
+    delete = (e, item) => e.preventDefault() || T.confirm('Xóa forum', 'Bạn có chắc bạn muốn xóa forum này?', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id));
     updateState = (item, state) => this.props.updateForum(item._id, { state });
 

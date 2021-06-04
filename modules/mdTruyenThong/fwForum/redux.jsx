@@ -177,7 +177,7 @@ export function updateForum(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật forum thành công!', 'info');
+                T.notify('Cập nhật forum thành công!', 'success');
                 dispatch(getForumPage());
                 done && done();
             }
@@ -246,7 +246,7 @@ export function addMessage(_id, messages, done) {
                 T.notify('Thêm bài viết bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                T.notify('Cập nhật bài viết thành công!', 'info');
+                T.notify('Cập nhật bài viết thành công!', 'success');
                 dispatch({ type: ForumGetItem, item: data.item });
                 done && done(data.item);
             }
@@ -263,7 +263,7 @@ export function updateMessage(_id, messages, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật bài viết thành công!', 'info');
+                T.notify('Cập nhật bài viết thành công!', 'success');
                 dispatch({ type: ForumGetItem, item: data.item });
                 done && done(data.item);
             }
@@ -279,9 +279,9 @@ export function deleteMessage(_id, messageId, done) {
                 T.notify('Xóa tin nhắn bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.notify('Xóa bài viết thành công!', 'info');
+                T.notify('Xóa bài viết thành công!', 'success');
                 dispatch({ type: ForumGetItem, item: data.item });
-                done && done();
+                done && done(data.item);
             }
         }, error => console.error('POST: ' + url + '.', error));
     };

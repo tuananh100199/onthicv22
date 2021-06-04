@@ -49,21 +49,20 @@ module.exports = app => {
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
             findTask.populate('user','firstname lastname').populate({
-                path:'messages.user', select: 'firstname lastname'}) .exec(done);
+                path:'messages.user', select: 'firstname lastname'}).exec(done);
         },
         
         // read: (_id, done) => model.findOneAndUpdate({ _id }, { $set: { read: true } }, { new: true }, done),
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
+        update: (_id, changes, done) => {
+            model.findOneAndUpdate({ _id }, changes, { new: true }, done) ;
+        },
 
         swapPriority: (_id, isMoveUp, done) => model.findById(_id, (error, item1) => {
             if (error || item1 === null) {
                 done('Invalid sign Id!');
             } else {
-                console.log('item1', item1);
-                console.log('isMoveUp', isMoveUp);
-
                 model.find({ priority: isMoveUp ? { $gt: item1.priority } : { $lt: item1.priority } })
                     .sort({ priority: isMoveUp ? 1 : -1 }).limit(1).exec((error, list) => {
                         if (error) {
@@ -92,15 +91,25 @@ module.exports = app => {
         }),
 
         addMessage: (_id, messages, done) => {
-            model.findOneAndUpdate(_id, { $push: { messages: messages } }, { new: true }).exec(done);
+            model.findOneAndUpdate(_id, { $push: { messages: messages } }, { new: true }).populate({
+                path:'messages.user', select: 'firstname lastname'}).exec(done);
         },
 
-        updateMessage: (_id, messages, done) => model.findOneAndUpdate({ _id }, messages, { new: true }, done),
-
+        updateMessage: (_id, messages, done) => {
+            model.findOneAndUpdate({ '_id' : _id, 'messages._id' :  messages._id }, 
+            {
+                $set: {
+                    'messages.$.active': messages.active,
+                    'messages.$.content': messages.content,
+                }
+            }, { new: true }).populate({
+                path:'messages.user', select: 'firstname lastname'}).exec(done);
+        },
+       
         deleteMessage: (_id, messageId, done) => {
-            model.findOneAndUpdate({ _id }, { $pull: { messages: messageId } }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id }, { $pull: { messages: { _id : messageId } } }, { new: true }).populate({
+                path:'messages.user', select: 'firstname lastname'}).exec(done);
         },
-
         count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

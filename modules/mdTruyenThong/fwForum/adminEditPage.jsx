@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateForum, getForum, addMessage, deleteMessage } from './redux';
+import { updateForum, getForum, addMessage, updateMessage, deleteMessage } from './redux';
 import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormCheckbox, FormEditor, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
@@ -19,18 +19,13 @@ class MessageModal extends AdminModal {
             active: this.itemMassgeActive.value(),
             content: this.itemMassgeContent.value()
         };
-         !this.state.user ? messages.user = this.props.currentUser && this.props.currentUser._id : null ;
+         !this.state.user ? (messages.user = this.props.currentUser && this.props.currentUser._id) : (messages._id =  this.state._id);
          if (messages.messages == '') {
             T.notify('Nội dung bài viết không được trống!', 'danger');
             this.itemLastname.focus();
         } else {
-             this.state._id ? this.props.update(this.state._id, messages, this.hide()) : this.props.addMessage(this.props._id, messages, this.hide());
+             this.state._id ? this.props.update(this.props._id, messages, this.hide()) : this.props.addMessage(this.props._id, messages, this.hide());
         }
-        
-        //  this.props.addMessage(this.props._id, messages, () => {
-        //     T.notify('Thêm bài viết thành công!', 'success');
-        //     this.hide();
-        // });
     }
 
     render = () => this.renderModal({
@@ -70,14 +65,14 @@ class ForumEditPage extends AdminPage {
                 if (items) {
                     this.props.getForum(_id, data => {
                         if (data) {
-                            const { _id = '', user = '', title = '', categories = [], createdDate = '', state = '', messages = [] } = data;
+                            const { _id = '', user = '', title = '', categories = [], createdDate = '', state = '' } = data;
                             this.itemTitle.value(title);
                             this.itemUserCreate.value(user.lastname + ' ' + user.firstname );
                             this.itemCreatedDate.value(createdDate ? T.dateToText(createdDate) : '');
                             this.itemState.value(state);
                             const forumCategories = (items || []).map(item => ({ id: item._id, text: item.title }));
 
-                            this.setState({ _id, title, messages, categories: forumCategories }, () => this.itemCategories.value(categories));
+                            this.setState({ _id, title, categories: forumCategories }, () => this.itemCategories.value(categories));
                             this.itemTitle.focus();
                         } else {
                             T.notify('Lấy thông tin forum bị lỗi!', 'danger');
@@ -108,16 +103,18 @@ class ForumEditPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+    changeActive = (active) => {
+        this.props.updateMessage(this.state._id, {active: active});
+    }
 
-
-    deleteMessage = (e, lesson) => e.preventDefault() || T.confirm('Xóa Bài học', `Bạn có chắc bạn muốn xóa bài học <strong>${lesson.title}</strong>?`, true, isConfirm =>
+    deleteMessage = (e, lesson) => e.preventDefault() || T.confirm('Xóa bài viết', 'Bạn có chắc bạn muốn xóa bài viết này?', true, isConfirm =>
     isConfirm && this.props.deleteMessage(this.state._id, lesson._id));
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null;
         const permission = this.getUserPermission('forum'),
             readOnly = !permission.write;
-        const { title, messages } = this.state;
+       const messages = this.props.forum && this.props.forum.item ? this.props.forum.item  && this.props.forum.item.messages: null;
         const tableMessage = renderTable({
             getDataSource: () => messages || [],
             renderHead: () => (
@@ -133,7 +130,7 @@ class ForumEditPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} onClick={e => this.showMessageModal(e, item)} />
                     <TableCell type='date' content={item.createdDate} style={{ whiteSpace: 'nowrap' }} />
-                    {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(item, active)} />}
+                    {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(active)} />}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.deleteMessage} />
                 </tr>),
         });
@@ -153,13 +150,13 @@ class ForumEditPage extends AdminPage {
             <div className='tile-body'>
                 {tableMessage}
                 {permission.write ? <CirclePageButton type='create' onClick={ permission.write ? e => e.preventDefault() || this.modal.show() : null} /> : null}
-                <MessageModal _id={this.state._id} ref={e => this.modal = e} addMessage={this.props.addMessage} update={this.props.updateForum} currentUser={currentUser} readOnly={!permission.write} />
+                <MessageModal _id={this.state._id} ref={e => this.modal = e} addMessage={this.props.addMessage} update={this.props.updateMessage} currentUser={currentUser} readOnly={!permission.write} />
             </div>);
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bài viết', component: componentMessage }];
 
         return this.renderPage({
             icon: 'fa fa-users',
-            title: 'Forum: ' + title,
+            title: 'Forum: ' + this.state.title,
             breadcrumb: [<Link key={0} to='/user/forum'>Forum</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
             backRoute: backUrl,
@@ -168,5 +165,5 @@ class ForumEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum });
-const mapActionsToProps = { updateForum, getForum, getCategoryAll, addMessage, deleteMessage };
+const mapActionsToProps = { updateForum, getForum, getCategoryAll, addMessage, updateMessage, deleteMessage };
 export default connect(mapStateToProps, mapActionsToProps)(ForumEditPage);
