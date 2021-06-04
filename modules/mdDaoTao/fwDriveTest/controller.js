@@ -121,7 +121,7 @@ module.exports = app => {
                                     expireDay: new Date().setHours(new Date().getHours() + 2),
                                 };
                                 req.session.driveTest = driveTest;
-                                res.send({ driveTest });
+                                res.send({ driveTest, courseType: item });
                             }
                         });
                     } else {
