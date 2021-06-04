@@ -30,7 +30,7 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/drive-question/page/:pageNumber/:pageSize', (req, res) => {
+    app.get('/api/drive-question/page/:pageNumber/:pageSize', (req, res) => {//mobile
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             { searchText, categories } = req.query,

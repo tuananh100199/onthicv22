@@ -31,7 +31,7 @@ module.exports = (app) => {
         app.model.subject.getAll(req.query.condition, (error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/subject', app.permission.check('subject:read'), (req, res) => {
+    app.get('/api/subject', app.permission.check('subject:read'), (req, res) => {//mobile
         app.model.subject.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 

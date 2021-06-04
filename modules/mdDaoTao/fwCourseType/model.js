@@ -11,6 +11,7 @@ module.exports = app => {
             amount: Number,
         }],
         isPriceDisplayed: { type: Boolean, default: false },
+        totalTime: Number,
     });
     const model = app.db.model('CourseType', schema);
 

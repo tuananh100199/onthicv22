@@ -17,21 +17,21 @@ export default function courseReducer(state = {}, data) {
         case CourseGetItem: {
             return Object.assign({}, state, { item: Object.assign({}, state.item || {}, data.item) });
         }
-    
+
         case CourseUpdateStudentInfoInCourse: {
             const studentId = data.studentId;
             const currentCoursePage = state,
-            students = currentCoursePage.item.students ? currentCoursePage.item.students  : [], 
-            representerGroups =  currentCoursePage.item.representerGroups ?  currentCoursePage.item.representerGroups : [],
-            teacherGroups =  currentCoursePage.item.teacherGroups ?  currentCoursePage.item.teacherGroups : [];
+                students = currentCoursePage.item.students ? currentCoursePage.item.students : [],
+                representerGroups = currentCoursePage.item.representerGroups ? currentCoursePage.item.representerGroups : [],
+                teacherGroups = currentCoursePage.item.teacherGroups ? currentCoursePage.item.teacherGroups : [];
 
-            for(let i = 0; i < students.length; i++ ) {
+            for (let i = 0; i < students.length; i++) {
                 if (students[i]._id == studentId) {
                     students.splice(i, 1, data.item);
                     currentCoursePage.item.students = students;
 
                     representerGroups.forEach(representerGroup => {
-                        for(let i = 0; i < representerGroup.student.length; i++ ) {
+                        for (let i = 0; i < representerGroup.student.length; i++) {
                             if (representerGroup.student[i]._id == studentId) {
                                 representerGroup.student.splice(i, 1, data.item);
                                 currentCoursePage.item.representerGroups = representerGroups;
@@ -41,7 +41,7 @@ export default function courseReducer(state = {}, data) {
                     });
 
                     teacherGroups.forEach(teacherGroup => {
-                        for(let i = 0; i < teacherGroup.student.length; i++ ) {
+                        for (let i = 0; i < teacherGroup.student.length; i++) {
                             if (teacherGroup.student[i]._id == studentId) {
                                 teacherGroup.student.splice(i, 1, data.item);
                                 currentCoursePage.item.teacherGroups = teacherGroups;
@@ -251,7 +251,7 @@ export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _
     };
 }
 export function updateStudentInfoInCourse(studentId, item) {
-    return { type: CourseUpdateStudentInfoInCourse, studentId, item  };
+    return { type: CourseUpdateStudentInfoInCourse, studentId, item };
 }
 
 // Home ---------------------------------------------------------------------------------------------------------------
@@ -340,6 +340,35 @@ export function getStudentByLecturer(_id, done) {
                 dispatch({ type: CourseGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
+    };
+}
+
+export function getLearingProgressByAdmin(_id, done) {
+    return dispatch => {
+        const url = '/api/course/learning-progress/admin';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
+    };
+}
+export function getLearingProgressByLecturer(_id, done) {
+    return dispatch => {
+        const url = '/api/course/learning-progress/lecturer';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
 }
 

@@ -11,7 +11,6 @@ module.exports = (app) => {
         email: String,
         password: String,
         phoneNumber: String,
-
         image: String,
         active: { type: Boolean, default: false },
         createdDate: Date,
@@ -23,6 +22,7 @@ module.exports = (app) => {
 
         token: String,
         tokenDate: Date,
+        fcmToken: String,
     });
 
     schema.methods.equalPassword = function (password) {
