@@ -397,7 +397,7 @@ module.exports = (app) => {
 
     // Get Course by Student API
     // API: Mobile
-    app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {//mobile
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {
@@ -419,7 +419,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {//mobile
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
         app.model.student.get({ user: _studentId, course: _courseId }, (error, student) => {

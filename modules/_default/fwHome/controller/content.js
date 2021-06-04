@@ -32,7 +32,7 @@ module.exports = app => {
     // Home -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/content/:_id', app.templates.home);
 
-    app.get('/home/content', (req, res) => {
+    app.get('/home/content', (req, res) => {//mobile
         app.model.content.get({ _id: req.query._id }, (error, item) => res.send({ error, item }));
     });
 

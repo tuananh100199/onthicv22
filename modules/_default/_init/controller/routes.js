@@ -51,7 +51,7 @@ module.exports = (app) => {
         }
     });
 
-    app.get('/api/state', (req, res) => {
+    app.get('/api/state', (req, res) => {//mobile
         app.state.get((error, data) => {
             if (error || data == null) {
                 res.send({ error: error || 'Hệ thống bị lỗi!' });
