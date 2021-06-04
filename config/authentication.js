@@ -68,47 +68,4 @@ module.exports = (app) => {
         res.send({ error: null });
     };
 
-    app.loginUserOnMobile = (req, res) => {
-        let email = req.body.email.trim(), password = req.body.password;
-        app.model.user.auth(email, password, user => {
-            if (user == null) {
-                res.send({ error: 'Invalid email or password!' });
-            } else if (user.active) {
-                const getUserToken = () => {
-                    const token = user._id + '_' + app.getToken(8),
-                        tokenKey = app.appName + '_mobile:' + token;
-
-                    app.redis.get(tokenKey, (error, value) => {
-                        if (error || value) {
-                            getUserToken();
-                        } else {
-                            app.updateSessionUser(req, user, sessionUser => {
-                                app.redis.set(tokenKey, JSON.stringify(sessionUser), (error) => {//Lưu session user
-                                    if (error) {
-                                        getUserToken();
-                                    } else {
-                                        app.redis.expire(tokenKey, 30 * 24 * 60 * 60); // 30 days
-                                        res.send({ token, user, });
-                                    }
-                                });
-                            });
-                        }
-                    });
-                };
-                getUserToken();
-            } else {
-                res.send({ error: 'Tài khoản của bạn chưa được kích hoạt!' });
-            }
-        });
-    };
-
-    // app.loginUserOnMobile = (req, res) => {
-    //     const auth = require('basic-auth');
-    //     const credentials = auth(req);
-    //     if (credentials) {
-    //         //auth => credentials.name, credentials.pass
-    //     } else {
-    //         res.send({ error: 'Invalid parameters!' });
-    //     }
-    // };
 };
