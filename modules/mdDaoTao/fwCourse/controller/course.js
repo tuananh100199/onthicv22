@@ -380,7 +380,7 @@ module.exports = (app) => {
 
     // Get Course by Student API
     // API: Mobile
-    app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {//mobile
         const _userId = req.session.user._id;
         app.model.student.getAll({ user: _userId }, (error, students) => {
             if (error || students.length == 0) {
@@ -402,7 +402,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {//mobile
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
         app.model.student.get({ user: _studentId, course: _courseId }, (error, student) => {
@@ -422,8 +422,8 @@ module.exports = (app) => {
 
     app.get('/api/course/student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
         const sessionUser = req.session.user,
-        division = sessionUser.division,
-        courseId = req.params._courseId;
+            division = sessionUser.division,
+            courseId = req.params._courseId;
         if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
             res.send({ error: 'Bạn không có quyền xuất file excel này!' });
         } else {
@@ -442,7 +442,7 @@ module.exports = (app) => {
                         { cell: 'G1', value: 'Loại khóa học', bold: true, border: '1234' },
                         { cell: 'H1', value: 'Khóa học', bold: true, border: '1234' },
                     ];
-    
+
                     worksheet.columns = [
                         { header: 'STT', key: '_id', width: 15 },
                         { header: 'Họ', key: 'lastname', width: 15 },
@@ -505,7 +505,7 @@ module.exports = (app) => {
                 let count = 2, mergeStart = 0, mergeEnd = 0;
                 course && course.representerGroups.forEach(group => {
                     cells.push({
-                        cell:`${'A' + count}`,
+                        cell: `${'A' + count}`,
                         border: '1234',
                         value: group.representer.lastname + ' ' + group.representer.firstname,
                         font: { size: 12, align: 'center' },
@@ -530,7 +530,7 @@ module.exports = (app) => {
                         worksheet.addRow({});
                         indexStudent = 1;
                     }
-                    mergeStart = count ;
+                    mergeStart = count;
                     mergeEnd = count + indexStudent - 1;
                     worksheet.mergeCells(`${'A' + mergeStart}:${'A' + mergeEnd}`);
                     count += indexStudent;
@@ -543,8 +543,8 @@ module.exports = (app) => {
 
     app.get('/api/course/teacher-student/export/:_courseId', app.permission.check('course:read'), (req, res) => {
         const sessionUser = req.session.user,
-        division = sessionUser.division,
-        courseId = req.params._courseId;
+            division = sessionUser.division,
+            courseId = req.params._courseId;
         if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
             res.send({ error: 'Bạn không có quyền xuất file excel này!' });
         } else {
@@ -579,7 +579,7 @@ module.exports = (app) => {
                     let count = 2, mergeStart = 0, mergeEnd = 0;
                     course && course.teacherGroups.forEach(group => {
                         cells.push({
-                            cell:`${'A' + count}`,
+                            cell: `${'A' + count}`,
                             border: '1234',
                             value: group.teacher.lastname + ' ' + group.teacher.firstname,
                             font: { size: 12, align: 'center' },
@@ -604,7 +604,7 @@ module.exports = (app) => {
                             worksheet.addRow({});
                             indexStudent = 1;
                         }
-                        mergeStart = count ;
+                        mergeStart = count;
                         mergeEnd = count + indexStudent - 1;
                         worksheet.mergeCells(`${'A' + mergeStart}:${'A' + mergeEnd}`);
                         count += indexStudent;
@@ -615,7 +615,7 @@ module.exports = (app) => {
             });
         }
     });
-    
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'course:read');

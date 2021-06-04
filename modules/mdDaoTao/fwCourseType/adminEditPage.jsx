@@ -44,6 +44,7 @@ class CourseTypeEditPage extends AdminPage {
                 if (item) {
                     this.setState(item, () => {
                         this.itemTitle.value(item.title);
+                        this.totalTime.value(item.totalTime);
                         this.itemShortDescription.value(item.shortDescription);
                         this.itemDetailDescription.html(item.detailDescription);
                         this.itemPrice.value(item.price);
@@ -68,6 +69,7 @@ class CourseTypeEditPage extends AdminPage {
     save = () => {
         const changes = {
             title: this.itemTitle.value(),
+            totalTime: this.totalTime.value(),
             shortDescription: this.itemShortDescription.value().trim(),
             detailDescription: this.itemDetailDescription.html(),
             price: this.itemPrice.value(),
@@ -80,6 +82,9 @@ class CourseTypeEditPage extends AdminPage {
         if (changes.title == '') {
             T.notify('Tên loại khóa học không được trống!', 'danger');
             this.itemTitle.focus();
+        } else if (changes.totalTime == '') {
+            T.notify('Thời gian làm bài khóa học không được trống!', 'danger');
+            this.totalTime.focus();
         } else {
             this.props.updateCourseType(this.state._id, changes);
         }
@@ -112,7 +117,10 @@ class CourseTypeEditPage extends AdminPage {
             <div className='row'>
                 <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
                 <div className='col-md-9 order-md-1'>
-                    <FormTextBox ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                    <div className='row'>
+                        <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                        <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài' value={this.state.totalTime} onChange={e => this.setState({ totalTime: e.target.value })} readOnly={readOnly} />
+                    </div>
                     <div className='row'>
                         <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
                         <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />

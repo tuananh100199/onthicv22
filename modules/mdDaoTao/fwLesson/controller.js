@@ -27,12 +27,12 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {
+    app.get('/api/lesson', app.permission.check('lesson:read'), (req, res) => {//mobile
         const { _id } = req.query;
         app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {
+    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {//mobile
         const { _id, courseId, subjectId } = req.query;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {
@@ -71,7 +71,7 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {
+    app.post('/api/question/student/submit', app.permission.check('lesson:read'), (req, res) => {//mobile
         const { courseId, subjectId, lessonId, answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
             score = 0;
@@ -110,7 +110,7 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/question/student/reset', app.permission.check('lesson:read'), (req, res) => {
+    app.put('/api/question/student/reset', app.permission.check('lesson:read'), (req, res) => {//mobile
         const { courseId, subjectId, lessonId } = req.body,
             userId = req.session.user._id;
         app.model.student.getAll({ user: userId, course: courseId }, (error, students) => {

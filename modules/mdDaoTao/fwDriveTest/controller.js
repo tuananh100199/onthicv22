@@ -22,9 +22,9 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/:_id', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu', app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/bo-de-thi-thu/:_id', app.templates.admin);
-    
+
     // APIs -----------------------------------------------------------------------------------------------------------
-    app.get('/api/drive-test/all', (req, res) => {
+    app.get('/api/drive-test/all', (req, res) => {//mobile
         const condition = req.query.condition;
         app.model.driveTest.getAll(condition, (error, list) => res.send({ error, list }));
     });
@@ -39,7 +39,7 @@ module.exports = app => {
         app.model.driveTest.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
-    app.get('/api/drive-test', (req, res) => {
+    app.get('/api/drive-test', (req, res) => {//mobile
         app.model.driveTest.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
@@ -70,7 +70,7 @@ module.exports = app => {
     });
 
     //Random Drive Test API ----------------------------------------------------------------------------------------------
-    app.post('/api/drive-test/random', (req, res) => {
+    app.post('/api/drive-test/random', (req, res) => {//mobile
         req.session.driveTest = null;
         const _courseTypeId = req.body._courseTypeId,
             driveTest = req.session.driveTest,
@@ -95,7 +95,7 @@ module.exports = app => {
                 }
                 return result;
             };
-            
+
             app.model.courseType.get(_courseTypeId, (error, item) => {
                 if (error || item == null) {
                     res.send({ error: 'Lấy loại khóa học bị lỗi!' });
@@ -103,7 +103,7 @@ module.exports = app => {
                     if (item.questionTypes) {
                         app.model.driveQuestion.getAll((error, list) => {
                             if (error || list.length == 0) {
-                                res.send({error: 'Lấy câu hỏi thi bị lỗi!'});
+                                res.send({ error: 'Lấy câu hỏi thi bị lỗi!' });
                             } else {
                                 const questionMapper = {};
                                 list.forEach(question => {
@@ -125,14 +125,14 @@ module.exports = app => {
                             }
                         });
                     } else {
-                        res.send({error: 'Lấy loại câu hỏi thi bị lỗi!'});
+                        res.send({ error: 'Lấy loại câu hỏi thi bị lỗi!' });
                     }
                 }
             });
         }
     });
 
-    app.post('/api/drive-test/student/submit', (req, res) => {
+    app.post('/api/drive-test/student/submit', (req, res) => {//mobile
         const { _id, answers } = req.body;
         let score = 0,
             importanceScore = null;
@@ -167,7 +167,7 @@ module.exports = app => {
         });
     });
 
-    app.post('/api/drive-test/random/submit', (req, res) => {
+    app.post('/api/drive-test/random/submit', (req, res) => {//mobile
         const { answers } = req.body,
             randomTest = req.session.driveTest;
         let score = 0,
