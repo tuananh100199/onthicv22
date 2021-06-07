@@ -103,8 +103,13 @@ class ForumEditPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    changeActive = (active) => {
-        this.props.updateMessage(this.state._id, {active: active});
+    changeActive = (active, item) => {
+        const messages = {
+            _id: item._id,
+            active: active,
+            content: item.content
+        };
+        this.props.updateMessage(this.state._id, messages);
     }
 
     deleteMessage = (e, lesson) => e.preventDefault() || T.confirm('Xóa bài viết', 'Bạn có chắc bạn muốn xóa bài viết này?', true, isConfirm =>
@@ -130,7 +135,7 @@ class ForumEditPage extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} onClick={e => this.showMessageModal(e, item)} />
                     <TableCell type='date' content={item.createdDate} style={{ whiteSpace: 'nowrap' }} />
-                    {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(active)} />}
+                    {!readOnly && <TableCell type='checkbox' content={item.active} permission={permission} onChanged={active => this.changeActive(active, item)} />}
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.deleteMessage} />
                 </tr>),
         });

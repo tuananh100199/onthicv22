@@ -7,12 +7,12 @@ module.exports = app => {
             3005: { title: 'Forum', link: '/user/forum', backgroundColor: '#00897b' },
         },
     };
-    app.permission.add({ name: 'forum:read', menu }, { name: 'forum:write' }, { name: 'forum:delete' });
+    app.permission.add({ name: 'forum:read', menu },{ name: 'forum:write' }, { name: 'forum:delete' });
 
     // app.get('/forum(.htm(l)?)?', app.templates.home);
-    app.get('/user/forum', app.permission.check('forum:read'), app.templates.admin);
-    app.get('/user/forum/:_id', app.permission.check('forum:read'), app.templates.admin);
-    app.get('/user/forum/category', app.permission.check('category:read'), app.templates.admin);
+    app.get('/user/forum', app.permission.check('forum:write'), app.templates.admin);
+    app.get('/user/forum/:_id', app.permission.check('forum:write'), app.templates.admin);
+    app.get('/user/forum/category', app.permission.check('category:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('forum:write'), (req, res) => {
@@ -26,10 +26,6 @@ module.exports = app => {
 
     app.get('/api/forum/all', app.permission.check('forum:write'), (req, res) => {
         app.model.forum.getAll((error, list) => res.send({ error, list }));
-    });
-
-    app.get('/api/forum/unread', app.permission.check('forum:write'), (req, res) => {
-        app.model.forum.getUnread((error, list) => res.send({ error, list }));
     });
 
     app.get('/api/forum/:_id', app.permission.check('forum:write'), (req, res) => {
@@ -66,7 +62,9 @@ module.exports = app => {
     // API Message ----------------------------------------------------------------------------------------------------
     app.post('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
         const { _id, messages } = req.body;
-        app.model.forum.addMessage(_id , messages, (error, item) => res.send({ error, item }));
+        app.model.forum.addMessage(_id , messages, (error, item) => {
+            res.send({ error, item });
+        } );
     });
 
     app.put('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
