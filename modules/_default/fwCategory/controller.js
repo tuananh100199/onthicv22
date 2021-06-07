@@ -2,7 +2,7 @@ module.exports = app => {
     app.permission.add({ name: 'category:read' }, { name: 'category:write' }, { name: 'category:delete' });
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/category/:type', (req, res) => {
+    app.get('/api/category/:type', (req, res) => { //mobile
         const condition = { type: req.params.type },
             searchText = req.query.searchText,
             active = req.query.active;

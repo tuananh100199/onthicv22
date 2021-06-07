@@ -13,6 +13,7 @@ module.exports = app => {
         maxStudent: { type: Number, default: 100 },                                       // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
+        chatActive: { type: Boolean, default: true },
         active: { type: Boolean, default: false },
 
         thoiGianKhaiGiang: { type: Date, default: Date.now },

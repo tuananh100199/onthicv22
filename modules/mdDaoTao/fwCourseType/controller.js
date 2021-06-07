@@ -25,7 +25,7 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course-type/all', (req, res) => {
+    app.get('/api/course-type/all', (req, res) => {//mobile
         app.model.courseType.getAll((error, list) => res.send({ error, list }));
     });
 

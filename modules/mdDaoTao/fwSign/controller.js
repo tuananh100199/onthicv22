@@ -21,7 +21,7 @@ module.exports = app => {
         app.model.sign.getAll(condition, (error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/sign/page/:pageNumber/:pageSize', (req, res) => {
+    app.get('/api/sign/page/:pageNumber/:pageSize', (req, res) => {//mobile
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             { searchText, categories } = req.query,
