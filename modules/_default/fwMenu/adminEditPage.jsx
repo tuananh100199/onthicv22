@@ -55,7 +55,7 @@ class ComponentModal extends AdminModal {
         title: 'Thành phần giao diện',
         body: <>
             <FormTextBox ref={e => this.itemClassname = e} label='Classname' readOnly={this.props.readOnly} />
-            <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: <strong>marginTop: 50px; backgroundColor: red</strong> <br/> (Các style cách nhau bởi dấu ";")' readOnly={this.props.readOnly} />
+            <FormTextBox ref={e => this.itemStyle = e} label='Style' smallText='Ví dụ: <strong>marginTop: 50px; backgroundColor: red</strong> <br/> (Các style cách nhau bởi dấu chấm phẩy &apos;;&apos;)' readOnly={this.props.readOnly} />
             <FormSelect ref={e => this.itemViewTyle = e} label='Loại thành phần' data={this.componentTypes} onChange={data => this.viewTypeChanged(data.id)} readOnly={this.props.readOnly} />
 
             <FormSelect ref={e => this.itemViewItem = e} label='Tên thành phần' data={this.state.adapter} onChange={data => this.setState({ viewId: data.id })} readOnly={this.props.readOnly}

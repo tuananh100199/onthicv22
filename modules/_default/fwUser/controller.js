@@ -33,8 +33,6 @@ module.exports = app => {
                 if (condition.userType && condition.userType != 'all') {
                     pageCondition.$or.push(Object.fromEntries(
                         (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).map(item => [item, true])));
-                    // (Array.isArray(condition.userType) ? condition.userType : [condition.userType]).forEach(item =>
-                    //     pageCondition.$or.push(JSON.parse(`{"${item}":true}`)));
                 }
 
                 if (condition.dateStart && condition.dateEnd) {
