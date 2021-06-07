@@ -206,7 +206,7 @@ export function deleteMessage(_id, messageId, done) {
         const url = '/api/forum/message';
         T.delete(url, { _id, messageId }, data => {
             if (data.error) {
-                T.notify('Xóa tin nhắn bị lỗi!', 'danger');
+                T.notify('Xóa bài viết bị lỗi!', 'danger');
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.notify('Xóa bài viết thành công!', 'success');

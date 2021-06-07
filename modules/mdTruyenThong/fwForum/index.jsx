@@ -2,14 +2,13 @@
 // import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-// import SectionForum from './sectionForum';
 import forum from './redux';
 
 export default {
     init: () => {
         // T.component['forum'] = {
         //     render: (viewId) => <SectionForum viewId={viewId} />,
-        //     text: 'Liên hệ',
+        //     text: 'Forum',
         //     backgroundColor: '#c8e6f9',
         // };
     },

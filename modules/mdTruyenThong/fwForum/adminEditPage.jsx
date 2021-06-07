@@ -24,7 +24,7 @@ class MessageModal extends AdminModal {
             T.notify('Nội dung bài viết không được trống!', 'danger');
             this.itemLastname.focus();
         } else {
-             this.state._id ? this.props.update(this.props._id, messages, this.hide()) : this.props.addMessage(this.props._id, messages, this.hide());
+             this.state._id ? this.props.updateMessage(this.props._id, messages, this.hide()) : this.props.addMessage(this.props._id, messages, this.hide());
         }
     }
 
@@ -155,7 +155,7 @@ class ForumEditPage extends AdminPage {
             <div className='tile-body'>
                 {tableMessage}
                 {permission.write ? <CirclePageButton type='create' onClick={ permission.write ? e => e.preventDefault() || this.modal.show() : null} /> : null}
-                <MessageModal _id={this.state._id} ref={e => this.modal = e} addMessage={this.props.addMessage} update={this.props.updateMessage} currentUser={currentUser} readOnly={!permission.write} />
+                <MessageModal _id={this.state._id} ref={e => this.modal = e} addMessage={this.props.addMessage} updateMessage={this.props.updateMessage} currentUser={currentUser} readOnly={!permission.write} />
             </div>);
         const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Bài viết', component: componentMessage }];
 

@@ -91,7 +91,7 @@ module.exports = app => {
         }),
 
         addMessage: (_id, messages, done) => {
-            model.findOneAndUpdate(_id, { $push: { messages: messages } }, { new: true }).populate({
+            model.findOneAndUpdate({ '_id' : _id }, { $push: { messages: messages } }, { new: true }).populate({
                 path:'messages.user', select: 'firstname lastname'}).exec(done);
         },
 

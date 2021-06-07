@@ -69,7 +69,9 @@ module.exports = app => {
 
     app.put('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
         const { _id, messages } = req.body;
-        app.model.forum.updateMessage(_id, messages, (error, item) => res.send({ error, item }));
+        app.model.forum.updateMessage(_id, messages, (error, item) => {
+            res.send({ error, item });
+        });
     });
 
     app.delete('/api/forum/message', app.permission.check('forum:write'), (req, res) => {

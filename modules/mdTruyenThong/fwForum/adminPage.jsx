@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
-import { getForumPage, createForum, updateForum, swapForum, deleteForum, changeForum } from './redux';
+import { getForumPage, createForum, updateForum, swapForum, deleteForum } from './redux';
 import Pagination from 'view/component/Pagination';
 import Dropdown from 'view/component/Dropdown';
 import { AdminPage, AdminModal, FormSelect, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
@@ -109,7 +109,7 @@ class ForumPage extends AdminPage {
                 <Pagination name='pageForum' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getForumPage} />
                 <ForumModal ref={e => this.modal = e} currentUser={currentUser} forumTypes={this.state.forumTypes} readOnly={!permission.write}
-                    create={this.props.createForum} update={this.props.updateForum} change={this.props.changeForum} />
+                    create={this.props.createForum} update={this.props.updateForum} />
             </>,
             onCreate: permission.write ? this.edit : null,
         });
@@ -117,5 +117,5 @@ class ForumPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, category: state.framework.category });
-const mapActionsToProps = { getCategoryAll, getForumPage, createForum, updateForum, swapForum, deleteForum, changeForum };
+const mapActionsToProps = { getCategoryAll, getForumPage, createForum, updateForum, swapForum, deleteForum };
 export default connect(mapStateToProps, mapActionsToProps)(ForumPage);
