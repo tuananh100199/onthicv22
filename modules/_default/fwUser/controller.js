@@ -23,6 +23,7 @@ module.exports = app => {
                 if (condition.searchText) {
                     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
                     pageCondition.$or.push(
+                        { identityCard: value },
                         { phoneNumber: value },
                         { email: value },
                         { firstname: value },

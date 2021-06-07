@@ -187,25 +187,19 @@ export function switchUser(_id) {
     };
 }
 
-// export const ajaxSelectUser = {
-//     ajax: true,
-//     url: `/api/user/page/1/20`,
-//     data: params => ({ condition: params.term }),
-//     processResults: response => ({
-//         results: response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
-//     })
-// };
-
 export const ajaxSelectUser = T.createAjaxAdapter(
     '/api/user/page/1/20',
-    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
+    params => ({ condition: { searchText: params.term } }),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );
 
 export const ajaxSelectUserType = (userType) => T.createAjaxAdapter(
     '/api/user/page/1/20',
     // params => ({ condition: params.term ? { searchText: params.term } : { userType } }),
     params => ({ condition: { searchText: params.term, userType } }),
-    response => response && response.page && response.page.list ? response.page.list.map(item => ({ id: item._id, text: `${item.lastname} ${item.firstname} (${item.email})` })) : [],
+    response => response && response.page && response.page.list ?
+        response.page.list.map(user => ({ id: user._id, text: `${user.lastname} ${user.firstname} ${user.identityCard ? '(' + user.identityCard + ')' : ''}` })) : [],
 );
 
 export function ajaxGetUser(_id, done) {
