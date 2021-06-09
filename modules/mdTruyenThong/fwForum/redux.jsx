@@ -3,7 +3,6 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const ForumGetAll = 'ForumGetAll';
 const ForumGetPage = 'ForumGetPage';
-const ForumGetUnread = 'ForumGetUnread';
 const ForumGetItem = 'ForumGetItem';
 
 export default function forumReducer(state = null, data) {
@@ -13,9 +12,6 @@ export default function forumReducer(state = null, data) {
 
         case ForumGetPage:
             return Object.assign({}, state, { page: data.page });
-
-        case ForumGetUnread:
-            return Object.assign({}, state, { unreads: data.list });
 
         case ForumGetItem: {
             return Object.assign({}, state, { item: data.item });
@@ -71,21 +67,6 @@ export function getForum(_id, done) {
                 dispatch({ type: ForumGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy liên hệ bị lỗi!', 'danger'));
-    };
-}
-
-export function getUnreadForums(done) {
-    return dispatch => {
-        const url = '/api/forum/unread';
-        T.get(url, data => {
-            if (data.error) {
-                done && done(null, data.error);
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.list);
-                dispatch({ type: ForumGetUnread, list: data.list });
-            }
-        }, error => console.error(error) || T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
     };
 }
 
