@@ -40,6 +40,15 @@ module.exports = (app) => {
 
         tienDoHocTap: {},
         diemBoDeThi: {},
+        courseFeedbacks: [{
+            createdDate: { type: Date, default: Date.now },
+            title: String,
+            replies: [{
+                createdDate: { type: Date, default: Date.now },
+                content: String,
+                _adminId: { type: app.db.Schema.ObjectId, ref: 'User' }
+            }]
+        }],
 
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
         duKienNamThi: Number,                                                                       // Dự kiến năm thi
@@ -54,7 +63,7 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('course').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('course').populate('courseFeedbacks.replies._adminId', '-password firstname lastname').exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {
@@ -169,6 +178,15 @@ module.exports = (app) => {
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
             });
+        },
+
+        addCourseFeedback: (_id, title, done) => {
+            model.findOneAndUpdate({ _id }, { $push: { courseFeedbacks: { title, createdDate: new Date(), replies: [] } } }, { new: true }).exec(done);
+        },
+
+        addReplyToCourseFeedback: (_id, _feedbackId, reply, done) => {
+            const { content, _adminId } = reply;
+            model.findOneAndUpdate({ _id, 'courseFeedbacks._id': _feedbackId }, { $push: { 'courseFeedbacks.$.replies': { content, createdDate: new Date(), ...(_adminId && { _adminId }) } } }, { new: true }).exec(done);
         },
     };
 };

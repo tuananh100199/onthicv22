@@ -39,6 +39,10 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/thong-tin/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userCourseInfo') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/phan-hoi',
+            component: Loadable({ loading: Loading, loader: () => import('./userCourseFeedbackPage') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,
