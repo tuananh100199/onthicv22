@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormCheckbox, FormEditor, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
-const backUrl = '/user/forum';
+const backUrl = '/user/forum-category';
 class MessageModal extends AdminModal {
     onShow = (item) => {
         let { _id, user, active, content, createdDate } = item || { id: null, user: null, active: false, content: '', createdDate: '' };
@@ -59,7 +59,7 @@ class ForumEditPage extends AdminPage {
     state = { title: '...', categories: [] };
     componentDidMount() {
         T.ready(backUrl, () => {
-            const route = T.routeMatcher('/user/forum/:_id'),
+            const route = T.routeMatcher('/user/forum-category/:_id'),
                 _id = route.parse(window.location.pathname)._id;
             this.props.getCategoryAll('forum', null, (items) => {
                 if (items) {
@@ -162,9 +162,9 @@ class ForumEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Forum: ' + this.state.title,
-            breadcrumb: [<Link key={0} to='/user/forum'>Forum</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={`/user/forum-category/${this.state.categories}`}>Forum</Link>, 'Chỉnh sửa'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
-            backRoute: backUrl,
+            backRoute: `/user/forum-category/${this.state.categories}`,
         });
     }
 }

@@ -28,28 +28,30 @@ export function getForumAll(done) {
         const url = '/api/forum/all';
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger');
+                T.notify('Lấy tất cả forum bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.list);
                 dispatch({ type: ForumGetAll, list: data.list });
             }
-        }, error => console.error(error) || T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy tất cả forum bị lỗi!', 'danger'));
     };
 }
 
 T.initCookiePage('pageForum');
-export function getForumPage(pageNumber, pageSize, done) {
+export function getForumPage(pageNumber, pageSize,searchText, categories, done) {
     const page = T.updatePage('pageForum', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, data => {
+        T.get(url, { searchText, categories }, data => {
+            console.log('categories-redux', categories);
+            console.log('data-redux', data);
             if (data.error) {
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
-                dispatch({ type: ForumGetPage, page: data.page });
+                if (done) done(data);
+                dispatch({ type: ForumGetPage, categories, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách forum bị lỗi!', 'danger'));
     };
@@ -60,19 +62,20 @@ export function getForum(_id, done) {
         const url = '/api/forum/' + _id;
         T.get(url, data => {
             if (data.error) {
-                T.notify('Lấy liên hệ bị lỗi!', 'danger');
+                T.notify('Lấy forum bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data.item);
                 dispatch({ type: ForumGetItem, item: data.item });
             }
-        }, error => console.error(error) || T.notify('Lấy liên hệ bị lỗi!', 'danger'));
+        }, error => console.error(error) || T.notify('Lấy forum bị lỗi!', 'danger'));
     };
 }
 
 export function createForum(data, done) {
     return dispatch => {
-        const url = '/api/forum';
+        const url = '/api/forum',
+            categories = data.categories;
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo forum bị lỗi!', 'danger');
@@ -80,13 +83,13 @@ export function createForum(data, done) {
             } else {
                 if (done) done(data);
                 T.notify('Tạo forum thành công!', 'success');
-                dispatch(getForumPage());
+                dispatch(getForumPage(undefined, undefined, {}, categories));
             }
         }, error => console.error(error) || T.notify('Tạo forum bị lỗi!', 'danger'));
     };
 }
 
-export function updateForum(_id, changes, done) {
+export function updateForum(_id, categories, changes, done) {
     return dispatch => {
         const url = '/api/forum';
         T.put(url, { _id, changes }, data => {
@@ -96,41 +99,25 @@ export function updateForum(_id, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật forum thành công!', 'success');
-                dispatch(getForumPage());
+                dispatch(getForumPage(undefined, undefined, {}, categories));
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };
 }
 
-export function swapForum(_id, isMoveUp, done) {
-    return dispatch => {
-        const url = '/api/forum/swap';
-        T.put(url, { _id, isMoveUp }, data => {
-            if (data.error) {
-                T.notify('Thay đổi thứ tự forum bị lỗi!', 'danger');
-                console.error('PUT: ' + url + '.', data.error);
-            } else {
-                T.notify('Thay đổi thứ tự forum thành công!', 'success');
-                dispatch(getForumPage());
-                done && done();
-            }
-        }, error => console.error(error) || T.notify('Thay đổi thứ tự forum bị lỗi!', 'danger'));
-    };
-}
-
-export function deleteForum(_id) {
+export function deleteForum(_id, categories) {
     return dispatch => {
         const url = '/api/forum';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xoá liên hệ bị lỗi', 'danger');
+                T.notify('Xoá forum bị lỗi', 'danger');
                 console.error('DELETE: ' + url + '. ' + data.error);
             } else {
-                T.alert('Xoá liên hệ thành công!', 'error', false, 800);
-                dispatch(getForumPage());
+                T.alert('Xoá forum thành công!', 'error', false, 800);
+                dispatch(getForumPage(undefined, undefined, {}, categories));
             }
-        }, error => console.error(error) || T.notify('Xoá liên hệ bị lỗi', 'danger'));
+        }, error => console.error(error) || T.notify('Xoá forum bị lỗi', 'danger'));
     };
 }
 

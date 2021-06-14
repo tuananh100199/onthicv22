@@ -2,24 +2,26 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.communication,
         menus: {
-            3004: { title: 'Danh mục forum', link: '/user/forum/category', backgroundColor: '#00897b' },
-            3005: { title: 'Forum', link: '/user/forum', backgroundColor: '#00897b' },
+            3004: { title: 'Danh mục forum', link: '/user/forum-category', backgroundColor: '#00897b' },
         },
     };
     app.permission.add({ name: 'forum:read', menu }, { name: 'forum:write' }, { name: 'forum:delete' });
 
     app.get('/user/forum', app.permission.check('forum:write'), app.templates.admin);
-    app.get('/user/forum/:_id', app.permission.check('forum:write'), app.templates.admin);
-    app.get('/user/forum/category', app.permission.check('category:write'), app.templates.admin);
+    app.get('/user/forum-category/:_id/forum/:forumId', app.permission.check('forum:write'), app.templates.admin);
+    app.get('/user/forum-category', app.permission.check('category:write'), app.templates.admin);
+    app.get('/user/forum-category/:_id', app.permission.check('category:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('forum:write'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
-            pageSize = parseInt(req.params.pageSize);
-        app.model.forum.getPage(pageNumber, pageSize, {}, (error, page) => {
-            page.list = page.list.map(item => app.clone(item, { message: '' }));
-            res.send({ error, page });
-        });
+            pageSize = parseInt(req.params.pageSize),
+            { searchText, categories } = req.query,
+            pageCondition = {};
+            categories && (pageCondition.categories = categories);
+        searchText && (pageCondition.title = new RegExp(searchText, 'i'));
+        console.log('pageCondition', pageCondition);
+        app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/forum/all', app.permission.check('forum:write'), (req, res) => {
