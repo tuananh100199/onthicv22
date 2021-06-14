@@ -63,7 +63,11 @@ module.exports = (app) => {
         create: (data, done) => model.create(data, done),
 
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
-            .populate('user', '-password').populate('division').populate('courseType').populate('course').populate('courseFeedbacks.replies._adminId', '-password firstname lastname').exec(done),
+            .populate('user', '-password').populate('division').populate('courseType').populate('course').populate({
+                path: 'courseFeedbacks.replies._adminId',
+                model: 'User'
+            }).
+            exec(done),
 
         getAll: (condition, done) => {
             if (typeof condition == 'function') {
