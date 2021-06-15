@@ -44,8 +44,6 @@ export function getForumPage(pageNumber, pageSize,searchText, categories, done) 
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;
         T.get(url, { searchText, categories }, data => {
-            console.log('categories-redux', categories);
-            console.log('data-redux', data);
             if (data.error) {
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
@@ -99,6 +97,7 @@ export function updateForum(_id, categories, changes, done) {
                 done && done(data.error);
             } else {
                 T.notify('Cập nhật forum thành công!', 'success');
+                dispatch({ type: ForumGetItem, item: data.item });
                 dispatch(getForumPage(undefined, undefined, {}, categories));
                 done && done();
             }

@@ -43,6 +43,7 @@ module.exports = app => {
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
+            changes.modifiedDate = new Date().getTime();
             model.findOneAndUpdate({ _id }, changes, { new: true }, done);
         },
 

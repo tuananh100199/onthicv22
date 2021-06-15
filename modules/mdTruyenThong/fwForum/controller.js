@@ -20,7 +20,6 @@ module.exports = app => {
             pageCondition = {};
             categories && (pageCondition.categories = categories);
         searchText && (pageCondition.title = new RegExp(searchText, 'i'));
-        console.log('pageCondition', pageCondition);
         app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
 

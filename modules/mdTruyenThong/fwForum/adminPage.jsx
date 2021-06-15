@@ -49,31 +49,33 @@ const stateMapper = {
 };
 const states = Object.entries(stateMapper).map(([key, value]) => ({ id: key, text: value.text }));
 class ForumPage extends AdminPage {
-    // state = { forumTypes: [] };
+    state = { categories: null };
 
     componentDidMount() {
         T.ready('/user/forum-category', () => {
+            T.showSearchBox();
             const route = T.routeMatcher('/user/forum-category/:_id'),
             categories = route.parse(window.location.pathname)._id;
+            this.setState({ categories });
             if (categories) {
-                this.setState({ categories });
                 this.props.getForumPage(undefined, undefined, {}, categories);
             } else {
                 this.props.history.push(backUrl);
             }
         });
-        // T.ready(() => T.showSearchBox());
-        // this.props.getCategoryAll('forum', null, (items) =>
-        //     this.setState({ forumTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
-        // this.props.getForumPage(1);
-        // this.props.getForumPage(undefined, undefined, {}, category);
-        // this.setState({ category });
-        // T.onSearch = (searchText) => this.props.getForumPage(1, undefined, searchText);
+        T.onSearch = (searchText) => this.props.getForumPage(1, undefined, searchText);
     }
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
     delete = (e, item) => e.preventDefault() || T.confirm('Xóa forum', 'Bạn có chắc bạn muốn xóa forum này?', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id, this.state.categories));
+
     updateState = (item, state) => this.props.updateForum(item._id, this.state.categories, { state });
+
+    getPage = (pageNumber, pageSize) => {
+        this.props.getForumPage(pageNumber, pageSize, {}, this.state.categories);
+
+    }
 
     render() {
         const currentUser = this.props.system ? this.props.system.user : null;
@@ -89,6 +91,7 @@ class ForumPage extends AdminPage {
                     <th style={{ width: '20%' }} nowrap='true'>Người tạo</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng bài viết</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày cập nhật cuối</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => {
@@ -97,11 +100,14 @@ class ForumPage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                        <TableCell type='link' content={item.title} url={'/user/forum-category/' + this.state.categories + '/forum/' +item._id} />
+                        <TableCell type='link' content={item.title} url={'/user/forum-category/' + this.state && this.state.categories + '/forum/' +item._id} />
                         <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
                         <TableCell type='text' content={item.messages && item.messages.length} style={{textAlign: 'center'}}/>
                         <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/forum-category/' + this.state.categories + '/forum/' +item._id}  onDelete={this.delete} />
+                        <TableCell content={new Date(item.modifiedDate).getText()} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
+                    
+
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/forum-category/' + this.state && this.state.categories + '/forum/' +item._id}  onDelete={this.delete} />
                     </tr>
                 );
             },
@@ -114,12 +120,11 @@ class ForumPage extends AdminPage {
             content: <>
                 <div className='tile'>{table}</div>
                 <Pagination name='pageForum' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getForumPage} />
+                    getPage={this.getPage} />
                 <ForumModal ref={e => this.modal = e} categories={this.state && this.state.categories} currentUser={currentUser} readOnly={!permission.write}
                     create={this.props.createForum} update={this.props.updateForum} />
             </>,
             onCreate: permission.write ? this.edit : null,
-            backRoute: backUrl,
         });
     }
 }

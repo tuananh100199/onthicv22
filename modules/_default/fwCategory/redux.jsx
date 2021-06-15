@@ -80,6 +80,7 @@ export function swapCategory(_id, isMoveUp, type) {
                 T.notify('Thay đổi thứ tự danh mục bị lỗi!', 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
+                T.notify('Cập nhật danh mục thành công!', 'success');
                 dispatch(getCategoryAll(type));
             }
         }, error => console.error(error) || T.notify('Thay đổi thứ tự danh mục bị lỗi!', 'danger'));
