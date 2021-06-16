@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
@@ -130,5 +129,5 @@ class ForumPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum });
-const mapActionsToProps = { getCategoryAll, getForumPage, createForum, updateForum, deleteForum };
+const mapActionsToProps = { getForumPage, createForum, updateForum, deleteForum };
 export default connect(mapStateToProps, mapActionsToProps)(ForumPage);

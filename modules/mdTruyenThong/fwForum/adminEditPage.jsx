@@ -99,6 +99,7 @@ class ForumEditPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+    
     changeActive = (active, item) => {
         const messages = {
             _id: item._id,

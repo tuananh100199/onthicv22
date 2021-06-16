@@ -3,7 +3,7 @@ module.exports = app => {
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
-        modifiedDate: { type: Date, default: null },                        // Ngày cập nhật cuối cùng
+        modifiedDate: { type: Date, default: Date.now },                        // Ngày cập nhật cuối cùng
         categories: { type: app.db.Schema.ObjectId, ref: 'Category' },            // Phân loại forum
         messages: [{
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
@@ -44,7 +44,9 @@ module.exports = app => {
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             changes.modifiedDate = new Date().getTime();
-            model.findOneAndUpdate({ _id }, changes, { new: true }, done);
+            model.findOneAndUpdate({ _id }, changes, { new: true }).populate({
+                path: 'messages.user', select: 'firstname lastname'
+            }).exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

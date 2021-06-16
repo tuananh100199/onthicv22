@@ -45,11 +45,6 @@ module.exports = app => {
         app.model.forum.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/forum/swap', app.permission.check('forum:write'), (req, res) => {
-        const isMoveUp = req.body.isMoveUp.toString() == 'true';
-        app.model.forum.swapPriority(req.body._id, isMoveUp, (error) => res.send({ error }));
-    });
-
     app.delete('/api/forum', app.permission.check('forum:delete'), (req, res) => {
         app.model.forum.delete(req.body._id, error => res.send({ error }));
     });
@@ -57,18 +52,34 @@ module.exports = app => {
     // API Message ----------------------------------------------------------------------------------------------------
     app.post('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
         const { _id, messages } = req.body;
-        app.model.forum.addMessage(_id, messages, (error, item) => res.send({ error, item }));
+        app.model.forum.update(_id, {}, (error, item) => { //update ModifiedDate
+            if (error || item == null) {
+                res.send({error: 'Lỗi thêm mới bài viết'});
+            } else {
+                app.model.forum.addMessage(_id, messages, (error, item) => res.send({ error, item }));
+            }
+        });
     });
 
     app.put('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
         const { _id, messages } = req.body;
-        app.model.forum.updateMessage(_id, messages, (error, item) => res.send({ error, item }));
+        app.model.forum.update(_id, {}, (error, item) => { //update ModifiedDate
+            if (error || item == null) {
+                res.send({error: 'Lỗi cập nhật bài viết'});
+            } else {
+                app.model.forum.updateMessage(_id, messages, (error, item) => res.send({ error, item }));
+            }
+        });
     });
 
     app.delete('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
         const { _id, messageId } = req.body;
-        app.model.forum.deleteMessage(_id, messageId, (error, item) => res.send({ error, item }));
+        app.model.forum.update(_id, {}, (error, item) => { //update ModifiedDate
+            if (error || item == null) {
+                res.send({error: 'Lỗi xóa bài viết'});
+            } else {
+                app.model.forum.deleteMessage(_id, messageId, (error, item) => res.send({ error, item }));
+            }
+        });
     });
-
-    // User create forum-----------------------------------------------------------------------------------------------
 };

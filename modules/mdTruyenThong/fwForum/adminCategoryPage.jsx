@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCategoryAll, createCategory, swapCategory, updateCategory, changeCategory, deleteCategory } from 'modules/_default/fwCategory/redux';
+import { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory } from 'modules/_default/fwCategory/redux';
 import { AdminPage, AdminModal, FormTextBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
 class CategoryModal extends AdminModal {
@@ -43,8 +43,6 @@ class ForumCategoryPage extends AdminPage {
 
     create = (e) => e.preventDefault() || this.modal.show();
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
-
     swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapCategory(item._id, isMoveUp, 'forum');
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá danh mục', 'Bạn có chắc bạn muốn xoá danh mục này?', true, isConfirm =>
@@ -78,7 +76,7 @@ class ForumCategoryPage extends AdminPage {
                 <div className='tile'>{table}</div>
                 {permission.write ? <CirclePageButton type='create' onClick={this.create} /> : null}
                 <CategoryModal ref={e => this.modal = e} readOnly={!permission.write} type={'forum'}
-                    create={this.props.createCategory} update={this.props.updateCategory} change={this.props.changeCategory} />
+                    create={this.props.createCategory} />
             </>
         });
 
@@ -86,5 +84,5 @@ class ForumCategoryPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, category: state.framework.category });
-const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, changeCategory, deleteCategory };
+const mapActionsToProps = { getCategoryAll, createCategory, swapCategory, updateCategory, deleteCategory };
 export default connect(mapStateToProps, mapActionsToProps)(ForumCategoryPage);
