@@ -7,10 +7,9 @@ module.exports = app => {
     };
     app.permission.add({ name: 'forum:read', menu }, { name: 'forum:write' }, { name: 'forum:delete' });
 
-    app.get('/user/forum', app.permission.check('forum:write'), app.templates.admin);
-    app.get('/user/forum-category/:_id/forum/:forumId', app.permission.check('forum:write'), app.templates.admin);
     app.get('/user/forum-category', app.permission.check('category:write'), app.templates.admin);
     app.get('/user/forum-category/:_id', app.permission.check('category:write'), app.templates.admin);
+    app.get('/user/forum-category/:_id/forum/:forumId', app.permission.check('forum:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('forum:write'), (req, res) => {
