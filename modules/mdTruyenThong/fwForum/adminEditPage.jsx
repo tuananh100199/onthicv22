@@ -99,7 +99,7 @@ class ForumEditPage extends AdminPage {
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    
+
     changeActive = (active, item) => {
         const messages = {
             _id: item._id,
@@ -143,7 +143,7 @@ class ForumEditPage extends AdminPage {
                     <FormSelect className='col-md-6' ref={e => this.itemState = e} label='Trạng thái' data={states} />
                     <FormTextBox type='text' className='col-md-4' ref={e => this.itemUserCreate = e} label='Người tạo'  readOnly={true} />
                     <FormTextBox type='text' className='col-md-4' ref={e => this.itemCreatedDate = e} label={'Ngày tạo'} readOnly={true} />
-                    <p className={'col-md-4'} style={{ width: '100%', padding: '0 8px' }}>Ngày cập nhật cuối: <b>{T.dateToText(modifiedDate)}</b></p>
+                    <p className={'col-md-4'}>Ngày cập nhật cuối: <b>{T.dateToText(modifiedDate)}</b></p>
 
                     {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
                 </div>
