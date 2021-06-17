@@ -65,6 +65,7 @@ module.exports = (app) => {
         get: (condition, done) => (typeof condition == 'object' ? model.findOne(condition) : model.findById(condition))
             .populate('user', '-password').populate('division').populate('courseType').populate('course').populate({
                 path: 'courseFeedbacks.replies._adminId',
+                select: '-password firstname lastname image',
                 model: 'User'
             }).
             exec(done),
