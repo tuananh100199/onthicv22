@@ -18,7 +18,8 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                     const { questions } = data.driveTest;
                     if (questions && questions.length == 1) {
                         this.setState({ prevButton: 'invisible', nextButton: 'invisible' });
-                    } else { this.setState({ prevButton: 'invisible' });
+                    } else {
+                        this.setState({ prevButton: 'invisible' });
                     }
                     this.setState({ activeQuestionIndex: 0, questions });
                 } else {
@@ -31,7 +32,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
     componentWillUnmount() {
         window.removeEventListener('keydown', this.logKey);
     }
-    
+
     logKey = (e) => {
         const activeQuestionIndex = this.state.activeQuestionIndex,
             maxIndex = this.state.questions.length - 1,
@@ -148,7 +149,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         }
-       
+
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: Đề thi ngẫu nhiên',

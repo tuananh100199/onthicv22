@@ -21,9 +21,24 @@ class UserPageDriveTestDetail extends AdminPage {
                         _id: data.item._id,
                         title: data.item.title,
                         questions: data.item.questions,
+                        totalTime: data.item.courseType.totalTime,
                     };
                     if (newState.questions && newState.questions.length == 1) newState.nextButton = 'invisible';
                     this.setState(newState);
+                    let minutes = data.item.courseType.totalTime;
+                    let seconds = 0;
+                    let interval = setInterval(() => {
+                        --seconds;
+                        minutes = (seconds < 0) ? --minutes : minutes;
+                        seconds = (seconds < 0) ? 59 : seconds;
+                        seconds = (seconds < 10) ? '0' + seconds : seconds;
+                        $('#time').text(minutes + ':' + seconds);
+                        if (minutes < 0) clearInterval(interval);
+                        if ((seconds <= 0) && (minutes <= 0)) {
+                            clearInterval(interval);
+                            this.submitAnswer();
+                        }
+                    }, 1000);
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -62,7 +77,7 @@ class UserPageDriveTestDetail extends AdminPage {
     }
 
     submitAnswer = (e) => {
-        e.preventDefault();
+        e && e.preventDefault();
         this.props.checkDriveTestScore(this.state._id, this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
@@ -151,6 +166,7 @@ class UserPageDriveTestDetail extends AdminPage {
         } else if (activeQuestionIndex == 0) {
             activeQuestion && prevAnswers && prevAnswers[activeQuestion._id] && $('#' + activeQuestion._id + prevAnswers[activeQuestion._id]).prop('checked', true);
         }
+
         return this.renderPage({
             icon: 'fa fa-dashboard',
             title: 'Ôn tập: ' + (this.state.title || '...'),
@@ -159,8 +175,9 @@ class UserPageDriveTestDetail extends AdminPage {
             content: (<>
                 {questions && questions.length ? (
                     <div className='tile'>
-                        <div className='tile-header'>
-                            {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
+                        <div className='tile-header row'>
+                            <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
+                            <h3 className='col-md-2' id='time'></h3>
                         </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
@@ -205,10 +222,10 @@ class UserPageDriveTestDetail extends AdminPage {
                                         {showSubmitButton ?
                                             <button className='btn btn-lg' id='submit-btn' disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} onClick={e => this.submitAnswer(e)} >
                                                 <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
-                                        </button> :
+                                            </button> :
                                             <button className='btn btn-lg btn-info' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
                                                 <i className='fa fa-lg fa-refresh' /> Làm lại
-                                        </button>}
+                                            </button>}
                                     </div>
                                 </div>
                             </div>
