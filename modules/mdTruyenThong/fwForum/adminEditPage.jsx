@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormCheckbox, FormEditor, FormSelect, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
 
-const backUrl = '/user/forum';
+const backUrl = '/user/forum-category';
 class MessageModal extends AdminModal {
     onShow = (item) => {
         let { _id, user, active, content, createdDate } = item || { id: null, user: null, active: false, content: '', createdDate: '' };
@@ -56,23 +56,23 @@ const stateMapper = {
 };
 const states = Object.entries(stateMapper).map(([key, value]) => ({ id: key, text: value.text }));
 class ForumEditPage extends AdminPage {
-    state = { title: '...', categories: [] };
+    state = { title: '...', currentCategory: null };
     componentDidMount() {
         T.ready(backUrl, () => {
-            const route = T.routeMatcher('/user/forum/:_id'),
-                _id = route.parse(window.location.pathname)._id;
+            const route = T.routeMatcher('/user/forum-category/:categoryId/forum/:forumId'),
+            categoryId = route.parse(window.location.pathname).categoryId,
+            forumId = route.parse(window.location.pathname).forumId;
+                this.setState({currentCategory : categoryId});
             this.props.getCategoryAll('forum', null, (items) => {
                 if (items) {
-                    this.props.getForum(_id, data => {
+                    this.props.getForum(forumId, data => {
                         if (data) {
-                            const { _id = '', user = '', title = '', categories = [], createdDate = '', state = '' } = data;
+                            const { _id = '', user = '', title = '', createdDate = '', state = '' } = data;
                             this.itemTitle.value(title);
                             this.itemUserCreate.value(user.lastname + ' ' + user.firstname );
                             this.itemCreatedDate.value(createdDate ? T.dateToText(createdDate) : '');
                             this.itemState.value(state);
-                            const forumCategories = (items || []).map(item => ({ id: item._id, text: item.title }));
-
-                            this.setState({ _id, title, categories: forumCategories }, () => this.itemCategories.value(categories));
+                            this.setState({ _id, title });
                             this.itemTitle.focus();
                         } else {
                             T.notify('Lấy thông tin forum bị lỗi!', 'danger');
@@ -88,21 +88,18 @@ class ForumEditPage extends AdminPage {
     saveInfo = () => {
         const newData = {
             title: this.itemTitle.value(),
-            categories: this.itemCategories.value(),
             state: this.itemState.value(),
         };
         if (newData.title == '') {
             T.notify('Tên forum bị trống!', 'danger');
             this.itemTitle.focus();
-        } else if (newData.categories == '') {
-            T.notify('Tên loại forum bị trống!', 'danger');
-            this.itemCategories.focus();
         } else {
-            this.props.updateForum(this.state._id, newData);
+            this.props.updateForum(this.state._id, this.state.currentCategory, newData);
         }
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
     changeActive = (active, item) => {
         const messages = {
             _id: item._id,
@@ -119,7 +116,7 @@ class ForumEditPage extends AdminPage {
         const currentUser = this.props.system ? this.props.system.user : null;
         const permission = this.getUserPermission('forum'),
             readOnly = !permission.write;
-       const messages = this.props.forum && this.props.forum.item ? this.props.forum.item  && this.props.forum.item.messages: null;
+        const { messages, modifiedDate } = this.props.forum && this.props.forum.item ? this.props.forum.item : { messages: null, modifiedDate: '' };
         const tableMessage = renderTable({
             getDataSource: () => messages || [],
             renderHead: () => (
@@ -143,10 +140,11 @@ class ForumEditPage extends AdminPage {
             <div className='tile-body'>
                 <div className='row'>
                     <FormTextBox type='text' className='col-md-6' ref={e => this.itemTitle = e} label='Tên bài viết' onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                    <FormSelect  className='col-md-6' ref={e => this.itemCategories = e} label='Danh mục forum' data={this.state.categories} readOnly={readOnly} />
-                    <FormSelect className='col-md-4' ref={e => this.itemState = e} label='Trạng thái' data={states} />
+                    <FormSelect className='col-md-6' ref={e => this.itemState = e} label='Trạng thái' data={states} />
                     <FormTextBox type='text' className='col-md-4' ref={e => this.itemUserCreate = e} label='Người tạo'  readOnly={true} />
                     <FormTextBox type='text' className='col-md-4' ref={e => this.itemCreatedDate = e} label={'Ngày tạo'} readOnly={true} />
+                    <p className={'col-md-4'}>Ngày cập nhật cuối: <b>{T.dateToText(modifiedDate)}</b></p>
+
                     {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
                 </div>
             </div>  
@@ -162,9 +160,9 @@ class ForumEditPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-users',
             title: 'Forum: ' + this.state.title,
-            breadcrumb: [<Link key={0} to='/user/forum'>Forum</Link>, 'Chỉnh sửa'],
+            breadcrumb: [<Link key={0} to={`/user/forum-category/${this.state.currentCategory}`}>Danh sách forum</Link>, 'Chỉnh sửa forum'],
             content: <FormTabs id='componentPageTab' contentClassName='tile' tabs={tabs} />,
-            backRoute: backUrl,
+            backRoute: `/user/forum-category/${this.state.currentCategory}`,
         });
     }
 }

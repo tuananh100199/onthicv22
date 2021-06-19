@@ -18,15 +18,15 @@ export default {
     },
     routes: [
         {
-            path: '/user/forum/category',
+            path: '/user/forum-category',
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') }),
         },
         {
-            path: '/user/forum',
+            path: '/user/forum-category/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/forum/:_id',
+            path: '/user/forum-category/:_id/forum/:forumId',
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
     ],
