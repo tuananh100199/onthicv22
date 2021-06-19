@@ -39,17 +39,17 @@ export function getForumAll(done) {
 }
 
 T.initCookiePage('pageForum');
-export function getForumPage(pageNumber, pageSize,searchText, categories, done) {
+export function getForumPage(pageNumber, pageSize,searchText, done) {
     const page = T.updatePage('pageForum', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { searchText, categories }, data => {
+        T.get(url, { searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
-                dispatch({ type: ForumGetPage, categories, page: data.page });
+                dispatch({ type: ForumGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách forum bị lỗi!', 'danger'));
     };
