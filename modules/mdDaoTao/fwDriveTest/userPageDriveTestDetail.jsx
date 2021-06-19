@@ -27,15 +27,15 @@ class UserPageDriveTestDetail extends AdminPage {
                     this.setState(newState);
                     let minutes = data.item.courseType.totalTime;
                     let seconds = 0;
-                    let interval = setInterval(() => {
+                    window.interval = setInterval(() => {
                         --seconds;
                         minutes = (seconds < 0) ? --minutes : minutes;
                         seconds = (seconds < 0) ? 59 : seconds;
                         seconds = (seconds < 10) ? '0' + seconds : seconds;
                         $('#time').text(minutes + ':' + seconds);
-                        if (minutes < 0) clearInterval(interval);
+                        if (minutes < 0) clearInterval(window.interval);
                         if ((seconds <= 0) && (minutes <= 0)) {
-                            clearInterval(interval);
+                            clearInterval(window.interval);
                             this.submitAnswer();
                         }
                     }, 1000);
@@ -48,6 +48,7 @@ class UserPageDriveTestDetail extends AdminPage {
 
     componentWillUnmount() {
         window.removeEventListener('keydown', this.logKey);
+        clearInterval(window.interval);
     }
 
     logKey = (e) => {
