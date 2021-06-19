@@ -15,9 +15,8 @@ module.exports = app => {
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('forum:write'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { searchText, categories } = req.query,
+            { searchText } = req.query,
             pageCondition = {};
-            categories && (pageCondition.categories = categories);
         searchText && (pageCondition.title = new RegExp(searchText, 'i'));
         app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
