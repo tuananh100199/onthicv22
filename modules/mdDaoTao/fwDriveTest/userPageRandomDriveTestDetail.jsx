@@ -22,6 +22,20 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                         this.setState({ prevButton: 'invisible' });
                     }
                     this.setState({ activeQuestionIndex: 0, questions });
+                    let minutes = data.driveTest.totalTime;
+                    let seconds = 0;
+                    window.interval = setInterval(() => {
+                        --seconds;
+                        minutes = (seconds < 0) ? --minutes : minutes;
+                        seconds = (seconds < 0) ? 59 : seconds;
+                        seconds = (seconds < 10) ? '0' + seconds : seconds;
+                        $('#time').text(minutes + ':' + seconds);
+                        if (minutes < 0) clearInterval(window.interval);
+                        if ((seconds <= 0) && (minutes <= 0)) {
+                            clearInterval(window.interval);
+                            this.submitAnswer();
+                        }
+                    }, 1000);
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -31,6 +45,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
 
     componentWillUnmount() {
         window.removeEventListener('keydown', this.logKey);
+        clearInterval(window.interval);
     }
 
     logKey = (e) => {
@@ -60,7 +75,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
     }
 
     submitAnswer = (e) => {
-        e.preventDefault();
+        e && e.preventDefault();
         this.props.checkRandomDriveTestScore(this.state.studentAnswer, result => {
             T.alert('Gửi câu trả lời thành công!', 'success', false, 2000);
             this.setState({
@@ -158,8 +173,9 @@ class UserPageRandomDriveTestDetail extends AdminPage {
             content: (<>
                 {questions && questions.length ? (
                     <div className='tile'>
-                        <div className='tile-header'>
-                            {questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}
+                        <div className='tile-header row'>
+                            <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
+                            <h3 className='col-md-2' id='time'></h3>
                         </div>
                         <div className='tile-body row'>
                             {activeQuestion ? (
