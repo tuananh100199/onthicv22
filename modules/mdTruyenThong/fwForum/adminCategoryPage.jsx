@@ -9,9 +9,7 @@ class CategoryModal extends AdminModal {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => {
-        this.itemTitle.value('');
-    }
+    onShow = () => this.itemTitle.value('');
 
     onSubmit = () => {
         const data = {
@@ -28,9 +26,7 @@ class CategoryModal extends AdminModal {
 
     render = () => this.renderModal({
         title: 'Danh mục forum',
-        body: <>
-            <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục forum' readOnly={this.props.readOnly} />
-        </>,
+        body: <FormTextBox ref={e => this.itemTitle = e} label='Tên danh mục forum' readOnly={this.props.readOnly} />,
     });
 }
 
@@ -45,18 +41,18 @@ class ForumCategoryPage extends AdminPage {
 
     swap = (e, item, isMoveUp) => e.preventDefault() || this.props.swapCategory(item._id, isMoveUp, 'forum');
 
-    delete = (e, item) => e.preventDefault() || T.confirm('Xoá danh mục', 'Bạn có chắc bạn muốn xoá danh mục này?', true, isConfirm =>
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá danh mục', `Bạn có chắc bạn muốn xoá danh mục ${item.title}?`, true, isConfirm =>
         isConfirm && this.props.deleteCategory(item._id, 'forum'));
 
     render() {
-        const permission = this.getUserPermission('category');  
+        const permission = this.getUserPermission('category');
         const table = renderTable({
             getDataSource: () => this.props.category, stickyHead: true,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '80%' }}>Tên loại forum</th>
-                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
+                    <th style={{ width: '100%' }}>Tên loại forum</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -79,7 +75,6 @@ class ForumCategoryPage extends AdminPage {
                     create={this.props.createCategory} />
             </>
         });
-
     }
 }
 
