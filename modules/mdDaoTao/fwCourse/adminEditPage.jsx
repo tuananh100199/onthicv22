@@ -132,7 +132,7 @@ class EditCoursePage extends AdminPage {
         }
 
         if (isCourseAdmin && permission.write) {
-            adminTabs.push({ title: 'Phản hổi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
+            adminTabs.push({ title: 'Phản hồi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
 
 

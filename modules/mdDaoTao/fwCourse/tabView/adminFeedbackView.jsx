@@ -177,22 +177,12 @@ class AdminFeedbackView extends React.Component {
 
         return (
             <div className='row'>
-                <div className='col-md-6' >
-                    <h3 className='tile-title'>Ứng viên</h3>
-                    <div style={{ float: 'right', marginTop: 8, marginRight: 8 }}>
-                        <FormCheckbox label='Hiện cơ sở ngoài' onChange={value => this.setState({ outsideStudentVisible: value })} style={{ display: isOutsideCourseAdmin ? 'none' : 'inline-block', marginRight: 16 }} defaultValue={true} />
-                        Sắp xếp theo:&nbsp;
-                        <a className={sortType == 'name' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { division: 0, lastname: 1, firstname: 1 })}>
-                            Tên
-                        </a> |&nbsp;
-                        <a className={sortType == 'division' ? ' text-warning' : 'text-secondary'} href='#' onClick={e => e.preventDefault() || this.onSearch({ pageNumber, pageSize }, { division: 1, lastname: 1, firstname: 1 })}>
-                            Cơ sở
-                        </a>
-                    </div>
-
+                <div className='col-md-3' >
+                    <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        <FormTextBox label='Tìm kiếm ứng viên theo họ tên' onChange={e => this.onSearch({ searchText: e.target.value })} />
-                        <FormTextBox label='Tìm kiếm ứng viên theo khoá dự kiến' onChange={e => this.onSearch({ searchPlanCourse: e.target.value })} />
+                        <div style={{ marginTop: 8, marginRight: 8 }}>
+                            <i className='fa fa-check'></i>
+                        </div>
                         <div style={{ display: preStudentList.length ? 'block' : 'none' }}>
                             <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyPreStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} />
                             <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyPreStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
@@ -210,8 +200,8 @@ class AdminFeedbackView extends React.Component {
                     </div>
                 </div>
 
-                <div className='col-md-6'>
-                    <h3 className='tile-title'>Học viên</h3>
+                <div className='col-md-9'>
+                    <h3 className='tile-title'>Phản hồi</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox ref={e => this.searchBox = e} label='Tìm kiếm học viên' onChange={e => this.setState({ searchStudentText: e.target.value })} />
                         {studentList.length ?
