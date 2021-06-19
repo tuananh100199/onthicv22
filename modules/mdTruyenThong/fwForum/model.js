@@ -36,7 +36,7 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('user', 'firstname lastname')
+            findTask.populate('user', 'firstname lastname').populate('categories', 'title')
                 .populate({ path: 'messages.user', select: 'firstname lastname' })
                 .exec(done);
         },

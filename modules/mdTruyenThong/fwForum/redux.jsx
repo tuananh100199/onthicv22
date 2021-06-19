@@ -57,13 +57,13 @@ export function getForumPage(pageNumber, pageSize,searchText, categories, done) 
 
 export function getForum(_id, done) {
     return dispatch => {
-        const url = '/api/forum/' + _id;
-        T.get(url, data => {
+        const url = '/api/forum';
+        T.get(url, { _id }, data => {
             if (data.error) {
                 T.notify('Lấy forum bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
+                console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.item);
+                done && done(data);
                 dispatch({ type: ForumGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy forum bị lỗi!', 'danger'));
@@ -72,8 +72,7 @@ export function getForum(_id, done) {
 
 export function createForum(data, done) {
     return dispatch => {
-        const url = '/api/forum',
-            categories = data.categories;
+        const url = '/api/forum';
         T.post(url, { data }, data => {
             if (data.error) {
                 T.notify('Tạo forum bị lỗi!', 'danger');
@@ -81,13 +80,13 @@ export function createForum(data, done) {
             } else {
                 if (done) done(data);
                 T.notify('Tạo forum thành công!', 'success');
-                dispatch(getForumPage(undefined, undefined, {}, categories));
+                dispatch(getForumPage());
             }
         }, error => console.error(error) || T.notify('Tạo forum bị lỗi!', 'danger'));
     };
 }
 
-export function updateForum(_id, categories, changes, done) {
+export function updateForum(_id, changes, done) {
     return dispatch => {
         const url = '/api/forum';
         T.put(url, { _id, changes }, data => {
@@ -98,25 +97,25 @@ export function updateForum(_id, categories, changes, done) {
             } else {
                 T.notify('Cập nhật forum thành công!', 'success');
                 dispatch({ type: ForumGetItem, item: data.item });
-                dispatch(getForumPage(undefined, undefined, {}, categories));
+                dispatch(getForumPage());
                 done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };
 }
 
-export function deleteForum(_id, categories) {
+export function deleteForum(_id) {
     return dispatch => {
         const url = '/api/forum';
         T.delete(url, { _id }, data => {
             if (data.error) {
-                T.notify('Xoá forum bị lỗi', 'danger');
-                console.error('DELETE: ' + url + '. ' + data.error);
+                T.notify('Xóa forum bị lỗi!', 'danger');
+                console.error('DELETE: ' + url + '.', data.error);
             } else {
-                T.alert('Xoá forum thành công!', 'error', false, 800);
-                dispatch(getForumPage(undefined, undefined, {}, categories));
+                T.alert('Forum được xóa thành công!', 'error', false, 800);
+                dispatch(getForumPage());
             }
-        }, error => console.error(error) || T.notify('Xoá forum bị lỗi', 'danger'));
+        }, error => console.error(error) || T.notify('Xóa forum bị lỗi!', 'danger'));
     };
 }
 
@@ -183,3 +182,4 @@ export function deleteMessage(_id, messageId, done) {
         }, error => console.error('POST: ' + url + '.', error));
     };
 }
+
