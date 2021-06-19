@@ -119,6 +119,7 @@ module.exports = app => {
                                 const driveTest = {
                                     questions: randomQuestions.filter(item => item != null).flat(),
                                     expireDay: new Date().setHours(new Date().getHours() + 2),
+                                    totalTime: item.totalTime
                                 };
                                 req.session.driveTest = driveTest;
                                 res.send({ driveTest });
