@@ -38,7 +38,7 @@ module.exports = app => {
 
         get: (condition, done) => {
             if (typeof condition == 'string') condition = { _id: condition };
-            model.findOne(condition).populate('courseType', 'title').populate('questions').exec(done);
+            model.findOne(condition).populate('courseType', 'title totalTime').populate('questions').exec(done);
         },
 
         // changes = { $set, $unset, $push, $pull }

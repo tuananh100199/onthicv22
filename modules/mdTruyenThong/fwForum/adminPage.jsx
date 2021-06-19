@@ -104,8 +104,6 @@ class ForumPage extends AdminPage {
                         <TableCell type='text' content={item.messages && item.messages.length} style={{textAlign: 'center'}}/>
                         <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={new Date(item.modifiedDate).getText()} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                    
-
                         <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/forum-category/' + this.state && this.state.categories + '/forum/' +item._id}  onDelete={this.delete} />
                     </tr>
                 );
