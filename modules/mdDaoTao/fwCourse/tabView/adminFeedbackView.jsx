@@ -6,7 +6,7 @@ import Pagination from 'view/component/Pagination';
 import { CirclePageButton, FormTextBox, FormCheckbox } from 'view/component/AdminPage';
 import AdminStudentModal from '../adminStudentModal';
 
-class AdminStudentView extends React.Component {
+class AdminFeedbackView extends React.Component {
     state = { searchPreStudentText: '', searchPreStudentCourse: '', searchStudentText: '', outsideStudentVisible: true, sortType: 'division', assignedButtonVisible: false }; // sortType = name | division
     preStudents = {};
     itemDivisionSelectAll = {};
@@ -228,4 +228,4 @@ class AdminStudentView extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, student: state.trainning.student });
 const mapActionsToProps = { updateCourseStudents, getPreStudentPage, updateStudent, updateStudentInfoInCourse, exportStudentInfoToExcel };
-export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
+export default connect(mapStateToProps, mapActionsToProps)(AdminFeedbackView);
