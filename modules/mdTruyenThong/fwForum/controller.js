@@ -2,22 +2,21 @@ module.exports = app => {
     const menu = {
         parentMenu: app.parentMenu.communication,
         menus: {
-            3004: { title: 'Danh mục forum', link: '/user/forum-category', backgroundColor: '#00897b' },
+            3004: { title: 'Danh mục forum', link: '/user/category/forum' },
+            3005: { title: 'Forum', link: '/user/forum' },
         },
     };
     app.permission.add({ name: 'forum:read', menu }, { name: 'forum:write' }, { name: 'forum:delete' });
-
-    app.get('/user/forum-category', app.permission.check('category:write'), app.templates.admin);
-    app.get('/user/forum-category/:_id', app.permission.check('category:write'), app.templates.admin);
-    app.get('/user/forum-category/:_id/forum/:forumId', app.permission.check('forum:write'), app.templates.admin);
-
+    
+    app.get('/user/category/forum', app.permission.check('category:read'), app.templates.admin);
+    app.get('/user/forum', app.permission.check('forum:read'), app.templates.admin);
+    app.get('/user/forum/:_id', app.permission.check('forum:read'), app.templates.admin);
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('forum:write'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { searchText, categories } = req.query,
+            { searchText } = req.query,
             pageCondition = {};
-            categories && (pageCondition.categories = categories);
         searchText && (pageCondition.title = new RegExp(searchText, 'i'));
         app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
     });
@@ -26,8 +25,20 @@ module.exports = app => {
         app.model.forum.getAll((error, list) => res.send({ error, list }));
     });
 
-    app.get('/api/forum/:_id', app.permission.check('forum:write'), (req, res) => {
-        app.model.forum.get(req.params._id, (error, item) => res.send({ error, item }));
+    app.get('/api/forum', app.permission.check('forum:read'), (req, res) => {
+        app.model.category.getAll({ type: 'forum' }, (error, categories) => {
+            if (error || categories == null) {
+                res.send({ error: 'Lỗi khi lấy danh mục!' });
+            } else {
+                app.model.forum.get(req.query._id, (error, item) => {
+                    res.send({
+                        error,
+                        categories: categories.map((item) => ({ id: item._id, text: item.title, })),
+                        item,
+                    });
+                });
+            }
+        });
     });
 
     app.post('/api/forum', app.permission.check('forum:write'), (req, res) => {
