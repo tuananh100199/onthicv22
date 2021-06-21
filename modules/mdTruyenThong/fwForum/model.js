@@ -3,15 +3,16 @@ module.exports = app => {
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
+        category: { type: app.db.Schema.ObjectId, ref: 'Category' },              // Phân loại forum
+        createdDate: { type: Date, default: Date.now },
         modifiedDate: { type: Date, default: Date.now },                          // Ngày cập nhật cuối cùng
-        categories: { type: app.db.Schema.ObjectId, ref: 'Category' },            // Phân loại forum
+
         messages: [{
             user: { type: app.db.Schema.ObjectId, ref: 'User' },
             content: String,
             active: { type: Boolean, default: false },
             createdDate: { type: Date, default: Date.now },
         }],
-        createdDate: { type: Date, default: Date.now },
     });
     const model = app.db.model('Forum', schema);
 
@@ -27,7 +28,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('user', 'firstname lastname').populate('categories', 'title').sort({ title: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('user', 'firstname lastname').sort({ title: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
@@ -36,7 +37,7 @@ module.exports = app => {
 
         get: (condition, done) => {
             const findTask = typeof condition == 'string' ? model.findById(condition) : model.findOne(condition);
-            findTask.populate('user', 'firstname lastname').populate('categories', 'title')
+            findTask.populate('user', 'firstname lastname').populate('category', 'title')
                 .populate({ path: 'messages.user', select: 'firstname lastname' })
                 .exec(done);
         },
@@ -44,9 +45,9 @@ module.exports = app => {
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => {
             changes.modifiedDate = new Date().getTime();
-            model.findOneAndUpdate({ _id }, changes, { new: true }).populate({
-                path: 'messages.user', select: 'firstname lastname'
-            }).exec(done);
+            model.findOneAndUpdate({ _id }, changes, { new: true })
+                .populate({ path: 'messages.user', select: 'firstname lastname' })
+                .exec(done);
         },
 
         delete: (_id, done) => model.findById(_id, (error, item) => {

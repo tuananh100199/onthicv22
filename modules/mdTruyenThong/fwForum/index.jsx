@@ -16,11 +16,12 @@ export default {
         },
         {
             path: '/user/forum',
-            component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
+            component: Loadable({ loading: Loading, loader: () => import('./categoryPage') })
         },
         {
             path: '/user/forum/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
+            component: Loadable({ loading: Loading, loader: () => import('./forumPage') })
+            // component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
     ],
 };

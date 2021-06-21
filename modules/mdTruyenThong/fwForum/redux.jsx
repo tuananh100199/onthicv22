@@ -1,13 +1,17 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
+const ForumGetCategories = 'ForumGetCategories';
 const ForumGetPage = 'ForumGetPage';
 const ForumGetItem = 'ForumGetItem';
 
-export default function forumReducer(state = null, data) {
+export default function forumReducer(state = {}, data) {
     switch (data.type) {
+        case ForumGetCategories:
+            return Object.assign({}, state, { categories: data.categories });
+
         case ForumGetPage:
-            return Object.assign({}, state, { page: data.page });
+            return Object.assign({}, state, { category: data.category, page: data.page });
 
         case ForumGetItem: {
             return Object.assign({}, state, { item: data.item });
@@ -19,18 +23,33 @@ export default function forumReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
+export function getForumCategories(done) {
+    return dispatch => {
+        const url = '/api/forum/categories';
+        T.get(url, data => {
+            if (data.error) {
+                T.notify('Lấy danh mục forum bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+                dispatch({ type: ForumGetCategories, categories: data.categories });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh mục forum bị lỗi!', 'danger'));
+    };
+}
+
 T.initCookiePage('pageForum');
-export function getForumPage(pageNumber, pageSize, searchText, done) {
+export function getForumPage(_categoryId, pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageForum', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { searchText }, data => {
+        T.get(url, { _categoryId, searchText }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
                 if (done) done(data);
-                dispatch({ type: ForumGetPage, page: data.page });
+                dispatch({ type: ForumGetPage, category: data.category, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách forum bị lỗi!', 'danger'));
     };
