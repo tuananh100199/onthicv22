@@ -80,7 +80,7 @@ export function createForum(data, done) {
             } else {
                 done && done(data);
                 T.notify('Tạo forum thành công!', 'success');
-                data.item && data.item._id && dispatch(getForumPage(data.item._id));
+                data.item && data.item.category && dispatch(getForumPage(data.item.category));
             }
         }, error => console.error(error) || T.notify('Tạo forum bị lỗi!', 'danger'));
     };
@@ -95,10 +95,9 @@ export function updateForum(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật forum thành công!', 'success');
-                dispatch({ type: ForumGetItem, item: data.item });
-                dispatch(getForumPage());
                 done && done();
+                T.notify('Cập nhật forum thành công!', 'success');
+                data.item && data.item.category && dispatch(getForumPage(data.item.category));
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };
@@ -113,11 +112,17 @@ export function deleteForum(_id) {
                 console.error('DELETE: ' + url + '.', data.error);
             } else {
                 T.alert('Forum được xóa thành công!', 'error', false, 800);
-                dispatch(getForumPage());
+                data.item && data.item.category && dispatch(getForumPage(data.item.category));
             }
         }, error => console.error(error) || T.notify('Xóa forum bị lỗi!', 'danger'));
     };
 }
+
+
+
+
+
+
 
 export function createForumByUser(forum, done) {
     return () => {

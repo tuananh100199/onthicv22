@@ -76,16 +76,46 @@ module.exports = app => {
         });
     });
 
-    app.post('/api/forum', app.permission.check('forum:write'), (req, res) => {
-        app.model.forum.create(req.body.data, (error, item) => res.send({ error, item }));
+    app.post('/api/forum', app.permission.check('user:login'), (req, res) => {
+        const data = app.clone(req.body.data);
+        data.user = req.session.user._id;
+        app.model.forum.create(data, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/forum', app.permission.check('forum:write'), (req, res) => {
-        app.model.forum.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    app.put('/api/forum', app.permission.check('user:login'), (req, res) => {
+        // Người có quyền forum:write hoặc tác giả của forum
+        const { _id, changes } = req.body;
+        if (req.session.user.permissions && req.session.user.permissions.includes('forum:write')) {
+            app.model.forum.update(_id, changes, (error, item) => res.send({ error, item }));
+        } else {
+            app.model.forum.get({ _id, user: req.session.user._id }, (error, forum) => {
+                if (error == null && forum) {
+                    if (changes && changes.title != null) {
+                        app.model.forum.update(_id, { title: changes.title }, (error, item) => res.send({ error, item }));
+                    } else {
+                        res.send({ error: 'Lỗi khi cập nhật forum!' });
+                    }
+                } else {
+                    res.send({ error: 'Lỗi khi cập nhật forum!' });
+                }
+            });
+        }
     });
 
-    app.delete('/api/forum', app.permission.check('forum:delete'), (req, res) => {
-        app.model.forum.delete(req.body._id, error => res.send({ error }));
+    app.delete('/api/forum', app.permission.check('user:login'), (req, res) => {
+        // Người có quyền forum:delete hoặc tác giả của forum
+        const { _id } = req.body;
+        if (req.session.user.permissions && req.session.user.permissions.includes('forum:delete')) {
+            app.model.forum.delete(_id, (error, item) => res.send({ error, item }));
+        } else {
+            app.model.forum.get({ _id, user: req.session.user._id }, (error, forum) => {
+                if (error == null && forum) {
+                    app.model.forum.delete(_id, (error, item) => res.send({ error, item }));
+                } else {
+                    res.send({ error: 'Lỗi khi xoá forum!' });
+                }
+            });
+        }
     });
 
 

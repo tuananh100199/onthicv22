@@ -7,19 +7,21 @@ import { AdminPage, AdminModal, FormTextBox, FormSelect } from 'view/component/A
 
 const ForumStates = [{ id: 'approved', text: 'Đã duyệt' }, { id: 'waiting', text: 'Đang chờ duyệt' }, { id: 'reject', text: 'Từ chối' }];
 class ForumModal extends AdminModal {
+    state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
     }
 
-    onShow = () => {
-        this.itemTitle.value('');
-        this.itemState.value(null);
+    onShow = (item) => {
+        const { _id, title, state } = item || { title: '', state: 'waiting' };
+        this.itemTitle.value(title);
+        this.itemState.value(state);
+        this.setState({ _id });
     }
 
     onSubmit = () => {
-        if (this.props.currentUser && this.props.category) {
+        if (this.props.category) {
             const data = {
-                user: this.props.currentUser._id,
                 title: this.itemTitle.value(),
                 state: this.itemState ? this.itemState.value() : 'waiting',
                 category: this.props.category,
@@ -31,7 +33,9 @@ class ForumModal extends AdminModal {
                 T.notify('Trạng thái forum bị trống!', 'danger');
                 this.itemTitle.focus();
             } else {
-                this.props.create(data, () => this.hide());
+                this.state._id ?
+                    this.props.update(this.state._id, data, () => this.hide()) :
+                    this.props.create(data, () => this.hide());
             }
         }
     }
@@ -66,16 +70,18 @@ class ForumPage extends AdminPage {
         // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
     }
 
-    create = (e) => e.preventDefault() || this.modal.show();
-
     getPage = (pageNumber, pageSize, pageCondition, done) => {
         console.log(pageNumber, pageSize, pageCondition);
         this.state._id && this.props.getForumPage(this.state._id, pageNumber, pageSize, pageCondition, done);
     }
 
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
+    delete = (e, item) => e.preventDefault() || T.confirm('Forum', 'Bạn có chắc bạn muốn xóa forum này?', 'warning', true, isConfirm =>
+        isConfirm && this.props.deleteForum(item._id));
+
     render() {
-        const currentUser = this.props.system ? this.props.system.user : null,
-            permission = this.getUserPermission('forum');
+        const permission = this.getUserPermission('forum');
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page ?
             this.props.forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
@@ -84,6 +90,11 @@ class ForumPage extends AdminPage {
                 <Link to={`/user/forum/message/${item._id}`} style={{ textDecoration: 'none' }}>
                     <h3 className='tile-title'>{item.title}</h3>
                 </Link>
+                {permission.write ?
+                    <div className='btn-group btn-group-sm' style={{ position: 'absolute', right: 12, top: -12 }}>
+                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}><i className='fa fa-lg fa-edit' /></a>
+                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a>
+                    </div> : null}
             </div>)) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
@@ -93,10 +104,11 @@ class ForumPage extends AdminPage {
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <ForumModal ref={e => this.modal = e} currentUser={currentUser} category={category._id} permission={permission} create={this.props.createForum} />
+                <ForumModal ref={e => this.modal = e} category={category._id} permission={permission}
+                    create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: backUrl,
-            onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? this.edit : null,
         });
     }
 }

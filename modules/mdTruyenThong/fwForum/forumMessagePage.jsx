@@ -11,8 +11,7 @@ class ForumMessagePage extends AdminPage {
     }
 
     render() {
-        const currentUser = this.props.system ? this.props.system.user : null,
-            permission = this.getUserPermission('forum');
+        const permission = this.getUserPermission('forum');
 
         return this.renderPage({
             icon: 'fa fa-comments',

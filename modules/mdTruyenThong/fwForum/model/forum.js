@@ -20,7 +20,7 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('user', 'firstname lastname').sort({ modifiedDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
-                    result.list = list;
+                    result.list = list; //TODO: lấy nhiều nhất 3 message
                     done(error, result);
                 });
             }
@@ -43,7 +43,7 @@ module.exports = app => {
             } else if (item == null) {
                 done('Invalid id!');
             } else {
-                app.model.forumMessage.deleteForum(_id, () => item.remove(done));
+                app.model.forumMessage.deleteForum(_id, () => item.remove(error => done(error, item)));
             }
         }),
 
