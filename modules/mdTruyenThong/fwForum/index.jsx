@@ -19,9 +19,12 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./categoryPage') })
         },
         {
-            path: '/user/forum/:_id',
+            path: '/user/forum/:_categoryId',
             component: Loadable({ loading: Loading, loader: () => import('./forumPage') })
-            // component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
+        },
+        {
+            path: '/user/forum/message/:_forumId',
+            component: Loadable({ loading: Loading, loader: () => import('./forumMessagePage') })
         },
     ],
 };

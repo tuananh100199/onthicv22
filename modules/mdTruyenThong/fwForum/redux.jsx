@@ -55,7 +55,7 @@ export function getForumPage(_categoryId, pageNumber, pageSize, searchText, done
     };
 }
 
-export function getForum(_id, done) {
+export function getForum(_id, done) { //TODO
     return dispatch => {
         const url = '/api/forum';
         T.get(url, { _id }, data => {
@@ -78,9 +78,9 @@ export function createForum(data, done) {
                 T.notify('Tạo forum bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 T.notify('Tạo forum thành công!', 'success');
-                dispatch(getForumPage());
+                data.item && data.item._id && dispatch(getForumPage(data.item._id));
             }
         }, error => console.error(error) || T.notify('Tạo forum bị lỗi!', 'danger'));
     };

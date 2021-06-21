@@ -7,7 +7,12 @@ import { AdminPage } from 'view/component/AdminPage';
 class CategoryPage extends AdminPage {
     state = {};
     componentDidMount() {
+        T.ready();
         this.props.getForumCategories();
+
+        // TODO: Hiển thị thanh tìm kiếm
+        // T.ready(() => T.showSearchBox());
+        // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
     }
 
     render() {
@@ -17,10 +22,10 @@ class CategoryPage extends AdminPage {
             breadcrumb: ['Forum'],
             content: this.props.forum ? <>
                 {(this.props.forum.categories || []).map((category, index) => {
-                    const forums = category.page && category.page.length ? [] : 'Chưa có bài viết!';
-                    for (let i = 0; i < Math.min(3, category.page ? category.page.length : 0); i++) {
-                        const forumItem = category.page[i];
-                        forums.push(<li key={i}>TODO: {forumItem.title}</li>);
+                    const forums = [];
+                    for (let i = 0; i < Math.min(3, category.page && category.page.list ? category.page.list.length : 0); i++) {
+                        const forumItem = category.page.list[i];
+                        forums.push(<li key={i} style={{ marginBottom: 12 }}><Link to={`/user/forum/message/${forumItem._id}`} style={{ color: 'black' }}>{forumItem.title}</Link></li>);
                     }
 
                     return (
@@ -36,7 +41,7 @@ class CategoryPage extends AdminPage {
                                         <h3 className='tile-title'>{category.title}</h3>
                                     </Link>
                                     <p style={{ position: 'absolute', top: 0, right: 12 }}>{category.total ? `Có ${category.total} bài viết.` : ''}</p>
-                                    {forums}
+                                    {forums.length ? <ol>{forums}</ol> : 'Chưa có bài viết!'}
                                 </div>
                             </div>
                         </div>);

@@ -11,7 +11,8 @@ module.exports = app => {
 
     app.get('/user/category/forum', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/forum', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/forum/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
@@ -52,12 +53,14 @@ module.exports = app => {
             if (error || category == null) {
                 res.send({ error: 'Danh mục không hợp lệ!' });
             } else {
-                app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, category, page }));
+                app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+                    res.send({ error, category, page });
+                });
             }
         });
     });
 
-    app.get('/api/forum', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/forum', app.permission.check('user:login'), (req, res) => { //TODO
         app.model.category.getAll({ type: 'forum' }, (error, categories) => {
             if (error || categories == null) {
                 res.send({ error: 'Lỗi khi lấy danh mục!' });
@@ -84,6 +87,14 @@ module.exports = app => {
     app.delete('/api/forum', app.permission.check('forum:delete'), (req, res) => {
         app.model.forum.delete(req.body._id, error => res.send({ error }));
     });
+
+
+
+
+
+
+
+
 
     // API Message ----------------------------------------------------------------------------------------------------
     app.post('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
