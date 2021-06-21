@@ -1,6 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         _refId: app.db.Schema.ObjectId, // _courseId
+        type: String,
 
         createdDate: { type: Date, default: Date.now },
         content: String,
