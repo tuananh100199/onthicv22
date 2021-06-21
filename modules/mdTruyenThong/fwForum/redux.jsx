@@ -1,15 +1,11 @@
 import T from 'view/js/common';
 
 // Reducer ------------------------------------------------------------------------------------------------------------
-const ForumGetAll = 'ForumGetAll';
 const ForumGetPage = 'ForumGetPage';
 const ForumGetItem = 'ForumGetItem';
 
 export default function forumReducer(state = null, data) {
     switch (data.type) {
-        case ForumGetAll:
-            return Object.assign({}, state, { list: data.list });
-
         case ForumGetPage:
             return Object.assign({}, state, { page: data.page });
 
@@ -23,23 +19,8 @@ export default function forumReducer(state = null, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getForumAll(done) {
-    return dispatch => {
-        const url = '/api/forum/all';
-        T.get(url, data => {
-            if (data.error) {
-                T.notify('Lấy tất cả forum bị lỗi!', 'danger');
-                console.error('GET: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data.list);
-                dispatch({ type: ForumGetAll, list: data.list });
-            }
-        }, error => console.error(error) || T.notify('Lấy tất cả forum bị lỗi!', 'danger'));
-    };
-}
-
 T.initCookiePage('pageForum');
-export function getForumPage(pageNumber, pageSize,searchText, done) {
+export function getForumPage(pageNumber, pageSize, searchText, done) {
     const page = T.updatePage('pageForum', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;

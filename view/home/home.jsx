@@ -61,7 +61,7 @@ class App extends React.Component {
 
             const routes = Object.keys(routeMapper).sort().reverse().map(key => routeMapper[key]);
             const isMatch = routes.some(route => T.routeMatcher(route.props.path).parse(window.location.pathname));
-            this.setState({ routes, isMatch }, () => this.loader.isShown() && this.loader.hide());
+            this.setState({ routes, isMatch }, () => this.loader && this.loader.isShown() && this.loader.hide());
         });
     }
 

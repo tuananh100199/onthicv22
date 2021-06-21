@@ -13,7 +13,7 @@
 	3002 - Liên hệ (/user/contact)
 	3003 - Đăng ký nhận tin (/user/subscribe)
 	3004 - Danh mục forum (/user/category/forum)
-	3005 - Forum (/user/forum)
+3010. Forum (/user/forum)
 3100. Tin tức (undefined)
 	3101 - Danh mục tin tức (/user/category/news)
 	3102 - Tin tức (/user/news)

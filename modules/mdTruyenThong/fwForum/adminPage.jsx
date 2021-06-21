@@ -4,8 +4,8 @@ import { getCategoryAll } from 'modules/_default/fwCategory/redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import Pagination from 'view/component/Pagination';
 import Dropdown from 'view/component/Dropdown';
-
 import { AdminPage, AdminModal, FormTextBox, TableCell, FormSelect, renderTable } from 'view/component/AdminPage';
+
 class ForumModal extends AdminModal {
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemTitle.focus()));
@@ -44,6 +44,7 @@ class ForumModal extends AdminModal {
         </>,
     });
 }
+
 const stateMapper = {
     approved: { text: 'Đã duyệt', style: { color: '#28A745' } },
     waiting: { text: 'Đang chờ duyệt', style: { color: '#1488DB' } },
@@ -60,9 +61,8 @@ class ForumPage extends AdminPage {
             this.setState({ forumTypes: (items || []).map(item => ({ id: item._id, text: item.title })) }));
         this.props.getForumPage(1);
         T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
-
-      
     }
+
     create = (e) => e.preventDefault() || this.modal.show();
 
     updateState = (item, state) => this.props.updateForum(item._id, { state });
@@ -75,37 +75,37 @@ class ForumPage extends AdminPage {
         const permission = this.getUserPermission('forum');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.forum && this.props.forum.page ?
             this.props.forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-            const table = renderTable({
-                getDataSource: () => list,
-                renderHead: () => (
-                    <tr>
-                        <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                        <th style={{ width: '40%' }}>Tên forum</th>
-                        <th style={{ width: '20%' }} nowrap='true'>Người tạo</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng bài viết</th>
-                        <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày cập nhật cuối</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
-                    </tr>),
-                renderRow: (item, index) => {
-                    const selectedState = stateMapper[item.state],
+        const table = renderTable({
+            getDataSource: () => list,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '40%' }}>Tên forum</th>
+                    <th style={{ width: '20%' }} nowrap='true'>Người tạo</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số lượng bài viết</th>
+                    <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày cập nhật cuối</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
+                </tr>),
+            renderRow: (item, index) => {
+                const selectedState = stateMapper[item.state],
                     dropdownState = <Dropdown items={states} item={selectedState} onSelected={e => this.updateState(item, e.id)} textStyle={selectedState ? selectedState.style : null} />;
-                    return (
-                        <tr key={index}>
-                            <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                            <TableCell type='link' content={item.title} url={'/user/forum/' + item._id} />
-                            <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
-                            <TableCell type='text' content={item.messages && item.messages.length} style={{textAlign: 'center'}}/>
-                            <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                            <TableCell content={new Date(item.modifiedDate).getText()} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
-                            <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/forum/' + item._id}  onDelete={this.delete} />
-                        </tr>
-                    );
-                },
-            });
+                return (
+                    <tr key={index}>
+                        <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
+                        <TableCell type='link' content={item.title} url={'/user/forum/' + item._id} />
+                        <TableCell type='text' content={item.user && (item.user.lastname + ' ' + item.user.firstname)} />
+                        <TableCell type='text' content={item.messages && item.messages.length} style={{ textAlign: 'center' }} />
+                        <TableCell content={dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
+                        <TableCell content={new Date(item.modifiedDate).getText()} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
+                        <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/forum/' + item._id} onDelete={this.delete} />
+                    </tr>
+                );
+            },
+        });
 
         return this.renderPage({
-            icon: 'fa fa-file',
+            icon: 'fa fa-comments',
             title: 'Forum',
             breadcrumb: ['Forum'],
             content: <>

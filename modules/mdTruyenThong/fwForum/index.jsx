@@ -5,13 +5,6 @@ import Loading from 'view/component/Loading';
 import forum from './redux';
 
 export default {
-    init: () => {
-        // T.component['forum'] = {
-        //     render: (viewId) => <SectionForum viewId={viewId} />,
-        //     text: 'Forum',
-        //     backgroundColor: '#c8e6f9',
-        // };
-    },
     redux: {
         parent: 'communication',
         reducers: { forum },
@@ -30,7 +23,4 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
     ],
-    Section: {
-        // SectionForum,
-    }
 };
