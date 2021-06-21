@@ -14,7 +14,7 @@ class AdminFeedbackView extends React.Component {
                     <h3 className='tile-title'>Học viên</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <div style={{ marginTop: 8, marginRight: 8 }}>
-                            <i className='fa fa-check'></i> Đã trả lời
+                            <i className='fa fa-check'></i>: Đã trả lời
                         </div>
                         Danh sách trống!
                     </div>
