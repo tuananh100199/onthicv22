@@ -108,7 +108,7 @@ class ForumPage extends AdminPage {
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: backUrl,
-            onCreate: permission.write ? this.edit : null,
+            onCreate: this.edit,
         });
     }
 }

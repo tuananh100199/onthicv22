@@ -124,20 +124,6 @@ export function deleteForum(_id) {
 
 
 
-export function createForumByUser(forum, done) {
-    return () => {
-        const url = '/api/forum';
-        T.post(url, { forum }, data => {
-            if (data.error) {
-                T.notify('Tạo forum bị lỗi!', 'danger');
-                console.error('POST: ' + url + '. ' + data.error);
-            } else {
-                if (done) done(data);
-            }
-        }, error => console.error(error) || T.notify('tạo forum bị lỗi!', 'danger'));
-    };
-}
-
 // Message -------------------------------------------------------------------------------------------------------
 export function addMessage(_id, messages, done) {
     return dispatch => {
