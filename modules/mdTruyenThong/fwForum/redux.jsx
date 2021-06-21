@@ -125,6 +125,8 @@ export function deleteForum(_id) {
 
 
 // Message -------------------------------------------------------------------------------------------------------
+T.initCookiePage('pageForumMessage');
+
 export function addMessage(_id, messages, done) {
     return dispatch => {
         const url = '/api/forum/message';

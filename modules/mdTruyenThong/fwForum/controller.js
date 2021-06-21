@@ -16,7 +16,10 @@ module.exports = app => {
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
-        app.model.category.getAll({ type: 'forum' }, (error, items) => {
+        const isForumWrite = req.session.user.permissions ? req.session.user.permissions.includes('forum:write') : false;
+        let condition = { type: 'forum' };
+        if (!isForumWrite) condition.active = true;
+        app.model.category.getAll(condition, (error, items) => {
             if (error || items == null) {
                 res.send({ error: 'Lỗi khi lấy danh mục!' });
             } else {
@@ -24,11 +27,14 @@ module.exports = app => {
                     getForums = (index = 0) => {
                         if (index < items.length) {
                             const { _id, title, image } = items[index];
-                            new Promise(resolve => app.model.forum.count({ category: _id }, (error, total) => {
+                            condition = { category: _id };
+                            if (!isForumWrite) condition.state == 'approved';
+
+                            new Promise(resolve => app.model.forum.count(condition, (error, total) => {
                                 if (error || total == 0) {
                                     resolve({ total: 0, page: [] });
                                 } else {
-                                    app.model.forum.getPage(1, 3, { category: _id }, (error, page) => resolve({ total, page: error || page == null ? [] : page }));
+                                    app.model.forum.getPage(1, 3, condition, (error, page) => resolve({ total, page: error || page == null ? [] : page }));
                                 }
                             })).then(({ total, page }) => {
                                 categories.push({ _id, title, image, total, page });
