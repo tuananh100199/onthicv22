@@ -2,6 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
+        content: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
         category: { type: app.db.Schema.ObjectId, ref: 'Category' },              // Phân loại forum
         createdDate: { type: Date, default: Date.now },
@@ -20,8 +21,21 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('user', 'firstname lastname').sort({ modifiedDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
-                    result.list = list; //TODO: lấy nhiều nhất 3 message
-                    done(error, result);
+                    result.list = [];
+                    const numberOfForums = list ? list.length : 0,
+                        solve = (index = 0) => {
+                            if (index < numberOfForums) {
+                                const item = app.clone(list[index]);
+                                app.model.forumMessage.getPage(1, 3, { forum: item._id }, (error, messages) => {
+                                    item.messages = error || messages == null ? [] : messages;
+                                    result.list.push(item);
+                                    solve(index + 1);
+                                });
+                            } else {
+                                done(error, result);
+                            }
+                        };
+                    solve();
                 });
             }
         }),

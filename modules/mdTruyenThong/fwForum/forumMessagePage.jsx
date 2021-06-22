@@ -7,7 +7,7 @@ import { AdminPage } from 'view/component/AdminPage';
 class ForumMessagePage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready();
+        T.ready('/user/forum');
     }
 
     render() {

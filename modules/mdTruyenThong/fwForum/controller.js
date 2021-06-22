@@ -34,7 +34,7 @@ module.exports = app => {
                                 if (error || total == 0) {
                                     resolve({ total: 0, page: [] });
                                 } else {
-                                    app.model.forum.getPage(1, 3, condition, (error, page) => resolve({ total, page: error || page == null ? [] : page }));
+                                    app.model.forum.getPage(1, 5, condition, (error, page) => resolve({ total, page: error || page == null ? [] : page }));
                                 }
                             })).then(({ total, page }) => {
                                 categories.push({ _id, title, image, total, page });
@@ -96,8 +96,11 @@ module.exports = app => {
         } else {
             app.model.forum.get({ _id, user: req.session.user._id }, (error, forum) => {
                 if (error == null && forum) {
-                    if (changes && changes.title != null) {
-                        app.model.forum.update(_id, { title: changes.title }, (error, item) => res.send({ error, item }));
+                    const data = {};
+                    if (changes.title) data.title = changes.title;
+                    if (changes.content) data.content = changes.content.substring(0, 200);
+                    if (changes.title || changes.content) {
+                        app.model.forum.update(_id, data, (error, item) => res.send({ error, item }));
                     } else {
                         res.send({ error: 'Lỗi khi cập nhật forum!' });
                     }

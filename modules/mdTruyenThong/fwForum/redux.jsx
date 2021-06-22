@@ -95,7 +95,7 @@ export function updateForum(_id, changes, done) {
                 console.error('PUT: ' + url + '. ' + data.error);
                 done && done(data.error);
             } else {
-                done && done();
+                done && done(data);
                 T.notify('Cập nhật forum thành công!', 'success');
                 data.item && data.item.category && dispatch(getForumPage(data.item.category));
             }
