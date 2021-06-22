@@ -15,7 +15,7 @@ class MessageModal extends AdminModal {
     onShow = (item) => {
         const { _id, content, state } = item || { content: '', state: 'waiting' };
         this.itemContent.value(content);
-        this.itemState.value(state);
+        this.itemState && this.itemState.value(state);
         this.setState({ _id });
     }
 
@@ -46,7 +46,7 @@ class MessageModal extends AdminModal {
         return this.renderModal({
             title: 'Bài viết',
             body: <>
-                <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={!permission.write} />
+                <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
                 {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });

@@ -168,17 +168,17 @@ export function updateForumMessage(_id, changes, done) {
     };
 }
 
-export function deleteForumMessage(_id, messageId, done) {
+export function deleteForumMessage(_id, done) {
     return dispatch => {
         const url = '/api/forum/message';
-        T.delete(url, { _id, messageId }, data => {
+        T.delete(url, { _id }, data => {
             if (data.error) {
                 T.notify('Xóa bài viết bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 done && done(data);
                 T.notify('Xóa bài viết thành công!', 'success');
-                dispatch({ type: ForumGetItem, item: { page: data.page } });
+                data.item && data.item.forum && dispatch(getForumMessagePage(data.item.forum));
             }
         }, error => console.error(`DELETE: ${url}. ${error}`) || T.notify('Xóa bài viết bị lỗi!', 'danger'));
     };

@@ -18,7 +18,7 @@ class ForumModal extends AdminModal {
         const { _id, title, content, state } = item || { title: '', content: '', state: 'waiting' };
         this.itemTitle.value(title);
         this.itemContent.value(content);
-        this.itemState.value(state);
+        this.itemState && this.itemState.value(state);
         this.setState({ _id });
     }
 
@@ -52,8 +52,8 @@ class ForumModal extends AdminModal {
         return this.renderModal({
             title: 'Chủ đề',
             body: <>
-                <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={!permission.write} />
-                <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={!permission.write} />
+                <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
+                <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
                 {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });

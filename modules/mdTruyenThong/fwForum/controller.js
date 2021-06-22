@@ -58,6 +58,9 @@ module.exports = app => {
             pageCondition.title = new RegExp(searchText, 'i');
             pageCondition.content = new RegExp(searchText, 'i');
         }
+        if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
+            pageCondition.state = 'approved';
+        }
 
         app.model.category.get(_categoryId, (error, category) => {
             if (error || category == null) {
@@ -79,6 +82,9 @@ module.exports = app => {
     app.post('/api/forum', app.permission.check('user:login'), (req, res) => {
         const data = app.clone(req.body.data);
         data.user = req.session.user._id;
+        if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
+            data.state = 'waiting';
+        }
         app.model.forum.create(data, (error, item) => res.send({ error, item }));
     });
 
@@ -130,6 +136,10 @@ module.exports = app => {
         if (searchText) {
             pageCondition.content = new RegExp(searchText, 'i');
         }
+        if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
+            pageCondition.state = 'approved';
+        }
+
         app.model.forumMessage.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
             res.send({ error, page });
         });
@@ -144,8 +154,15 @@ module.exports = app => {
                 if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
                     state = 'waiting';
                 }
+
+                // Tạo bài viết trong forum
                 app.model.forumMessage.create({ user: req.session.user._id, forum, content, state }, (error, item) => {
-                    res.send({ error, item });
+                    if (error || item == null) {
+                        res.send({ error: 'Tạo bài viết bị lỗi!' });
+                    } else {
+                        // Cập nhật thời gian forum.modifiedDate
+                        app.model.forum.update(item.forum, { modifiedDate: new Date() }, (error) => res.send({ error, item }));
+                    }
                 });
             }
         });
@@ -157,22 +174,46 @@ module.exports = app => {
             if (error || item == null || changes == null || changes.content == '') {
                 res.send({ error: 'Dữ liệu không hợp lệ!' });
             } else {
-                item.content = changes.content;
-                if (req.session.user.permissions && req.session.user.permissions.includes('forum:write')) {
-                    item.state = changes.state;
-                }
-                item.save(error => res.send({ error, item }));
+                app.model.forum.get(item.forum, (error, forum) => {
+                    if (error || forum == null) {
+                        res.send({ error: 'Dữ liệu không hợp lệ!' });
+                    } else {
+                        // Cập nhật thời gian forum.modifiedDate
+                        app.model.forum.update(item.forum, { modifiedDate: new Date() }, (error) => {
+                            if (error) {
+                                res.send({ error: 'Dữ liệu không hợp lệ!' });
+                            } else {
+                                // Cập nhật bài viết trong forum
+                                item.content = changes.content;
+                                if (req.session.user.permissions && req.session.user.permissions.includes('forum:write')) {
+                                    item.state = changes.state;
+                                }
+                                item.save(error => res.send({ error, item }));
+                            }
+                        });
+                    }
+                });
             }
         });
     });
 
     app.delete('/api/forum/message', app.permission.check('user:login'), (req, res) => {
-        const { _id, messageId } = req.body;
-        app.model.forum.update(_id, { modifiedDate: new Date() }, (error, item) => {
+        const { _id } = req.body;
+        app.model.forumMessage.get(_id, (error, item) => {
             if (error || item == null) {
-                res.send({ error: 'Lỗi xóa bài viết' });
+                res.send({ error: 'Dữ liệu không hợp lệ!' });
+            } else if ((req.session.user.permissions && req.session.user.permissions.includes('forum:delete')) || req.session.user._id == item.user._id) {
+                // Xoá bài viết trong forum
+                app.model.forum.delete(_id, (error) => {
+                    if (error) {
+                        res.send({ error });
+                    } else {
+                        // Cập nhật thời gian forum.modifiedDate
+                        app.model.forum.update(_id, { modifiedDate: new Date() }, (error) => res.send({ error, item }));
+                    }
+                });
             } else {
-                app.model.forum.deleteMessage(_id, messageId, (error, item) => res.send({ error, item }));
+                res.send({ error: 'Bạn không được phép xoá bài viết này!' });
             }
         });
     });
