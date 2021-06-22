@@ -3,7 +3,7 @@ module.exports = app => {
         forum: { type: app.db.Schema.ObjectId, ref: 'Forum' },
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         content: String,
-        active: { type: Boolean, default: false },
+        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
         createdDate: { type: Date, default: Date.now },
     });
     const model = app.db.model('ForumMessage', schema);

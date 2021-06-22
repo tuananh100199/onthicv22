@@ -54,7 +54,11 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { _categoryId, searchText } = req.query,
             pageCondition = { category: _categoryId };
-        searchText && (pageCondition.title = new RegExp(searchText, 'i'));
+        if (searchText) {
+            pageCondition.title = new RegExp(searchText, 'i');
+            pageCondition.content = new RegExp(searchText, 'i');
+        }
+
         app.model.category.get(_categoryId, (error, category) => {
             if (error || category == null) {
                 res.send({ error: 'Danh mục không hợp lệ!' });
@@ -66,19 +70,9 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/forum', app.permission.check('user:login'), (req, res) => { //TODO
-        app.model.category.getAll({ type: 'forum' }, (error, categories) => {
-            if (error || categories == null) {
-                res.send({ error: 'Lỗi khi lấy danh mục!' });
-            } else {
-                app.model.forum.get(req.query._id, (error, item) => {
-                    res.send({
-                        error,
-                        item,
-                        categories: categories.map((item) => ({ id: item._id, text: item.title, })),
-                    });
-                });
-            }
+    app.get('/api/forum', app.permission.check('user:login'), (req, res) => {
+        app.model.forum.get(req.query._id, (error, item) => {
+            res.send({ error, item });
         });
     });
 
@@ -127,38 +121,52 @@ module.exports = app => {
         }
     });
 
-
-
-
-
-
-
-
-
     // API Message ----------------------------------------------------------------------------------------------------
-    app.post('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
-        const { _id, messages } = req.body;
-        app.model.forum.update(_id, { modifiedDate: new Date() }, (error, item) => {
-            if (error || item == null) {
-                res.send({ error: 'Lỗi thêm mới bài viết' });
+    app.get('/api/forum/message/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            { _forumId, searchText } = req.query,
+            pageCondition = { forum: _forumId };
+        if (searchText) {
+            pageCondition.content = new RegExp(searchText, 'i');
+        }
+        app.model.forumMessage.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
+            res.send({ error, page });
+        });
+    });
+
+    app.post('/api/forum/message', app.permission.check('user:login'), (req, res) => {
+        let { forum, content, state } = req.body;
+        app.model.forum.get(forum, (error, item) => {
+            if (error || item == null || content == '') {
+                res.send({ error: 'Dữ liệu không hợp lệ!' });
             } else {
-                app.model.forum.addMessage(_id, messages, (error, item) => res.send({ error, item }));
+                if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
+                    state = 'waiting';
+                }
+                app.model.forumMessage.create({ user: req.session.user._id, forum, content, state }, (error, item) => {
+                    res.send({ error, item });
+                });
             }
         });
     });
 
-    app.put('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
-        const { _id, messages } = req.body;
-        app.model.forum.update(_id, { modifiedDate: new Date() }, (error, item) => {
-            if (error || item == null) {
-                res.send({ error: 'Lỗi cập nhật bài viết' });
+    app.put('/api/forum/message', app.permission.check('user:login'), (req, res) => {
+        const { _id, changes } = req.body;
+        app.model.forumMessage.get(_id, (error, item) => {
+            if (error || item == null || changes == null || changes.content == '') {
+                res.send({ error: 'Dữ liệu không hợp lệ!' });
             } else {
-                app.model.forum.updateMessage(_id, messages, (error, item) => res.send({ error, item }));
+                item.content = changes.content;
+                if (req.session.user.permissions && req.session.user.permissions.includes('forum:write')) {
+                    item.state = changes.state;
+                }
+                item.save(error => res.send({ error, item }));
             }
         });
     });
 
-    app.delete('/api/forum/message', app.permission.check('forum:write'), (req, res) => {
+    app.delete('/api/forum/message', app.permission.check('user:login'), (req, res) => {
         const { _id, messageId } = req.body;
         app.model.forum.update(_id, { modifiedDate: new Date() }, (error, item) => {
             if (error || item == null) {
