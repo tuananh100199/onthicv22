@@ -5,7 +5,9 @@ module.exports = (app, http) => {
 
     app.io.on('connection', socket => {
         console.log('A user connected.');
-
+        socket.on('sendDataClient', (data) => {
+            app.io.emit('sendDataServer', { data });
+        });
         socket.on('disconnect', () => console.log('A user disconnected'));
     });
 

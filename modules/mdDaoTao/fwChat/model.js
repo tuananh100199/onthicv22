@@ -1,7 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         message: String,
-        room: String,
+        room: { type: app.db.Schema.ObjectId },
         sent: { type: Date, default: Date.now },
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
     });
@@ -11,8 +11,8 @@ module.exports = app => {
         create: (data, done) => model.create(data, done),
 
         getAll: (condition, done) => done ?
-            model.find(condition).sort({ title: 1 }).exec(done) :
-            model.find({}).sort({ title: 1 }).exec(condition),
+            model.find(condition).populate('user', 'firstname lastname image _id isLecturer isCourseAdmin').exec(done) :
+            model.find({}).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?
             model.findById(condition).exec(done) :

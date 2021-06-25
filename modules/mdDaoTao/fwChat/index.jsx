@@ -1,12 +1,12 @@
 //TEMPLATES: admin|home
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
-import division from './redux';
+import chat from './redux';
 
 export default {
     redux: {
         parent: 'trainning',
-        reducers: { division },
+        reducers: { chat },
     },
     routes: [
         {

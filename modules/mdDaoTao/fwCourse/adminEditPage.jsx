@@ -12,6 +12,8 @@ import AdminRepresentersView from './tabView/adminRepresentersView';
 import AdminLearningProgressView from './tabView/adminLearningProgressView';
 import LecturerStudentView from './tabView/lecturerStudentView';
 import LecturerLearningProgressView from './tabView/lecturerLearningProgressView';
+import AdminAllChat from '../fwChat/adminAllChat';
+import AdminPersonalChat from '../fwChat/adminPersonalChat';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -115,12 +117,16 @@ class EditCoursePage extends AdminPage {
             { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permission} courseType={this.state.courseType} course={this.props.course} /> : null },
             { title: 'Tiến độ học tập chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
             { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permission} /> : null },
+            { title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null },
+            { title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },
         ];
         const lecturerTabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permission} readOnly={readOnly} /> },
             { title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
             { title: 'Tiến độ học tập', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
+            { title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null },
+            { title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },
         ];
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
             adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permission} /> : null });

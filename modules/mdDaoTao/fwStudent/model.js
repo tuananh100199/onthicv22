@@ -62,7 +62,7 @@ module.exports = (app) => {
                 condition = {};
             }
             model.find(condition)
-                .populate('user', 'email phoneNumber').populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
+                .populate('user', 'email phoneNumber image').populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
                 .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 

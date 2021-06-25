@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getDivisionAll, createDivision, deleteDivision, updateDivision } from './redux';
+import { createMessage } from './redux';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
-import TabAllChat from './tabAllChat';
-import TabPersonalChat from './tabPersonalChat';
+import UserAllChat from './userAllChat';
+import UserPersonalChat from './userPersonalChat';
 
 
 const previousRoute = '/user';
@@ -27,8 +27,8 @@ class ChatPage extends AdminPage {
     render() {
         // const permission = this.getUserPermission('chat');
         const adminTabs = [
-            { title: 'Phòng chat chung', component: <TabAllChat /> },
-            { title: 'Phòng chat cá nhân', component: <TabPersonalChat /> },
+            { title: 'Phòng chat chung', component: <UserAllChat /> },
+            { title: 'Phòng chat cá nhân', component: <UserPersonalChat /> },
         ];
         return this.renderPage({
             icon: 'fa fa-comment',
@@ -40,5 +40,5 @@ class ChatPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { getDivisionAll, createDivision, deleteDivision, updateDivision };
+const mapActionsToProps = { createMessage };
 export default connect(mapStateToProps, mapActionsToProps)(ChatPage);
