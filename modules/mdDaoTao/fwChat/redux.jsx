@@ -26,6 +26,7 @@ export function getOldMessage(roomId, done) {
         const url = '/api/chat/all';
         T.get(url, { roomId }, data => {
             if (data.error) {
+
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
@@ -44,7 +45,7 @@ export function createMessage(data, done) {
                 T.notify('Gửi tin nhắn bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch();
+                dispatch({ type: ChatGetItem });
                 if (done) done(data);
             }
         }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));

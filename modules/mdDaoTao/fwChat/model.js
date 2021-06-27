@@ -1,7 +1,7 @@
 module.exports = app => {
     const schema = app.db.Schema({
         message: String,
-        room: { type: app.db.Schema.ObjectId },
+        room: String,
         sent: { type: Date, default: Date.now },
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
     });

@@ -11,7 +11,7 @@ export default {
     routes: [
         {
             path: '/user/chat/:id',
-            component: Loadable({ loading: Loading, loader: () => import('./adminPage') }),
+            component: Loadable({ loading: Loading, loader: () => import('./userChatPage') }),
         },
     ]
 };
