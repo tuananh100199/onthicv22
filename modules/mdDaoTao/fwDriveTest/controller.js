@@ -45,9 +45,6 @@ module.exports = app => {
 
     app.get('/api/drive-test/student', (req, res) => {
         app.model.driveTest.get(req.query._id, (error, item) => {
-            if (item && item.questions) {
-                item.questions.forEach(question => question.trueAnswer = null);
-            }
             res.send({ error, item });
         });
     });
@@ -83,7 +80,7 @@ module.exports = app => {
                     return null;
                 }
                 let result = new Array(n),
-                    len = arr.length,
+                    len = arr ? arr.length : 1,
                     taken = new Array(len);
                 if (n > len) {
                     return null;
@@ -132,6 +129,7 @@ module.exports = app => {
             });
         }
     });
+
 
     app.post('/api/drive-test/student/submit', (req, res) => {//mobile
         const { _id, answers } = req.body;
