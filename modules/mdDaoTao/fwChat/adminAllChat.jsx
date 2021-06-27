@@ -9,6 +9,7 @@ class AdminAllChat extends AdminPage {
     socketRef = React.createRef();
     state = { clientId: null, oldMessage: [] };
     componentDidMount() {
+        window.addEventListener('keydown', this.logKey);
         const _id = this.props.courseId;
         const user = this.props.system.user;
         this.setState({
@@ -46,6 +47,16 @@ class AdminAllChat extends AdminPage {
 
         });
 
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.logKey);
+    }
+
+    logKey = (e) => {
+        if (e.code == 'Enter') {
+            this.sendMessage();
+        }
     }
 
     sendMessage = () => {

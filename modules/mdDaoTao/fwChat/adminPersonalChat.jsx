@@ -10,6 +10,7 @@ class AdminPersonalChat extends AdminPage {
     socketRef = React.createRef();
     state = { listStudent: [], oldMessage: [] };
     componentDidMount() {
+        window.addEventListener('keydown', this.logKey);
         const _id = this.props.courseId;
         if (_id) {
             const user = this.props.system.user;
@@ -61,6 +62,16 @@ class AdminPersonalChat extends AdminPage {
             }
 
         });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.logKey);
+    }
+
+    logKey = (e) => {
+        if (e.code == 'Enter') {
+            this.sendMessage();
+        }
     }
 
     sendMessage = () => {
@@ -121,7 +132,7 @@ class AdminPersonalChat extends AdminPage {
             </div>
         );
         return (<div className='container'>
-            <h3 className=' text-center'>Messaging</h3>
+            <h3 className=' text-center'>Phòng chat cá nhân</h3>
             <div className='messaging'>
                 <div className='inbox_msg row'>
                     <div className='inbox_people col-md-3'>

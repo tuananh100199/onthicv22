@@ -51,3 +51,19 @@ export function createMessage(data, done) {
         }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
     };
 }
+
+export function getAdminChatByStudent(courseId, done) {
+    return (dispatch) => {
+        const url = '/api/chat/student';
+        T.get(url, { courseId }, data => {
+            if (data.error) {
+
+                T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                if (done) done(data);
+                dispatch({ type: ChatGetItem });
+            }
+        }, error => console.error(error) || T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
+    };
+}

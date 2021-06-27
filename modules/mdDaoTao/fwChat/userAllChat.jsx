@@ -9,6 +9,7 @@ class UserAllChat extends AdminPage {
     socketRef = React.createRef();
     state = { clientId: null, oldMessage: [] };
     componentDidMount() {
+        window.addEventListener('keydown', this.logKey);
         const route = T.routeMatcher('/user/chat/:_id'),
             _id = route.parse(window.location.pathname)._id;
         const user = this.props.system.user;
@@ -49,6 +50,16 @@ class UserAllChat extends AdminPage {
 
         });
 
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.logKey);
+    }
+
+    logKey = (e) => {
+        if (e.code == 'Enter') {
+            this.sendMessage();
+        }
     }
 
     sendMessage = () => {
