@@ -29,7 +29,7 @@ class EditCoursePage extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
                         const { name, maxStudent, shortDescription, detailDescription, courseType, courseFee,
-                            thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active } = data.item;
+                            thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive } = data.item;
 
                         this.name.value(name);
                         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
@@ -46,6 +46,7 @@ class EditCoursePage extends AdminPage {
                         this.thoiGianThiTotNghiepDuKien.value(thoiGianThiTotNghiepDuKien);
                         this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
                         this.active.value(active);
+                        this.chatActive.value(chatActive);
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
@@ -67,9 +68,10 @@ class EditCoursePage extends AdminPage {
             detailDescription: this.detailDescription.html(),
             courseFees: this.state.courseFees,
             active: this.active.value(),
+            chatActive: this.chatActive.value(),
         };
+        this.setState({ chatActive: changes.chatActive });
         if (changes.courseFee == null) changes.courseFee = 0;
-
         if (changes.name == '') {
             T.notify('Tên khóa học trống!', 'danger');
             this.name.focus();
@@ -86,7 +88,7 @@ class EditCoursePage extends AdminPage {
             courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
         const tabInfo = <div className='row'>
             <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
-            <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + readOnly ? 'invisible' : ''} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
+            <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
             <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
             <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
             <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
@@ -103,11 +105,12 @@ class EditCoursePage extends AdminPage {
             <FormDatePicker ref={e => this.thoiGianThiTotNghiepDuKien = e} label='Thời gian tốt nghiệp dự kiến' className='col-md-6' readOnly={readOnly} />
             <FormDatePicker ref={e => this.thoiGianThiTotNghiepChinhThuc = e} label='Thời gian tốt nghiệp chính thức' className='col-md-6' readOnly={readOnly} />
 
-            <h3 className='tile-title' style={{ width: '100%', paddingLeft: 15, marginBottom: 5 }}>Mô tả khoá học</h3>
+            <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Mô tả khoá học</h3>
+            <FormCheckbox ref={e => this.chatActive = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt chat' isSwitch={true} readOnly={readOnly} />
             <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
             <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
 
-            {permission.write && !isLecturer ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+            {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
         </div>;
 
         const adminTabs = [
@@ -117,16 +120,12 @@ class EditCoursePage extends AdminPage {
             { title: 'Học viên', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminStudentView permission={permission} courseType={this.state.courseType} course={this.props.course} /> : null },
             { title: 'Tiến độ học tập chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
             { title: 'Gán cố vấn học tập', component: this.props.course && this.props.course.item ? <AdminTeacherView permission={permission} /> : null },
-            { title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null },
-            { title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },
         ];
         const lecturerTabs = [
             { title: 'Thông tin chung', component: tabInfo },
             { title: 'Môn học', component: <AdminSubjectView permission={permission} readOnly={readOnly} /> },
             { title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
             { title: 'Tiến độ học tập', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
-            { title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null },
-            { title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },
         ];
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
             adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permission} /> : null });
@@ -134,6 +133,12 @@ class EditCoursePage extends AdminPage {
         if (isCourseAdmin && isLecturer) {
             adminTabs.push({ title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
             adminTabs.push({ title: 'Tiến độ học tập', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
+        }
+        if (this.state.chatActive) {
+            adminTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
+            adminTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null });
+            lecturerTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
+            lecturerTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },);
         }
 
         return this.renderPage({

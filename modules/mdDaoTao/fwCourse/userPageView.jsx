@@ -76,15 +76,16 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
-                    {/* //TODO chức năng chat */}
-                    <Link className='col-md-4' to={'/user/chat/' + this.state.courseId}>
-                        <div className='widget-small coloured-icon info'>
-                            <i className='icon fa fa-3x fa-comments-o' />
-                            <div className='info'>
-                                <h4>Chat</h4>
+                    {this.state.chatActive &&
+                        <Link className='col-md-4' to={'/user/chat/' + this.state.courseId}>
+                            <div className='widget-small coloured-icon info'>
+                                <i className='icon fa fa-3x fa-comments-o' />
+                                <div className='info'>
+                                    <h4>Chat</h4>
+                                </div>
                             </div>
-                        </div>
-                    </Link>
+                        </Link>}
+
                     {/* //TODO chức năng phản hồi */}
                     <Link className='col-md-4' to='#'>
                         <div className='widget-small coloured-icon info'>

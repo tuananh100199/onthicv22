@@ -14,18 +14,13 @@ class ChatPage extends AdminPage {
         this.setState({ courseId: _id });
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-
-
             });
         } else {
             this.props.history.push(previousRoute);
         }
     }
 
-
-
     render() {
-        // const permission = this.getUserPermission('chat');
         const adminTabs = [
             { title: 'Phòng chat chung', component: <UserAllChat /> },
             { title: 'Phòng chat cá nhân', component: <UserPersonalChat /> },

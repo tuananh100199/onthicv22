@@ -93,8 +93,6 @@ class UserPersonalChat extends AdminPage {
         });
     }
 
-
-
     render() {
         const renderMess = this.state.oldMessage.map((msg, index) =>
             <div key={index} className={(msg.user._id == this.state.user._id) ? 'outgoing_msg' : 'incoming_msg'}>
