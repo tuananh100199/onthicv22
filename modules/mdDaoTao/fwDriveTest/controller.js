@@ -80,7 +80,7 @@ module.exports = app => {
                     return null;
                 }
                 let result = new Array(n),
-                    len = arr ? arr.length : 1,
+                    len = arr.length,
                     taken = new Array(len);
                 if (n > len) {
                     return null;

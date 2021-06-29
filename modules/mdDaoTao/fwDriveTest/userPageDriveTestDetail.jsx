@@ -15,7 +15,6 @@ class UserPageDriveTestDetail extends AdminPage {
                 params = route.parse(window.location.pathname);
             this.props.getDriveTestItemByStudent(params._id, data => {
                 if (data.item) {
-                    console.log(data.item);
                     const newState = {
                         activeQuestionIndex: 0,
                         prevButton: 'invisible',
