@@ -27,7 +27,6 @@ class UserPersonalChat extends AdminPage {
             });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getAdminChatByStudent(_id, data => {
-                    console.log(data.item);
                     this.setState({ listAdmin: data.item, roomId: _id + '_' + data.item[0]._id + '_' + user._id, activeId: data.item[0]._id }, () => {
                         this.props.getOldMessage(this.state.roomId, data => {
                             this.setState({

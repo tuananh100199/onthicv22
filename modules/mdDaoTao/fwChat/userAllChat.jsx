@@ -98,7 +98,7 @@ class UserAllChat extends AdminPage {
         );
         return (
             <div className='container'>
-                <h3 className=' text-center'>Phòng chat lớp</h3>
+                <h3 className=' text-center'>Phòng chat chung</h3>
                 <div className='messaging'>
                     <div className='inbox_msg'>
                         <div className='mesgs-all-chat'>

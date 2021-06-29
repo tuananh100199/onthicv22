@@ -1,7 +1,7 @@
 module.exports = app => {
 
     app.get('/user/chat/:id', app.templates.admin);
-    
+
     app.get('/api/chat/all', (req, res) => {
         app.model.chat.getAll({ room: req.query.roomId }, (error, item) => {
             res.send({ error, item });
@@ -22,7 +22,9 @@ module.exports = app => {
                 const lecturer = item.teacherGroups.filter(teacherGroup => teacherGroup.student && teacherGroup.student.findIndex(student =>
                     student.user._id == sessionUser._id
                 ) != -1);
-                listAdmin.push(lecturer[0].teacher);
+                if (listAdmin.findIndex(admin => admin._id == lecturer[0].teacher._id) != -1) {
+                    listAdmin.push(lecturer[0].teacher);
+                }
                 res.send({ error, item: listAdmin.length ? listAdmin : null });
             }
         });
