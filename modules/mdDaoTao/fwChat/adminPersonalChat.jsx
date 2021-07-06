@@ -28,7 +28,7 @@ class AdminPersonalChat extends AdminPage {
             user.isCourseAdmin ?
                 this.props.getLearingProgressByAdmin(_id, data => {
                     this.setState({ listStudent: data.item, roomId: _id + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
-                        this.props.getOldMessage(this.state.roomId, data => {
+                        this.props.getOldMessage(_id, Date.now(), 5, data => {
                             this.setState({
                                 oldMessage: data.item
                             });
@@ -37,7 +37,7 @@ class AdminPersonalChat extends AdminPage {
                 }) :
                 this.props.getLearingProgressByLecturer(_id, data => {
                     this.setState({ listStudent: data.item, roomId: _id + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
-                        this.props.getOldMessage(this.state.roomId, data => {
+                        this.props.getOldMessage(_id, Date.now(), 5, data => {
                             this.setState({
                                 oldMessage: data.item
                             });
@@ -92,7 +92,7 @@ class AdminPersonalChat extends AdminPage {
         const { courseId, user } = this.state;
         e.preventDefault();
         this.setState({ roomId: courseId + '_' + user._id + '_' + studentId, activeId: studentId }, () => {
-            this.props.getOldMessage(this.state.roomId, data => {
+            this.props.getOldMessage(user._id, Date.now(), 5, data => {
                 this.setState({
                     oldMessage: data.item
                 });

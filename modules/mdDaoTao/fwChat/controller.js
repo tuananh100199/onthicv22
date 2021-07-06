@@ -3,8 +3,10 @@ module.exports = app => {
     app.get('/user/chat/:id', app.templates.admin);
 
     app.get('/api/chat/all', (req, res) => {
-        app.model.chat.getAll({ room: req.query.roomId }, (error, item) => {
-            res.send({ error, item });
+        const { roomId, create_at, num_message } = req.query;
+        app.model.chat.getAll({ room: roomId, sent: { $lt: create_at } }, parseInt(num_message), (error, item) => {
+            const new_item = item.reverse();
+            res.send({ error, item: new_item });
         });
     });
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createMessage, getOldMessage } from './redux';
+import { debounce } from 'lodash';
 import { AdminPage, FormTextBox } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
 
@@ -21,12 +22,15 @@ class AdminAllChat extends AdminPage {
                 firstname: user.firstname,
                 isCourseAdmin: user.isCourseAdmin,
                 isLecturer: user.isLecturer
-            }
+            },
+            currentLoaded: 0,
+            anyMessagesLeft: true,
         });
         if (_id) {
-            this.props.getOldMessage(_id, data => {
+            this.props.getOldMessage(_id, Date.now(), 5, data => {
                 this.setState({
-                    oldMessage: data.item
+                    oldMessage: data.item,
+                    currentLoaded: data.item[0].sent,
                 });
             });
         } else {
@@ -73,6 +77,19 @@ class AdminAllChat extends AdminPage {
         }
     }
 
+    handleScrollMessage = debounce((target) => {
+        console.log(target.clientHeight);
+        if (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40)) {
+            this.state.anyMessagesLeft && this.props.getOldMessage(this.state.courseId, this.state.currentLoaded, 5, data => {
+                this.setState(prevState => ({
+                    oldMessage: data.item.concat(prevState.oldMessage),
+                    currentLoaded: data.item[data.item.length - 1].sent,
+                    anyMessagesLeft: false
+                }));
+            });
+        }
+    }, 200)
+
     render() {
         // const permission = this.getUserPermission('chat');
         const renderMess = this.state.oldMessage.map((msg, index) =>
@@ -96,10 +113,10 @@ class AdminAllChat extends AdminPage {
         return (
             <div className='container'>
                 <h3 className=' text-center'>Phòng chat chung</h3>
-                <div className='messaging'>
+                <div className='messaging' >
                     <div className='inbox_msg'>
                         <div className='mesgs-all-chat'>
-                            <div className='msg_history'>
+                            <div className='msg_history' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
                             </div>
                             <div className='type_msg'>

@@ -10,8 +10,8 @@ module.exports = app => {
     app.model.chat = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, done) => done ?
-            model.find(condition).populate('user', 'firstname lastname image _id isLecturer isCourseAdmin').exec(done) :
+        getAll: (condition, num_message, done) => done ?
+            model.find(condition).sort({ sent: -1 }).populate('user', 'firstname lastname image _id isLecturer isCourseAdmin').limit(num_message).exec(done) :
             model.find({}).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?
@@ -31,5 +31,7 @@ module.exports = app => {
                 item.remove(done);
             }
         }),
+
+        count: (condition, done) => done ? model.countDocuments(condition, done) : model.countDocuments({}, condition),
     };
 };

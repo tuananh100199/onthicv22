@@ -21,10 +21,10 @@ export default function ChatReducer(state = {}, data) {
 
 // Actions ------------------------------------------------------------------------------------------------------------
 T.initCookiePage('pageChat');
-export function getOldMessage(roomId, done) {
+export function getOldMessage(roomId, create_at, num_message, done) {
     return (dispatch) => {
         const url = '/api/chat/all';
-        T.get(url, { roomId }, data => {
+        T.get(url, { roomId, create_at, num_message }, data => {
             if (data.error) {
 
                 T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
