@@ -6,7 +6,9 @@ module.exports = app => {
         const { roomId, create_at, num_message } = req.query;
         app.model.chat.getAll({ room: roomId, sent: { $lt: create_at } }, parseInt(num_message), (error, item) => {
             const new_item = item.reverse();
-            res.send({ error, item: new_item });
+            app.model.chat.count({ room: roomId }, (error, count) => {
+                res.send({ error, item: new_item, count });
+            });
         });
     });
 

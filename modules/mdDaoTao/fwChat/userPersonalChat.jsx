@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createMessage, getAdminChatByStudent, getOldMessage } from './redux';
+import { debounce } from 'lodash';
 import { AdminPage, FormTextBox } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
 
@@ -23,14 +24,18 @@ class UserPersonalChat extends AdminPage {
                     firstname: user.firstname,
                     isCourseAdmin: user.isCourseAdmin,
                     isLecturer: user.isLecturer
-                }
+                },
+                scrollDown: true,
+                currentLoaded: 0,
             });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getAdminChatByStudent(_id, data => {
                     this.setState({ listAdmin: data.item, roomId: _id + '_' + data.item[0]._id + '_' + user._id, activeId: data.item[0]._id }, () => {
-                        this.props.getOldMessage(_id, Date.now(), 5, data => {
+                        this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                             this.setState({
-                                oldMessage: data.item
+                                oldMessage: data.item,
+                                currentLoaded: data.item[0] && data.item[0].sent,
+                                anyMessagesLeft: data.item.length < data.count
                             });
                         });
                     });
@@ -80,13 +85,29 @@ class UserPersonalChat extends AdminPage {
         }
     }
 
+    handleScrollMessage = debounce((target) => {
+        if (!this.state.scrollDown && (target.scrollHeight + target.scrollTop >= (target.clientHeight))) {
+            this.state.anyMessagesLeft && this.props.getOldMessage(this.state.roomId, this.state.currentLoaded, 5, data => {
+                this.setState(prevState => ({
+                    oldMessage: data.item.concat(prevState.oldMessage),
+                    currentLoaded: data.item[0].sent,
+                    anyMessagesLeft: data.item.concat(prevState.oldMessage).length < data.count,
+                }));
+            });
+        } else if (this.state.scrollDown) {
+            this.setState({ scrollDown: false });
+        }
+    }, 200)
+
     loadChat = (e, adminId) => {
         const { courseId, user } = this.state;
         e.preventDefault();
         this.setState({ roomId: courseId + '_' + adminId + '_' + user._id, activeId: adminId }, () => {
-            this.props.getOldMessage(user._id, Date.now(), 5, data => {
+            this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                 this.setState({
-                    oldMessage: data.item
+                    oldMessage: data.item,
+                    currentLoaded: data.item[0] && data.item[0].sent,
+                    anyMessagesLeft: data.item.length < data.count
                 });
             });
         });
@@ -121,6 +142,11 @@ class UserPersonalChat extends AdminPage {
                 </div>
             </div>
         );
+        if (this.state.scrollDown) {
+            $('#msg_user_personal').stop().animate({
+                scrollTop: $('#msg_user_personal').height()
+            }, 500);
+        }
         return (<div className='container'>
             <h3 className=' text-center'>Phòng chat cá nhân</h3>
             <div className='messaging'>
@@ -136,7 +162,7 @@ class UserPersonalChat extends AdminPage {
                         </div>
                     </div>
                     <div className='mesgs col-md-9'>
-                        <div className='msg_history'>
+                        <div className='msg_history' id='msg_user_personal' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                             {renderMess}
                         </div>
                         <div className='type_msg'>

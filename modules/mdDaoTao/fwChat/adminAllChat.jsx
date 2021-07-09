@@ -23,14 +23,15 @@ class AdminAllChat extends AdminPage {
                 isCourseAdmin: user.isCourseAdmin,
                 isLecturer: user.isLecturer
             },
+            scrollDown: true,
             currentLoaded: 0,
-            anyMessagesLeft: true,
         });
         if (_id) {
             this.props.getOldMessage(_id, Date.now(), 5, data => {
                 this.setState({
                     oldMessage: data.item,
-                    currentLoaded: data.item[0].sent,
+                    currentLoaded: data.item[0] && data.item[0].sent,
+                    anyMessagesLeft: data.item.length < data.count
                 });
             });
         } else {
@@ -78,15 +79,16 @@ class AdminAllChat extends AdminPage {
     }
 
     handleScrollMessage = debounce((target) => {
-        console.log(target.clientHeight);
-        if (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40)) {
+        if (!this.state.scrollDown && (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40))) {
             this.state.anyMessagesLeft && this.props.getOldMessage(this.state.courseId, this.state.currentLoaded, 5, data => {
                 this.setState(prevState => ({
                     oldMessage: data.item.concat(prevState.oldMessage),
-                    currentLoaded: data.item[data.item.length - 1].sent,
-                    anyMessagesLeft: false
+                    currentLoaded: data.item[0].sent,
+                    anyMessagesLeft: data.item.concat(prevState.oldMessage).length < data.count,
                 }));
             });
+        } else if (this.state.scrollDown) {
+            this.setState({ scrollDown: false });
         }
     }, 200)
 
@@ -110,13 +112,18 @@ class AdminAllChat extends AdminPage {
                     </div>}
             </div>
         );
+        if (this.state.scrollDown) {
+            $('#msg_admin_all').animate({
+                scrollTop: $('#msg_admin_all').height()
+            }, 500);
+        }
         return (
             <div className='container'>
                 <h3 className=' text-center'>Phòng chat chung</h3>
                 <div className='messaging' >
                     <div className='inbox_msg'>
                         <div className='mesgs-all-chat'>
-                            <div className='msg_history' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                            <div className='msg_history' id='msg_admin_all' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
                             </div>
                             <div className='type_msg'>
