@@ -38,7 +38,7 @@ class HomeCourseTypeDetailPage extends React.Component {
                 <div className='row'>
                     <div className='col-lg-9 contact_content'>
                         <div className='contact_content_title ftco-animate text-center text-primary'>{currentItem.title}</div>
-                        {currentItem.isPriceDisplayed && <h3 className='service_title text-center'>{T.numberDisplay(currentItem.price ? `Giá : ${currentItem.price} VND` : '')}</h3>}
+                        {currentItem.isPriceDisplayed && <h3 className='service_title text-center'>{T.numberDisplay(currentItem.price ? `Giá : ${currentItem.price} VNĐ` : '')}</h3>}
                         <div className='contact_info ftco-animate'>
                             <p dangerouslySetInnerHTML={{ __html: currentItem.detailDescription }} />
                         </div>
