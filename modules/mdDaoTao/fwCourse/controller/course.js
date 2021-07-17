@@ -25,7 +25,7 @@ module.exports = (app) => {
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
             if (error || !item) {
-                done('Khoá học không tồn tại!');
+                done('Khóa học không tồn tại!');
             } else {
                 const division = sessionUser.division,
                     courseFees = item.courseFees;
@@ -252,11 +252,11 @@ module.exports = (app) => {
         new Promise((resolve, reject) => {
             app.model.course.get(_courseId, (error, course) => {
                 if (error || course == null) {
-                    reject('Khoá học không hợp lệ!');
+                    reject('Khóa học không hợp lệ!');
                 } else if (sessionUser.permissions.includes('course:write') || (sessionUser.isCourseAdmin && course.admins.find(admin => admin._id == sessionUser._id))) {
                     if (type == 'add') {
                         const solve = (index = 0) => index < _studentIds.length ?
-                            app.model.student.update(_studentIds[index], { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1)) :
+                            app.model.student.update(_studentIds[index], { course: _courseId }, error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1)) :
                             resolve();
                         solve();
                     } else if (type == 'remove') {
@@ -264,18 +264,18 @@ module.exports = (app) => {
                             if (index < _studentIds.length) {
                                 app.model.student.get({ _id: _studentIds[index], course: _courseId }, (error, student) => {
                                     if (error) {
-                                        reject('Lỗi khi cập nhật khoá học!');
+                                        reject('Lỗi khi cập nhật khóa học!');
                                     } else if (student) {
                                         course.teacherGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         course.representerGroups.forEach(group => group.student.forEach((item, index) => item._id == student._id.toString() && group.student.splice(index, 1)));
                                         student.course = null;
-                                        student.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : solve(index + 1));
+                                        student.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : solve(index + 1));
                                     } else {
                                         solve(index + 1);
                                     }
                                 });
                             } else {
-                                course.save(error => error ? reject('Lỗi khi cập nhật khoá học!') : resolve());
+                                course.save(error => error ? reject('Lỗi khi cập nhật khóa học!') : resolve());
                             }
                         };
                         solve();
@@ -283,11 +283,11 @@ module.exports = (app) => {
                         reject('Dữ liệu không hợp lệ!');
                     }
                 } else {
-                    reject('Khoá học không được phép truy cập!');
+                    reject('Khóa học không được phép truy cập!');
                 }
             });
         }).then(() => getCourseData(_courseId, sessionUser, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { students: item.students, ...(type == 'remove' && { teacherGroups: item.teacherGroups, representerGroups: item.representerGroups }) } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -305,7 +305,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { representerGroups: item.representerGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -323,7 +323,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { representerGroups: item.representerGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -341,7 +341,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { teacherGroups: item.teacherGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));
@@ -359,7 +359,7 @@ module.exports = (app) => {
                 reject('Dữ liệu không hợp lệ!');
             }
         }).then(() => getCourseData(_courseId, req.session.user, (error, item) => {
-            error = error || (item ? null : 'Lỗi khi cập nhật khoá học!');
+            error = error || (item ? null : 'Lỗi khi cập nhật khóa học!');
             item = item ? { teacherGroups: item.teacherGroups } : null;
             res.send({ error, item });
         })).catch(error => console.error(error) || res.send({ error }));

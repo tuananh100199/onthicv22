@@ -171,9 +171,7 @@ module.exports = (app, appName) => {
                     }
                     user.firstname = 'TÙNG';
                     user.lastname = 'NGUYỄN THANH';
-                    user.save(() => {
-                        console.log(' - Generate default Admin User successfully!');
-                    });
+                    user.save(() => console.log(' - Generate default Admin User successfully!'));
                 }
             });
         };
