@@ -123,7 +123,7 @@ export function getStudentScore(courseId, done) {
         T.get(url, { courseId }, data => {
             if (data.error) {
                 T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
-                console.error(`DELETE: ${url}. ${data.error}`);
+                console.error(`GET: ${url}. ${data.error}`);
             } else {
                 // T.alert('Lấy thông tin học viên thành công!', 'info', false, 800);
                 done && done(data.item);

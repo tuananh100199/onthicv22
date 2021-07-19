@@ -130,7 +130,7 @@ class PreStudentPage extends AdminPage {
 
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá ứng viên', 'Bạn có chắc muốn xoá ứng viên này?', true, isConfirm =>
         isConfirm && this.props.deletePreStudent(item._id));
-    create = (e) => e.preventDefault() || this.modal.show();
+    // create = (e) => e.preventDefault() || this.modal.show();
 
     render() {
         const permission = this.getUserPermission('pre-student', ['read', 'write', 'delete', 'import']),
@@ -172,7 +172,7 @@ class PreStudentPage extends AdminPage {
                 <PreStudenModal readOnly={!permission.write} ref={e => this.modal = e} create={this.props.createPreStudent} update={this.props.updatePreStudent} />
                 {permission.import ? <CirclePageButton type='import' style={{ right: '70px' }} onClick={() => this.props.history.push('/user/pre-student/import')} /> : null}
             </>,
-            onCreate: permission.write ? this.create : null,
+            onCreate: permission.write ? this.edit : null,
         });
     }
 }

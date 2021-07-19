@@ -20,7 +20,7 @@ module.exports = (app) => {
             condition = req.query.pageCondition || {},
             pageCondition = { course: { $ne: null } };
         try {
-            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                 pageCondition.division = req.session.user.division._id;
             }
 
@@ -73,7 +73,7 @@ module.exports = (app) => {
             condition = req.query.condition || {},
             pageCondition = { course: null };
         try {
-            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khoá học
+            if (req.session.user.isCourseAdmin && req.session.user.division && req.session.user.division.isOutside) { // Session user là quản trị viên khóa học
                 pageCondition.division = req.session.user.division._id;
             }
 
@@ -104,7 +104,7 @@ module.exports = (app) => {
                 day = ('0' + date.getDate()).slice(-2);
             return [day, mnth, date.getFullYear()].join('');
         }
-        delete data.course; // Không được gán khoá học cho pre-student
+        delete data.course; // Không được gán khóa học cho pre-student
         new Promise((resolve, reject) => { // Tạo user cho pre
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
@@ -212,7 +212,7 @@ module.exports = (app) => {
 
     app.put('/api/pre-student', app.permission.check('pre-student:write'), (req, res) => {
         let { _id, changes } = req.body;
-        delete changes.course; // Không được gán khoá học cho pre-student
+        delete changes.course; // Không được gán khóa học cho pre-student
         app.model.student.update(_id, changes, (error, item) => res.send({ error, item }));
     });
 
@@ -249,7 +249,7 @@ module.exports = (app) => {
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'pre-student:read', 'pre-student:write', 'pre-student:delete');
 
-        // Quản lý khoá học nội bộ (isOutSide=true) thì được import danh sách ứng viên bằng file Excel
+        // Quản lý khóa học nội bộ (isOutSide=true) thì được import danh sách ứng viên bằng file Excel
         if (user.division && !user.division.isOutside) app.permissionHooks.pushUserPermission(user, 'pre-student:import');
         resolve();
     }));
