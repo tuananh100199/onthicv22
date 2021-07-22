@@ -21,7 +21,7 @@ class AdminStudentView extends React.Component {
         if (searchPlanCourse == undefined) searchPlanCourse = this.state.searchPreStudentCourse;
         if (sort == undefined) sort = { lastname: 1, firstname: 1 };
         if (sort.division == undefined) sort.division = this.state.sortType == 'division' ? 1 : 0;
-        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, searchPlanCourse, courseType: this.props.courseType && this.props.courseType._id }, sort, () => {
+        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, searchPlanCourse, courseType: this.props.courseType ? this.props.courseType._id : null }, sort, () => {
             this.setState({
                 searchPreStudentText: searchText,
                 searchPreStudentPlanCourse: searchPlanCourse,

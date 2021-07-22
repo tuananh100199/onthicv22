@@ -209,3 +209,10 @@ export function importPreStudent(students, division, courseType, done) {
         }, error => console.error(error) || T.notify('Tạo học viên bị lỗi!', 'danger'));
     };
 }
+
+// Ajax Selections ----------------------------------------------------------------------------------------------------
+export const ajaxSelectPreStudent = T.createAjaxAdapter(
+    '/api/pre-student/page/1/20',
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
+);
