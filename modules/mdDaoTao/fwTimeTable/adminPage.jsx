@@ -1,11 +1,39 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTimeTablePage } from './redux';
+import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
+import { ajaxSelectStudentByCourse } from 'modules/mdDaoTao/fwStudent/redux';
 import Pagination from 'view/component/Pagination';
-import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, TableCell, renderTable, FormSelect } from 'view/component/AdminPage';
+
+class TimeTableModal extends AdminModal {
+    state = {};
+    onShow = () => {
+        this.setState({ courseType: null });
+    }
+
+    onSubmit = () => {
+    }
+
+    onChangeCourse = (data) => {
+        data && data.id && this.setState({ courseType: data.id }, () => console.log(this.state.courseType) || this.itemStudent.value());
+    }
+
+    render = () => {
+        //TODO: Sang => ajaxSelectStudentByCourse
+        return this.renderModal({
+            title: 'Buổi học thực hành',
+            body: <>
+                <FormSelect ref={e => this.itemCourse = e} label='Khoá học' data={ajaxSelectCourse} onChange={this.onChangeCourse} readOnly={this.props.readOnly} allowClear={true} />
+                <FormSelect ref={e => this.itemStudent = e} label='Học viên' data={ajaxSelectStudentByCourse(this.state.courseType)} readOnly={this.props.readOnly} />
+            </>,
+        });
+    }
+}
 
 class TimeTablePage extends AdminPage {
     state = { searchText: '', isSearching: false };
+    courseTypeMapper = {};
 
     componentDidMount() {
         this.props.getTimeTablePage(1, 50, undefined);
@@ -59,6 +87,7 @@ class TimeTablePage extends AdminPage {
                 <div className='tile'>{table}</div>
                 <Pagination name='adminTimeTable' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
                     getPage={this.props.getTimeTablePage} />
+                <TimeTableModal ref={e => this.modal = e} courseTypeMapper={this.courseTypeMapper} readOnly={!permission.write} />
             </>,
             onCreate: permission.write ? this.edit : null,
         });

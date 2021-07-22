@@ -87,8 +87,8 @@ module.exports = (app) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
             sessionUser = req.session.user,
-            { pageCondition, courseType } = req.query;
-        const condition = { courseType, ...pageCondition };
+            condition = req.query.pageCondition || {};
+        if (req.query.courseType) condition.courseType = req.query.courseType;
         if (sessionUser.isLecturer && !sessionUser.isCourseAdmin) {
             condition.teacherGroups = { $elemMatch: { teacher: sessionUser._id } };
             condition.active = true;
