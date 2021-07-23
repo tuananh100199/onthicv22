@@ -33,7 +33,6 @@ module.exports = (app) => {
                     { lastname: value },
                 ];
             }
-            console.log(pageNumber, pageSize, pageCondition);
             app.model.student.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });

@@ -16,7 +16,7 @@ class TimeTableModal extends AdminModal {
     }
 
     onChangeCourse = (data) => {
-        data && data.id && this.setState({ courseType: data.id }, () => console.log(this.state.courseType) || this.itemStudent.value());
+        data && data.id && this.setState({ courseType: data.id }, () => this.itemStudent.value(null));
     }
 
     render = () => {
