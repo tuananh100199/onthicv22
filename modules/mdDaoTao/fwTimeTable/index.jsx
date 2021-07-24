@@ -15,7 +15,7 @@ export default {
             path: '/user/time-table',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
-        // TODO
+        // TODO: Sinh viên xem giờ học
         // {
         //     path: '/user/student-time-table',
         //     component: Loadable({ loading: Loading, loader: () => import('./userPage') })

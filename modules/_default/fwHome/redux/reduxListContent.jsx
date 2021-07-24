@@ -34,7 +34,7 @@ export function getListContentAll(done) {
                 T.notify('Lấy tất cả danh sách bài viết bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: ListContentGetAll, list: data.list ? data.list : [] });
             }
         }, error => console.error(`GET: ${url}. ${error}`));
@@ -63,7 +63,7 @@ export function createListContent(data, done) {
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
                 dispatch(getListContentAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo danh sách bài viết bị lỗi!', 'danger'));
     };

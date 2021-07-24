@@ -47,7 +47,7 @@ export function getForumPage(_categoryId, pageNumber, pageSize, searchText, done
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: ForumGetPage, category: data.category, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách forum bị lỗi!', 'danger'));

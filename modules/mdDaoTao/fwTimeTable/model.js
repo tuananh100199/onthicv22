@@ -2,7 +2,7 @@ module.exports = app => {
     const schema = app.db.Schema({
         student: { type: app.db.Schema.ObjectId, ref: 'Student' },
 
-        index: { type: Number, default: -1 },                                           // Buổi học thứ
+        dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         date: { type: Date, default: Date.now },                                        // Ngày học
         startHour: { type: Number, default: 8 },                                        // Thời gian bắt đầu học
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.
@@ -63,8 +63,8 @@ module.exports = app => {
                     } else {
                         const solve = (index = 0) => {
                             if (index < items.length) {
-                                items[index].index = index + 1;
-                                items[index].save(error => error ? done('Gặp lỗi khi cập nhật index của thời khóa biểu!') : solve(index + 1));
+                                items[index].dateNumber = index + 1;
+                                items[index].save(error => error ? done('Gặp lỗi khi cập nhật dateNumber của thời khóa biểu!') : solve(index + 1));
                             } else {
                                 done(null, item);
                             }

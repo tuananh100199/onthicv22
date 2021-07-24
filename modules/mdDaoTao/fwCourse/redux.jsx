@@ -89,7 +89,7 @@ export function getCoursePage(courseType, pageNumber, pageSize, pageCondition, d
                 T.notify('Lấy danh sách khóa học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: CourseGetPage, courseType, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách khóa học bị lỗi!', 'danger'));
@@ -126,7 +126,7 @@ export function createCourse(data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getCoursePage(data.item.courseType));
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
     };
@@ -308,7 +308,7 @@ export function getUserCourse(done) {
                 T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Lấy thông tin khóa học của người dùng bị lỗi!', 'danger'));
     };

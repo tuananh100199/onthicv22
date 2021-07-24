@@ -47,6 +47,36 @@ export function getTimeTablePage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+export function getTimeTable(_id, done) {
+    return dispatch => {
+        const url = '/api/time-table';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch({ type: TimeTableUpdate, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
+    };
+}
+
+export function createTimeTable(data, done) {
+    return dispatch => {
+        const url = '/api/time-table';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo thời khóa biểu bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch(getTimeTablePage());
+            }
+        }, error => console.error(error) || T.notify('Tạo thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
 export function updateTimeTable(_id, changes, done) {
     return dispatch => {
         const url = '/api/time-table';
@@ -76,20 +106,5 @@ export function deleteTimeTable(_id) {
                 dispatch(getTimeTablePage());
             }
         }, error => console.error(error) || T.notify('Xóa học viên bị lỗi!', 'danger'));
-    };
-}
-
-export function getTimeTable(_id, done) {
-    return dispatch => {
-        const url = '/api/time-table';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data.item);
-                dispatch({ type: TimeTableUpdate, item: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
     };
 }

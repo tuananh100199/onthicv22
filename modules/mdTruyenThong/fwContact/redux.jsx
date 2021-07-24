@@ -93,7 +93,7 @@ export function getContactAll(done) {
                 T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: ContactGetAll, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy tất cả liên hệ bị lỗi!', 'danger'));
@@ -110,7 +110,7 @@ export function getContactPage(pageNumber, pageSize, done) {
                 T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: ContactGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
@@ -125,7 +125,7 @@ export function getContact(contactId, done) {
                 T.notify('Lấy liên hệ bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.item);
+                done && done(data.item);
                 dispatch({ type: ContactUpdate, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy liên hệ bị lỗi!', 'danger'));
@@ -140,7 +140,7 @@ export function getUnreadContacts(done) {
                 done && done(null, data.error);
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: ContactGetUnread, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách liên hệ bị lỗi!', 'danger'));
@@ -194,7 +194,7 @@ export function createContact(contact, done) {
                 T.notify('Gửi liên hệ bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Gửi liên hệ bị lỗi!', 'danger'));
     };
