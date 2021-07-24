@@ -250,6 +250,7 @@ export function updateCourseRepresenterGroupStudent(_courseId, _representerId, _
         }, error => console.error('PUT: ' + url + '.', error));
     };
 }
+
 export function updateStudentInfoInCourse(studentId, item) {
     return { type: CourseUpdateStudentInfoInCourse, studentId, item };
 }
@@ -298,7 +299,7 @@ export function getCourseFeed(done) {
     };
 }
 
-//Get Course Of User
+//Get Course Of User --------------------------------------------------------------------------------------------------
 export function getUserCourse(done) {
     return () => {
         const url = '/api/course/student/all';
@@ -327,7 +328,8 @@ export function getCourseByStudent(_id, done) {
         }, error => console.error(error) || T.notify('Lấy khóa học bị lỗi!', 'danger'));
     };
 }
-// Lecturer
+
+// Lecturer -----------------------------------------------------------------------------------------------------------
 export function getStudentByLecturer(_id, done) {
     return dispatch => {
         const url = '/api/course/lecturer/student';
@@ -357,6 +359,7 @@ export function getLearingProgressByAdmin(_id, done) {
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };
 }
+
 export function getLearingProgressByLecturer(_id, done) {
     return dispatch => {
         const url = '/api/course/learning-progress/lecturer';
@@ -372,6 +375,7 @@ export function getLearingProgressByLecturer(_id, done) {
     };
 }
 
+// Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportStudentInfoToExcel(_courseId) {
     T.download(T.url(`/api/course/student/export/${_courseId}`));
 }
@@ -381,3 +385,10 @@ export function exportRepresenterAndStudentToExcel(_courseId) {
 export function exportTeacherAndStudentToExcel(_courseId) {
     T.download(T.url(`/api/course/teacher-student/export/${_courseId}`));
 }
+
+// Ajax Selections ----------------------------------------------------------------------------------------------------
+export const ajaxSelectCourse = T.createAjaxAdapter(
+    '/api/course/page/1/20',
+    response => response && response.page && response.page.list ?
+        response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [],
+);

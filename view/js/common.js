@@ -204,7 +204,7 @@ const T = {
         }
         return ({
             ajax: true,
-            url,
+            url: T.url(url),
             data: parseData,
             processResults: response => ({ results: parseResponse(response) }),
         });

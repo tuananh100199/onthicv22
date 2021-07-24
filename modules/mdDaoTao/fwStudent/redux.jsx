@@ -244,3 +244,15 @@ export function sendFeedback(_id, title, done) {
         }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
     };
 }
+// Ajax Selections ----------------------------------------------------------------------------------------------------
+export const ajaxSelectPreStudent = T.createAjaxAdapter(
+    '/api/pre-student/page/1/20',
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
+);
+
+export const ajaxSelectStudentByCourse = (course) => T.createAjaxAdapter(
+    '/api/student/page/1/20' + (course ? `?course=${course}` : ''),
+    response => response && response.page && response.page.list ?
+        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
+);
