@@ -2,10 +2,10 @@ module.exports = app => {
     const schema = app.db.Schema({
         student: { type: app.db.Schema.ObjectId, ref: 'Student' },
 
-        dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         date: { type: Date, default: Date.now },                                        // Ngày học
         startHour: { type: Number, default: 8 },                                        // Thời gian bắt đầu học
         numOfHours: { type: Number, default: 1 },                                       // Số giờ học, số nguyên dương.
+        dateNumber: { type: Number, default: -1 },                                      // Buổi học thứ
         truant: { type: Boolean, default: false },                                      // Học viên không đến lớp
 
         licensePlates: String,                                                          // Xe học (biển số xe)
@@ -13,6 +13,11 @@ module.exports = app => {
         note: String,                                                                   // Ghi chú
     });
     const model = app.db.model('TimeTable', schema);
+
+    const populateStudent = {
+        path: 'student',
+        populate: [{ path: 'course', select: 'name' }, { path: 'courseType', select: 'title' }, { path: 'user', select: 'phoneNumber' }],
+    };
 
     app.model.timeTable = {
         create: (data, done) => model.create(data, (error, item) => {
@@ -30,7 +35,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).sort({ date: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate(populateStudent).sort({ date: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });

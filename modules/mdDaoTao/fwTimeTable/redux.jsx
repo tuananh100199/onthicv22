@@ -62,6 +62,20 @@ export function getTimeTable(_id, done) {
     };
 }
 
+export function getTimeTableDateNumber(student, date, startHour, done) {
+    return () => {
+        const url = '/api/time-table/date-number';
+        T.get(url, { student, date, startHour }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.dateNumber);
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
+    };
+}
+
 export function createTimeTable(data, done) {
     return dispatch => {
         const url = '/api/time-table';

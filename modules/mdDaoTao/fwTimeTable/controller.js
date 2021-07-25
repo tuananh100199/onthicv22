@@ -36,6 +36,36 @@ module.exports = (app) => {
         app.model.timeTable.get(req.query._id, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/time-table/date-number', app.permission.check('timeTable:read'), (req, res) => {
+        let { student, date, startHour } = req.query,
+            dateTime = new Date(date).getTime();
+        startHour = Number(startHour);
+        app.model.timeTable.getAll({ student }, (error, items) => {
+            if (error) {
+                res.send({ error: 'Lỗi khi lấy dữ liệu thời khóa biểu' });
+            } else {
+                let dateNumber = 1;
+                items = items || [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    if (item.date.getTime() == dateTime && (item.startHour <= startHour && startHour < item.startHour + item.numOfHours)) {
+                        dateNumber = -1;
+                        break;
+                    } else if (item.date.getTime() <= dateTime && item.startHour < startHour) {
+                        dateNumber++;
+                    } else {
+                        break;
+                    }
+                }
+                res.send({ dateNumber });
+            }
+        });
+    });
+
+    app.post('/api/time-table', app.permission.check('timeTable:write'), (req, res) => {
+        app.model.timeTable.create(req.body.data, (error, item) => res.send({ error, item }));
+    });
+
     app.put('/api/time-table', app.permission.check('timeTable:write'), (req, res) => {
         app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
