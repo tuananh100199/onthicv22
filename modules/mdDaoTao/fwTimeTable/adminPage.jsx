@@ -150,7 +150,6 @@ class TimeTablePage extends AdminPage {
         const permission = this.getUserPermission('timeTable', ['read', 'write', 'delete']);
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.timeTable && this.props.timeTable.page ?
             this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
-        console.log(pageNumber, pageSize, pageTotal, pageCondition, totalItem, list);
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
