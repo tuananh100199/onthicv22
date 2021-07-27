@@ -58,7 +58,6 @@ class TimeTableModal extends AdminModal {
     onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>
         this.itemStudent.value(null));
     onChangeStudent = (data) => data && data.id && this.setState({ loading: true }, () => this.props.getStudent(data.id, student => {
-        console.log(student);
         this.setState({ loading: false, student }, () => this.state._id || this.getDateNumber());
     }));
 
@@ -136,8 +135,8 @@ class TimeTablePage extends AdminPage {
     state = { searchText: '', isSearching: false };
     componentDidMount() {
         this.props.getTimeTablePage(1, 50, undefined);
-        T.ready(() => T.showSearchBox());
-        // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText } : null, () => {
+        // T.ready(() => T.showSearchBox());
+        // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText: searchText } : null, () => {
         //     this.setState({ searchText, isSearching: searchText != '' });
         // });
     }
