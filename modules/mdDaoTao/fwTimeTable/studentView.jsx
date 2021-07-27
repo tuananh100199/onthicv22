@@ -6,7 +6,6 @@ import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 class StudentView extends AdminPage {
     componentDidMount() {
         this.props.studentId &&  this.props.getTimeTablePage(1, 50, {student: this.props.studentId});
-        '60b1b260062d271a00ab8573' &&  this.props.getTimeTablePage(1, 50, {student: '60b1b260062d271a00ab8573'});
     }
 
     render() {
