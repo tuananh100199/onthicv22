@@ -30,7 +30,7 @@ export function getDivisionAll(searchText, done) {
                 T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: DivisionGetAll, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy tất cả cơ sở bị lỗi!', 'danger'));
@@ -57,7 +57,7 @@ export function createDivision(data, done) {
                 T.notify('Tạo cơ sở bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch(getDivisionAll());
             }
         }, error => console.error(error) || T.notify('Tạo cơ sở bị lỗi!', 'danger'));
@@ -107,7 +107,7 @@ export function getAllDivisionByUser(done) {
             } else {
                 dispatch({ type: DivisionGetAll, list: data.list });
             }
-            if (done) done(data);
+            done && done(data);
 
         }, error => console.error(error) || T.notify('Lấy danh sách cơ sở bị lỗi', 'danger'));
     };

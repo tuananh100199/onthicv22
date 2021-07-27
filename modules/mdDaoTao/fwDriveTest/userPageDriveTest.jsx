@@ -5,6 +5,7 @@ import { getDriveTestPage } from './redux';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
+
 class DriveTestContent extends AdminPage {
     state = { courseType: null };
     componentDidMount() {
@@ -42,6 +43,7 @@ class DriveTestContent extends AdminPage {
             </div>);
     }
 }
+
 class UserDriveTestPage extends AdminPage {
     state = {};
     componentDidMount() {

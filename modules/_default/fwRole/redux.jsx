@@ -83,7 +83,7 @@ export function getRolePage(pageNumber, pageSize, pageCondition, done) {
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
                 if (pageCondition) data.page.pageCondition = pageCondition;
-                if (done) done(data.page);
+                done && done(data.page);
                 dispatch({ type: RoleGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách vai trò bị lỗi!', 'danger'));

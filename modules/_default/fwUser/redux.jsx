@@ -73,7 +73,7 @@ export function getAllStaffs(done) {
                 T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: StaffGetAll, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách người dùng bị lỗi!', 'danger'));

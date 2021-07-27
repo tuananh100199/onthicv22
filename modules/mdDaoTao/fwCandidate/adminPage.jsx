@@ -22,11 +22,11 @@ class CandidateModal extends AdminModal {
         this.itemIdentityCard.value(identityCard);
         this.itemBirthday.value(birthday);
         this.itemPlanCourse.value(planCourse);
-        ajaxGetCourseType(courseType, data => {
+        ajaxGetCourseType(courseType, data => { //TODO: cần xem lại đoạn code này
             this.setState({ courseTypeTitle: data.item.title });
             this.courseType.value(data && data.item ? { id: data.item._id, text: data.item.title } : null);
         });
-        ajaxGetDivision(division, data =>
+        ajaxGetDivision(division, data => //TODO: cần xem lại đoạn code này
             this.division.value(data && data.item ? { id: data.item._id, text: data.item.title } : null));
         this.states.value(state);
         this.setState({ _id });

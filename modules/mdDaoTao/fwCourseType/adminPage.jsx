@@ -52,7 +52,7 @@ class CourseTypePage extends AdminPage {
                         <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                         <th style={{ width: '80%' }}>Tên</th>
                         <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Hiển thị giá</th>
-                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá (VND)</th>
+                        <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giá (VNĐ)</th>
                         <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
                         <th style={{ width: 'auto' }} nowrap='true'>Thao tác</th>
                     </tr>),

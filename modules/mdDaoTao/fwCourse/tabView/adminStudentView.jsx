@@ -21,7 +21,7 @@ class AdminStudentView extends React.Component {
         if (searchPlanCourse == undefined) searchPlanCourse = this.state.searchPreStudentCourse;
         if (sort == undefined) sort = { lastname: 1, firstname: 1 };
         if (sort.division == undefined) sort.division = this.state.sortType == 'division' ? 1 : 0;
-        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, searchPlanCourse, courseType: this.props.courseType && this.props.courseType._id }, sort, () => {
+        this.props.getPreStudentPage(pageNumber, pageSize, { searchText, searchPlanCourse, courseType: this.props.courseType ? this.props.courseType._id : null }, sort, () => {
             this.setState({
                 searchPreStudentText: searchText,
                 searchPreStudentPlanCourse: searchPlanCourse,
@@ -104,7 +104,7 @@ class AdminStudentView extends React.Component {
                     preStudentList.push(<li style={{ margin: 0, display: 'block' }} key={index}>
                         <div style={{ display: 'inline-flex' }}>
                             <FormCheckbox ref={e => this.preStudents[preStudent._id] = e} style={{ display: 'inline-block' }} onChange={this.selectOnePreStudent}
-                                label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
+                                label={<>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard}) - {preStudent.division && preStudent.division.title} {preStudent.division && preStudent.division.isOutside ? ' (cơ sở ngoài)' : ''} =&gt; Khóa dự kiến <span className='text-danger'>{preStudent.planCourse}</span></>} />
                             <div className='buttons'>
                                 <a href='#' onClick={e => this.addCourseStudents(e, _courseId, preStudent)}>
                                     <i style={{ marginLeft: 10, fontSize: 20 }} className='fa fa-arrow-right text-success' />
@@ -138,7 +138,7 @@ class AdminStudentView extends React.Component {
                         <ul className='menuList' style={{ width: '100%', paddingLeft: 20, margin: 0 }}>
                             {division.preStudents.map((preStudent, index) => {
                                 const studentLabel = <>{preStudentList.length + 1}. {preStudent.lastname} {preStudent.firstname} ({preStudent.identityCard})
-                                    {preStudent.planCourse ? <>=&gt; Khoá dự kiến <span className='text-danger'>{preStudent.planCourse}</span></> : ''}</>;
+                                    {preStudent.planCourse ? <>=&gt; Khóa dự kiến <span className='text-danger'>{preStudent.planCourse}</span></> : ''}</>;
                                 return (
                                     <li style={{ margin: 0, display: 'block' }} key={index}>
                                         <div style={{ display: 'inline-flex' }}>
@@ -192,7 +192,7 @@ class AdminStudentView extends React.Component {
 
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
                         <FormTextBox label='Tìm kiếm ứng viên theo họ tên' onChange={e => this.onSearch({ searchText: e.target.value })} />
-                        <FormTextBox label='Tìm kiếm ứng viên theo khoá dự kiến' onChange={e => this.onSearch({ searchPlanCourse: e.target.value })} />
+                        <FormTextBox label='Tìm kiếm ứng viên theo khóa dự kiến' onChange={e => this.onSearch({ searchPlanCourse: e.target.value })} />
                         <div style={{ display: preStudentList.length ? 'block' : 'none' }}>
                             <FormCheckbox ref={e => this.itemSelectAll = e} label='Chọn tất cả' onChange={() => this.selectManyPreStudents(true)} style={{ display: 'inline-block' }} defaultValue={true} />
                             <FormCheckbox ref={e => this.itemDeSelectAll = e} label='Không chọn tất cả' onChange={() => this.selectManyPreStudents(false)} style={{ display: 'inline-block', marginLeft: 12 }} defaultValue={false} />
@@ -221,7 +221,7 @@ class AdminStudentView extends React.Component {
                     </div>
                 </div>
                 {!isOutsideCourseAdmin ? <CirclePageButton type='export' onClick={() => exportStudentInfoToExcel(_courseId)} /> : null}
-                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent}/>
+                <AdminStudentModal ref={e => this.modal = e} permission={this.props.permissionCourse} updateStudent={this.updateStudent} />
             </div>);
     }
 }

@@ -50,7 +50,7 @@ export function getAllSigns(searchText, done) {
                 T.notify('Lấy tất cả biển báo bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.items);
+                done && done(data.items);
                 dispatch({ type: SignGetAll, items: data.items });
             }
         }, error => console.error(error) || T.notify('Lấy tất cả biển báo bị lỗi!', 'danger'));
@@ -66,7 +66,7 @@ export function getSignPage(pageNumber, pageSize, searchText, done) {
                 T.notify('Lấy danh sách biển báo bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SignGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách biển báo bị lỗi!', 'danger'));
@@ -83,7 +83,7 @@ export function getSign(_id, done) {
             } else {
                 dispatch({ type: SignGet, item: data.item });
             }
-            if (done) done(data);
+            done && done(data);
         }, error => console.error(error) || T.notify('Lấy biển báo bị lỗi', 'danger'));
     };
 }
@@ -96,7 +96,7 @@ export function createSign(data, done) {
                 T.notify('Tạo biển báo bị lỗi!', 'danger');
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 T.notify('Tạo biển báo thành công!', 'success');
                 dispatch(getSignPage());
             }

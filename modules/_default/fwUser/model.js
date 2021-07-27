@@ -40,9 +40,9 @@ module.exports = (app) => {
         create: (data, done) => {
             app.model.user.get({ identityCard: data.identityCard }, (error, user) => {
                 if (error) {
-                    if (done) done(error);
+                    done && done(error);
                 } else if (user) {
-                    if (done) done('CMND/CCCD của bạn đã được đăng ký!', user);
+                    done && done('CMND/CCCD của bạn đã được đăng ký!', user);
                 } else {
                     data.createdDate = new Date();
                     data.tokenDate = new Date();

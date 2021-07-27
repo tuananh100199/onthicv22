@@ -37,7 +37,7 @@ module.exports = (app) => {
                         solveAnItem(index + 1);
                     });
                 } else if (done) {
-                    if (done) done(error);
+                    done && done(error);
                 }
             };
             solveAnItem(0);

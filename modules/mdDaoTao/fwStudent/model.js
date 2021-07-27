@@ -24,18 +24,18 @@ module.exports = (app) => {
 
         donXinHoc: { type: Boolean, default: false },                                               // Checkbox, đánh dấu có đơn xin học hay chưa có
         giayKhamSucKhoe: { type: Boolean, default: false },                                         // Checkbox, đánh dấu có giấy khám sức khoẻ hay chưa có
-        giayKhamSucKhoeNgayKham: Date,  // Ngày khám sức khoẻ
+        giayKhamSucKhoeNgayKham: Date,                                                              // Ngày khám sức khoẻ
 
         hinhThe3x4: { type: Boolean, default: false },
         hinhChupTrucTiep: { type: Boolean, default: false },
 
-        planCourse: String,                                                                         // Khoá học dự kiến
+        planCourse: String,                                                                         // Khóa học dự kiến
         division: { type: app.db.Schema.ObjectId, ref: 'Division' },                                // Cơ sở đào tạo
-        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khoá học
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },                                    // Khóa học
         courseType: { type: app.db.Schema.ObjectId, ref: 'CourseType' },                            // Hạng đăng ký
 
         hocPhiPhaiDong: Number,                                                                     // Học phí phải đóng
-        hocPhiMienGiam: Number,                                                                     // Số tiển được miễn giảm
+        hocPhiMienGiam: Number,                                                                     // Số tiền được miễn giảm
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
 
         tienDoHocTap: {},

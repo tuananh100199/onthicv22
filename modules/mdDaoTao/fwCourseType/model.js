@@ -12,6 +12,10 @@ module.exports = app => {
         }],
         isPriceDisplayed: { type: Boolean, default: false },
         totalTime: Number,
+
+        practiceNumOfMonths: { type: Number, default: 0 },                          // Tổng tháng dạy thực hành
+        practiceNumOfHours: { type: Number, default: 0 },                           // Tổng giờ dạy thực hành
+        practiceNumOfReviewHours: { type: Number, default: 0 },                     // Tổng giờ ôn tập thực hành
     });
     const model = app.db.model('CourseType', schema);
 

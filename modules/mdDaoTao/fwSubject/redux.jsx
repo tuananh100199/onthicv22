@@ -38,12 +38,13 @@ export function getSubjectPage(pageNumber, pageSize, searchText, done) {
                 T.notify('Lấy danh sách môn học bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SubjectGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách môn học bị lỗi!', 'danger'));
     };
 }
+
 export function getSubjectAll(condition, done) {
     const url = '/api/subject/all';
     if (!done) {
@@ -68,7 +69,7 @@ export function getSubject(_id, done) {
                 T.notify('Lấy môn học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: SubjectGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy môn học bị lỗi!', 'danger'));
@@ -83,7 +84,7 @@ export function getSubjectByStudent(_id, done) {
                 T.notify('Lấy môn học bị lỗi1!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch({ type: SubjectGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy môn học bị lỗi!', 'danger'));
@@ -98,7 +99,7 @@ export function createSubject(data, done) {
                 T.notify('Tạo môn học bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 dispatch(getSubjectPage());
             }
         }, error => console.error(error) || T.notify('Tạo môn học bị lỗi!', 'danger'));
@@ -145,7 +146,7 @@ export function submitFeedback(subjectId, courseId, answers, done) {
                 T.notify('Kiểm tra đáp án bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.result);
+                done && done(data.result);
             }
         }, error => console.error(error) || T.notify('Kiểm tra đáp án bị lỗi!', 'danger'));
     };

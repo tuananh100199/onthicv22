@@ -10,7 +10,7 @@ module.exports = app => {
             fee: { type: Number, default: 0 },
         }],
         subjects: [{ type: app.db.Schema.ObjectId, ref: 'Subject' }],       // Danh sách môn học
-        maxStudent: { type: Number, default: 100 },                                       // Số lượng học viên tối đa
+        maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
         chatActive: { type: Boolean, default: true },
@@ -34,8 +34,8 @@ module.exports = app => {
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
-        lock: { type: Boolean, default: false }, // bổ sung khóa khóa học lại
-        close: { type: Boolean, default: false }, // khóa học đã đóng
+        lock: { type: Boolean, default: false },                            // Bổ sung khóa khóa học lại
+        close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });
     const model = app.db.model('Course', schema);
 
@@ -59,7 +59,7 @@ module.exports = app => {
                 let result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).populate('admins', '-password').sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('admins', '-password').populate('courseType', 'title').sort({ name: 1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = error ? [] : list;
                     done(error, result);
                 });

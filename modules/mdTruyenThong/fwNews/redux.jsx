@@ -51,7 +51,7 @@ export function getNewsPage(pageNumber, pageSize, done) {
                 T.notify('Lấy danh sách tin tức bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: NewsGetNewsPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách tin tức bị lỗi!', 'danger'));
@@ -67,7 +67,7 @@ export function createNews(done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getNewsPage());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo tin tức bị lỗi!', 'danger'));
     };

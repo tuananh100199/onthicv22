@@ -19,11 +19,9 @@ class CourseTypeModal extends AdminModal {
 
     onSubmit = () => {
         const _subjectId = this.subjectSelect.value();
-        if (!_subjectId) {
+        _subjectId ?
+            this.props.add(this.props.item._id, _subjectId, this.hide) :
             T.notify('Tên môn học không được trống!', 'danger');
-        } else {
-            this.props.add(this.props.item._id, _subjectId, this.hide);
-        }
     }
 
     render = () => this.renderModal({
@@ -49,13 +47,15 @@ class CourseTypeEditPage extends AdminPage {
                         this.itemDetailDescription.html(item.detailDescription);
                         this.itemPrice.value(item.price);
                         this.itemIsPriceDisplayed.value(item.isPriceDisplayed);
+                        this.itemPracticeNumOfMonths.value(item.practiceNumOfMonths);
+                        this.itemPracticeNumOfHours.value(item.practiceNumOfHours);
+                        this.itemPracticeNumOfReviewHours.value(item.practiceNumOfReviewHours);
                         this.itemImage.setData('course-type:' + item._id);
 
                         this.itemTitle.focus();
                         item.questionTypes && item.questionTypes.forEach(type => type.amount ?
                             this[type.category] && this[type.category].value(type.amount) : this[type.category] && this[type.category].value(0));
                     });
-
                 } else {
                     this.props.history.push(backRoute);
                 }
@@ -74,6 +74,9 @@ class CourseTypeEditPage extends AdminPage {
             detailDescription: this.itemDetailDescription.html(),
             price: this.itemPrice.value(),
             isPriceDisplayed: this.itemIsPriceDisplayed.value(),
+            practiceNumOfMonths: this.itemPracticeNumOfMonths.value(),
+            practiceNumOfHours: this.itemPracticeNumOfHours.value(),
+            practiceNumOfReviewHours: this.itemPracticeNumOfReviewHours.value(),
             questionTypes: this.state.types.map(type => ({
                 category: type._id,
                 amount: this[type._id].value(),
@@ -114,22 +117,29 @@ class CourseTypeEditPage extends AdminPage {
         });
 
         const componentInfo = (
-            <div className='row'>
-                <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
-                <div className='col-md-9 order-md-1'>
-                    <div className='row'>
-                        <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                        <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài' value={this.state.totalTime} onChange={e => this.setState({ totalTime: e.target.value })} readOnly={readOnly} />
-                    </div>
-                    <div className='row'>
-                        <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' readOnly={readOnly} />
-                        <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
+            <>
+                <div className='row'>
+                    <FormImageBox ref={e => this.itemImage = e} label='Hình đại diện' uploadType='CourseTypeImage' image={this.state.image} readOnly={readOnly} className='col-md-3 order-md-12' />
+                    <div className='col-md-9 order-md-1'>
+                        <div className='row'>
+                            <FormTextBox className='col-md-8' ref={e => this.itemTitle = e} label='Tên loại khóa học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                            <FormTextBox className='col-md-4' ref={e => this.totalTime = e} label='Thời gian làm bài thi' value={this.state.totalTime} onChange={e => this.setState({ totalTime: e.target.value })} type='number' readOnly={readOnly} />
+                            <FormTextBox className='col-md-8' ref={e => this.itemPrice = e} label='Giá loại khóa học' type='number' readOnly={readOnly} />
+                            <FormCheckbox className='col-md-4' ref={e => this.itemIsPriceDisplayed = e} label='Hiển thị giá' readOnly={readOnly} />
+                        </div>
                     </div>
                 </div>
-                <FormRichTextBox ref={e => this.itemShortDescription = e} className='col-md-12' label='Mô tả ngắn gọn' readOnly={readOnly} />
-                <FormEditor ref={e => this.itemDetailDescription = e} className='col-md-12' label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
+
+                <div className='row'>
+                    <FormTextBox className='col-md-4' ref={e => this.itemPracticeNumOfMonths = e} label='Số tháng dạy thực hành' type='number' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' ref={e => this.itemPracticeNumOfHours = e} label='Số giờ dạy thực hành' type='number' readOnly={readOnly} />
+                    <FormTextBox className='col-md-4' ref={e => this.itemPracticeNumOfReviewHours = e} label='Số giờ ôn tập thực hành' type='number' readOnly={readOnly} />
+                </div>
+
+                <FormRichTextBox ref={e => this.itemShortDescription = e} label='Mô tả ngắn gọn' readOnly={readOnly} />
+                <FormEditor ref={e => this.itemDetailDescription = e} label='Mô tả chi tiết' uploadUrl='/user/upload?category=courseType' readOnly={readOnly} />
                 {readOnly ? null : <CirclePageButton type='save' onClick={this.save} />}
-            </div>);
+            </>);
         const componentSubject = <>
             {tableSubject}
             {readOnly ? null : <CirclePageButton type='create' onClick={() => this.modal.show()} />}

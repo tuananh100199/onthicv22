@@ -204,7 +204,7 @@ const T = {
         }
         return ({
             ajax: true,
-            url,
+            url: T.url(url),
             data: parseData,
             processResults: response => ({ results: parseResponse(response) }),
         });
@@ -316,6 +316,12 @@ Date.prototype.getText = function () {
 Date.prototype.getTimeText = function () {
     return T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
+Date.prototype.getDateText = function () {
+    return T.get2(this.getDate()) + '/' + T.get2(this.getMonth() + 1) + '/' + this.getFullYear();
+};
 Date.prototype.getShortText = function () {
     return this.getFullYear() + '/' + T.get2(this.getMonth() + 1) + '/' + T.get2(this.getDate()) + ' ' + T.get2(this.getHours()) + ':' + T.get2(this.getMinutes());
 };
+Date.prototype.getDayText = function () {
+    return ['thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy', 'chủ nhật'][this.getDay()];
+}
