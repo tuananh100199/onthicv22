@@ -10,22 +10,30 @@ module.exports = (app) => {
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
+    app.get('/user/student-time-table', app.permission.check('timeTable:read'), app.templates.admin);
+    
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/time-table/page/:pageNumber/:pageSize', app.permission.check('timeTable:read'), (req, res) => {
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            // condition = req.query.pageCondition || {},
+            condition = req.query.pageCondition || {}, 
             pageCondition = {};
         try {
-            // TODO: tìm kiếm
-            // if (condition.searchText) {
-            //     const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
-            //     pageCondition.$or = [
-            //         { firstname: value },
-            //         { lastname: value },
-            //     ];
-            // }
+            if (condition) {
+                pageCondition.$or = [];
+                if (condition.searchText) {
+                    const value = { $regex: `.*${condition.searchText}.*`, $options: 'i' };
+                    pageCondition.$or.push(
+                        { firstname: value },
+                        { lastname: value },
+                    );
+                }
+                if (condition.student) {
+                    pageCondition.student = condition.student;
+                }
+                if (pageCondition.$or.length == 0) delete pageCondition.$or;
+            }
             app.model.timeTable.getPage(pageNumber, pageSize, pageCondition, (error, page) => res.send({ error, page }));
         } catch (error) {
             res.send({ error });
@@ -73,4 +81,4 @@ module.exports = (app) => {
     app.delete('/api/time-table', app.permission.check('timeTable:delete'), (req, res) => {
         app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
     });
-};
+  };
