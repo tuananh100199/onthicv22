@@ -144,7 +144,7 @@ class TimeTablePage extends AdminPage {
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
-        isConfirm && this.props.deleteCandidate(item._id));
+        isConfirm && this.props.deleteTimeTable(item._id));
 
     render() {
         const permission = this.getUserPermission('timeTable', ['read', 'write', 'delete']);
