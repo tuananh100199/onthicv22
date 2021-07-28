@@ -231,10 +231,10 @@ class UserPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '40%' }}>Tên</th>
+                    <th style={{ width: '40%', whiteSpace: 'nowrap' }}>Tên</th>
                     <th style={{ width: 'auto' }}>Thông tin liên hệ</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Hình ảnh</th>
-                    <th style={{ width: '40%' }}>Cơ sở đào tạo</th>
+                    <th style={{ width: '40%', whiteSpace: 'nowrap' }}>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Thời gian tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Kích hoạt</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
@@ -242,7 +242,7 @@ class UserPage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<>{item.lastname + ' ' + item.firstname}<br />{item.identityCard}</>} onClick={e => this.edit(e, item)} />
+                    <TableCell type='link' content={<>{item.lastname + ' ' + item.firstname}<br />{item.identityCard}</>} onClick={e => this.edit(e, item)} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={<>{item.email}<br />{item.phoneNumber}</>} />
                     <TableCell type='image' content={item.image ? item.image : '/img/avatar.png'} />
                     <TableCell type='text' content={item.division ? `${item.division.title} ${item.division.isOutside ? '(ngoài)' : ''}` : ''} />

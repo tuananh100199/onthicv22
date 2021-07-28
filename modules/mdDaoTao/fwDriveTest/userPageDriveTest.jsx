@@ -27,7 +27,7 @@ class DriveTestContent extends AdminPage {
             <div className='tile-body'>
                 <div className='row'>
                     {list && list.length ? list.map((driveTest, index) => (
-                        <div key={index} className='col-md-4'>
+                        <div key={index} className='col-md-6 col-lg-4'>
                             <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-thu/' + driveTest._id}>
                                 <div className='widget-small coloured-icon info border'>
                                     <i className='icon fa fa-3x fa fa-cubes' />
@@ -37,7 +37,7 @@ class DriveTestContent extends AdminPage {
                                 </div>
                             </Link>
                         </div>
-                    )) : 'Không có dữ liệu'}
+                    )) : <div className='col-12'>Không có dữ liệu!</div>}
                 </div>
                 <Pagination name='pageDriveTest' pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} pageCondition={pageCondition} />
             </div>);
