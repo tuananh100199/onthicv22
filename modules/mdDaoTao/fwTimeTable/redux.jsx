@@ -8,7 +8,6 @@ export default function timeTableReducer(state = {}, data) {
     switch (data.type) {
         case TimeTableGetPage:
             return Object.assign({}, state, { page: data.page });
-
         case TimeTableUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;
@@ -47,6 +46,50 @@ export function getTimeTablePage(pageNumber, pageSize, pageCondition, done) {
     };
 }
 
+export function getTimeTable(_id, done) {
+    return dispatch => {
+        const url = '/api/time-table';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch({ type: TimeTableUpdate, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
+    };
+}
+
+export function getTimeTableDateNumber(student, date, startHour, done) {
+    return () => {
+        const url = '/api/time-table/date-number';
+        T.get(url, { student, date, startHour }, data => {
+            if (data.error) {
+                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data.dateNumber);
+            }
+        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
+    };
+}
+
+export function createTimeTable(data, done) {
+    return dispatch => {
+        const url = '/api/time-table';
+        T.post(url, { data }, data => {
+            if (data.error) {
+                T.notify('Tạo thời khóa biểu bị lỗi!', 'danger');
+                console.error(`POST: ${url}. ${data.error}`);
+            } else {
+                done && done(data.item);
+                dispatch(getTimeTablePage());
+            }
+        }, error => console.error(error) || T.notify('Tạo thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
 export function updateTimeTable(_id, changes, done) {
     return dispatch => {
         const url = '/api/time-table';
@@ -76,20 +119,5 @@ export function deleteTimeTable(_id) {
                 dispatch(getTimeTablePage());
             }
         }, error => console.error(error) || T.notify('Xóa học viên bị lỗi!', 'danger'));
-    };
-}
-
-export function getTimeTable(_id, done) {
-    return dispatch => {
-        const url = '/api/time-table';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
-                console.error(`GET: ${url}. ${data.error}`);
-            } else {
-                done && done(data.item);
-                dispatch({ type: TimeTableUpdate, item: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
     };
 }

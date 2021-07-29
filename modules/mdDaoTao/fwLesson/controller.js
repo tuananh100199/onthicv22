@@ -9,9 +9,9 @@ module.exports = (app) => {
 
     app.get('/user/dao-tao/bai-hoc', app.permission.check('lesson:read'), app.templates.admin);
     app.get('/user/dao-tao/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id', app.permission.check('lesson:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id', app.permission.check('lesson:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:courseId/mon-hoc/:subjectId/bai-hoc/cau-hoi/:_id', app.permission.check('user:login'), app.templates.admin);
 
     // Lesson APIs ----------------------------------------------------------------------------------------------------
     app.get('/api/lesson/page/:pageNumber/:pageSize', app.permission.check('lesson:read'), (req, res) => {
@@ -32,7 +32,7 @@ module.exports = (app) => {
         app.model.lesson.get(_id, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/lesson/student', app.permission.check('lesson:read'), (req, res) => {//mobile
+    app.get('/api/lesson/student', app.permission.check('user:login'), (req, res) => {//mobile
         const { _id, courseId, subjectId } = req.query;
         app.model.lesson.get(_id, (error, item) => {
             if (item && item.questions) {

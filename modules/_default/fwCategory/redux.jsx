@@ -49,7 +49,7 @@ export function createCategory(data, done) {
                 console.error('POST: ' + url + '.', data.error);
             } else {
                 dispatch(getCategoryAll(data.item.type));
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo danh mục bị lỗi!', 'danger'));
     };

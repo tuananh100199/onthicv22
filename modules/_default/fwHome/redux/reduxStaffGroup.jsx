@@ -42,7 +42,7 @@ export function getStaffGroupAll(done) {
                 T.notify('Lấy danh sách nhóm nhân viên bị lỗi!', 'danger');
                 console.error(`GET: getStaffGroupAll. ${data.error}`);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: StaffGroupGetAll, list: data.list || [] });
             }
         }, error => console.error(`GET: getStaffGroupAll. ${error}`));
@@ -72,7 +72,7 @@ export function createStaffGroup(data, done) {
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
                 dispatch(getStaffGroupAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(`POST: ${url}. ${error}`));
     };
@@ -121,7 +121,7 @@ export function createStaff(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getStaffGroup(data.item.staffGroupId));
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo nhân viên bị lỗi!', 'danger'));
     };
@@ -137,7 +137,7 @@ export function updateStaff(_id, changes, done) {
             } else {
                 T.notify('Cập nhật nhân viên thành công!', 'info');
                 dispatch(getStaffGroup(data.item.staffGroupId));
-                if (done) done();
+                done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật nhân viên bị lỗi!', 'danger'));
     };
@@ -203,7 +203,7 @@ export function homeGetStaffGroup(_id, done) {
                 T.notify('Lấy danh sách nhân viên bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
             } else {
-                if (done) done(data.item);
+                done && done(data.item);
             }
         }, error => console.error(`GET: ${url}. ${error}`));
     };

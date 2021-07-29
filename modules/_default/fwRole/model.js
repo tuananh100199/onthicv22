@@ -11,9 +11,9 @@ module.exports = (app) => {
     app.model.role = {
         create: (data, done) => model.findOne({ name: data.name }, (error, role) => {
             if (error) {
-                if (done) done(error);
+                done && done(error);
             } else if (role) {
-                if (done) done('Vai trò đã được đăng ký!', role);
+                done && done('Vai trò đã được đăng ký!', role);
             } else {
                 model.create(data, done);
             }

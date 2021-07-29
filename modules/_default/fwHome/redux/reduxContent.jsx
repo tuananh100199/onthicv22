@@ -33,7 +33,7 @@ export function getContentAll(done) {
                 T.notify('Lấy danh sách nội dung bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: ContentGetAll, list: data.list ? data.list : [] });
             }
         }, error => {
@@ -62,7 +62,7 @@ export function createContent(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getContentAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo nội dung bị lỗi!', 'danger'));
     };

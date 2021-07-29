@@ -44,8 +44,8 @@ class UserCourseInfo extends AdminPage {
                     <h3 className='tile-title'>Thông tin chung</h3>
                     <div className='tile-body row'>
                         <label className='col-md-6'>Tên khóa học: <b>{this.state.name}</b></label>
-                        <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType && this.state.courseType.title}</b></label>
-                        <label className='col-md-3'>Học phí:  <b>{this.state.courseFee}</b></label>
+                        <label className='col-md-3'>Loại khóa học: <b>{this.state.courseType ? this.state.courseType.title : ''}</b></label>
+                        <label className='col-md-3'>Học phí:  <b>{this.state.courseFee ? T.numberDisplay(this.state.courseFee) + ' đồng' : ''}</b></label>
                         <label className='col'>Thời gian khai giảng: <b>{T.dateToText(this.state.thoiGianKhaiGiang, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian bắt đầu: <b>{T.dateToText(this.state.thoiGianBatDau, 'dd/mm/yyyy h:mm')}</b></label>
                         <label className='col-md-6'>Thời gian kết thúc: <b>{T.dateToText(this.state.thoiGianKetThuc, 'dd/mm/yyyy h:mm')}</b></label>

@@ -21,7 +21,7 @@ export function saveSystemState(changes, done) {
                 T.notify(data.error, 'danger');
                 console.error('PUT: ' + url + '.', data.error);
             } else {
-                if (done) done(data);
+                done && done(data);
                 T.notify('Lưu thông tin hệ thống thành công!', 'success');
                 dispatch({ type: SystemUpdateState, state: data });
             }

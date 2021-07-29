@@ -19,9 +19,9 @@ module.exports = (app) => {
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('course:learn'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('course:learn'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('course:learn'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
 
     const getCourseData = (_id, sessionUser, done) => {
         app.model.course.get(_id, (error, item) => {
@@ -413,14 +413,12 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/api/course/student/all', app.permission.check('course:read'), (req, res) => {
+    app.get('/api/course/student/all', app.permission.check('user:login'), (req, res) => {
         const _userId = req.session.user._id;
-        app.model.student.getAll({ user: _userId }, (error, students) => {
-            res.send({ error, students: students.map(item => ({ courseType: item.courseType, course: item.course })) });
-        });
+        app.model.student.getAll({ user: _userId }, (error, students) => res.send({ error, students }));
     });
 
-    app.get('/api/course/student', app.permission.check('course:read'), (req, res) => {//mobile
+    app.get('/api/course/student', app.permission.check('user:login'), (req, res) => {//mobile
         const _courseId = req.query._id,
             _studentId = req.session.user._id;
         app.model.student.get({ user: _studentId, course: _courseId }, (error, student) => {

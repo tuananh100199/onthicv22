@@ -47,7 +47,7 @@ class adminEditPage extends AdminPage {
                     <h3 className='tile-title'>Bài giảng</h3>
                     <div className='tile-body'>{videosRender}</div>
                     <div className='tile-footer' style={{ textAlign: 'right' }}>
-                        <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</a>
+                        <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>
                     </div>
                 </div>) : null,
             backRoute: userPageLink,

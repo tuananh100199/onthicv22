@@ -21,11 +21,7 @@ module.exports = app => {
             if (error) {
                 done(error);
             } else {
-                let result = {
-                    totalItem,
-                    pageSize,
-                    pageTotal: Math.ceil(totalItem / pageSize)
-                };
+                const result = { totalItem, pageSize, pageTotal: Math.ceil(totalItem / pageSize) };
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;

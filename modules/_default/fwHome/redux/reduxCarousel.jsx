@@ -41,7 +41,7 @@ export function getCarouselAll(done) {
                 T.notify('Lấy tập hình ảnh bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: CarouselGetAll, list: data.list || [] });
             }
         }, error => console.error(error) || T.notify('Lấy tập hình ảnh bị lỗi!', 'danger'));
@@ -69,7 +69,7 @@ export function createCarousel(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getCarouselAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo tập hình ảnh bị lỗi!', 'danger'));
     };
@@ -116,7 +116,7 @@ export function createCarouselItem(data, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch(getCarousel(data.item.carouselId));
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo hình ảnh bị lỗi!', 'danger'));
     };
@@ -132,7 +132,7 @@ export function updateCarouselItem(_id, changes, done) {
             } else {
                 T.notify('Cập nhật hình ảnh thành công!', 'info');
                 dispatch(getCarousel(data.item.carouselId));
-                if (done) done();
+                done && done();
             }
         }, error => console.error(error) || T.notify('Cập nhật hình ảnh bị lỗi!', 'danger'));
     };
@@ -180,7 +180,7 @@ export function homeGetCarousel(_id, done) {
                 T.notify('Lấy danh sách hình ảnh bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.item);
+                done && done(data.item);
             }
         }, error => {
             console.error('GET: ' + url + '. ' + error);

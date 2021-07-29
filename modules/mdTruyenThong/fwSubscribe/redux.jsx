@@ -93,7 +93,7 @@ export function getSubscribeAll(done) {
                 T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.list);
+                done && done(data.list);
                 dispatch({ type: SubscribeGetAll, list: data.list });
             }
         }, error => console.error(error) || T.notify('Lấy tất cả đăng ký nhận tin bị lỗi!', 'danger'));
@@ -110,7 +110,7 @@ export function getSubscribePage(pageNumber, pageSize, searchText, done) {
                 T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger');
                 console.error('GET: ' + url + '. ' + data.error);
             } else {
-                if (done) done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
+                done && done(data.page.pageNumber, data.page.pageSize, data.page.pageTotal, data.page.totalItem);
                 dispatch({ type: SubscribeGetPage, page: data.page });
             }
         }, error => console.error(error) || T.notify('Lấy danh sách đăng ký nhận tin bị lỗi!', 'danger'));
@@ -148,7 +148,7 @@ export function createSubscribe(subscribe, done) {
                 console.error('POST: ' + url + '. ' + data.error);
             } else {
                 dispatch({ type: SubscribeGetPage, page: data.page });
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Gửi đăng ký nhận tin bị lỗi!', 'danger'));
     };

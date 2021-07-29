@@ -192,8 +192,8 @@ class CandidatePage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '50%' }}>Họ và tên</th>
-                    <th style={{ width: '50%' }}>Thông tin liên hệ</th>
+                    <th style={{ width: '50%' }} nowrap='true'>Họ và tên</th>
+                    <th style={{ width: '50%' }} nowrap='true'>Thông tin liên hệ</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Cơ sở đào tạo</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Loại khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Trạng thái</th>
@@ -215,8 +215,8 @@ class CandidatePage extends AdminPage {
                 return (
                     <tr key={index}>
                         <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                        <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} />
-                        <TableCell content={<>{item.email}<br />{item.phoneNumber}</>} />
+                        <TableCell type='link' content={item.lastname + ' ' + item.firstname} onClick={e => this.edit(e, item)} style={{ whiteSpace: 'nowrap' }} />
+                        <TableCell content={<>{item.email}<br />{item.phoneNumber}</>} style={{ whiteSpace: 'nowrap' }} />
                         <TableCell content={dropdownDivision} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={dropdownCourseType} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />
                         <TableCell content={item.state == 'UngVien' ? <span style={{ color: '#28A745' }}>Ứng viên</span> : dropdownState} style={{ whiteSpace: 'nowrap', textAlign: 'center' }} />

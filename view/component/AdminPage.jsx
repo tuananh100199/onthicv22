@@ -193,7 +193,7 @@ export class FormTextBox extends React.Component {
     focus = () => this.input.focus();
 
     render() {
-        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null, required = false, min = '', max = '' } = this.props,
+        let { type = 'text', smallText = '', label = '', className = '', readOnly = false, onChange = null, required = false, min = '', max = '', style } = this.props,
             readOnlyText = this.state.value;
         type = type.toLowerCase(); // type = text | number | email | password | phone
         const properties = {
@@ -201,7 +201,7 @@ export class FormTextBox extends React.Component {
             className: 'form-control',
             placeholder: label,
             value: this.state.value,
-            onChange: e => this.setState({ value: e.target.value }) || (onChange && onChange(e)),
+            onChange: e => this.setState({ value: e.target.value }, () => onChange && onChange(e)),
         };
         if (type == 'password') properties.autoComplete = 'new-password';
         if (type == 'phone') {
@@ -217,7 +217,7 @@ export class FormTextBox extends React.Component {
         return (
             <div className={'form-group ' + (className || '')}>
                 <label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly ? <>: <b>{readOnlyText}</b></> : ''}
-                <input ref={e => this.input = e} style={{ display: readOnly ? 'none' : 'block' }}{...properties} />
+                <input ref={e => this.input = e} style={{ ...style, display: readOnly ? 'none' : 'block' }}{...properties} />
                 {smallText ? <small>{smallText}</small> : null}
             </div>);
     }
@@ -464,7 +464,8 @@ export class FormDatePicker extends React.Component {
                 ) : (
                     <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
                         inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                        value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                        value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
+                    // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
                 )}
             </div>);
     }

@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, CirclePageButton } from 'view/component/AdminPage';
+// import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
 const previousRoute = '/user';
 class UserCoursePageDetail extends AdminPage {
@@ -31,6 +32,7 @@ class UserCoursePageDetail extends AdminPage {
             this.props.history.push(previousRoute);
         }
     }
+
     componentDidUpdate(prevProps) {
         if (prevProps.match.url != this.props.match.url) {
             const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id'),
@@ -67,7 +69,7 @@ class UserCoursePageDetail extends AdminPage {
             content: (
                 <div className='row user-course'>
                     <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-4' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
+                    <Link className='col-md-6 col-lg-4' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
                         <div className='widget-small coloured-icon info'>
                             <i className='icon fa fa-3x fa-info' />
                             <div className='info'>
@@ -84,19 +86,21 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
+
                     {/* //TODO chức năng phản hồi */}
-                    <Link className='col-md-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>
-                        <div className='widget-small coloured-icon info'>
+                    <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>
+                        <div className='widget-small coloured-icon warning'>
                             <i className='icon fa fa-3x fa-commenting-o' />
                             <div className='info'>
                                 <h4>Phản hồi</h4>
                             </div>
                         </div>
                     </Link>
+
                     <h4 style={{ width: '100%' }}>Môn học</h4>
                     {subjects.length ? subjects.map((subject, index) => (
-                        <div key={index} className='col-md-6'>
-                            <Link to={'/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/mon-hoc/' + subject._id}>
+                        <div key={index} className='col-md-6 col-lg-4'>
+                            <Link to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/mon-hoc/${subject._id}`}>
                                 <div className='widget-small coloured-icon primary'>
                                     <i className='icon fa fa-3x fa fa-briefcase' />
                                     <div className='info'>
@@ -105,8 +109,10 @@ class UserCoursePageDetail extends AdminPage {
                                 </div>
                             </Link>
                         </div>
-                    )) : <div className='col-md-4'>Chưa có môn học!</div>
-                    }
+                    )) : <div className='col-md-4'>Chưa có môn học!</div>}
+
+                    {/* //TODO chức năng chat */}
+                    <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => alert('Chat')} />
                 </div>
             ),
         });

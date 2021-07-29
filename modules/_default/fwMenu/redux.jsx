@@ -35,7 +35,7 @@ export function createMenu(_id, done) {
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
                 dispatch(getAll());
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo menu bị lỗi!', 'danger'));
     };
@@ -104,7 +104,7 @@ export function createComponent(parentId, component, done) {
                 T.notify('Tạo thành phần trang bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo thành phần trang bị lỗi!', 'danger'));
     };
@@ -118,7 +118,7 @@ export function updateComponent(_id, changes, done) {
                 T.notify('Cập nhật thành phần trang bị lỗi!', 'danger');
                 console.error(`PUT: ${url}. ${data.error}`);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Cập nhật thành phần trang bị lỗi!', 'danger'));
     };
@@ -147,7 +147,7 @@ export function deleteComponent(_id, done) {
                 T.notify('Xóa thành phần trang bị lỗi!', 'danger');
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
-                if (done) done(data);
+                done && done(data);
             }
         }, error => console.error(error) || T.notify('Xóa thành phần trang bị lỗi!', 'danger'));
     };

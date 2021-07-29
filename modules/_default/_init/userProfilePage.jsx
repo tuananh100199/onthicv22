@@ -34,7 +34,7 @@ class UserProfilePage extends AdminPage {
                         {students.map((student, index) => {
                             const activeCourse = student.course && student.course.active;
                             const content = (
-                                <div className='widget-small coloured-icon info'>
+                                <div className='widget-small coloured-icon primary'>
                                     <i className='icon fa fa-3x fa fa-cubes' />
                                     <div className='info'>
                                         <h4>Khóa học hạng {student.courseType && student.courseType.title ? student.courseType.title : ''}</h4>
@@ -50,7 +50,7 @@ class UserProfilePage extends AdminPage {
 
                     <h4 className='col-md-12'>Ôn tập</h4>
                     <Link to='/user/hoc-vien/khoa-hoc/bo-de-thi-thu' className='col-md-6 col-lg-4'>
-                        <div className='widget-small coloured-icon info'>
+                        <div className='widget-small coloured-icon danger'>
                             <i className='icon fa fa-3x fa-graduation-cap' />
                             <div className='info'>
                                 <h4>Bộ đề thi thử</h4>
@@ -59,7 +59,7 @@ class UserProfilePage extends AdminPage {
                     </Link>
 
                     <Link to='/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien' className='col-md-6 col-lg-4'>
-                        <div className='widget-small coloured-icon info'>
+                        <div className='widget-small coloured-icon danger'>
                             <i className='icon fa fa-3x fa-graduation-cap' />
                             <div className='info'>
                                 <h4>Bộ đề thi ngẫu nhiên</h4>
