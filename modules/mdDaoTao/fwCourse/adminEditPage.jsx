@@ -106,6 +106,7 @@ class EditCoursePage extends AdminPage {
             <FormDatePicker ref={e => this.thoiGianThiTotNghiepChinhThuc = e} label='Thời gian tốt nghiệp chính thức' className='col-md-6' readOnly={readOnly} />
 
             <h3 className='tile-title' style={{ width: '100%', paddingLeft: 15, marginBottom: 5 }}>Mô tả khóa học</h3>
+            <FormCheckbox ref={e => this.chatActive = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt chat' isSwitch={true} readOnly={readOnly} />
             <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
             <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
 
