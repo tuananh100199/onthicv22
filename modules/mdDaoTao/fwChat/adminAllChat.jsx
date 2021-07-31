@@ -100,17 +100,17 @@ class AdminAllChat extends AdminPage {
             const prev_msg = element[index - 1],
                 isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(msg.sent).getTime())),
                 isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
-                isNewUser = (prev_msg && prev_msg.user._id != msg.user._id);
+                isNewUser = (!isNow || (prev_msg && prev_msg.user._id != msg.user._id)) && msg.user._id != this.state.user._id;
             return (
                 <div key={index}>
                     {isNewDay ?
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'dd/mm HH:MM')}</p> :
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'HH:MM')}</p>}
                     <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
-                        {isNewUser && msg.user._id != this.state.user._id && <img style={{ width: '6%' }} src={msg.user.image} alt={msg.lastname} />}
+                        {isNewUser && <img style={{ width: '50px' }} src={msg.user.image} alt={msg.lastname} />}
                         <div>
-                            {!isNow && msg.user._id != this.state.user._id && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
-                            <p className='info' style={{ position: 'static' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
+                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '65px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
                         </div>
                     </div>
                 </div>
