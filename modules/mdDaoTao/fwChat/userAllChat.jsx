@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createMessage, getOldMessage } from './redux';
 import { debounce } from 'lodash';
-import { AdminPage, FormTextBox } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
 
 const previousRoute = '/user';
@@ -29,7 +29,7 @@ class UserAllChat extends AdminPage {
         });
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-                this.props.getOldMessage(_id, Date.now(), 5, data => {
+                this.props.getOldMessage(_id, Date.now(), 100, data => {
                     this.setState({
                         oldMessage: data.item,
                         currentLoaded: data.item[0] && data.item[0].sent,
@@ -68,16 +68,17 @@ class UserAllChat extends AdminPage {
     }
 
     sendMessage = () => {
-        if (this.message.value() !== '') {
+        const message = $('#message').val().trim();
+        if (message !== '') {
             const msg = {
-                message: this.message.value(),
+                message: message,
                 user: this.state.user,
                 sent: Date.now(),
                 room: this.state.courseId,
             };
             this.socketRef.current.emit('sendDataClient', msg);
             this.props.createMessage(msg);
-            this.message.value('');
+            $('#message').val('');
         }
     }
 
@@ -96,46 +97,43 @@ class UserAllChat extends AdminPage {
     }, 200)
 
     render() {
-        // const permission = this.getUserPermission('chat');
-        const renderMess = this.state.oldMessage.map((msg, index) =>
-            <div key={index} className={(msg.user._id == this.state.user._id) ? 'outgoing_msg' : 'incoming_msg'}>
-                {(msg.user._id != this.state.user._id) && <div className='incoming_msg_img'> <img src={msg.user.image} alt={msg.lastname} /> </div>}
-                {(msg.user._id != this.state.user._id) ?
-                    <div className='received_msg'>
-                        <p className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname}</p>
-                        <div className='received_withd_msg'>
-                            <p>{msg.message}</p>
-                            <span className='time_date'> {T.dateToText(msg.sent)}</span>
+        const renderMess = this.state.oldMessage.map((msg, index, element) => {
+            const prev_msg = element[index - 1],
+                isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(msg.sent).getTime())),
+                isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
+                isNewUser = (!isNow || (prev_msg && prev_msg.user._id != msg.user._id)) && msg.user._id != this.state.user._id;
+            return (
+                <div key={index}>
+                    {isNewDay ?
+                        !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'dd/mm HH:MM')}</p> :
+                        !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'HH:MM')}</p>}
+                    <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
+                        {isNewUser && <img style={{ width: '30px' }} src={msg.user.image} alt={msg.lastname} />}
+                        <div>
+                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
                         </div>
-                    </div> :
-                    <div className='outgoing_msg my-0'>
-                        <div className='sent_msg'>
-                            <p>{msg.message}</p>
-                            <span className='time_date'> {T.dateToText(msg.sent)}</span> </div>
-                    </div>}
-            </div>
-        );
+                    </div>
+                </div>
+
+            );
+        });
+
         if (this.state.scrollDown) {
-            $('#msg_user_all').animate({
-                scrollTop: $('#msg_user_all').height()
-            }, 500);
+            $('#msg_admin_all').animate({
+                scrollTop: $('#msg_admin_all').height()
+            }, 1000);
         }
         return (
-            <div className='container'>
-                <h3 className=' text-center'>Phòng chat chung</h3>
-                <div className='messaging'>
-                    <div className='inbox_msg'>
-                        <div className='mesgs-all-chat'>
-                            <div className='msg_history' id='msg_user_all' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
-                                {renderMess}
-                            </div>
-                            <div className='type_msg'>
-                                <div className='input_msg_write'>
-                                    <FormTextBox ref={e => this.message = e} />
-                                    <button className='msg_send_btn' type='button' onClick={this.sendMessage}><i className='fa fa-paper-plane-o' aria-hidden='true'></i></button>
-                                </div>
-                            </div>
-                        </div>
+            <div >
+                {/* <h3 className='tile-title text-center'>Chat</h3> */}
+                <div className='messanger'>
+                    <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll', maxHeight: '340px' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                        {renderMess}
+                    </div>
+                    <div className='sender'>
+                        <input type='text' placeholder='Gửi tin nhắn' id='message' />
+                        <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                     </div>
                 </div>
             </div>

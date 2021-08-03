@@ -56,6 +56,15 @@ img{ max-width:100%;}
   margin: 0;
   padding: 18px 16px 10px;
 }
+
+.messanger .messages .message.me .info:before {
+  display: none;
+}
+
+.messanger .messages .message.me .info::after {
+  display: none;
+}
+
 .inbox_chat { height: 350px; overflow-y: scroll;}
 
 .active_chat{ background:#ebebeb;}

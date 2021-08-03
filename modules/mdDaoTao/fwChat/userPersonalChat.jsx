@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createMessage, getAdminChatByStudent, getOldMessage } from './redux';
 import { debounce } from 'lodash';
-import { AdminPage, FormTextBox } from 'view/component/AdminPage';
+import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
 
 const previousRoute = '/user';
@@ -31,7 +31,7 @@ class UserPersonalChat extends AdminPage {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getAdminChatByStudent(_id, data => {
                     this.setState({ listAdmin: data.item, roomId: _id + '_' + data.item[0]._id + '_' + user._id, activeId: data.item[0]._id }, () => {
-                        this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
+                        this.props.getOldMessage(this.state.roomId, Date.now(), 100, data => {
                             this.setState({
                                 oldMessage: data.item,
                                 currentLoaded: data.item[0] && data.item[0].sent,
@@ -72,16 +72,17 @@ class UserPersonalChat extends AdminPage {
     }
 
     sendMessage = () => {
-        if (this.message.value() !== '') {
+        const message = $('#user_personal_message').val().trim();
+        if (message !== '') {
             const msg = {
-                message: this.message.value(),
+                message: message,
                 user: this.state.user,
                 sent: Date.now(),
                 room: this.state.roomId,
             };
             this.socketRef.current.emit('sendDataClient', msg);
             this.props.createMessage(msg);
-            this.message.value('');
+            $('#user_personal_message').val('');
         }
     }
 
@@ -114,24 +115,27 @@ class UserPersonalChat extends AdminPage {
     }
 
     render() {
-        const renderMess = this.state.oldMessage.map((msg, index) =>
-            <div key={index} className={(msg.user._id == this.state.user._id) ? 'outgoing_msg' : 'incoming_msg'}>
-                {(msg.user._id != this.state.user._id) && <div className='incoming_msg_img'> <img src={msg.user.image} alt={msg.lastname} /> </div>}
-                {(msg.user._id != this.state.user._id) ?
-                    <div className='received_msg'>
-                        <p className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname}</p>
-                        <div className='received_withd_msg'>
-                            <p>{msg.message}</p>
-                            <span className='time_date'> {T.dateToText(msg.sent)}</span>
+        const renderMess = this.state.oldMessage.map((msg, index, element) => {
+            const prev_msg = element[index - 1],
+                isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(msg.sent).getTime())),
+                isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
+                isNewUser = (!isNow || (prev_msg && prev_msg.user._id != msg.user._id)) && msg.user._id != this.state.user._id;
+            return (
+                <div key={index}>
+                    {isNewDay ?
+                        !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'dd/mm HH:MM')}</p> :
+                        !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'HH:MM')}</p>}
+                    <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
+                        {isNewUser && <img style={{ width: '30px' }} src={msg.user.image} alt={msg.lastname} />}
+                        <div>
+                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
                         </div>
-                    </div> :
-                    <div className='outgoing_msg my-0'>
-                        <div className='sent_msg'>
-                            <p>{msg.message}</p>
-                            <span className='time_date'> {T.dateToText(msg.sent)}</span> </div>
-                    </div>}
-            </div>
-        );
+                    </div>
+                </div>
+
+            );
+        });
         const inboxChat = this.state.listAdmin.map((admin, index) =>
             <div key={index} className={'chat_list' + (this.state.activeId == admin._id ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => this.loadChat(e, admin._id)}>
                 <div className='chat_people'>
@@ -147,34 +151,34 @@ class UserPersonalChat extends AdminPage {
                 scrollTop: $('#msg_user_personal').height()
             }, 500);
         }
-        return (<div className='container'>
-            <h3 className=' text-center'>Phòng chat cá nhân</h3>
-            <div className='messaging'>
-                <div className='inbox_msg row'>
-                    <div className='inbox_people col-md-3'>
-                        <div className='headind_srch'>
-                            <div className='recent_heading'>
-                                <h4>Danh sách liên hệ</h4>
+        return (
+            <div >
+                <div className='messanger'>
+                    <div className='inbox_msg row'>
+                        <div className='inbox_people col-md-3'>
+                            <div className='headind_srch'>
+                                <div className='recent_heading'>
+                                    <h4>Danh sách giảng viên</h4>
+                                </div>
+                            </div>
+                            <div className='inbox_chat'>
+                                {inboxChat}
                             </div>
                         </div>
-                        <div className='inbox_chat'>
-                            {inboxChat}
-                        </div>
-                    </div>
-                    <div className='mesgs col-md-9'>
-                        <div className='msg_history' id='msg_user_personal' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
-                            {renderMess}
-                        </div>
-                        <div className='type_msg'>
-                            <div className='input_msg_write'>
-                                <FormTextBox ref={e => this.message = e} />
-                                <button className='msg_send_btn' type='button' onClick={this.sendMessage}><i className='fa fa-paper-plane-o' aria-hidden='true'></i></button>
+                        <div className='col-md-9'>
+                            <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                                {renderMess}
+                            </div>
+                            <div className='sender'>
+                                <input type='text' placeholder='Gửi tin nhắn' id='user_personal_message' />
+                                <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-        </div>);
+        );
     }
 }
 

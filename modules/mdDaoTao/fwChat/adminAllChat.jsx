@@ -107,10 +107,10 @@ class AdminAllChat extends AdminPage {
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'dd/mm HH:MM')}</p> :
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'HH:MM')}</p>}
                     <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
-                        {isNewUser && <img style={{ width: '50px' }} src={msg.user.image} alt={msg.lastname} />}
+                        {isNewUser && <img style={{ width: '30px' }} src={msg.user.image} alt={msg.lastname} />}
                         <div>
                             {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
-                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '65px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,7 @@ class AdminAllChat extends AdminPage {
         if (this.state.scrollDown) {
             $('#msg_admin_all').animate({
                 scrollTop: $('#msg_admin_all').height()
-            }, 500);
+            }, 1000);
         }
         return (
             <div >
