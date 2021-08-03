@@ -8,7 +8,6 @@ export default function timeTableReducer(state = {}, data) {
     switch (data.type) {
         case TimeTableGetPage:
             return Object.assign({}, state, { page: data.page });
-
         case TimeTableUpdate: {
             let updatedPage = Object.assign({}, state.page),
                 updatedItem = data.item;

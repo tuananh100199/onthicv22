@@ -4,6 +4,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import timeTable from './redux';
+import StudentView from './studentView';
 
 export default {
     redux: {
@@ -15,12 +16,12 @@ export default {
             path: '/user/time-table',
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
-        // TODO: Sinh viên xem giờ học
-        // {
-        //     path: '/user/student-time-table',
-        //     component: Loadable({ loading: Loading, loader: () => import('./userPage') })
-        // },
+        {
+            path: '/user/student-time-table',
+            component: Loadable({ loading: Loading, loader: () => import('./studentView') })
+        },
     ],
     Section: {
+        StudentView
     }
 };

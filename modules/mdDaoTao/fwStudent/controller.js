@@ -51,7 +51,7 @@ module.exports = (app) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.get('/api/student/score', app.permission.check('student:read'), (req, res) => {//mobile
+    app.get('/api/student/score', app.permission.check('user:login'), (req, res) => {//mobile
         const _userId = req.session.user._id,
             _courseId = req.query.courseId;
         app.model.student.get({ user: _userId, course: _courseId }, (error, item) => {

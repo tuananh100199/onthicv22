@@ -58,7 +58,6 @@ class TimeTableModal extends AdminModal {
     onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>
         this.itemStudent.value(null));
     onChangeStudent = (data) => data && data.id && this.setState({ loading: true }, () => this.props.getStudent(data.id, student => {
-        console.log(student);
         this.setState({ loading: false, student }, () => this.state._id || this.getDateNumber());
     }));
 
@@ -136,15 +135,15 @@ class TimeTablePage extends AdminPage {
     state = { searchText: '', isSearching: false };
     componentDidMount() {
         this.props.getTimeTablePage(1, 50, undefined);
-        T.ready(() => T.showSearchBox());
-        // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText } : null, () => {
+        // T.ready(() => T.showSearchBox());
+        // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText: searchText } : null, () => {
         //     this.setState({ searchText, isSearching: searchText != '' });
         // });
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
     delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
-        isConfirm && this.props.deleteCandidate(item._id));
+        isConfirm && this.props.deleteTimeTable(item._id));
 
     render() {
         const permission = this.getUserPermission('timeTable', ['read', 'write', 'delete']);
@@ -168,7 +167,7 @@ class TimeTablePage extends AdminPage {
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='text' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} />
+                    <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
                     <TableCell type='text' content={item.student && item.student.user && item.student.user.phoneNumber ? T.mobileDisplay(item.student.user.phoneNumber) : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={<><span className='text-primary'>{item.student && item.student.course ? item.student.course.name : ''}</span><br />{item.student && item.student.courseType ? item.student.courseType.title : ''}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' content={item.dateNumber} />

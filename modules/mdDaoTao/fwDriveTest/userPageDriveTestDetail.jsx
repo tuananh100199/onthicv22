@@ -180,67 +180,64 @@ class UserPageDriveTestDetail extends AdminPage {
             title: 'Ôn tập: ' + (this.state.title || '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi thử</Link>, this.state.title],
             backRoute: userPageLink,
-            content: (<>
-                {questions && questions.length ? (
-                    <div className='tile'>
-                        <div className='tile-header row'>
-                            <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
-                            <h3 className='col-md-2' id='time'></h3>
-                        </div>
-                        <div className='tile-body row'>
-                            {activeQuestion ? (
-                                <div className='col-md-12 pb-5'>
-                                    <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
-                                    {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
-                                    <div className='form-check'>
-                                        {activeQuestion.answers.split('\n').map((answer, index) => (
-                                            <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
-                                                <input className='custom-control-input' type='radio' name={activeQuestion._id} id={activeQuestion._id + index} value={index} disabled={prevAnswers && prevTrueAnswers && prevAnswers[activeQuestion._id]} onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+            content: questions && questions.length ?
+                <div className='tile'>
+                    <div className='tile-header row'>
+                        <div className='col-md-10'>{questions.map((question, index) => (<span key={index} style={{ cursor: 'pointer' }} onClick={e => this.changeQuestion(e, index)}><i className={'fa fa-square ' + (prevAnswers && prevTrueAnswers && prevAnswers[question._id] ? (prevAnswers[question._id] == prevTrueAnswers[question._id] ? 'text-primary' : 'text-danger') : 'text-secondary')} aria-hidden='true'></i>&nbsp;&nbsp;</span>))}</div>
+                        <h3 className='col-md-2' id='time'></h3>
+                    </div>
+                    <div className='tile-body row'>
+                        {activeQuestion ? (
+                            <div className='col-md-12 pb-5'>
+                                <h6>Câu hỏi {activeQuestionIndex + 1 + '/' + questions.length}: {activeQuestion.title}</h6>
+                                {activeQuestion.image ? <img src={activeQuestion.image} alt='question' style={{ width: '50%', height: 'auto', display: 'block', margin: 'auto', padding: '50px 0px' }} /> : null}
+                                <div className='form-check'>
+                                    {activeQuestion.answers.split('\n').map((answer, index) => (
+                                        <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
+                                            <input className='custom-control-input' type='radio' name={activeQuestion._id} id={activeQuestion._id + index} value={index} onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
 
-                                                <label className={'custom-control-label ' +
-                                                    (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
-                                                        (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
-                                                            (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
-                                                } htmlFor={activeQuestion._id + index} >
-                                                    {answer}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            <label className={'custom-control-label ' +
+                                                (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :
+                                                    (prevTrueAnswers && prevTrueAnswers[activeQuestion._id] == index ? 'text-success ' :
+                                                        (prevAnswers && prevAnswers[activeQuestion._id] == index ? 'text-danger invalid' : '')))
+                                            } htmlFor={activeQuestion._id + index} >
+                                                {answer}
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
-                            ) : null}
-                        </div>
-                        <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
-                            <div style={{ width: '100%' }}>
-                                <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <ul className='pagination'>
-                                        <li className={'page-item ' + this.state.prevButton} >
-                                            <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true' /> Câu trước</a>
-                                        </li>
-                                        <li className={'page-item ' + this.state.nextButton}>
-                                            <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                                <div>
-                                    {showTotalScore ?
-                                        <h4 style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
-                                        : null}
-                                    <div style={{ float: 'right', marginRight: '10px' }}>
-                                        {showSubmitButton ?
-                                            <button className='btn btn-lg' id='submit-btn' disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} onClick={e => this.submitAnswer(e)} >
-                                                <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
-                                            </button> :
-                                            <button className='btn btn-lg btn-info' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
-                                                <i className='fa fa-lg fa-refresh' /> Làm lại
-                                            </button>}
-                                    </div>
+                            </div>
+                        ) : null}
+                    </div>
+                    <div className='tile-footer' style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <div style={{ width: '100%' }}>
+                            <nav aria-label='...' style={{ display: 'flex', justifyContent: 'center' }}>
+                                <ul className='pagination'>
+                                    <li className={'page-item ' + this.state.prevButton} >
+                                        <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex - 1)}><i className='fa fa-arrow-left' aria-hidden='true' /> Câu trước</a>
+                                    </li>
+                                    <li className={'page-item ' + this.state.nextButton}>
+                                        <a role='button' className='page-link' onClick={e => this.changeQuestion(e, activeQuestionIndex + 1)}> Câu tiếp <i className='fa fa-arrow-right' aria-hidden='true' /></a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div>
+                                {showTotalScore ?
+                                    <h4 style={{ marginLeft: '15px' }}>Số câu đúng của bạn: <b className='text-danger' >{score} / {questions && questions.length}</b></h4>
+                                    : null}
+                                <div style={{ float: 'right', marginRight: '10px' }}>
+                                    {showSubmitButton ?
+                                        <button className='btn btn-lg' id='submit-btn' disabled={!(this.state.studentAnswer && Object.keys(this.state.studentAnswer).length == questions.length)} onClick={e => this.submitAnswer(e)} >
+                                            <i className='fa fa-lg fa-paper-plane-o' /> Nộp bài
+                                        </button> :
+                                        <button className='btn btn-lg btn-info' onClick={e => this.resetQuestion(e, questions[0]._id)} disabled={false}>
+                                            <i className='fa fa-lg fa-refresh' /> Làm lại
+                                        </button>}
                                 </div>
                             </div>
                         </div>
                     </div>
-                ) : <div className='tile'>Không có dữ liệu</div>}
-            </>),
+                </div> : <div className='tile'>Không có dữ liệu</div>,
         });
     }
 }
