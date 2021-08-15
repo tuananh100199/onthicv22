@@ -136,7 +136,7 @@ class EditCoursePage extends AdminPage {
         }
         if (this.state.chatActive) {
             adminTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
-            adminTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null });
+            isCourseAdmin && adminTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null });
             lecturerTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
             lecturerTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },);
         }
