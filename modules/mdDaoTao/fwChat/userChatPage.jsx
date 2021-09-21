@@ -8,6 +8,7 @@ import UserPersonalChat from './userPersonalChat';
 
 const previousRoute = '/user';
 class ChatPage extends AdminPage {
+    state = {};
     componentDidMount() {
         const route = T.routeMatcher('/user/chat/:_id'),
             _id = route.parse(window.location.pathname)._id;
@@ -21,6 +22,7 @@ class ChatPage extends AdminPage {
     }
 
     render() {
+        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         const adminTabs = [
             { title: 'Phòng chat chung', component: <UserAllChat /> },
             { title: 'Phòng chat cá nhân', component: <UserPersonalChat /> },
@@ -30,6 +32,7 @@ class ChatPage extends AdminPage {
             title: 'Chat room',
             breadcrumb: ['Chat'],
             content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={adminTabs} />,
+            backRoute: userPageLink,
         });
     }
 }
