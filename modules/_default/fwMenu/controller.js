@@ -225,7 +225,7 @@ module.exports = app => {
         ready: () => app.redis,
         run: () => {
             app.redis.menusKey = app.appName + ':menus';
-            process.env['enableInit'] == 'true' && app.buildAppMenus();
+            app.primaryWorker && app.buildAppMenus();
         },
     });
 

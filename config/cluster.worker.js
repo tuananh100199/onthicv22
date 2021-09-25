@@ -6,7 +6,7 @@ module.exports = (cluster, isDebug) => {
     app.isDebug = isDebug;
     app.fs = require('fs');
     app.path = require('path');
-    app.configWorker = process.env['enableInit'] == 'true';
+    app.primaryWorker = process.env['primaryWorker'] == 'true';
     const server = app.isDebug ?
         require('http').createServer(app) :
         require('https').createServer({
@@ -48,7 +48,7 @@ module.exports = (cluster, isDebug) => {
     app.loadModules();
     app.readyHooks.add('setupAdmin', {
         ready: () => app.model && app.model.user,
-        run: () => process.env['enableInit'] == 'true' && app.setupAdmin(),
+        run: () => process.env['primaryWorker'] == 'true' && app.setupAdmin(),
     });
 
     app.get('/user', app.permission.check(), app.templates.admin);
@@ -63,8 +63,8 @@ module.exports = (cluster, isDebug) => {
     // Worker ---------------------------------------------------------------------------------------------------------
     app.worker = {
         create: () => process.send({ type: 'createWorker' }),
-        reset: (workerId) => process.send({ type: 'resetWorker', workerId }),
-        shutdown: (workerId) => process.send({ type: 'shutdownWorker', workerId }),
+        reset: (workerId) => process.send({ type: 'resetWorker', workerId, primaryWorker: app.primaryWorker }),
+        shutdown: (workerId) => process.send({ type: 'shutdownWorker', workerId, primaryWorker: app.primaryWorker }),
     };
 
     // Listen from MASTER ---------------------------------------------------------------------------------------------
@@ -77,7 +77,9 @@ module.exports = (cluster, isDebug) => {
             process.exit(1);
             // isDebug ? process.exit(1) : setTimeout(() => process.exit(1), 1 * 60 * 1000); // Waiting 1 minutes...
         } else if (message.type == 'shutdownWorker') {
-            process.exit(1);
+            process.exit(4);
+        } else if (message.type == 'setPrimaryWorker') {
+            app.primaryWorker = true;
         }
     });
 
