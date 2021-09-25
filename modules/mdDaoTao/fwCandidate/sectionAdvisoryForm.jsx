@@ -10,9 +10,6 @@ class SectionAdvisoryForm extends React.Component {
             this.props.viewId ?
                 ajaxGetCourseType(this.props.viewId, data =>
                     this.courseType.value(data && data.item && { id: data.item._id, text: data.item.title })) : this.courseType.value(null);
-            const { phoneNumber } = this.props.system && this.props.system.user ?
-            this.props.system.user : { phoneNumber: '' };
-            this.phoneNumber.value = phoneNumber || '';
         });
     }
 
@@ -57,7 +54,7 @@ class SectionAdvisoryForm extends React.Component {
         if (this.firstname) this.firstname.value = firstname;
         if (this.lastname) this.lastname.value = lastname;
         if (this.email) this.email.value = email;
-        if (this.phoneNumber) this.phoneNumber.value = phoneNumber;
+        if (this.phoneNumber) this.phoneNumber.value = phoneNumber || '';
 
         return (
             <div className='intro'>

@@ -1,0 +1,77 @@
+import T from 'view/js/common';
+
+const FeedbackGetAll = 'FeedbackGetAll';
+const FeedbackChange = 'FeedbackChange';
+
+export default function feedbackReducer(state = [], data) {
+    switch (data.type) {
+        case FeedbackGetAll:
+            return data.items;
+
+        case FeedbackChange: {
+            let updateItemState = state.slice();
+            for (let i = 0; i < updateItemState.length; i++) {
+                if (updateItemState[i]._id == data.item._id) {
+                    updateItemState[i] = data.item;
+                    break;
+                }
+            }
+            return updateItemState;
+        }
+
+        default:
+            return state;
+    }
+}
+
+// Actions ------------------------------------------------------------------------------------------------------------
+export function getFeedbackAll(type, _id, done) {
+    return dispatch => {
+        const url = `/api/feedback/${type}`;
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy phản hồi bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: FeedbackGetAll, items: data.items });
+                done && done(data.items);
+            }
+        }, error => console.error(error) || T.notify('Lấy phản hồi bị lỗi!', 'danger'));
+    };
+}
+
+export function createFeedback(_refId, content,type, done) {
+    return dispatch => {
+        const url = '/api/feedback';
+        T.post(url, { _refId, content,type }, data => {
+            if (data.error) {
+                T.notify('Tạo phản hồi bị lỗi!', 'danger');
+                console.error('POST: ' + url + '.', data.error);
+            } else {
+                dispatch(getFeedbackAll(type,_refId));
+                done && done(data);
+            }
+        }, error => console.error(error) || T.notify('Tạo phản hồi bị lỗi!', 'danger'));
+    };
+}
+
+// export function updateFeedback(_id, changes, done) {
+//     return dispatch => {
+//         const url = '/api/feedback';
+//         T.put(url, { _id, changes }, data => {
+//             if (data.error) {
+//                 T.notify('Cập nhật phản hồi bị lỗi!', 'danger');
+//                 console.error('PUT: ' + url + '.', data.error);
+//                 done && done(data.error);
+//             } else {
+//                 T.notify('Cập nhật phản hồi thành công!', 'success');
+//                 dispatch(getFeedbackAll(data.item.type));
+//                 done && done();
+//             }
+//         }, error => console.error(error) || T.notify('Cập nhật phản hồi bị lỗi!', 'danger'));
+//     };
+// }
+
+export function changeFeedback(feedback) {
+    return { type: FeedbackChange, item: feedback };
+}
