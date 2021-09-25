@@ -84,8 +84,8 @@ module.exports = app => {
                 app.fs.renameSync(extractPath + '/modules', destPath + '/modules');
 
                 app.deleteFolder(extractPath);
-                const imageTextFile = app.path.join(destPath, 'imageInfo.txt');
-                app.fs.writeFileSync(imageTextFile, app.path.basename(imageFile));
+                const imageInfoPath = app.path.join(destPath, 'imageInfo.txt');
+                app.fs.writeFileSync(imageInfoPath, app.path.basename(imageFile));
                 res.send({});
             });
 
