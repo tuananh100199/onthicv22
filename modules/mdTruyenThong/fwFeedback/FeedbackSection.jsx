@@ -87,6 +87,6 @@ class FeedbackSection extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, feedback: state.comunication.feedback });
+const mapStateToProps = state => ({ system: state.system, feedback: state.communication.feedback });
 const mapActionsToProps = { getFeedbackAll, createFeedback };
 export default connect(mapStateToProps, mapActionsToProps)(FeedbackSection);
