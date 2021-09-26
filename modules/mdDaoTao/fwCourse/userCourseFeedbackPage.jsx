@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse } from './redux.jsx';
+import { getCourseByStudent } from './redux.jsx';
 import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackSection';
 import { AdminPage } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
@@ -13,10 +13,10 @@ class UserCourseFeedback extends AdminPage {
         if (_id) {
             this.setState({ courseId: _id });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-                this.props.getCourse(_id, data => {
+                this.props.getCourseByStudent(_id, data => {
                     if (data.error) {
                         this.props.history.push(`/user/hoc-vien/khoa-hoc/${this.state.courseId}`);
-                    }
+                    } else this.setState({name:data.item && data.item.name});
                 });
             });
         } else {
@@ -27,14 +27,14 @@ class UserCourseFeedback extends AdminPage {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Khóa học: ' + (this.props.course && this.props.course.name || '...'),
+            title: 'Khóa học: ' + (this.state.name || '...'),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Phản hồi khóa học'],
-            content: <FeedbackSection type='course' _refId={this.state.courseId} />,
+            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} />,
             backRoute: userPageLink,
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system,course: state.trainning.course });
-const mapActionsToProps = { getCourse };
+const mapActionsToProps = { getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCourseFeedback);

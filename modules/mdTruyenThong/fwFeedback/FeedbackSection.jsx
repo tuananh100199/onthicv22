@@ -78,7 +78,7 @@ class FeedbackSection extends AdminPage {
                         <div className='row'>
                             <FormRichTextBox ref={e => this.newFeedback = e} className='col-md-11' style={{ display: 'flex' }} />
                             <div className='col-md-1'>
-                                <button className='btn btn-primary' type='button' onClick={() => this.sendFeedback}> Gửi </button>
+                                <button className='btn btn-primary' type='button' onClick={this.sendFeedback}> Gửi </button>
                             </div>
                         </div>
                     </div>      
