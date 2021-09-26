@@ -7,13 +7,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/feedback', app.permission.check('feedback:write'), (req, res) => {
-        const newData ={
-            _refId :req.body._refId,
-            type: req.body.type,
-            user: req.session.user && req.session.user._id ,
-            content:req.body.content,
-            replies:[],
-        };
-        app.model.feedback.create(newData, (error, item) => res.send({ error, item }));
+        app.model.feedback.create(app.clone(req.body.newData, { user: req.session.user && req.session.user._id }),
+         (error, item) => res.send({ error, item }));
     });
 };

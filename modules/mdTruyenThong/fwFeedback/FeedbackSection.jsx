@@ -9,10 +9,21 @@ class FeedbackSection extends AdminPage {
     }
 
     sendFeedback = () => {
-        const content = this.newFeedback.value();
-        this.props.createFeedback(this.props._refId, content,this.props.type, () => {
-            this.newFeedback.value('');
-        });
+        const content = this.newFeedback.value(),
+            data = {
+                _refId: this.props._refId,
+                type: this.props.type,
+                content: content,
+                replies: [],
+            };
+        if (content == '') {
+            T.notify('Không thể gửi thông điệp không nội dung!', 'danger');
+            this.newFeedback.focus();
+        } else {
+            this.props.createFeedback(data, () => {
+                this.newFeedback.value('');
+            });
+        }
     }
 
     render() {

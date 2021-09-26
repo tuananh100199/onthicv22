@@ -40,15 +40,15 @@ export function getFeedbackAll(type, _id, done) {
     };
 }
 
-export function createFeedback(_refId, content,type, done) {
+export function createFeedback(newData, done) {
     return dispatch => {
         const url = '/api/feedback';
-        T.post(url, { _refId, content,type }, data => {
+        T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo phản hồi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getFeedbackAll(type,_refId));
+                dispatch(getFeedbackAll(newData.type,newData._refId));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo phản hồi bị lỗi!', 'danger'));
