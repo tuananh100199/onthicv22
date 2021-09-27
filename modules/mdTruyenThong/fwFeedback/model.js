@@ -50,7 +50,7 @@ module.exports = app => {
 
         addReply: (_id, reply, done) => {
             const { content, adminUser } = reply;
-            model.findOneAndUpdate(_id, { $push: { replies: { createdDate: new Date(), content, adminUser } } }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id }, { $push: { replies: { createdDate: new Date(), content, adminUser } } }, { new: true }).exec(done);
         },
 
         deleteReply: (_id, _replyId, done) => {
