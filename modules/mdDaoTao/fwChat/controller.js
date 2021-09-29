@@ -12,7 +12,7 @@ module.exports = app => {
         });
     });
 
-    app.post('/api/chat', (req, res) => {
+    app.post('/api/chat', app.permission.check('user:login'), (req, res) => {
         app.model.chat.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
