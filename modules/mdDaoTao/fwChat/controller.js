@@ -2,9 +2,9 @@ module.exports = app => {
 
     app.get('/user/chat/:id', app.templates.admin);
 
-    app.get('/api/chat/all', (req, res) => {
-        const { roomId, create_at, num_message } = req.query;
-        app.model.chat.getAll({ room: roomId, sent: { $lt: create_at } }, parseInt(num_message), (error, item) => {
+    app.get('/api/chat', app.permission.check('user:login'), (req, res) => {
+        const { roomId, createAt, numMessage } = req.query;
+        app.model.chat.getAll({ room: roomId, sent: { $lt: createAt } }, parseInt(numMessage), (error, item) => {
             const new_item = item.reverse();
             app.model.chat.count({ room: roomId }, (error, count) => {
                 res.send({ error, item: new_item, count });
@@ -16,7 +16,7 @@ module.exports = app => {
         app.model.chat.create(req.body.data || {}, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/chat/student', (req, res) => {
+    app.get('/api/chat/student', app.permission.check('user:login'), (req, res) => {
         const sessionUser = req.session.user;
         app.model.course.get(req.query.courseId, (error, item) => {
             if (error || !item) {

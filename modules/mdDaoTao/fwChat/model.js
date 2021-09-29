@@ -10,8 +10,8 @@ module.exports = app => {
     app.model.chat = {
         create: (data, done) => model.create(data, done),
 
-        getAll: (condition, num_message, done) => done ?
-            model.find(condition).sort({ sent: -1 }).populate('user', 'firstname lastname image _id isLecturer isCourseAdmin').limit(num_message).exec(done) :
+        getAll: (condition, numMessage, done) => done ?
+            model.find(condition).sort({ sent: -1 }).populate('user', 'firstname lastname image _id isLecturer isCourseAdmin').limit(numMessage).exec(done) :
             model.find({}).exec(condition),
 
         get: (condition, done) => typeof condition == 'string' ?

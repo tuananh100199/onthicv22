@@ -6,6 +6,7 @@ import { getLearingProgressByLecturer, getLearingProgressByAdmin } from '../fwCo
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
 
+
 const previousRoute = '/user';
 class AdminPersonalChat extends AdminPage {
     socketRef = React.createRef();
@@ -83,7 +84,6 @@ class AdminPersonalChat extends AdminPage {
 
     sendMessage = () => {
         const message = $('#personal_message').val().trim();
-        console.log(message);
         if (message !== '') {
             const msg = {
                 message: message,
@@ -97,10 +97,11 @@ class AdminPersonalChat extends AdminPage {
         }
     }
 
-    loadChat = (e, studentId) => {
+    loadChat = (e, student) => {
+        const studentId = student.user._id;
         const { courseId, user } = this.state;
         e.preventDefault();
-        this.setState({ roomId: courseId + '_' + user._id + '_' + studentId, activeId: studentId }, () => {
+        this.setState({ roomId: courseId + '_' + user._id + '_' + studentId, activeId: studentId, studentName: student.lastname + ' ' + student.firstname, studentImage: student.user.image }, () => {
             this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                 this.setState({
                     oldMessage: data.item,
@@ -131,6 +132,7 @@ class AdminPersonalChat extends AdminPage {
                 isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(msg.sent).getTime())),
                 isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
                 isNewUser = (!isNow || (prev_msg && prev_msg.user._id != msg.user._id)) && msg.user._id != this.state.user._id;
+
             return (
                 <div key={index}>
                     {isNewDay ?
@@ -139,7 +141,6 @@ class AdminPersonalChat extends AdminPage {
                     <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
                         {isNewUser && <img style={{ width: '30px' }} src={msg.user.image} alt={msg.lastname} />}
                         <div>
-                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
                             <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
                         </div>
                     </div>
@@ -147,8 +148,10 @@ class AdminPersonalChat extends AdminPage {
 
             );
         });
+        const studentName = this.state.studentName ? this.state.studentName : this.state.listStudent[0] && this.state.listStudent[0].firstname + ' ' + this.state.listStudent[0].lastname,
+            studentImage = this.state.studentImage ? this.state.studentImage : this.state.listStudent[0] && this.state.listStudent[0].user.image;
         const inboxChat = this.state.listStudent.map((student, index) =>
-            <div key={index} className={'chat_list' + (this.state.activeId == student.user._id ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => this.loadChat(e, student.user._id)}>
+            <div key={index} className={'chat_list' + (this.state.activeId == student.user._id ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => this.loadChat(e, student)}>
                 <div className='chat_people'>
                     <div className='chat_img'> <img src={student.user.image} alt={student.lastname} /> </div>
                     <div className='chat_ib'>
@@ -163,7 +166,7 @@ class AdminPersonalChat extends AdminPage {
             }, 500);
         }
         return (
-            <div >
+            <div>
                 <div className='messanger'>
                     <div className='inbox_msg row'>
                         <div className='inbox_people col-md-3'>
@@ -177,6 +180,10 @@ class AdminPersonalChat extends AdminPage {
                             </div>
                         </div>
                         <div className='col-md-9'>
+                            <div style={{ borderBottom: '1px solid black', height: '30px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                                <img style={{ height: '20px', width: 'auto' }} src={studentImage} alt={studentName} />
+                                <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
+                            </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
                             </div>
@@ -188,7 +195,7 @@ class AdminPersonalChat extends AdminPage {
                     </div>
 
                 </div>
-            </div>
+            </div >
         );
     }
 }

@@ -100,10 +100,11 @@ class UserPersonalChat extends AdminPage {
         }
     }, 200)
 
-    loadChat = (e, adminId) => {
+    loadChat = (e, admin) => {
+        const adminId = admin._id;
         const { courseId, user } = this.state;
         e.preventDefault();
-        this.setState({ roomId: courseId + '_' + adminId + '_' + user._id, activeId: adminId }, () => {
+        this.setState({ roomId: courseId + '_' + adminId + '_' + user._id, activeId: adminId, adminName: admin.lastname + ' ' + admin.firstname, adminImage: admin.image }, () => {
             this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                 this.setState({
                     oldMessage: data.item,
@@ -128,7 +129,6 @@ class UserPersonalChat extends AdminPage {
                     <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
                         {isNewUser && <img style={{ width: '30px' }} src={msg.user.image} alt={msg.lastname} />}
                         <div>
-                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
                             <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{msg.message}</p>
                         </div>
                     </div>
@@ -136,8 +136,10 @@ class UserPersonalChat extends AdminPage {
 
             );
         });
+        const adminName = this.state.adminName ? this.state.adminName : this.state.listAdmin[0] && this.state.listAdmin[0].firstname + ' ' + this.state.listAdmin[0].lastname,
+            adminImage = this.state.adminImage ? this.state.adminImage : this.state.listAdmin[0] && this.state.listAdmin[0].image;
         const inboxChat = this.state.listAdmin.map((admin, index) =>
-            <div key={index} className={'chat_list' + (this.state.activeId == admin._id ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => this.loadChat(e, admin._id)}>
+            <div key={index} className={'chat_list' + (this.state.activeId == admin._id ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => this.loadChat(e, admin)}>
                 <div className='chat_people'>
                     <div className='chat_img'> <img src={admin.image} alt={admin.lastname} /> </div>
                     <div className='chat_ib'>
@@ -166,11 +168,15 @@ class UserPersonalChat extends AdminPage {
                             </div>
                         </div>
                         <div className='col-md-9'>
+                            <div style={{ borderBottom: '1px solid black', height: '30px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                                <img style={{ height: '20px', width: 'auto' }} src={adminImage} alt={adminName} />
+                                <h6 style={{ marginBottom: '0px' }}>&nbsp;{adminName}</h6>
+                            </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
                             </div>
                             <div className='sender'>
-                                <input type='text' placeholder='Gửi tin nhắn' id='user_personal_message' />
+                                <input type='text' placeholder='Gửi tin nhắn' id='personal_message' />
                                 <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                             </div>
                         </div>
