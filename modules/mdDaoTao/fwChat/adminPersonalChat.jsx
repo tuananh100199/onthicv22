@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getOldMessage } from './redux';
+import { createMessage, getOldMessage, getRoomId } from './redux';
 import { debounce } from 'lodash';
 import { getLearingProgressByLecturer, getLearingProgressByAdmin } from '../fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
@@ -14,6 +14,7 @@ class AdminPersonalChat extends AdminPage {
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const _id = this.props.courseId;
+        this.socketRef.current = T.socket;
         if (_id) {
             const user = this.props.system.user;
             this.setState({
@@ -52,16 +53,17 @@ class AdminPersonalChat extends AdminPage {
                         });
                     });
                 });
+            this.props.getRoomId(_id, data => {
+                if (data.error) {
+                    this.props.history.push(previousRoute);
+                } else {
+                    this.socketRef.current.emit('sendRoomClient', data.listRoom);
+                }
+            });
 
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current = T.socket;
-        this.socketRef.current.on('getId', data => {
-            this.setState({
-                clientId: data
-            });
-        });
         this.socketRef.current.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.roomId) {
                 this.setState(prevState => ({
@@ -83,7 +85,7 @@ class AdminPersonalChat extends AdminPage {
     }
 
     sendMessage = () => {
-        const message = $('#personal_message').val().trim();
+        const message = $('#personal_message').val() ? $('#personal_message').val().trim() : '';
         if (message !== '') {
             const msg = {
                 message: message,
@@ -201,5 +203,5 @@ class AdminPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { createMessage, getOldMessage, getLearingProgressByLecturer, getLearingProgressByAdmin };
+const mapActionsToProps = { createMessage, getOldMessage, getLearingProgressByLecturer, getLearingProgressByAdmin, getRoomId };
 export default connect(mapStateToProps, mapActionsToProps)(AdminPersonalChat);

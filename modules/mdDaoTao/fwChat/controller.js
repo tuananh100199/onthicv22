@@ -1,3 +1,4 @@
+
 module.exports = app => {
 
     app.get('/user/chat/:id', app.templates.admin);
@@ -31,6 +32,16 @@ module.exports = app => {
                 }
                 res.send({ error, item: listAdmin.length ? listAdmin : null });
             }
+        });
+    });
+
+    app.get('/api/chat/room/student', app.permission.check('user:login'), (req, res) => {
+        const sessionUser = req.session.user,
+            listRoom = [];
+        listRoom.push(req.query.courseId);
+        app.model.chat.getAll({ room: { $regex: sessionUser._id, $options: '$i' } }, (error, items) => {
+            items.map(item => listRoom.indexOf(item.room) < 0 && listRoom.push(item.room));
+            res.send({ error, listRoom });
         });
     });
 };

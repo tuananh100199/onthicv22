@@ -12,7 +12,7 @@ module.exports = app => {
 
         getAll: (condition, numMessage, done) => done ?
             model.find(condition).sort({ sent: -1 }).populate('user', 'firstname lastname image _id isLecturer isCourseAdmin').limit(numMessage).exec(done) :
-            model.find({}).exec(condition),
+            model.find(condition).exec(numMessage),
 
         get: (condition, done) => typeof condition == 'string' ?
             model.findById(condition).exec(done) :

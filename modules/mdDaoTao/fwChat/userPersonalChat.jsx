@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getAdminChatByStudent, getOldMessage } from './redux';
+import { createMessage, getAdminChatByStudent, getOldMessage, getRoomId } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
@@ -13,6 +13,7 @@ class UserPersonalChat extends AdminPage {
         window.addEventListener('keydown', this.logKey);
         const route = T.routeMatcher('/user/chat/:_id'),
             _id = route.parse(window.location.pathname)._id;
+        this.socketRef.current = T.socket;
         if (_id) {
             const user = this.props.system.user;
             this.setState({
@@ -40,17 +41,17 @@ class UserPersonalChat extends AdminPage {
                         });
                     });
                 });
-
+                this.props.getRoomId(_id, data => {
+                    if (data.error) {
+                        this.props.history.push(previousRoute);
+                    } else {
+                        this.socketRef.current.emit('sendRoomClient', data.listRoom);
+                    }
+                });
             });
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current = T.socket;
-        this.socketRef.current.on('getId', data => {
-            this.setState({
-                clientId: data
-            });
-        });
         this.socketRef.current.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.roomId) {
                 this.setState(prevState => ({
@@ -72,7 +73,7 @@ class UserPersonalChat extends AdminPage {
     }
 
     sendMessage = () => {
-        const message = $('#user_personal_message').val().trim();
+        const message = $('#user_personal_message').val() ? $('#user_personal_message').val().trim() : '';
         if (message !== '') {
             const msg = {
                 message: message,
@@ -104,7 +105,7 @@ class UserPersonalChat extends AdminPage {
         const adminId = admin._id;
         const { courseId, user } = this.state;
         e.preventDefault();
-        this.setState({ roomId: courseId + '_' + adminId + '_' + user._id, activeId: adminId, adminName: admin.lastname + ' ' + admin.firstname, adminImage: admin.image }, () => {
+        this.setState({ roomId: courseId + '_' + adminId + '_' + user._id, activeId: adminId, adminName: admin.firstname + ' ' + admin.lastname, adminImage: admin.image }, () => {
             this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                 this.setState({
                     oldMessage: data.item,
@@ -169,14 +170,14 @@ class UserPersonalChat extends AdminPage {
                         </div>
                         <div className='col-md-9'>
                             <div style={{ borderBottom: '1px solid black', height: '30px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
-                                <img style={{ height: '20px', width: 'auto' }} src={adminImage} alt={adminName} />
+                                <img style={{ height: '20px', width: '20px' }} src={adminImage} alt={adminName} />
                                 <h6 style={{ marginBottom: '0px' }}>&nbsp;{adminName}</h6>
                             </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
                             </div>
                             <div className='sender'>
-                                <input type='text' placeholder='Gửi tin nhắn' id='personal_message' />
+                                <input type='text' placeholder='Gửi tin nhắn' id='user_personal_message' />
                                 <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                             </div>
                         </div>
@@ -189,5 +190,5 @@ class UserPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { createMessage, getAdminChatByStudent, getOldMessage };
+const mapActionsToProps = { createMessage, getAdminChatByStudent, getOldMessage, getRoomId };
 export default connect(mapStateToProps, mapActionsToProps)(UserPersonalChat);

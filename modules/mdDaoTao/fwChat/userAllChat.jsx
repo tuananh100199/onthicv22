@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getOldMessage } from './redux';
+import { createMessage, getOldMessage, getRoomId } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
@@ -8,7 +8,7 @@ import '../../../view/component/chat.scss';
 const previousRoute = '/user';
 class UserAllChat extends AdminPage {
     socketRef = React.createRef();
-    state = { clientId: null, oldMessage: [] };
+    state = { clientId: null, oldMessage: [], listRoom: [] };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const route = T.routeMatcher('/user/chat/:_id'),
@@ -27,6 +27,7 @@ class UserAllChat extends AdminPage {
             scrollDown: true,
             currentLoaded: 0,
         });
+        this.socketRef.current = T.socket;
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getOldMessage(_id, Date.now(), 100, data => {
@@ -36,16 +37,17 @@ class UserAllChat extends AdminPage {
                         anyMessagesLeft: data.item.length < data.count
                     });
                 });
+                this.props.getRoomId(_id, data => {
+                    if (data.error) {
+                        this.props.history.push(previousRoute);
+                    } else {
+                        this.socketRef.current.emit('sendRoomClient', data.listRoom);
+                    }
+                });
             });
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current = T.socket;
-        this.socketRef.current.on('getId', data => {
-            this.setState({
-                clientId: data
-            });
-        });
         this.socketRef.current.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.courseId) {
                 this.setState(prevState => ({
@@ -142,5 +144,5 @@ class UserAllChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { createMessage, getOldMessage };
+const mapActionsToProps = { createMessage, getOldMessage, getRoomId };
 export default connect(mapStateToProps, mapActionsToProps)(UserAllChat);

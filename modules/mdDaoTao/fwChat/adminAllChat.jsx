@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getOldMessage } from './redux';
+import { createMessage, getOldMessage, getRoomId } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
@@ -14,6 +14,7 @@ class AdminAllChat extends AdminPage {
         window.addEventListener('keydown', this.logKey);
         const _id = this.props.courseId;
         const user = this.props.system.user;
+        this.socketRef.current = T.socket;
         this.setState({
             courseId: _id,
             user: {
@@ -35,15 +36,16 @@ class AdminAllChat extends AdminPage {
                     anyMessagesLeft: data.item.length < data.count
                 });
             });
+            this.props.getRoomId(_id, data => {
+                if (data.error) {
+                    this.props.history.push(previousRoute);
+                } else {
+                    this.socketRef.current.emit('sendRoomClient', data.listRoom);
+                }
+            });
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current = T.socket;
-        this.socketRef.current.on('getId', data => {
-            this.setState({
-                clientId: data
-            });
-        });
         this.socketRef.current.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.courseId) {
                 this.setState(prevState => ({
@@ -141,5 +143,5 @@ class AdminAllChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { createMessage, getOldMessage };
+const mapActionsToProps = { createMessage, getOldMessage, getRoomId };
 export default connect(mapStateToProps, mapActionsToProps)(AdminAllChat);
