@@ -29,7 +29,7 @@ class UserCourseFeedback extends AdminPage {
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name || '...'),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Phản hồi khóa học'],
-            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} />,
+            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} isTitleHidden={false} />,
             backRoute: userPageLink,
         });
     }

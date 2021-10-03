@@ -45,7 +45,7 @@ class FeedbackSection extends AdminPage {
         console.log(this.props._id,'_id');
         return <>
             <div className='tile'>
-            <h3 className='tile-title'>Phản hồi {this.props.type =='course'?'khóa học':''}</h3>
+            {!this.props.isTitleHidden && <h3 className='tile-title'>Phản hồi {this.props.type =='course'?'khóa học':''}</h3>}
             <div className='tile-body'>
                         {this.props.viewBy =='admin'?
                         <div style={{ margin: 10 }}>
