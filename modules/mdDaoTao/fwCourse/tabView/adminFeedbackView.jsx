@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {getFeedbackAll,updateFeedback} from 'modules/mdTruyenThong/fwFeedback/redux';
 import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackSection';
-// import { FormTextBox } from 'view/component/AdminPage';
 
 class AdminFeedbackView extends React.Component {
     state={};

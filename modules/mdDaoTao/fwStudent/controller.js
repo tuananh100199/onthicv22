@@ -47,13 +47,6 @@ module.exports = (app) => {
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    // app.put('/api/student/course/feedback', app.permission.check('course:write'), (req, res) => {
-    //     const sessionUser = req.session.user;
-    //     if (sessionUser && sessionUser.isCourseAdmin) {
-    //         app.model.student.addCourseFeedback(req.body._id, req.body.data, (error, item) => res.send({ error, item }));
-    //     }
-    // });
-
     app.delete('/api/student', app.permission.check('student:delete'), (req, res) => {
         app.model.student.delete(req.body._id, (error) => res.send({ error }));
     });
@@ -232,18 +225,6 @@ module.exports = (app) => {
             }
         });
     });
-
-    // Home API
-    //Web & Mobile API
-    // app.put('/home/student/course/feedback', app.permission.check('course:read'), (req, res) => {
-    //     app.model.student.addCourseFeedback(req.body._id, req.body.title, (error, item) => res.send({ error, item }));
-    // });
-
-    // app.get('/home/student/course/feedback', app.permission.check('course:read'), (req, res) => {
-    //     const _courseId = req.query._id,
-    //         _studentId = req.session.user._id;
-    //     app.model.student.get({ user: _studentId, course: _courseId }, (error, item) => res.send({ error, item }));
-    // });
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'pre-student', (user) => new Promise(resolve => {
