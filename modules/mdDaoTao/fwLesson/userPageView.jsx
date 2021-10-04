@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import YouTube from 'react-youtube';
 import { getLessonByStudent } from './redux';
+import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
@@ -16,6 +17,13 @@ class adminEditPage extends AdminPage {
                     this.props.history.push('/user');
                 } else if (data.item) {
                     T.ready('/user/hoc-vien/khoa-hoc/' + params.courseId);
+                    this.props.getStudentScore(params.courseId, data => {
+                        if (data.error) {
+                            this.props.history.push('/user');
+                        } else {
+                            this.setState({ tienDoHocTap: data[params.subjectId] });
+                        }
+                    });
                     this.setState({ lessonId: params._id, subjectId: params.subjectId, courseId: params.courseId, ...data.item });
                 } else {
                     this.props.history.push('/user');
@@ -27,7 +35,7 @@ class adminEditPage extends AdminPage {
     }
 
     render() {
-        const { lessonId, subjectId, title, courseId } = this.state;
+        const { lessonId, subjectId, title, courseId, tienDoHocTap } = this.state;
         const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
         const videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
@@ -48,6 +56,7 @@ class adminEditPage extends AdminPage {
                     <div className='tile-body'>{videosRender}</div>
                     <div className='tile-footer' style={{ textAlign: 'right' }}>
                         <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>
+                        {tienDoHocTap && tienDoHocTap[lessonId] && <div>Đánh giá</div>}
                     </div>
                 </div>) : null,
             backRoute: userPageLink,
@@ -56,5 +65,5 @@ class adminEditPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, lesson: state.trainning.lesson });
-const mapActionsToProps = { getLessonByStudent };
+const mapActionsToProps = { getLessonByStudent, getStudentScore };
 export default connect(mapStateToProps, mapActionsToProps)(adminEditPage);

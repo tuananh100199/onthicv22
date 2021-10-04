@@ -97,7 +97,6 @@ class AdminAllChat extends AdminPage {
     }, 200)
 
     render() {
-        // const permission = this.getUserPermission('chat');
         const renderMess = this.state.oldMessage.map((msg, index, element) => {
             const prev_msg = element[index - 1],
                 isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(msg.sent).getTime())),

@@ -70,7 +70,7 @@ export function getAdminChatByStudent(courseId, done) {
 
 export function getRoomId(courseId, done) {
     return (dispatch) => {
-        const url = '/api/chat/room/student';
+        const url = '/api/chat/room';
         T.get(url, { courseId }, data => {
             if (data.error) {
 

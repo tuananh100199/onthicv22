@@ -35,7 +35,7 @@ module.exports = app => {
         });
     });
 
-    app.get('/api/chat/room/student', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/chat/room', app.permission.check('user:login'), (req, res) => {
         const sessionUser = req.session.user,
             listRoom = [];
         listRoom.push(req.query.courseId);
