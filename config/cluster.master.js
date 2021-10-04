@@ -1,13 +1,16 @@
 module.exports = (cluster, isDebug) => {
     const fs = require('fs'),
         path = require('path'),
-        appConfig = require('../package.json');
-    const imageInfoPath = path.dirname(require.main.filename) + '/imageInfo.txt';
+        appConfig = require('../package.json'),
+        appConfigPath = path.join(__dirname, '../package.json'),
+        imageInfoPath = path.join(__dirname, '../imageInfo.txt');
 
     const workers = {},
         numWorkers = isDebug ? 2 : require('os').cpus().length;
     for (let i = 0; i < numWorkers; i++) {
-        const worker = cluster.fork({ enableInit: i == 0 });
+        const primaryWorker = i == 0;
+        const worker = cluster.fork({ primaryWorker });
+        worker.primaryWorker = primaryWorker;
         worker.status = 'running';
         worker.version = appConfig.version;
         worker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
@@ -21,6 +24,7 @@ module.exports = (cluster, isDebug) => {
         const listWorkers = Object.values(workers);
         let items = listWorkers.map(worker => ({
             pid: worker.process.pid,
+            primaryWorker: worker.primaryWorker,
             status: worker.status,
             version: worker.version,
             imageInfo: worker.imageInfo,
@@ -41,28 +45,26 @@ module.exports = (cluster, isDebug) => {
         worker.on('message', message => {
             if (message.type == 'createWorker') {
                 const targetWorker = cluster.fork();
+                targetWorker.primaryWorker = false;
                 targetWorker.status = 'running';
-                targetWorker.version = appConfig.version;
+                targetWorker.version = JSON.parse(fs.readFileSync(appConfigPath)).version;
                 targetWorker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
                 targetWorker.createdDate = new Date();
                 workers[targetWorker.process.pid] = targetWorker;
                 workersChanged();
             } else if (message.type == 'resetWorker') {
-                const resetWorker = (targetWorker) => {
-                    targetWorker.status = 'resetting';
-                    targetWorker.send({ type: message.type });
-                };
-
-                if (message.workerId) {
-                    resetWorker(workers[message.workerId]);
-                    workersChanged();
-                } else {
-                    Object.values(workers).forEach(worker => resetWorker(worker));
-                }
+                const targetWorker = workers[message.workerId];
+                targetWorker.status = 'resetting';
+                targetWorker.send({ type: message.type });
+                workersChanged();
             } else if (message.type == 'shutdownWorker') {
                 const targetWorker = workers[message.workerId];
                 targetWorker.status = 'shutdown';
                 targetWorker.send({ type: message.type });
+
+                delete workers[message.workerId];
+                const listWorkers = Object.values(workers);
+                listWorkers.length && listWorkers[0].send({ type: 'setPrimaryWorker' });
                 workersChanged();
             }
         });
@@ -70,16 +72,18 @@ module.exports = (cluster, isDebug) => {
 
     cluster.on('exit', (worker, code, signal) => {
         console.log(` - Worker #${worker.process.pid} died with code: ${code}, and signal: ${signal}. Starting a new worker!`);
-
-        const status = workers[worker.process.pid].status;
-        delete workers[worker.process.pid];
-        if (status == 'resetting' || status == 'running') {
-            worker = cluster.fork();
-            worker.status = 'running';
-            worker.version = appConfig.version;
-            worker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
-            worker.createdDate = new Date();
-            workers[worker.process.pid] = worker;
+        if (code != 4) {
+            const { primaryWorker, status } = workers[worker.process.pid];
+            delete workers[worker.process.pid];
+            if (status == 'resetting' || status == 'running') {
+                worker = cluster.fork({ primaryWorker });
+                worker.primaryWorker = primaryWorker;
+                worker.status = 'running';
+                worker.version = JSON.parse(fs.readFileSync(appConfigPath)).version;
+                worker.imageInfo = fs.existsSync(imageInfoPath) ? fs.readFileSync(imageInfoPath, 'utf-8') : '';
+                worker.createdDate = new Date();
+                workers[worker.process.pid] = worker;
+            }
         }
 
         workersChanged();

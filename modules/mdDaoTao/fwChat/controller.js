@@ -27,7 +27,7 @@ module.exports = app => {
                 const lecturer = item.teacherGroups.filter(teacherGroup => teacherGroup.student && teacherGroup.student.findIndex(student =>
                     student.user._id == sessionUser._id
                 ) != -1);
-                if (listAdmin.findIndex(admin => admin._id == lecturer[0].teacher._id) != -1) {
+                if (lecturer.length && listAdmin.findIndex(admin => admin._id == lecturer[0].teacher._id) != -1) {
                     listAdmin.push(lecturer[0].teacher);
                 }
                 res.send({ error, item: listAdmin.length ? listAdmin : null });

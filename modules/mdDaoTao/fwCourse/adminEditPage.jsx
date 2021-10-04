@@ -14,6 +14,7 @@ import LecturerStudentView from './tabView/lecturerStudentView';
 import LecturerLearningProgressView from './tabView/lecturerLearningProgressView';
 import AdminAllChat from '../fwChat/adminAllChat';
 import AdminPersonalChat from '../fwChat/adminPersonalChat';
+import AdminFeedbackView from './tabView/adminFeedbackView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -140,6 +141,11 @@ class EditCoursePage extends AdminPage {
             lecturerTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
             lecturerTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },);
         }
+
+        if (isCourseAdmin && permission.write) {
+            adminTabs.push({ title: 'Phản hồi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
+        }
+
 
         return this.renderPage({
             icon: 'fa fa-cubes',

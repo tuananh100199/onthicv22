@@ -20,6 +20,14 @@ export default {
             path: '/user/student-time-table',
             component: Loadable({ loading: Loading, loader: () => import('./studentView') })
         },
+        {
+            path: '/user/lecturer/student-time-table',
+            component: Loadable({ loading: Loading, loader: () => import('./lecturerView') })
+        },
+        {
+            path: '/user/lecturer/student-time-table/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./lecturerEditView') })
+        },
     ],
     Section: {
         StudentView

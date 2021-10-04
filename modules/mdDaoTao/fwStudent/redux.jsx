@@ -6,6 +6,7 @@ const StudentUpdate = 'StudentUpdate';
 const StudentGetCourse = 'StudentGetCourse';
 const PreStudentGetPage = 'PreStudentGetPage';
 const PreStudentGetAll = 'PreStudentGetAll';
+const StudentGetItem = 'StudentGetItem';
 
 export default function studentReducer(state = {}, data) {
     switch (data.type) {
@@ -40,6 +41,9 @@ export default function studentReducer(state = {}, data) {
 
         case PreStudentGetPage:
             return Object.assign({}, state, { prePage: data.page });
+
+        case StudentGetItem:
+            return Object.assign({}, state, { item: data.item });
 
         default:
             return state;
@@ -210,6 +214,36 @@ export function importPreStudent(students, division, courseType, done) {
     };
 }
 
+//Actions by Student
+export function getStudentFeedback(_id, done) {
+    return dispatch => {
+        const url = '/home/student/course/feedback';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+                dispatch({ type: StudentGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
+
+export function sendFeedback(_id, title, done) {
+    return dispatch => {
+        const url = '/home/student/course/feedback';
+        T.put(url, { _id, title }, data => {
+            if (data.error) {
+                T.notify('Lấy thông tin học viên bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                done && done(data);
+                dispatch();
+            }
+        }, error => console.error(error) || T.notify('Lấy thông tin học viên bị lỗi', 'danger'));
+    };
+}
 // Ajax Selections ----------------------------------------------------------------------------------------------------
 export const ajaxSelectPreStudent = T.createAjaxAdapter(
     '/api/pre-student/page/1/20',

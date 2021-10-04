@@ -171,6 +171,6 @@ module.exports = (app) => {
     // Hook readyHooks ------------------------------------------------------------------------------------------------------------------------------
     app.readyHooks.add('readyInit', {
         ready: () => app.redis,
-        run: () => app.configWorker && app.state.init(),
+        run: () => app.primaryWorker && app.state.init(),
     });
 };

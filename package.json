@@ -97,6 +97,7 @@
     "connect-redis": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "country-list": "^2.2.0",
+    "dayjs": "^1.10.7",
     "decompress-zip": "^0.3.3",
     "docxtemplater": "^3.21.1",
     "docxtemplater-image-module-free": "^1.1.1",
