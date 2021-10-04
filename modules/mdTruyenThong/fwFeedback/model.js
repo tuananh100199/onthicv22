@@ -26,7 +26,7 @@ module.exports = app => {
             }
             model.find(condition)
                 .populate('user', 'lastname firstname image').populate('replies.adminUser', 'lastname firstname image')
-                .sort({ createdDate: 1 }).exec(done);
+                .sort({ createdDate: -1 }).exec(done);
         },
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
             if (error) {
