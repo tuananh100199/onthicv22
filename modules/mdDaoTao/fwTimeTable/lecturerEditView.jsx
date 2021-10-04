@@ -8,11 +8,10 @@ class StudentView extends AdminPage {
     componentDidMount() {
         const params = T.routeMatcher('/user/lecturer/student-time-table/:_id').parse(window.location.pathname),
             studentId = params._id;
-        this.setState({studentId: studentId});
-        studentId && this.props.getTimeTablePage(1, 50, {student: studentId});
+        this.setState({ studentId });
+        studentId && this.props.getTimeTablePage(1, 50, { student: studentId });
     }
 
-   
     render() {
         const backRoute = '/user/lecturer/student-time-table';
         const permission = this.getUserPermission('timeTable');
@@ -23,7 +22,7 @@ class StudentView extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '80%' }} nowrap='true'>Học viên</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Học viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi học</th>
@@ -52,9 +51,7 @@ class StudentView extends AdminPage {
             title: 'Thời khóa biểu chi tiết',
             breadcrumb: [<Link key={0} to={backRoute}>Học viên</Link>, 'Thời khóa biểu chi tiết'],
             backRoute: backRoute,
-            content: <>
-                <div className='tile'>{table}</div>
-            </>,
+            content: <div className='tile'>{table}</div>,
         });
     }
 }

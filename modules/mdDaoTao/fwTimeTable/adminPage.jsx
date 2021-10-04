@@ -135,6 +135,7 @@ class TimeTablePage extends AdminPage {
     state = { searchText: '', isSearching: false };
     componentDidMount() {
         this.props.getTimeTablePage(1, 50, undefined);
+        T.ready();
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText: searchText } : null, () => {
         //     this.setState({ searchText, isSearching: searchText != '' });
