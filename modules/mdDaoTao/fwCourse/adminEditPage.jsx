@@ -12,6 +12,7 @@ import AdminRepresentersView from './tabView/adminRepresentersView';
 import AdminLearningProgressView from './tabView/adminLearningProgressView';
 import LecturerStudentView from './tabView/lecturerStudentView';
 import LecturerLearningProgressView from './tabView/lecturerLearningProgressView';
+import AdminFeedbackView from './tabView/adminFeedbackView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -129,6 +130,11 @@ class EditCoursePage extends AdminPage {
             adminTabs.push({ title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
             adminTabs.push({ title: 'Tiến độ học tập', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
+
+        if (isCourseAdmin && permission.write) {
+            adminTabs.push({ title: 'Phản hồi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
+        }
+
 
         return this.renderPage({
             icon: 'fa fa-cubes',
