@@ -11,7 +11,8 @@ module.exports = (app) => {
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
     app.get('/user/student-time-table', app.permission.check('timeTable:read'), app.templates.admin);
-    
+    app.get('/user/lecturer/student-time-table', app.permission.check('timeTable:read'), app.templates.admin);
+    app.get('/user/lecturer/student-time-table/:_id', app.permission.check('timeTable:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/time-table/page/:pageNumber/:pageSize', app.permission.check('timeTable:read'), (req, res) => {
@@ -78,6 +79,10 @@ module.exports = (app) => {
         app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
+    app.put('/api/time-table/truant', app.permission.check('timeTable:write'), (req, res) => {
+        app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+    
     app.delete('/api/time-table', app.permission.check('timeTable:delete'), (req, res) => {
         app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
     });

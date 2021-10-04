@@ -107,6 +107,23 @@ export function updateTimeTable(_id, changes, done) {
     };
 }
 
+export function updateTimeTableTruant(_id, changes, studentId, done) {
+    return dispatch => {
+        const url = '/api/time-table/truant';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger');
+                console.error(`PUT: ${url}. ${data.error}`);
+            } else {
+                T.notify('Cập nhật thời khóa biểu thành công!', 'success');
+                done && done(data.item);
+                dispatch(getTimeTablePage(undefined, undefined, {student: studentId}));
+            }
+            done && done(data.error);
+        }, error => console.error(error) || T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger'));
+    };
+}
+
 export function deleteTimeTable(_id) {
     return dispatch => {
         const url = '/api/time-table';
