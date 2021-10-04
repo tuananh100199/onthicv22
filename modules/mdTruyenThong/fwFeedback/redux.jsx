@@ -52,7 +52,6 @@ export function updateFeedback(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                T.notify('Cập nhật phản hồi thành công!', 'success');
                 dispatch((getFeedbackAll(data.item.type,data.item._refId)));
                 done && done(data.item);
             }

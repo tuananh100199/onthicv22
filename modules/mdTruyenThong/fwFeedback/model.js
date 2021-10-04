@@ -6,6 +6,7 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },
         content: String,
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
+        isSeen:{ type: Boolean, default: false },
 
         replies: [{
             createdDate: { type: Date, default: Date.now },

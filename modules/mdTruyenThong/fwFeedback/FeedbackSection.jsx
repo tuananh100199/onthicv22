@@ -3,8 +3,25 @@ import { connect } from 'react-redux';
 import { getFeedbackAllByUser, createFeedback,updateFeedback } from './redux';
 import { AdminPage, FormRichTextBox} from 'view/component/AdminPage';
 
-const dayjs = require('dayjs'),relativeTime = require('dayjs/plugin/relativeTime');
+const dayjs = require('dayjs'),relativeTime = require('dayjs/plugin/relativeTime'),updateLocale = require('dayjs/plugin/updateLocale');
 dayjs.extend(relativeTime);
+dayjs.extend(updateLocale);
+dayjs.updateLocale('en', {
+    relativeTime: {
+      past: '%s cách đây',
+      s: 'vài giây',
+      m: '1 phút',
+      mm: '%d phút',
+      h: '1 giờ',
+      hh: '%d giờ',
+      d: '1 ngày',
+      dd: '%d ngày',
+      M: '1 tháng',
+      MM: '%d tháng',
+      y: '1 năm',
+      yy: '%d năm'
+    }
+  });
 class FeedbackSection extends AdminPage {
     componentDidMount() {
         this.props.viewBy =='admin'|| this.props.getFeedbackAllByUser(this.props.type,this.props._refId);
@@ -16,7 +33,6 @@ class FeedbackSection extends AdminPage {
                 _refId: this.props._refId,
                 type: this.props.type,
                 content: content,
-                replies: [],
             };
         if (content == '') {
             T.notify('Không thể gửi thông điệp không nội dung!', 'danger');
@@ -44,7 +60,6 @@ class FeedbackSection extends AdminPage {
         // const permission = this.getUserPermission('feedback');
         const feedback =this.props.feedback,
         item=this.props.viewBy =='admin' && feedback.find((item)=>item._id==this.props._id);
-        console.log(this.props._id,'_id');
         return <>
             <div className='tile'>
             {!this.props.isTitleHidden && <h3 className='tile-title'>Phản hồi {this.props.type =='course'?'khóa học':''}</h3>}
