@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
 import { Link } from 'react-router-dom';
 import { AdminPage, CirclePageButton } from 'view/component/AdminPage';
-import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+// import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
 
 const previousRoute = '/user';
 class UserCoursePageDetail extends AdminPage {
@@ -77,9 +77,18 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
+                    {/* //TODO chức năng chat */}
+                    <Link className='col-md-4' to='#'>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-comments-o' />
+                            <div className='info'>
+                                <h4>Chat</h4>
+                            </div>
+                        </div>
+                    </Link>
 
                     {/* //TODO chức năng phản hồi */}
-                    <Link className='col-md-6 col-lg-4' to='#'>
+                    <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>
                         <div className='widget-small coloured-icon warning'>
                             <i className='icon fa fa-3x fa-commenting-o' />
                             <div className='info'>
@@ -111,5 +120,5 @@ class UserCoursePageDetail extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest });
-const mapActionsToProps = { getCourseByStudent, getStudent };
+const mapActionsToProps = { getCourseByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);
