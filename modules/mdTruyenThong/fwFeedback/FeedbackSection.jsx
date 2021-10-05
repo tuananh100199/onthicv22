@@ -3,25 +3,6 @@ import { connect } from 'react-redux';
 import { getFeedbackAllByUser, createFeedback,updateFeedback } from './redux';
 import { AdminPage, FormRichTextBox} from 'view/component/AdminPage';
 
-const dayjs = require('dayjs'),relativeTime = require('dayjs/plugin/relativeTime'),updateLocale = require('dayjs/plugin/updateLocale');
-dayjs.extend(relativeTime);
-dayjs.extend(updateLocale);
-dayjs.updateLocale('en', {
-    relativeTime: {
-      past: '%s cách đây',
-      s: 'vài giây',
-      m: '1 phút',
-      mm: '%d phút',
-      h: '1 giờ',
-      hh: '%d giờ',
-      d: '1 ngày',
-      dd: '%d ngày',
-      M: '1 tháng',
-      MM: '%d tháng',
-      y: '1 năm',
-      yy: '%d năm'
-    }
-  });
 class FeedbackSection extends AdminPage {
     componentDidMount() {
         this.props.viewBy =='admin'|| this.props.getFeedbackAllByUser(this.props.type,this.props._refId);
@@ -74,9 +55,7 @@ class FeedbackSection extends AdminPage {
                                 <div className=''>
                                     <b>{`${item.user && item.user.lastname} ${item.user && item.user.firstname}`}</b>
                                     <label style={{ float: 'right' }}>
-                                        {/* {T.dateToText(item.createdDate)} */}
-                                        {/* dayjs.extend(relativeTime) */}
-                                        {dayjs(item.createdDate).fromNow()}
+                                        {T.fromNow(item.createdDate)}
                                     </label>
                                 </div>
                                 <div className=''>
@@ -97,8 +76,7 @@ class FeedbackSection extends AdminPage {
                                         <b>{reply.adminUser && `${reply.adminUser.lastname} ${reply.adminUser.firstname}`}</b>
                                         (Quản trị khóa học):
                                         <label style={{ float: 'right' }}>
-                                        {dayjs(reply.createdDate).fromNow()}
-                                            {/* {T.dateToText(reply.createdDate)} */}
+                                        {T.fromNow(reply.createdDate)}
                                         </label>
                                     </div>
                                     <div className=''>
@@ -118,7 +96,7 @@ class FeedbackSection extends AdminPage {
                                     <div className=''>
                                         <b>{`${item.user && item.user.lastname} ${item.user && item.user.firstname}`}</b> (Bạn):
                                         <label style={{ float: 'right' }}>
-                                        {dayjs(item.createdDate).fromNow()}
+                                        {T.fromNow(item.createdDate)}
                                         </label>
                                     </div>
                                     <div className=''>
@@ -139,7 +117,7 @@ class FeedbackSection extends AdminPage {
                                             <b>{reply.adminUser && `${reply.adminUser.lastname} ${reply.adminUser.firstname}`}</b>
                                             (Quản trị khóa học):
                                             <label style={{ float: 'right' }}>
-                                            {dayjs(reply.createdDate).fromNow()}
+                                            {T.fromNow(reply.createdDate)}
                                             </label>
                                         </div>
                                         <div className=''>
