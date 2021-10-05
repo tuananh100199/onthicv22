@@ -77,7 +77,7 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
-                    {this.state.chatActive &&
+                    {/* {this.state.chatActive &&
                         <Link className='col-md-4' to={'/user/chat/' + this.state.courseId}>
                             <div className='widget-small coloured-icon info'>
                                 <i className='icon fa fa-3x fa-comments-o' />
@@ -85,7 +85,16 @@ class UserCoursePageDetail extends AdminPage {
                                     <h4>Chat</h4>
                                 </div>
                             </div>
-                        </Link>}
+                        </Link>} */}
+                    <Link className='col-md-4' to='#'>
+                        <div className='widget-small coloured-icon info'>
+                            <i className='icon fa fa-3x fa-comments-o' />
+                            <div className='info'>
+                                <h4>Chat</h4>
+                            </div>
+                        </div>
+                    </Link>
+
 
                     {/* //TODO chức năng phản hồi */}
                     <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>

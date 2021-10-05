@@ -6,12 +6,12 @@ module.exports = (app, http, appConfig) => {
 
     app.io.on('connection', socket => {
         console.log('A user connected.');
-        socket.on('sendRoomClient', (data) => {
-            data && data.map(room => socket.join(room));
-        });
-        socket.on('sendDataClient', (data) => {
-            app.io.to(data.room).emit('sendDataServer', { data });
-        });
+        // socket.on('sendRoomClient', (data) => {
+        //     data && data.map(room => socket.join(room));
+        // });
+        // socket.on('sendDataClient', (data) => {
+        //     app.io.to(data.room).emit('sendDataServer', { data });
+        // });
         socket.on('disconnect', () => console.log('A user disconnected'));
     });
     // app.io.on('connection', socket => {

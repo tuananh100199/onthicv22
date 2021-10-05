@@ -13,8 +13,8 @@ import AdminLearningProgressView from './tabView/adminLearningProgressView';
 import LecturerStudentView from './tabView/lecturerStudentView';
 import LecturerLearningProgressView from './tabView/lecturerLearningProgressView';
 import LecturerRatingView from './tabView/lecturerRatingView';
-import AdminAllChat from '../fwChat/adminAllChat';
-import AdminPersonalChat from '../fwChat/adminPersonalChat';
+// import AdminAllChat from '../fwChat/adminAllChat'; Vinh
+// import AdminPersonalChat from '../fwChat/adminPersonalChat';
 import AdminFeedbackView from './tabView/adminFeedbackView';
 
 const previousRoute = '/user/course';
@@ -138,12 +138,12 @@ class EditCoursePage extends AdminPage {
             adminTabs.push({ title: 'Tiến độ học tập', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
             adminTabs.push({ title: 'Đánh giá bài học', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerRatingView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
-        if (this.state.chatActive) {
-            adminTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
-            isCourseAdmin && adminTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null });
-            lecturerTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
-            lecturerTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },);
-        }
+        // if (this.state.chatActive) {
+        //     adminTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
+        //     isCourseAdmin && adminTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null });
+        //     lecturerTabs.push({ title: 'Phòng chat chung', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminAllChat courseId={courseId} /> : null });
+        //     lecturerTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },);
+        // }
 
         if (isCourseAdmin && permission.write) {
             adminTabs.push({ title: 'Phản hồi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
