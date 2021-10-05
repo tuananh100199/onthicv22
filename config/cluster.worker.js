@@ -21,7 +21,6 @@ module.exports = (cluster, isDebug) => {
     app.port = appConfig.port;
     app.rootUrl = appConfig.rootUrl;
     app.debugUrl = `http://localhost:${app.port}`;
-    app.mongodb = `mongodb://localhost:27017/${appConfig.dbName}`;
     app.email = appConfig.email;
     app.defaultAdminEmail = appConfig.default.adminEmail;
     app.defaultAdminPassword = appConfig.default.adminPassword;

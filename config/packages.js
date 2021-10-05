@@ -38,7 +38,9 @@ module.exports = (app, http, config) => {
         const redisStore = require('connect-redis')(session);
         sessionOptions.store = new redisStore({ client: app.redis, prefix: config.name + '_sess:' });
     }
-    app.use(session(sessionOptions));
+    const sessionMiddleware = session(sessionOptions);
+    app.use(sessionMiddleware);
+    app.io.use((socket, next) => sessionMiddleware(socket.request, sessionOptions, next));
 
     // Read cookies (needed for auth)
     const cookieParser = require('cookie-parser');

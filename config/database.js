@@ -1,5 +1,5 @@
-module.exports = (app) => {
-    // Connect RedisDB ------------------------------------------------------------------------------------------------------------------------------
+module.exports = (app, appConfig) => {
+    // Connect RedisDB ----------------------------------------------------------------------------
     const redis = require('redis');
     app.redis = redis.createClient();
     app.redis.on('connect', () => {
@@ -11,8 +11,9 @@ module.exports = (app) => {
     });
 
     // Connect MongoDB ----------------------------------------------------------------------------
+    const mongoConnectionString = `mongodb://${appConfig.mongoDB.host}:${appConfig.mongoDB.port}/${appConfig.mongoDB.dbName}`;
     app.db = require('mongoose');
-    app.db.connect(app.mongodb, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
+    app.db.connect(mongoConnectionString, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
     app.db.connection.on('error', console.error.bind(console, 'The MongoDB connection error'));
     app.db.connection.once('open', () => console.log(' - The MongoDB connection succeeded.'));
 
