@@ -634,11 +634,12 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
         resolve();
     }));
+
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:write');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
         resolve();
     }));
 };

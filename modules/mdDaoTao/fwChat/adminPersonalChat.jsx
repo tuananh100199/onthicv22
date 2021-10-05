@@ -47,7 +47,7 @@ class AdminPersonalChat extends AdminPage {
                         this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                             this.setState({
                                 oldMessage: data.item,
-                                currentLoaded: data.item[0].sent,
+                                currentLoaded: data.item[0] && data.item[0].sent,
                                 anyMessagesLeft: data.item.length < data.count
                             });
                         });

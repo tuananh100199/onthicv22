@@ -150,13 +150,13 @@ module.exports = (app) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
-                } else if (data.score) {
+                } else if (data.rating) {
+                    student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                } else {
                     const obj = {};
                     obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };
                     Object.assign(student.tienDoHocTap[data.subjectId], obj);
-                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
-                } else {
-                    student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
             });
