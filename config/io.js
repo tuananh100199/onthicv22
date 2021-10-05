@@ -2,7 +2,6 @@ module.exports = (app, http, appConfig) => {
     const redisAdapter = require('socket.io-redis');
     app.io = require('socket.io')(http);
     app.io.adapter(redisAdapter(appConfig.redisDB));
-    app.io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
 
     app.io.on('connection', socket => {
         console.log('A user connected.');
