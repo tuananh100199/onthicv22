@@ -28,7 +28,7 @@ module.exports = app => {
     app.get('/user/course/edit/:_id', app.permission.check('component:read'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.buildAppMenus = (menuTree, callback) => {
+    const buildAppMenus = () => {
         const menus = {},
             getMenu = (index, items, done) => {
                 if (index < items.length) {
@@ -45,17 +45,8 @@ module.exports = app => {
                 }
             };
 
-        if (menuTree) {
-            getMenu(0, menuTree, () => {
-                app.redis.set(app.redis.menusKey, JSON.stringify(menus));
-                callback && callback();
-            });
-        } else {
-            app.model.menu.getAll({}, (error, menuTree) => getMenu(0, menuTree, () => {
-                app.redis.set(app.redis.menusKey, JSON.stringify(menus));
-                callback && callback();
-            }));
-        }
+        app.model.menu.getAll({}, (error, menuTree) =>
+            getMenu(0, menuTree, () => app.redis.set(app.redis.menusKey, JSON.stringify(menus))));
     };
 
     app.get('/api/menu/all', app.permission.check('menu:read'), (req, res) => {
@@ -139,7 +130,7 @@ module.exports = app => {
 
     app.put('/api/menu', app.permission.check('menu:write'), (req, res) =>
         app.model.menu.update(req.body._id, req.body.changes, (error, item) => {
-            if (error == null) app.buildAppMenus();
+            !error && buildAppMenus();
             res.send({ error, item });
         })
     );
@@ -157,6 +148,7 @@ module.exports = app => {
                         });
                     }
                 } else {
+                    !error && buildAppMenus();
                     res.send({ error });
                 }
             };
@@ -164,7 +156,10 @@ module.exports = app => {
     });
 
     app.delete('/api/menu', app.permission.check('menu:write'), (req, res) => {
-        app.model.menu.delete(req.body._id, error => res.send({ error }));
+        app.model.menu.delete(req.body._id, error => {
+            !error && buildAppMenus();
+            res.send({ error });
+        });
     });
 
 
@@ -225,7 +220,7 @@ module.exports = app => {
         ready: () => app.redis,
         run: () => {
             app.redis.menusKey = app.appName + ':menus';
-            app.primaryWorker && app.buildAppMenus();
+            app.primaryWorker && buildAppMenus();
         },
     });
 
@@ -239,7 +234,7 @@ module.exports = app => {
                 data.componentIds = [];
                 app.model.component.create(data, (error, component) => {
                     if (error || component == null) {
-                        if (error) console.error(error);
+                        error && console.error(error);
                         res.send({ error: 'Tạo component bị lỗi!' });
                     } else {
                         parent.componentIds.push(component._id);
