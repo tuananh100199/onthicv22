@@ -36,11 +36,11 @@ module.exports = (cluster, isDebug) => {
     // Configure ------------------------------------------------------------------------------------------------------
     require('./common')(app, app.appName);
     require('./view')(app, express);
-    require('./database')(app);
+    require('./database')(app, appConfig);
+    require('./io')(app, server, appConfig);
     require('./packages')(app, server, appConfig);
     require('./authentication')(app);
     require('./permission')(app);
-    require('./io')(app, server);
 
     // Init -----------------------------------------------------------------------------------------------------------
     app.createTemplate('home', 'admin');

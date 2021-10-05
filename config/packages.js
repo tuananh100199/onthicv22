@@ -1,4 +1,4 @@
-module.exports = (app, http, config) => {
+module.exports = (app, http, appConfig) => {
     app.componentModel = {};
     app.url = require('url');
 
@@ -33,10 +33,10 @@ module.exports = (app, http, config) => {
             resave: false,
             saveUninitialized: true,
         };
-    if (config && app.redis) {
+    if (appConfig && app.redis) {
         // console.log(` - #${process.pid}: The system used Redis session!`);
         const redisStore = require('connect-redis')(session);
-        sessionOptions.store = new redisStore({ client: app.redis, prefix: config.name + '_sess:' });
+        sessionOptions.store = new redisStore({ client: app.redis, prefix: appConfig.name + '_sess:' });
     }
     const sessionMiddleware = session(sessionOptions);
     app.use(sessionMiddleware);

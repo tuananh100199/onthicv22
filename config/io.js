@@ -13,6 +13,8 @@ module.exports = (app, http, appConfig) => {
         app.isDebug && console.log(`Socket ID ${socket.id} connected!`);
         // socket.on('disconnect', () => console.log('A user disconnected'));
 
+        console.log('socket.request.session', socket.request.session ? socket.request.session.user : null);
+
         // socket.on('abc', () => {
         //     console.log(socket.request.session);
         // });

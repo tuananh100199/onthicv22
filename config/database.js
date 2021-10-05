@@ -14,8 +14,8 @@ module.exports = (app, appConfig) => {
     const mongoConnectionString = `mongodb://${appConfig.mongoDB.host}:${appConfig.mongoDB.port}/${appConfig.mongoDB.dbName}`;
     app.db = require('mongoose');
     app.db.connect(mongoConnectionString, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
-    app.db.connection.on('error', console.error.bind(console, 'The MongoDB connection error'));
-    app.db.connection.once('open', () => console.log(' - The MongoDB connection succeeded.'));
+    app.db.connection.on('error', console.error.bind(console, ` - #${process.pid}: The MongoDB connection failed!`));
+    app.db.connection.once('open', () => console.log(` - #${process.pid}: The MongoDB connection succeeded.`));
 
     // Define all models --------------------------------------------------------------------------
     app.model = {};
