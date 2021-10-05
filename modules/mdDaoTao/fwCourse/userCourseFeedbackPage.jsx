@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
-import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackSection';
+import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackUserSection';
 import { AdminPage } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ class UserCourseFeedback extends AdminPage {
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name || '...'),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Phản hồi khóa học'],
-            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} isTitleHidden={false} />,
+            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} />,
             backRoute: userPageLink,
         });
     }

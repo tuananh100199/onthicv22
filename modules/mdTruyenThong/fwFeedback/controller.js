@@ -1,5 +1,9 @@
 module.exports = (app) => {
     app.permission.add({ name: 'feedback:read' }, { name: 'feedback:write' }, { name: 'feedback:delete' });
+    app.permission.add({ name: 'user:login', menu: { parentMenu: { index: 3020, title: 'Phản hồi hệ thống', icon: '', link: '/user/feedback/system' } } });
+
+    app.get('/user/feedback/system', app.permission.check('user:login'), app.templates.admin);
+
     app.get('/api/feedback/:type', app.permission.check('feedback:read'), (req, res) => { 
         const condition = { type: req.params.type, _refId: req.query._refId };
         app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
