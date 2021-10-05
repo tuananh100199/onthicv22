@@ -101,7 +101,7 @@ module.exports = (app) => {
                         res.send({ error });
                     } else {
                         const data = { studentId: student._id, subjectId, lessonId, trueAnswer, answers, score };
-                        app.model.student.addStudiedLesson(data, (error, item) => {
+                        app.model.student.updateLearningProgress(data, (error, item) => {
                             res.send({ error, result: { score, trueAnswer, answers }, item });
                         });
                     }
@@ -213,6 +213,22 @@ module.exports = (app) => {
             }
         });
     });
+
+    // Rating APIs -----------------------------------------------------------------------------------------------------
+    app.post('/api/lesson/rating', app.permission.check('user:login'), (req, res) => {//mobile
+        const { courseId, subjectId, lessonId, rating } = req.body;
+        app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
+            if (error) {
+                res.send({ error });
+            } else {
+                const data = { studentId: student._id, subjectId, lessonId, rating: rating };
+                app.model.student.updateLearningProgress(data, (error, item) => {
+                    res.send({ error, result: { rating }, item });
+                });
+            }
+        });
+    });
+
 
     // Hook readyHooks  -----------------------------------------------------------------------------------------------
     app.readyHooks.add('createLessonQuestionManager', {

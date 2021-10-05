@@ -231,3 +231,19 @@ export function deleteLessonVideo(_lessonId, _lessonVideoId, done) {
 export function changeLessonQuestions(data) {
     return { type: LessonGetItem, item: { questions: data.questions } };
 }
+
+// Lesson Rating ----------------------------------------------------------------------------------------------------
+export function rateLesson(lessonId, subjectId, courseId, rating, done) {
+    return () => {
+        const url = '/api/lesson/rating';
+        T.post(url, { lessonId, subjectId, courseId, rating }, data => {
+            if (data.error) {
+                T.notify('Thêm đánh giá bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                T.alert('Thêm đánh giá thành công!', 'success', true, 800);
+                done && done(data.result);
+            }
+        }, error => console.error(error) || T.notify('Thêm đánh giá bị lỗi!', 'danger'));
+    };
+}

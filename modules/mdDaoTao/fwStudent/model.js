@@ -146,14 +146,17 @@ module.exports = (app) => {
             }
         }),
 
-        addStudiedLesson: (data, done) => {
+        updateLearningProgress: (data, done) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
-                } else {
+                } else if (data.score) {
                     const obj = {};
                     obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };
                     Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
+                } else {
+                    student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 }
             });

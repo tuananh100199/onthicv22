@@ -88,7 +88,7 @@ class UserCoursePageDetail extends AdminPage {
                         </Link>}
 
                     {/* //TODO chức năng phản hồi */}
-                    <Link className='col-md-4' to='#'>
+                    <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>
                         <div className='widget-small coloured-icon warning'>
                             <i className='icon fa fa-3x fa-commenting-o' />
                             <div className='info'>
@@ -96,6 +96,7 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
+
 
                     <h4 style={{ width: '100%' }}>Môn học</h4>
                     {subjects.length ? subjects.map((subject, index) => (
