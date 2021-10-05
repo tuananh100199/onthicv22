@@ -71,7 +71,7 @@ module.exports = (app) => {
         });
     });
 
-    app.post('/api/question/student/submit', app.permission.check('user:login'), (req, res) => {//mobile
+    app.post('/api/lesson/question/student/submit', app.permission.check('user:login'), (req, res) => {//mobile
         const { courseId, subjectId, lessonId, answers } = req.body;
         let questionIds = answers ? Object.keys(answers) : [],
             score = 0;
@@ -110,7 +110,7 @@ module.exports = (app) => {
         });
     });
 
-    app.put('/api/question/student/reset', app.permission.check('user:login'), (req, res) => {//mobile
+    app.put('/api/lesson/question/student/reset', app.permission.check('user:login'), (req, res) => {//mobile
         const { courseId, subjectId, lessonId } = req.body,
             userId = req.session.user._id;
         app.model.student.getAll({ user: userId, course: courseId }, (error, students) => {
