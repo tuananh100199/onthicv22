@@ -14,7 +14,7 @@ class LecturerView extends AdminPage {
     render() {
         const permission = this.getUserPermission('timeTable');
         const table = renderTable({
-        getDataSource: () => this.state && this.state.listStudent,
+        getDataSource: () => this.state && this.state.listStudent || [],
         renderHead: () => (
             <tr>
                 <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -27,7 +27,7 @@ class LecturerView extends AdminPage {
         renderRow: (item, index) => (
             <tr key={index}>
                 <TableCell type='text' content={index + 1}/>
-                <TableCell type='link' content={item.lastname + ' ' + item.firstname} url={'/user/lecturer/student-time-table/' + item._id} />
+                <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
                 <TableCell type='text' content={item.identityCard} />
                 <TableCell type='text' content={item.user && item.user.email} />
                 <TableCell type='text' style={{ whiteSpace: 'nowrap' }} content={item.division ? item.division.title : ''} />

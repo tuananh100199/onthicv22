@@ -309,4 +309,10 @@ module.exports = (app) => {
             });
         }
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'student', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'student:read', 'student:write');
+        resolve();
+    }));
 };

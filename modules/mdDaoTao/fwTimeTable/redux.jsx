@@ -107,9 +107,9 @@ export function updateTimeTable(_id, changes, done) {
     };
 }
 
-export function updateTimeTableTruant(_id, changes, studentId, done) {
+export function updateTimeTableByLecturer(_id, changes, studentId, done) {
     return dispatch => {
-        const url = '/api/time-table/truant';
+        const url = '/api/time-table/lecturer';
         T.put(url, { _id, changes }, data => {
             if (data.error) {
                 T.notify('Cập nhật thời khóa biểu bị lỗi!', 'danger');

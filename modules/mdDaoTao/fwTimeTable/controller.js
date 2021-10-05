@@ -79,11 +79,22 @@ module.exports = (app) => {
         app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/time-table/truant', app.permission.check('timeTable:write'), (req, res) => {
+    app.put('/api/time-table/lecturer', app.permission.check('timeTable:write'), (req, res) => {
         app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
     
     app.delete('/api/time-table', app.permission.check('timeTable:delete'), (req, res) => {
         app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('lecturer', 'timeTable', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write');
+        resolve();
+    }));
+
+    app.permissionHooks.add('courseAdmin', 'timeTable', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write');
+        resolve();
+    }));
   };
