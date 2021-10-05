@@ -21,8 +21,7 @@ class NoteModal extends AdminModal {
                 note: this.itemNote.value(),
                 truant: this.itemTruant.value(),
             };
-        this.props.update(_id, changes, student._id , () => this.hide());
-            
+        this.props.update(_id, changes, student._id , () => this.hide()); 
         }
     }
 
