@@ -9,6 +9,7 @@ module.exports = (app, http, appConfig) => {
             data && data.map(room => socket.join(room));
         });
         socket.on('sendDataClient', (data) => {
+            data.user = socket.request.session ? socket.request.session.user : null;
             app.io.to(data.room).emit('sendDataServer', { data });
         });
         socket.on('disconnect', () => console.log('A user disconnected'));

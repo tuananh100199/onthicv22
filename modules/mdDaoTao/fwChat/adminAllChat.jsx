@@ -72,11 +72,11 @@ class AdminAllChat extends AdminPage {
         if (message !== '') {
             const msg = {
                 message: message,
-                user: this.state.user,
                 sent: Date.now(),
                 room: this.state.courseId,
             };
             this.socketRef.current.emit('sendDataClient', msg);
+            msg.user = this.state.user;
             this.props.createMessage(msg);
             $('#message').val('');
         }
