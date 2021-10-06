@@ -17,7 +17,7 @@ class AdminStudentView extends AdminPage {
                 this.setState({
                     subjects: subjects,
                     listSubject: listSubject,
-                    currentSubject: subjects[0]._id,
+                    currentSubject: subjects[0],
                     currentLessons: data.item && data.item.lessons
                 });
             });
