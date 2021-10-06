@@ -8,6 +8,12 @@ class FeedbackSection extends AdminPage {
         this.props.getFeedbackAllByUser(this.props.type,this.props._refId);
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.type != this.props.type) {
+            this.props.getFeedbackAllByUser(this.props.type,this.props._refId);
+        }
+    }
+
     sendFeedback = () => {
         const content = this.newFeedback.value(),
             data = {
