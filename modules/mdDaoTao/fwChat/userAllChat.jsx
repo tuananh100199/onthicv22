@@ -37,13 +37,7 @@ class UserAllChat extends AdminPage {
                         anyMessagesLeft: data.item.length < data.count
                     });
                 });
-                this.props.getRoomId(_id, data => {
-                    if (data.error) {
-                        this.props.history.push(previousRoute);
-                    } else {
-                        this.socketRef.current.emit('sendRoomClient', data.listRoom);
-                    }
-                });
+                this.socketRef.current.emit('sendRoomClient', [_id]);
             });
         } else {
             this.props.history.push(previousRoute);
@@ -128,9 +122,8 @@ class UserAllChat extends AdminPage {
         }
         return (
             <div >
-                {/* <h3 className='tile-title text-center'>Chat</h3> */}
                 <div className='messanger' style={{ minHeight: '300px' }}>
-                    <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 300px)', overflowY: 'scroll', maxHeight: '340px' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                    <div className='messages' id='msg_admin_all' style={{ height: '300px', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                         {renderMess}
                     </div>
                     <div className='sender'>

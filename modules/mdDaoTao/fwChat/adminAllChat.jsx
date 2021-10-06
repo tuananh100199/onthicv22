@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getOldMessage, getRoomId } from './redux';
+import { createMessage, getOldMessage } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
@@ -36,13 +36,7 @@ class AdminAllChat extends AdminPage {
                     anyMessagesLeft: data.item.length < data.count
                 });
             });
-            this.props.getRoomId(_id, data => {
-                if (data.error) {
-                    this.props.history.push(previousRoute);
-                } else {
-                    this.socketRef.current.emit('sendRoomClient', data.listRoom);
-                }
-            });
+            this.socketRef.current.emit('sendRoomClient', [_id]);
         } else {
             this.props.history.push(previousRoute);
         }
@@ -52,9 +46,7 @@ class AdminAllChat extends AdminPage {
                     oldMessage: [...prevState.oldMessage, dataGot.data]
                 }));
             }
-
         });
-
     }
 
     componentWillUnmount() {
@@ -125,10 +117,9 @@ class AdminAllChat extends AdminPage {
             }, 1000);
         }
         return (
-            <div >
-                {/* <h3 className='tile-title text-center'>Chat</h3> */}
-                <div className='messanger' style={{ height: 'calc(100vh - 360px)' }}>
-                    <div className='messages' id='msg_admin_all' style={{ overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+            <div className='tile-body'>
+                <div className='messanger' >
+                    <div className='messages' id='msg_admin_all' style={{ overflowY: 'scroll', height: 'calc(100vh - 160px)' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                         {renderMess}
                     </div>
                     <div className='sender'>
@@ -142,5 +133,5 @@ class AdminAllChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { createMessage, getOldMessage, getRoomId };
+const mapActionsToProps = { createMessage, getOldMessage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminAllChat);

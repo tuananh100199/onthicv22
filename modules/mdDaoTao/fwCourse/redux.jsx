@@ -375,6 +375,23 @@ export function getLearingProgressByLecturer(_id, done) {
     };
 }
 
+// Chat -----------------------------------------------------------------------------------------------------------
+export function getChatByAdmin(_id, done) {
+    return dispatch => {
+        const url = '/api/course/chat/admin';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy các liên hệ bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: CourseGetItem, item: data.item });
+            }
+        }, error => console.error(error) || T.notify('Lấy các liên hệ bị lỗi!', 'danger'));
+    };
+}
+
+
 // Export to Excel ----------------------------------------------------------------------------------------------------
 export function exportStudentInfoToExcel(_courseId) {
     T.download(T.url(`/api/course/student/export/${_courseId}`));

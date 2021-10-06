@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getAdminChatByStudent, getOldMessage, getRoomId } from './redux';
+import { createMessage, getAdminChatByStudent, getOldMessage } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
@@ -40,13 +40,8 @@ class UserPersonalChat extends AdminPage {
                             });
                         });
                     });
-                });
-                this.props.getRoomId(_id, data => {
-                    if (data.error) {
-                        this.props.history.push(previousRoute);
-                    } else {
-                        this.socketRef.current.emit('sendRoomClient', data.listRoom);
-                    }
+                    const listRoom = data.item.map(admin => _id + '_' + admin._id + '_' + user._id);
+                    this.socketRef.current.emit('sendRoomClient', listRoom);
                 });
             });
         } else {
@@ -169,11 +164,11 @@ class UserPersonalChat extends AdminPage {
                             </div>
                         </div>
                         <div className='col-md-9'>
-                            <div style={{ borderBottom: '1px solid black', height: '30px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
-                                <img style={{ height: '20px', width: '20px' }} src={adminImage} alt={adminName} />
+                            <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                                <img style={{ height: '25px', width: '25px' }} src={adminImage} alt={adminName} />
                                 <h6 style={{ marginBottom: '0px' }}>&nbsp;{adminName}</h6>
                             </div>
-                            <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                            <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: '200px' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
                             </div>
                             <div className='sender'>
@@ -190,5 +185,5 @@ class UserPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { createMessage, getAdminChatByStudent, getOldMessage, getRoomId };
+const mapActionsToProps = { createMessage, getAdminChatByStudent, getOldMessage };
 export default connect(mapStateToProps, mapActionsToProps)(UserPersonalChat);

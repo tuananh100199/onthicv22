@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getOldMessage, getRoomId } from './redux';
+import { createMessage, getOldMessage } from './redux';
 import { debounce } from 'lodash';
-import { getLearingProgressByLecturer, getLearingProgressByAdmin } from '../fwCourse/redux';
+import { getLearingProgressByLecturer, getChatByAdmin } from '../fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
 import '../../../view/component/chat.scss';
 
@@ -30,37 +30,19 @@ class AdminPersonalChat extends AdminPage {
                 scrollDown: true,
                 currentLoaded: 0,
             });
-            user.isCourseAdmin ?
-                this.props.getLearingProgressByAdmin(_id, data => {
-                    this.setState({ listStudent: data.item, roomId: _id + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
-                        this.props.getOldMessage(this.state.roomId, Date.now(), 100, data => {
-                            this.setState({
-                                oldMessage: data.item,
-                                currentLoaded: data.item[0] && data.item[0].sent,
-                                anyMessagesLeft: data.item.length < data.count
-                            });
-                        });
-                    });
-                }) :
-                this.props.getLearingProgressByLecturer(_id, data => {
-                    this.setState({ listStudent: data.item, roomId: _id + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
-                        this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
-                            this.setState({
-                                oldMessage: data.item,
-                                currentLoaded: data.item[0] && data.item[0].sent,
-                                anyMessagesLeft: data.item.length < data.count
-                            });
+            this.props.getChatByAdmin(_id, data => {
+                this.setState({ listStudent: data.item, roomId: _id + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
+                    this.props.getOldMessage(this.state.roomId, Date.now(), 100, data => {
+                        this.setState({
+                            oldMessage: data.item,
+                            currentLoaded: data.item[0] && data.item[0].sent,
+                            anyMessagesLeft: data.item.length < data.count
                         });
                     });
                 });
-            this.props.getRoomId(_id, data => {
-                if (data.error) {
-                    this.props.history.push(previousRoute);
-                } else {
-                    this.socketRef.current.emit('sendRoomClient', data.listRoom);
-                }
+                const listRoom = data.item.map(student => _id + '_' + user._id + '_' + student.user._id);
+                this.socketRef.current.emit('sendRoomClient', listRoom);
             });
-
         } else {
             this.props.history.push(previousRoute);
         }
@@ -170,7 +152,7 @@ class AdminPersonalChat extends AdminPage {
         return (
             <div>
                 <div className='messanger'>
-                    <div className='inbox_msg row'>
+                    <div className='inbox_msg row' >
                         <div className='inbox_people col-md-3'>
                             <div className='headind_srch'>
                                 <div className='recent_heading'>
@@ -181,9 +163,9 @@ class AdminPersonalChat extends AdminPage {
                                 {inboxChat}
                             </div>
                         </div>
-                        <div className='col-md-9'>
-                            <div style={{ borderBottom: '1px solid black', height: '30px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
-                                <img style={{ height: '20px', width: 'auto' }} src={studentImage} alt={studentName} />
+                        <div className='col-md-9' >
+                            <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                                <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
                                 <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
                             </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
@@ -203,5 +185,5 @@ class AdminPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { createMessage, getOldMessage, getLearingProgressByLecturer, getLearingProgressByAdmin, getRoomId };
+const mapActionsToProps = { createMessage, getOldMessage, getLearingProgressByLecturer, getChatByAdmin };
 export default connect(mapStateToProps, mapActionsToProps)(AdminPersonalChat);
