@@ -5,9 +5,10 @@ module.exports = app => {
         value: Number,
         note: String,
     });
-    // const model = app.db.model('Rate', schema);
+    const model = app.db.model('Rate', schema);
 
     app.model.rate = {
         //TODO
+        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
     };
 };
