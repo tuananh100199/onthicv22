@@ -27,4 +27,10 @@ module.exports = (app) => {
         const condition = { type: req.params.type, _refId: req.query._refId, user: req.session.user && req.session.user._id };
         app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'feedback', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'feedback:read','feedback:write');
+        resolve();
+    }));
 };
