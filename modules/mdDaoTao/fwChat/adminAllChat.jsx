@@ -118,7 +118,7 @@ class AdminAllChat extends AdminPage {
         }
         return (
             <div className='tile-body'>
-                <div className='messanger' >
+                <div className='messanger' style={{ minHeight: '300px' }} >
                     <div className='messages' id='msg_admin_all' style={{ overflowY: 'scroll', height: 'calc(100vh - 160px)' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                         {renderMess}
                     </div>

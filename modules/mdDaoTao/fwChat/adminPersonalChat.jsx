@@ -85,7 +85,7 @@ class AdminPersonalChat extends AdminPage {
         const studentId = student.user._id;
         const { courseId, user } = this.state;
         e.preventDefault();
-        this.setState({ roomId: courseId + '_' + user._id + '_' + studentId, activeId: studentId, studentName: student.lastname + ' ' + student.firstname, studentImage: student.user.image }, () => {
+        this.setState({ roomId: courseId + '_' + user._id + '_' + studentId, activeId: studentId, studentName: student.firstname + ' ' + student.lastname, studentImage: student.user.image }, () => {
             this.props.getOldMessage(this.state.roomId, Date.now(), 5, data => {
                 this.setState({
                     oldMessage: data.item,
