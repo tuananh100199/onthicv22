@@ -12,7 +12,7 @@ class userFeedbackSystemPage extends AdminPage {
             icon: 'fa fa-cog',
             title: 'Phản hồi hệ thống',
             breadcrumb: ['Phản hồi hệ thống'],
-            content:<FeedbackSection type='system'/>,
+            content:<FeedbackSection type='system'  title='hệ thống'/>,
         });
     }
 }

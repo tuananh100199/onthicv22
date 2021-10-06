@@ -30,7 +30,7 @@ class FeedbackSection extends AdminPage {
         const feedback =this.props.feedback;
         return <>
             <div className='tile'>
-<h3 className='tile-title'>Phản hồi</h3>
+    <h3 className='tile-title'>Phản hồi {this.props.title}</h3>
             <div className='tile-body'>
                         {feedback.length ? feedback.map((item, index) => <div key={index} style={{ margin: 10 }}>
                             <div className='row'>

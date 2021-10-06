@@ -28,8 +28,8 @@ class UserCourseFeedback extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name || '...'),
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Phản hồi khóa học'],
-            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} />,
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học của tôi</Link>, 'Phản hồi khóa học'],
+            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} title='khóa học' />,
             backRoute: userPageLink,
         });
     }
