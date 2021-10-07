@@ -23,6 +23,13 @@ class UserCourseFeedback extends AdminPage {
             this.props.history.push(`/user/hoc-vien/khoa-hoc/${this.state.courseId}`);
         }
     }
+
+    onChange =(value,type)=>{
+        if (value){
+            this.setState({type});
+            this[type=='course'?'teacher':'course'].value(false);
+        }
+    }
     render() {
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         return this.renderPage({
@@ -31,8 +38,9 @@ class UserCourseFeedback extends AdminPage {
             breadcrumb: [<Link key={0} to={userPageLink}>Khóa học của tôi</Link>, 'Phản hồi khóa học'],
             content: <>
             <div className='tile' style={{display:'flex'}}>
-            <FormCheckbox onChange={value=> value && this.setState({type:'course'})} label='Phản hồi khóa học'/>
-            <FormCheckbox onChange={value=> value && this.setState({type:'teacher'})} label='Phản hồi cố vấn học tập'/>
+            <FormCheckbox ref={e=>this.course=e} onChange={value=>this.onChange(value,'course')} label='Phản hồi khóa học'/>
+            &nbsp;
+            <FormCheckbox ref={e=>this.teacher=e} onChange={value=>this.onChange(value,'teacher')} label='Phản hồi cố vấn học tập'/>
             </div>
             {this.state.type && <FeedbackSection type={this.state.type} _refId={this.state.courseId} title={this.state.type == 'teacher'?'cố vấn học tập':'khóa học'} />}
         </>,
