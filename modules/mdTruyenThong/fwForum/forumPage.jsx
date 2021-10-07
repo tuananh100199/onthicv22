@@ -4,7 +4,7 @@ import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
-import { ForumStates, ForumStatesMapper } from './index';
+import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 
 const backUrl = '/user/forum';
 
@@ -78,14 +78,10 @@ class ForumPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize, pageCondition, done) => {
-        if (this.state._id) {
-            this.props.getForumPage(this.state._id, pageNumber, pageSize, pageCondition, done);
-        }
+        this.state._id && this.props.getForumPage(this.state._id, pageNumber, pageSize, pageCondition, done);
     }
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
-
-    delete = (e, item) => e.preventDefault() || T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
+    delete = (item) => T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id));
 
     render() {
@@ -104,11 +100,7 @@ class ForumPage extends AdminPage {
                         {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                {permission.write ?
-                    <div className='btn-group btn-group-sm' style={{ position: 'absolute', right: 12, top: -12 }}>
-                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}><i className='fa fa-lg fa-edit' /></a>
-                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a>
-                    </div> : null}
+                <ForumButtons state={item.state} permission={permission} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>

@@ -100,6 +100,7 @@ module.exports = app => {
                     if (changes.title) data.title = changes.title;
                     if (changes.content) data.content = changes.content.substring(0, 200);
                     if (changes.title || changes.content) {
+                        data.modifiedDate = new Date().getTime();
                         app.model.forum.update(_id, data, (error, item) => res.send({ error, item }));
                     } else {
                         res.send({ error: 'Lỗi khi cập nhật forum!' });
@@ -178,19 +179,22 @@ module.exports = app => {
                     if (error || forum == null) {
                         res.send({ error: 'Dữ liệu không hợp lệ!' });
                     } else {
-                        // Cập nhật thời gian forum.modifiedDate
-                        app.model.forum.update(item.forum, { modifiedDate: new Date() }, (error) => {
-                            if (error) {
-                                res.send({ error: 'Dữ liệu không hợp lệ!' });
-                            } else {
-                                // Cập nhật bài viết trong forum
-                                item.content = changes.content;
-                                if (req.session.user.permissions && req.session.user.permissions.includes('forum:write')) {
-                                    item.state = changes.state;
-                                }
-                                item.save(error => res.send({ error, item }));
+                        let modifiedDateChanged = true;
+                        if (changes.state && req.session.user.permissions && req.session.user.permissions.includes('forum:write')) {
+                            item.state = changes.state;
+                            modifiedDateChanged = Object.keys(changes).includes('content');
+                        } else {
+                            item.state = 'waiting';
+                        }
+                        if (changes.content) {
+                            item.content = changes.content;
+                            if (modifiedDateChanged) {// Cập nhật thời gian forum.modifiedDate
+                                item.modifiedDate = new Date();
+                                forum.modifiedDate = new Date();
+                                forum.save();
                             }
-                        });
+                        }
+                        item.save(error => res.send({ error, item }));
                     }
                 });
             }
@@ -204,7 +208,7 @@ module.exports = app => {
                 res.send({ error: 'Dữ liệu không hợp lệ!' });
             } else if ((req.session.user.permissions && req.session.user.permissions.includes('forum:delete')) || req.session.user._id == item.user._id) {
                 // Xoá bài viết trong forum
-                app.model.forum.delete(_id, (error) => {
+                app.model.forumMessage.delete(_id, (error) => {
                     if (error) {
                         res.send({ error });
                     } else {

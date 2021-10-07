@@ -4,7 +4,7 @@ import { getForumCategories } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
 
-class CategoryPage extends AdminPage {
+class ForumCategoryPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready();
@@ -53,4 +53,4 @@ class CategoryPage extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum });
 const mapActionsToProps = { getForumCategories };
-export default connect(mapStateToProps, mapActionsToProps)(CategoryPage);
+export default connect(mapStateToProps, mapActionsToProps)(ForumCategoryPage);
