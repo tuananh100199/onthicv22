@@ -396,6 +396,23 @@ module.exports = (app) => {
         });
     });
 
+    // // Chat API
+    app.get('/api/course/chat/admin', app.permission.check('course:write'), (req, res) => {
+        const sessionUser = req.session.user;
+        if (sessionUser.isCourseAdmin) {
+            app.model.student.getAll({ course: req.query._id }, (error, item) => res.send({ error, item }));
+        } else {
+            app.model.course.get(req.query._id, (error, item) => {
+                if (error || !item) {
+                    res.send({ error });
+                } else {
+                    const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                    res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                }
+            });
+        }
+    });
+
     // Get Course by Student API
     // API: Mobile
     app.get('/api/mobile/course/student/all', app.permission.check('user:login'), (req, res) => {//mobile
@@ -634,11 +651,12 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
         resolve();
     }));
+
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:write');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
         resolve();
     }));
 };

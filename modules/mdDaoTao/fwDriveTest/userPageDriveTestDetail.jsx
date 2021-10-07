@@ -112,11 +112,18 @@ class UserPageDriveTestDetail extends AdminPage {
     }
 
     changeQuestion = (e, index) => {
-        const questions = this.state.questions ? this.state.questions : [];
+        const questions = this.state.questions ? this.state.questions : [],
+            activeQuestion = this.state.questions[index],
+            questionId = activeQuestion ? activeQuestion._id : null,
+            prevStudentAnswer = this.state.studentAnswer[questions[this.state.activeQuestionIndex]._id];
         e.preventDefault();
+        if (prevStudentAnswer) {
+            this.setState(prevState => ({
+                prevAnswers: { ...prevState.prevAnswers, [questions[this.state.activeQuestionIndex]._id]: prevStudentAnswer },
+                prevTrueAnswers: { ...prevState.prevTrueAnswers, [questions[this.state.activeQuestionIndex]._id]: questions[this.state.activeQuestionIndex].trueAnswer },
+            }));
+        }
         this.setState({ activeQuestionIndex: index }, () => {
-            const activeQuestion = this.state.questions[index],
-                questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
                 if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
                     $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);

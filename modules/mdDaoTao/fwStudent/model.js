@@ -62,7 +62,7 @@ module.exports = (app) => {
                 condition = {};
             }
             model.find(condition)
-                .populate('user', 'email phoneNumber').populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
+                .populate('user', 'email phoneNumber image').populate('course', 'subjects courseType name active').populate('division').populate('courseType', 'title')
                 .sort({ lastname: 1, firstname: 1 }).exec(done);
         },
 
@@ -146,10 +146,13 @@ module.exports = (app) => {
             }
         }),
 
-        addStudiedLesson: (data, done) => {
+        updateLearningProgress: (data, done) => {
             app.model.student.get(data.studentId, (error, student) => {
                 if (error) {
                     done(error);
+                } else if (data.rating) {
+                    student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
+                    model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 } else {
                     const obj = {};
                     obj[data.lessonId] = { score: data.score, trueAnswers: data.trueAnswer, answers: data.answers };

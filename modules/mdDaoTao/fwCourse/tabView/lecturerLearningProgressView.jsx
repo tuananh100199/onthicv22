@@ -30,7 +30,7 @@ class AdminStudentView extends AdminPage {
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.identityCard} />
-                    {subjects.length && subjects.map((subject, i) => (<TableCell key={i} type='text' content={(item.tienDoHocTap[subject._id] ? (Object.keys(item.tienDoHocTap[subject._id]).length > subject.lessons.length ? subject.lessons.length : Object.keys(item.tienDoHocTap[subject._id]).length) : 0) + '/' + subject.lessons.length} />))}
+                    {subjects.length && subjects.map((subject, i) => (<TableCell key={i} type='text' content={(item.tienDoHocTap && item.tienDoHocTap[subject._id] ? (Object.keys(item.tienDoHocTap[subject._id]).length > subject.lessons.length ? subject.lessons.length : Object.keys(item.tienDoHocTap[subject._id]).length) : 0) + '/' + subject.lessons.length} />))}
                 </tr>),
         });
         return <div className='tile-body'>{table}</div>;

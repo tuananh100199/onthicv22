@@ -73,7 +73,7 @@ module.exports = app => {
             findTask.populate('courseType').populate('subjects', '-detailDescription').populate({
                 path: 'teacherGroups.teacher', select: '-password', populate: { path: 'user division' }
             }).populate({
-                path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name' }
+                path: 'teacherGroups.student', populate: { path: 'user division courseType course', select: 'email title name image phoneNumber' }
             }).populate({
                 path: 'representerGroups.representer', select: '-password', populate: { path: 'user division' }
             }).populate({

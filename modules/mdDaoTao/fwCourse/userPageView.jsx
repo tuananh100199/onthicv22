@@ -77,15 +77,15 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
-                    {/* //TODO chức năng chat */}
-                    <Link className='col-md-4' to='#'>
-                        <div className='widget-small coloured-icon info'>
-                            <i className='icon fa fa-3x fa-comments-o' />
-                            <div className='info'>
-                                <h4>Chat</h4>
+                    {this.state.chatActive &&
+                        <Link className='col-md-4' to={'/user/chat/' + this.state.courseId}>
+                            <div className='widget-small coloured-icon info'>
+                                <i className='icon fa fa-3x fa-comments-o' />
+                                <div className='info'>
+                                    <h4>Chat</h4>
+                                </div>
                             </div>
-                        </div>
-                    </Link>
+                        </Link>}
 
                     {/* //TODO chức năng phản hồi */}
                     <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>
@@ -96,6 +96,7 @@ class UserCoursePageDetail extends AdminPage {
                             </div>
                         </div>
                     </Link>
+
 
                     <h4 style={{ width: '100%' }}>Môn học</h4>
                     {subjects.length ? subjects.map((subject, index) => (
