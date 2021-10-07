@@ -6,7 +6,7 @@ module.exports = (app) => {
         }
     };
     app.permission.add(
-        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete', menu },
+        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete' },  { name: 'timeTable:create', menu }
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
