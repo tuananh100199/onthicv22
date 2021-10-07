@@ -6,7 +6,7 @@ module.exports = (app) => {
         }
     };
     app.permission.add(
-        { name: 'timeTable:read' }, { name: 'timeTable:write', menu }, { name: 'timeTable:delete' },
+        { name: 'timeTable:read' }, { name: 'timeTable:write' }, { name: 'timeTable:delete', menu },
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
@@ -76,17 +76,26 @@ module.exports = (app) => {
         app.model.timeTable.create(req.body.data, (error, item) => res.send({ error, item }));
     });
 
+    app.post('/api/time-table/admin', app.permission.check('timeTable:write'), (req, res) => {
+        app.model.timeTable.create(req.body.data, (error, item) => res.send({ error, item }));
+    });
+
     app.put('/api/time-table', app.permission.check('timeTable:write'), (req, res) => {
         app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
 
-    app.put('/api/time-table/lecturer', app.permission.check('timeTable:write'), (req, res) => {
+    app.put('/api/time-table/admin', app.permission.check('timeTable:write'), (req, res) => {
         app.model.timeTable.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
     
     app.delete('/api/time-table', app.permission.check('timeTable:delete'), (req, res) => {
         app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
     });
+
+    app.delete('/api/time-table/admin', app.permission.check('timeTable:delete'), (req, res) => {
+        app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
+    });
+    
 
     // Student API-----------------------------------------------------------------------------------------------------
     app.get('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
@@ -107,7 +116,7 @@ module.exports = (app) => {
     }));
 
     app.permissionHooks.add('courseAdmin', 'timeTable', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write');
+        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write', 'timeTable:delete');
         resolve();
     }));
   };
