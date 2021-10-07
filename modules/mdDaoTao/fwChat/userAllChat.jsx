@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { createMessage, getOldMessage } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
-import '../../../view/component/chat.scss';
+import './chat.scss';
 
 const previousRoute = '/user';
 class UserAllChat extends AdminPage {

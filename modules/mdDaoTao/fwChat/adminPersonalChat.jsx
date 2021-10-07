@@ -4,8 +4,7 @@ import { createMessage, getOldMessage } from './redux';
 import { debounce } from 'lodash';
 import { getLearingProgressByLecturer, getChatByAdmin } from '../fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
-import '../../../view/component/chat.scss';
-
+import './chat.scss';
 
 const previousRoute = '/user';
 class AdminPersonalChat extends AdminPage {
@@ -52,7 +51,6 @@ class AdminPersonalChat extends AdminPage {
                     oldMessage: [...prevState.oldMessage, dataGot.data]
                 }));
             }
-
         });
     }
 

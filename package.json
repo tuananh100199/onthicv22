@@ -1,6 +1,6 @@
 {
   "name": "hiep-phat",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "title": "Hiep Phat Website",
   "description": "Trung tam dao tao lai xe Hiep Phat",
   "main": "hiepphat.main.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "nodemon": "nodemon hiepphat.main.js --ignore node_modules/ --ignore public/ --ignore src/view/ --ignore webpack.config.js --ignore *.json",
     "webpack-server": "webpack serve --mode development --color",
-    "build": "webpack --mode production",
+    "build-webpack": "webpack --mode production",
+    "build": "db.generate -d",
     "lint:fix": "npm run lint --  --fix",
     "lint": "eslint . --ext .jsx,.js --ignore-path .gitignore",
     "prepare": "husky install"

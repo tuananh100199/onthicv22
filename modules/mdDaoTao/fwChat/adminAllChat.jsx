@@ -3,48 +3,32 @@ import { connect } from 'react-redux';
 import { createMessage, getOldMessage } from './redux';
 import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
-import '../../../view/component/chat.scss';
+import './chat.scss';
 import T from 'view/js/common';
 
 const previousRoute = '/user';
 class AdminAllChat extends AdminPage {
-    socketRef = React.createRef();
     state = { clientId: null, oldMessage: [] };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
-        const _id = this.props.courseId;
-        const user = this.props.system.user;
-        this.socketRef.current = T.socket;
-        this.setState({
-            courseId: _id,
-            user: {
-                _id: user._id,
-                image: user.image,
-                lastname: user.lastname,
-                firstname: user.firstname,
-                isCourseAdmin: user.isCourseAdmin,
-                isLecturer: user.isLecturer
-            },
-            scrollDown: true,
-            currentLoaded: 0,
-        });
-        if (_id) {
-            this.props.getOldMessage(_id, Date.now(), 100, data => {
+        const courseId = this.props.courseId,
+            user = this.props.system.user;
+        this.setState({ courseId, user, scrollDown: true, currentLoaded: 0 });
+        if (courseId) {
+            this.props.getOldMessage(courseId, Date.now(), 100, data => {
                 this.setState({
                     oldMessage: data.item,
                     currentLoaded: data.item[0] && data.item[0].sent,
                     anyMessagesLeft: data.item.length < data.count
                 });
             });
-            this.socketRef.current.emit('sendRoomClient', [_id]);
+            T.socket.emit('sendRoomClient', [courseId]);
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current.on('sendDataServer', dataGot => {
+        T.socket.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.courseId) {
-                this.setState(prevState => ({
-                    oldMessage: [...prevState.oldMessage, dataGot.data]
-                }));
+                this.setState(prevState => ({ oldMessage: [...prevState.oldMessage, dataGot.data] }));
             }
         });
     }
@@ -53,11 +37,7 @@ class AdminAllChat extends AdminPage {
         window.removeEventListener('keydown', this.logKey);
     }
 
-    logKey = (e) => {
-        if (e.code == 'Enter') {
-            this.sendMessage();
-        }
-    }
+    logKey = (e) => (e.code == 'Enter') && this.sendMessage();
 
     sendMessage = () => {
         const message = $('#message').val().trim();
@@ -67,7 +47,7 @@ class AdminAllChat extends AdminPage {
                 sent: Date.now(),
                 room: this.state.courseId,
             };
-            this.socketRef.current.emit('sendDataClient', msg);
+            T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
             $('#message').val('');
@@ -124,7 +104,7 @@ class AdminAllChat extends AdminPage {
                     </div>
                     <div className='sender'>
                         <input type='text' placeholder='Gửi tin nhắn' id='message' />
-                        <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
+                        <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane' /></button>
                     </div>
                 </div>
             </div>

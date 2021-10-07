@@ -80,11 +80,9 @@ class AdminTeacherView extends React.Component {
 
     showStudentInfo = (e, student) => e.preventDefault() || this.studentModal.show(student);
 
-    updateStudent = (studentId, changes) => {
-        this.props.updateStudent(studentId, changes, (data) => {
-            data && this.props.updateStudentInfoInCourse(studentId, data);
-        });
-    }
+    updateStudent = (studentId, changes) => this.props.updateStudent(studentId, changes, (data) => {
+        data && this.props.updateStudentInfoInCourse(studentId, data);
+    });
 
     selectDivisionStudents = (_divisionId, selected) => {
         this.itemDivisionSelectAll[_divisionId] && this.itemDivisionSelectAll[_divisionId].value(true);

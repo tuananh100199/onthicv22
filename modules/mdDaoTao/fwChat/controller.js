@@ -1,6 +1,5 @@
 
 module.exports = app => {
-
     app.get('/user/chat/:id', app.templates.admin);
 
     app.get('/api/chat', app.permission.check('user:login'), (req, res) => {
@@ -14,7 +13,8 @@ module.exports = app => {
     });
 
     app.post('/api/chat', app.permission.check('user:login'), (req, res) => {
-        app.model.chat.create(req.body.data || {}, (error, item) => res.send({ error, item }));
+        const { data } = req.body;
+        app.model.chat.create(data || {}, (error, item) => res.send({ error, item }));
     });
 
     app.get('/api/chat/student', app.permission.check('user:login'), (req, res) => {
