@@ -79,6 +79,7 @@ module.exports = app => {
             data.password = convert(data.birthday);
         }
         if (data.roles == 'empty') data.roles = [];
+        console.log(data);
         // const password = data.password;
         app.model.user.create(data, (error, user) => {
             res.send({ error, user });

@@ -28,7 +28,7 @@ module.exports = app => {
                         if (index < items.length) {
                             const { _id, title, image } = items[index];
                             condition = { category: _id };
-                            if (!isForumWrite) condition.state == 'approved';
+                            if (!isForumWrite) condition.state = 'approved';
 
                             new Promise(resolve => app.model.forum.count(condition, (error, total) => {
                                 if (error || total == 0) {
