@@ -97,6 +97,23 @@ class UserCoursePageDetail extends AdminPage {
                         </div>
                     </Link>
 
+                    <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/thoi-khoa-bieu`}>
+                        <div className='widget-small coloured-icon warning'>
+                            <i className='icon fa fa-3x fa-calendar' />
+                            <div className='info'>
+                                <h4>Thời khóa biểu</h4>
+                            </div>
+                        </div>
+                    </Link>
+
+                    <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/forum`}>
+                        <div className='widget-small coloured-icon primary'>
+                            <i className='icon fa fa-3x fa-comments' />
+                            <div className='info'>
+                                <h4>Forum khóa học</h4>
+                            </div>
+                        </div>
+                    </Link>
 
                     <h4 style={{ width: '100%' }}>Môn học</h4>
                     {subjects.length ? subjects.map((subject, index) => (

@@ -43,6 +43,10 @@ export default {
             path: '/user/hoc-vien/khoa-hoc/:_id/phan-hoi',
             component: Loadable({ loading: Loading, loader: () => import('./userCourseFeedbackPage') })
         },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdDaoTao/fwTimeTable/studentView') })
+        },
     ],
     Section: {
         // SectionCourse, SectionCourseList,
