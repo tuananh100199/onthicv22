@@ -34,30 +34,4 @@ module.exports = app => {
             }
         });
     });
-
-    app.get('/api/chat/room', app.permission.check('user:login'), (req, res) => {
-        const sessionUser = req.session.user,
-            listRoom = [],
-            courseId = req.query.courseId;
-        listRoom.push(courseId);
-        // app.model.chat.getAll({ room: { $regex: sessionUser._id, $options: '$i' } }, (error, items) => {
-        //     items.map(item => listRoom.indexOf(item.room) < 0 && listRoom.push(item.room));
-        //     res.send({ error, listRoom });
-        // });
-        app.model.course.get(req.query.courseId, (error, item) => {
-            if (error || !item) {
-                res.send({ error });
-            } else {
-                const listAdmin = item.admins;
-                const lecturer = item.teacherGroups.filter(teacherGroup => teacherGroup.student && teacherGroup.student.findIndex(student =>
-                    student.user._id == sessionUser._id
-                ) != -1);
-                if (lecturer.length && listAdmin.findIndex(admin => admin._id == lecturer[0].teacher._id) != -1) {
-                    listAdmin.push(lecturer[0].teacher);
-                }
-                listAdmin.map(admin => listRoom.push(courseId + '_' + admin._id + '_' + sessionUser._id));
-                res.send({ error, listRoom });
-            }
-        });
-    });
 };

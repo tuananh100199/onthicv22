@@ -68,18 +68,3 @@ export function getAdminChatByStudent(courseId, done) {
     };
 }
 
-export function getRoomId(courseId, done) {
-    return (dispatch) => {
-        const url = '/api/chat/room';
-        T.get(url, { courseId }, data => {
-            if (data.error) {
-
-                T.notify('Lấy danh sách phòng chat bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data);
-                dispatch({ type: ChatGetItem });
-            }
-        }, error => console.error(error) || T.notify('Lấy danh sách phòng chat bị lỗi!', 'danger'));
-    };
-}
