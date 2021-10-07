@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTimeTablePage, updateTimeTableByLecturer } from './redux';
+import { getTimeTablePage, updateTimeTable, updateTimeTableByLecturer, getTimeTableDateNumber } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
 
@@ -233,5 +233,5 @@ class StudentView extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, timeTable: state.trainning.timeTable });
-const mapActionsToProps = { getTimeTablePage, updateTimeTableByLecturer };
+const mapActionsToProps = { getTimeTablePage, updateTimeTable, updateTimeTableByLecturer, getTimeTableDateNumber };
 export default connect(mapStateToProps, mapActionsToProps)(StudentView);
