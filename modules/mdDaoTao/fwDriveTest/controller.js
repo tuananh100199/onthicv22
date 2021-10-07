@@ -14,7 +14,7 @@ module.exports = app => {
         },
     };
 
-    app.permission.add({ name: 'driveTestUser:read', menu: driveTest }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' }, { name: 'driveTest:read', menu });
+    app.permission.add({ name: 'user:login', menu: driveTest }, { name: 'driveTestUser:read' }, { name: 'driveTest:write', menu }, { name: 'driveTest:delete' }, { name: 'driveTest:read', menu });
 
     app.get('/user/drive-test', app.permission.check('driveTest:read'), app.templates.admin);
     app.get('/user/drive-test/:_id', app.permission.check('driveTest:read'), app.templates.admin);
@@ -45,9 +45,6 @@ module.exports = app => {
 
     app.get('/api/drive-test/student', (req, res) => {
         app.model.driveTest.get(req.query._id, (error, item) => {
-            if (item && item.questions) {
-                item.questions.forEach(question => question.trueAnswer = null);
-            }
             res.send({ error, item });
         });
     });
@@ -132,6 +129,7 @@ module.exports = app => {
             });
         }
     });
+
 
     app.post('/api/drive-test/student/submit', (req, res) => {//mobile
         const { _id, answers } = req.body;

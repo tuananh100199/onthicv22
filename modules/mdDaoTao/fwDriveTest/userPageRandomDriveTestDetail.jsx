@@ -109,11 +109,18 @@ class UserPageRandomDriveTestDetail extends AdminPage {
     }
 
     changeQuestion = (e, index) => {
-        const questions = this.state.questions ? this.state.questions : [];
+        const questions = this.state.questions ? this.state.questions : [],
+            activeQuestion = this.state.questions[index],
+            questionId = activeQuestion ? activeQuestion._id : null,
+            prevStudentAnswer = this.state.studentAnswer[questions[this.state.activeQuestionIndex]._id];
         e.preventDefault();
+        if (prevStudentAnswer) {
+            this.setState(prevState => ({
+                prevAnswers: { ...prevState.prevAnswers, [questions[this.state.activeQuestionIndex]._id]: prevStudentAnswer },
+                prevTrueAnswers: { ...prevState.prevTrueAnswers, [questions[this.state.activeQuestionIndex]._id]: questions[this.state.activeQuestionIndex].trueAnswer },
+            }));
+        }
         this.setState({ activeQuestionIndex: index }, () => {
-            const activeQuestion = this.state.questions[index],
-                questionId = activeQuestion ? activeQuestion._id : null;
             if (activeQuestion) {
                 if (this.state.prevAnswers && this.state.prevAnswers[questionId]) {
                     $('#' + questionId + this.state.prevAnswers[questionId]).prop('checked', true);
@@ -185,7 +192,7 @@ class UserPageRandomDriveTestDetail extends AdminPage {
                                     <div className='form-check'>
                                         {activeQuestion.answers.split('\n').map((answer, index) => (
                                             <div key={index} className='custom-control custom-radio' style={{ paddingBottom: '10px' }}>
-                                                <input className='custom-control-input' type='radio' name={activeQuestion._id} id={activeQuestion._id + index} value={index} onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
+                                                <input className='custom-control-input' type='radio' name={activeQuestion._id} id={activeQuestion._id + index} value={index} disabled={prevAnswers && prevTrueAnswers && prevAnswers[activeQuestion._id]} onChange={e => this.onAnswerChanged(e, activeQuestion._id)} />
 
                                                 <label className={'custom-control-label ' +
                                                     (prevTrueAnswers && prevAnswers && prevTrueAnswers[activeQuestion._id] == prevAnswers[activeQuestion._id] && prevAnswers[activeQuestion._id] == index ? 'text-success valid ' :

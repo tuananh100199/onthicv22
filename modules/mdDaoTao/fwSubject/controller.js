@@ -52,7 +52,7 @@ module.exports = (app) => {
         app.model.subject.delete(req.body._id, (error) => res.send({ error }));
     });
 
-    app.post('/api/subject/student/submit', app.permission.check('subject:read'), (req, res) => {
+    app.post('/api/subject/student/submit', app.permission.check('user:login'), (req, res) => {
         const { courseId, subjectId, answers } = req.body;
         app.model.student.get({ user: req.session.user._id, course: courseId }, (error, student) => {
             if (error) {
@@ -123,6 +123,10 @@ module.exports = (app) => {
 
     // Hook permissionHooks  ------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'subject', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'subject:read');
+        resolve();
+    }));
+    app.permissionHooks.add('lecturer', 'subject', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'subject:read');
         resolve();
     }));

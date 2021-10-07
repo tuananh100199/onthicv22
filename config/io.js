@@ -3,6 +3,20 @@ module.exports = (app, http, appConfig) => {
     app.io = require('socket.io')(http);
     app.io.adapter(redisAdapter(appConfig.redisDB));
 
+    app.io.on('connection', socket => {
+        console.log('A user connected.');
+        // socket.on('sendRoomClient', (data) => {
+        //     data && data.map(room => socket.join(room));
+        // });
+        // socket.on('sendDataClient', (data) => {
+        //     app.io.to(data.room).emit('sendDataServer', { data });
+        // });
+        socket.on('disconnect', () => console.log('A user disconnected'));
+    });
+    // app.io.on('connection', socket => {
+    //     console.log('A user connected.');
+    //     socket.on('disconnect', () => console.log('A user disconnected'));
+    // });
     app.isDebug && app.fs.watch('public/js', () => {
         console.log('Debug: Reload client!');
         app.io.emit('debug', 'reload');
