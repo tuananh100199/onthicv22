@@ -20,6 +20,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./forumCategoryPage') })
         },
         {
+            path: '/user/forum/course/:_courseId',
+            component: Loadable({ loading: Loading, loader: () => import('./forumCategoryPage') })
+        },
+        {
             path: '/user/forum/:_categoryId',
             component: Loadable({ loading: Loading, loader: () => import('./forumPage') })
         },

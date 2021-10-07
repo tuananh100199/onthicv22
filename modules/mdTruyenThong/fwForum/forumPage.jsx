@@ -6,8 +6,6 @@ import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
 import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 
-const backUrl = '/user/forum';
-
 class ForumModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -63,12 +61,12 @@ class ForumModal extends AdminModal {
 class ForumPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready(backUrl, () => {
+        T.ready('/user/forum', () => {
             const params = T.routeMatcher('/user/forum/:_id').parse(window.location.pathname);
             if (params && params._id) {
                 this.setState({ _id: params._id }, () => this.getPage());
             } else {
-                this.props.history.push(backUrl);
+                this.props.history.goBack();
             }
         });
 
@@ -120,14 +118,14 @@ class ForumPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-comments',
             title: category ? category.title : 'Forum',
-            breadcrumb: [<Link key={0} to={backUrl}>Forum</Link>, category ? category.title : ''],
+            breadcrumb: [<a key={0} href='#' onClick={e => e.preventDefault() || this.props.history.goBack()}>Forum</a>, category ? category.title : ''],
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
                 <ForumModal ref={e => this.modal = e} category={category._id} permission={permission} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
-            backRoute: backUrl,
+            onBack: () => this.props.history.goBack(),
             onCreate: this.edit,
         });
     }

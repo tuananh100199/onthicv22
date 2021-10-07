@@ -1,5 +1,6 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
         content: String,

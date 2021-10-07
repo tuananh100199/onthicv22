@@ -8,6 +8,7 @@ class ForumCategoryPage extends AdminPage {
     state = {};
     componentDidMount() {
         T.ready();
+        //TODO: /user/forum/course/:_courseId
         this.props.getForumCategories();
 
         // TODO: Hiển thị thanh tìm kiếm
