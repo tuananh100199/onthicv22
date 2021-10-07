@@ -1,13 +1,11 @@
 .container{max-width:1170px; margin:auto;}
 img{ max-width:100%;}
 .inbox_people {
-    background: #f8f8f8 none repeat scroll 0 0;
     float: left;
     overflow: hidden;
     width: 40%; border-right:1px solid #c4c4c4;
 }
 .inbox_msg {
-    border: 1px solid #c4c4c4;
     clear: both;
     overflow: hidden;
 }
@@ -65,7 +63,7 @@ img{ max-width:100%;}
   display: none;
 }
 
-.inbox_chat { height: 350px; overflow-y: scroll;}
+.inbox_chat { height: 300px; overflow-y: scroll;}
 
 .active_chat{ background:#ddd;}
 
