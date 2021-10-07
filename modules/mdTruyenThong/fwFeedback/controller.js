@@ -1,12 +1,10 @@
 module.exports = (app) => {
     app.permission.add({ name: 'feedback:read' }, { name: 'feedback:write' }, { name: 'feedback:delete' });
-    // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    // app.get('/api/feedback/:type', app.permission.check('feedback:read'), (req, res) => { //mobile
-    //     const condition = { type: req.params.type, _refId: req.query._id, user: req.session.user && req.session.user._id };
-    //     app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
-    // });
+
+    app.get('/user/feedback/system', app.permission.check('user:login'), app.templates.admin);
+
     app.get('/api/feedback/:type', app.permission.check('feedback:read'), (req, res) => { 
-        const condition = { type: req.params.type, _refId: req.query._id };
+        const condition = { type: req.params.type, _refId: req.query._refId };
         app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
     });
 
@@ -26,7 +24,13 @@ module.exports = (app) => {
          (error, item) => res.send({ error, item }));
     });
     app.get('/home/feedback/:type', app.permission.check('user:login'), (req, res) => { //mobile
-        const condition = { type: req.params.type, _refId: req.query._id, user: req.session.user && req.session.user._id };
+        const condition = { type: req.params.type, _refId: req.query._refId, user: req.session.user && req.session.user._id };
         app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('courseAdmin', 'feedback', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'feedback:read','feedback:write');
+        resolve();
+    }));
 };

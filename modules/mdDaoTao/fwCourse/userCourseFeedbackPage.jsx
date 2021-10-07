@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
-import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackSection';
-import { AdminPage } from 'view/component/AdminPage';
+import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackUserSection';
+import { AdminPage,FormCheckbox } from 'view/component/AdminPage';
 import { Link } from 'react-router-dom';
 
 class UserCourseFeedback extends AdminPage {
@@ -28,8 +28,14 @@ class UserCourseFeedback extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name || '...'),
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Phản hồi khóa học'],
-            content: this.state.courseId && <FeedbackSection type='course' _refId={this.state.courseId} isTitleHidden={false} />,
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học của tôi</Link>, 'Phản hồi khóa học'],
+            content: <>
+            <div className='tile' style={{display:'flex'}}>
+            <FormCheckbox onChange={value=> value && this.setState({type:'course'})} label='Phản hồi khóa học'/>
+            <FormCheckbox onChange={value=> value && this.setState({type:'teacher'})} label='Phản hồi cố vấn học tập'/>
+            </div>
+            {this.state.type && <FeedbackSection type={this.state.type} _refId={this.state.courseId} title={this.state.type == 'teacher'?'cố vấn học tập':'khóa học'} />}
+        </>,
             backRoute: userPageLink,
         });
     }

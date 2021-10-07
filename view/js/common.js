@@ -3,6 +3,11 @@ import dateformat from 'dateformat';
 import routeMatcherLib from './routematcher.js';
 import './sweetalert.min.js';
 
+const dayjs = require('dayjs'), relativeTime = require('dayjs/plugin/relativeTime');
+require('dayjs/locale/vi');
+dayjs.locale('vi');
+dayjs.extend(relativeTime);
+
 const T = {
     debug: (location.hostname === 'localhost' || location.hostname === '127.0.0.1'),
     rootUrl: window.location.protocol + '//' + window.location.hostname,
@@ -209,6 +214,8 @@ const T = {
             processResults: response => ({ results: parseResponse(response) }),
         });
     },
+
+    fromNow: (time) => dayjs(time).fromNow(),
 };
 
 T.socket = T.debug ? io({ transports: ['websocket'] }) : io.connect(T.rootUrl, { transports: ['websocket'], secure: true });
