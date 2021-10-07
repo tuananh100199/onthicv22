@@ -10,9 +10,10 @@ module.exports = (app) => {
     );
 
     app.get('/user/time-table', app.permission.check('timeTable:read'), app.templates.admin);
-    app.get('/user/student-time-table', app.permission.check('timeTable:read'), app.templates.admin);
-    app.get('/user/lecturer/student-time-table', app.permission.check('timeTable:read'), app.templates.admin);
-    app.get('/user/lecturer/student-time-table/:_id', app.permission.check('timeTable:read'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/lecturer/student-time-table', app.permission.check('timeTable:write'), app.templates.admin);
+    app.get('/user/course-admin/student-time-table', app.permission.check('timeTable:write'), app.templates.admin);
+    app.get('/user/course/:courseId/student/:studentId/time-table', app.permission.check('timeTable:write'), app.templates.admin);
 
     // APIs -----------------------------------------------------------------------------------------------------------
     app.get('/api/time-table/page/:pageNumber/:pageSize', app.permission.check('timeTable:read'), (req, res) => {
@@ -87,9 +88,21 @@ module.exports = (app) => {
         app.model.timeTable.delete(req.body._id, (error) => res.send({ error }));
     });
 
+    // Student API-----------------------------------------------------------------------------------------------------
+    app.get('/api/time-table/student', app.permission.check('user:login'), (req, res) => {
+        const userId = req.session.user._id;
+        app.model.student.get({user: userId}, (error, item) => {
+            if (error || item == null) {
+                res.send({ error: 'Lỗi khi lấy thời khóa biểu học viên' });
+            } else {
+                app.model.timeTable.getPage(undefined, undefined, {student: item._id}, (error, page) => res.send({ error, page }));
+            }
+        });
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('lecturer', 'timeTable', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'timeTable:read', 'timeTable:write');
+        app.permissionHooks.pushUserPermission(user,'timeTable:read', 'timeTable:write');
         resolve();
     }));
 

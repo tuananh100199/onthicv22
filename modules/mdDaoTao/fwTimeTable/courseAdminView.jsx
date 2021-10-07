@@ -1,33 +1,31 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getStudentByLecturer } from 'modules/mdDaoTao/fwCourse/redux';
+import { getStudentPage } from 'modules/mdDaoTao/fwStudent/redux';
+import Pagination from 'view/component/Pagination';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
-class LecturerView extends AdminPage {
-
+class CourseAdminView extends AdminPage {
+    state = {};
     componentDidMount() {
         const route = T.routeMatcher('/user/course/:courseId'),
         courseId = route.parse(window.location.pathname).courseId;
 
-    if (courseId) {
-        this.setState({ courseId: courseId});
-        
-        T.ready('/user/course/' + courseId, () => {
-            this.props.getStudentByLecturer(this.props.courseId, data => {
-                this.setState({ listStudent: data.item });
+        if (courseId) {
+            this.setState({ courseId: courseId});
+            T.ready('/user/course/' + courseId, () => {
+                this.props.getStudentPage(undefined, undefined, { course: courseId });
             });
-        });
-    } else {
-        this.props.history.push(`/user/course/${this.state.courseId}`);
+        } else {
+            this.props.history.push(`/user/course/${this.state.courseId}`);
+        }  
     }
-
-        
-    }
-
+    
     render() {
         const permission = this.getUserPermission('timeTable');
+        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.student && this.props.student.page ?
+        this.props.student.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
-        getDataSource: () => this.state && this.state.listStudent || [],
+        getDataSource: () => list && list.filter(item => item.course != null),
         renderHead: () => (
             <tr>
                 <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
@@ -47,11 +45,15 @@ class LecturerView extends AdminPage {
                 <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/course/' + this.state.courseId + '/student/' + item._id + '/time-table'} />
             </tr >),
         });
-        return <div className='tile-body'>{table}</div>;
+        return <> 
+            <div className='tile-body'>{table}</div>
+            <Pagination name='adminStudent' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} style={{ left: 320 }}
+                getPage={this.props.getStudentPage} />
+        </>;
     }
 }
 
-const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { getStudentByLecturer };
-export default connect(mapStateToProps, mapActionsToProps)(LecturerView);
+const mapStateToProps = state => ({ system: state.system, student: state.trainning.student});
+const mapActionsToProps = { getStudentPage };
+export default connect(mapStateToProps, mapActionsToProps)(CourseAdminView);
 

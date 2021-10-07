@@ -17,7 +17,7 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminPage') })
         },
         {
-            path: '/user/student-time-table',
+            path: '/user/hoc-vien/khoa-hoc/:_id/thoi-khoa-bieu',
             component: Loadable({ loading: Loading, loader: () => import('./studentView') })
         },
         {
@@ -25,8 +25,12 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./lecturerView') })
         },
         {
-            path: '/user/lecturer/student-time-table/:_id',
-            component: Loadable({ loading: Loading, loader: () => import('./lecturerEditView') })
+            path: '/user/course-admin/student-time-table',
+            component: Loadable({ loading: Loading, loader: () => import('./courseAdminView') })
+        },
+        {
+            path: '/user/course/:courseId/student/:studentId/time-table',
+            component: Loadable({ loading: Loading, loader: () => import('./timeTableEditView') })
         },
     ],
     Section: {

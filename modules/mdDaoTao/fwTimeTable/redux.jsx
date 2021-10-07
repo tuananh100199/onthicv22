@@ -138,3 +138,18 @@ export function deleteTimeTable(_id) {
         }, error => console.error(error) || T.notify('Xóa học viên bị lỗi!', 'danger'));
     };
 }
+    //Student API--------------------------------------------------------------------------------------------------
+    export function getTimeTableByStudent(done) {
+        return dispatch => {
+            const url = '/api/time-table/student';
+            T.get(url, data => {
+                if (data.error) {
+                    T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
+                    console.error(`GET: ${url}. ${data.error}`);
+                } else {
+                    done && done(data.page);
+                    dispatch({ type: TimeTableGetPage, page: data.page });
+                }
+            }, error => console.error(error) || T.notify('Lấy thời khóa biểu bị lỗi', 'danger'));
+        };
+    }
