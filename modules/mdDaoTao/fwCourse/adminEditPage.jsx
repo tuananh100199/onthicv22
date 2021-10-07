@@ -85,6 +85,7 @@ class EditCoursePage extends AdminPage {
     render() {
         const currentUser = this.props.system ? this.props.system.user : null,
             permission = this.getUserPermission('course'),
+            permissionFeedback = this.getUserPermission('feedback'),
             { isLecturer, isCourseAdmin } = currentUser,
             readOnly = (!permission.write || isLecturer) && !isCourseAdmin, //TODO: xem lại !isCourseAdmin
             courseId = this.props.course && this.props.course.item ? this.props.course.item._id : null;
@@ -145,7 +146,7 @@ class EditCoursePage extends AdminPage {
             lecturerTabs.push({ title: 'Phòng chat cá nhân', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminPersonalChat courseId={courseId} /> : null },);
         }
 
-        if (isCourseAdmin && permission.write) {
+        if (isCourseAdmin && permission.write && permissionFeedback) {
             adminTabs.push({ title: 'Phản hồi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
 

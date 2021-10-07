@@ -1,6 +1,8 @@
 //TEMPLATES: admin
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
+import Loadable from 'react-loadable';
+import Loading from 'view/component/Loading';
 import feedback from './redux';
 
 export default {
@@ -8,5 +10,10 @@ export default {
         parent: 'communication',
         reducers: { feedback },
     },
-    routes: [],
+    routes: [
+        {
+            path: '/user/feedback/system',
+            component: Loadable({ loading: Loading, loader: () => import('./userFeedbackSystemPage') })
+        },
+    ],
 };

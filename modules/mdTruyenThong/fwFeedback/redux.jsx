@@ -28,10 +28,10 @@ export default function feedbackReducer(state = [], data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getFeedbackAll(type, _id, done) {
+export function getFeedbackAll(type, _refId, done) {
     return dispatch => {
         const url = `/api/feedback/${type}`;
-        T.get(url, { _id }, data => {
+        T.get(url, { _refId }, data => {
             if (data.error) {
                 T.notify('Lấy phản hồi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
@@ -59,10 +59,10 @@ export function updateFeedback(_id, changes, done) {
     };
 }
 
-export function getFeedbackAllByUser(type, _id, done) {
+export function getFeedbackAllByUser(type, _refId, done) {
     return dispatch => {
         const url = `/home/feedback/${type}`;
-        T.get(url, { _id }, data => {
+        T.get(url, { _refId }, data => {
             if (data.error) {
                 T.notify('Lấy phản hồi bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
