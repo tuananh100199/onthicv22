@@ -54,7 +54,6 @@ class TimeTableModal extends AdminModal {
     }
 
     onSubmit = () => {
-        console.log('iiii');
         const { _id, student } = this.state;
         const data = {
             student: student ? student._id : this.props.studentId,
@@ -119,7 +118,7 @@ class TimeTableModal extends AdminModal {
     }
 
     render = () => {
-        const { date, dateNumber, endHour, student } = this.state;
+        const { date, endHour, student } = this.state;
         return this.renderModal({
             title: 'Buổi học thực hành',
             size: 'large',
@@ -138,9 +137,7 @@ class TimeTableModal extends AdminModal {
                         {date == null ? '' : <>
                             Học <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span>
                             {endHour ? <> từ <span className='text-success'> {this.itemStartHour.value()}h - {endHour}h</span></> : ''}. </>}
-                        {dateNumber == null ? '' :
-                            (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
-                    </p>
+                     </p>
 
                     <FormTextBox ref={e => this.itemLicensePlates = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-8' readOnly={this.props.readOnly} />
@@ -182,7 +179,7 @@ class StudentView extends AdminPage {
         }
     } 
 
-    delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
         isConfirm && this.props.deleteTimeTableByAdmin(item._id, this.state.studentId));
    
     render() {
