@@ -5,8 +5,6 @@ import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserAllChat from './userAllChat';
 import UserPersonalChat from './userPersonalChat';
 
-
-const previousRoute = '/user';
 class ChatPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -14,25 +12,23 @@ class ChatPage extends AdminPage {
             _id = route.parse(window.location.pathname)._id;
         this.setState({ courseId: _id });
         if (_id) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-            });
+            T.ready('/user/hoc-vien/khoa-hoc/' + _id);
         } else {
-            this.props.history.push(previousRoute);
+            this.props.history.goBack();
         }
     }
 
     render() {
-        const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         const adminTabs = [
             { title: 'Phòng chat chung', component: <UserAllChat /> },
             { title: 'Phòng chat cá nhân', component: <UserPersonalChat /> },
         ];
         return this.renderPage({
-            icon: 'fa fa-comment',
-            title: 'Chat room',
-            breadcrumb: ['Chat'],
+            icon: 'fa fa-comments-o',
+            title: 'Chat',
+            breadcrumb: [<a key={0} href='#' onClick={() => this.props.history.goBack()}>Khoá học</a>, 'Chat'],
             content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={adminTabs} />,
-            backRoute: userPageLink,
+            onBack: () => this.props.history.goBack(),
         });
     }
 }

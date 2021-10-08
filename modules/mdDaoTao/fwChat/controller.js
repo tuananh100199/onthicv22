@@ -34,4 +34,15 @@ module.exports = app => {
             }
         });
     });
+
+
+    // Socket IO listeners --------------------------------------------------------------------------------------------------------------------------
+    app.io.onSocketListener('sendRoomClient', (socket, data) => {
+        data && data.map(room => socket.join(room));
+    });
+
+    app.io.onSocketListener('sendDataClient', (socket, data) => {
+        data.user = app.io.getSessionUser(socket);
+        data.user && app.io.to(data.room).emit('sendDataServer', { data });
+    });
 };

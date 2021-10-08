@@ -116,7 +116,7 @@ class ForumPage extends AdminPage {
             </div>)) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
-            icon: 'fa fa-comments',
+            icon: 'fa fa-users',
             title: category ? category.title : 'Forum',
             breadcrumb: [<a key={0} href='#' onClick={e => e.preventDefault() || this.props.history.goBack()}>Forum</a>, category ? category.title : ''],
             content: category ? <>

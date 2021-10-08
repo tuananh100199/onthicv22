@@ -36,7 +36,6 @@ class UserAllChat extends AdminPage {
                     oldMessage: [...prevState.oldMessage, dataGot.data]
                 }));
             }
-
         });
         this.scrollToBottom();
 

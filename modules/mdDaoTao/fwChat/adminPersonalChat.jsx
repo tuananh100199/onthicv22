@@ -138,37 +138,34 @@ class AdminPersonalChat extends AdminPage {
             </div>
         );
         return (
-            <div>
-                <div className='messanger'>
-                    <div className='inbox_msg row' >
-                        <div className='inbox_people col-md-3'>
-                            <div className='headind_srch'>
-                                <div className='recent_heading'>
-                                    <h4>Danh sách học viên</h4>
-                                </div>
-                            </div>
-                            <div className='inbox_chat'>
-                                {inboxChat}
+            <div className='messanger'>
+                <div className='inbox_msg row' >
+                    <div className='inbox_people col-md-3'>
+                        <div className='headind_srch'>
+                            <div className='recent_heading'>
+                                <h4>Danh sách học viên</h4>
                             </div>
                         </div>
-                        <div className='col-md-9' >
-                            <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
-                                <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
-                                <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
-                            </div>
-                            <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
-                                {renderMess}
-                                <div ref={this.scrollDown}></div>
-                            </div>
-                            <div className='sender'>
-                                <input type='text' placeholder='Gửi tin nhắn' ref={this.messagePersonal} />
-                                <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
-                            </div>
+                        <div className='inbox_chat'>
+                            {inboxChat}
                         </div>
                     </div>
-
+                    <div className='col-md-9' >
+                        <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                            <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
+                            <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
+                        </div>
+                        <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                            {renderMess}
+                            <div ref={this.scrollDown}></div>
+                        </div>
+                        <div className='sender'>
+                            <input type='text' placeholder='Gửi tin nhắn' ref={this.messagePersonal} />
+                            <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
+                        </div>
+                    </div>
                 </div>
-            </div >
+            </div>
         );
     }
 }
