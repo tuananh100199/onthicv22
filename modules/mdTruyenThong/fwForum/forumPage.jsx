@@ -4,9 +4,7 @@ import { getForumPage, createForum, updateForum, deleteForum } from './redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
-import { ForumStates, ForumStatesMapper } from './index';
-
-const backUrl = '/user/forum';
+import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 
 class ForumModal extends AdminModal {
     state = {};
@@ -63,12 +61,12 @@ class ForumModal extends AdminModal {
 class ForumPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready(backUrl, () => {
+        T.ready('/user/forum', () => {
             const params = T.routeMatcher('/user/forum/:_id').parse(window.location.pathname);
             if (params && params._id) {
                 this.setState({ _id: params._id }, () => this.getPage());
             } else {
-                this.props.history.push(backUrl);
+                this.props.history.goBack();
             }
         });
 
@@ -78,14 +76,10 @@ class ForumPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize, pageCondition, done) => {
-        if (this.state._id) {
-            this.props.getForumPage(this.state._id, pageNumber, pageSize, pageCondition, done);
-        }
+        this.state._id && this.props.getForumPage(this.state._id, pageNumber, pageSize, pageCondition, done);
     }
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
-
-    delete = (e, item) => e.preventDefault() || T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
+    delete = (item) => T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id));
 
     render() {
@@ -104,11 +98,7 @@ class ForumPage extends AdminPage {
                         {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                {permission.write ?
-                    <div className='btn-group btn-group-sm' style={{ position: 'absolute', right: 12, top: -12 }}>
-                        <a className='btn btn-primary' href='#' onClick={e => this.edit(e, item)}><i className='fa fa-lg fa-edit' /></a>
-                        <a className='btn btn-danger' href='#' onClick={e => this.delete(e, item)}><i className='fa fa-lg fa-trash' /></a>
-                    </div> : null}
+                <ForumButtons state={item.state} permission={permission} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
@@ -126,16 +116,16 @@ class ForumPage extends AdminPage {
             </div>)) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
-            icon: 'fa fa-comments',
+            icon: 'fa fa-users',
             title: category ? category.title : 'Forum',
-            breadcrumb: [<Link key={0} to={backUrl}>Forum</Link>, category ? category.title : ''],
+            breadcrumb: [<a key={0} href='#' onClick={e => e.preventDefault() || this.props.history.goBack()}>Forum</a>, category ? category.title : ''],
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
                 <ForumModal ref={e => this.modal = e} category={category._id} permission={permission} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
-            backRoute: backUrl,
+            onBack: () => this.props.history.goBack(),
             onCreate: this.edit,
         });
     }

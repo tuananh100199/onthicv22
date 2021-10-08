@@ -43,17 +43,17 @@ class ProfilePage extends AdminPage {
     }
 
     savePassword = () => {
-        const password1 = $(this.password1).val(),
-            password2 = $(this.password2).val();
+        const password1 = this.password1.value(),
+            password2 = this.password2.value();
         if (password1 == '') {
             T.notify('Mật khẩu mới của bạn bị trống!', 'danger');
-            $(this.password1).focus();
+            this.password1.focus();
         } else if (password2 == '') {
             T.notify('Bạn vui lòng nhập lại mật khẩu!', 'danger');
-            $(this.password2).focus();
+            this.password2.focus();
         } else if (password1 != password2) {
             T.notify('Mật khẩu không trùng nhau!', 'danger');
-            $(this.password1).focus();
+            this.password1.focus();
         } else {
             this.props.updateProfile({ password: password1 });
             T.notify('Cập nhật mật khẩu thành công', 'info');

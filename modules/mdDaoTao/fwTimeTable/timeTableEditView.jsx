@@ -1,17 +1,47 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTimeTablePage, createTimeTable, updateTimeTable, deleteTimeTable, getTimeTableDateNumber } from './redux';
-import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
-import { ajaxSelectStudentByCourse, getStudent } from 'modules/mdDaoTao/fwStudent/redux';
-import Pagination from 'view/component/Pagination';
-import { AdminPage, AdminModal, TableCell, renderTable, FormSelect, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
+import { getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber } from './redux';
+import { Link } from 'react-router-dom';
+import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox, FormCheckbox, FormRichTextBox, FormDatePicker } from 'view/component/AdminPage';
+
+
+class NoteModal extends AdminModal {
+    state = {};
+    onShow = (item) => {
+        const { _id, student, note, truant } = item || { note: '', truant: false };
+        this.itemNote.value(note);
+        this.itemTruant.value(truant);
+
+        this.setState({ loading: false, _id, student});
+    }
+
+    onSubmit = () => {
+        const { _id, student } = this.state;
+        if (student) {
+            const changes = {
+                note: this.itemNote.value(),
+                truant: this.itemTruant.value(),
+            };
+        this.props.update(_id, changes, student._id , () => this.hide()); 
+        }
+    }
+
+    render = () => {
+        return this.renderModal({
+            title: 'Ghi chú',
+            body: <>
+                <FormCheckbox ref={e => this.itemTruant = e} label='Học viên nghỉ học' isSwitch={true} readOnly={this.props.readOnly} />
+                <FormRichTextBox ref={e => this.itemNote = e} label='Ghi chú' readOnly={this.props.readOnly} />
+            </>,
+        });
+    }
+}
 
 class TimeTableModal extends AdminModal {
     state = {};
     onShow = (item) => {
         const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: new Date(), startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
-        this.itemStudent.value(student ? student._id : null);
         this.itemDate.value(date);
         this.itemStartHour.value(startHour);
         this.itemNumOfHours.value(numOfHours);
@@ -49,16 +79,9 @@ class TimeTableModal extends AdminModal {
             this.itemLicensePlates.focus();
         } else {
             data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
-            _id ? this.props.update(_id, data, () => this.hide()) : this.props.create(data, () => this.hide());
+            _id ?this.props.update(_id, data,  student._id, () => this.hide()) : this.props.create(data, this.props.studentId, () => this.hide());
         }
-        
     }
-
-    onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>
-        this.itemStudent.value(null));
-    onChangeStudent = (data) => data && data.id && this.setState({ loading: true }, () => this.props.getStudent(data.id, student => {
-        this.setState({ loading: false, student }, () => this.state._id || this.getDateNumber());
-    }));
 
     onSelectDate = (date) => this.setState({ date }, () => this.getDateNumber() || this.itemStartHour.focus());
 
@@ -86,7 +109,8 @@ class TimeTableModal extends AdminModal {
     }
 
     getDateNumber = () => {
-        const { student, date } = this.state,
+        const { student } = this.state,
+        date = new Date(this.state.date),
             startHour = this.itemStartHour.value();
         if (student && date && startHour != null) {
             this.props.getDateNumber(student._id, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour, (dateNumber) => this.setState({ dateNumber }));
@@ -94,19 +118,17 @@ class TimeTableModal extends AdminModal {
     }
 
     render = () => {
-        const { loading, courseType, date, dateNumber, endHour, student } = this.state;
+        const { date, endHour, student } = this.state;
         return this.renderModal({
             title: 'Buổi học thực hành',
             size: 'large',
             body: <>
                 <div className='row'>
-                    <FormSelect ref={e => this.itemCourse = e} label='Khóa học' data={ajaxSelectCourse} onChange={this.onChangeCourse} className='col-lg-4' readOnly={this.props.readOnly} allowClear={true} />
-                    <FormSelect ref={e => this.itemStudent = e} label='Học viên' data={ajaxSelectStudentByCourse(courseType)} onChange={this.onChangeStudent} className='col-lg-8' readOnly={this.props.readOnly} />
-                    {loading ? <p className='col-12'>Đang tải...</p> : ''}
-                </div>
-                <div className='row' style={{ display: student ? 'flex' : 'none' }}>
-                    <p className='col-lg-7'>Khóa học: <b>{student && student.course ? student.course.name : ''}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
-                    <p className='col-lg-5'>Số điện thoại: <b>{student && student.user && student.user.phoneNumber ? student.user.phoneNumber : 'Không có thông tin'}</b></p>
+                    {student? <>
+                    <p className='col-lg-3'>Học viên: <b>{ `${student && student.lastname} ${student && student.firstname}`}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
+                    <p className='col-lg-6'>Khóa học: <b>{student && student.course ? student.course.name : ''}</b>. Hạng LX: <b>{student && student.courseType ? student.courseType.title : ''}</b></p>
+                    <p className='col-lg-3'>Số điện thoại: <b>{student && student.user && student.user.phoneNumber ? student.user.phoneNumber : 'Không có thông tin'}</b></p>
+                    </> : null }
 
                     <FormDatePicker className='col-12 col-md-4' ref={e => this.itemDate = e} label='Ngày học' onChange={this.onSelectDate} readOnly={this.props.readOnly} />
                     <FormTextBox className='col-6 col-md-4' ref={e => this.itemStartHour = e} label='Giờ bắt đầu' type='number' min='0' max='23' onChange={this.onChangeHour} readOnly={this.props.readOnly} />
@@ -115,9 +137,7 @@ class TimeTableModal extends AdminModal {
                         {date == null ? '' : <>
                             Học <span className='text-success'>{new Date(date).getDayText()} {new Date(date).getDateText()}</span>
                             {endHour ? <> từ <span className='text-success'> {this.itemStartHour.value()}h - {endHour}h</span></> : ''}. </>}
-                        {dateNumber == null ? '' :
-                            (dateNumber == -1 ? <span className='text-danger'>Trùng thời khóa biểu!</span> : <>Buổi học thứ: <span className='text-primary'>{dateNumber}</span>.</>)}
-                    </p>
+                     </p>
 
                     <FormTextBox ref={e => this.itemLicensePlates = e} label='Xe học' className='col-md-4' style={{ textTransform: 'uppercase' }} readOnly={this.props.readOnly} />
                     <FormCheckbox ref={e => this.itemTruant = e} label='Học viên vắng học' className='col-md-8' readOnly={this.props.readOnly} />
@@ -130,31 +150,49 @@ class TimeTableModal extends AdminModal {
     }
 }
 
-class TimeTablePage extends AdminPage {
-    state = { searchText: '', isSearching: false };
+class StudentView extends AdminPage {
+    state = {};
     componentDidMount() {
-        this.props.getTimeTablePage(1, 50, undefined);
-        T.ready();
-        // T.ready(() => T.showSearchBox());
-        // T.onSearch = (searchText) => this.props.getTimeTablePage(undefined, undefined, searchText ? { searchText: searchText } : null, () => {
-        //     this.setState({ searchText, isSearching: searchText != '' });
-        // });
+        const params = T.routeMatcher('/user/course/:courseId/student/:studentId/time-table').parse(window.location.pathname),
+        courseId = params.courseId,
+        studentId = params.studentId;
+        const currentUser = this.props.system ? this.props.system.user : null,
+        { isLecturer, isCourseAdmin } = currentUser;
+        this.setState({ isLecturer: isLecturer, isCourseAdmin: isCourseAdmin });
+
+        if (studentId) {
+            this.setState({ courseId: courseId, studentId: studentId });
+            T.ready('/user/course/' + courseId, () => {
+                studentId && this.props.getTimeTablePage(1, 50, {student: studentId});
+            });
+        } else {
+            this.props.history.push(`/user/course/${this.state.courseId}`);
+        }
     }
 
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
-    delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá đăng ký tư vấn này?', true, isConfirm =>
-        isConfirm && this.props.deleteTimeTable(item._id));
+    edit = (e, item) =>{
+        e.preventDefault();
+        if (this.state.isLecturer){
+            this.modalLecturer.show(item);
+        } else if (this.state.isCourseAdmin) {
+            this.modalCourseAdmin.show(item);
+        }
+    } 
 
+    delete = (e, item) => e.preventDefault() || T.confirm('Xoá thời khóa biểu', 'Bạn có chắc muốn xoá thời khóa biểu này?', true, isConfirm =>
+        isConfirm && this.props.deleteTimeTableByAdmin(item._id, this.state.studentId));
+   
     render() {
-        const permission = this.getUserPermission('timeTable', ['read', 'write', 'delete']);
-        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.timeTable && this.props.timeTable.page ?
+        const backRoute = '/user/course/' + this.state.courseId;
+        const permission = this.getUserPermission('timeTable');
+        let { pageNumber, pageSize, list } = this.props.timeTable && this.props.timeTable.page ?
             this.props.timeTable.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: '100%' }} nowrap='true'>Học viên</th>
+                    <th style={{ width: '70%' }} nowrap='true'>Học viên</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số điện thoại</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Khóa học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Buổi học</th>
@@ -162,12 +200,13 @@ class TimeTablePage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Giờ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Số giờ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghỉ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={(pageNumber - 1) * pageSize + index + 1} />
-                    <TableCell type='link' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={<>{item.student ? item.student.lastname + ' ' + item.student.firstname : ''}<br />{item.student ? item.student.identityCard : ''}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={item.student && item.student.user && item.student.user.phoneNumber ? T.mobileDisplay(item.student.user.phoneNumber) : ''} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span><br />{item.student && item.student.courseType ? item.student.courseType.title : ''}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.dateNumber} />
@@ -175,26 +214,30 @@ class TimeTablePage extends AdminPage {
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours ? `${item.startHour}-${item.startHour + item.numOfHours}` : `${item.startHour}`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.numOfHours} />
                     <TableCell type='number' content={item.licensePlates} />
+                    <TableCell type='checkbox' content={item.truant} permission={permission} onChanged={active => this.props.updateTimeTableByAdmin(item._id, { truant: active }, this.state.studentId)} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={this.edit} onDelete={this.delete} />
                 </tr>),
         });
         return this.renderPage({
-            icon: 'fa fa-calendar',
-            title: 'Thời khóa biểu',
-            breadcrumb: ['Thời khóa biểu'],
+            icon: 'fa fa-cubes',
+            title: 'Khóa học: Thời khóa biểu học viên',
+            breadcrumb: [<Link key={0} to={backRoute}>Khóa học</Link>, 'Thời khóa biểu'],
+            backRoute: backRoute,
             content: <>
                 <div className='tile'>{table}</div>
-                <Pagination name='adminTimeTable' pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                    getPage={this.props.getTimeTablePage} />
-                <TimeTableModal ref={e => this.modal = e} readOnly={!permission.write}
-                    getStudent={this.props.getStudent} create={this.props.createTimeTable} update={this.props.updateTimeTable} getDateNumber={this.props.getTimeTableDateNumber} />
+                <NoteModal ref={e => this.modalLecturer = e} readOnly={!permission.write}
+                update={this.props.updateTimeTableByAdmin} />
+                <TimeTableModal ref={e => this.modalCourseAdmin = e} studentId={this.state.studentId} readOnly={!permission.write}
+                    getStudent={this.props.getStudent} create={this.props.createTimeTableByAdmin} update={this.props.updateTimeTableByAdmin} getDateNumber={this.props.getTimeTableDateNumber} />
+                {this.state.isCourseAdmin ?
+                    <button type='button' className='btn btn-success btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.edit}>
+                        <i className='fa fa-lg fa-plus' />
+                    </button> : null} 
             </>,
-            onCreate: permission.write ? this.edit : null,
-            onDelete: permission.delete ? this.delete : null,
         });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, timeTable: state.trainning.timeTable });
-const mapActionsToProps = { getTimeTablePage, createTimeTable, updateTimeTable, deleteTimeTable, getStudent, getTimeTableDateNumber };
-export default connect(mapStateToProps, mapActionsToProps)(TimeTablePage);
+const mapActionsToProps = { getTimeTablePage, createTimeTableByAdmin, updateTimeTableByAdmin, deleteTimeTableByAdmin, getTimeTableDateNumber };
+export default connect(mapStateToProps, mapActionsToProps)(StudentView);

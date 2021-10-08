@@ -13,7 +13,7 @@ module.exports = (app) => {
         phoneNumber: String,
         image: String,
         active: { type: Boolean, default: false },
-        createdDate: Date,
+        createdDate: { type: Date, default: Date.now },
 
         isCourseAdmin: { type: Boolean, default: false },                                           // Là quản trị viên khóa học
         isLecturer: { type: Boolean, default: false },                                              // Là cố vấn học tập
@@ -81,7 +81,7 @@ module.exports = (app) => {
                                     }
                                 });
                             } else {
-                                user.roles = [];
+                                // user.roles = [];
                                 user.save((error, user) => done && done(error, user));
                             }
                         }

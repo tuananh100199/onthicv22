@@ -1,11 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux.jsx';
-import { Link } from 'react-router-dom';
-import { AdminPage, CirclePageButton } from 'view/component/AdminPage';
-// import { getStudent } from 'modules/mdDaoTao/fwStudent/redux';
+import { AdminPage, CirclePageButton, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
-const previousRoute = '/user';
 class UserCoursePageDetail extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
@@ -17,19 +14,19 @@ class UserCoursePageDetail extends AdminPage {
                 this.props.getCourseByStudent(_id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
-                        this.props.history.push(previousRoute);
+                        this.props.history.push('/user');
                     } else if (data.notify) {
                         T.alert(data.notify, 'error', false, 2000);
-                        this.props.history.push(previousRoute);
+                        this.props.history.push('/user');
                     } else if (data.item && data._studentId) {
                         this.setState(data.item);
                     } else {
-                        this.props.history.push(previousRoute);
+                        this.props.history.push('/user');
                     }
                 });
             });
         } else {
-            this.props.history.push(previousRoute);
+            this.props.history.push('/user');
         }
     }
 
@@ -43,14 +40,14 @@ class UserCoursePageDetail extends AdminPage {
                     this.props.getCourseByStudent(_id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push(previousRoute);
+                            this.props.history.push('/user');
                         } else if (data.notify) {
                             T.alert(data.notify, 'error', false, 2000);
-                            this.props.history.push(previousRoute);
+                            this.props.history.push('/user');
                         } else if (data.item) {
                             this.setState(data.item);
                         } else {
-                            this.props.history.push(previousRoute);
+                            this.props.history.push('/user');
                         }
                     });
                 });
@@ -62,58 +59,34 @@ class UserCoursePageDetail extends AdminPage {
 
     render() {
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
+        const { name, courseId } = this.state;
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Khóa học: ' + (this.state.name),
+            title: `Khóa học: ${name}`,
             breadcrumb: ['Khóa học'],
             content: (
                 <div className='row user-course'>
-                    <h4 style={{ width: '100%' }}>Thông tin chung</h4>
-                    <Link className='col-md-6 col-lg-4' to={'/user/hoc-vien/khoa-hoc/thong-tin/' + this.state.courseId}>
-                        <div className='widget-small coloured-icon info'>
-                            <i className='icon fa fa-3x fa-info' />
-                            <div className='info'>
-                                <h4>Thông tin khóa học</h4>
-                            </div>
-                        </div>
-                    </Link>
-                    {this.state.chatActive &&
-                        <Link className='col-md-4' to={'/user/chat/' + this.state.courseId}>
-                            <div className='widget-small coloured-icon info'>
-                                <i className='icon fa fa-3x fa-comments-o' />
-                                <div className='info'>
-                                    <h4>Chat</h4>
-                                </div>
-                            </div>
-                        </Link>}
+                    <PageIconHeader text='Thông tin chung' />
 
-                    {/* //TODO chức năng phản hồi */}
-                    <Link className='col-md-6 col-lg-4' to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/phan-hoi`}>
-                        <div className='widget-small coloured-icon warning'>
-                            <i className='icon fa fa-3x fa-commenting-o' />
-                            <div className='info'>
-                                <h4>Phản hồi</h4>
-                            </div>
-                        </div>
-                    </Link>
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/thong-tin/${courseId}`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/thoi-khoa-bieu`} icon='fa-calendar' iconBackgroundColor='#ffc107' text='Thời khóa biểu' />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
 
+                    <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
+                    <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
 
-                    <h4 style={{ width: '100%' }}>Môn học</h4>
-                    {subjects.length ? subjects.map((subject, index) => (
-                        <div key={index} className='col-md-6 col-lg-4'>
-                            <Link to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/mon-hoc/${subject._id}`}>
-                                <div className='widget-small coloured-icon primary'>
-                                    <i className='icon fa fa-3x fa fa-briefcase' />
-                                    <div className='info'>
-                                        <h4>{subject && subject.title}</h4>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-                    )) : <div className='col-md-4'>Chưa có môn học!</div>}
+                    {subjects.length ? <>
+                        <PageIconHeader text='Môn học lý thuyết' />
+                        <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4>
+                        {subjects.map((subject, index) =>
+                            <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
+                        )}
+                    </> : null}
 
-                    {/* //TODO chức năng chat */}
-                    <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => alert('Chat')} />
+                    <PageIconHeader text='Môn học thực hành' />
+                    {/* TODO: hiển thị môn học thực hành */}
+
+                    <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
                 </div>
             ),
         });

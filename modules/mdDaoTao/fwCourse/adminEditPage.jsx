@@ -16,6 +16,8 @@ import LecturerRatingView from './tabView/lecturerRatingView';
 import AdminAllChat from '../fwChat/adminAllChat';
 import AdminPersonalChat from '../fwChat/adminPersonalChat';
 import AdminFeedbackView from './tabView/adminFeedbackView';
+import LecturerView from '../fwTimeTable/lecturerView';
+import CourseAdminView from '../fwTimeTable/courseAdminView';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -130,6 +132,7 @@ class EditCoursePage extends AdminPage {
             { title: 'Học viên của bạn', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerStudentView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
             { title: 'Tiến độ học tập', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerLearningProgressView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
             { title: 'Đánh giá bài học', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerRatingView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
+            { title: 'Thời khóa biểu', component: this.state.courseType && this.props.course && this.props.course.item ? <LecturerView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null },
         ];
         if (currentUser && currentUser.division && !currentUser.division.isOutside) {
             adminTabs.push({ title: 'Gán giáo viên', component: this.props.course && this.props.course.item ? <AdminRepresentersView permission={permission} /> : null });
@@ -148,8 +151,8 @@ class EditCoursePage extends AdminPage {
 
         if (isCourseAdmin && permission.write && permissionFeedback) {
             adminTabs.push({ title: 'Phản hồi', component: this.state.courseType && this.props.course && this.props.course.item ? <AdminFeedbackView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
+            adminTabs.push({ title: 'Thời khóa biểu', component: this.state.courseType && this.props.course && this.props.course.item ? <CourseAdminView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
-
 
         return this.renderPage({
             icon: 'fa fa-cubes',

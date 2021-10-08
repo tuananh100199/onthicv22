@@ -22,10 +22,10 @@ export default function forumReducer(state = {}, data) {
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-export function getForumCategories(done) {
+export function getForumCategories(course, done) {
     return dispatch => {
         const url = '/api/forum/categories';
-        T.get(url, data => {
+        T.get(url, { course }, data => {
             if (data.error) {
                 T.notify('Lấy danh mục forum bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
