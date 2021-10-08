@@ -45,14 +45,10 @@ class UserAllChat extends AdminPage {
         window.removeEventListener('keydown', this.logKey);
     }
 
-    logKey = (e) => {
-        if (e.code == 'Enter') {
-            this.sendMessage();
-        }
-    }
+    logKey = (e) => (e.code == 'Enter') && this.sendMessage();
 
     sendMessage = (e) => {
-        e.preventDefault();
+        e && e.preventDefault();
         const message = this.messageAll.value.trim();
         if (message !== '') {
             const msg = {

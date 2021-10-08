@@ -50,13 +50,11 @@ class AdminPersonalChat extends AdminPage {
         window.removeEventListener('keydown', this.logKey);
     }
 
-    logKey = (e) => {
-        if (e.code == 'Enter') {
-            this.sendMessage();
-        }
-    }
+    logKey = (e) => (e.code == 'Enter') && this.sendMessage();
 
-    sendMessage = () => {
+
+    sendMessage = (e) => {
+        e && e.preventDefault();
         const message = this.messagePersonal.value ? this.messagePersonal.value.trim() : '';
         if (message !== '') {
             const msg = {

@@ -44,7 +44,8 @@ class AdminAllChat extends AdminPage {
 
     logKey = (e) => (e.code == 'Enter') && this.sendMessage();
 
-    sendMessage = () => {
+    sendMessage = (e) => {
+        e && e.preventDefault();
         const message = this.messageAll.value.trim();
         if (message !== '') {
             const msg = {
@@ -102,18 +103,18 @@ class AdminAllChat extends AdminPage {
         });
 
         return (
-            <div className='tile-body'>
-                <div className='messanger' style={{ minHeight: '300px' }} >
-                    <div className='messages' style={{ overflowY: 'scroll', height: 'calc(100vh - 160px)' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
-                        {renderMess}
-                        <div ref={e => this.scrollDown = e}></div>
-                    </div>
-                    <div className='sender'>
-                        <input type='text' placeholder='Gửi tin nhắn' ref={e => this.messageAll = e} />
-                        <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane' /></button>
-                    </div>
+            <form className='messanger' style={{ minHeight: '300px' }} onSubmit={this.sendMessage}>
+                <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                    {renderMess}
+                    <div ref={e => this.scrollDown = e}></div>
                 </div>
-            </div>
+                <div style={{ display: 'flex' }}>
+                    <input ref={e => this.messageAll = e} type='text' placeholder='Gửi tin nhắn' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
+                    <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
+                        <i className='fa fa-lg fa-fw fa-paper-plane' />
+                    </button>
+                </div>
+            </form>
         );
     }
 }
