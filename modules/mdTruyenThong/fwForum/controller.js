@@ -27,7 +27,7 @@ module.exports = app => {
                     getForums = (index = 0) => {
                         if (index < items.length) {
                             const { _id, title, image } = items[index];
-                            condition = { category: _id };
+                            const condition = { category: _id, course: req.query.course };
                             if (!isForumWrite) condition.state = 'approved';
 
                             new Promise(resolve => app.model.forum.count(condition, (error, total) => {
@@ -66,6 +66,7 @@ module.exports = app => {
             if (error || category == null) {
                 res.send({ error: 'Danh mục không hợp lệ!' });
             } else {
+                console.log(pageCondition);
                 app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
                     res.send({ error, category, page });
                 });

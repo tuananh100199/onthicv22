@@ -20,8 +20,8 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./forumCategoryPage') })
         },
         {
-            path: '/user/forum/course/:_courseId',
-            component: Loadable({ loading: Loading, loader: () => import('./forumCategoryPage') })
+            path: '/user/hoc-vien/khoa-hoc/:_courseId/forum',
+            component: Loadable({ loading: Loading, loader: () => import('./forumCourseCategoryPage') })
         },
         {
             path: '/user/forum/:_categoryId',

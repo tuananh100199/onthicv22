@@ -8,9 +8,15 @@ import SectionForumCategory from './SectionForumCategory';
 class ForumCategoryPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready();
-        //TODO: /user/forum/course/:_courseId
-        this.props.getForumCategories(null);
+
+        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:course/forum'),
+            params = route.parse(window.location.pathname);
+        if (params && params.course) {
+            T.ready('/user/hoc-vien/khoa-hoc/' + params.course);
+            this.setState({ course: params.course });
+        } else {
+            this.props.history.goBack();
+        }
     }
 
     render() {
@@ -18,7 +24,7 @@ class ForumCategoryPage extends AdminPage {
             icon: 'fa fa-comments',
             title: 'Forum',
             breadcrumb: ['Forum'],
-            content: <SectionForumCategory />,
+            content: this.state.course ? <SectionForumCategory course={this.state.course} /> : null,
         });
     }
 }
