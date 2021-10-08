@@ -77,7 +77,7 @@ class UserCoursePageDetail extends AdminPage {
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
-                        <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4>
+                        {/* <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4> */}
                         {subjects.map((subject, index) =>
                             <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}
