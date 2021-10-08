@@ -154,7 +154,6 @@ class EditCoursePage extends AdminPage {
             adminTabs.push({ title: 'Thời khóa biểu', component: this.state.courseType && this.props.course && this.props.course.item ? <CourseAdminView permission={permission} courseType={this.state.courseType} courseId={courseId} /> : null });
         }
 
-
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),

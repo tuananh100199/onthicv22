@@ -25,34 +25,33 @@ class TimeTableModal extends AdminModal {
 
     onSubmit = () => {
         const { _id, student } = this.state;
-        if (student) {
-            const data = {
-                student: student ? student._id : null,
-                date: this.itemDate.value(),
-                startHour: this.itemStartHour.value(),
-                numOfHours: this.itemNumOfHours.value(),
-                truant: this.itemTruant.value(),
-                licensePlates: this.itemLicensePlates.value(),
-                content: this.itemContent.value(),
-                note: this.itemNote.value(),
-            };
-            if (data.date == null) {
-                T.notify('Ngày học chưa được chọn!', 'danger');
-                this.itemDate.focus();
-            } else if (data.startHour == null) {
-                T.notify('Giờ bắt đầu chưa được chọn!', 'danger');
-                this.itemStartHour.focus();
-            } else if (data.numOfHours == null) {
-                T.notify('Số giờ học chưa được chọn!', 'danger');
-                this.itemNumOfHours.focus();
-            } else if (data.licensePlates == null) {
-                T.notify('Xe học chưa được chọn!', 'danger');
-                this.itemLicensePlates.focus();
-            } else {
-                data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
-                _id ? this.props.update(_id, data, () => this.hide()) : this.props.create(data, () => this.hide());
-            }
+        const data = {
+            student: student ? student._id : this.props.studentId,
+            date: this.itemDate.value(),
+            startHour: this.itemStartHour.value(),
+            numOfHours: this.itemNumOfHours.value(),
+            truant: this.itemTruant.value(),
+            licensePlates: this.itemLicensePlates.value(),
+            content: this.itemContent.value(),
+            note: this.itemNote.value(),
+        };
+        if (data.date == null) {
+            T.notify('Ngày học chưa được chọn!', 'danger');
+            this.itemDate.focus();
+        } else if (data.startHour == null) {
+            T.notify('Giờ bắt đầu chưa được chọn!', 'danger');
+            this.itemStartHour.focus();
+        } else if (data.numOfHours == null) {
+            T.notify('Số giờ học chưa được chọn!', 'danger');
+            this.itemNumOfHours.focus();
+        } else if (data.licensePlates == null) {
+            T.notify('Xe học chưa được chọn!', 'danger');
+            this.itemLicensePlates.focus();
+        } else {
+            data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
+            _id ? this.props.update(_id, data, () => this.hide()) : this.props.create(data, () => this.hide());
         }
+        
     }
 
     onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>

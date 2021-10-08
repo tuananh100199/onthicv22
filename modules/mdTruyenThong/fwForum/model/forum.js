@@ -1,12 +1,13 @@
 module.exports = app => {
     const schema = app.db.Schema({
+        course: { type: app.db.Schema.ObjectId, ref: 'Course' },
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
         title: String,
         content: String,
         state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' },
         category: { type: app.db.Schema.ObjectId, ref: 'Category' },              // Phân loại forum
         createdDate: { type: Date, default: Date.now },
-        modifiedDate: { type: Date, default: Date.now },                          // Ngày cập nhật cuối cùng
+        modifiedDate: { type: Date, default: Date.now },
     });
     const model = app.db.model('Forum', schema);
 
@@ -46,10 +47,7 @@ module.exports = app => {
         },
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => {
-            changes.modifiedDate = new Date().getTime();
-            model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done);
-        },
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }).exec(done),
 
         delete: (_id, done) => model.findById(_id, (error, item) => {
             if (error) {

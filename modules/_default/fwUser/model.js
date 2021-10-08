@@ -81,7 +81,7 @@ module.exports = (app) => {
                                     }
                                 });
                             } else {
-                                user.roles = [];
+                                // user.roles = [];
                                 user.save((error, user) => done && done(error, user));
                             }
                         }

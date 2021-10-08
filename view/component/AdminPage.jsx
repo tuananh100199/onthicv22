@@ -503,12 +503,12 @@ export class FormFileBox extends React.Component {
 // Page components ----------------------------------------------------------------------------------------------------
 export class CirclePageButton extends React.Component {
     render() {
-        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick = () => { } } = this.props; // type = back | save | create | delete | export | import | custom
+        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick } = this.props; // type = back | save | create | delete | export | import | custom
         const properties = {
             type: 'button',
             style: { position: 'fixed', right: '10px', bottom: '10px', zIndex: 500, ...style },
             'data-toggle': 'tooltip', title: tooltip,
-            onClick,
+            onClick: () => onClick && onClick(),
         };
         let result = null;
         if (type == 'save') {
@@ -525,11 +525,18 @@ export class CirclePageButton extends React.Component {
             result = <button {...properties} className='btn btn-danger btn-circle'><i className='fa fa-lg fa-trash' /></button>;
         } else if (type == 'custom') {
             result = <button {...properties} className={'btn btn-circle ' + customClassName}><i className={'fa fa-lg ' + customIcon} /></button>;
-        } else {
-            result = (
-                <Link to={to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
-                    <i className='fa fa-lg fa-reply' />
-                </Link>);
+        } else { // back
+            if (onClick) {
+                result = (
+                    <a href='#' onClick={onClick} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
+                        <i className='fa fa-lg fa-reply' />
+                    </a>);
+            } else {
+                result = (
+                    <Link to={to} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
+                        <i className='fa fa-lg fa-reply' />
+                    </Link>);
+            }
         }
         return result;
     }
@@ -619,7 +626,7 @@ export class AdminPage extends React.Component {
         return permission;
     }
 
-    renderPage = ({ icon, title, subTitle, header, breadcrumb, advanceSearch, content, backRoute, onCreate, onSave, onExport, onImport }) => {
+    renderPage = ({ icon, title, subTitle, header, breadcrumb, advanceSearch, content, backRoute, onCreate, onSave, onExport, onImport, onBack }) => {
         if (breadcrumb == null) breadcrumb = [];
 
         let right = 10, createButton, saveButton, exportButton, importButton;
@@ -658,7 +665,7 @@ export class AdminPage extends React.Component {
                     <div style={{ width: '100%' }}>{advanceSearch}</div>
                 </div>
                 {content}
-                {backRoute ? <CirclePageButton type='back' to={backRoute} /> : null}
+                {onBack ? <CirclePageButton type='back' onClick={onBack} /> : (backRoute ? <CirclePageButton type='back' to={backRoute} /> : null)}
                 {importButton} {exportButton} {saveButton} {createButton}
             </main>);
     }

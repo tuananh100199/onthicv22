@@ -1,4 +1,4 @@
-//TEMPLATES: admin|home
+//TEMPLATES: admin
 import Loadable from 'react-loadable';
 import Loading from 'view/component/Loading';
 import chat from './redux';
