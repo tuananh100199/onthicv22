@@ -7,7 +7,7 @@ module.exports = app => {
     };
 
     app.permission.add({ name: 'forum:write', menu }, { name: 'forum:delete' });
-    app.permission.add({ name: 'user:login', menu: { parentMenu: { index: 3010, title: 'Forum', icon: 'fa-comments', link: '/user/forum' } } });
+    app.permission.add({ name: 'user:login', menu: { parentMenu: { index: 3010, title: 'Forum', icon: 'fa-users', link: '/user/forum' } } });
 
     app.get('/user/category/forum', app.permission.check('category:read'), app.templates.admin);
     app.get('/user/forum', app.permission.check('user:login'), app.templates.admin);

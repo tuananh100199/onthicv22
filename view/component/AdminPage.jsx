@@ -542,6 +542,26 @@ export class CirclePageButton extends React.Component {
     }
 }
 
+export class PageIcon extends React.Component {
+    render() {
+        const { className = 'col-md-6 col-lg-4', to = '/user', visible = true, disabled = false, icon = '', iconBackgroundColor = '#17a2b8', text = '', textColor = 'black' } = this.props;
+        const content = (
+            <div className='widget-small coloured-icon'>
+                <i className={'icon fa fa-3x ' + icon} style={{ backgroundColor: iconBackgroundColor }} />
+                <div className='info' style={{ color: textColor }}>
+                    {typeof text == 'string' ? <h4>{text}</h4> : text()}
+                </div>
+            </div>);
+        return !visible ? null : (disabled ? content : <Link className={className} to={to}>{content}</Link>);
+    }
+}
+export class PageIconHeader extends React.Component {
+    render() {
+        const { className = 'col-md-12', text = '' } = this.props;
+        return <h4 className={className}>{text}</h4>;
+    }
+}
+
 export class AdminModal extends React.Component {
     state = { display: '' };
     _data = {};

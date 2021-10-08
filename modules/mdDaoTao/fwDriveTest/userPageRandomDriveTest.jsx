@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseTypeAll } from 'modules/mdDaoTao/fwCourseType/redux';
-import { Link } from 'react-router-dom';
-import { AdminPage } from 'view/component/AdminPage';
+import { AdminPage, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
 class UserPageRandomDriveTest extends AdminPage {
     state = { name: '...' };
@@ -22,18 +21,9 @@ class UserPageRandomDriveTest extends AdminPage {
             breadcrumb: ['Bộ đề thi ngẫu nhiên'],
             content: (
                 <div className='row'>
-                    <h4 className='col-12'>Loại đề thi</h4>
+                    <PageIconHeader text='Loại đề thi' />
                     {courseTypes && courseTypes.map((type, index) => (
-                        <div key={index} className='col-md-4'>
-                            <Link to={'/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/' + type._id}>
-                                <div className='widget-small coloured-icon info'>
-                                    <i className='icon fa fa-3x fa fa-cubes' />
-                                    <div className='info'>
-                                        <h4>Loại {type.title}</h4>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
+                        <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/bo-de-thi-ngau-nhien/${type._id}`} icon='fa-cubes' iconBackgroundColor='#17a2b8' text={'Loại ' + type.title} />
                     ))}
                 </div>
             ),

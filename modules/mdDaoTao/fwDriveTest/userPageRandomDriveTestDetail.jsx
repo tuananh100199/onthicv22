@@ -173,8 +173,8 @@ class UserPageRandomDriveTestDetail extends AdminPage {
         }
 
         return this.renderPage({
-            icon: 'fa fa-dashboard',
-            title: 'Ôn tập: Đề thi ngẫu nhiên',
+            icon: 'fa fa-cubes',
+            title: 'Đề thi ngẫu nhiên',
             breadcrumb: [<Link key={0} to={userPageLink}>Bộ đề thi</Link>, 'Đề thi ngẫu nhiên'],
             backRoute: userPageLink,
             content: (<>
