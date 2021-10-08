@@ -7,36 +7,25 @@ import './chat.scss';
 
 const previousRoute = '/user';
 class UserAllChat extends AdminPage {
-    socketRef = React.createRef();
+    messageAll = React.createRef();
+    scrollDown = React.createRef();
     state = { clientId: null, oldMessage: [], listRoom: [] };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const route = T.routeMatcher('/user/chat/:_id'),
-            _id = route.parse(window.location.pathname)._id;
-        const user = this.props.system.user;
-        this.setState({
-            courseId: _id,
-            user: {
-                _id: user._id,
-                image: user.image,
-                lastname: user.lastname,
-                firstname: user.firstname,
-                isCourseAdmin: user.isCourseAdmin,
-                isLecturer: user.isLecturer
-            },
-            scrollDown: true,
-            currentLoaded: 0,
-        });
-        if (_id) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
-                this.props.getOldMessage(_id, Date.now(), 100, data => {
+            courseId = route.parse(window.location.pathname)._id,
+            user = this.props.system.user;
+        this.setState({ courseId, user, currentLoaded: 0 });
+        if (courseId) {
+            T.ready('/user/hoc-vien/khoa-hoc/' + courseId, () => {
+                this.props.getOldMessage(courseId, Date.now(), 100, data => {
                     this.setState({
                         oldMessage: data.item,
                         currentLoaded: data.item[0] && data.item[0].sent,
                         anyMessagesLeft: data.item.length < data.count
                     });
                 });
-                T.socket.emit('sendRoomClient', [_id]);
+                T.socket.emit('sendRoomClient', [courseId]);
             });
         } else {
             this.props.history.push(previousRoute);
@@ -49,7 +38,12 @@ class UserAllChat extends AdminPage {
             }
 
         });
+        this.scrollToBottom();
 
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
     }
 
     componentWillUnmount() {
@@ -63,7 +57,7 @@ class UserAllChat extends AdminPage {
     }
 
     sendMessage = () => {
-        const message = $('#message').val().trim();
+        const message = this.messageAll.current.value.trim();
         if (message !== '') {
             const msg = {
                 message: message,
@@ -73,12 +67,16 @@ class UserAllChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            $('#message').val('');
+            this.messageAll.current.value = '';
         }
     }
 
+    scrollToBottom = () => {
+        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
     handleScrollMessage = debounce((target) => {
-        if (!this.state.scrollDown && (target.scrollHeight + target.scrollTop >= (target.clientHeight))) {
+        if (target.scrollHeight + target.scrollTop >= (target.clientHeight)) {
             this.state.anyMessagesLeft && this.props.getOldMessage(this.state.courseId, this.state.currentLoaded, 5, data => {
                 this.setState(prevState => ({
                     oldMessage: data.item.concat(prevState.oldMessage),
@@ -86,8 +84,6 @@ class UserAllChat extends AdminPage {
                     anyMessagesLeft: data.item.concat(prevState.oldMessage).length < data.count,
                 }));
             });
-        } else if (this.state.scrollDown) {
-            this.setState({ scrollDown: false });
         }
     }, 200)
 
@@ -114,19 +110,15 @@ class UserAllChat extends AdminPage {
             );
         });
 
-        if (this.state.scrollDown) {
-            $('#msg_admin_all').animate({
-                scrollTop: $('#msg_admin_all').height()
-            }, 1000);
-        }
         return (
             <div >
                 <div className='messanger' style={{ minHeight: '300px' }}>
-                    <div className='messages' id='msg_admin_all' style={{ height: '300px', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                    <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                         {renderMess}
+                        <div ref={this.scrollDown}></div>
                     </div>
                     <div className='sender'>
-                        <input type='text' placeholder='Gửi tin nhắn' id='message' />
+                        <input type='text' placeholder='Gửi tin nhắn' ref={this.messageAll} />
                         <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                     </div>
                 </div>

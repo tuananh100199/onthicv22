@@ -9,11 +9,13 @@ import T from 'view/js/common';
 const previousRoute = '/user';
 class AdminAllChat extends AdminPage {
     state = { clientId: null, oldMessage: [] };
+    messageAll = React.createRef();
+    scrollDown = React.createRef();
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const courseId = this.props.courseId,
             user = this.props.system.user;
-        this.setState({ courseId, user, scrollDown: true, currentLoaded: 0 });
+        this.setState({ courseId, user, currentLoaded: 0 });
         if (courseId) {
             this.props.getOldMessage(courseId, Date.now(), 100, data => {
                 this.setState({
@@ -31,6 +33,11 @@ class AdminAllChat extends AdminPage {
                 this.setState(prevState => ({ oldMessage: [...prevState.oldMessage, dataGot.data] }));
             }
         });
+        this.scrollToBottom();
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
     }
 
     componentWillUnmount() {
@@ -40,7 +47,7 @@ class AdminAllChat extends AdminPage {
     logKey = (e) => (e.code == 'Enter') && this.sendMessage();
 
     sendMessage = () => {
-        const message = $('#message').val().trim();
+        const message = this.messageAll.current.value.trim();
         if (message !== '') {
             const msg = {
                 message: message,
@@ -50,12 +57,12 @@ class AdminAllChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            $('#message').val('');
+            this.messageAll.current.value = '';
         }
     }
 
     handleScrollMessage = debounce((target) => {
-        if (!this.state.scrollDown && (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40))) {
+        if (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40)) {
             this.state.anyMessagesLeft && this.props.getOldMessage(this.state.courseId, this.state.currentLoaded, 5, data => {
                 this.setState(prevState => ({
                     oldMessage: data.item.concat(prevState.oldMessage),
@@ -63,10 +70,12 @@ class AdminAllChat extends AdminPage {
                     anyMessagesLeft: data.item.concat(prevState.oldMessage).length < data.count,
                 }));
             });
-        } else if (this.state.scrollDown) {
-            this.setState({ scrollDown: false });
         }
     }, 200)
+
+    scrollToBottom = () => {
+        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+    }
 
     render() {
         const renderMess = this.state.oldMessage.map((msg, index, element) => {
@@ -91,19 +100,15 @@ class AdminAllChat extends AdminPage {
             );
         });
 
-        if (this.state.scrollDown) {
-            $('#msg_admin_all').animate({
-                scrollTop: $('#msg_admin_all').height()
-            }, 1000);
-        }
         return (
             <div className='tile-body'>
                 <div className='messanger' style={{ minHeight: '300px' }} >
-                    <div className='messages' id='msg_admin_all' style={{ overflowY: 'scroll', height: 'calc(100vh - 160px)' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                    <div className='messages' style={{ overflowY: 'scroll', height: 'calc(100vh - 160px)' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                         {renderMess}
+                        <div ref={this.scrollDown}></div>
                     </div>
                     <div className='sender'>
-                        <input type='text' placeholder='Gửi tin nhắn' id='message' />
+                        <input type='text' placeholder='Gửi tin nhắn' ref={this.messageAll} />
                         <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane' /></button>
                     </div>
                 </div>

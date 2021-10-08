@@ -9,26 +9,16 @@ import './chat.scss';
 const previousRoute = '/user';
 class AdminPersonalChat extends AdminPage {
     state = { listStudent: [], oldMessage: [] };
+    messagePersonal = React.createRef();
+    scrollDown = React.createRef();
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
-        const _id = this.props.courseId;
-        if (_id) {
-            const user = this.props.system.user;
-            this.setState({
-                courseId: _id,
-                user: {
-                    _id: user._id,
-                    image: user.image,
-                    lastname: user.lastname,
-                    firstname: user.firstname,
-                    isCourseAdmin: user.isCourseAdmin,
-                    isLecturer: user.isLecturer
-                },
-                scrollDown: true,
-                currentLoaded: 0,
-            });
-            this.props.getChatByAdmin(_id, data => {
-                this.setState({ listStudent: data.item, roomId: _id + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
+        const courseId = this.props.courseId,
+            user = this.props.system.user;
+        this.setState({ courseId, user, currentLoaded: 0 });
+        if (courseId) {
+            this.props.getChatByAdmin(courseId, data => {
+                this.setState({ listStudent: data.item, roomId: courseId + '_' + user._id + '_' + data.item[0].user._id, activeId: data.item[0].user._id }, () => {
                     this.props.getOldMessage(this.state.roomId, Date.now(), 100, data => {
                         this.setState({
                             oldMessage: data.item,
@@ -37,7 +27,7 @@ class AdminPersonalChat extends AdminPage {
                         });
                     });
                 });
-                const listRoom = data.item.map(student => _id + '_' + user._id + '_' + student.user._id);
+                const listRoom = data.item.map(student => courseId + '_' + user._id + '_' + student.user._id);
                 T.socket.emit('sendRoomClient', listRoom);
             });
         } else {
@@ -50,6 +40,11 @@ class AdminPersonalChat extends AdminPage {
                 }));
             }
         });
+        this.scrollToBottom();
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
     }
 
     componentWillUnmount() {
@@ -63,7 +58,7 @@ class AdminPersonalChat extends AdminPage {
     }
 
     sendMessage = () => {
-        const message = $('#personal_message').val() ? $('#personal_message').val().trim() : '';
+        const message = this.messagePersonal.current.value ? this.messagePersonal.current.value.trim() : '';
         if (message !== '') {
             const msg = {
                 message: message,
@@ -73,7 +68,7 @@ class AdminPersonalChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            $('#personal_message').val('');
+            this.messagePersonal.current.value = '';
         }
     }
 
@@ -92,8 +87,12 @@ class AdminPersonalChat extends AdminPage {
         });
     }
 
+    scrollToBottom = () => {
+        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
     handleScrollMessage = debounce((target) => {
-        if (!this.state.scrollDown && (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40))) {
+        if (target.scrollHeight + target.scrollTop >= (target.clientHeight - 40)) {
             this.state.anyMessagesLeft && this.props.getOldMessage(this.state.roomId, this.state.currentLoaded, 5, data => {
                 this.setState(prevState => ({
                     oldMessage: data.item.concat(prevState.oldMessage),
@@ -101,8 +100,6 @@ class AdminPersonalChat extends AdminPage {
                     anyMessagesLeft: data.item.concat(prevState.oldMessage).length < data.count,
                 }));
             });
-        } else if (this.state.scrollDown) {
-            this.setState({ scrollDown: false });
         }
     }, 200)
 
@@ -140,11 +137,6 @@ class AdminPersonalChat extends AdminPage {
                 </div>
             </div>
         );
-        if (this.state.scrollDown) {
-            $('#msg_admin_personal').stop().animate({
-                scrollTop: $('#msg_admin_personal').height()
-            }, 500);
-        }
         return (
             <div>
                 <div className='messanger'>
@@ -166,9 +158,10 @@ class AdminPersonalChat extends AdminPage {
                             </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
+                                <div ref={this.scrollDown}></div>
                             </div>
                             <div className='sender'>
-                                <input type='text' placeholder='Gửi tin nhắn' id='personal_message' />
+                                <input type='text' placeholder='Gửi tin nhắn' ref={this.messagePersonal} />
                                 <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                             </div>
                         </div>
