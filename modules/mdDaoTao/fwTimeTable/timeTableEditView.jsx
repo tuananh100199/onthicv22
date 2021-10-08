@@ -113,7 +113,6 @@ class TimeTableModal extends AdminModal {
             date = new Date(this.state.date),
             startHour = this.itemStartHour.value();
         if (student && date && startHour != null) {
-            console.log(date);
             this.props.getDateNumber(student._id, new Date(date.getFullYear(), date.getMonth(), date.getDate()), startHour, (dateNumber) => this.setState({ dateNumber }));
         }
     }
