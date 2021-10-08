@@ -5,10 +5,7 @@ import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
 
-const previousRoute = '/user';
 class UserPersonalChat extends AdminPage {
-    messagePersonal = React.createRef();
-    scrollDown = React.createRef();
     state = { listAdmin: [], oldMessage: [] };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
@@ -33,7 +30,7 @@ class UserPersonalChat extends AdminPage {
                 });
             });
         } else {
-            this.props.history.push(previousRoute);
+            this.props.history.goBack();
         }
         T.socket.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.roomId) {
@@ -61,7 +58,7 @@ class UserPersonalChat extends AdminPage {
     }
 
     sendMessage = () => {
-        const message = this.messagePersonal.current.value ? this.messagePersonal.current.value.trim() : '';
+        const message = this.messagePersonal.value ? this.messagePersonal.value.trim() : '';
         if (message !== '') {
             const msg = {
                 message: message,
@@ -71,7 +68,7 @@ class UserPersonalChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            this.messagePersonal.current.value = '';
+            this.messagePersonal.value = '';
         }
     }
 
@@ -103,7 +100,7 @@ class UserPersonalChat extends AdminPage {
     }
 
     scrollToBottom = () => {
-        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+        this.scrollDown.scrollIntoView({ behavior: 'smooth' });
     }
 
     render() {
@@ -165,10 +162,10 @@ class UserPersonalChat extends AdminPage {
                             </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: '200px' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                                 {renderMess}
-                                <div ref={this.scrollDown}></div>
+                                <div ref={e => this.scrollDown = e}></div>
                             </div>
                             <div className='sender'>
-                                <input type='text' placeholder='Gửi tin nhắn' ref={this.messagePersonal} />
+                                <input type='text' placeholder='Gửi tin nhắn' ref={e => this.messagePersonal = e} />
                                 <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                             </div>
                         </div>

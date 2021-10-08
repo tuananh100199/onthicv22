@@ -9,8 +9,6 @@ import T from 'view/js/common';
 const previousRoute = '/user';
 class AdminAllChat extends AdminPage {
     state = { clientId: null, oldMessage: [] };
-    messageAll = React.createRef();
-    scrollDown = React.createRef();
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const courseId = this.props.courseId,
@@ -47,7 +45,7 @@ class AdminAllChat extends AdminPage {
     logKey = (e) => (e.code == 'Enter') && this.sendMessage();
 
     sendMessage = () => {
-        const message = this.messageAll.current.value.trim();
+        const message = this.messageAll.value.trim();
         if (message !== '') {
             const msg = {
                 message: message,
@@ -57,7 +55,7 @@ class AdminAllChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            this.messageAll.current.value = '';
+            this.messageAll.value = '';
         }
     }
 
@@ -74,7 +72,7 @@ class AdminAllChat extends AdminPage {
     }, 200)
 
     scrollToBottom = () => {
-        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+        this.scrollDown.scrollIntoView({ behavior: 'smooth' });
     }
 
     render() {
@@ -108,10 +106,10 @@ class AdminAllChat extends AdminPage {
                 <div className='messanger' style={{ minHeight: '300px' }} >
                     <div className='messages' style={{ overflowY: 'scroll', height: 'calc(100vh - 160px)' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                         {renderMess}
-                        <div ref={this.scrollDown}></div>
+                        <div ref={e => this.scrollDown = e}></div>
                     </div>
                     <div className='sender'>
-                        <input type='text' placeholder='Gửi tin nhắn' ref={this.messageAll} />
+                        <input type='text' placeholder='Gửi tin nhắn' ref={e => this.messageAll = e} />
                         <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane' /></button>
                     </div>
                 </div>

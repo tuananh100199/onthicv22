@@ -9,8 +9,7 @@ import './chat.scss';
 const previousRoute = '/user';
 class AdminPersonalChat extends AdminPage {
     state = { listStudent: [], oldMessage: [] };
-    messagePersonal = React.createRef();
-    scrollDown = React.createRef();
+
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const courseId = this.props.courseId,
@@ -58,7 +57,7 @@ class AdminPersonalChat extends AdminPage {
     }
 
     sendMessage = () => {
-        const message = this.messagePersonal.current.value ? this.messagePersonal.current.value.trim() : '';
+        const message = this.messagePersonal.value ? this.messagePersonal.value.trim() : '';
         if (message !== '') {
             const msg = {
                 message: message,
@@ -68,7 +67,7 @@ class AdminPersonalChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            this.messagePersonal.current.value = '';
+            this.messagePersonal.value = '';
         }
     }
 
@@ -88,7 +87,7 @@ class AdminPersonalChat extends AdminPage {
     }
 
     scrollToBottom = () => {
-        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+        this.scrollDown.scrollIntoView({ behavior: 'smooth' });
     }
 
     handleScrollMessage = debounce((target) => {
@@ -160,10 +159,10 @@ class AdminPersonalChat extends AdminPage {
                         </div>
                         <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
                             {renderMess}
-                            <div ref={this.scrollDown}></div>
+                            <div ref={e => this.scrollDown = e}></div>
                         </div>
                         <div className='sender'>
-                            <input type='text' placeholder='Gửi tin nhắn' ref={this.messagePersonal} />
+                            <input type='text' placeholder='Gửi tin nhắn' ref={e => this.messagePersonal = e} />
                             <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
                         </div>
                     </div>

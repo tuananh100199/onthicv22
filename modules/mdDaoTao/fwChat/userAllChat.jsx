@@ -5,13 +5,9 @@ import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
 
-const previousRoute = '/user';
 class UserAllChat extends AdminPage {
-    messageAll = React.createRef();
-    scrollDown = React.createRef();
     state = { clientId: null, oldMessage: [], listRoom: [] };
     componentDidMount() {
-        window.addEventListener('keydown', this.logKey);
         const route = T.routeMatcher('/user/chat/:_id'),
             courseId = route.parse(window.location.pathname)._id,
             user = this.props.system.user;
@@ -28,7 +24,7 @@ class UserAllChat extends AdminPage {
                 T.socket.emit('sendRoomClient', [courseId]);
             });
         } else {
-            this.props.history.push(previousRoute);
+            this.props.history.push('/user');
         }
         T.socket.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.courseId) {
@@ -55,8 +51,9 @@ class UserAllChat extends AdminPage {
         }
     }
 
-    sendMessage = () => {
-        const message = this.messageAll.current.value.trim();
+    sendMessage = (e) => {
+        e.preventDefault();
+        const message = this.messageAll.value.trim();
         if (message !== '') {
             const msg = {
                 message: message,
@@ -66,12 +63,12 @@ class UserAllChat extends AdminPage {
             T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
-            this.messageAll.current.value = '';
+            this.messageAll.value = '';
         }
     }
 
     scrollToBottom = () => {
-        this.scrollDown.current.scrollIntoView({ behavior: 'smooth' });
+        this.scrollDown.scrollIntoView({ behavior: 'smooth' });
     }
 
     handleScrollMessage = debounce((target) => {
@@ -88,24 +85,24 @@ class UserAllChat extends AdminPage {
 
     render() {
         const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-        const renderMess = this.state.oldMessage.map((msg, index, element) => {
-            const prev_msg = element[index - 1],
-                isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(msg.sent).getTime())),
-                isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
-                isNewUser = (!isNow || (prev_msg && prev_msg.user._id != msg.user._id)) && msg.user._id != this.state.user._id,
-                message = msg.message.split(' ').map((part, index) =>
-                    urlRegex.test(part) ? <a key={index} style={{ color: msg.user._id != this.state.user._id ? 'black' : 'white' }} href={part} target='_blank' rel='noreferrer' ><u>{part}</u></a> : part + ' '
+        const renderMess = this.state.oldMessage.map((message, index, element) => {
+            const prevMessage = element[index - 1],
+                isNow = (prevMessage && (new Date(prevMessage.sent).getTime() + 300000 >= new Date(message.sent).getTime())),
+                isNewDay = !(prevMessage && T.dateToText(prevMessage.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
+                isNewUser = (!isNow || (prevMessage && prevMessage.user._id != message.user._id)) && message.user._id != this.state.user._id,
+                newMessage = message.message.split(' ').map((part, index) =>
+                    urlRegex.test(part) ? <a key={index} style={{ color: message.user._id != this.state.user._id ? 'black' : 'white' }} href={part} target='_blank' rel='noreferrer' ><u>{part}</u></a> : part + ' '
                 );
             return (
                 <div key={index}>
                     {isNewDay ?
-                        !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'dd/mm HH:MM')}</p> :
-                        !isNow && <p className='text-secondary text-center'>{T.dateToText(msg.sent, 'HH:MM')}</p>}
-                    <div style={{ marginBottom: '5px' }} className={(msg.user._id == this.state.user._id) ? 'message me' : 'message'}>
-                        {isNewUser && <img style={{ width: '30px' }} src={msg.user.image} alt={msg.lastname} />}
+                        !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'dd/mm HH:MM')}</p> :
+                        !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'HH:MM')}</p>}
+                    <div style={{ marginBottom: '5px' }} className={(message.user._id == this.state.user._id) ? 'message me' : 'message'}>
+                        {isNewUser && <img style={{ width: '30px' }} src={message.user.image} alt={message.lastname} />}
                         <div>
-                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (msg.user.isCourseAdmin ? 'text-danger' : (msg.user.isLecturer ? 'text-primary' : ''))}>{msg.user.firstname + ' ' + msg.user.lastname + ' '}</div>}
-                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(msg.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{message}</p>
+                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (message.user.isCourseAdmin ? 'text-danger' : (message.user.isLecturer ? 'text-primary' : ''))}>{message.user.lastname + ' ' + message.user.firstname}</div>}
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
                         </div>
                     </div>
                 </div>
@@ -113,19 +110,20 @@ class UserAllChat extends AdminPage {
             );
         });
 
+
         return (
-            <div >
-                <div className='messanger' style={{ minHeight: '300px' }}>
-                    <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
-                        {renderMess}
-                        <div ref={this.scrollDown}></div>
-                    </div>
-                    <div className='sender'>
-                        <input type='text' placeholder='Gửi tin nhắn' ref={this.messageAll} />
-                        <button className='btn btn-primary' type='button' onClick={this.sendMessage}><i className='fa fa-lg fa-fw fa-paper-plane'></i></button>
-                    </div>
+            <form className='messanger' style={{ minHeight: '300px' }} onSubmit={this.sendMessage}>
+                <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} onScroll={(e) => this.handleScrollMessage(e.target)}>
+                    {renderMess}
+                    <div ref={e => this.scrollDown = e}></div>
                 </div>
-            </div>
+                <div style={{ display: 'flex' }}>
+                    <input ref={e => this.messageAll = e} type='text' placeholder='Gửi tin nhắn' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
+                    <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
+                        <i className='fa fa-lg fa-fw fa-paper-plane' />
+                    </button>
+                </div>
+            </form>
         );
     }
 }
