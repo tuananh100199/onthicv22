@@ -27,7 +27,6 @@ class UserAllChat extends AdminPage {
             scrollDown: true,
             currentLoaded: 0,
         });
-        this.socketRef.current = T.socket;
         if (_id) {
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getOldMessage(_id, Date.now(), 100, data => {
@@ -37,12 +36,12 @@ class UserAllChat extends AdminPage {
                         anyMessagesLeft: data.item.length < data.count
                     });
                 });
-                this.socketRef.current.emit('sendRoomClient', [_id]);
+                T.socket.emit('sendRoomClient', [_id]);
             });
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current.on('sendDataServer', dataGot => {
+        T.socket.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.courseId) {
                 this.setState(prevState => ({
                     oldMessage: [...prevState.oldMessage, dataGot.data]
@@ -71,7 +70,7 @@ class UserAllChat extends AdminPage {
                 sent: Date.now(),
                 room: this.state.courseId,
             };
-            this.socketRef.current.emit('sendDataClient', msg);
+            T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
             $('#message').val('');

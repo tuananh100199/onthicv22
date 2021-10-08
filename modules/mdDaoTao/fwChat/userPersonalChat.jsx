@@ -13,7 +13,6 @@ class UserPersonalChat extends AdminPage {
         window.addEventListener('keydown', this.logKey);
         const route = T.routeMatcher('/user/chat/:_id'),
             _id = route.parse(window.location.pathname)._id;
-        this.socketRef.current = T.socket;
         if (_id) {
             const user = this.props.system.user;
             this.setState({
@@ -41,13 +40,13 @@ class UserPersonalChat extends AdminPage {
                         });
                     });
                     const listRoom = data.item.map(admin => _id + '_' + admin._id + '_' + user._id);
-                    this.socketRef.current.emit('sendRoomClient', listRoom);
+                    T.socket.emit('sendRoomClient', listRoom);
                 });
             });
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current.on('sendDataServer', dataGot => {
+        T.socket.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.roomId) {
                 this.setState(prevState => ({
                     oldMessage: [...prevState.oldMessage, dataGot.data]
@@ -75,7 +74,7 @@ class UserPersonalChat extends AdminPage {
                 sent: Date.now(),
                 room: this.state.roomId,
             };
-            this.socketRef.current.emit('sendDataClient', msg);
+            T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
             $('#user_personal_message').val('');

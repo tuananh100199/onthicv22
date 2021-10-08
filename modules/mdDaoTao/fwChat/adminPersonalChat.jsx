@@ -8,12 +8,10 @@ import './chat.scss';
 
 const previousRoute = '/user';
 class AdminPersonalChat extends AdminPage {
-    socketRef = React.createRef();
     state = { listStudent: [], oldMessage: [] };
     componentDidMount() {
         window.addEventListener('keydown', this.logKey);
         const _id = this.props.courseId;
-        this.socketRef.current = T.socket;
         if (_id) {
             const user = this.props.system.user;
             this.setState({
@@ -40,12 +38,12 @@ class AdminPersonalChat extends AdminPage {
                     });
                 });
                 const listRoom = data.item.map(student => _id + '_' + user._id + '_' + student.user._id);
-                this.socketRef.current.emit('sendRoomClient', listRoom);
+                T.socket.emit('sendRoomClient', listRoom);
             });
         } else {
             this.props.history.push(previousRoute);
         }
-        this.socketRef.current.on('sendDataServer', dataGot => {
+        T.socket.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.roomId) {
                 this.setState(prevState => ({
                     oldMessage: [...prevState.oldMessage, dataGot.data]
@@ -72,7 +70,7 @@ class AdminPersonalChat extends AdminPage {
                 sent: Date.now(),
                 room: this.state.roomId,
             };
-            this.socketRef.current.emit('sendDataClient', msg);
+            T.socket.emit('sendDataClient', msg);
             msg.user = this.state.user;
             this.props.createMessage(msg);
             $('#personal_message').val('');
