@@ -4,11 +4,11 @@ module.exports = app => {
         _refId: app.db.Schema.ObjectId,                             // Đối tượng đánh giá
         value: Number,
         note: String,
+        type: String,
     });
     const model = app.db.model('Rate', schema);
 
     app.model.rate = {
-        //TODO
-        getAll: (condition, done) => model.find(condition).sort({ priority: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).sort({ value: -1 }).exec(done),
     };
 };
