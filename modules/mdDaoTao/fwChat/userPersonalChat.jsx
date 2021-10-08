@@ -5,7 +5,6 @@ import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
 
-const previousRoute = '/user';
 class UserPersonalChat extends AdminPage {
     socketRef = React.createRef();
     state = { listAdmin: [], oldMessage: [] };
@@ -45,7 +44,7 @@ class UserPersonalChat extends AdminPage {
                 });
             });
         } else {
-            this.props.history.push(previousRoute);
+            this.props.history.goBack();
         }
         this.socketRef.current.on('sendDataServer', dataGot => {
             if (dataGot.data.room == this.state.roomId) {
