@@ -26,6 +26,7 @@ class StudentView extends AdminPage {
     }
 
     render() {
+        const today = T.dateToText(new Date().toISOString(), 'dd/mm/yyyy');
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
         let { list } = this.props.timeTable && this.props.timeTable.page ? this.props.timeTable.page : { list: [] };
         const table = renderTable({
@@ -40,7 +41,7 @@ class StudentView extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Xe học</th>
                 </tr>),
             renderRow: (item, index) => (
-                <tr key={index}>
+                <tr key={index} style={{ backgroundColor: T.dateToText(item.date, 'dd/mm/yyyy') == today ? '#D9EDF7' : '' }} >
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={<><span>{item.student && item.student.course ? item.student.course.name : ''}</span><br />{item.student && item.student.courseType ? item.student.courseType.title : ''}</>} style={{ whiteSpace: 'nowrap' }} />
                     <TableCell type='number' style={{ width: 'auto', textAlign: 'center' }} content={item.dateNumber} />

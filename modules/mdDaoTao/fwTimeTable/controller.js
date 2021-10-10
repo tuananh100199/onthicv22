@@ -47,9 +47,12 @@ module.exports = (app) => {
     });
 
     app.get('/api/time-table/date-number', app.permission.check('timeTable:read'), (req, res) => {
-        let { student, date, startHour } = req.query,
+        let { student, date, startHour, numOfHours } = req.query,
             dateTime = new Date(date).getTime();
         startHour = Number(startHour);
+        numOfHours = Number(numOfHours);
+        const endHour = startHour + numOfHours;
+
         app.model.timeTable.getAll({ student }, (error, items) => {
             if (error) {
                 res.send({ error: 'Lỗi khi lấy dữ liệu thời khóa biểu' });
@@ -57,15 +60,18 @@ module.exports = (app) => {
                 let dateNumber = 1;
                 items = items || [];
                 for (let i = 0; i < items.length; i++) {
-                    const item = items[i];
-                    if (item.date.getTime() == dateTime && (item.startHour <= startHour && startHour < item.startHour + item.numOfHours)) {
+                    const item = items[i],
+                    itemEndHour =  item.startHour + item.numOfHours;
+
+                    if (item.date.getTime() == dateTime && ((startHour >= item.startHour && startHour < itemEndHour) || (startHour < item.startHour && endHour > item.startHour))) {
                         dateNumber = -1;
                         break;
-                    } else if (item.date.getTime() <= dateTime && item.startHour < startHour) {
+                    } else if (item.date.getTime() <= dateTime && item.startHour <= startHour) {
                         dateNumber++;
-                    } else {
-                        break;
                     }
+                    //  else {
+                    //     break;
+                    // }
                 }
                 res.send({ dateNumber });
             }

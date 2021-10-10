@@ -503,12 +503,12 @@ export class FormFileBox extends React.Component {
 // Page components ----------------------------------------------------------------------------------------------------
 export class CirclePageButton extends React.Component {
     render() {
-        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick } = this.props; // type = back | save | create | delete | export | import | custom
+        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick = () => { } } = this.props; // type = back | save | create | delete | export | import | custom
         const properties = {
             type: 'button',
             style: { position: 'fixed', right: '10px', bottom: '10px', zIndex: 500, ...style },
             'data-toggle': 'tooltip', title: tooltip,
-            onClick: () => onClick && onClick(),
+            onClick,
         };
         let result = null;
         if (type == 'save') {
