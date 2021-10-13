@@ -37,7 +37,7 @@ class AdminListSubject extends AdminPage {
         T.onSearch = (searchText) => this.props.getSubjectPage(null, null, searchText);
     }
 
-    create = e => e.preventDefault() || this.modal.show();
+    create = e => e && e.preventDefault() || this.modal.show();
 
     delete = (e, item) => e.preventDefault() || T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm =>
         isConfirm && this.props.deleteSubject(item._id));
