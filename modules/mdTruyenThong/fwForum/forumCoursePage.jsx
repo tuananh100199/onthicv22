@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
-import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
@@ -14,8 +13,7 @@ class ForumModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, content, course, state } = item || { title: '', content: '', state: 'waiting' };
-        this.itemCourse.value(course ? { id: course._id, text: course.name } : null);
+        const { _id, title, content, state } = item || { title: '', content: '', state: 'waiting' };
         this.itemTitle.value(title);
         this.itemContent.value(content);
         this.itemState && this.itemState.value(state);
@@ -25,7 +23,6 @@ class ForumModal extends AdminModal {
     onSubmit = () => {
         if (this.props.category) {
             const data = {
-                course: this.itemCourse.value(),
                 title: this.itemTitle.value(),
                 content: this.itemContent.value(),
                 state: this.itemState ? this.itemState.value() : 'waiting',
@@ -34,9 +31,6 @@ class ForumModal extends AdminModal {
             if (data.title == '') {
                 T.notify('Tên chủ đề bị trống!', 'danger');
                 this.itemTitle.focus();
-            } else if (data.course == '') {
-                T.notify('Loại khóa học bị trống!', 'danger');
-                this.itemCourse.focus();
             } else if (data.content == '') {
                 T.notify('Nội dung chủ đề bị trống!', 'danger');
                 this.itemContent.focus();
@@ -57,7 +51,6 @@ class ForumModal extends AdminModal {
             title: 'Chủ đề',
             body: <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
-                <FormSelect ref={e => this.itemCourse = e} label='Khóa học' data={ajaxSelectCourse} readOnly={false} allowClear={true} />
                 <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
                 {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
@@ -68,14 +61,15 @@ class ForumModal extends AdminModal {
 class ForumPage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/forum', () => {
-            const params = T.routeMatcher('/user/forum/:_id').parse(window.location.pathname);
-            if (params && params._id) {
-                this.setState({ _id: params._id }, () => this.getPage(undefined, undefined,''));
-            } else {
-                this.props.history.goBack();
-            }
-        });
+        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_courseId/forum/:_categoryid').parse(window.location.pathname),
+            courseId = params._courseId,
+            forumCategoryId = params._categoryid;
+        if (forumCategoryId) {
+            T.ready('/user/hoc-vien/khoa-hoc/' + courseId); // TODO
+            this.setState({ courseId, forumCategoryId }, () => this.getPage(undefined, undefined,''));
+        } else {
+            this.props.history.goBack();
+        }
 
         // TODO: Hiển thị thanh tìm kiếm
         // T.ready(() => T.showSearchBox());
@@ -83,10 +77,8 @@ class ForumPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize, searchText, done) => {
-        this.state._id && this.props.getForumPage(this.state._id, pageNumber, pageSize, searchText, null, done);
+        this.state.forumCategoryId && this.props.getForumPage(this.state.forumCategoryId, pageNumber, pageSize, searchText, this.state.courseId, done);
     }
-
-    edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     delete = (item) => T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id));
@@ -95,12 +87,12 @@ class ForumPage extends AdminPage {
         const permission = this.getUserPermission('forum');
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const backRoute = '/user/forum'; 
+        const backRoute = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/forum'; 
         const listForums = list && list.length ? list.map((item, index) => (
             <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
-                        <Link to={`/user/forum/message/${item._id}`} style={{ textDecoration: 'none' }}>{item.title}</Link>&nbsp;&nbsp;
+                        <Link to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/forum/message/${item._id}`} style={{ textDecoration: 'none' }}>{item.title}</Link>&nbsp;&nbsp;
                     </h4>
                     <small style={{ paddingTop: 10 }}>
                         ({item.user ? `${item.user.lastname} ${item.user.firstname}` : ''}
@@ -122,7 +114,7 @@ class ForumPage extends AdminPage {
                         </ul>) : ''}
                 </div>
 
-                <Link to={`/user/forum/message/${item._id}`} style={{ textDecoration: 'none', position: 'absolute', bottom: 0, right: 0, padding: 6, color: 'white', backgroundColor: '#1488db', borderBottomRightRadius: 3 }}>Đọc thêm...</Link>
+                <Link to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/forum/message/${item._id}`} style={{ textDecoration: 'none', position: 'absolute', bottom: 0, right: 0, padding: 6, color: 'white', backgroundColor: '#1488db', borderBottomRightRadius: 3 }}>Đọc thêm...</Link>
             </div>)) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
@@ -135,8 +127,8 @@ class ForumPage extends AdminPage {
                 <ForumModal ref={e => this.modal = e} category={category._id} permission={permission} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
-            onCreate: this.edit,
             onBack: () => this.props.history.goBack(),
+            onCreate: this.edit,
         });
     }
 }

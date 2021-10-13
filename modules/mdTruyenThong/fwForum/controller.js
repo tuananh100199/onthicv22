@@ -13,7 +13,10 @@ module.exports = app => {
     app.get('/user/forum', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
-
+    app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum/:_categoryid', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
+    
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
         const isForumWrite = req.session.user.permissions ? req.session.user.permissions.includes('forum:write') : false;
@@ -52,8 +55,10 @@ module.exports = app => {
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { _categoryId, searchText } = req.query,
-            pageCondition = { category: _categoryId };
+            { categoryId, searchText, courseId } = req.query,
+            pageCondition = { category: categoryId };
+            courseId ? pageCondition.course = courseId : null;
+
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');
             pageCondition.content = new RegExp(searchText, 'i');
@@ -62,11 +67,10 @@ module.exports = app => {
             pageCondition.state = 'approved';
         }
 
-        app.model.category.get(_categoryId, (error, category) => {
+        app.model.category.get(categoryId, (error, category) => {
             if (error || category == null) {
                 res.send({ error: 'Danh mục không hợp lệ!' });
             } else {
-                console.log(pageCondition);
                 app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
                     res.send({ error, category, page });
                 });

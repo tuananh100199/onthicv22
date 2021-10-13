@@ -3,17 +3,16 @@ import { connect } from 'react-redux';
 import { getForumCategories } from './redux';
 // import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-import SectionForumCategory from './SectionForumCategory';
+import SectionForumCourseCategory from './SectionForumCourseCategory';
 
 class ForumCategoryPage extends AdminPage {
     state = {};
     componentDidMount() {
-
-        const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:course/forum'),
-            params = route.parse(window.location.pathname);
-        if (params && params.course) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + params.course);
-            this.setState({ course: params.course });
+        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/forum').parse(window.location.pathname),
+        courseId = params.courseId;
+        if (courseId) {
+            T.ready('/user/hoc-vien/khoa-hoc/' + courseId); // TODO
+            this.setState({ courseId });
         } else {
             this.props.history.goBack();
         }
@@ -22,9 +21,9 @@ class ForumCategoryPage extends AdminPage {
     render() {
         return this.renderPage({
             icon: 'fa fa-users',
-            title: 'Forum',
-            breadcrumb: ['Forum'],
-            content: this.state.course ? <SectionForumCategory course={this.state.course} /> : null,
+            title: 'Forum khóa học',
+            breadcrumb: ['Forum khóa học'],
+            content: <SectionForumCourseCategory courseId={this.state.courseId} />,
         });
     }
 }

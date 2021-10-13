@@ -12,24 +12,32 @@ export default {
     },
     routes: [
         {
-            path: '/user/category/forum',
+            path: '/user/category/forum', //danh mục forum
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') })
         },
         {
-            path: '/user/forum',
+            path: '/user/forum', // Các danh mục forum admin
             component: Loadable({ loading: Loading, loader: () => import('./forumCategoryPage') })
         },
         {
-            path: '/user/hoc-vien/khoa-hoc/:_courseId/forum',
-            component: Loadable({ loading: Loading, loader: () => import('./forumCourseCategoryPage') })
-        },
-        {
-            path: '/user/forum/:_categoryId',
+            path: '/user/forum/:_categoryId', // Một danh mục forum có nhiều forum admin
             component: Loadable({ loading: Loading, loader: () => import('./forumPage') })
         },
         {
-            path: '/user/forum/message/:_forumId',
+            path: '/user/forum/message/:_forumId', // Tin nhắn trong admin
             component: Loadable({ loading: Loading, loader: () => import('./forumMessagePage') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_courseId/forum', // Các danh mục forum trong khóa học
+            component: Loadable({ loading: Loading, loader: () => import('./forumCourseCategoryPage') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_courseId/forum/:_categoryid', // Một danh mục forum có nhiều forum -> lọc theo course
+            component: Loadable({ loading: Loading, loader: () => import('./forumCoursePage') })
+        },
+        {
+            path: '/user/hoc-vien/khoa-hoc/:_courseId/forum/message/:_forumId', // Tin nhắn trong forum khóa học
+            component: Loadable({ loading: Loading, loader: () => import('./forumCourseMessagePage') })
         },
     ],
 };

@@ -38,11 +38,11 @@ export function getForumCategories(course, done) {
 }
 
 T.initCookiePage('pageForum');
-export function getForumPage(_categoryId, pageNumber, pageSize, searchText, done) {
+export function getForumPage(categoryId, pageNumber, pageSize, searchText, courseId, done) {
     const page = T.updatePage('pageForum', pageNumber, pageSize);
     return dispatch => {
         const url = '/api/forum/page/' + page.pageNumber + '/' + page.pageSize;
-        T.get(url, { _categoryId, searchText }, data => {
+        T.get(url, { categoryId, searchText, courseId }, data => {
             if (data.error) {
                 T.notify('Lấy danh sách forum bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -79,7 +79,8 @@ export function createForum(data, done) {
             } else {
                 done && done(data);
                 T.notify('Tạo forum thành công!', 'success');
-                data.item && data.item.category && dispatch(getForumPage(data.item.category));
+                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, data.item.course));
+
             }
         }, error => console.error(error) || T.notify('Tạo forum bị lỗi!', 'danger'));
     };
@@ -96,7 +97,7 @@ export function updateForum(_id, changes, done) {
             } else {
                 done && done(data);
                 T.notify('Cập nhật forum thành công!', 'success');
-                data.item && data.item.category && dispatch(getForumPage(data.item.category));
+                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, null));
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };

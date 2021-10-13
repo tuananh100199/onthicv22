@@ -526,7 +526,7 @@ export class CirclePageButton extends React.Component {
         } else if (type == 'custom') {
             result = <button {...properties} className={'btn btn-circle ' + customClassName}><i className={'fa fa-lg ' + customIcon} /></button>;
         } else { // back
-            if (onClick) {
+            if (!onClick) {
                 result = (
                     <a href='#' onClick={onClick} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
                         <i className='fa fa-lg fa-reply' />
@@ -648,7 +648,6 @@ export class AdminPage extends React.Component {
 
     renderPage = ({ icon, title, subTitle, header, breadcrumb, advanceSearch, content, backRoute, onCreate, onSave, onExport, onImport, onBack }) => {
         if (breadcrumb == null) breadcrumb = [];
-
         let right = 10, createButton, saveButton, exportButton, importButton;
         if (onCreate) {
             createButton = <CirclePageButton type='create' onClick={onCreate} style={{ right }} />;
