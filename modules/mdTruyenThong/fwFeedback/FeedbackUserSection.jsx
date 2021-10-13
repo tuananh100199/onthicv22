@@ -14,18 +14,19 @@ class FeedbackSection extends AdminPage {
         }
     }
 
-    sendFeedback = () => {
-        const content = this.newFeedback.value(),
-            data = {
-                _refId: this.props._refId,
+    sendFeedback = (e) => {
+        e.preventDefault();
+        const content = this.newFeedback.value().trim(),
+            newData = {
+                ...(this.props.type!='system'&& {_refId: this.props._refId}),
                 type: this.props.type,
-                content: content,
+                content,
             };
         if (content == '') {
             T.notify('Không thể gửi thông điệp không nội dung!', 'danger');
             this.newFeedback.focus();
         } else {
-            this.props.createFeedback(data, () => {
+            this.props.createFeedback(newData, () => {
                 this.newFeedback.value('');
             });
         }
@@ -37,6 +38,12 @@ class FeedbackSection extends AdminPage {
         return <>
             <div className='tile'>
     <h3 className='tile-title'>Phản hồi {this.props.title}</h3>
+                        <div className='row'>
+                            <FormRichTextBox ref={e => this.newFeedback = e} className='col-md-11' style={{ display: 'flex' }} />
+                            <div className='col-md-1'>
+                                <button className='btn btn-primary' type='button' onClick={this.sendFeedback}> Gửi </button>
+                            </div>
+                        </div>
             <div className='tile-body'>
                         {feedback.length ? feedback.map((item, index) => <div key={index} style={{ margin: 10 }}>
                             <div className='row'>
@@ -75,18 +82,10 @@ class FeedbackSection extends AdminPage {
                                             {reply.content}
                                         </div>
                                     </div>
-                                </div>) : `Chưa có phản hồi từ quản trị ${this.props.type =='course'?'khóa học':''} `}
+                                </div>) : 'Chưa được trả lời'}
                             </div>
                         </div>) : 'Chưa có phản hồi'}
                     </div>    
-                    <div className='tile-footer'>
-                        <div className='row'>
-                            <FormRichTextBox ref={e => this.newFeedback = e} className='col-md-11' style={{ display: 'flex' }} />
-                            <div className='col-md-1'>
-                                <button className='btn btn-primary' type='button' onClick={this.sendFeedback}> Gửi </button>
-                            </div>
-                        </div>
-                    </div>      
             </div>
         </>;
     }

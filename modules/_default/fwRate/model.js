@@ -9,6 +9,11 @@ module.exports = app => {
     const model = app.db.model('Rate', schema);
 
     app.model.rate = {
+        create: (data, done) => model.create(data, done),
+
+        get: (condition, done) => typeof condition == 'string' ?
+            model.findById(condition, done) : model.findOne(condition, done),
+
         getAll: (condition, done) => model.find(condition).sort({ value: -1 }).exec(done),
     };
 };

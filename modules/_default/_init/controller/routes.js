@@ -75,8 +75,8 @@ module.exports = (app) => {
                                 data.user.menu['3020'] = {
                                     parentMenu: {
                                         index: 3020,
-                                        title: 'Phản hồi hệ thống',
-                                        link:'/user/feedback/system',
+                                        title: 'Phản hồi',
+                                        link:'user/hoc-vien/phan-hoi/he-thong',
                                         permissions: ['user:login'],
                                         icon: 'fa-cog',
                                     },
