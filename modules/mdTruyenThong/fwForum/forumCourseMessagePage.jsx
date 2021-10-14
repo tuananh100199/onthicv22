@@ -47,7 +47,7 @@ class CourseMessageModal extends AdminModal {
             title: 'Bài viết',
             body: <>
                 <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
-                {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
+                {permission.write && permission.forumOwner ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });
     }
@@ -83,7 +83,8 @@ class ForumCourseMessagePage extends AdminPage {
 
     render() {
         const permission = this.getUserPermission('forum');
-        const { user } = this.props.system;
+        const { user } = this.props.system,
+        { isLecturer, isCourseAdmin } = user;
         const createdDateStyle = { textDecoration: 'none', position: 'absolute', top: 0, left: 0, padding: '6px 12px', color: 'white', borderTopLeftRadius: 3, borderBottomRightRadius: 3 };
         const { item: forum } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = forum && forum.page ? forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
@@ -109,16 +110,16 @@ class ForumCourseMessagePage extends AdminPage {
                             <div className='tile-body'>
                                 <small className='bg-secondary' style={{ ...createdDateStyle }}>
                                     {item.user ? item.user.lastname + ' ' + item.user.firstname : ''} -&nbsp;
-                                    {new Date(forum.modifiedDate || forum.createdDate).getText()}&nbsp;&nbsp;
-                                    {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
+                                    {new Date(item.createdDate).getText()}&nbsp;&nbsp;
+                                    {item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                                 </small>
                                 <p style={{ margin: '12px 0 0 0' }}>{item.content}</p>
-                                <ForumButtons state={item.state} permission={{ ...permission, owner: user && item && item.user && user._id == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                                <ForumButtons state={item.state} permission={{ ...permission, forumOwner : isCourseAdmin || (isLecturer && user && forum && forum.user && (user._id == forum.user._id) ), messageOwner: user && item && item.user && user._id == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
                             </div>
                         </div>) :
                     <div className='tile' style={{ marginLeft: 20 }}>Chưa có bài viết!</div>}
                 <Pagination name='pageForumMessage' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <CourseMessageModal ref={e => this.modal = e} forum={forum._id} permission={permission} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
+                <CourseMessageModal ref={e => this.modal = e} forum={forum._id} permission={{...permission, forumOwner : isCourseAdmin || (isLecturer && user && forum && forum.user && (user._id == forum.user._id) )}} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
             </> : '...',
             backRoute: backRoute,
             onCreate: this.edit,

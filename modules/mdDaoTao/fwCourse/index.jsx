@@ -32,6 +32,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./adminEditPage') })
         },
         {
+            path: '/user/khoa-hoc/:_id/thong-tin',
+            component: Loadable({ loading: Loading, loader: () => import('./pageView/courseInfoPage') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },

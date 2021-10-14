@@ -67,7 +67,7 @@ class StudentView extends AdminPage {
                     <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                     <TableCell type='number' style={{ width: 'auto', textAlign: 'center' }}content={item.numOfHours ? `${item.startHour}h-${item.startHour + item.numOfHours}h` : `${item.startHour}h`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
-                    <TableCell type='text' style={{ textAlign: 'center', backgroundColor: item.truant ? 'red' : '', color:  item.truant ? 'white' : '' }} content={item.truant ? 'Có' : 'Không'} />
+                    <TableCell type='text' style={{ textAlign: 'center', backgroundColor: item.truant ? 'red' : '', color:  item.truant ? 'white' : '' }} content={item.truant ? 'X' : ''} />
                     <TableCell type='buttons' content={item} onEdit={this.edit} />
                 </tr>),
         });

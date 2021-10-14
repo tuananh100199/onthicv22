@@ -85,7 +85,10 @@ class ForumPage extends AdminPage {
         isConfirm && this.props.deleteForum(item._id));
 
     render() {
+        const currentUser = this.props.system ? this.props.system.user : null,
+        { isCourseAdmin } = currentUser;
         const permission = this.getUserPermission('forum');
+        const adminPermission = this.getUserPermission('system', ['settings']);
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const backRoute = '/user/forum'; 
@@ -98,10 +101,10 @@ class ForumPage extends AdminPage {
                     <small style={{ paddingTop: 10 }}>
                         ({item.user ? `${item.user.lastname} ${item.user.firstname}` : ''}
                         {item.modifiedDate ? ' - ' + (new Date(item.modifiedDate).getText()) : ''})&nbsp;&nbsp;
-                        {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
+                        {permission.write && isCourseAdmin && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                <ForumButtons state={item.state} permission={permission} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                <ForumButtons state={item.state} permission={{...permission, forumOwner: adminPermission.settings, messageOwner: adminPermission.settings }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
@@ -128,7 +131,7 @@ class ForumPage extends AdminPage {
                 <ForumModal ref={e => this.modal = e} category={category._id} permission={permission} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
-            onCreate: this.edit,
+            onCreate: permission.write && adminPermission.settings ? this.edit : null,
             backRoute: backRoute,
         });
     }

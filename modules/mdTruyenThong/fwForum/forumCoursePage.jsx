@@ -23,6 +23,7 @@ class ForumModal extends AdminModal {
     onSubmit = () => {
         if (this.props.category) {
             const data = {
+                course: this.props.courseId,
                 title: this.itemTitle.value(),
                 content: this.itemContent.value(),
                 state: this.itemState ? this.itemState.value() : 'waiting',
@@ -40,7 +41,7 @@ class ForumModal extends AdminModal {
                 if (data.content.length > 200) data.content = data.content.substring(0, 200);
                 this.state._id ?
                     this.props.update(this.state._id, data, () => this.hide()) :
-                    this.props.create(data, (data) => (data && data.item && this.props.history.push('/user/forum/message/' + data.item._id)) || this.hide());
+                    this.props.create(data, (data) => (data && data.item && this.props.courseId && this.props.history.push('/user/hoc-vien/khoa-hoc/' + this.props.courseId + '/forum/message/'+  data.item._id)) || this.hide());
             }
         }
     }
@@ -65,7 +66,7 @@ class ForumPage extends AdminPage {
             courseId = params._courseId,
             forumCategoryId = params._categoryid;
         if (forumCategoryId) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + courseId); // TODO
+            T.ready('/user/hoc-vien/khoa-hoc/' + courseId);
             this.setState({ courseId, forumCategoryId }, () => this.getPage(undefined, undefined,''));
         } else {
             this.props.history.goBack();
@@ -80,10 +81,14 @@ class ForumPage extends AdminPage {
         this.state.forumCategoryId && this.props.getForumPage(this.state.forumCategoryId, pageNumber, pageSize, searchText, this.state.courseId, done);
     }
 
+    edit = (e, item) => e.preventDefault() || this.modal.show(item);
+
     delete = (item) => T.confirm('Chủ đề', `Bạn có chắc bạn muốn xóa chủ đề '${item.title}'?`, 'warning', true, isConfirm =>
         isConfirm && this.props.deleteForum(item._id));
 
     render() {
+        const currentUser = this.props.system ? this.props.system.user : null,
+            { isLecturer, isCourseAdmin } = currentUser;
         const permission = this.getUserPermission('forum');
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
@@ -100,7 +105,7 @@ class ForumPage extends AdminPage {
                         {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                <ForumButtons state={item.state} permission={permission} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                <ForumButtons state={item.state} permission={{...permission, forumOwner : isCourseAdmin || (isLecturer && currentUser && item && item.user && currentUser._id == item.user._id) }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
@@ -124,11 +129,11 @@ class ForumPage extends AdminPage {
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <ForumModal ref={e => this.modal = e} category={category._id} permission={permission} history={this.props.history}
+                <ForumModal ref={e => this.modal = e} courseId={this.state.courseId} category={category._id} permission={permission} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: backRoute,
-            onCreate: this.edit,
+            onCreate: permission.write ? this.edit : null,
         });
     }
 }

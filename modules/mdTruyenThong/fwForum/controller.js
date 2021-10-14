@@ -226,4 +226,15 @@ module.exports = app => {
             }
         });
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('lecturer', 'forum', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'forum:write');
+        resolve();
+    }));
+
+    app.permissionHooks.add('courseAdmin', 'forum', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'forum:write', 'forum:delete');
+        resolve();
+    }));
 };

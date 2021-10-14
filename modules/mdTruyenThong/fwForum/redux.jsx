@@ -97,7 +97,7 @@ export function updateForum(_id, changes, done) {
             } else {
                 done && done(data);
                 T.notify('Cập nhật forum thành công!', 'success');
-                data.item && data.item.category && dispatch(getForumPage(data.item.category));
+                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, data.item.course));
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };
@@ -112,7 +112,7 @@ export function deleteForum(_id) {
                 console.error(`DELETE: ${url}. ${data.error}`);
             } else {
                 T.alert('Forum được xóa thành công!', 'error', false, 800);
-                data.item && data.item.category && dispatch(getForumPage(data.item.category));
+                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, data.item.course));
             }
         }, error => console.error(error) || T.notify('Xóa forum bị lỗi!', 'danger'));
     };

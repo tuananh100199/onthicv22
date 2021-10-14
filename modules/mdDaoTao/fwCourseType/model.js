@@ -25,7 +25,7 @@ module.exports = app => {
                 done(error);
             } else {
                 item.image = `/img/course-type/${item._id}.jpg`;
-                const srcPath = app.path.join(app.publicPath, '/img/avatar.jpg'),
+                const srcPath = app.path.join(app.publicPath, '/img/avatar-default.png'),
                     destPath = app.path.join(app.publicPath, item.image);
                 app.fs.copyFile(srcPath, destPath, error => error ? done(error) : item.save(done));
             }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { createCourse } from './redux';
 import { getCourseTypeAll, ajaxSelectCourseType } from '../fwCourseType/redux';
 import { AdminPage, AdminModal, FormTextBox, FormSelect, FormTabs } from 'view/component/AdminPage';
-import AdminCourseFilterView from './tabView/adminCourseFilterView';
+import AdminCourseFilterView from './pageView/adminCourseFilterView';
 
 class CourseModal extends AdminModal {
     componentDidMount() {
