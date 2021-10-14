@@ -44,6 +44,7 @@ class EditCoursePage extends AdminPage {
                     <PageIconHeader text='Thông tin chung' />
 
                     <PageIcon visible={isLecturer||isCourseAdmin} to={`/user/khoa-hoc/${_id}/thong-tin`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
+                    <PageIcon visible={isLecturer||isCourseAdmin} to={`/user/khoa-hoc/${_id}/mon-hoc`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
                     <PageIcon to={`/user/khoa-hoc/${_id}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
                 </div>
             ),
