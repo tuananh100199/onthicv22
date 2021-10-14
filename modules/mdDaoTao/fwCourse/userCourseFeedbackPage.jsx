@@ -17,8 +17,9 @@ class UserCourseFeedback extends AdminPage {
                     if (data.error) {
                         this.props.history.goBack();
                     } else {
-                        const course = data.item;
-                        course.teacherGroups.forEach(group => group.student.forEach(item => item.user._id == this.props.system.user._id && this.setState({isAssignToTeacher:true})));
+                        const course = data.item.active && data.item;
+                        // course.teacherGroups.forEach(group => group.student.forEach(item => item.user._id == this.props.system.user._id && this.setState({isAssignToTeacher:true})));
+                        course.teacherGroups.forEach(group => group.student.forEach(item => item._id == data._studentId && this.setState({isAssignToTeacher:true})));
                         this.setState({name:course.name});
                     }
                 });

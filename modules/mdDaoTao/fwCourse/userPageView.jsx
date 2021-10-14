@@ -21,6 +21,7 @@ class UserCoursePageDetail extends AdminPage {
                         this.props.history.push('/user');
                     } else if (data.item && data._studentId) {
                         this.setState(data.item);
+                        if (data.teacher) this.setState({teacher:data.teacher});
                     } else {
                         this.props.history.push('/user');
                     }
@@ -60,7 +61,8 @@ class UserCoursePageDetail extends AdminPage {
 
     render() {
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
-        const { name, courseId } = this.state;
+        const { name, courseId,teacher } = this.state;
+        console.log(this.state,'d');
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: `Khóa học: ${name}`,
@@ -77,7 +79,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
                     {/* check render */}
-                    <RateSection title='Đánh giá cố vấn học tập'/>
+                    <RateSection visible={teacher!=null} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher && teacher._id} />
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
