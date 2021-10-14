@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
-// import RateSection from 'modules/_default/fwRate/RateUserSection';
+import RateSection from 'modules/_default/fwRate/RateUserSection';
 import { AdminPage, CirclePageButton, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
 class UserCoursePageDetail extends AdminPage {
@@ -77,7 +77,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
                     {/* check render */}
-                    {/* <RateSection title='Đánh giá cố vấn học tập'/> */}
+                    <RateSection title='Đánh giá cố vấn học tập'/>
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
