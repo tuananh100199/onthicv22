@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getSubjectPage, createSubject, deleteSubject } from './redux';
+import { getSubjectPage, createSubject, deleteSubject, updateSubject } from './redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, TableCell, renderTable } from 'view/component/AdminPage';
 
@@ -37,6 +37,8 @@ class AdminListSubject extends AdminPage {
         T.onSearch = (searchText) => this.props.getSubjectPage(null, null, searchText);
     }
 
+    changeType = (item, monThucHanh) => this.props.updateSubject(item._id, { monThucHanh: monThucHanh });
+
     create = e => e && e.preventDefault() || this.modal.show();
 
     delete = (e, item) => e.preventDefault() || T.confirm('Môn học', 'Bạn có chắc bạn muốn xóa môn học này?', 'warning', true, isConfirm =>
@@ -46,7 +48,6 @@ class AdminListSubject extends AdminPage {
         const permission = this.getUserPermission('subject');
         const { pageNumber, pageSize, pageTotal, totalItem, list } = this.props.subject && this.props.subject.page ?
             this.props.subject.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0, list: [] };
-
         const table = renderTable({
             getDataSource: () => list,
             renderHead: () => (
@@ -55,6 +56,7 @@ class AdminListSubject extends AdminPage {
                     <th style={{ width: '100%' }}>Tiêu đề</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số bài học</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Số câu hỏi</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Môn thực hành</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -63,6 +65,7 @@ class AdminListSubject extends AdminPage {
                     <TableCell type='link' content={item.title} url={'/user/dao-tao/mon-hoc/' + item._id} />
                     <TableCell type='number' content={item.lessons ? item.lessons.length : 0} />
                     <TableCell type='number' content={item.questions ? item.questions.length : 0} />
+                    <TableCell type='checkbox' content={item.monThucHanh} permission={permission} onChanged={monThucHanh => this.changeType(item, monThucHanh)} />
                     <TableCell type='buttons' content={item} permission={permission} onEdit={'/user/dao-tao/mon-hoc/' + item._id} onDelete={this.delete} />
                 </tr>),
         });
@@ -82,5 +85,5 @@ class AdminListSubject extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, subject: state.trainning.subject });
-const mapActionsToProps = { getSubjectPage, createSubject, deleteSubject };
+const mapActionsToProps = { getSubjectPage, createSubject, deleteSubject, updateSubject };
 export default connect(mapStateToProps, mapActionsToProps)(AdminListSubject);
