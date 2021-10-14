@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourseByStudent } from './redux.jsx';
+import { getCourseByStudent } from './redux';
+import RateSection from 'modules/_default/fwRate/RateUserSection';
 import { AdminPage, CirclePageButton, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
 class UserCoursePageDetail extends AdminPage {
@@ -74,10 +75,12 @@ class UserCoursePageDetail extends AdminPage {
 
                     <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
+                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
+                    {/* check render */}
+                    <RateSection title='Đánh giá cố vấn học tập'/>
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
-                        <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4>
                         {subjects.map((subject, index) =>
                             <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}

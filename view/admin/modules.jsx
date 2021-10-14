@@ -5,6 +5,7 @@ import fwCluster from 'modules/_default/fwCluster/index';
 import fwEmail from 'modules/_default/fwEmail/index';
 import fwHome from 'modules/_default/fwHome/index';
 import fwMenu from 'modules/_default/fwMenu/index';
+import fwRate from 'modules/_default/fwRate/index';
 import fwRole from 'modules/_default/fwRole/index';
 import fwUser from 'modules/_default/fwUser/index';
 import fwCandidate from 'modules/mdDaoTao/fwCandidate/index';
@@ -25,4 +26,4 @@ import fwForum from 'modules/mdTruyenThong/fwForum/index';
 import fwNews from 'modules/mdTruyenThong/fwNews/index';
 import fwSubscribe from 'modules/mdTruyenThong/fwSubscribe/index';
 
-export const modules = [_init, fwCategory, fwCluster, fwEmail, fwHome, fwMenu, fwRole, fwUser, fwCandidate, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwSubscribe];
+export const modules = [_init, fwCategory, fwCluster, fwEmail, fwHome, fwMenu, fwRate, fwRole, fwUser, fwCandidate, fwChat, fwCourse, fwCourseType, fwDivision, fwDriveQuestion, fwDriveTest, fwLesson, fwSign, fwStudent, fwSubject, fwTimeTable, fwContact, fwFeedback, fwForum, fwNews, fwSubscribe];
