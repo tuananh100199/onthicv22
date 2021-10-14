@@ -127,7 +127,7 @@ class ForumPage extends AdminPage {
                 <ForumModal ref={e => this.modal = e} category={category._id} permission={permission} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
-            onBack: () => this.props.history.goBack(),
+            backRoute: backRoute,
             onCreate: this.edit,
         });
     }

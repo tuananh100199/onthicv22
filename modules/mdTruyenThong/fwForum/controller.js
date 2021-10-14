@@ -18,7 +18,7 @@ module.exports = app => {
     app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
     
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {    
         const isForumWrite = req.session.user.permissions ? req.session.user.permissions.includes('forum:write') : false;
         let condition = { type: 'forum' };
         if (!isForumWrite) condition.active = true;
@@ -57,7 +57,7 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { categoryId, searchText, courseId } = req.query,
             pageCondition = { category: categoryId };
-            courseId ? pageCondition.course = courseId : null;
+            pageCondition.course = courseId ? courseId : null;
 
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');

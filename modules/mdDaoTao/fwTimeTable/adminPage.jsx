@@ -12,7 +12,7 @@ class TimeTableModal extends AdminModal {
         const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: new Date(), startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
         this.itemCourse.value(student && student.course ? student.course.name : '');
-        this.itemStudent.value(student ? student._id : '');
+        this.itemStudent.value(student ? { id: student._id, text: student.lastname } : null);
         this.itemDate.value(date);
         this.itemStartHour.value(startHour);
         this.itemNumOfHours.value(numOfHours);
@@ -62,14 +62,14 @@ class TimeTableModal extends AdminModal {
                 } else {
                     _id ? this.props.update(_id, data, () => this.hide()) : this.props.create(data, () => this.hide());
                 }
-            //     data.date = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate());
-            //     _id ? this.props.update(_id, data, () => this.hide()) : this.props.create(data, () => this.hide());
             }
         }
     }
 
-    onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>
-        this.itemStudent.value(null));
+    onChangeCourse = (data) => data && data.id && this.setState({ courseType: data.id }, () =>{
+        this.itemStudent.value(null);
+    });
+
     onChangeStudent = (data) => data && data.id && this.setState({ loading: true }, () => this.props.getStudent(data.id, student => {
         this.setState({ loading: false, student }, () => this.state._id || this.getDateNumber());
     }));

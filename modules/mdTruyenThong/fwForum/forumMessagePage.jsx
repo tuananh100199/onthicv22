@@ -117,7 +117,7 @@ class ForumMessagePage extends AdminPage {
                 <Pagination name='pageForumMessage' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
                 <MessageModal ref={e => this.modal = e} forum={forum._id} permission={permission} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
             </> : '...',
-            onBack: () => this.props.history.goBack(),
+            backRoute: backRoute,
             onCreate: this.edit,
         });
     }

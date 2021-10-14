@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 class SectionForumCourseCategory extends React.Component {
     state = {};
     componentDidMount() {
-        this.props.getForumCategories(this.props.courseId);
+        this.props.courseId && this.props.getForumCategories(this.props.courseId);
         // TODO: Hiển thị thanh tìm kiếm
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
@@ -20,7 +20,7 @@ class SectionForumCourseCategory extends React.Component {
                     const forumItem = category.page.list[i];
                     forums.push(<li key={i} style={{ marginBottom: 12 }}><Link to={`/user/forum/message/${forumItem._id}`} style={{ color: 'black' }}>{forumItem.title}</Link></li>);
                 }
-
+                
                 return (
                     <div key={index} className='tile'>
                         <div className='row'>

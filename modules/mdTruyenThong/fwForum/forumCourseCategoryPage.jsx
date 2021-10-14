@@ -11,8 +11,8 @@ class ForumCategoryPage extends AdminPage {
         const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:courseId/forum').parse(window.location.pathname),
         courseId = params.courseId;
         if (courseId) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + courseId); // TODO
-            this.setState({ courseId });
+            T.ready('/user/hoc-vien/khoa-hoc/' + courseId);
+            this.setState({ courseId },() => this.props.getForumCategories(courseId));
         } else {
             this.props.history.goBack();
         }

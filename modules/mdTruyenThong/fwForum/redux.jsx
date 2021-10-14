@@ -97,7 +97,7 @@ export function updateForum(_id, changes, done) {
             } else {
                 done && done(data);
                 T.notify('Cập nhật forum thành công!', 'success');
-                data.item && data.item.category && dispatch(getForumPage(data.item.category, undefined, undefined, null, null));
+                data.item && data.item.category && dispatch(getForumPage(data.item.category));
             }
         }, error => console.error(error) || T.notify('Cập nhật forum bị lỗi', 'danger'));
     };

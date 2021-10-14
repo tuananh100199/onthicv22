@@ -14,8 +14,7 @@ class NoteModal extends AdminModal {
         return this.renderModal({
             title: 'Ghi chú',
             body: <>
-                <label className='col-md-12'>Học viên nghỉ học: <b>{this.state.truant ? 'Có' : 'Không'}</b></label>
-                <label className='col-md-12'>Ghi chú của giáo viên: <b>{this.state.note}</b></label>
+                <label className='col-md-12'>Ghi chú của giáo viên: <b>{this.state.note ? this.state.note : 'Chưa có!' }</b></label>
             </>,
         });
     }
@@ -57,6 +56,7 @@ class StudentView extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ngày học</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Giờ học</th>
                     <th style={{ width: '20%', textAlign: 'center' }} nowrap='true'>Xe học</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Nghỉ học</th>
                     <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Ghi chú</th>
                 </tr>),
             renderRow: (item, index) => (
@@ -67,6 +67,7 @@ class StudentView extends AdminPage {
                     <TableCell type='text' content={item.date ? T.dateToText(item.date, 'dd/mm/yyyy') : ''} />
                     <TableCell type='number' style={{ width: 'auto', textAlign: 'center' }}content={item.numOfHours ? `${item.startHour}h-${item.startHour + item.numOfHours}h` : `${item.startHour}h`} />
                     <TableCell type='number' style={{ textAlign: 'center' }} content={item.licensePlates} />
+                    <TableCell type='text' style={{ textAlign: 'center', backgroundColor: item.truant ? 'red' : '', color:  item.truant ? 'white' : '' }} content={item.truant ? 'Có' : 'Không'} />
                     <TableCell type='buttons' content={item} onEdit={this.edit} />
                 </tr>),
         });

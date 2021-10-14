@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getForumPage, createForum, updateForum, deleteForum } from './redux';
-import { ajaxSelectCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTextBox, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
@@ -14,8 +13,7 @@ class ForumModal extends AdminModal {
     }
 
     onShow = (item) => {
-        const { _id, title, content, course, state } = item || { title: '', content: '', state: 'waiting' };
-        this.itemCourse.value(course ? { id: course._id, text: course.name } : null);
+        const { _id, title, content, state } = item || { title: '', content: '', state: 'waiting' };
         this.itemTitle.value(title);
         this.itemContent.value(content);
         this.itemState && this.itemState.value(state);
@@ -25,7 +23,6 @@ class ForumModal extends AdminModal {
     onSubmit = () => {
         if (this.props.category) {
             const data = {
-                course: this.itemCourse.value(),
                 title: this.itemTitle.value(),
                 content: this.itemContent.value(),
                 state: this.itemState ? this.itemState.value() : 'waiting',
@@ -34,9 +31,6 @@ class ForumModal extends AdminModal {
             if (data.title == '') {
                 T.notify('Tên chủ đề bị trống!', 'danger');
                 this.itemTitle.focus();
-            } else if (data.course == '') {
-                T.notify('Loại khóa học bị trống!', 'danger');
-                this.itemCourse.focus();
             } else if (data.content == '') {
                 T.notify('Nội dung chủ đề bị trống!', 'danger');
                 this.itemContent.focus();
@@ -57,7 +51,6 @@ class ForumModal extends AdminModal {
             title: 'Chủ đề',
             body: <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
-                <FormSelect ref={e => this.itemCourse = e} label='Khóa học' data={ajaxSelectCourse} readOnly={false} allowClear={true} />
                 <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
                 {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
@@ -71,7 +64,7 @@ class ForumPage extends AdminPage {
         T.ready('/user/forum', () => {
             const params = T.routeMatcher('/user/forum/:_id').parse(window.location.pathname);
             if (params && params._id) {
-                this.setState({ _id: params._id }, () => this.getPage(undefined, undefined,''));
+                this.setState({ _id: params._id }, () => this.getPage());
             } else {
                 this.props.history.goBack();
             }
@@ -83,7 +76,7 @@ class ForumPage extends AdminPage {
     }
 
     getPage = (pageNumber, pageSize, searchText, done) => {
-        this.state._id && this.props.getForumPage(this.state._id, pageNumber, pageSize, searchText, null, done);
+        this.state._id && this.props.getForumPage(this.state._id, pageNumber, pageSize, searchText, done);
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -136,7 +129,7 @@ class ForumPage extends AdminPage {
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             onCreate: this.edit,
-            onBack: () => this.props.history.goBack(),
+            backRoute: backRoute,
         });
     }
 }
