@@ -33,7 +33,11 @@ export default {
         },
         {
             path: '/user/khoa-hoc/:_id/thong-tin',
-            component: Loadable({ loading: Loading, loader: () => import('./pageView/courseInfoPage') })
+            component: Loadable({ loading: Loading, loader: () => import('./pages/courseInfoPage') })
+        },
+        {
+            path: '/user/khoa-hoc/:_id/mon-học',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/courseInfoPage') })
         },
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',

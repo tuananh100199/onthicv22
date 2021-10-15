@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCourse} from './redux';
+import { getCourse } from './redux';
 import { Link } from 'react-router-dom';
-import { AdminPage,PageIconHeader, PageIcon } from 'view/component/AdminPage';
+import { AdminPage, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
 const previousRoute = '/user/course';
 class EditCoursePage extends AdminPage {
@@ -19,7 +19,7 @@ class EditCoursePage extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
                         const { name } = data.item;
-                        this.setState({name});
+                        this.setState({ name });
                     } else {
                         this.props.history.push(previousRoute);
                     }
@@ -37,14 +37,13 @@ class EditCoursePage extends AdminPage {
 
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Khóa học: ' + (name),
+            title: 'Khóa học: ' + name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
             content: (
                 <div className='row user-course'>
                     <PageIconHeader text='Thông tin chung' />
-
-                    <PageIcon visible={isLecturer||isCourseAdmin} to={`/user/khoa-hoc/${_id}/thong-tin`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
-                    <PageIcon visible={isLecturer||isCourseAdmin} to={`/user/khoa-hoc/${_id}/mon-hoc`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/khoa-hoc/${_id}/thong-tin`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/khoa-hoc/${_id}/mon-hoc`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
                     <PageIcon to={`/user/khoa-hoc/${_id}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
                 </div>
             ),

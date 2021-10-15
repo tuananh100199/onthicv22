@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateCourse } from '../redux';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
-import { AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { AdminPage, AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class SubjectModal extends AdminModal {
     componentDidMount() {
@@ -26,7 +26,7 @@ class SubjectModal extends AdminModal {
     });
 }
 
-class AdminSubjectView extends React.Component {
+class AdminSubjectPage extends AdminPage {
     addSubject = e => e.preventDefault() || this.modal.show();
 
     removeSubject = (e, index) => e.preventDefault() || T.confirm('Xoá môn học', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
@@ -77,4 +77,4 @@ class AdminSubjectView extends React.Component {
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCourse, updateCourse };
-export default connect(mapStateToProps, mapActionsToProps)(AdminSubjectView);
+export default connect(mapStateToProps, mapActionsToProps)(AdminSubjectPage);

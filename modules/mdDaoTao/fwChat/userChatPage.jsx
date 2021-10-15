@@ -26,7 +26,7 @@ class ChatPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-comments-o',
             title: 'Chat',
-            breadcrumb: [<a key={0} href='#' onClick={() => this.props.history.goBack()}>Khoá học</a>, 'Chat'],
+            breadcrumb: [<a key={0} href='#' onClick={() => this.props.history.goBack()}>Khóa học</a>, 'Chat'],
             content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={adminTabs} />,
             onBack: () => this.props.history.goBack(),
         });
