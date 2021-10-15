@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getCourseByStudent } from './redux';
-import RateSection from 'modules/_default/fwRate/RateUserSection';
+import { getRateByUser } from 'modules/_default/fwRate/redux';
+import RateModal from 'modules/_default/fwRate/RateModal';
 import { AdminPage, CirclePageButton, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
 class UserCoursePageDetail extends AdminPage {
@@ -21,7 +22,10 @@ class UserCoursePageDetail extends AdminPage {
                         this.props.history.push('/user');
                     } else if (data.item && data._studentId) {
                         this.setState(data.item);
-                        if (data.teacher) this.setState({teacher:data.teacher});
+                        if (data.teacher) {
+                            this.setState({teacher:data.teacher});
+                            this.props.getRateByUser('teacher',data.teacher._id);
+                        }
                     } else {
                         this.props.history.push('/user');
                     }
@@ -61,8 +65,7 @@ class UserCoursePageDetail extends AdminPage {
 
     render() {
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
-        const { name, courseId,teacher } = this.state;
-        console.log(this.state,'d');
+        const { name, courseId,teacher } = this.state,rate=this.props.rate.item && this.props.rate.item.value;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: `Khóa học: ${name}`,
@@ -77,9 +80,10 @@ class UserCoursePageDetail extends AdminPage {
 
                     <PageIcon to={`/user/chat/${courseId}`} icon='fa-comments-o' iconBackgroundColor='#28a745' text='Chat' visible={this.state.chatActive} />
                     <PageIcon to={`/user/hoc-vien/khoa-hoc/${courseId}/phan-hoi`} icon='fa-commenting-o' iconBackgroundColor='#dc3545' text='Phản hồi' />
-                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
+                    <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher!=null} 
+                    onClick={(e) => {e.preventDefault();this.modal.show();}} subtitle={rate ?rate+' sao':'Chưa đánh giá'}/>
                     {/* check render */}
-                    <RateSection visible={teacher!=null} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher && teacher._id} />
+                    <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher && teacher._id} />
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
@@ -98,6 +102,6 @@ class UserCoursePageDetail extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest });
-const mapActionsToProps = { getCourseByStudent };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, driveTest: state.trainning.driveTest,rate: state.framework.rate });
+const mapActionsToProps = { getCourseByStudent,getRateByUser };
 export default connect(mapStateToProps, mapActionsToProps)(UserCoursePageDetail);

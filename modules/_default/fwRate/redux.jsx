@@ -29,7 +29,7 @@ export default function rateReducer(state = {}, data) {
 
 export function getRateByUser(type, _refId, done) {
     return dispatch => {
-        const url = `/api/rate/${type}`;
+        const url = `/home/rate/${type}`;
         T.get(url, { _refId }, data => {
             if (data.error) {
                 T.notify('Lấy đánh giá bị lỗi!', 'danger');
@@ -74,14 +74,14 @@ export function getRateByUser(type, _refId, done) {
 // }
 
 export function createRate(newData, done) {
-    return () => {
+    return dispatch => {
         const url = '/home/rate';
         T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo đánh giá bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                // dispatch(getRateAllByUser(newData.type,newData._refId));
+                dispatch({ type: RateGetItem, item: data.item });
                 done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Tạo đánh giá bị lỗi!', 'danger'));

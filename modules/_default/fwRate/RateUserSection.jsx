@@ -9,6 +9,11 @@ class RateSection extends React.Component {
     // componentDidMount() {
     //     this.props.getRateByUser(this.props.type,this.props._refId);
     // }
+    componentDidUpdate(prevProps) {
+        if (prevProps.isSubmitted != this.props.isSubmitted) {
+            if(this.props.isSubmitted==true) this.onClick();
+        }
+    }
 
     saveRating = (rateNumber) => {
         this.setState({ rateNumber });
@@ -27,21 +32,17 @@ class RateSection extends React.Component {
     render() {
         // const permission = this.getUserPermission('rate');
         // const rate =this.props.rate;
-        const {  visible = true } = this.props;
+        const {  visible = true,className ='',style={},isNote=true,title='',isButtonHidden=false } = this.props;
         return !visible ? null : <>
-            <div className='tile'>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <h6 style={{ textAlign: 'center' }}>{this.props.title}</h6>
+            <div className={className} style={{ textAlign: 'center',...style }}>
+                        <h6 >{title}</h6>
                         <div className='starrating risingstar d-flex justify-content-center flex-row-reverse'>
                             {[...Array(5).keys()].map(item => <><input type='radio' id={5 - item} name='rating' value={5 - item} onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor={5 - item} title={`${5 - item} sao`} ></label></>)}
                         </div>
-                        <FormRichTextBox ref={e => this.note = e} style={{ display: 'flex' }} />
-                        <div style={{ textAlign: 'center' }}>
+                        {isNote && <><FormRichTextBox ref={e => this.note = e} style={{ display: 'flex' }} />
+                        <div style={{...(isButtonHidden&&{display:'none'})}}>
                             <button className='btn btn-primary' type='button' onClick={this.onClick}> Gửi </button>
-                        </div>
-                    </div>
-                </div>
+                        </div></>}
             </div>
         </>;
     }
