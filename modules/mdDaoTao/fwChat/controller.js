@@ -1,4 +1,3 @@
-
 module.exports = app => {
     app.get('/user/chat/:id', app.templates.admin);
 
@@ -99,7 +98,10 @@ module.exports = app => {
                     }
                 });
             }
-        })).then(data => socket.emit('chat:join', data));
+        })).then(data => {
+            console.log(data, 'abc');
+            socket.emit('chat:join', data);
+        });
     });
 
     app.io.addSocketListener('chat:send', (socket, data) => {
@@ -112,6 +114,7 @@ module.exports = app => {
                     message: data.message,
                 }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                     if (!error && chat) {
+                        console.log(chat);
                         socket.emit('chat:send', { chat });
                         app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
                             !error && socketIds && socketIds.forEach(socketId => {
@@ -129,7 +132,9 @@ module.exports = app => {
                             message: data.message,
                         }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                             if (!error && chat) {
-                                socket.emit('chat:send', { chat });
+                                chat.receiver = receiver._id;
+                                console.log(chat);
+                                socket.to({ _roomId: receiver._id }).emit('chat:send', { chat });
                                 // app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
                                 //     console.log('object', socketIds);
                                 //     !error && socketIds && socketIds.forEach(socketId => {

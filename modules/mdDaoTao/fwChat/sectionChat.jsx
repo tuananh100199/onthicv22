@@ -12,7 +12,7 @@ class SectionChat extends AdminPage {
         const { courseId, listUser, oldMessage, _selectedUserId } = this.props,
             user = this.props.system.user;
         this.setState({ courseId, user, listUser, oldMessage, _selectedUserId });
-        T.socket.emit('chat:join', { _roomId: courseId });
+        T.socket.emit('chat:join', { _courseId: courseId });
         _selectedUserId && T.socket.emit('chat:join', { _userId: _selectedUserId });
     }
 

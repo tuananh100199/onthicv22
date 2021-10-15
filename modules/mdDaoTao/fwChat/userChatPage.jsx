@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage } from './redux';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserAllChat from './userAllChat';
 import UserPersonalChat from './userPersonalChat';
@@ -34,5 +33,5 @@ class ChatPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { createMessage };
+const mapActionsToProps = {};
 export default connect(mapStateToProps, mapActionsToProps)(ChatPage);

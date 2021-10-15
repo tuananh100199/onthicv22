@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage, getOldMessage, readAllChats, getUserChats, addChat } from './redux';
+import { readAllChats, getUserChats, addChat } from './redux';
 // import { debounce } from 'lodash';
 import { getLearingProgressByLecturer, getChatByAdmin } from '../fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
@@ -16,7 +16,7 @@ class AdminPersonalChat extends AdminPage {
         window.addEventListener('keydown', this.logKey);
         const courseId = this.props.courseId,
             user = this.props.system.user;
-        this.setState({ courseId, user, currentLoaded: 0 });
+        this.setState({ courseId, user });
 
         if (courseId) {
             this.props.getChatByAdmin(courseId, data => {
@@ -206,5 +206,5 @@ class AdminPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, chat: state.trainning.chat });
-const mapActionsToProps = { createMessage, getOldMessage, getLearingProgressByLecturer, getChatByAdmin, readAllChats, getUserChats, addChat };
+const mapActionsToProps = { getLearingProgressByLecturer, getChatByAdmin, readAllChats, getUserChats, addChat };
 export default connect(mapStateToProps, mapActionsToProps)(AdminPersonalChat);
