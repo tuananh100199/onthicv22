@@ -76,7 +76,7 @@ module.exports = (app) => {
                                     parentMenu: {
                                         index: 3020,
                                         title: 'Phản hồi',
-                                        link:'/user/hoc-vien/phan-hoi/he-thong',
+                                        link: '/user/feedback',
                                         permissions: ['user:login'],
                                         icon: 'fa-cog',
                                     },

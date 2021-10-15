@@ -42,9 +42,9 @@ class EditCoursePage extends AdminPage {
             content: (
                 <div className='row user-course'>
                     <PageIconHeader text='Thông tin chung' />
-                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/khoa-hoc/${_id}/thong-tin`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
-                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/khoa-hoc/${_id}/mon-hoc`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
-                    <PageIcon to={`/user/khoa-hoc/${_id}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${_id}/info`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
+                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${_id}/subject`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
+                    <PageIcon to={`/user/course/${_id}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
                 </div>
             ),
             backRoute: previousRoute,

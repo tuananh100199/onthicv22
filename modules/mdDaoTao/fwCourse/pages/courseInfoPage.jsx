@@ -9,7 +9,7 @@ class EditCoursePage extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
         T.ready('/user/course', () => {
-            const route = T.routeMatcher('/user/khoa-hoc/:_id/thong-tin'),
+            const route = T.routeMatcher('/user/course/:_id/info'),
                 _id = route.parse(window.location.pathname)._id,
                 previousRoute = '/user/course/' + _id;
             if (_id) {
@@ -76,50 +76,49 @@ class EditCoursePage extends AdminPage {
             previousRoute = '/user/course/' + this.state._id,
             { isLecturer, isCourseAdmin } = currentUser,
             readOnly = (!permission.write || isLecturer) && !isCourseAdmin; //TODO: xem lại !isCourseAdmin
-        const pageInfo = <>
-            <div className='tile'>
-                <div className='row'>
-                    <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
-                    <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
-                    <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
-                    <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
-                    <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
-                    <FormTextBox ref={e => this.courseFee = e} type='number' label='Học phí' className='col-md-3' readOnly={readOnly} />
-                </div>
-            </div>
-
-            <div className='tile'>
-                <div className='row'>
-                    <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Thời gian</h3>
-                    <FormDatePicker ref={e => this.thoiGianKhaiGiang = e} label='Thời gian khai giảng' className='col-md-4' readOnly={readOnly} type='time' />
-                    <FormDatePicker ref={e => this.thoiGianBatDau = e} label='Thời gian bắt đầu' className='col-md-4' readOnly={readOnly} />
-                    <FormDatePicker ref={e => this.thoiGianKetThuc = e} label='Thời gian kết thúc' className='col-md-4' readOnly={readOnly} />
-
-                    <FormDatePicker ref={e => this.thoiGianThiKetThucMonDuKien = e} label='Thời gian kết thúc môn dự kiến' className='col-md-6' readOnly={readOnly} type='time' />
-                    <FormDatePicker ref={e => this.thoiGianThiKetThucMonChinhThuc = e} label='Thời gian kết thúc môn chính thức' className='col-md-6' readOnly={readOnly} type='time' />
-
-                    <FormDatePicker ref={e => this.thoiGianThiTotNghiepDuKien = e} label='Thời gian tốt nghiệp dự kiến' className='col-md-6' readOnly={readOnly} />
-                    <FormDatePicker ref={e => this.thoiGianThiTotNghiepChinhThuc = e} label='Thời gian tốt nghiệp chính thức' className='col-md-6' readOnly={readOnly} />
-
-                </div>
-            </div>
-
-            <div className='tile'>
-                <div className='row'>
-                    <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Mô tả khóa học</h3>
-                    <FormCheckbox ref={e => this.chatActive = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt chat' isSwitch={true} readOnly={readOnly} />
-                    <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
-                    <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
-                </div>
-            </div>
-            {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
-        </>;
 
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: Thông tin khóa học ' + (this.state.name),
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Thông tin khóa học'],
-            content: pageInfo,
+            content: <>
+                <div className='tile'>
+                    <div className='row'>
+                        <h3 className='tile-title col-md-9' style={{ paddingLeft: 15, marginBottom: 5 }}>Thông tin chung</h3>
+                        <FormCheckbox ref={e => this.active = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt' isSwitch={true} readOnly={readOnly} />
+                        <FormTextBox ref={e => this.name = e} label='Tên khóa học' className='col-md-3' value={this.state.name} onChange={e => this.setState({ title: e.target.value })} readOnly={readOnly} />
+                        <FormSelect ref={e => this.courseType = e} label='Loại khóa học' data={ajaxSelectCourseType} className='col-md-3' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.maxStudent = e} label='Số  học viên tối đa' className='col-md-3' type='number' readOnly={readOnly} />
+                        <FormTextBox ref={e => this.courseFee = e} type='number' label='Học phí' className='col-md-3' readOnly={readOnly} />
+                    </div>
+                </div>
+
+                <div className='tile'>
+                    <div className='row'>
+                        <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Thời gian</h3>
+                        <FormDatePicker ref={e => this.thoiGianKhaiGiang = e} label='Thời gian khai giảng' className='col-md-4' readOnly={readOnly} type='time' />
+                        <FormDatePicker ref={e => this.thoiGianBatDau = e} label='Thời gian bắt đầu' className='col-md-4' readOnly={readOnly} />
+                        <FormDatePicker ref={e => this.thoiGianKetThuc = e} label='Thời gian kết thúc' className='col-md-4' readOnly={readOnly} />
+
+                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonDuKien = e} label='Thời gian kết thúc môn dự kiến' className='col-md-6' readOnly={readOnly} type='time' />
+                        <FormDatePicker ref={e => this.thoiGianThiKetThucMonChinhThuc = e} label='Thời gian kết thúc môn chính thức' className='col-md-6' readOnly={readOnly} type='time' />
+
+                        <FormDatePicker ref={e => this.thoiGianThiTotNghiepDuKien = e} label='Thời gian tốt nghiệp dự kiến' className='col-md-6' readOnly={readOnly} />
+                        <FormDatePicker ref={e => this.thoiGianThiTotNghiepChinhThuc = e} label='Thời gian tốt nghiệp chính thức' className='col-md-6' readOnly={readOnly} />
+
+                    </div>
+                </div>
+
+                <div className='tile'>
+                    <div className='row'>
+                        <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Mô tả khóa học</h3>
+                        <FormCheckbox ref={e => this.chatActive = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt chat' isSwitch={true} readOnly={readOnly} />
+                        <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
+                        <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
+                    </div>
+                </div>
+                {!readOnly ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
+            </>,
             backRoute: previousRoute,
         });
     }

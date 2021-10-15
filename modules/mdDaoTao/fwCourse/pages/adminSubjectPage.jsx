@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateCourse } from '../redux';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
+import { Link } from 'react-router-dom';
 import { AdminPage, AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class SubjectModal extends AdminModal {
@@ -27,6 +28,48 @@ class SubjectModal extends AdminModal {
 }
 
 class AdminSubjectPage extends AdminPage {
+    componentDidMount() {
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_id/info').parse(window.location.pathname);
+            const course = this.props.course ? this.props.course.item : null;
+            if (!course) {
+                if (params && params._id) {
+                    const previousRoute = '/user/course/' + params._id;
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push(previousRoute);
+                        } else if (data.item) {
+                            const { name, maxStudent, detailDescription, courseType, courseFee,
+                                thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive } = data.item;
+
+                            this.name.value(name);
+                            this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
+                            this.courseFee.value(courseFee);
+                            this.maxStudent.value(maxStudent);
+                            this.detailDescription.html(detailDescription);
+
+                            this.thoiGianKhaiGiang.value(thoiGianKhaiGiang);
+                            this.thoiGianBatDau.value(thoiGianBatDau);
+                            this.thoiGianKetThuc.value(thoiGianKetThuc);
+                            this.thoiGianThiKetThucMonDuKien.value(thoiGianThiKetThucMonDuKien);
+                            this.thoiGianThiKetThucMonChinhThuc.value(thoiGianThiKetThucMonChinhThuc);
+                            this.thoiGianThiTotNghiepDuKien.value(thoiGianThiTotNghiepDuKien);
+                            this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
+                            this.active.value(active);
+                            this.chatActive.value(chatActive);
+                            this.setState(data.item);
+                        } else {
+                            this.props.history.push(previousRoute);
+                        }
+                    });
+                } else {
+                    this.props.history.push('/user/course/');
+                }
+            }
+        });
+    }
+
     addSubject = e => e.preventDefault() || this.modal.show();
 
     removeSubject = (e, index) => e.preventDefault() || T.confirm('Xoá môn học', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
@@ -38,6 +81,7 @@ class AdminSubjectPage extends AdminPage {
     });
 
     render() {
+        const course = this.props.course ? this.props.course.item || {} : {};
         const readOnly = this.props.readOnly,
             item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
         const table = renderTable({
@@ -63,15 +107,23 @@ class AdminSubjectPage extends AdminPage {
                 </tr>),
         });
 
-        return (
-            <div className='tile-body'>
-                {table}
-                <SubjectModal ref={e => this.modal = e} update={this.props.updateCourse} _id={item._id} subjects={item.subjects || []} />
-                {!readOnly ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addSubject}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button> : null}
-            </div>);
+        return this.renderPage({
+            icon: 'fa fa-cubes',
+            title: 'Môn học: ' + course.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Môn học'],
+            content: (
+                <div className='tile'>
+                    <div className='tile-body'>
+                        {table}
+                        <SubjectModal ref={e => this.modal = e} update={this.props.updateCourse} _id={item._id} subjects={item.subjects || []} />
+                        {!readOnly ?
+                            <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addSubject}>
+                                <i className='fa fa-lg fa-plus' />
+                            </button> : null}
+                    </div>
+                </div>),
+            onBack: () => this.props.history.goBack(),
+        });
     }
 }
 

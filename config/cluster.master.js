@@ -6,7 +6,7 @@ module.exports = (cluster, isDebug) => {
         imageInfoPath = path.join(__dirname, '../imageInfo.txt');
 
     const workers = {},
-        numWorkers = isDebug ? 1 : require('os').cpus().length;
+        numWorkers = isDebug ? 2 : require('os').cpus().length;
     for (let i = 0; i < numWorkers; i++) {
         const primaryWorker = i == 0;
         const worker = cluster.fork({ primaryWorker });
