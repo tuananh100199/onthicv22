@@ -15,7 +15,6 @@ class AdminStudentView extends AdminPage {
         const data = this.state.listStudent ? this.state.listStudent : [],
             courseItem = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] },
             subjects = courseItem && courseItem.subjects && courseItem.subjects.sort((a, b) => a.title.localeCompare(b.title));
-        console.log(subjects);
         const table = renderTable({
             getDataSource: () => data, stickyHead: true,
             renderHead: () => (
