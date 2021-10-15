@@ -19,6 +19,7 @@ module.exports = (app) => {
         isLecturer: { type: Boolean, default: false },                                              // Là cố vấn học tập
         isRepresenter: { type: Boolean, default: false },                                           // Là người đại diện (giáo viên báo cáo với Sở)
         isStaff: { type: Boolean, default: false },                                                 // Là nhân viên
+        trustLecturer: { type: Boolean, default: false }, // cố vấn học tập tin cậy => họ được quyền approved forum, comment của họ
 
         token: String,
         tokenDate: Date,

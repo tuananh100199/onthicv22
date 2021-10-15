@@ -56,7 +56,7 @@ export class ForumButtons extends React.Component {
         if (!onChangeState) onChangeState = () => { };
         return permission ?
             <div style={{ position: 'absolute', right: 12, top: -12 }}>
-                {permission.write && permission.forumOwner?
+                {permission.write && permission.forumOwner? // trustLecturer == true thì được quyền chuyển, không tin cậy thì như một học viên binh thường không làm được gì
                     <div className='btn-group btn-group-sm'>
                         {ForumStates.map((item, index) =>
                             <Tooltip key={index} placement='top' overlay={item.text}>
