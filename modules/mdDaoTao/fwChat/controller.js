@@ -28,11 +28,6 @@ module.exports = app => {
         });
     });
 
-    app.post('/api/chat', app.permission.check('user:login'), (req, res) => {
-        const { data } = req.body;
-        app.model.chat.create(data || {}, (error, item) => res.send({ error, item }));
-    });
-
     app.get('/api/chat/user', app.permission.check('user:login'), (req, res) => {
         const sessionUser = req.session.user,
             { _selectedUserId, sent } = req.query;
@@ -79,17 +74,6 @@ module.exports = app => {
         });
     });
 
-
-    // Socket IO listeners --------------------------------------------------------------------------------------------------------------------------
-    // app.io.onSocketListener('sendRoomClient', (socket, data) => {
-    //     data && data.map(room => socket.join(room));
-    // });
-
-    // app.io.onSocketListener('sendDataClient', (socket, data) => {
-    //     data.user = app.io.getSessionUser(socket);
-    //     data.user && app.io.to(data.room).emit('sendDataServer', { data });
-    // });
-
     // Socket IO listeners --------------------------------------------------------------------------------------------------------------------------
     app.io.addSocketListener('chat:join', (socket, data) => {
         const sessionUser = app.io.getSessionUser(socket);
@@ -119,7 +103,6 @@ module.exports = app => {
     });
 
     app.io.addSocketListener('chat:send', (socket, data) => {
-        console.log(data);
         const sessionUser = app.io.getSessionUser(socket);
         sessionUser && app.model.user.get(data.receiver, (error, receiver) => {
             if (!error && receiver) {
@@ -130,7 +113,6 @@ module.exports = app => {
                 }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                     if (!error && chat) {
                         socket.emit('chat:send', { chat });
-
                         app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
                             !error && socketIds && socketIds.forEach(socketId => {
                                 socket.to(socketId).emit('chat:send', { chat });
@@ -148,12 +130,12 @@ module.exports = app => {
                         }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                             if (!error && chat) {
                                 socket.emit('chat:send', { chat });
-
-                                app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
-                                    !error && socketIds && socketIds.forEach(socketId => {
-                                        socket.to(socketId).emit('chat:send', { chat });
-                                    });
-                                });
+                                // app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
+                                //     console.log('object', socketIds);
+                                //     !error && socketIds && socketIds.forEach(socketId => {
+                                //         socket.to(socketId).emit('chat:send', { chat });
+                                //     });
+                                // });
                             }
                         }));
                     }

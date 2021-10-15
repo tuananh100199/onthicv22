@@ -21,14 +21,7 @@ export default function ChatReducer(state = { users: [] }, data) {
         }
 
         case ChatGetUserChats: {
-            // const users = state.users || [],
-            //     selectedUser = users.find(user => user._id == data._selectedUserId);
-            // if (selectedUser) {
-            //     data.chats.forEach(chat => chat.read = true);
-            //     selectedUser.chats = (selectedUser.chats || []).concat(data.chats);
-            // }
             return Object.assign({}, state, data.chats);
-            //return Object.assign({}, state, { users });
         }
 
         case ChatGetAllChats: {
@@ -121,37 +114,6 @@ export function addChat(isSenderChat, chat) {
 export function updateChatState(state) {
     delete state.error;
     return { type: ChatUpdateState, state };
-}
-
-export function getOldMessage(roomId, createAt, numMessage, done) {
-    return (dispatch) => {
-        const url = '/api/chat';
-        T.get(url, { roomId, createAt, numMessage }, data => {
-            if (data.error) {
-
-                T.notify('Lấy danh sách học viên bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                if (done) done(data);
-                dispatch({ type: ChatGetItem });
-            }
-        }, error => console.error(error) || T.notify('Lấy danh sách học viên bị lỗi!', 'danger'));
-    };
-}
-
-export function createMessage(data, done) {
-    return dispatch => {
-        const url = '/api/chat';
-        T.post(url, { data }, data => {
-            if (data.error) {
-                T.notify('Gửi tin nhắn bị lỗi!', 'danger');
-                console.error('POST: ' + url + '.', data.error);
-            } else {
-                dispatch({ type: ChatGetItem });
-                if (done) done(data);
-            }
-        }, error => console.error(error) || T.notify('Tạo khóa học bị lỗi!', 'danger'));
-    };
 }
 
 export function getAdminChatByStudent(courseId, done) {
