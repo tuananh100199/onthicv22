@@ -5,7 +5,7 @@ import { getLessonByStudent, rateLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-import 'view/component/ratingStar.scss';
+// import 'view/component/ratingStar.scss';
 
 class adminEditPage extends AdminPage {
     state = { showQuestionButton: false, questionVisibility: 'hidden' };
@@ -36,7 +36,6 @@ class adminEditPage extends AdminPage {
     }
 
     saveRating = (value) => {
-        console.log(value);
         this.props.rateLesson(this.state.lessonId, this.state.subjectId, this.state.courseId, value);
     }
 
