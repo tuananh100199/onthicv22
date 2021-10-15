@@ -12,8 +12,12 @@ export default {
     },
     routes: [
         {
-            path: '/user/feedback/system',
+            path: '/user/hoc-vien/phan-hoi/he-thong',
             component: Loadable({ loading: Loading, loader: () => import('./userFeedbackSystemPage') })
+        },
+        {
+            path: '/user/feedback/system',
+            component: Loadable({ loading: Loading, loader: () => import('./adminFeedbackSystemPage') })
         },
     ],
 };
