@@ -12,8 +12,8 @@ class SectionChat extends AdminPage {
         const { courseId, listUser, oldMessage, _selectedUserId } = this.props,
             user = this.props.system.user;
         this.setState({ courseId, user, listUser, oldMessage, _selectedUserId });
-        T.socket.emit('chat:join', { _courseId: courseId });
-        _selectedUserId && T.socket.emit('chat:join', { _userId: _selectedUserId });
+        _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:join', { _courseId: courseId });
+        T.socket.on('chat:send', this.onReceiveMessage);
     }
 
     componentDidUpdate() {
@@ -23,20 +23,6 @@ class SectionChat extends AdminPage {
     componentWillUnmount() {
         T.socket.off('chat:send');
     }
-
-    loadMoreChats = () => inView('.listViewLoading').on('enter', () => { // Scroll on top and load more chats
-        const chats = this.state.oldMessage,
-            chatLength = chats ? chats.length : 0,
-            sent = chats && chats.length ? chats[0].sent : null;
-        this.props.getAllChats(this.state.courseId, sent, data => {
-            const loadedChats = data.chats.sort(() => -1);
-            this.setState(prevState => ({
-                oldMessage: loadedChats.concat(prevState.oldMessage),
-                isLastedChat: data.chats && data.chats.length < 20
-            }));
-            this.scrollToChat(chatLength - 1);
-        });
-    });
 
     loadMoreChats = () => inView('.listViewLoading').on('enter', () => { // Scroll on top and load more chats
         const _selectedUserId = this.state._selectedUserId ? this.state._selectedUserId : null;

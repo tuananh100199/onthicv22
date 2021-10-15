@@ -22,7 +22,7 @@ class UserAllChat extends AdminPage {
                 });
             });
 
-            T.socket.emit('chat:join', { _roomId: courseId });
+            T.socket.emit('chat:joinCourseRoom', { courseId, userId: user._id });
         } else {
             this.props.history.push(previousRoute);
         }
@@ -79,9 +79,10 @@ class UserAllChat extends AdminPage {
     }
 
     onReceiveMessage = (data) => {
+        console.log(data);
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        if (user && chat) {
+        if (user && chat && data.chat.receiver == this.state.courseId) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
             this.setState(prevState => ({
                 oldMessage: [...prevState.oldMessage, data.chat]

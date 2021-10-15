@@ -1,3 +1,4 @@
+
 module.exports = app => {
     app.get('/user/chat/:id', app.templates.admin);
 
@@ -78,7 +79,7 @@ module.exports = app => {
         const sessionUser = app.io.getSessionUser(socket);
         new Promise(resolve => {
             if (data && data._courseId) {
-                app.model.course.get(data._courseId, (error, course) => resolve({ error, _newUserId: course ? course._id : null }));
+                app.model.course.get(data._courseId, (error, course) => resolve({ error, _roomId: course ? course._id : null }));
             } else {
                 resolve({ _newUserId: data && data._userId });
             }
@@ -94,15 +95,19 @@ module.exports = app => {
                     } else {
                         if (!_userIds) _userIds = [];
                         if (_newUserId) _userIds.unshift(_newUserId);
-                        app.model.user.getAll({ _id: { $in: _userIds } }, '', 'firstname lastname image', (error, users) => resolve({ error, users }));
+                        app.model.user.getAll({ _id: { $in: _userIds } }, (error, users) => resolve({ error, users }));
                     }
                 });
             }
         })).then(data => {
-            console.log(data, 'abc');
             socket.emit('chat:join', data);
         });
     });
+
+    app.io.addSocketListener('chat:joinCourseRoom', (socket, data) => {
+        data && socket.join(data.courseId);
+    });
+
 
     app.io.addSocketListener('chat:send', (socket, data) => {
         const sessionUser = app.io.getSessionUser(socket);
@@ -114,7 +119,6 @@ module.exports = app => {
                     message: data.message,
                 }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                     if (!error && chat) {
-                        console.log(chat);
                         socket.emit('chat:send', { chat });
                         app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
                             !error && socketIds && socketIds.forEach(socketId => {
@@ -133,14 +137,7 @@ module.exports = app => {
                         }, (error, item) => !error && item && app.model.chat.get(item._id, (error, chat) => {
                             if (!error && chat) {
                                 chat.receiver = receiver._id;
-                                console.log(chat);
-                                socket.to({ _roomId: receiver._id }).emit('chat:send', { chat });
-                                // app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
-                                //     console.log('object', socketIds);
-                                //     !error && socketIds && socketIds.forEach(socketId => {
-                                //         socket.to(socketId).emit('chat:send', { chat });
-                                //     });
-                                // });
+                                app.io.in(receiver._id.toString()).emit('chat:send', { chat });
                             }
                         }));
                     }
