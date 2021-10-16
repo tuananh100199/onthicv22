@@ -13,7 +13,8 @@ module.exports = app => {
         maxStudent: { type: Number, default: 100 },                         // Số lượng học viên tối đa
         modifiedDate: { type: Date, default: Date.now },
         createdDate: { type: Date, default: Date.now },
-        chatActive: { type: Boolean, default: true },
+        chatActive: { type: Boolean, default: true },                       // Cho phép chat trong khoá học
+        commentActive: { type: Boolean, default: true },                    // Cho phép bình luận dưới bài học
         active: { type: Boolean, default: false },
 
         thoiGianKhaiGiang: { type: Date, default: Date.now },
@@ -34,7 +35,7 @@ module.exports = app => {
             student: [{ type: app.db.Schema.Types.ObjectId, ref: 'Student' }],
         }],
 
-        lock: { type: Boolean, default: false },                            // Bổ sung khóa khóa học lại
+        lock: { type: Boolean, default: false },                            // Cho phép thay đổi thông tin toàn khoá học => TODO: readOnly
         close: { type: Boolean, default: false },                           // Khóa học đã đóng
     });
     const model = app.db.model('Course', schema);
