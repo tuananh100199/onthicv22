@@ -121,9 +121,18 @@ module.exports = app => {
                     if (!error && chat) {
                         socket.emit('chat:send', { chat });
                         app.model.chat.getSocketIds(receiver._id, (error, socketIds) => {
-                            !error && socketIds && socketIds.forEach(socketId => {
-                                socket.to(socketId).emit('chat:send', { chat });
+                            let listSocketIds = [];
+                            !error && socketIds && socketIds.map(socketId => {
+                                listSocketIds.push(socketId);
                             });
+                            socket.to(listSocketIds).emit('chat:send', { chat });
+                        });
+                        app.model.chat.getSocketIds(sessionUser._id, (error, socketIds) => {
+                            let listSocketIds = [];
+                            !error && socketIds && socketIds.map(socketId => {
+                                listSocketIds.push(socketId);
+                            });
+                            socket.to(listSocketIds).emit('chat:send', { chat });
                         });
                     }
                 }));
