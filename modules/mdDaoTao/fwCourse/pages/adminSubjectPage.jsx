@@ -41,7 +41,7 @@ class AdminSubjectPage extends AdminPage {
                             this.props.history.push(previousRoute);
                         } else if (data.item) {
                             const { name, maxStudent, detailDescription, courseType, courseFee,
-                                thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive } = data.item;
+                                thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = data.item;
 
                             this.name.value(name);
                             this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
@@ -58,6 +58,7 @@ class AdminSubjectPage extends AdminPage {
                             this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
                             this.active.value(active);
                             this.chatActive.value(chatActive);
+                            this.commentActive.value(commentActive);
                             this.setState(data.item);
                         } else {
                             this.props.history.push(previousRoute);

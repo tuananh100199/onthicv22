@@ -19,7 +19,7 @@ class EditCoursePage extends AdminPage {
                         this.props.history.push(previousRoute);
                     } else if (data.item) {
                         const { name, maxStudent, shortDescription, detailDescription, courseType, courseFee,
-                            thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive } = data.item;
+                            thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = data.item;
 
                         this.name.value(name);
                         this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
@@ -37,6 +37,7 @@ class EditCoursePage extends AdminPage {
                         this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
                         this.active.value(active);
                         this.chatActive.value(chatActive);
+                        this.commentActive.value(commentActive);
                         this.setState(data.item);
                     } else {
                         this.props.history.push(previousRoute);
@@ -59,8 +60,9 @@ class EditCoursePage extends AdminPage {
             courseFees: this.state.courseFees,
             active: this.active.value(),
             chatActive: this.chatActive.value(),
+            commentActive: this.commentActive.value(),
         };
-        this.setState({ chatActive: changes.chatActive });
+        this.setState({ chatActive: changes.chatActive, commentActive: changes.commentActive });
         if (changes.courseFee == null) changes.courseFee = 0;
         if (changes.name == '') {
             T.notify('Tên khóa học trống!', 'danger');
@@ -113,6 +115,8 @@ class EditCoursePage extends AdminPage {
                     <div className='row'>
                         <h3 className='tile-title col-12' style={{ paddingLeft: 15, marginBottom: 5 }}>Mô tả khóa học</h3>
                         <FormCheckbox ref={e => this.chatActive = e} className={'col-md-3 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt chat' isSwitch={true} readOnly={readOnly} />
+                        <FormCheckbox ref={e => this.commentActive = e} className={'col-md-6 ' + (readOnly ? 'invisible' : '')} label='Kích hoạt bình luận bài học' isSwitch={true} readOnly={readOnly} />
+
                         <FormRichTextBox ref={e => this.shortDescription = e} label='Mô tả ngắn khóa học' className='col-md-12' readOnly={readOnly} />
                         <FormEditor ref={e => this.detailDescription = e} label='Mô tả chi tiết khóa học' className='col-md-12' readOnly={readOnly} style={{ height: '400px' }} />
                     </div>
