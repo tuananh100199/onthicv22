@@ -19,7 +19,8 @@ module.exports = (app) => {
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/khoa-hoc/:_id/thong-tin', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
@@ -446,10 +447,10 @@ module.exports = (app) => {
             } else {
                 if (student.course && student.course.active) {
                     app.model.course.get(_courseId, (error, item) => {
-                        const _studentId= student._id,
-                        teacherGroups=item.teacherGroups.find(({student})=>student.find(({_id})=>_id==_studentId.toString())!=null),
-                        teacher=teacherGroups.teacher||null;
-                        res.send({ error, item, _studentId,teacher});
+                        const _studentId = student._id,
+                            teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
+                            teacher = teacherGroups.teacher || null;
+                        res.send({ error, item, _studentId, teacher });
                     });
                 } else {
                     res.send({ notify: 'Khóa học chưa được kích hoạt!' });

@@ -5,18 +5,18 @@ import { AdminPage } from 'view/component/AdminPage';
 
 class userFeedbackSystemPage extends AdminPage {
     componentDidMount() {
-        T.ready('/user/hoc-vien/phan-hoi/he-thong');
+        T.ready('/user/feedback');
     }
     render() {
         return this.renderPage({
             icon: 'fa fa-cog',
             title: 'Phản hồi',
             breadcrumb: ['Phản hồi'],
-            content:<FeedbackSection type='system'/>,
+            content: <FeedbackSection type='system' />,
         });
     }
 }
 
-const mapStateToProps = () => ({ });
-const mapActionsToProps = { };
+const mapStateToProps = () => ({});
+const mapActionsToProps = {};
 export default connect(mapStateToProps, mapActionsToProps)(userFeedbackSystemPage);
