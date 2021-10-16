@@ -29,7 +29,7 @@ export default function rateReducer(state = {}, data) {
 
 export function getRateByUser(type, _refId, done) {
     return dispatch => {
-        const url = `/home/rate/${type}`;
+        const url = `/api/rate/student/${type}`;
         T.get(url, { _refId }, data => {
             if (data.error) {
                 T.notify('Lấy đánh giá bị lỗi!', 'danger');
@@ -42,25 +42,25 @@ export function getRateByUser(type, _refId, done) {
     };
 }
 
-// export function updateRate(_id, changes, done) {
-//     return dispatch => {
-//         const url = '/api/rate';
-//         T.put(url, { _id, changes }, data => {
-//             if (data.error) {
-//                 T.notify('Cập nhật đánh giá bị lỗi!', 'danger');
-//                 console.error('PUT: ' + url + '.', data.error);
-//                 done && done(data.error);
-//             } else {
-//                 dispatch((getRateAll(data.item.type,data.item._refId)));
-//                 done && done(data.item);
-//             }
-//         }, error => console.error(error) || T.notify('Cập nhật đánh giá bị lỗi!', 'danger'));
-//     };
-// }
+export function updateRate(_id, changes, done) {
+    return dispatch => {
+        const url = '/api/rate/student';
+        T.put(url, { _id, changes }, data => {
+            if (data.error) {
+                T.notify('Cập nhật đánh giá bị lỗi!', 'danger');
+                console.error('PUT: ' + url + '.', data.error);
+                done && done(data.error);
+            } else {
+                dispatch({ type: RateGetItem, item: changes });
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Cập nhật đánh giá bị lỗi!', 'danger'));
+    };
+}
 
 // export function getRateAllByUser(type, _refId, done) {
 //     return dispatch => {
-//         const url = `/home/rate/${type}`;
+//         const url = `/api/rate/student/${type}`;
 //         T.get(url, { _refId }, data => {
 //             if (data.error) {
 //                 T.notify('Lấy đánh giá bị lỗi!', 'danger');
@@ -75,7 +75,7 @@ export function getRateByUser(type, _refId, done) {
 
 export function createRate(newData, done) {
     return dispatch => {
-        const url = '/home/rate';
+        const url = '/api/rate/student';
         T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo đánh giá bị lỗi!', 'danger');

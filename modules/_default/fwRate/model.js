@@ -15,5 +15,8 @@ module.exports = app => {
             model.findById(condition, done) : model.findOne(condition, done),
 
         getAll: (condition, done) => model.find(condition).sort({ value: -1 }).exec(done),
+
+        // changes = { $set, $unset, $push, $pull }
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
     };
 };
