@@ -1,20 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFeedbackAll,updateFeedback } from './redux';
-import { AdminPage, FormRichTextBox} from 'view/component/AdminPage';
+import { getFeedbackPage,updateFeedback } from './redux';
+// import { AdminPage, FormRichTextBox,TableCell, renderTable} from 'view/component/AdminPage';
+import { AdminPage,TableCell, renderTable} from 'view/component/AdminPage';
+import Pagination from 'view/component/Pagination';
 
 class FeedbackSection extends AdminPage {
     state={};
     componentDidMount() {
-        this.props.getFeedbackAll(this.props.type,this.props._refId);
+        const { type, _refId } = this.props;
+        this.props.getFeedbackPage(1, 50, { type, _refId });
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.type != this.props.type) {
-            this.props.getFeedbackAll(this.props.type,this.props._refId);
+            const { type, _refId } = this.props;
+            this.props.getFeedbackPage(1, 50, { type, _refId });
         }
     }
-
     onClick = (e, item) => {
         e.preventDefault();
         !item.isSeen && this.props.updateFeedback(item._id,{isSeen:true});
@@ -34,16 +37,34 @@ class FeedbackSection extends AdminPage {
     }
 
     render() {
-        const feedback =this.props.feedback,
-             item=feedback.find((item)=>item._id==this.state._feedbackIdSelected);
+        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.feedback && this.props.feedback.page ?
+        this.props.feedback.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+        const table = renderTable({
+            getDataSource: () => list, stickyHead: true,
+            renderHead: () => (
+                <tr>
+                    <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
+                    <th style={{ width: '50%' }}>Tên</th>
+                    <th style={{ width: '50%', textAlign: 'center' }} nowrap='true'>Thời gian</th>
+                </tr>),
+            renderRow: (item, index) => (
+                <tr key={index}>
+                    <TableCell type='number' content={index + 1} />
+                    <TableCell type='link' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
+                    <TableCell type='text' content={T.dateToText(item.createdDate)}/>
+                </tr>),
+        });
+        // const feedback =this.props.feedback,
+        //      item=feedback.find((item)=>item._id==this.state._feedbackIdSelected);
         return <>
-                <div className='row'>
+         {table}
+                {/* <div className='row'>
                 <div className='col-md-3' >
                     <h3 className='tile-title'>Danh sách phản hồi</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
-                        {/* <div style={{ marginTop: 8, marginRight: 8 }}>
+                        <div style={{ marginTop: 8, marginRight: 8 }}>
                             <i className='fa fa-check'></i>: Đã trả lời
-                        </div> */}
+                        </div>
                     {feedback.length ? feedback.map((item, index) =>
                     <div key={index} style={{ marginTop: 8, marginRight: 8,...(item._id==this.state._feedbackIdSelected && { backgroundColor:'#F0F8FF' }),
                     fontWeight:item.isSeen==true?'normal':'bold' }}>              
@@ -95,7 +116,7 @@ class FeedbackSection extends AdminPage {
                                         {reply.content}
                                     </div>
                                 </div>
-                            </div>) : 'Chưa có phản hồi lại'}
+                            </div>) : ''}
                         </div>
                         <div className='row'>
                             <FormRichTextBox ref={e => this.newFeedback = e} className='col-md-11' style={{ display: 'flex' }} />
@@ -106,11 +127,13 @@ class FeedbackSection extends AdminPage {
                     </div>               
                     :'Chọn phản hồi để xem chi tiết'}
                 </div>
-            </div> 
+            </div> */}
+            <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                getPage={this.props.getFeedbackPage} /> 
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, feedback: state.communication.feedback });
-const mapActionsToProps = { getFeedbackAll, updateFeedback };
+const mapActionsToProps = { getFeedbackPage, updateFeedback };
 export default connect(mapStateToProps, mapActionsToProps)(FeedbackSection);
