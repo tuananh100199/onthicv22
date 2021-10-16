@@ -79,7 +79,6 @@ class UserAllChat extends AdminPage {
     }
 
     onReceiveMessage = (data) => {
-        console.log(data);
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
         if (user && chat && data.chat.receiver == this.state.courseId) {

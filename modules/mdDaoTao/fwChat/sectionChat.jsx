@@ -7,16 +7,26 @@ import T from 'view/js/common';
 import inView from 'in-view';
 
 class SectionChat extends AdminPage {
-    state = { clientId: null, oldMessage: [] };
+    state = { clientId: null, oldMessageAll: [], oldMessagePersonal: [] };
     componentDidMount() {
-        const { courseId, listUser, oldMessage, _selectedUserId } = this.props,
+        const { courseId, listUser, _selectedUserId } = this.props,
             user = this.props.system.user;
-        this.setState({ courseId, user, listUser, oldMessage, _selectedUserId });
-        _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:join', { _courseId: courseId });
+        console.log(this.props);
+        this.setState({ courseId, user, listUser, _selectedUserId });
+        this.props.oldMessageAll && this.setState({
+            oldMessageAll: this.props.oldMessageAll
+        });
+        this.props.oldMessagePersonal && this.setState({
+            oldMessagePersonal: this.props.oldMessagePersonal
+        });
+        _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:joinCourseRoom', { courseId });
         T.socket.on('chat:send', this.onReceiveMessage);
     }
 
     componentDidUpdate() {
+        const listUser = this.state;
+        !this.state._selectedUserId && listUser && listUser.length && this.selectUser(listUser[0]);
+        this.state.loading && this.setState({ loading: false }, this.scrollToChat);
         this.scrollToChat;
     }
 
@@ -27,25 +37,25 @@ class SectionChat extends AdminPage {
     loadMoreChats = () => inView('.listViewLoading').on('enter', () => { // Scroll on top and load more chats
         const _selectedUserId = this.state._selectedUserId ? this.state._selectedUserId : null;
         if (_selectedUserId) {
-            const chats = this.state.oldMessage,
+            const chats = this.state.oldMessagePersonal,
                 chatLength = chats ? chats.length : 0,
                 sent = chats && chats.length ? chats[0].sent : null;
             this.props.getUserChats(_selectedUserId, sent, data => {
                 const loadedChats = data.chats.sort(() => -1);
                 this.setState(prevState => ({
-                    oldMessage: loadedChats.concat(prevState.oldMessage),
+                    oldMessagePersonal: loadedChats.concat(prevState.oldMessagePersonal),
                     isLastedChat: data.chats && data.chats.length < 20
                 }));
                 this.scrollToChat(chatLength - 1);
             });
         } else {
-            const chats = this.state.oldMessage,
+            const chats = this.state.oldMessageAll,
                 chatLength = chats ? chats.length : 0,
                 sent = chats && chats.length ? chats[0].sent : null;
             this.props.getAllChats(this.state.courseId, sent, data => {
                 const loadedChats = data.chats.sort(() => -1);
                 this.setState(prevState => ({
-                    oldMessage: loadedChats.concat(prevState.oldMessage),
+                    oldMessageAll: loadedChats.concat(prevState.oldMessageAll),
                     isLastedChat: data.chats && data.chats.length < 20
                 }));
                 this.scrollToChat(chatLength - 1);
@@ -60,6 +70,22 @@ class SectionChat extends AdminPage {
             chat.scrollIntoView({});
         } else {
             attemptNumber && setTimeout(() => this.scrollToChat(index, attemptNumber - 1), 1000);
+        }
+    }
+
+    selectUser = (student) => {
+        if (this.state._selectedUserId != student.user._id && this.props.system && this.props.system.user) {
+            // this.selectedUser = student.user;
+            this.props.getUserChats(student.user._id, null, data => {
+                this.setState({
+                    oldMessagePersonal: data.chats.sort(() => -1),
+                    _selectedUserId: student.user._id,
+                    isLastedChat: false,
+                    studentName: student.firstname + ' ' + student.lastname,
+                    studentImage: student.image
+                });
+            });
+            !this.state.loading && T.socket.emit('chat:join', { _userId: student.user._id });
         }
     }
 
@@ -82,32 +108,27 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        const selectedUserId = this.state._selectedUserId;
+        const { courseId } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
-            this.setState(prevState => ({
-                oldMessage: [...prevState.oldMessage, data.chat]
-            }));
-            if (selectedUserId) {
-                // Nếu tôi đang đang chat với người gửi => các message của người gửi chuyển read=true
-                if (selectedUserId == chat.sender._id) {
-                    this.props.readAllChats(selectedUserId);
-                }
-
-                // Nếu chat đang ở cuộc hội thoại hiện hành => cuộn xuống đến chat cuối
-                if (selectedUserId == chat.sender._id || (chat.receiver && selectedUserId == chat.receiver._id)) {
-                    this.scrollToBottom();
-                }
-            } else if (this.state.listStudent && this.state.listStudent.length) {
-                // Chọn thằng đầu trong danh sách
-                setTimeout(() => this.selectUser(this.state.listStudent[0]), 1000);
+            if (chat.receiver == courseId) {
+                this.setState(prevState => ({
+                    oldMessageAll: [...prevState.oldMessageAll, data.chat]
+                }));
+                this.scrollToBottom();
+            } else {
+                this.setState(prevState => ({
+                    oldMessagePersonal: [...prevState.oldMessagePersonal, data.chat]
+                }));
             }
         }
     }
 
     render() {
-        const urlRegex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm;
-        const renderMess = this.state.oldMessage.map((message, index, element) => {
+        const urlRegex = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm,
+            oldMessage = this.state._selectedUserId ? this.state.oldMessagePersonal : this.state.oldMessageAll,
+            isChatAll = !this.state._selectedUserId;
+        const renderMess = oldMessage && oldMessage.length ? oldMessage.map((message, index, element) => {
             const prev_msg = element[index - 1],
                 isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(message.sent).getTime())),
                 isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
@@ -129,21 +150,74 @@ class SectionChat extends AdminPage {
                     </div>
                 </div>
             );
+        }) : null;
+        const studentName = this.state.studentName ? this.state.studentName : this.state.listUser && this.state.listUser[0] && this.state.listUser[0].firstname + ' ' + this.state.listUser[0].lastname,
+            studentImage = this.state.studentImage ? this.state.studentImage : this.state.listUser && this.state.listUser[0] && this.state.listUser[0].user.image;
+        const { _selectedUserId, isLastedChat } = this.state;
+        const inboxChat = this.state.listUser && this.state.listUser.map((student, index) => {
+            const isSelectedUser = _selectedUserId == student.user._id;
+            //const isUnreadUser = user.chats && user.chats.find(item => !item.read) ? true : false;
+            return (
+                <div key={index} className={'chat_list' + (isSelectedUser ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectUser(student)}>
+                    <div className='chat_people'>
+                        <div className='chat_img'> <img src={student.user.image} alt={student.lastname} /> </div>
+                        <div className='chat_ib'>
+                            <h6>{student.firstname + ' ' + student.lastname}</h6>
+                        </div>
+                    </div>
+                </div>);
         });
+        const chatPersonal = (
+            <div className='messanger' >
+                <div className='inbox_msg row' >
+                    <div className='inbox_people col-md-3'>
+                        <div className='headind_srch'>
+                            <div className='recent_heading'>
+                                <h4>Danh sách học viên</h4>
+                            </div>
+                        </div>
+                        <div className='inbox_chat'>
+                            {inboxChat}
+                        </div>
+                    </div>
+                    <div className='col-md-9' >
+                        <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                            <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
+                            <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
+                        </div>
+                        <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} >
+                            {isLastedChat ? null :
+                                <div style={{ width: '100%', height: 48, textAlign: 'center' }}>
+                                    <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{ marginLeft: 'auto', marginRight: 'auto', height: 48 }} onLoad={this.loadMoreChats} />
+                                </div>}
+                            {renderMess}
+                            <div ref={e => this.scrollDown = e}></div>
+                        </div>
+                        <form style={{ display: 'flex' }} onSubmit={this.onSendMessage}>
+                            <input ref={e => this.message = e} type='text' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
+                            <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
+                                <i className='fa fa-lg fa-fw fa-paper-plane' />
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>);
 
         return (
-            <div className='messanger' style={{ minHeight: '300px' }}>
-                <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} >
-                    {renderMess}
-                    <div ref={e => this.scrollDown = e}></div>
-                </div>
-                <form style={{ display: 'flex' }} onSubmit={this.onSendMessage}>
-                    <input ref={e => this.message = e} type='text' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
-                    <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
-                        <i className='fa fa-lg fa-fw fa-paper-plane' />
-                    </button>
-                </form>
-            </div>
+            isChatAll ?
+                (<div className='messanger' style={{ minHeight: '300px' }}>
+                    <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} >
+                        {renderMess}
+                        <div ref={e => this.scrollDown = e}></div>
+                    </div>
+                    <form style={{ display: 'flex' }} onSubmit={this.onSendMessage}>
+                        <input ref={e => this.message = e} type='text' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
+                        <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
+                            <i className='fa fa-lg fa-fw fa-paper-plane' />
+                        </button>
+                    </form>
+                </div>) : chatPersonal
+
         );
     }
 }

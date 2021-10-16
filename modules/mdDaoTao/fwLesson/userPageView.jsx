@@ -36,7 +36,6 @@ class adminEditPage extends AdminPage {
     }
 
     saveRating = (value) => {
-        console.log(value);
         this.props.rateLesson(this.state.lessonId, this.state.subjectId, this.state.courseId, value);
     }
 
