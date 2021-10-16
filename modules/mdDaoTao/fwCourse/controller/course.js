@@ -19,6 +19,8 @@ module.exports = (app) => {
 
     app.get('/user/course', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
@@ -479,16 +481,20 @@ module.exports = (app) => {
     });
 
     app.get('/api/course/student', app.permission.check('user:login'), (req, res) => {//mobile
-        const _courseId = req.query._id,
-            _studentId = req.session.user._id;
-        app.model.student.get({ user: _studentId, course: _courseId }, (error, student) => {
+        const _courseId = req.query._id;
+        app.model.student.get({ user: req.session.user._id, course: _courseId }, (error, student) => {
             if (error) {
                 res.send({ error });
             } else if (!student) {
                 res.send({ notify: 'Bạn không thuộc khóa học này!' });
             } else {
                 if (student.course && student.course.active) {
-                    app.model.course.get(_courseId, (error, item) => res.send({ error, item, _studentId: student._id }));
+                    app.model.course.get(_courseId, (error, item) => {
+                        const _studentId = student._id,
+                            teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
+                            teacher = teacherGroups.teacher || null;
+                        res.send({ error, item, _studentId, teacher });
+                    });
                 } else {
                     res.send({ notify: 'Khóa học chưa được kích hoạt!' });
                 }

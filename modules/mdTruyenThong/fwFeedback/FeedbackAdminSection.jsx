@@ -9,6 +9,12 @@ class FeedbackSection extends AdminPage {
         this.props.getFeedbackAll(this.props.type,this.props._refId);
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.type != this.props.type) {
+            this.props.getFeedbackAll(this.props.type,this.props._refId);
+        }
+    }
+
     onClick = (e, item) => {
         e.preventDefault();
         !item.isSeen && this.props.updateFeedback(item._id,{isSeen:true});
