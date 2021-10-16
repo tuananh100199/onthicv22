@@ -113,35 +113,49 @@ module.exports = (app) => {
     });
 
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
-        let changes = req.body.changes || {};
-        const sessionUser = req.session.user,
-            courseFees = changes.courseFees,
-            division = sessionUser.division;
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            if (courseFees) {
-                const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
-                if (index != -1) courseFees[index].fee = changes.courseFee;
-                else courseFees.push({
-                    division: division._id,
-                    fee: changes.courseFee
-                });
+        app.model.course.get(req.body._id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Dữ liệu không hợp lệ!' });
+            } else {
+                let changes = req.body.changes || {};
+                const sessionUser = req.session.user,
+                    courseFees = app.clone(item.courseFees || {}),
+                    division = sessionUser.division;
+                if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+                    if (courseFees) {
+                        const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
+                        if (index != -1) {
+                            courseFees[index].fee = changes.courseFee;
+                        } else {
+                            courseFees.push({ division: division._id, fee: changes.courseFee });
+                        }
+                    }
+                    if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+
+                    //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
+                    changes.teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
+                } else {
+                    if (courseFees) {
+                        if (courseFees.length == 0) {
+                            courseFees.push({ division: division._id, fee: changes.courseFee });
+                        } else {
+                            courseFees[0].fee = changes.courseFee;
+                        }
+                    }
+                    if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+                    if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
+                    if (changes.admins && changes.admins === 'empty') changes.admins = [];
+                }
+
+                delete changes.courseFee;
+                changes.courseFees = courseFees;
+                app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
+                    const item = {};
+                    course && Object.keys(changes).forEach(key => item[key] = course[key]);
+                    res.send({ error, item });
+                }));
             }
-            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            const teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
-            //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
-            changes = { teacherGroups };
-        } else {
-            if (courseFees) courseFees[0].fee = changes.courseFee;
-            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
-            if (changes.admins && changes.admins === 'empty') changes.admins = [];
-        }
-        delete changes.courseFee;
-        app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-            const item = {};
-            course && Object.keys(changes).forEach(key => item[key] = course[key]);
-            res.send({ error, item });
-        }));
+        });
     });
 
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
