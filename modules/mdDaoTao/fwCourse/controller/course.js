@@ -21,6 +21,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
@@ -414,37 +415,37 @@ module.exports = (app) => {
                     student.subject = {};
                     subjects.forEach(subject => {
                         const diemLyThuyet =
-                        student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ? 
-                        Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
+                            student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                                Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
 
                         const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
                             (student.tienDoHocTap[subject._id] && Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
                                 subject.lessons.length :
                                 Object.keys(student.tienDoHocTap[subject._id]).length)
                             : 0);
-                        
+
                         const obj = {};
                         obj[subject._id] = {
-                            completedLessons : completedLessons,
-                            numberLessons: subject.lessons.length ? subject.lessons.length :0,
+                            completedLessons: completedLessons,
+                            numberLessons: subject.lessons.length ? subject.lessons.length : 0,
                             diemLyThuyet: diemLyThuyet
                         };
                         Object.assign(student.subject, obj);
                     });
                     const diemLyThuyet = Number((monLyThuyet.reduce((subjectNext, subject) =>
-                            (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
-                                Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
-                                    Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
-                                        (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
-                                            Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
-                                    : 0))
-                                : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
+                        (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                            Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
+                                Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
+                                    (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
+                                : 0))
+                            : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
 
-                    const diemThucHanh =  student.diemThucHanh ? Number(student.diemThucHanh) : 0;
+                    const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
                     Object.assign(student, { diemLyThuyet: diemLyThuyet, diemThucHanh: diemThucHanh });
-                    
+
                     return student;
                 }));
                 res.send({ error, item: listStudentReturn.length ? listStudentReturn : null });
@@ -455,7 +456,7 @@ module.exports = (app) => {
     app.put('/api/course/learning-progress/lecturer', app.permission.check('course:write'), (req, res) => {
         app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
     });
-    // // Chat API
+    // Chat API
     app.get('/api/course/chat/admin', app.permission.check('course:write'), (req, res) => {
         const sessionUser = req.session.user;
         if (sessionUser.isCourseAdmin) {

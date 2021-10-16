@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getLearingProgressByLecturer } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox } from 'view/component/AdminPage';
+
 class Modal extends AdminModal {
     state = {};
     onShow = (item) => {
@@ -19,12 +20,12 @@ class Modal extends AdminModal {
         };
         if (changes.diemThucHanh == '') {
             T.notify('Vui lòng nhập điểm thực hành!', 'danger');
-             this.itemDiemThucHanh.focus();
-        }else {
+            this.itemDiemThucHanh.focus();
+        } else {
             this.props.updateStudent(_id, changes, () => {
                 this.props.getLearingProgressByLecturer(this.props.courseId, data => {
                     this.setState({ listStudent: data.item });
-                    });
+                });
                 this.hide();
             });
         }
@@ -46,34 +47,43 @@ class Modal extends AdminModal {
         return this.renderModal({
             title: 'Điểm thực hành',
             body: <>
-                <FormTextBox ref={e => this.itemDiemThucHanh = e} label='Nhập điểm' type='number' min='0' max='10' onChange={this.onChangeScore}  readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemDiemThucHanh = e} label='Nhập điểm' type='number' min='0' max='10' onChange={this.onChangeScore} readOnly={this.props.readOnly} />
             </>,
         });
     }
 }
-class AdminStudentView extends AdminPage {
+
+class AdminLearningProgressPage extends AdminPage {
     state = {};
     componentDidMount() {
-        this.props.getLearingProgressByLecturer(this.props.courseId, data => {
-            this.setState({ listStudent: data.item });
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
+            if (params && params._id) {
+                this.props.getLearingProgressByLecturer(params._id, data => {
+                    // TODO: Tuấn Anh null nè
+                    console.log(params._id, data.item);
+                    this.setState({ listStudent: data.item });
+                });
+            } else {
+                this.props.history.push('/user/course/');
+            }
         });
     }
-    
+
     componentDidUpdate(prevProps) {
-        if (prevProps.item !== this.props.item) {   
+        if (prevProps.item !== this.props.item) {
             this.props.getLearingProgressByLecturer(this.props.courseId, data => {
                 this.setState({ listStudent: data.item });
             });
         }
     }
 
-
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     render() {
         const data = this.state.listStudent ? this.state.listStudent : [],
             courseItem = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] },
-            subjects = courseItem && courseItem.subjects && courseItem.subjects.sort((a, b) => a.monThucHanh-b.monThucHanh);
+            subjects = courseItem && courseItem.subjects && courseItem.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh);
         const table = renderTable({
             getDataSource: () => data, stickyHead: true,
             renderHead: () => (
@@ -95,13 +105,13 @@ class AdminStudentView extends AdminPage {
                     {subjects.length && subjects.map((subject, i) => (
                         <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
                             ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
-                        / ${subject.monThucHanh ? 0 : subject.lessons.length}
-                        ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemLyThuyet : 0}`}
+                            / ${subject.monThucHanh ? 0 : subject.lessons.length}
+                            ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemLyThuyet : 0}`}
                          ` }
-                    />))}
+                        />))}
                     <TableCell type='text' content={item.diemLyThuyet} />
-                    <TableCell type='text' content={this.props.course && this.props.course.item[index] && this.props.course.item[index].diemThucHanh ?  this.props.course.item[index].diemThucHanh : 0} />
-                    <TableCell type='text' content={this.props.course && this.props.course.item[index] && this.props.course.item[index] ? (Number(Number((this.props.course.item[index].diemThucHanh? this.props.course.item[index].diemThucHanh : 0)) + item.diemLyThuyet)/2).toFixed(1) : 0 } />
+                    <TableCell type='text' content={this.props.course && this.props.course.item[index] && this.props.course.item[index].diemThucHanh ? this.props.course.item[index].diemThucHanh : 0} />
+                    <TableCell type='text' content={this.props.course && this.props.course.item[index] && this.props.course.item[index] ? (Number(Number((this.props.course.item[index].diemThucHanh ? this.props.course.item[index].diemThucHanh : 0)) + item.diemLyThuyet) / 2).toFixed(1) : 0} />
                     <TableCell type='buttons' content={item} onEdit={this.edit} />
 
                 </tr>),
@@ -115,4 +125,4 @@ class AdminStudentView extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getLearingProgressByLecturer, updateStudent };
-export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
+export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);
