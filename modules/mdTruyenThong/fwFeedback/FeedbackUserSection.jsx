@@ -1,16 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFeedbackAllByUser, createFeedback } from './redux';
+import { createFeedback, getFeedbackPageByStudent } from './redux';
 import { AdminPage, FormRichTextBox } from 'view/component/AdminPage';
+import Pagination from 'view/component/Pagination';
 
 class FeedbackSection extends AdminPage {
     componentDidMount() {
-        this.props.getFeedbackAllByUser(this.props.type, this.props._refId);
+        const { type, _refId } = this.props;
+        this.props.getFeedbackPageByStudent(1, 50, { type, _refId });
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.type != this.props.type) {
-            this.props.getFeedbackAllByUser(this.props.type, this.props._refId);
+            const { type, _refId } = this.props;
+            this.props.getFeedbackPageByStudent(1, 50, { type, _refId });
         }
     }
 
@@ -34,7 +37,8 @@ class FeedbackSection extends AdminPage {
 
     render() {
         // const permission = this.getUserPermission('feedback');
-        const feedback = this.props.feedback;
+        let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.feedback && this.props.feedback.page ?
+            this.props.feedback.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         return <>
             <div className='tile'>
                 <div className='row'>
@@ -44,7 +48,7 @@ class FeedbackSection extends AdminPage {
                     </div>
                 </div>
                 <div className='tile-body'>
-                    {feedback.length ? feedback.map((item, index) => <div key={index} style={{ margin: 10 }}>
+                    {list.length ? list.map((item, index) => <div key={index} style={{ margin: 10 }}>
                         <div className='row'>
                             <div className='col-md-1' >
                                 <img src={item.user && item.user.image} style={{ height: '40px', borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5 }} alt='no image'></img>
@@ -72,7 +76,7 @@ class FeedbackSection extends AdminPage {
                                 <div className='col-md-10' style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5 }}>
                                     <div className=''>
                                         <b>{reply.adminUser && `${reply.adminUser.lastname} ${reply.adminUser.firstname}`}</b>
-                                            (Quản trị khóa học):
+                                            (Quản trị viên):
                                             <label style={{ float: 'right' }}>
                                             {T.fromNow(reply.createdDate)}
                                         </label>
@@ -81,15 +85,17 @@ class FeedbackSection extends AdminPage {
                                         {reply.content}
                                     </div>
                                 </div>
-                            </div>) : 'Chưa được trả lời'}
+                            </div>) : 'Chưa được trả lời từ quản trị viên'}
                         </div>
                     </div>) : 'Chưa có phản hồi'}
                 </div>
             </div>
+            <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
+                getPage={this.props.getFeedbackPageByStudent} />
         </>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, feedback: state.communication.feedback });
-const mapActionsToProps = { getFeedbackAllByUser, createFeedback };
+const mapActionsToProps = { createFeedback, getFeedbackPageByStudent };
 export default connect(mapStateToProps, mapActionsToProps)(FeedbackSection);

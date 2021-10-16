@@ -11,6 +11,7 @@ class UserCourseFeedback extends AdminPage {
         const route = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_id/phan-hoi'),
             _id = route.parse(window.location.pathname)._id;
         if (_id) {
+            this.course.value(true);
             this.setState({ courseId: _id });
             T.ready('/user/hoc-vien/khoa-hoc/' + _id, () => {
                 this.props.getCourseByStudent(_id, data => {
@@ -18,8 +19,9 @@ class UserCourseFeedback extends AdminPage {
                         this.props.history.goBack();
                     } else {
                         const course = data.item.active && data.item;
-                        // course.teacherGroups.forEach(group => group.student.forEach(item => item.user._id == this.props.system.user._id && this.setState({isAssignToTeacher:true})));
-                        course.teacherGroups.forEach(group => group.student.forEach(item => item._id == data._studentId && this.setState({isAssignToTeacher:true})));
+                        if (data.teacher) {
+                            this.setState({ teacher: data.teacher });
+                        }
                         this.setState({name:course.name});
                     }
                 });
@@ -36,20 +38,20 @@ class UserCourseFeedback extends AdminPage {
         }
     }
     render() {
-        const backRoute = '/user/hoc-vien/khoa-hoc/' + this.state.courseId;
+        const { name, courseId, teacher,type } = this.state,backRoute = '/user/hoc-vien/khoa-hoc/' + courseId;
         return this.renderPage({
             icon: 'fa fa-cubes',
-            title: 'Khóa học: ' + (this.state.name || '...'),
+            title: 'Khóa học: ' + name,
             breadcrumb: [<Link key={0} to={backRoute}>Khóa học của tôi</Link>, 'Phản hồi khóa học'],
             content: <>
             <div className='tile' style={{display:'flex'}}>
             <FormCheckbox ref={e=>this.course=e} onChange={value=>this.onChange(value,'course')} label='Phản hồi khóa học'/>
             &nbsp; &nbsp;
-            {this.state.isAssignToTeacher &&<FormCheckbox ref={e=>this.teacher=e} onChange={value=>this.onChange(value,'teacher')} label='Phản hồi cố vấn học tập'/>}
+            {teacher &&<FormCheckbox ref={e=>this.teacher=e} onChange={value=>this.onChange(value,'teacher')} label={`Phản hồi cố vấn học tập ${teacher.lastname} ${teacher.firstname}`}/>}
             </div>
-            {this.state.type && <FeedbackSection type={this.state.type} _refId={this.state.courseId} title={this.state.type == 'teacher'?'cố vấn học tập':'khóa học'} />}
+            {type && <FeedbackSection type={type} _refId={courseId} title={type == 'teacher'?'cố vấn học tập':'khóa học'} />}
         </>,
-            onBack: () => this.props.history.goBack(),
+            // onBack: () => this.props.history.goBack(),
         });
     }
 }
