@@ -23,7 +23,7 @@ module.exports = (app) => {
         } else app.model.feedback.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/home/feedback', app.permission.check('user:login'), (req, res) => { //mobile
+    app.post('/api/feedback/student', app.permission.check('user:login'), (req, res) => { //mobile
         app.model.student.get({ user: req.session.user._id, course: req.body.newData._refId }, (error, student) => {
             if (error) {
                 res.send({ error });
@@ -34,7 +34,24 @@ module.exports = (app) => {
         });
     });
 
-    app.get('/home/feedback/:type', app.permission.check('user:login'), (req, res) => { //mobile
+    app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {};
+        try {
+            app.model.student.get({ user: req.session.user._id, course: condition._refId }, (error, student) => {
+                if (error) {
+                    res.send({ error:'Bạn không thể phản hồi khóa học không phải của bạn!' });
+                } else {
+                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user: student.user._id }), (error, page) => res.send({ error, page }));
+                }
+            });
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
+    app.get('/api/feedback/student/:type', app.permission.check('user:login'), (req, res) => { //mobile
         const condition = { type: req.params.type, _refId: req.query._refId, user: req.session.user && req.session.user._id };
         app.model.feedback.getAll(condition, (error, items) => res.send({ error, items }));
     });

@@ -2,11 +2,14 @@ import T from 'view/js/common';
 
 const FeedbackGetAll = 'FeedbackGetAll';
 const FeedbackChange = 'FeedbackChange';
+const FeedbackGetPage = 'FeedbackGetPage';
 
-export default function feedbackReducer(state = [], data) {
+export default function feedbackReducer(state = {}, data) {
     switch (data.type) {
         case FeedbackGetAll:
-            return data.items;
+            return Object.assign({}, state, { list: data.list });
+        case FeedbackGetPage:
+            return Object.assign({}, state, { page: data.page });
 
         // case FeedbackGetItem:
         //     return Object.assign({}, state, { item: Object.assign({}, state ? state.item : {}, data.item || {}) });
@@ -52,7 +55,7 @@ export function updateFeedback(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                dispatch((getFeedbackAll(data.item.type,data.item._refId)));
+                dispatch((getFeedbackAll(data.item.type, data.item._refId)));
                 done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Cập nhật phản hồi bị lỗi!', 'danger'));
@@ -61,7 +64,7 @@ export function updateFeedback(_id, changes, done) {
 
 export function getFeedbackAllByUser(type, _refId, done) {
     return dispatch => {
-        const url = `/home/feedback/${type}`;
+        const url = `/api/feedback/student/${type}`;
         T.get(url, { _refId }, data => {
             if (data.error) {
                 T.notify('Lấy phản hồi bị lỗi!', 'danger');
@@ -74,15 +77,31 @@ export function getFeedbackAllByUser(type, _refId, done) {
     };
 }
 
+export function getFeedbackPageByStudent(pageNumber, pageSize, pageCondition, done) {
+    return dispatch => {
+        const url = `/api/feedback/student/page/${pageNumber}/${pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy phản hồi bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: FeedbackGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy phản hồi bị lỗi!', 'danger'));
+    };
+}
+
 export function createFeedback(newData, done) {
     return dispatch => {
-        const url = '/home/feedback';
+        const url = '/api/feedback/student';
         T.post(url, { newData }, data => {
             if (data.error) {
                 T.notify('Tạo phản hồi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getFeedbackAllByUser(newData.type,newData._refId));
+                dispatch(getFeedbackAllByUser(newData.type, newData._refId));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo phản hồi bị lỗi!', 'danger'));

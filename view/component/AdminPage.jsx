@@ -240,7 +240,7 @@ export class FormRichTextBox extends React.Component {
         const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, required = false } = this.props;
         return (
             <div className={'form-group ' + (className ? className : '')} style={style}>
-                <label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
+                <label onClick={this.focus}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
