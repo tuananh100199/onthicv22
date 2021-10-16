@@ -3,6 +3,7 @@ module.exports = app => {
         title: String,
         shortDescription: String,
         detailDescription: String,
+        monThucHanh: { type: Boolean, default: false },
         lessons: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Lesson' }], default: [] },
         questions: { type: [{ type: app.db.Schema.Types.ObjectId, ref: 'Question' }], default: [] },
     });
