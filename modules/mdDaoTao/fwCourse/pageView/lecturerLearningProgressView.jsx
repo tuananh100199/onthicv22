@@ -22,7 +22,7 @@ class AdminStudentView extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%' }}>Tên học viên</th>
                     <th style={{ width: '100%' }}>CMND/CCCD</th>
-                    {subjects.length && subjects.map((subject, i) => (<th key={i} style={{ width: 'auto' }} nowrap='true'>{subject.title}</th>))}
+                    {subjects.length && subjects.map((subject, i) => (<th key={i} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>))}
 
                 </tr>),
             renderRow: (item, index) => (
