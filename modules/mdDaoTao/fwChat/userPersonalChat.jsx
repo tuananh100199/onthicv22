@@ -36,7 +36,6 @@ class UserPersonalChat extends AdminPage {
 
     render() {
         const { isLoading, oldMessage, courseId, listAdmin, _selectedUserId } = this.state;
-        console.log(listAdmin, isLoading);
         return (
             !isLoading && <SectionChat oldMessagePersonal={oldMessage} courseId={courseId} listUser={listAdmin} _selectedUserId={_selectedUserId}></SectionChat>
         );

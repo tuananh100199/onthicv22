@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { readAllChats, getAllChats, getUserChats, addChat } from './redux';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
-import T from 'view/js/common';
 import inView from 'in-view';
 
 class SectionChat extends AdminPage {
@@ -133,6 +132,7 @@ class SectionChat extends AdminPage {
                 isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(message.sent).getTime())),
                 isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
                 isNewUser = (!isNow || (prev_msg && prev_msg.sender._id != message.sender._id)) && message.sender._id != this.state.user._id,
+                isNewSender = (!isNow || isNewDay) && (message.sender._id == this.state.user._id),
                 newMessage = message.message.split(' ').map((part, index) =>
                     urlRegex.test(part) ? <a key={index} style={{ color: message.sender._id != this.state.user._id ? 'black' : 'white' }} href={part} target='_blank' rel='noreferrer' ><u>{part}</u></a> : part + ' '
                 );
@@ -143,9 +143,10 @@ class SectionChat extends AdminPage {
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'HH:MM')}</p>}
                     <div style={{ marginBottom: '5px' }} className={(message.sender._id == this.state.user._id) ? 'message me' : 'message'}>
                         {isNewUser && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
+                        {isNewSender && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
                         <div>
                             {isNewUser && <div className={'font-weight-bold mb-0 ' + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
-                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px', marginRight: isNewSender ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
                         </div>
                     </div>
                 </div>
