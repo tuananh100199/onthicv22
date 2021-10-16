@@ -83,7 +83,7 @@ class UserCoursePageDetail extends AdminPage {
                     <PageIcon to={''} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' visible={teacher != null}
                         onClick={(e) => { e.preventDefault(); this.modal.show(); }} subtitle={rate ? rate + ' sao' : 'Chưa đánh giá'} />
                     {/* check render */}
-                    <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher && teacher._id} />
+                    {teacher && <RateModal ref={e => this.modal = e} title='Đánh giá cố vấn học tập' type='teacher' _refId={teacher._id} />}
 
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
