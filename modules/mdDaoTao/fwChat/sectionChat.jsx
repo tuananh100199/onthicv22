@@ -11,7 +11,6 @@ class SectionChat extends AdminPage {
     componentDidMount() {
         const { courseId, listUser, _selectedUserId } = this.props,
             user = this.props.system.user;
-        console.log(this.props);
         this.setState({ courseId, user, listUser, _selectedUserId });
         this.props.oldMessageAll && this.setState({
             oldMessageAll: this.props.oldMessageAll
@@ -74,18 +73,19 @@ class SectionChat extends AdminPage {
     }
 
     selectUser = (student) => {
-        if (this.state._selectedUserId != student.user._id && this.props.system && this.props.system.user) {
+        const studentId = student.user ? student.user._id : student._id;
+        if (this.state._selectedUserId != studentId && this.props.system && this.props.system.user) {
             // this.selectedUser = student.user;
-            this.props.getUserChats(student.user._id, null, data => {
+            this.props.getUserChats(studentId, null, data => {
                 this.setState({
                     oldMessagePersonal: data.chats.sort(() => -1),
-                    _selectedUserId: student.user._id,
+                    _selectedUserId: studentId,
                     isLastedChat: false,
                     studentName: student.firstname + ' ' + student.lastname,
                     studentImage: student.image
                 });
             });
-            !this.state.loading && T.socket.emit('chat:join', { _userId: student.user._id });
+            !this.state.loading && T.socket.emit('chat:join', { _userId: studentId });
         }
     }
 
@@ -108,19 +108,19 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        const { courseId } = this.state;
+        const { _selectedUserId, courseId } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
             if (chat.receiver == courseId) {
                 this.setState(prevState => ({
                     oldMessageAll: [...prevState.oldMessageAll, data.chat]
                 }));
-                this.scrollToBottom();
             } else {
-                this.setState(prevState => ({
+                (_selectedUserId == chat.receiver._id || user._id == chat.sender._id) && this.setState(prevState => ({
                     oldMessagePersonal: [...prevState.oldMessagePersonal, data.chat]
                 }));
             }
+            this.scrollToBottom();
         }
     }
 
@@ -151,57 +151,22 @@ class SectionChat extends AdminPage {
                 </div>
             );
         }) : null;
-        const studentName = this.state.studentName ? this.state.studentName : this.state.listUser && this.state.listUser[0] && this.state.listUser[0].firstname + ' ' + this.state.listUser[0].lastname,
-            studentImage = this.state.studentImage ? this.state.studentImage : this.state.listUser && this.state.listUser[0] && this.state.listUser[0].user.image;
+        const listUser = this.state.listUser;
+        const studentName = this.state.studentName ? this.state.studentName : listUser && listUser[0] && listUser[0].firstname + ' ' + listUser[0].lastname,
+            studentImage = this.state.studentImage ? this.state.studentImage : (listUser && listUser[0] && (listUser[0].user ? listUser[0].user.image : listUser[0].image));
         const { _selectedUserId, isLastedChat } = this.state;
         const inboxChat = this.state.listUser && this.state.listUser.map((student, index) => {
-            const isSelectedUser = _selectedUserId == student.user._id;
-            //const isUnreadUser = user.chats && user.chats.find(item => !item.read) ? true : false;
+            const isSelectedUser = _selectedUserId == (student.user ? student.user._id : student._id);
             return (
                 <div key={index} className={'chat_list' + (isSelectedUser ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectUser(student)}>
                     <div className='chat_people'>
-                        <div className='chat_img'> <img src={student.user.image} alt={student.lastname} /> </div>
+                        <div className='chat_img'> <img src={student.user ? student.user.image : student.image} alt={student.lastname} /> </div>
                         <div className='chat_ib'>
                             <h6>{student.firstname + ' ' + student.lastname}</h6>
                         </div>
                     </div>
                 </div>);
         });
-        const chatPersonal = (
-            <div className='messanger' >
-                <div className='inbox_msg row' >
-                    <div className='inbox_people col-md-3'>
-                        <div className='headind_srch'>
-                            <div className='recent_heading'>
-                                <h4>Danh sách học viên</h4>
-                            </div>
-                        </div>
-                        <div className='inbox_chat'>
-                            {inboxChat}
-                        </div>
-                    </div>
-                    <div className='col-md-9' >
-                        <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
-                            <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
-                            <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
-                        </div>
-                        <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} >
-                            {isLastedChat ? null :
-                                <div style={{ width: '100%', height: 48, textAlign: 'center' }}>
-                                    <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{ marginLeft: 'auto', marginRight: 'auto', height: 48 }} onLoad={this.loadMoreChats} />
-                                </div>}
-                            {renderMess}
-                            <div ref={e => this.scrollDown = e}></div>
-                        </div>
-                        <form style={{ display: 'flex' }} onSubmit={this.onSendMessage}>
-                            <input ref={e => this.message = e} type='text' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
-                            <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
-                                <i className='fa fa-lg fa-fw fa-paper-plane' />
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>);
 
         return (
             isChatAll ?
@@ -216,8 +181,41 @@ class SectionChat extends AdminPage {
                             <i className='fa fa-lg fa-fw fa-paper-plane' />
                         </button>
                     </form>
-                </div>) : chatPersonal
-
+                </div>) :
+                (<div className='messanger' >
+                    <div className='inbox_msg row' >
+                        <div className='inbox_people col-md-3'>
+                            <div className='headind_srch'>
+                                <div className='recent_heading'>
+                                    <h4>Cố vấn học tập</h4>
+                                </div>
+                            </div>
+                            <div className='inbox_chat'>
+                                {inboxChat}
+                            </div>
+                        </div>
+                        <div className='col-md-9' >
+                            <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
+                                <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
+                                <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
+                            </div>
+                            <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} >
+                                {isLastedChat ? null :
+                                    <div style={{ width: '100%', height: 48, textAlign: 'center' }}>
+                                        <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{ marginLeft: 'auto', marginRight: 'auto', height: 48 }} onLoad={this.loadMoreChats} />
+                                    </div>}
+                                {renderMess}
+                                <div ref={e => this.scrollDown = e}></div>
+                            </div>
+                            <form style={{ display: 'flex' }} onSubmit={this.onSendMessage}>
+                                <input ref={e => this.message = e} type='text' style={{ flex: 1, border: '1px solid #1488db', outline: 'none', padding: '5px 10px' }} />
+                                <button className='btn btn-primary' type='submit' style={{ borderRadius: 0 }}>
+                                    <i className='fa fa-lg fa-fw fa-paper-plane' />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>)
         );
     }
 }
