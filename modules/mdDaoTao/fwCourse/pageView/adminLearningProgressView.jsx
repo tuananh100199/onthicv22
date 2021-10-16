@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLearingProgressByAdmin } from '../../fwCourse/redux';
+import { getLearingProgressByAdmin } from '../redux';
 import { AdminPage, renderTable, TableCell } from 'view/component/AdminPage';
 
 class AdminStudentView extends AdminPage {
