@@ -394,7 +394,7 @@ module.exports = (app) => {
                 const { subjects } = items;
                 const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
                 const listStudent = items.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                var listStudentReturn = listStudent[0].student.map((student => {
+                let listStudentReturn = listStudent[0].student.map((student => {
                     student.subject = {};
                     subjects.forEach(subject => {
                         const diemLyThuyet =
@@ -427,11 +427,10 @@ module.exports = (app) => {
                                 : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
 
                     const diemThucHanh =  student.diemThucHanh ? Number(student.diemThucHanh) : 0;
-                    const diemTB = Number(((diemLyThuyet + diemThucHanh) / 2).toFixed(1));
-                    Object.assign(student, { diemLyThuyet: diemLyThuyet, diemThucHanh: diemThucHanh, diemTB: diemTB })
+                    Object.assign(student, { diemLyThuyet: diemLyThuyet, diemThucHanh: diemThucHanh });
+                    
                     return student;
                 }));
-                
                 res.send({ error, item: listStudentReturn.length ? listStudentReturn : null });
             }
         });
