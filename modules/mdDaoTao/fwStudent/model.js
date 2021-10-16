@@ -39,6 +39,7 @@ module.exports = (app) => {
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
 
         tienDoHocTap: {},
+        diemThucHanh: Number,
         diemBoDeThi: {},
 
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi

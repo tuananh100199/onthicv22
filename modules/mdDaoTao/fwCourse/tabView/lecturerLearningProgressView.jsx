@@ -1,23 +1,44 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getLearingProgressByLecturer } from '../redux';
+import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox } from 'view/component/AdminPage';
 class Modal extends AdminModal {
     state = {};
     onShow = (item) => {
-        const { _id, student, note } = item || { note: '', truant: false };
-        this.itemNote.value(note);
+        const { _id, student, diemThucHanh } = item || { diemThucHanh: 0 };
+        this.itemDiemThucHanh.value(diemThucHanh);
 
         this.setState({ loading: false, _id, student });
     }
 
     onSubmit = () => {
-        const { _id, student } = this.state;
-        if (student) {
-            const changes = {
-                note: this.itemNote.value(),
-            };
-            this.props.update(_id, changes, student._id, () => this.hide());
+        const _id = this.state;
+        const changes = {
+            diemThucHanh: this.itemDiemThucHanh.value(),
+        };
+        if (changes.diemThucHanh == '') {
+            T.notify('Vui lòng nhập điểm thực hành!', 'danger');
+             this.itemDiemThucHanh.focus();
+        }else {
+            this.props.updateStudent(_id, changes, () => {
+                this.props.getLearingProgressByLecturer(this.props.courseId, data => {
+                    this.setState({ listStudent: data.item });
+                    });
+                this.hide();
+            });
+        }
+    }
+
+    onChangeScore = () => {
+        let diemThucHanh = this.itemDiemThucHanh.value();
+        if (diemThucHanh) {
+            diemThucHanh = Number(diemThucHanh);
+            if (diemThucHanh < 0) {
+                this.itemDiemThucHanh.value(0);
+            } else if (diemThucHanh > 10) {
+                this.itemDiemThucHanh.value(diemThucHanh % 100 <= 10 ? diemThucHanh % 100 : diemThucHanh % 10);
+            }
         }
     }
 
@@ -25,7 +46,7 @@ class Modal extends AdminModal {
         return this.renderModal({
             title: 'Điểm thực hành',
             body: <>
-                <FormTextBox ref={e => this.itemNote = e} label='Nhập điểm' readOnly={this.props.readOnly} />
+                <FormTextBox ref={e => this.itemDiemThucHanh = e} label='Nhập điểm' type='number' min='0' max='10' onChange={this.onChangeScore}  readOnly={this.props.readOnly} />
             </>,
         });
     }
@@ -37,15 +58,22 @@ class AdminStudentView extends AdminPage {
             this.setState({ listStudent: data.item });
         });
     }
+    
+    componentDidUpdate(prevProps) {
+        if (prevProps.item !== this.props.item) {   
+            this.props.getLearingProgressByLecturer(this.props.courseId, data => {
+                this.setState({ listStudent: data.item });
+            });
+        }
+    }
+
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
 
     render() {
         const data = this.state.listStudent ? this.state.listStudent : [],
             courseItem = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] },
-            subjects = courseItem && courseItem.subjects && courseItem.subjects.sort((a, b) => a && a.title && a.title.localeCompare(b && b.title));
-            const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
-
+            subjects = courseItem && courseItem.subjects && courseItem.subjects.sort((a, b) => a.monThucHanh-b.monThucHanh);
         const table = renderTable({
             getDataSource: () => data, stickyHead: true,
             renderHead: () => (
@@ -57,6 +85,7 @@ class AdminStudentView extends AdminPage {
                     <th style={{ width: 'auto' }}>Điểm lý thuyết</th>
                     <th style={{ width: 'auto' }}>Điểm thực hành</th>
                     <th style={{ width: 'auto' }}>Điểm trung bình</th>
+                    <th style={{ width: 'auto' }}>Nhập điểm thực hành</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
@@ -64,61 +93,26 @@ class AdminStudentView extends AdminPage {
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
                     <TableCell type='text' content={item.identityCard} />
                     {subjects.length && subjects.map((subject, i) => (
-                    <TableCell 
-                        key={i} 
-                        type='text' 
-                        content={`${
-                            (subject && item.tienDoHocTap && item.tienDoHocTap[subject._id] ? 
-                            (item.tienDoHocTap[subject._id]  && Object.keys(item.tienDoHocTap[subject._id]).length > subject.lessons.length ? 
-                                subject.lessons.length : 
-                                Object.keys(item.tienDoHocTap[subject._id]).length) 
-                            : 0) }
-
-                            / ${subject.lessons.length} => 
-                            
-                            ${ subject && item.tienDoHocTap && item.tienDoHocTap[subject._id]  ? 
-                               (Object.keys(item.tienDoHocTap[subject._id]).length ? 
-                                Object.entries(item.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => 
-                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ? 
-                                    (Number(Object.entries(item.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => 
-                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0))/ subject.lessons.length).toFixed(1) : 0
-                                 : 0)
-                            : 0}`
-                            } />))}
-                    <TableCell 
-                        type='text' 
-                        content={monLyThuyet.length && 
-                            (monLyThuyet.reduce((subjectNext, subject) => 
-                            (subject && item.tienDoHocTap && item.tienDoHocTap[subject._id]  ? 
-                                (Object.keys(item.tienDoHocTap[subject._id]).length ? 
-                                    Object.entries(item.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => 
-                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ? 
-                                        (Number(Object.entries(item.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => 
-                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0))/ subject.lessons.length).toFixed(1) : 0
-                                : 0) 
-                            : 0) + subjectNext ,0)) ? 
-                            (monLyThuyet.reduce((subjectNext, subject) => 
-                            (subject && item.tienDoHocTap && item.tienDoHocTap[subject._id]  ? 
-                                Number((Object.keys(item.tienDoHocTap[subject._id]).length ? 
-                                    Object.entries(item.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => 
-                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ? 
-                                        (Number(Object.entries(item.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) => 
-                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0))/ subject.lessons.length).toFixed(1) : 0
-                                    : 0))
-                                : 0) + subjectNext ,0) / monLyThuyet.length).toFixed(1)
-                            :0
-                    } />
+                        <TableCell key={i} type='text' style={{ textAlign: 'center' }} content={` 
+                            ${item.subject && item.subject[subject._id] && !subject.monThucHanh ? item.subject[subject._id].completedLessons : 0}
+                        / ${subject.monThucHanh ? 0 : subject.lessons.length}
+                        ${subject.monThucHanh ? '' : `=> ${item.subject && item.subject[subject._id] ? item.subject[subject._id].diemLyThuyet : 0}`}
+                         ` }
+                    />))}
+                    <TableCell type='text' content={item.diemLyThuyet} />
+                    <TableCell type='text' content={this.props.course && this.props.course.item[index] && this.props.course.item[index].diemThucHanh ?  this.props.course.item[index].diemThucHanh : 0} />
+                    <TableCell type='text' content={this.props.course && this.props.course.item[index] && this.props.course.item[index] ? (Number(Number((this.props.course.item[index].diemThucHanh? this.props.course.item[index].diemThucHanh : 0)) + item.diemLyThuyet)/2).toFixed(1) : 0 } />
                     <TableCell type='buttons' content={item} onEdit={this.edit} />
-                    <TableCell type='text' content={item.identityCard} />
+
                 </tr>),
         });
         return <div className='tile-body'>
-                {table}
-                <Modal ref={e => this.modal = e} />
-            </div>;
+            {table}
+            <Modal ref={e => this.modal = e} updateStudent={this.props.updateStudent} getLearingProgressByLecturer={this.props.getLearingProgressByLecturer} courseId={this.props.courseId} />
+        </div>;
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getLearingProgressByLecturer };
+const mapActionsToProps = { getLearingProgressByLecturer, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
