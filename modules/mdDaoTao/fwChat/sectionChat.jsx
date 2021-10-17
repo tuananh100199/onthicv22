@@ -106,7 +106,7 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        const { _selectedUserId, courseId, listUser } = this.state;
+        const { _selectedUserId, courseId } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
             if (chat.receiver == courseId) {
@@ -121,13 +121,14 @@ class SectionChat extends AdminPage {
                     }));
                     this.props.readAllChats(_selectedUserId);
                     this.scrollToBottom();
-                } else {
-                    const listUserNew = listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
-                    listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
-                    this.setState({
-                        listUser: listUserNew
-                    });
                 }
+                // else {
+                //     const listUserNew = listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
+                //     listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
+                //     this.setState({
+                //         listUser: listUserNew
+                //     });
+                // }
             }
         }
     }
