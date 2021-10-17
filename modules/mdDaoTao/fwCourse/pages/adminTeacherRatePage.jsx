@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { getCourse } from '../redux';
 import { getRatePage } from 'modules/_default/fwRate/redux';
-import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
+import Pagination from 'view/component/Pagination';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
 class AdminTeacherRatePage extends AdminPage {
@@ -14,7 +15,7 @@ class AdminTeacherRatePage extends AdminPage {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
                     this.getCourseRate(course._id);
-                } else if (params._id) {
+                } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
@@ -23,8 +24,6 @@ class AdminTeacherRatePage extends AdminPage {
                             this.getCourseRate(params._id);
                         }
                     });
-                } else {
-                    this.props.history.push('/user/course/');
                 }
             } else {
                 this.props.history.push('/user/course/');
@@ -85,5 +84,5 @@ class AdminTeacherRatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
-const mapActionsToProps = { getRatePage };
+const mapActionsToProps = { getCourse, getRatePage };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherRatePage);
