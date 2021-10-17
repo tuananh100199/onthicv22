@@ -46,7 +46,7 @@ class EditCoursePage extends AdminPage {
 
                     {isCourseAdmin ? <PageIconHeader text='Nhân sự' /> : null}
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/student`} icon='fa-user-plus' iconBackgroundColor='#8A0' text='Gán Học viên' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin && currentUser && currentUser.division && !currentUser.division.isOutside} to={`/user/course/${item._id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
 
@@ -59,7 +59,11 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
                     {/* <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' /> */}
 
-                    <PageIconHeader text='Chat' />
+                    {item.chatActive && (isLecturer || isCourseAdmin) ? <>
+                        <PageIconHeader text='Chat' />
+                        <PageIcon to={`/user/course/${item._id}/chat-all`} icon='fa-weixin' iconBackgroundColor='#29b6f6' text='Phòng chat chung' />
+                        <PageIcon to={`/user/course/${item._id}/chat`} icon='fa-comments-o' iconBackgroundColor='#9ccc65' text='Phòng chat riêng' />
+                    </> : null}
                 </div>
             ),
             backRoute,

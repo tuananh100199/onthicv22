@@ -13,9 +13,9 @@ import AdminLearningProgressView from './tabView/adminLearningProgressView'; //d
 import LecturerStudentView from './tabView/lecturerStudentView'; //done
 import LecturerLearningProgressView from './tabView/lecturerLearningProgressView'; //done => adminLearningProgressPage
 import LecturerRatingView from './tabView/lecturerRatingView'; //TODO => errors
-import AdminAllChat from '../fwChat/adminAllChat';
-import AdminPersonalChat from '../fwChat/adminPersonalChat';
-import AdminFeedbackView from './tabView/adminFeedbackView';
+import AdminAllChat from '../fwChat/adminAllChat'; //TODO
+import AdminPersonalChat from '../fwChat/adminPersonalChat'; //TODO => errors
+import AdminFeedbackView from './tabView/adminFeedbackView'; //TODO => errors
 import LecturerView from '../fwTimeTable/lecturerView';
 import CourseAdminView from '../fwTimeTable/courseAdminView';
 

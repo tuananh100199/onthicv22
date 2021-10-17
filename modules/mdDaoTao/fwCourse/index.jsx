@@ -75,6 +75,15 @@ export default {
             path: '/user/course/:_id/rate-subject',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerRatingPage') })
         },
+        {
+            path: '/user/course/:_id/chat-all',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatAllPage') })
+        },
+        {
+            path: '/user/course/:_id/chat',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatPersonalPage') })
+        },
+
 
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',

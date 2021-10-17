@@ -30,6 +30,8 @@ module.exports = (app) => {
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/chat-all', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_id/chat', app.permission.check('user:login'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);

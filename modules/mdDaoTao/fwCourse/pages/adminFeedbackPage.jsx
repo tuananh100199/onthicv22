@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse } from '../redux';
 import FeedbackSection from 'modules/mdTruyenThong/fwFeedback/FeedbackAdminSection';
-import { AdminPage } from 'view/component/AdminPage';
-
-import { FormCheckbox } from 'view/component/AdminPage';
+import { AdminPage, FormCheckbox } from 'view/component/AdminPage';
 
 export class AdminFeedbackPage extends AdminPage {
     state = {};

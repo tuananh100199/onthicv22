@@ -51,7 +51,7 @@ class LecturerStudentPage extends AdminPage {
 
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
-            icon: 'fa fa-star',
+            icon: 'fa fa-users',
             title: 'Học viên của bạn: ' + item.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Học viên của bạn'],
             content: (
