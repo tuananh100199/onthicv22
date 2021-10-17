@@ -37,7 +37,7 @@ class AdminSubjectPage extends AdminPage {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push('/user/course/');
+                            this.props.history.push('/user/course/' + params._id);
                         }
                     });
                 } else {
@@ -86,7 +86,7 @@ class AdminSubjectPage extends AdminPage {
 
         const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
-            icon: 'fa fa-cubes',
+            icon: 'fa fa-briefcase',
             title: 'Môn học: ' + course.name,
             breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Môn học'],
             content: (

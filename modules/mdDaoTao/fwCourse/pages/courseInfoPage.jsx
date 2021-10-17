@@ -39,11 +39,11 @@ class EditCoursePage extends AdminPage {
                 this.props.getCourse(params._id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
-                        this.props.history.push('/user/course/');
+                        this.props.history.push('/user/course/' + params._id);
                     } else if (data.item) {
                         setData(data.item);
                     } else {
-                        this.props.history.push('/user/course/');
+                        this.props.history.push('/user/course/' + params._id);
                     }
                 });
             } else {
