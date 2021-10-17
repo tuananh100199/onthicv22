@@ -77,6 +77,22 @@ export function getFeedbackAllByUser(type, _refId, done) {
     };
 }
 
+export function getFeedbackPage(pageNumber, pageSize, pageCondition, done) {
+    return dispatch => {
+        const url = `/api/feedback/page/${pageNumber}/${pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy phản hồi bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: FeedbackGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy phản hồi bị lỗi!', 'danger'));
+    };
+}
+
 export function getFeedbackPageByStudent(pageNumber, pageSize, pageCondition, done) {
     return dispatch => {
         const url = `/api/feedback/student/page/${pageNumber}/${pageSize}`;

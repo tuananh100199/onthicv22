@@ -4,7 +4,7 @@ import { getCourse } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
-const previousRoute = '/user/course';
+const backRoute = '/user/course';
 class EditCoursePage extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
@@ -16,16 +16,16 @@ class EditCoursePage extends AdminPage {
                 this.props.getCourse(_id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
-                        this.props.history.push(previousRoute);
+                        this.props.history.push(backRoute);
                     } else if (data.item) {
                         const { name } = data.item;
                         this.setState({ name });
                     } else {
-                        this.props.history.push(previousRoute);
+                        this.props.history.push(backRoute);
                     }
                 });
             } else {
-                this.props.history.push(previousRoute);
+                this.props.history.push(backRoute);
             }
         });
     }
@@ -47,6 +47,10 @@ class EditCoursePage extends AdminPage {
                     <PageIcon to={`/user/course/${_id}/forum`} icon='fa-address-book' iconBackgroundColor='#8d6e63' text='Forum' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/learning`} icon='fa-line-chart' iconBackgroundColor='#0D0' text='Tiến độ học tập' />
 
+                    <PageIconHeader visible={!isLecturer}text='Cố vấn học tập' />
+                    <PageIcon visible={!isLecturer} to={`/user/course/${_id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
+                  
+
                     <PageIconHeader text='Nhân sự' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
@@ -58,7 +62,7 @@ class EditCoursePage extends AdminPage {
                     <PageIconHeader text='Chat' />
                 </div>
             ),
-            backRoute: previousRoute,
+            backRoute,
         });
     }
 }

@@ -1,31 +1,35 @@
 import T from 'view/js/common';
 
 const RateGetItem = 'RateGetItem';
+const RateGetPage = 'RateGetPage';
 
 export default function rateReducer(state = {}, data) {
     switch (data.type) {
         case RateGetItem:
             return Object.assign({}, state, { item: data.item });
+        case RateGetPage:
+            return Object.assign({}, state, { page: data.page });
         default:
             return state;
     }
 }
 
 // Actions ------------------------------------------------------------------------------------------------------------
-// export function getRateAll(type, _refId, done) {
-//     return dispatch => {
-//         const url = `/api/rate/${type}`;
-//         T.get(url, { _refId }, data => {
-//             if (data.error) {
-//                 T.notify('Lấy đánh giá bị lỗi!', 'danger');
-//                 console.error('GET: ' + url + '.', data.error);
-//             } else {
-//                 dispatch({ type: RateGetAll, items: data.items });
-//                 done && done(data.items);
-//             }
-//         }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
-//     };
-// }
+export function getRatePage(pageNumber, pageSize, pageCondition, done) {
+    return dispatch => {
+        const url = `/api/rate/page/${pageNumber}/${pageSize}`;
+        T.get(url, { pageCondition }, data => {
+            if (data.error) {
+                T.notify('Lấy đánh giá bị lỗi!', 'danger');
+                console.error(`GET: ${url}. ${data.error}`);
+            } else {
+                if (pageCondition) data.page.pageCondition = pageCondition;
+                done && done(data.page);
+                dispatch({ type: RateGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
+    };
+}
 
 export function getRateByUser(type, _refId, done) {
     return dispatch => {
