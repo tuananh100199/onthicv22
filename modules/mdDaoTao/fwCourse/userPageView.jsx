@@ -88,13 +88,18 @@ class UserCoursePageDetail extends AdminPage {
                     {subjects.length ? <>
                         <PageIconHeader text='Môn học lý thuyết' />
                         {subjects.map((subject, index) =>
-                            <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
+                            !subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
                         )}
                     </> : null}
 
-                    <PageIconHeader text='Môn học thực hành' />
-                    {/* TODO: hiển thị môn học thực hành */}
-
+                    {subjects.length ? <>
+                        <PageIconHeader text='Môn học thực hành' />
+                        {/* TODO: hiển thị môn học thực hành */}
+                        {/* <h4 style={{ width: '100%' }}>Môn học lý thuyết</h4> */}
+                        {subjects.map((subject, index) =>
+                            subject.monThucHanh && <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${courseId}/mon-hoc/${subject._id}`} icon='fa-briefcase' iconBackgroundColor='#1488db' text={subject ? subject.title : ''} />
+                        )}
+                    </> : null}
                     <CirclePageButton type='custom' customClassName='btn-success' customIcon='fa-comments-o' onClick={() => this.props.history.push('/user/chat/' + this.state.courseId)} />
                 </div>
             ),

@@ -40,14 +40,16 @@ class adminEditPage extends AdminPage {
     }
 
     render() {
-        const { lessonId, subjectId, title, courseId, tienDoHocTap } = this.state;
-        const videos = this.props.lesson && this.props.lesson.item && this.props.lesson.item && this.props.lesson.item.videos ? this.props.lesson.item.videos : [];
+        const { lessonId, subjectId, title, courseId, tienDoHocTap } = this.state,
+            lesson = this.props.lesson && this.props.lesson.item,
+            videos = lesson && lesson.videos ? lesson.videos : [];
         const videosRender = videos.length ? videos.map((video, index) => (
             <div key={index} className='d-flex justify-content-center pb-5'>
                 <div className='embed-responsive embed-responsive-16by9' style={{ width: '70%', display: 'block' }} onClick={e => this.onView(e, video._id, index)}>
                     <YouTube videoId={video.link} containerClassName='embed embed-youtube' />
                 </div>
             </div>)) : 'Chưa có video bài giảng!';
+        const isShowRating = tienDoHocTap && tienDoHocTap[lessonId] || (lesson && lesson.questions && !lesson.questions.length);
         const userPageLink = '/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId;
         if (tienDoHocTap && tienDoHocTap[lessonId]) {
             $('#' + tienDoHocTap[lessonId].rating).prop('checked', true);
@@ -63,7 +65,7 @@ class adminEditPage extends AdminPage {
                     <div className='tile-body'>{videosRender}</div>
                     <div className='tile-footer' >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div className={tienDoHocTap && tienDoHocTap[lessonId] ? 'visible' : 'invisible'}>
+                            <div className={isShowRating ? 'visible' : 'invisible'}>
                                 <h6>Đánh giá cuối bài học</h6>
                                 <div className='starrating risingstar d-flex justify-content-center flex-row-reverse'>
                                     <input type='radio' id='5' name='rating' value='5' onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor='5' title='5 star'></label>

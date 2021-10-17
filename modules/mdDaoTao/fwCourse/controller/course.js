@@ -21,6 +21,7 @@ module.exports = (app) => {
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/:_id/phan-hoi', app.permission.check('user:login'), app.templates.admin);
@@ -113,35 +114,49 @@ module.exports = (app) => {
     });
 
     app.put('/api/course', (req, res, next) => (req.session.user && req.session.user.isCourseAdmin) ? next() : app.permission.check('course:write')(req, res, next), (req, res) => {
-        let changes = req.body.changes || {};
-        const sessionUser = req.session.user,
-            courseFees = changes.courseFees,
-            division = sessionUser.division;
-        if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
-            if (courseFees) {
-                const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
-                if (index != -1) courseFees[index].fee = changes.courseFee;
-                else courseFees.push({
-                    division: division._id,
-                    fee: changes.courseFee
-                });
+        app.model.course.get(req.body._id, (error, item) => {
+            if (error || !item) {
+                res.send({ error: 'Dữ liệu không hợp lệ!' });
+            } else {
+                let changes = req.body.changes || {};
+                const sessionUser = req.session.user,
+                    courseFees = app.clone(item.courseFees || {}),
+                    division = sessionUser.division;
+                if (sessionUser && sessionUser.isCourseAdmin && division && division.isOutside) {
+                    if (courseFees) {
+                        const index = courseFees.findIndex(courseFee => courseFee.division == division._id);
+                        if (index != -1) {
+                            courseFees[index].fee = changes.courseFee;
+                        } else {
+                            courseFees.push({ division: division._id, fee: changes.courseFee });
+                        }
+                    }
+                    if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+
+                    //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
+                    changes.teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
+                } else {
+                    if (courseFees) {
+                        if (courseFees.length == 0) {
+                            courseFees.push({ division: division._id, fee: changes.courseFee });
+                        } else {
+                            courseFees[0].fee = changes.courseFee;
+                        }
+                    }
+                    if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
+                    if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
+                    if (changes.admins && changes.admins === 'empty') changes.admins = [];
+                }
+
+                delete changes.courseFee;
+                changes.courseFees = courseFees;
+                app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
+                    const item = {};
+                    course && Object.keys(changes).forEach(key => item[key] = course[key]);
+                    res.send({ error, item });
+                }));
             }
-            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            const teacherGroups = changes.teacherGroups == null || changes.teacherGroups === 'empty' ? [] : changes.teacherGroups;
-            //TODO: Với user là isCourseAdmin + isOutside: cho phép họ thêm / xoá lecturer, student thuộc cơ sở của họ
-            changes = { teacherGroups };
-        } else {
-            if (courseFees) courseFees[0].fee = changes.courseFee;
-            if (changes.subjects && changes.subjects === 'empty') changes.subjects = [];
-            if (changes.teacherGroups && changes.teacherGroups === 'empty') changes.teacherGroups = [];
-            if (changes.admins && changes.admins === 'empty') changes.admins = [];
-        }
-        delete changes.courseFee;
-        app.model.course.update(req.body._id, changes, () => getCourseData(req.body._id, req.session.user, (error, course) => {
-            const item = {};
-            course && Object.keys(changes).forEach(key => item[key] = course[key]);
-            res.send({ error, item });
-        }));
+        });
     });
 
     app.delete('/api/course', app.permission.check('course:delete'), (req, res) => {
@@ -388,17 +403,60 @@ module.exports = (app) => {
 
     app.get('/api/course/learning-progress/lecturer', app.permission.check('course:write'), (req, res) => {
         const sessionUser = req.session.user;
-        app.model.course.get(req.query._id, (error, item) => {
-            if (error || !item) {
+        app.model.course.get(req.query._id, (error, items) => {
+            if (error || !items) {
                 res.send({ error });
             } else {
-                const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
-                res.send({ error, item: listStudent.length ? listStudent[0].student : null });
+                items = app.clone(items);
+                const { subjects } = items;
+                const monLyThuyet = subjects.filter(subject => subject.monThucHanh == false);
+                const listStudent = items.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                let listStudentReturn = listStudent[0].student.map((student => {
+                    student.subject = {};
+                    subjects.forEach(subject => {
+                        const diemLyThuyet =
+                            student && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                                Number((Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0;
+
+                        const completedLessons = (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                            (student.tienDoHocTap[subject._id] && Object.keys(student.tienDoHocTap[subject._id]).length > subject.lessons.length ?
+                                subject.lessons.length :
+                                Object.keys(student.tienDoHocTap[subject._id]).length)
+                            : 0);
+
+                        const obj = {};
+                        obj[subject._id] = {
+                            completedLessons: completedLessons,
+                            numberLessons: subject.lessons.length ? subject.lessons.length : 0,
+                            diemLyThuyet: diemLyThuyet
+                        };
+                        Object.assign(student.subject, obj);
+                    });
+                    const diemLyThuyet = Number((monLyThuyet.reduce((subjectNext, subject) =>
+                        (subject && student.tienDoHocTap && student.tienDoHocTap[subject._id] ?
+                            Number((Object.keys(student.tienDoHocTap[subject._id]).length ?
+                                Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                    Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0) ?
+                                    (Number(Object.entries(student.tienDoHocTap[subject._id]).reduce((lessonNext, lesson) =>
+                                        Number(lesson[1].score) / Object.keys(lesson[1].trueAnswers).length * 10 + lessonNext, 0)) / subject.lessons.length).toFixed(1) : 0
+                                : 0))
+                            : 0) + subjectNext, 0) / monLyThuyet.length).toFixed(1));
+
+                    const diemThucHanh = student.diemThucHanh ? Number(student.diemThucHanh) : 0;
+                    Object.assign(student, { diemLyThuyet: diemLyThuyet, diemThucHanh: diemThucHanh });
+
+                    return student;
+                }));
+                res.send({ error, item: listStudentReturn.length ? listStudentReturn : null });
             }
         });
     });
 
-    // // Chat API
+    app.put('/api/course/learning-progress/lecturer', app.permission.check('course:write'), (req, res) => {
+        app.model.student.update(req.body._id, req.body.changes, (error, item) => res.send({ error, item }));
+    });
+    // Chat API
     app.get('/api/course/chat/admin', app.permission.check('course:write'), (req, res) => {
         const sessionUser = req.session.user;
         if (sessionUser.isCourseAdmin) {
@@ -662,7 +720,7 @@ module.exports = (app) => {
     }));
 
     app.permissionHooks.add('lecturer', 'course', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write');
+        app.permissionHooks.pushUserPermission(user, 'course:read', 'course:write', 'student:write', 'student:read');
         resolve();
     }));
 };

@@ -39,6 +39,7 @@ module.exports = (app) => {
         hocPhiDaDong: Number,                                                                       // Học phí đã đóng
 
         tienDoHocTap: {},
+        diemThucHanh: Number,
         diemBoDeThi: {},
 
         duKienThangThi: Number,                                                                     // Dự kiến tháng thi
@@ -151,7 +152,13 @@ module.exports = (app) => {
                 if (error) {
                     done(error);
                 } else if (data.rating) {
-                    student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
+                    const obj = {};
+                    if (student.tienDoHocTap[data.subjectId][data.lessonId]) {
+                        student.tienDoHocTap[data.subjectId][data.lessonId].rating = data.rating;
+                    } else {
+                        obj[data.lessonId].rating = data.rating;
+                        Object.assign(student.tienDoHocTap[data.subjectId], obj);
+                    }
                     model.findOneAndUpdate({ _id: data.studentId }, { tienDoHocTap: student.tienDoHocTap }, { new: true }).exec(done);
                 } else {
                     const obj = {};

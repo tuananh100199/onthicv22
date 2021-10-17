@@ -34,34 +34,10 @@ class AdminSubjectPage extends AdminPage {
             const course = this.props.course ? this.props.course.item : null;
             if (!course) {
                 if (params && params._id) {
-                    const previousRoute = '/user/course/' + params._id;
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
-                            this.props.history.push(previousRoute);
-                        } else if (data.item) {
-                            const { name, maxStudent, detailDescription, courseType, courseFee,
-                                thoiGianKhaiGiang, thoiGianBatDau, thoiGianKetThuc, thoiGianThiKetThucMonDuKien, thoiGianThiKetThucMonChinhThuc, thoiGianThiTotNghiepDuKien, thoiGianThiTotNghiepChinhThuc, active, chatActive, commentActive } = data.item;
-
-                            this.name.value(name);
-                            this.courseType.value(courseType ? { id: courseType._id, text: courseType.title } : null);
-                            this.courseFee.value(courseFee);
-                            this.maxStudent.value(maxStudent);
-                            this.detailDescription.html(detailDescription);
-
-                            this.thoiGianKhaiGiang.value(thoiGianKhaiGiang);
-                            this.thoiGianBatDau.value(thoiGianBatDau);
-                            this.thoiGianKetThuc.value(thoiGianKetThuc);
-                            this.thoiGianThiKetThucMonDuKien.value(thoiGianThiKetThucMonDuKien);
-                            this.thoiGianThiKetThucMonChinhThuc.value(thoiGianThiKetThucMonChinhThuc);
-                            this.thoiGianThiTotNghiepDuKien.value(thoiGianThiTotNghiepDuKien);
-                            this.thoiGianThiTotNghiepChinhThuc.value(thoiGianThiTotNghiepChinhThuc);
-                            this.active.value(active);
-                            this.chatActive.value(chatActive);
-                            this.commentActive.value(commentActive);
-                            this.setState(data.item);
-                        } else {
-                            this.props.history.push(previousRoute);
+                            this.props.history.push('/user/course/');
                         }
                     });
                 } else {
@@ -108,10 +84,11 @@ class AdminSubjectPage extends AdminPage {
                 </tr>),
         });
 
+        const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Môn học: ' + course.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Môn học'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Môn học'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
@@ -123,7 +100,7 @@ class AdminSubjectPage extends AdminPage {
                             </button> : null}
                     </div>
                 </div>),
-            onBack: () => this.props.history.goBack(),
+            backRoute,
         });
     }
 }
