@@ -558,8 +558,8 @@ export class PageIcon extends React.Component {
 }
 export class PageIconHeader extends React.Component {
     render() {
-        const { className = 'col-md-12', text = '' } = this.props;
-        return <h4 className={className}>{text}</h4>;
+        const { className = 'col-md-12', text = '', visible=true } = this.props;
+        return visible && <h4 className={className}>{text}</h4>;
     }
 }
 

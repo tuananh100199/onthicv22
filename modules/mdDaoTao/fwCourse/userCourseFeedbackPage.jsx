@@ -49,7 +49,7 @@ class UserCourseFeedback extends AdminPage {
             &nbsp; &nbsp;
             {teacher &&<FormCheckbox ref={e=>this.teacher=e} onChange={value=>this.onChange(value,'teacher')} label={`Phản hồi cố vấn học tập ${teacher.lastname} ${teacher.firstname}`}/>}
             </div>
-            {type && <FeedbackSection type={type} _refId={courseId} title={type == 'teacher'?'cố vấn học tập':'khóa học'} />}
+            {courseId && <FeedbackSection type={type} _refId={courseId} title={type == 'teacher'?'cố vấn học tập':'khóa học'} />}
         </>,
             // onBack: () => this.props.history.goBack(),
         });

@@ -3,8 +3,6 @@ module.exports = (app) => {
     app.permission.add({ name: 'feedback:read', menu: { parentMenu: { index: 3030, title: 'Phản hồi', icon: 'fa-comments-o', link: '/user/feedback/system' } } });
 
     app.get('/user/feedback/system', app.permission.check('feedback:read'), app.templates.admin);
-
-
     app.get('/user/feedback', app.permission.check('user:login'), app.templates.admin);
 
     app.get('/api/feedback/:type', app.permission.check('feedback:read'), (req, res) => {
@@ -34,6 +32,17 @@ module.exports = (app) => {
         });
     });
 
+    app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
+        let pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {};
+        try {
+            app.model.feedback.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
+        } catch (error) {
+            res.send({ error });
+        }
+    });
+
     app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
@@ -41,9 +50,9 @@ module.exports = (app) => {
         try {
             app.model.student.get({ user: req.session.user._id, course: condition._refId }, (error, student) => {
                 if (error) {
-                    res.send({ error:'Bạn không thể phản hồi khóa học không phải của bạn!' });
+                    res.send({ error: 'Bạn không thể phản hồi khóa học không phải của bạn!' });
                 } else {
-                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user: student.user._id }), (error, page) => res.send({ error, page }));
+                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user: student.user._id}), (error, page) => res.send({ error, page }));
                 }
             });
         } catch (error) {
