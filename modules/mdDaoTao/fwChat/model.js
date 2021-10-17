@@ -4,6 +4,7 @@ module.exports = app => {
         receiver: { type: app.db.Schema.ObjectId, ref: 'User' },
         sent: { type: Date, default: Date.now },
         sender: { type: app.db.Schema.ObjectId, ref: 'User' },
+        read: { type: Boolean, default: false },
     });
     const model = app.db.model('Chat', schema);
 

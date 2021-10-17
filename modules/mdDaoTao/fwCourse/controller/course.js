@@ -508,7 +508,7 @@ module.exports = (app) => {
                     app.model.course.get(_courseId, (error, item) => {
                         const _studentId = student._id,
                             teacherGroups = item.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == _studentId.toString()) != null),
-                            teacher = teacherGroups.teacher || null;
+                            teacher = (teacherGroups && teacherGroups.teacher) || null;
                         res.send({ error, item, _studentId, teacher });
                     });
                 } else {
