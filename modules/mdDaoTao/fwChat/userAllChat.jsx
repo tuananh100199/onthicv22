@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { readAllChats, getAllChats, addChat } from './redux';
+import { getAllChats } from './redux';
 // import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
@@ -35,5 +35,5 @@ class UserAllChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system });
-const mapActionsToProps = { readAllChats, getAllChats, addChat };
+const mapActionsToProps = { getAllChats };
 export default connect(mapStateToProps, mapActionsToProps)(UserAllChat);
