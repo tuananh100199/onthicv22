@@ -53,7 +53,7 @@ class AdminManagerPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-user-secret',
             title: 'Gán Quản trị viên khóa học: ' + item.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Môn học'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, item._id ? <Link key={0} to={backRoute}>{item.name}</Link> : '', 'Gán QTVKH'],
             content: (
                 <div className='tile'>
                     <div className='tile-body row'>
