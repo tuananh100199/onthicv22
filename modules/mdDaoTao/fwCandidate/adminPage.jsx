@@ -135,7 +135,7 @@ class CandidateModal extends AdminModal {
             <FormSelect className='col-md-6' ref={e => this.states = e} label='Trạng thái' data={this.props.states} />
             <FormSelect className='col-md-6' ref={e => this.division = e} label='Cơ sở đào tạo' data={ajaxSelectDivision} />
             <FormTextBox className='col-md-6' ref={e => this.itemIdentityCard = e} label='CMND/CCCD' />
-            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' />
+            <FormDatePicker className='col-md-6' ref={e => this.itemBirthday = e} label='Ngày sinh' type='date-mask' />
             <FormTextBox className='col-md-6' ref={e => this.itemPlanCourse = e} label='Khóa dự kiến' />
         </div>,
         buttons: this.props.permission.write ?
