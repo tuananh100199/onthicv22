@@ -24,7 +24,6 @@ class SectionChat extends AdminPage {
     componentDidUpdate() {
         const listUser = this.state;
         !this.state._selectedUserId && listUser && listUser.length && this.selectUser(listUser[0]);
-        this.state.loading && this.setState({ loading: false }, this.scrollToChat);
         this.scrollToChat;
     }
 
@@ -80,8 +79,8 @@ class SectionChat extends AdminPage {
                     oldMessagePersonal: data.chats.sort(() => -1),
                     _selectedUserId: studentId,
                     isLastedChat: false,
-                    studentName: student.firstname + ' ' + student.lastname,
-                    studentImage: student.image
+                    userName: student.firstname + ' ' + student.lastname,
+                    userImage: student.image
                 });
             });
             !this.state.loading && T.socket.emit('chat:join', { _userId: studentId });
@@ -107,19 +106,29 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        const { _selectedUserId, courseId } = this.state;
+        const { _selectedUserId, courseId, listUser } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
             if (chat.receiver == courseId) {
                 this.setState(prevState => ({
                     oldMessageAll: [...prevState.oldMessageAll, data.chat]
                 }));
+                this.scrollToBottom();
             } else {
-                (_selectedUserId == chat.receiver._id || user._id == chat.sender._id) && this.setState(prevState => ({
-                    oldMessagePersonal: [...prevState.oldMessagePersonal, data.chat]
-                }));
+                if (_selectedUserId == chat.receiver._id || _selectedUserId == chat.sender._id) {//Hội thoại hiện tại
+                    this.setState(prevState => ({
+                        oldMessagePersonal: [...prevState.oldMessagePersonal, data.chat]
+                    }));
+                    this.props.readAllChats(_selectedUserId);
+                    this.scrollToBottom();
+                } else {
+                    const listUserNew = listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
+                    listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
+                    this.setState({
+                        listUser: listUserNew
+                    });
+                }
             }
-            this.scrollToBottom();
         }
     }
 
@@ -153,17 +162,17 @@ class SectionChat extends AdminPage {
             );
         }) : null;
         const listUser = this.state.listUser;
-        const studentName = this.state.studentName ? this.state.studentName : listUser && listUser[0] && listUser[0].firstname + ' ' + listUser[0].lastname,
-            studentImage = this.state.studentImage ? this.state.studentImage : (listUser && listUser[0] && (listUser[0].user ? listUser[0].user.image : listUser[0].image));
+        const userName = this.state.userName ? this.state.userName : listUser && listUser[0] && listUser[0].firstname + ' ' + listUser[0].lastname,
+            userImage = this.state.userImage ? this.state.userImage : (listUser && listUser[0] && (listUser[0].user ? listUser[0].user.image : listUser[0].image));
         const { _selectedUserId, isLastedChat } = this.state;
-        const inboxChat = this.state.listUser && this.state.listUser.map((student, index) => {
-            const isSelectedUser = _selectedUserId == (student.user ? student.user._id : student._id);
+        const inboxChat = this.state.listUser && this.state.listUser.map((userChat, index) => {
+            const isSelectedUser = _selectedUserId == (userChat.user ? userChat.user._id : userChat._id);
             return (
-                <div key={index} className={'chat_list' + (isSelectedUser ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectUser(student)}>
+                <div key={index} className={'chat_list' + (isSelectedUser ? ' active_chat' : '')} style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.selectUser(userChat)}>
                     <div className='chat_people'>
-                        <div className='chat_img'> <img src={student.user ? student.user.image : student.image} alt={student.lastname} /> </div>
+                        <div className='chat_img'> <img src={userChat.user ? userChat.user.image : userChat.image} alt={userChat.lastname} /> </div>
                         <div className='chat_ib'>
-                            <h6>{student.firstname + ' ' + student.lastname}</h6>
+                            <h6>{userChat.firstname + ' ' + userChat.lastname}</h6>
                         </div>
                     </div>
                 </div>);
@@ -197,8 +206,8 @@ class SectionChat extends AdminPage {
                         </div>
                         <div className='col-md-9' >
                             <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
-                                <img style={{ height: '25px', width: '25px' }} src={studentImage} alt={studentName} />
-                                <h6 style={{ marginBottom: '0px' }}>&nbsp;{studentName}</h6>
+                                <img style={{ height: '25px', width: '25px' }} src={userImage} alt={userName} />
+                                <h6 style={{ marginBottom: '0px' }}>&nbsp;{userName}</h6>
                             </div>
                             <div className='messages' id='msg_admin_all' style={{ height: 'calc(100vh - 350px)', overflowY: 'scroll', maxHeight: 'none' }} >
                                 {isLastedChat ? null :
