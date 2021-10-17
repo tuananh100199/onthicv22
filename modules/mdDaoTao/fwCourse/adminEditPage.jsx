@@ -49,9 +49,9 @@ class EditCoursePage extends AdminPage {
 
                     <PageIconHeader text='Nhân sự' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
 
                     <PageIconHeader text='Học viên' />
 
