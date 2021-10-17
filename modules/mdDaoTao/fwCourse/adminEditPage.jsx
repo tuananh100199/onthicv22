@@ -47,15 +47,12 @@ class EditCoursePage extends AdminPage {
                     <PageIcon to={`/user/course/${_id}/forum`} icon='fa-address-book' iconBackgroundColor='#8d6e63' text='Forum' />
                     <PageIcon to={`/user/course/${_id}/learning`} icon='fa-line-chart' iconBackgroundColor='#0D0' text='Tiến độ học tập' />
 
-                    <PageIconHeader visible={!isLecturer}text='Cố vấn học tập' />
-                    <PageIcon visible={!isLecturer} to={`/user/course/${_id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
-                  
-
                     <PageIconHeader text='Nhân sự' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
 
                     <PageIconHeader text='Học viên' />
 
