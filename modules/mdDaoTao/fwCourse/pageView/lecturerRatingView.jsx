@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLearingProgressByLecturer } from '../redux';
+import { getLearingProgressByLecturer } from '../redux'; // TODO Vinh coi lại hàm này
 import { getSubject } from '../../fwSubject/redux';
 import { AdminPage, FormSelect, renderTable, TableCell } from 'view/component/AdminPage';
 
