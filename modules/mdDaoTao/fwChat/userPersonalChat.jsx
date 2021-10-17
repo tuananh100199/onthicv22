@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getAdminChatByStudent, readAllChats, getUserChats, addChat } from './redux';
-import { getChatByAdmin } from '../fwCourse/redux';
+import { getAdminChatByStudent, getUserChats } from './redux';
 import { AdminPage } from 'view/component/AdminPage';
 // import chatComponent from './chatComponent';
 import './chat.scss';
@@ -36,7 +35,6 @@ class UserPersonalChat extends AdminPage {
 
     render() {
         const { isLoading, oldMessage, courseId, listAdmin, _selectedUserId } = this.state;
-        console.log(listAdmin, isLoading);
         return (
             !isLoading && <SectionChat oldMessagePersonal={oldMessage} courseId={courseId} listUser={listAdmin} _selectedUserId={_selectedUserId}></SectionChat>
         );
@@ -44,5 +42,5 @@ class UserPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, chat: state.trainning.chat });
-const mapActionsToProps = { getAdminChatByStudent, getChatByAdmin, readAllChats, getUserChats, addChat };
+const mapActionsToProps = { getAdminChatByStudent, getUserChats };
 export default connect(mapStateToProps, mapActionsToProps)(UserPersonalChat);

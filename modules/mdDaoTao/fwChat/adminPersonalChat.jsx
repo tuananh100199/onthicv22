@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { readAllChats, getUserChats, addChat } from './redux';
+import { getUserChats } from './redux';
 // import { debounce } from 'lodash';
 import { getChatByAdmin } from '../fwCourse/redux';
 import { AdminPage } from 'view/component/AdminPage';
@@ -40,5 +40,5 @@ class AdminPersonalChat extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, chat: state.trainning.chat });
-const mapActionsToProps = { getChatByAdmin, readAllChats, getUserChats, addChat };
+const mapActionsToProps = { getChatByAdmin, getUserChats };
 export default connect(mapStateToProps, mapActionsToProps)(AdminPersonalChat);

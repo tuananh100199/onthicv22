@@ -84,10 +84,11 @@ class AdminSubjectPage extends AdminPage {
                 </tr>),
         });
 
+        const backRoute = `/user/course/${course._id}`;
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Môn học: ' + course.name,
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Môn học'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Môn học'],
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
@@ -99,7 +100,7 @@ class AdminSubjectPage extends AdminPage {
                             </button> : null}
                     </div>
                 </div>),
-            onBack: () => this.props.history.goBack(),
+            backRoute,
         });
     }
 }
