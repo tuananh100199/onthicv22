@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getRatePage } from 'modules/_default/fwRate/redux';
+import { getCourse } from '../redux';
 import Pagination from 'view/component/Pagination';
 import { Link } from 'react-router-dom';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
@@ -85,5 +86,5 @@ class AdminTeacherRatePage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
-const mapActionsToProps = { getRatePage };
+const mapActionsToProps = { getRatePage,getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(AdminTeacherRatePage);

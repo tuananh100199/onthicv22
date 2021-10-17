@@ -54,7 +54,7 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
 
                     <PageIconHeader text='Học viên' />
-                    <PageIcon visible={isCourseAdmin || !isLecturer} to={`/user/course/${_id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
+                    <PageIcon visible={isCourseAdmin || !isLecturer} to={`/user/course/${_id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Cố vấn học tập' />
 
                     <PageIconHeader text='Chat' />
                 </div>
