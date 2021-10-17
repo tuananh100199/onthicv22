@@ -4,7 +4,7 @@ import { getCourse } from './redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, PageIconHeader, PageIcon } from 'view/component/AdminPage';
 
-const previousRoute = '/user/course';
+const backRoute = '/user/course';
 class EditCoursePage extends AdminPage {
     state = { name: '...' };
     componentDidMount() {
@@ -16,16 +16,16 @@ class EditCoursePage extends AdminPage {
                 this.props.getCourse(_id, data => {
                     if (data.error) {
                         T.notify('Lấy khóa học bị lỗi!', 'danger');
-                        this.props.history.push(previousRoute);
+                        this.props.history.push(backRoute);
                     } else if (data.item) {
                         const { name } = data.item;
                         this.setState({ name });
                     } else {
-                        this.props.history.push(previousRoute);
+                        this.props.history.push(backRoute);
                     }
                 });
             } else {
-                this.props.history.push(previousRoute);
+                this.props.history.push(backRoute);
             }
         });
     }
@@ -46,9 +46,12 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${_id}/subject`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
                     <PageIcon to={`/user/course/${_id}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
                     <PageIcon to={`/user/course/${_id}/learning`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Tiến độ học tập' />
+
+                    <PageIconHeader visible={!isLecturer}text='Cố vấn học tập' />
+                    <PageIcon visible={!isLecturer} to={`/user/course/${_id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
                 </div>
             ),
-            backRoute: previousRoute,
+            backRoute,
         });
     }
 }
