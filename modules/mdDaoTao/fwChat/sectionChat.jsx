@@ -152,10 +152,9 @@ class SectionChat extends AdminPage {
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'dd/mm HH:MM')}</p> :
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'HH:MM')}</p>}
                     <div style={{ marginBottom: '5px' }} className={(message.sender._id == this.state.user._id) ? 'message me' : 'message'}>
-                        {isNewUser && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
-                        {isNewSender && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
+                        {(isNewUser || isNewSender) && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
                         <div>
-                            {isNewUser && <div className={'font-weight-bold mb-0 ' + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
+                            {(isNewUser || isNewSender) && <div className={'font-weight-bold mb-0 ' + (isNewSender ? 'text-right' : '') + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
                             <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px', marginRight: isNewSender ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
                         </div>
                     </div>
