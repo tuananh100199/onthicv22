@@ -40,6 +40,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminSubjectPage') })
         },
         {
+            path: '/user/course/:_id/learning',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
+        },
+        {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })
         },

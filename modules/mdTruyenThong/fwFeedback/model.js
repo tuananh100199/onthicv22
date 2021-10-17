@@ -6,7 +6,7 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },
         content: String,
         user: { type: app.db.Schema.ObjectId, ref: 'User' },
-        isSeen:{ type: Boolean, default: false },
+        isSeen: { type: Boolean, default: false },
 
         replies: [{
             createdDate: { type: Date, default: Date.now },
@@ -36,7 +36,8 @@ module.exports = app => {
                 result.pageNumber = pageNumber === -1 ? result.pageTotal : Math.min(pageNumber, result.pageTotal);
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
-                model.find(condition).select('-replies').sort({ _id: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                model.find(condition).populate('user', 'lastname firstname image').populate('replies.adminUser', 'lastname firstname image')
+                .sort({ createdDate: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
                     result.list = list;
                     done(error, result);
                 });
