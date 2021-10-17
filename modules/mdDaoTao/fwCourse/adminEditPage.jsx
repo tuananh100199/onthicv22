@@ -30,6 +30,8 @@ class EditCoursePage extends AdminPage {
         const currentUser = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = currentUser,
             item = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const permission = this.getUserPermission('course'),
+            permissionFeedback = this.getUserPermission('feedback');
 
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -50,6 +52,7 @@ class EditCoursePage extends AdminPage {
 
                     {isCourseAdmin || !isLecturer ? <PageIconHeader text='Học viên' /> : null}
                     <PageIcon visible={isCourseAdmin || !isLecturer} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá cố vấn học tập' />
+                    <PageIcon visible={isCourseAdmin && permission.write && permissionFeedback.write} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
 
                     <PageIconHeader text='Đào tạo' />
                     {/* <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' /> */}
