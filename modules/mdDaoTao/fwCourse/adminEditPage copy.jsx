@@ -4,15 +4,15 @@ import { getCourse, updateCourse } from './redux';
 import { ajaxSelectCourseType } from 'modules/mdDaoTao/fwCourseType/redux';
 import { Link } from 'react-router-dom';
 import { AdminPage, FormTabs, FormTextBox, FormDatePicker, FormEditor, FormSelect, FormRichTextBox, CirclePageButton, FormCheckbox } from 'view/component/AdminPage';
-import AdminSubjectView from './tabView/adminSubjectView';
-import AdminManagerView from './tabView/adminManagerView';
-import AdminStudentView from './tabView/adminStudentView';
-import AdminTeacherView from './tabView/adminTeacherView';
-import AdminRepresentersView from './tabView/adminRepresentersView';
-import AdminLearningProgressView from './tabView/adminLearningProgressView';
-import LecturerStudentView from './tabView/lecturerStudentView';
-import LecturerLearningProgressView from './tabView/lecturerLearningProgressView';
-import LecturerRatingView from './tabView/lecturerRatingView';
+import AdminSubjectView from './tabView/adminSubjectView'; //done
+import AdminManagerView from './tabView/adminManagerView'; //done
+import AdminStudentView from './tabView/adminStudentView'; //done
+import AdminTeacherView from './tabView/adminTeacherView'; //done
+import AdminRepresentersView from './tabView/adminRepresentersView'; //done
+import AdminLearningProgressView from './tabView/adminLearningProgressView'; //done
+import LecturerStudentView from './tabView/lecturerStudentView'; //done
+import LecturerLearningProgressView from './tabView/lecturerLearningProgressView'; //done => adminLearningProgressPage
+import LecturerRatingView from './tabView/lecturerRatingView'; //TODO => errors
 import AdminAllChat from '../fwChat/adminAllChat';
 import AdminPersonalChat from '../fwChat/adminPersonalChat';
 import AdminFeedbackView from './tabView/adminFeedbackView';

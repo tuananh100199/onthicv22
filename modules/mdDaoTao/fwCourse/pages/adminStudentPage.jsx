@@ -16,20 +16,22 @@ class AdminStudentPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/student').parse(window.location.pathname);
-            const course = this.props.course ? this.props.course.item : null;
-            if (course) {
-                this.onSearch({});
-            } else if (params._id) {
-                this.props.getCourse(params._id, data => {
-                    if (data.error) {
-                        T.notify('Lấy khóa học bị lỗi!', 'danger');
-                        this.props.history.push('/user/course/' + params._id);
-                    } else {
-                        const waitSearch = () => (this.props.course && this.props.course.item) ?
-                            this.onSearch({}) : setTimeout(waitSearch, 1000);
-                        waitSearch();
-                    }
-                });
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (course) {
+                    this.onSearch({});
+                } else {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        } else {
+                            const waitSearch = () => (this.props.course && this.props.course.item) ?
+                                this.onSearch({}) : setTimeout(waitSearch, 1000);
+                            waitSearch();
+                        }
+                    });
+                }
             } else {
                 this.props.history.push('/user/course/');
             }

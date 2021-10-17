@@ -16,10 +16,11 @@ export default function courseReducer(state = {}, data) {
         }
 
         case CourseGetItem: {
-            return Object.assign({}, state, { item: Object.assign({}, state.item || {}, data.item) });
+            return Object.assign({}, state, { item: data.item });
         }
+
         case CourseGetLearningProgressByAdmin: {
-            return data;
+            return Object.assign({}, state, { students: data.students, subjects: data.subjects });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -359,7 +360,7 @@ export function getLearningProgress(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetLearningProgressByAdmin, data: data });
+                dispatch({ type: CourseGetLearningProgressByAdmin, students: data.students, subjects: data.subjects });
             }
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };

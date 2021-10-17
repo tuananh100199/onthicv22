@@ -21,13 +21,14 @@ module.exports = (app) => {
     app.get('/user/course/:_id', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/info', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/subject', app.permission.check('course:read'), app.templates.admin);
-    app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/manager', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/student', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/representer', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/rate-teacher', app.permission.check('course:read'), app.templates.admin);
     app.get('/user/course/:_id/your-students', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/learning', app.permission.check('course:read'), app.templates.admin);
+    app.get('/user/course/:_id/rate-subject', app.permission.check('course:read'), app.templates.admin);
 
     app.get('/user/hoc-vien/khoa-hoc/:_id', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/hoc-vien/khoa-hoc/thong-tin/:_id', app.permission.check('user:login'), app.templates.admin);
