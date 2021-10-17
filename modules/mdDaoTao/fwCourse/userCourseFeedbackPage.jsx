@@ -51,7 +51,7 @@ class UserCourseFeedback extends AdminPage {
                 </div>
                 {courseId && <FeedbackSection type={type} _refId={courseId} title={type == 'teacher' ? 'cố vấn học tập' : 'khóa học'} />}
             </>,
-            // onBack: () => this.props.history.goBack(),
+            onBack: () => this.props.history.goBack(),
         });
     }
 }

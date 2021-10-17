@@ -6,32 +6,32 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {};
         try {
-            if(condition.type=='teacher')
-            app.model.course.get(condition._courseId, (error, course) => {
-                if (error || !course) {
-                    res.send({ error: 'Invalid parameter!' });
-                } else {
-                    const _teacherIds = course.teacherGroups.map(item=>item.teacher && item.teacher._id);
-                    if (_teacherIds){
-                        condition._refId = { $in: _teacherIds };
-                        delete condition._courseId;
-                        app.model.rate.getPage(pageNumber, pageSize, condition, (error, page) => {
+            if (condition.type == 'teacher')
+                app.model.course.get(condition._courseId, (error, course) => {
+                    if (error || !course) {
+                        res.send({ error: 'Invalid parameter!' });
+                    } else {
+                        const _teacherIds = course.teacherGroups.map(item => item.teacher && item.teacher._id);
+                        if (_teacherIds) {
+                            condition._refId = { $in: _teacherIds };
+                            delete condition._courseId;
+                            app.model.rate.getPage(pageNumber, pageSize, condition, (error, page) => {
                                 new Promise((resolve, reject) => {
                                     if (error) {
                                         reject(error);
-                                    }else{
+                                    } else {
                                         let count = 0;
-                                        const list =[...page.list];
-                                        page.list=[];
+                                        const list = [...page.list];
+                                        page.list = [];
                                         list.forEach(item => {
-                                            app.model.user.get(item._refId,(error, user)=>{
+                                            app.model.user.get(item._refId, (error, user) => {
                                                 if (error) {
                                                     res.send({ error });
-                                                } else{
-                                                    item=app.clone(item, { _refId:user });
+                                                } else {
+                                                    item = app.clone(item, { _refId: user });
                                                     page.list.push(item);
                                                     count++;
-                                                    if(count==list.length){
+                                                    if (count == list.length) {
                                                         resolve(page);
                                                     }
                                                 }
@@ -41,26 +41,26 @@ module.exports = (app) => {
                                 }).then((page) => {
                                     res.send({ page });
                                 }).catch(error => res.send(error));
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
         } catch (error) {
             res.send({ error });
         }
     });
 
     app.put('/api/rate/student', app.permission.check('user:login'), (req, res) => {
-        const changes =req.body.changes;
-        app.model.rate.update(req.body._id,changes, (error, item) => res.send({ error, item }));
+        const changes = req.body.changes;
+        app.model.rate.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
     app.post('/api/rate/student', app.permission.check('user:login'), (req, res) => { //mobile
-        app.model.rate.create(app.clone(req.body.newData, { user:req.session.user._id }),
-         (error, item) => res.send({ error, item }));
+        app.model.rate.create(app.clone(req.body.newData, { user: req.session.user._id }),
+            (error, item) => res.send({ error, item }));
     });
     app.get('/api/rate/student/:type', app.permission.check('user:login'), (req, res) => { //mobile
-        const condition = { type: req.params.type, _refId: req.query._refId, user:req.session.user._id };
+        const condition = { type: req.params.type, _refId: req.query._refId, user: req.session.user._id };
         app.model.rate.get(condition, (error, item) => res.send({ error, item }));
     });
 

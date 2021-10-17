@@ -21,15 +21,39 @@ module.exports = (app) => {
         } else app.model.feedback.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/feedback/student', app.permission.check('user:login'), (req, res) => { //mobile
-        app.model.student.get({ user: req.session.user._id, course: req.body.newData._refId }, (error, student) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.feedback.create(app.clone(req.body.newData, { user: student.user._id }),
-                    (error, item) => res.send({ error, item }));
-            }
-        });
+    app.post('/api/feedback/student', app.permission.check('user:login'), (req, res) => {//mobile
+        const { type, _refId } = req.body.newData, user = req.session.user._id;
+        if (type == 'course') {
+            app.model.student.get({ user, course: _refId }, (error, student) => {
+                if (error) {
+                    res.send({ error });
+                } else {
+                    if (type == 'course')
+                        app.model.feedback.create(app.clone(req.body.newData, { user: student.user._id }),
+                            (error, item) => res.send({ error, item }));
+                    else if (type == 'teacher') {
+                        app.model.course.get(_refId, (error, course) => {
+                            if (error || !course) {
+                                res.send({ error: 'Invalid parameter!' });
+                            } else {
+                                res.send({ error: 'Invalid parameter!' });
+                            }
+                        });
+
+                    }
+                }
+            });
+        } 
+        // else if (type == 'teacher') {
+        //     app.model.course.get(_refId, (error, course) => {
+        //         if (error || !course) {
+        //             res.send({ error: 'Invalid parameter!' });
+        //         } else {
+
+        //         }
+        //     });
+
+        // }
     });
 
     app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
@@ -48,15 +72,17 @@ module.exports = (app) => {
             pageSize = parseInt(req.params.pageSize),
             condition = req.query.pageCondition || {};
         try {
-            app.model.student.get({ user: req.session.user._id, course: condition._refId }, (error, student) => {
-                if (error) {
-                    res.send({ error: 'Bạn không thể phản hồi khóa học không phải của bạn!' });
-                } else {
-                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user: student.user._id}), (error, page) => res.send({ error, page }));
-                }
-            });
+            if (condition.type == 'course') {
+                app.model.student.get({ user: req.session.user._id, course: condition._refId }, (error, student) => {
+                    if (error) {
+                        res.send({ error: 'Bạn không thể phản hồi khóa học không phải của bạn!' });
+                    } else {
+                        app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user: student.user._id }), (error, page) => res.send({ error, page }));
+                    }
+                });
+            }
         } catch (error) {
-            res.send({ error });
+            res.send({ error: error.message });
         }
     });
 
