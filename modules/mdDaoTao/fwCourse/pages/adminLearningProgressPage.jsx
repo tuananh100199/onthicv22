@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getLearningProgress } from '../redux';
+import { getCourse, getLearningProgress } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox } from 'view/component/AdminPage';
 
@@ -63,7 +63,7 @@ class AdminLearningProgressPage extends AdminPage {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/learning').parse(window.location.pathname);
             if (params && params._id) {
-                this.setState({courseId:  params._id});
+                this.setState({ courseId: params._id });
                 this.props.getLearningProgress(params._id, data => {
                     if (data.error) {
                         T.notify('Lấy tiến độ học tập học viên bị lỗi!', 'danger');
@@ -86,7 +86,7 @@ class AdminLearningProgressPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: 'auto' }}  nowrap='true'>Tên học viên</th>
+                    <th style={{ width: 'auto' }} nowrap='true'>Tên học viên</th>
                     <th style={{ width: 'auto' }}>CMND/CCCD</th>
                     {subjects && subjects.length && subjects.map((subject, i) => (<th key={i} style={{ width: 'auto', color: subject.monThucHanh ? 'aqua' : 'coral' }} nowrap='true'>{subject.title}</th>))}
                     <th style={{ width: 'auto' }} nowrap='true'>Điểm lý thuyết</th>
@@ -108,7 +108,7 @@ class AdminLearningProgressPage extends AdminPage {
                         />))}
                     <TableCell type='text' style={{ textAlign: 'center' }} content={item.diemLyThuyet ? item.diemLyThuyet : 0} />
                     <TableCell type='text' style={{ textAlign: 'center' }} content={students[index] && students[index].diemThucHanh ? students[index].diemThucHanh : 0} />
-                    <TableCell type='text' style={{ textAlign: 'center' }} content={students[index] ? (Number(Number((students[index].diemThucHanh ? students[index].diemThucHanh : 0)) + Number(item.diemLyThuyet ?  item.diemLyThuyet : 0)) / 2).toFixed(1) : 0} />
+                    <TableCell type='text' style={{ textAlign: 'center' }} content={students[index] ? (Number(Number((students[index].diemThucHanh ? students[index].diemThucHanh : 0)) + Number(item.diemLyThuyet ? item.diemLyThuyet : 0)) / 2).toFixed(1) : 0} />
                     <TableCell type='buttons' style={{ textAlign: 'center' }} content={item} onEdit={this.edit} />
 
                 </tr>),
@@ -130,5 +130,5 @@ class AdminLearningProgressPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getLearningProgress, updateStudent };
+const mapActionsToProps = { getCourse, getLearningProgress, updateStudent };
 export default connect(mapStateToProps, mapActionsToProps)(AdminLearningProgressPage);

@@ -44,10 +44,6 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
         },
         {
-            path: '/user/course/:_id/rate-teacher',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminTeacherRatePage') })
-        },
-        {
             path: '/user/course/:_id/manager',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminManagerPage') })
         },
@@ -63,6 +59,15 @@ export default {
             path: '/user/course/:_id/representer',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminRepresenterPage') })
         },
+        {
+            path: '/user/course/:_id/rate-teacher',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminTeacherRatePage') })
+        },
+        {
+            path: '/user/course/:_id/your-students',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerStudentPage') })
+        },
+
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })

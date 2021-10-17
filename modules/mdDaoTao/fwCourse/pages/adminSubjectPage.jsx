@@ -58,8 +58,10 @@ class AdminSubjectPage extends AdminPage {
     });
 
     render() {
+        const currentUser = this.props.system ? this.props.system.user : null,
+            permission = this.getUserPermission('course');
         const course = this.props.course ? this.props.course.item || {} : {};
-        const readOnly = this.props.readOnly,
+        const readOnly = (!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin,
             item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
         const table = renderTable({
             getDataSource: () => item && item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
