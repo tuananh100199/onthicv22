@@ -44,9 +44,18 @@ class EditCoursePage extends AdminPage {
                     <PageIconHeader text='Thông tin chung' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${_id}/info`} icon='fa-info' iconBackgroundColor='#17a2b8' text='Thông tin khóa học' />
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${_id}/subject`} icon='fa-briefcase' iconBackgroundColor='#1488db' text='Môn học' />
-                    <PageIcon to={`/user/course/${_id}/forum`} icon='fa-users' iconBackgroundColor='#8d6e63' text='Forum' />
+                    <PageIcon to={`/user/course/${_id}/forum`} icon='fa-address-book' iconBackgroundColor='#8d6e63' text='Forum' />
                     <PageIcon to={`/user/course/${_id}/learning`} icon='fa-line-chart' iconBackgroundColor='#0D0' text='Tiến độ học tập' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Quản trị viên khóa học' />
+
+                    <PageIconHeader text='Nhân sự' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Cố vấn học tập' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${_id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
+
+                    <PageIconHeader text='Học viên' />
+
+                    <PageIconHeader text='Chat' />
                 </div>
             ),
             backRoute: previousRoute,
