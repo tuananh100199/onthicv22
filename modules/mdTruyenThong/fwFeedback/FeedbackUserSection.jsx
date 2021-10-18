@@ -91,7 +91,7 @@ class FeedbackSection extends AdminPage {
                 </div>
             </div>
             <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                getPage={this.props.getFeedbackPageByStudent} />
+                getPage={this.props.getFeedbackPageByStudent} style={{ ...(this.props.type != 'system' && { left: 320 }) }} />
         </>;
     }
 }
