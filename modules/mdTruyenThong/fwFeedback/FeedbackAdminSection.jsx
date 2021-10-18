@@ -37,6 +37,7 @@ class FeedbackSection extends AdminPage {
     }
 
     render() {
+        // const permission = this.getUserPermission('feedback');
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.feedback && this.props.feedback.page ?
         this.props.feedback.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
@@ -46,16 +47,16 @@ class FeedbackSection extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '50%' }}>Tên</th>
                     <th style={{ width: '50%', textAlign: 'center' }} nowrap='true'>Thời gian</th>
+                    <th style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>Thao tác</th>
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
-                    <TableCell type='link' content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
-                    <TableCell type='text' content={T.dateToText(item.createdDate)}/>
+                    <TableCell content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
+                    <TableCell content={T.dateToText(item.createdDate)}/>
+                    <TableCell type='buttons' onEdit={`/user/feedback/system/${item._id}`} />
                 </tr>),
         });
-        // const feedback =this.props.feedback,
-        //      item=feedback.find((item)=>item._id==this.state._feedbackIdSelected);
         return <>
          {table}
                 {/* <div className='row'>

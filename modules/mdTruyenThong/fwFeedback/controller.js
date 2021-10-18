@@ -21,15 +21,31 @@ module.exports = (app) => {
         } else app.model.feedback.update(req.body._id, changes, (error, item) => res.send({ error, item }));
     });
 
-    app.post('/api/feedback/student', app.permission.check('user:login'), (req, res) => { //mobile
-        app.model.student.get({ user: req.session.user._id, course: req.body.newData._refId }, (error, student) => {
-            if (error) {
-                res.send({ error });
-            } else {
-                app.model.feedback.create(app.clone(req.body.newData, { user: student.user._id }),
-                    (error, item) => res.send({ error, item }));
-            }
-        });
+    app.post('/api/feedback/student', app.permission.check('user:login'), (req, res) => {//mobile
+        const { type, _refId } = req.body.newData, user = req.session.user._id;
+        if (type !== 'system') {
+            app.model.student.get({ user, course: _refId }, (error, student) => {
+                if (error || !student) {
+                    res.send({ error: 'Bạn không thể phản hồi khóa học không phải của bạn!' });
+                } else {
+                    if (type == 'course')
+                        app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
+                    else if (type == 'teacher') {
+                        app.model.course.get(_refId, (error, course) => {
+                            if (error || !course) {
+                                res.send({ error: 'Invalid parameter!' });
+                            } else {
+                                const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
+                                    _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
+                                req.body.newData._refId = _teacherId;
+                                app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
+                            }
+                        });
+
+                    }
+                }
+            });
+        } else app.model.feedback.create(app.clone(req.body.newData, { user }), (error, item) => res.send({ error, item }));
     });
 
     app.get('/api/feedback/page/:pageNumber/:pageSize', app.permission.check('feedback:read'), (req, res) => {
@@ -46,17 +62,35 @@ module.exports = (app) => {
     app.get('/api/feedback/student/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => { //mobile
         let pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            condition = req.query.pageCondition || {};
+            condition = req.query.pageCondition || {},
+            { type, _refId } = condition,
+            user = req.session.user._id;
         try {
-            app.model.student.get({ user: req.session.user._id, course: condition._refId }, (error, student) => {
-                if (error) {
-                    res.send({ error: 'Bạn không thể phản hồi khóa học không phải của bạn!' });
-                } else {
-                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user: student.user._id}), (error, page) => res.send({ error, page }));
-                }
-            });
+            if (type !== 'system') {
+                app.model.student.get({ user, course: _refId }, (error, student) => {
+                    if (error || !student) {
+                        res.send({ error: 'Bạn không thể xem phản hồi khóa học không phải của bạn!' });
+                    } else {
+                        if (type == 'course')
+                        app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user}), (error, page) => res.send({ error, page }));
+                        else if (type == 'teacher') {
+                            app.model.course.get(_refId, (error, course) => {
+                                if (error || !course) {
+                                    res.send({ error: 'Invalid parameter!' });
+                                } else {
+                                    const teacherGroups = course.teacherGroups.find(({ student }) => student.find(({ _id }) => _id == user) != null),
+                                        _teacherId = teacherGroups && teacherGroups.teacher && teacherGroups.teacher._id;
+                                    condition._refId = _teacherId;
+                                    app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user}), (error, page) => res.send({ error, page }));
+                                }
+                            });
+    
+                        }
+                    }
+                });
+            } else app.model.feedback.getPage(pageNumber, pageSize, app.clone(condition, { user}), (error, page) => res.send({ error, page }));
         } catch (error) {
-            res.send({ error });
+            res.send({ error: error.message });
         }
     });
 

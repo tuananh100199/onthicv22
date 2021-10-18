@@ -55,7 +55,8 @@ export function updateFeedback(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                dispatch((getFeedbackAll(data.item.type, data.item._refId)));
+                const { type, _refId } = changes;
+                dispatch(getFeedbackPage(1, 50, { type, _refId }));
                 done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Cập nhật phản hồi bị lỗi!', 'danger'));
@@ -117,7 +118,8 @@ export function createFeedback(newData, done) {
                 T.notify('Tạo phản hồi bị lỗi!', 'danger');
                 console.error('POST: ' + url + '.', data.error);
             } else {
-                dispatch(getFeedbackAllByUser(newData.type, newData._refId));
+                const { type, _refId } = newData;
+                dispatch(getFeedbackPageByStudent(1, 50, { type, _refId }));
                 done && done(data);
             }
         }, error => console.error(error) || T.notify('Tạo phản hồi bị lỗi!', 'danger'));
