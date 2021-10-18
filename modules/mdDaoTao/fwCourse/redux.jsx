@@ -395,8 +395,10 @@ export function exportTeacherAndStudentToExcel(_courseId) {
 }
 
 // Ajax Selections ----------------------------------------------------------------------------------------------------
-export const ajaxSelectCourse = T.createAjaxAdapter(
-    '/api/course/page/1/20',
-    response => response && response.page && response.page.list ?
-        response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [],
-);
+export const ajaxSelectCourse = {
+    ajax: false,
+    url: '/api/course/page/1/20',
+    data: {},
+    processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(course => ({ id: course._id, text: course.name + (course.courseType ? ` (${course.courseType.title})` : '') })) : [] }),
+    fetchOne: (_id, done) => (getCourse(_id, ({ item }) => done && done({ id: item._id, text: item.name + (item.courseType ? ` (${item.courseType.title})` : '') })))()
+};
