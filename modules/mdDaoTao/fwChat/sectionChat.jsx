@@ -123,15 +123,6 @@ class SectionChat extends AdminPage {
                     this.props.readAllChats(_selectedUserId);
                     this.scrollToBottom();
                 }
-                else {
-                    // if (listUser) {
-                    //     const listUserNew = listUser && listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
-                    //     listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
-                    //     this.setState({
-                    //         listUser: listUserNew
-                    //     });
-                    // }
-                }
             }
         }
     }
