@@ -12,6 +12,7 @@ class TimeTableModal extends AdminModal {
         const { _id, student, dateNumber, date, startHour, numOfHours, truant, licensePlates, content, note } = item || { date: new Date(), startHour: 8, numOfHours: 2, truant: false, licensePlates: '', content: '', note: '' },
             endHour = startHour + numOfHours;
         this.itemStudent.value(student ? student._id : null);
+        this.itemCourse.value(student && student.course ? student.course._id : null);
         this.itemDate.value(date);
         this.itemStartHour.value(startHour);
         this.itemNumOfHours.value(numOfHours);
