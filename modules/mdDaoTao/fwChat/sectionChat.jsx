@@ -19,12 +19,13 @@ class SectionChat extends AdminPage {
         });
         _selectedUserId ? T.socket.emit('chat:join', { _userId: _selectedUserId }) : T.socket.emit('chat:joinCourseRoom', { courseId });
         T.socket.on('chat:send', this.onReceiveMessage);
+        this.scrollToBottom();
     }
 
     componentDidUpdate() {
         const listUser = this.state;
         !this.state._selectedUserId && listUser && listUser.length && this.selectUser(listUser[0]);
-        this.scrollToChat;
+        this.scrollToBottom();
     }
 
     componentWillUnmount() {
@@ -46,6 +47,7 @@ class SectionChat extends AdminPage {
                 this.scrollToChat(chatLength - 1);
             });
         } else {
+            console.log('object');
             const chats = this.state.oldMessageAll,
                 chatLength = chats ? chats.length : 0,
                 sent = chats && chats.length ? chats[0].sent : null;
@@ -106,6 +108,7 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
+        const listUser = this.props.listUser;
         const { _selectedUserId, courseId } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
@@ -122,13 +125,15 @@ class SectionChat extends AdminPage {
                     this.props.readAllChats(_selectedUserId);
                     this.scrollToBottom();
                 }
-                // else {
-                //     const listUserNew = listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
-                //     listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
-                //     this.setState({
-                //         listUser: listUserNew
-                //     });
-                // }
+                else {
+                    if (listUser) {
+                        const listUserNew = listUser && listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
+                        listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
+                        this.setState({
+                            listUser: listUserNew
+                        });
+                    }
+                }
             }
         }
     }
@@ -154,7 +159,7 @@ class SectionChat extends AdminPage {
                     <div style={{ marginBottom: '5px' }} className={(message.sender._id == this.state.user._id) ? 'message me' : 'message'}>
                         {(isNewUser || isNewSender) && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
                         <div>
-                            {(isNewUser || isNewSender) && <div className={'font-weight-bold mb-0 ' + (isNewSender ? 'text-right' : '') + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
+                            {(isNewUser || isNewSender) && <div className={'font-weight-bold mb-0 ' + (isNewSender ? 'text-right ' : '') + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
                             <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px', marginRight: isNewSender ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
                         </div>
                     </div>

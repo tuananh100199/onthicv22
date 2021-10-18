@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse } from '../redux';
-// import AdminPersonalChat from 'modules/mdDaoTao/fwChat/adminPersonalChat'; //TODO: Lỗi Vinh ơi
+import AdminPersonalChat from 'modules/mdDaoTao/fwChat/adminPersonalChat';
 import { AdminPage } from 'view/component/AdminPage';
 
 export class AdminChatPersonalPage extends AdminPage {
@@ -11,7 +11,7 @@ export class AdminChatPersonalPage extends AdminPage {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/chat').parse(window.location.pathname);
             if (params && params._id) {
-                alert(params._id);
+                // alert(params._id);
                 const course = this.props.course ? this.props.course.item : null;
                 if (!course) {
                     this.props.getCourse(params._id, data => {
@@ -37,7 +37,7 @@ export class AdminChatPersonalPage extends AdminPage {
             content: (
                 <div className='tile'>
                     <div className='tile-body'>
-                        {/* {item && item._id ? <AdminPersonalChat courseId={item._id} /> : null} */}
+                        {item && item._id ? <AdminPersonalChat courseId={item._id} /> : null}
                     </div>
                 </div>),
             backRoute,

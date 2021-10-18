@@ -3,6 +3,7 @@ import T from 'view/js/common';
 // Reducer ------------------------------------------------------------------------------------------------------------
 const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
+const CourseGetUserChat = 'CourseGetUserChat';
 const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
 const CourseGetLearningProgressByAdmin = 'CourseGetLearningProgressByAdmin';
@@ -17,6 +18,10 @@ export default function courseReducer(state = {}, data) {
 
         case CourseGetItem: {
             return Object.assign({}, state, { item: data.item });
+        }
+
+        case CourseGetUserChat: {
+            return Object.assign({}, state, { user: data.user });
         }
 
         case CourseGetLearningProgressByAdmin: {
@@ -355,7 +360,6 @@ export function getLearningProgress(_id, done) {
         const url = '/api/course/learning-progress';
         T.get(url, { _id }, data => {
             if (data.error) {
-                console.log('data.error', data.error);
                 T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
@@ -376,7 +380,7 @@ export function getChatByAdmin(_id, done) {
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
+                dispatch({ type: CourseGetUserChat, user: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy các liên hệ bị lỗi!', 'danger'));
     };
