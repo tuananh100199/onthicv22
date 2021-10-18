@@ -4,13 +4,12 @@ import { getStudentByLecturer } from 'modules/mdDaoTao/fwCourse/redux';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 
 class LecturerView extends AdminPage {
-
     componentDidMount() {
         const route = T.routeMatcher('/user/course/:courseId'),
             courseId = route.parse(window.location.pathname).courseId;
 
         if (courseId) {
-            this.setState({ courseId: courseId });
+            this.setState({ courseId });
 
             T.ready('/user/course/' + courseId, () => {
                 this.props.getStudentByLecturer(this.props.courseId, data => {
@@ -52,4 +51,3 @@ class LecturerView extends AdminPage {
 const mapStateToProps = state => ({ system: state.system });
 const mapActionsToProps = { getStudentByLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerView);
-
