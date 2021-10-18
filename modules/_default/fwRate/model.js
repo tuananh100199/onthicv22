@@ -20,17 +20,17 @@ module.exports = app => {
 
                 const skipNumber = (result.pageNumber > 0 ? result.pageNumber - 1 : 0) * result.pageSize;
                 model.find(condition).populate('user', 'lastname firstname')
-                .sort({ value: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
-                    result.list = list;
-                    done(error, result);
-                });
+                    .sort({ value: -1 }).skip(skipNumber).limit(result.pageSize).exec((error, list) => {
+                        result.list = list;
+                        done(error, result);
+                    });
             }
         }),
 
         get: (condition, done) => typeof condition == 'string' ?
             model.findById(condition, done) : model.findOne(condition, done),
 
-        getAll: (condition, done) => model.find(condition).sort({ value: -1 }).exec(done),
+        getAll: (condition, done) => model.find(condition).populate('user', 'firstname lastname').sort({ value: -1 }).exec(done),
 
         // changes = { $set, $unset, $push, $pull }
         update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),

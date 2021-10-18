@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgress } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
+import { getRateByLecturer } from 'modules/_default/fwRate/redux';
 import { AdminPage, FormSelect, renderTable, TableCell } from 'view/component/AdminPage';
 
 class LecturerRatingPage extends AdminPage {
@@ -21,6 +22,7 @@ class LecturerRatingPage extends AdminPage {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
+                            this.setState({ courseId: params._id });
                             this.getLearningProgress(params._id);
                             this.loadSubject(data.item && data.item.subjects && data.item.subjects[0]._id);
                         }
@@ -43,6 +45,8 @@ class LecturerRatingPage extends AdminPage {
 
     loadSubject = (subjectId) => {
         this.props.getSubject(subjectId, data => {
+            let listLessonId = data.item.lessons.length && data.item.lessons.map(lesson => lesson._id);
+            this.props.getRateByLecturer(this.state.courseId, listLessonId);
             this.setState({
                 currentSubject: data.item,
                 currentLessons: data.item && data.item.lessons
@@ -55,12 +59,11 @@ class LecturerRatingPage extends AdminPage {
         const subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             course = this.props.course && this.props.course.item ? this.props.course.item : {},
             lessons = this.state.currentLessons ? this.state.currentLessons : [],
-            currentSubject = this.state.currentSubject ? this.state.currentSubject : subjects[0],
             listSubjects = subjects.map((subject) =>
                 ({ id: subject._id, text: subject.title })
             );
-        // this.itemSubject && !this.itemSubject.value() && !this.itemSubject.value(listSubjects && listSubjects[0]);
-        const students = this.props.course && this.props.course && this.props.course.students ? this.props.course.students : [];
+        const students = this.props.course && this.props.course.students ? this.props.course.students : [],
+            rate = this.props.rate;
         const select = <FormSelect data={listSubjects} label='Môn học' onChange={data => this.loadSubject(data.id)} style={{ margin: 0, width: '200px !important' }} />;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
@@ -75,7 +78,7 @@ class LecturerRatingPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='text' content={(item.tienDoHocTap && item.tienDoHocTap[currentSubject._id] && item.tienDoHocTap[currentSubject._id][lesson._id] && item.tienDoHocTap[currentSubject._id][lesson._id].rating) ? item.tienDoHocTap[currentSubject._id][lesson._id].rating : ''} />)) : null}
+                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='text' content={rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ? rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value : null} />)) : null}
                 </tr>),
         });
         const backRoute = `/user/course/${course._id}`;
@@ -98,6 +101,6 @@ class LecturerRatingPage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getCourse, getLearningProgress, getSubject };
+const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
+const mapActionsToProps = { getCourse, getLearningProgress, getSubject, getRateByLecturer };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerRatingPage);

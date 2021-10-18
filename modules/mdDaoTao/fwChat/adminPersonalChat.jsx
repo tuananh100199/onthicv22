@@ -32,7 +32,7 @@ class AdminPersonalChat extends AdminPage {
     render() {
         const { isLoading, oldMessage, courseId, listStudent, _selectedUserId } = this.state;
         return (
-            !isLoading && <SectionChat oldMessagePersonal={oldMessage} courseId={courseId} listUser={listStudent} _selectedUserId={_selectedUserId}></SectionChat>
+            !isLoading && <SectionChat type={'teacher'} oldMessagePersonal={oldMessage} courseId={courseId} listUser={listStudent} _selectedUserId={_selectedUserId}></SectionChat>
         );
     }
 }

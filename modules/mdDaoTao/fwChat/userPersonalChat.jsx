@@ -17,11 +17,11 @@ class UserPersonalChat extends AdminPage {
         if (courseId) {
             T.ready('/user/hoc-vien/khoa-hoc/' + courseId, () => {
                 this.props.getAdminChatByStudent(courseId, data => {
-                    this.props.getUserChats(data.item[0]._id, null, chat => {
+                    this.props.getUserChats(data.item && data.item._id, null, chat => {
                         this.setState({
                             oldMessage: chat.chats.sort(() => -1),
-                            listAdmin: data.item,
-                            _selectedUserId: data.item && data.item[0]._id,
+                            listAdmin: [data.item],
+                            _selectedUserId: data.item && data.item._id,
                             isLoading: false
                         });
                     });
@@ -36,7 +36,7 @@ class UserPersonalChat extends AdminPage {
     render() {
         const { isLoading, oldMessage, courseId, listAdmin, _selectedUserId } = this.state;
         return (
-            !isLoading && <SectionChat oldMessagePersonal={oldMessage} courseId={courseId} listUser={listAdmin} _selectedUserId={_selectedUserId}></SectionChat>
+            !isLoading && <SectionChat type={'student'} oldMessagePersonal={oldMessage} courseId={courseId} listUser={listAdmin} _selectedUserId={_selectedUserId}></SectionChat>
         );
     }
 }

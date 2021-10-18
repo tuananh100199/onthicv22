@@ -64,6 +64,44 @@ module.exports = (app) => {
         app.model.rate.get(condition, (error, item) => res.send({ error, item }));
     });
 
+    app.get('/api/rate/lecturer', app.permission.check('user:login'), (req, res) => {
+        const sessionUser = req.session.user,
+            listRefId = req.query.listRefId;
+        const ObjectId = require('mongodb').ObjectID;
+        const listStudentId = [];
+        if (sessionUser.isCourseAdmin) {
+            app.model.student.getAll({ course: req.query.courseId }, (error, item) => {
+                if (error) {
+                    res.send({ error });
+                } else {
+                    item.forEach(student => listStudentId.push(student.user._id));
+                    const objId = listStudentId.map(id => ObjectId(id));
+                    const condition = { type: 'lesson', _refId: { $in: listRefId }, user: { $in: objId } };
+                    app.model.rate.getAll(condition, (error, item) => {
+                        res.send({ error, item });
+                    });
+                }
+            });
+        } else {
+            app.model.course.get(req.query.courseId, (error, item) => {
+                if (error || !item) {
+                    res.send({ error });
+                } else {
+                    const listStudent = item.teacherGroups.filter(teacherGroup => teacherGroup.teacher && teacherGroup.teacher._id == sessionUser._id);
+                    listStudent.length && listStudent[0].student.map(student => listStudentId.push(student.user._id));
+                    const objId = listStudentId.map(id => ObjectId(id));
+                    const condition = {
+                        type: 'lesson', _refId: { $in: listRefId }, user: { $in: objId }
+                    };
+                    app.model.rate.getAll(condition, (error, item) => {
+                        res.send({ error, item });
+                    });
+                }
+            });
+        }
+
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'rate', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'rate:read');

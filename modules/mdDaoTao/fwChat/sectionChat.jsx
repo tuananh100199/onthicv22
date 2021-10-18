@@ -6,7 +6,7 @@ import './chat.scss';
 import inView from 'in-view';
 
 class SectionChat extends AdminPage {
-    state = { clientId: null, oldMessageAll: [], oldMessagePersonal: [] };
+    state = { clientId: null, oldMessageAll: [], oldMessagePersonal: [], isLastedChat: false };
     componentDidMount() {
         const { courseId, listUser, _selectedUserId } = this.props,
             user = this.props.system.user;
@@ -47,7 +47,6 @@ class SectionChat extends AdminPage {
                 this.scrollToChat(chatLength - 1);
             });
         } else {
-            console.log('object');
             const chats = this.state.oldMessageAll,
                 chatLength = chats ? chats.length : 0,
                 sent = chats && chats.length ? chats[0].sent : null;
@@ -62,7 +61,7 @@ class SectionChat extends AdminPage {
         }
     });
 
-    scrollToChat = (index = 19, attemptNumber = 5) => {
+    scrollToChat = (index = 0, attemptNumber = 5) => {
         const userChats = this.state.oldMessage ? this.state.oldMessage : [],
             chat = userChats && userChats.length > index && userChats[index] ? document.getElementById(`chat${userChats[index]._id}`) : null;
         if (chat) {
@@ -75,7 +74,6 @@ class SectionChat extends AdminPage {
     selectUser = (student) => {
         const studentId = student.user ? student.user._id : student._id;
         if (this.state._selectedUserId != studentId && this.props.system && this.props.system.user) {
-            // this.selectedUser = student.user;
             this.props.getUserChats(studentId, null, data => {
                 this.setState({
                     oldMessagePersonal: data.chats.sort(() => -1),
@@ -108,7 +106,7 @@ class SectionChat extends AdminPage {
     onReceiveMessage = (data) => {
         const user = this.props.system ? this.props.system.user : null;
         const chat = data ? data.chat : null;
-        const listUser = this.props.listUser;
+        // const listUser = this.props.listUser;
         const { _selectedUserId, courseId } = this.state;
         if (user && chat) {
             this.props.addChat(user._id == chat.sender._id, data.chat);
@@ -126,13 +124,13 @@ class SectionChat extends AdminPage {
                     this.scrollToBottom();
                 }
                 else {
-                    if (listUser) {
-                        const listUserNew = listUser && listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
-                        listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
-                        this.setState({
-                            listUser: listUserNew
-                        });
-                    }
+                    // if (listUser) {
+                    //     const listUserNew = listUser && listUser.filter(user => (user.user ? user.user._id : user._id) != chat.sender._id);
+                    //     listUserNew.unshift(this.state.listUser.find(user => user.user ? user.user._id : user._id == chat.sender._id));
+                    //     this.setState({
+                    //         listUser: listUserNew
+                    //     });
+                    // }
                 }
             }
         }
@@ -146,8 +144,8 @@ class SectionChat extends AdminPage {
             const prev_msg = element[index - 1],
                 isNow = (prev_msg && (new Date(prev_msg.sent).getTime() + 300000 >= new Date(message.sent).getTime())),
                 isNewDay = !(prev_msg && T.dateToText(prev_msg.sent, 'dd/mm/yyyy') == T.dateToText(new Date(), 'dd/mm/yyyy')),
-                isNewUser = (!isNow || (prev_msg && prev_msg.sender._id != message.sender._id)) && message.sender._id != this.state.user._id,
-                isNewSender = (!isNow || isNewDay) && (message.sender._id == this.state.user._id),
+                isNewUser = (!isNow || (prev_msg && prev_msg.sender._id != message.sender._id)),
+                isUserMessage = (message.sender._id == this.state.user._id),
                 newMessage = message.message.split(' ').map((part, index) =>
                     urlRegex.test(part) ? <a key={index} style={{ color: message.sender._id != this.state.user._id ? 'black' : 'white' }} href={part} target='_blank' rel='noreferrer' ><u>{part}</u></a> : part + ' '
                 );
@@ -157,10 +155,10 @@ class SectionChat extends AdminPage {
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'dd/mm HH:MM')}</p> :
                         !isNow && <p className='text-secondary text-center'>{T.dateToText(message.sent, 'HH:MM')}</p>}
                     <div style={{ marginBottom: '5px' }} className={(message.sender._id == this.state.user._id) ? 'message me' : 'message'}>
-                        {(isNewUser || isNewSender) && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
+                        {(isNewUser) && <img style={{ width: '30px' }} src={message.sender.image} alt={message.lastname} />}
                         <div>
-                            {(isNewUser || isNewSender) && <div className={'font-weight-bold mb-0 ' + (isNewSender ? 'text-right ' : '') + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
-                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px', marginRight: isNewSender ? '0px' : '45px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
+                            {(isNewUser) && <div className={'font-weight-bold mb-0 ' + (isUserMessage ? 'text-right ' : '') + (message.sender.isCourseAdmin ? 'text-danger' : (message.sender.isLecturer ? 'text-primary' : ''))}>{message.sender.firstname + ' ' + message.sender.lastname + ' '}</div>}
+                            <p className='info' style={{ position: 'static', marginLeft: isNewUser ? '0px' : '45px', marginRight: (isUserMessage && !isNewUser) ? '45px' : '0px' }} data-toggle='tooltip' title={T.dateToText(message.sent, isNewDay ? 'dd/mm HH:MM' : 'HH:MM')}>{newMessage}</p>
                         </div>
                     </div>
                 </div>
@@ -185,8 +183,12 @@ class SectionChat extends AdminPage {
 
         return (
             isChatAll ?
-                (<div className='messanger' style={{ minHeight: '300px' }}>
-                    <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} >
+                (<div className='messanger' style={{ height: '59vh' }}>
+                    <div className='messages' style={{ overflowY: 'scroll', maxHeight: 'none' }} >
+                        {isLastedChat ? null :
+                            <div style={{ width: '100%', height: 48, textAlign: 'center' }}>
+                                <img alt='Loading' className='listViewLoading' src='/img/loading.gif' style={{ marginLeft: 'auto', marginRight: 'auto', height: 48 }} onLoad={this.loadMoreChats} />
+                            </div>}
                         {renderMess}
                         <div ref={e => this.scrollDown = e}></div>
                     </div>
@@ -199,17 +201,17 @@ class SectionChat extends AdminPage {
                 </div>) :
                 (<div className='messanger' >
                     <div className='inbox_msg row' >
-                        <div className='inbox_people col-md-3'>
+                        <div className='inbox_people col-sm-3'>
                             <div className='headind_srch'>
                                 <div className='recent_heading'>
-                                    <h4>Cố vấn học tập</h4>
+                                    <h4>{this.props.type && this.props.type == 'student' ? 'Cố vấn học tập' : 'Học viên'}</h4>
                                 </div>
                             </div>
                             <div className='inbox_chat'>
                                 {inboxChat}
                             </div>
                         </div>
-                        <div className='col-md-9' >
+                        <div className='col-sm-9' >
                             <div style={{ borderBottom: '1px solid black', height: '35px', display: 'flex', alignItems: 'flex-start', paddingTop: '5px' }}>
                                 <img style={{ height: '25px', width: '25px' }} src={userImage} alt={userName} />
                                 <h6 style={{ marginBottom: '0px' }}>&nbsp;{userName}</h6>
