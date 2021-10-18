@@ -40,10 +40,6 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminSubjectPage') })
         },
         {
-            path: '/user/course/:_id/learning',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
-        },
-        {
             path: '/user/course/:_id/manager',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminManagerPage') })
         },
@@ -64,9 +60,30 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminTeacherRatePage') })
         },
         {
+            path: '/user/course/:_id/feedback',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminFeedbackPage') })
+        },
+        {
             path: '/user/course/:_id/your-students',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerStudentPage') })
         },
+        {
+            path: '/user/course/:_id/learning',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminLearningProgressPage') })
+        },
+        {
+            path: '/user/course/:_id/rate-subject',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerRatingPage') })
+        },
+        {
+            path: '/user/course/:_id/chat-all',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatAllPage') })
+        },
+        {
+            path: '/user/course/:_id/chat',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatPersonalPage') })
+        },
+
 
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',

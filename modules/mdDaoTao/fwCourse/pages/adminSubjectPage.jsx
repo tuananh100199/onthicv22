@@ -31,18 +31,18 @@ class AdminSubjectPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/info').parse(window.location.pathname);
-            const course = this.props.course ? this.props.course.item : null;
-            if (!course) {
-                if (params && params._id) {
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         }
                     });
-                } else {
-                    this.props.history.push('/user/course/');
                 }
+            } else {
+                this.props.history.push('/user/course/');
             }
         });
     }

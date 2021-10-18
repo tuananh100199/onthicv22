@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLearingProgressByLecturer } from '../redux'; // TODO Vinh coi lại hàm này
-import { getSubject } from '../../fwSubject/redux';
+import { getLearingProgressByLecturer } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
+import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, FormSelect, renderTable, TableCell } from 'view/component/AdminPage';
 
-
-class AdminStudentView extends AdminPage {
+class LecturerRatingPage extends AdminPage {
     state = {};
     componentDidMount() {
         const subjects = this.props.course && this.props.course.item && this.props.course.item.subjects ? this.props.course.item.subjects : [];
@@ -59,6 +58,7 @@ class AdminStudentView extends AdminPage {
                     {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='text' content={(item.tienDoHocTap && item.tienDoHocTap[currentSubject._id] && item.tienDoHocTap[currentSubject._id][lesson._id] && item.tienDoHocTap[currentSubject._id][lesson._id].rating) ? item.tienDoHocTap[currentSubject._id][lesson._id].rating : ''} />)) : null}
                 </tr>),
         });
+
         return <div className='tile-body'>
             <div className='pb-3 w-25'>
                 {select}
@@ -70,4 +70,4 @@ class AdminStudentView extends AdminPage {
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getLearingProgressByLecturer, getSubject };
-export default connect(mapStateToProps, mapActionsToProps)(AdminStudentView);
+export default connect(mapStateToProps, mapActionsToProps)(LecturerRatingPage);

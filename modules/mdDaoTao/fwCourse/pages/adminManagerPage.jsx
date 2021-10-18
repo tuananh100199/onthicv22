@@ -10,18 +10,18 @@ class AdminManagerPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/manager').parse(window.location.pathname);
-            const course = this.props.course ? this.props.course.item : null;
-            if (!course) {
-                if (params._id) {
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         }
                     });
-                } else {
-                    this.props.history.push('/user/course/');
                 }
+            } else {
+                this.props.history.push('/user/course/');
             }
         });
     }
@@ -49,6 +49,7 @@ class AdminManagerPage extends AdminPage {
     render() {
         const permission = this.getUserPermission('course'),
             item = this.props.course && this.props.course.item ? this.props.course.item : { admins: [] };
+
         const backRoute = `/user/course/${item._id}`;
         return this.renderPage({
             icon: 'fa fa-user-secret',

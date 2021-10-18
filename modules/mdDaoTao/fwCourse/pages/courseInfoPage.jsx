@@ -32,20 +32,22 @@ class EditCoursePage extends AdminPage {
 
         T.ready('/user/course', () => {
             const params = T.routeMatcher('/user/course/:_id/info').parse(window.location.pathname);
-            const course = this.props.course ? this.props.course.item : null;
-            if (course) {
-                setData(course);
-            } else if (params._id) {
-                this.props.getCourse(params._id, data => {
-                    if (data.error) {
-                        T.notify('Lấy khóa học bị lỗi!', 'danger');
-                        this.props.history.push('/user/course/' + params._id);
-                    } else if (data.item) {
-                        setData(data.item);
-                    } else {
-                        this.props.history.push('/user/course/' + params._id);
-                    }
-                });
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (course) {
+                    setData(course);
+                } else if (params._id) {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        } else if (data.item) {
+                            setData(data.item);
+                        } else {
+                            this.props.history.push('/user/course/' + params._id);
+                        }
+                    });
+                }
             } else {
                 this.props.history.push('/user/course/');
             }

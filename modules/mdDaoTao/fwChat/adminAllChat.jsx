@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getAllChats } from './redux';
-// import { debounce } from 'lodash';
 import { AdminPage } from 'view/component/AdminPage';
 import './chat.scss';
 import SectionChat from './sectionChat';

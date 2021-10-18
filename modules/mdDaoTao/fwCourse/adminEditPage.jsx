@@ -30,6 +30,8 @@ class EditCoursePage extends AdminPage {
         const currentUser = this.props.system ? this.props.system.user : null,
             { isLecturer, isCourseAdmin } = currentUser,
             item = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const permission = this.getUserPermission('course'),
+            permissionFeedback = this.getUserPermission('feedback');
 
         return this.renderPage({
             icon: 'fa fa-cubes',
@@ -44,19 +46,24 @@ class EditCoursePage extends AdminPage {
 
                     {isCourseAdmin ? <PageIconHeader text='Nhân sự' /> : null}
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/manager`} icon='fa-user-secret' iconBackgroundColor='#D00' text='Gán Quản trị viên khóa học' />
-                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/student`} icon='fa-users' iconBackgroundColor='#8A0' text='Gán Học viên' />
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/student`} icon='fa-user-plus' iconBackgroundColor='#8A0' text='Gán Học viên' />
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin && currentUser && currentUser.division && !currentUser.division.isOutside} to={`/user/course/${item._id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
 
                     {isCourseAdmin || !isLecturer ? <PageIconHeader text='Học viên' /> : null}
                     <PageIcon visible={isCourseAdmin || !isLecturer} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Cố vấn học tập' />
+                    <PageIcon visible={isCourseAdmin && permission.write && permissionFeedback.write} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
 
                     <PageIconHeader text='Đào tạo' />
                     {/* <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' /> */}
                     <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/learning`} icon='fa-line-chart' iconBackgroundColor='#69f0ae' text='Tiến độ học tập' />
-                    <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' />
+                    {/* <PageIcon visible={isLecturer || isCourseAdmin} to={`/user/course/${item._id}/rate-subject`} icon='fa-folder-open' iconBackgroundColor='#900' text='Đánh giá bài học' /> */}
 
-                    <PageIconHeader text='Chat' />
+                    {item.chatActive && (isLecturer || isCourseAdmin) ? <>
+                        <PageIconHeader text='Chat' />
+                        <PageIcon to={`/user/course/${item._id}/chat-all`} icon='fa-weixin' iconBackgroundColor='#29b6f6' text='Phòng chat chung' />
+                        <PageIcon to={`/user/course/${item._id}/chat`} icon='fa-comments-o' iconBackgroundColor='#9ccc65' text='Phòng chat riêng' />
+                    </> : null}
                 </div>
             ),
             backRoute,
