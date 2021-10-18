@@ -4,8 +4,8 @@ module.exports = (app, http, appConfig) => {
     app.io.adapter(redisAdapter(appConfig.redisDB));
 
     const socketListeners = {};
-    app.io.onSocketListener = (name, listener) => socketListeners[name] = listener;
-    // app.io.onSocketListener('someListener', (socket, data) => { });
+    app.io.addSocketListener = (name, listener) => socketListeners[name] = listener;
+    // app.io.addSocketListener('someListener', (socket, data) => { });
 
     app.io.getSessionUser = (socket) => {
         const sessionUser = socket.request.session ? socket.request.session.user : null;
@@ -19,17 +19,32 @@ module.exports = (app, http, appConfig) => {
     };
 
     app.io.on('connection', socket => {
-        app.isDebug && console.log(`Socket ID ${socket.id} connected!`);
-        app.isDebug && socket.on('disconnect', () => console.log(`Socket ID ${socket.id} disconnected!`));
+        app.isDebug && console.log(` - Socket ID ${socket.id} connected!`);
+
+        socket.on('disconnect', () => {
+            const sessionUser = app.io.getSessionUser(socket);
+            if (sessionUser) app.model.chat.leave(sessionUser._id, socket.id);
+        });
+
+        const joinSystem = () => {
+            const sessionUser = app.io.getSessionUser(socket);
+            if (sessionUser) app.model.chat.join(sessionUser._id, socket.id);
+        };
+        joinSystem();
+        socket.on('system:join', joinSystem);
 
         Object.keys(socketListeners).forEach(name => {
-            const listener = socketListeners[name];
-            socket.on(name, data => listener(socket, data));
+            try {
+                const listener = socketListeners[name];
+                socket.on(name, data => listener(socket, data));
+            } catch (error) {
+                console.error(` - Socket ID ${socket.id} listens ${name}:`, error);
+            }
         });
     });
 
     app.isDebug && app.fs.watch('public/js', () => {
         console.log('Debug: Reload client!');
-        app.io.emit('debug', 'reload');
+        app.io.emit('system:debug', 'reload');
     });
 };

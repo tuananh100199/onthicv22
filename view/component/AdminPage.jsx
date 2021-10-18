@@ -169,13 +169,13 @@ export class FormCheckbox extends React.Component {
                     </label>
                 </div>
             </div>) : (
-            <div className={'animated-checkbox ' + className} style={style}>
-                <label>
-                    <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} />
-                    <span className={'label-text ' + (this.state.checked ? trueClassName : falseClassName)}>{label}</span>
-                </label>
-            </div>
-        );
+                <div className={'animated-checkbox ' + className} style={style}>
+                    <label>
+                        <input type='checkbox' checked={this.state.checked} onChange={this.onCheck} />
+                        <span className={'label-text ' + (this.state.checked ? trueClassName : falseClassName)}>{label}</span>
+                    </label>
+                </div>
+            );
     }
 }
 
@@ -240,7 +240,7 @@ export class FormRichTextBox extends React.Component {
         const { style = {}, rows = 3, label = '', className = '', readOnly = false, onChange = null, required = false } = this.props;
         return (
             <div className={'form-group ' + (className ? className : '')} style={style}>
-                <label onClick={() => this.input.focus()}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
+                <label onClick={this.focus}>{label}{!readOnly && required ? <span style={{ color: 'red' }}> *</span> : ''}</label>{readOnly && this.state.value ? <>: <br /><b>{this.state.value}</b></> : ''}
                 <textarea ref={e => this.input = e} className='form-control' style={{ display: readOnly ? 'none' : 'block' }} placeholder={label} value={this.state.value} rows={rows}
                     onChange={e => this.setState({ value: e.target.value }) || onChange && onChange(e)} />
             </div>);
@@ -462,11 +462,11 @@ export class FormDatePicker extends React.Component {
                         formatChars={{ '2': '[12]', '0': '[09]', '1': '[01]', '3': '[0-3]', '9': '[0-9]', '5': '[0-5]', 'h': '[0-2]' }}
                         value={this.state.value} readOnly={readOnly} placeholder={label} />
                 ) : (
-                    <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
-                        inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
-                        value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
-                    // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
-                )}
+                        <Datetime ref={e => this.input = e} timeFormat={type == 'time' ? 'HH:mm' : false} dateFormat='DD/MM/YYYY'
+                            inputProps={{ placeholder: label, ref: e => this.inputRef = e, readOnly, style: { display: readOnly ? 'none' : '' } }}
+                            value={this.state.value} onChange={this.handleChange} closeOnSelect={true} />
+                        // value={this.state.value} onChange={e => this.setState({ value: new Date(e) })} closeOnSelect={true} />
+                    )}
             </div>);
     }
 }
@@ -544,21 +544,22 @@ export class CirclePageButton extends React.Component {
 
 export class PageIcon extends React.Component {
     render() {
-        const { className = 'col-md-6 col-lg-4', to = '/user', visible = true, disabled = false, icon = '', iconBackgroundColor = '#17a2b8', text = '', textColor = 'black' } = this.props;
+        const { className = 'col-md-6 col-lg-4', to = '/user', visible = true, disabled = false, icon = '', iconBackgroundColor = '#17a2b8', text = '', textColor = 'black', onClick, subtitle } = this.props;
         const content = (
             <div className='widget-small coloured-icon'>
                 <i className={'icon fa fa-3x ' + icon} style={{ backgroundColor: iconBackgroundColor }} />
                 <div className='info' style={{ color: textColor }}>
                     {typeof text == 'string' ? <h4>{text}</h4> : text()}
+                    {subtitle && <h6>{subtitle}</h6>}
                 </div>
             </div>);
-        return !visible ? null : (disabled ? content : <Link className={className} to={to}>{content}</Link>);
+        return !visible ? null : (disabled ? content : <Link className={className} onClick={onClick} to={to}>{content}</Link>);
     }
 }
 export class PageIconHeader extends React.Component {
     render() {
-        const { className = 'col-md-12', text = '' } = this.props;
-        return <h4 className={className}>{text}</h4>;
+        const { className = 'col-md-12', text = '', visible=true } = this.props;
+        return visible && <h4 className={className}>{text}</h4>;
     }
 }
 
@@ -600,7 +601,7 @@ export class AdminModal extends React.Component {
         const { readOnly = false } = this.props;
         return (
             <div className='modal fade' tabIndex='-1' role='dialog' ref={e => this.modal = e}>
-                <form className={'modal-dialog' + (size == 'large' ? ' modal-lg' : (size == 'extra-large' ? ' modal-xl' : ''))} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e); }}>
+                <form className={'modal-dialog' + (size == 'small' ? ' modal-sm' : (size == 'large' ? ' modal-lg' : (size == 'extra-large' ? ' modal-xl' : '')))} role='document' onSubmit={e => { e.preventDefault() || this.onSubmit && this.onSubmit(e); }}>
                     <div className='modal-content'>
                         <div className='modal-header'>
                             <h5 className='modal-title'>{title}</h5>

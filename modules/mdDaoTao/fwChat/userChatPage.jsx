@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMessage } from './redux';
 import { AdminPage, FormTabs } from 'view/component/AdminPage';
 import UserAllChat from './userAllChat';
 import UserPersonalChat from './userPersonalChat';
@@ -26,7 +25,7 @@ class ChatPage extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-comments-o',
             title: 'Chat',
-            breadcrumb: [<a key={0} href='#' onClick={() => this.props.history.goBack()}>Khoá học</a>, 'Chat'],
+            breadcrumb: [<a key={0} href='#' onClick={() => this.props.history.goBack()}>Khóa học</a>, 'Chat'],
             content: <FormTabs id='courseEditPageTab' contentClassName='tile' tabs={adminTabs} />,
             onBack: () => this.props.history.goBack(),
         });
@@ -34,5 +33,5 @@ class ChatPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, division: state.trainning.division });
-const mapActionsToProps = { createMessage };
+const mapActionsToProps = {};
 export default connect(mapStateToProps, mapActionsToProps)(ChatPage);

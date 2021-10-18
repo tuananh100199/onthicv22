@@ -5,6 +5,7 @@ const CourseGetPage = 'CourseGetPage';
 const CourseGetItem = 'CourseGetItem';
 const CourseGetPageByUser = 'CourseGetPageByUser';
 const CourseUpdateStudentInfoInCourse = 'CourseUpdateStudentInfoInCourse';
+const CourseGetLearningProgressByAdmin = 'CourseGetLearningProgressByAdmin';
 
 export default function courseReducer(state = {}, data) {
     switch (data.type) {
@@ -15,7 +16,11 @@ export default function courseReducer(state = {}, data) {
         }
 
         case CourseGetItem: {
-            return Object.assign({}, state, { item: Object.assign({}, state.item || {}, data.item) });
+            return Object.assign({}, state, { item: data.item });
+        }
+
+        case CourseGetLearningProgressByAdmin: {
+            return Object.assign({}, state, { students: data.students, subjects: data.subjects });
         }
 
         case CourseUpdateStudentInfoInCourse: {
@@ -345,31 +350,17 @@ export function getStudentByLecturer(_id, done) {
     };
 }
 
-export function getLearingProgressByAdmin(_id, done) {
+export function getLearningProgress(_id, done) {
     return dispatch => {
-        const url = '/api/course/learning-progress/admin';
+        const url = '/api/course/learning-progress';
         T.get(url, { _id }, data => {
             if (data.error) {
+                console.log('data.error', data.error);
                 T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
                 console.error('GET: ' + url + '.', data.error);
             } else {
                 done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
-            }
-        }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
-    };
-}
-
-export function getLearingProgressByLecturer(_id, done) {
-    return dispatch => {
-        const url = '/api/course/learning-progress/lecturer';
-        T.get(url, { _id }, data => {
-            if (data.error) {
-                T.notify('Lấy tiến độ học tập bị lỗi!', 'danger');
-                console.error('GET: ' + url + '.', data.error);
-            } else {
-                done && done(data);
-                dispatch({ type: CourseGetItem, item: data.item });
+                dispatch({ type: CourseGetLearningProgressByAdmin, students: data.students, subjects: data.subjects });
             }
         }, error => console.error(error) || T.notify('Lấy tiến độ học tập bị lỗi!', 'danger'));
     };

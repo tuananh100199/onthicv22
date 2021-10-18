@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { getCourse, updateCourse } from '../redux';
 import { ajaxSelectSubject } from 'modules/mdDaoTao/fwSubject/redux';
-import { AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
+import { Link } from 'react-router-dom';
+import { AdminPage, AdminModal, FormSelect, TableCell, renderTable } from 'view/component/AdminPage';
 
 class SubjectModal extends AdminModal {
     componentDidMount() {
@@ -26,7 +27,26 @@ class SubjectModal extends AdminModal {
     });
 }
 
-class AdminSubjectView extends React.Component {
+class AdminSubjectPage extends AdminPage {
+    componentDidMount() {
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_id/info').parse(window.location.pathname);
+            if (params && params._id) {
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        }
+                    });
+                }
+            } else {
+                this.props.history.push('/user/course/');
+            }
+        });
+    }
+
     addSubject = e => e.preventDefault() || this.modal.show();
 
     removeSubject = (e, index) => e.preventDefault() || T.confirm('Xoá môn học', 'Bạn có chắc muốn xoá môn học khỏi khóa học này?', true, isConfirm => {
@@ -38,7 +58,10 @@ class AdminSubjectView extends React.Component {
     });
 
     render() {
-        const readOnly = this.props.readOnly,
+        const currentUser = this.props.system ? this.props.system.user : null,
+            permission = this.getUserPermission('course');
+        const course = this.props.course ? this.props.course.item || {} : {};
+        const readOnly = (!permission.write || currentUser.isLecturer) && !currentUser.isCourseAdmin,
             item = this.props.course && this.props.course.item ? this.props.course.item : { subjects: [] };
         const table = renderTable({
             getDataSource: () => item && item.subjects && item.subjects.sort((a, b) => a.title.localeCompare(b.title)),
@@ -63,18 +86,27 @@ class AdminSubjectView extends React.Component {
                 </tr>),
         });
 
-        return (
-            <div className='tile-body'>
-                {table}
-                <SubjectModal ref={e => this.modal = e} update={this.props.updateCourse} _id={item._id} subjects={item.subjects || []} />
-                {!readOnly ?
-                    <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addSubject}>
-                        <i className='fa fa-lg fa-plus' />
-                    </button> : null}
-            </div>);
+        const backRoute = `/user/course/${course._id}`;
+        return this.renderPage({
+            icon: 'fa fa-briefcase',
+            title: 'Môn học: ' + course.name,
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, course._id ? <Link key={0} to={backRoute}>{course.name}</Link> : '', 'Môn học'],
+            content: (
+                <div className='tile'>
+                    <div className='tile-body'>
+                        {table}
+                        <SubjectModal ref={e => this.modal = e} update={this.props.updateCourse} _id={item._id} subjects={item.subjects || []} />
+                        {!readOnly ?
+                            <button type='button' className='btn btn-primary btn-circle' style={{ position: 'fixed', right: '10px', bottom: '10px' }} onClick={this.addSubject}>
+                                <i className='fa fa-lg fa-plus' />
+                            </button> : null}
+                    </div>
+                </div>),
+            backRoute,
+        });
     }
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
 const mapActionsToProps = { getCourse, updateCourse };
-export default connect(mapStateToProps, mapActionsToProps)(AdminSubjectView);
+export default connect(mapStateToProps, mapActionsToProps)(AdminSubjectPage);
