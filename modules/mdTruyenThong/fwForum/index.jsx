@@ -66,11 +66,11 @@ export class ForumButtons extends React.Component {
                             </Tooltip>)}
                     </div> : null}
                 <div className='btn-group btn-group-sm' style={{ marginLeft: 6 }} >
-                    {permission.write && ( permission.forumOwner || permission.messageOwner) ?
+                    { (permission.forumOwner || permission.messageOwner) ?
                         <Tooltip placement='top' overlay='Chỉnh sửa'>
                             <a className='btn btn-primary' href='#' onClick={e => e.preventDefault() || onEdit()}><i className='fa fa-lg fa-edit' /></a>
                         </Tooltip> : null}
-                    {permission.write && ( permission.forumOwner || permission.messageOwner) ?
+                    {(permission.forumOwner || permission.messageOwner) ?
                         <Tooltip placement='top' overlay='Xoá'>
                             <a className='btn btn-danger' href='#' onClick={e => e.preventDefault() || onDelete()}><i className='fa fa-lg fa-trash' /></a>
                         </Tooltip> : null}

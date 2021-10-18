@@ -139,10 +139,11 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { _forumId, searchText } = req.query,
             pageCondition = { forum: _forumId };
+            const user = req.session.user;
         if (searchText) {
             pageCondition.content = new RegExp(searchText, 'i');
         }
-        if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
+        if (!(user.isCourseAdmin || user.isTrustLecturer && user.permissions && user.permissions.includes('forum:write'))) {
             pageCondition.state = 'approved';
         }
 
@@ -229,7 +230,7 @@ module.exports = app => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('lecturer', 'forum', (user) => new Promise(resolve => {
-        app.permissionHooks.pushUserPermission(user, 'forum:write');
+        app.permissionHooks.pushUserPermission(user, 'forum:write', 'forum:delete');
         resolve();
     }));
 

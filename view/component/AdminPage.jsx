@@ -161,7 +161,7 @@ export class FormCheckbox extends React.Component {
         let { className, label, style, isSwitch = false, trueClassName = 'text-primary', falseClassName = 'text-secondary' } = this.props;
         if (style == null) style = {};
         return isSwitch ? (
-            <div className={className} style={{ ...style, display: 'inline-flex' }}>
+            <div className={className} style={{ ...style, display: style.display ? style.display : 'inline-flex' }}>
                 <label style={{ cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>
                 <div className='toggle'>
                     <label style={{ marginBottom: 0 }}>

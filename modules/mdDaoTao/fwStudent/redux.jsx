@@ -221,8 +221,10 @@ export const ajaxSelectPreStudent = T.createAjaxAdapter(
         response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
 );
 
-export const ajaxSelectStudentByCourse = (course) => T.createAjaxAdapter(
-    '/api/student/page/1/20' + (course ? `?course=${course}` : ''),
-    response => response && response.page && response.page.list ?
-        response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [],
-);
+export const ajaxSelectStudentByCourse = (course) => ({
+    ajax: false,
+    url: '/api/student/page/1/20' + (course ? `?course=${course}` : ''),
+    data: {},
+    processResults: response => ({ results: response && response.page && response.page.list ? response.page.list.map(student => ({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })) : [] }),
+    fetchOne: (_id, done) => (getStudent(_id, student => done && done({ id: student._id, text: `${student.lastname} ${student.firstname}` + (student.identityCard ? ` (${student.identityCard})` : '') })))()
+});

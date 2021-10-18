@@ -87,14 +87,16 @@ class ForumPage extends AdminPage {
         isConfirm && this.props.deleteForum(item._id));
 
     render() {
-        const currentUser = this.props.system ? this.props.system.user : null,
-            { isLecturer, isCourseAdmin } = currentUser;
+        const user = this.props.system ? this.props.system.user : null,
+            { isLecturer, isTrustLecturer, isCourseAdmin } = user;
+        let forumOwner;
         const permission = this.getUserPermission('forum');
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const backRoute = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/forum'; 
-        const listForums = list && list.length ? list.map((item, index) => (
-            <div key={index} className='tile'>
+        const listForums = list && list.length ? list.map((item, index) => {
+            forumOwner =  isCourseAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
+            return <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
                         <Link to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/forum/message/${item._id}`} style={{ textDecoration: 'none' }}>{item.title}</Link>&nbsp;&nbsp;
@@ -102,10 +104,10 @@ class ForumPage extends AdminPage {
                     <small style={{ paddingTop: 10 }}>
                         ({item.user ? `${item.user.lastname} ${item.user.firstname}` : ''}
                         {item.modifiedDate ? ' - ' + (new Date(item.modifiedDate).getText()) : ''})&nbsp;&nbsp;
-                        {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
+                        {forumOwner && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                <ForumButtons state={item.state} permission={{...permission, forumOwner : isCourseAdmin || (isLecturer && currentUser && item && item.user && currentUser._id == item.user._id) }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                <ForumButtons state={item.state} permission={{...permission, forumOwner : forumOwner }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
@@ -120,7 +122,8 @@ class ForumPage extends AdminPage {
                 </div>
 
                 <Link to={`/user/hoc-vien/khoa-hoc/${this.state.courseId}/forum/message/${item._id}`} style={{ textDecoration: 'none', position: 'absolute', bottom: 0, right: 0, padding: 6, color: 'white', backgroundColor: '#1488db', borderBottomRightRadius: 3 }}>Đọc thêm...</Link>
-            </div>)) : <div className='tile'>Chưa có bài viết!</div>;
+            </div>;
+            }) : <div className='tile'>Chưa có bài viết!</div>;
 
         return this.renderPage({
             icon: 'fa fa-users',
@@ -133,7 +136,7 @@ class ForumPage extends AdminPage {
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: backRoute,
-            onCreate: permission.write ? this.edit : null,
+            onCreate: permission.write && forumOwner ? this.edit : null,
         });
     }
 }
