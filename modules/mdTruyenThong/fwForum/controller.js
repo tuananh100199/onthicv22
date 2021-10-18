@@ -13,9 +13,9 @@ module.exports = app => {
     app.get('/user/forum', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum/:_categoryid', app.permission.check('user:login'), app.templates.admin);
-    app.get('/user/hoc-vien/khoa-hoc/:_courseId/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_courseId/forum', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_courseId/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_courseId/forum/:_forumId/message', app.permission.check('user:login'), app.templates.admin);
     
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
     app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {    

@@ -25,12 +25,12 @@ class SectionForumCourseCategory extends React.Component {
                     <div key={index} className='tile'>
                         <div className='row'>
                             <div className='col-md-2'>
-                                <Link to={`/user/hoc-vien/khoa-hoc/${this.props.courseId}/forum/${category._id}`}>
+                                <Link to={`/user/course/${this.props.courseId}/forum/${category._id}`}>
                                     <img src={category.image} style={{ width: '100%', height: 'auto' }} />
                                 </Link>
                             </div>
                             <div className='col-md-10'>
-                                <Link to={`/user/hoc-vien/khoa-hoc/${this.props.courseId}/forum/${category._id}`}>
+                                <Link to={`/user/course/${this.props.courseId}/forum/${category._id}`}>
                                     <h3 className='tile-title'>{category.title}</h3>
                                 </Link>
                                 <p style={{ position: 'absolute', top: 0, right: 12 }}>{category.total ? `Có ${category.total} bài viết.` : ''}</p>

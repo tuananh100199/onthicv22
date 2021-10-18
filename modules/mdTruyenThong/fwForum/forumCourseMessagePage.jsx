@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage } from './redux';
+import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
@@ -56,17 +57,24 @@ class CourseMessageModal extends AdminModal {
 class ForumCourseMessagePage extends AdminPage {
     state = {};
     componentDidMount() {
-
-        const params = T.routeMatcher('/user/hoc-vien/khoa-hoc/:_courseId/forum/message/:_forumId').parse(window.location.pathname),
-            courseId = params._courseId,
-            forumId = params._forumId;
-        if (forumId) {
-            T.ready('/user/hoc-vien/khoa-hoc/' + courseId); 
-            this.setState({ forumId, courseId }, () => this.props.getForum(forumId) || this.getPage());
-        } else {
-            this.props.history.goBack();
-        }
-
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_courseId/forum/:_forumId/message').parse(window.location.pathname),
+                forumId = params._forumId;
+            if (forumId) {
+                this.setState({ forumId }, () => this.props.getForum(forumId) || this.getPage());
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        }
+                    });
+                }
+            } else {
+                this.props.history.goBack();
+            }
+        });
         // TODO: Hiển thị thanh tìm kiếm
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
@@ -82,6 +90,7 @@ class ForumCourseMessagePage extends AdminPage {
         isConfirm && this.props.deleteForumMessage(item._id));
 
     render() {
+        const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const permission = this.getUserPermission('forum');
         const { user } = this.props.system,
         { isLecturer, isTrustLecturer, isCourseAdmin } = user;
@@ -89,13 +98,15 @@ class ForumCourseMessagePage extends AdminPage {
         const { item: forum } = this.props.forum || {};
         const forumOwner =  isCourseAdmin || (isLecturer && isTrustLecturer && user && forum && forum.user && (user._id == forum.user._id));
         const { pageNumber, pageSize, pageTotal, totalItem, list } = forum && forum.page ? forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
-        const backRoute = forum && forum.category ? '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/forum/' + forum.category._id : null;
-        const backRouteCategory = '/user/hoc-vien/khoa-hoc/' + this.state.courseId + '/forum'; 
+        const backRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/' + forum.category._id : null;
+        const courseBackRoute = '/user/course/' + courseItem._id; 
+        const categoryBackRoute = '/user/course/' + courseItem._id + '/forum'; 
+        const forumBackRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/'+ forum.category._id : null; 
 
         return this.renderPage({
             icon: 'fa fa-comments',
             title: forum ? <>{forum.title} <small style={{ fontSize: 13 }}>({forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} {forum.modifiedDate ? ' - ' + (new Date(forum.modifiedDate).getText()) : ''})</small></> : '...',
-            breadcrumb: [<Link key={0} to={backRouteCategory}>Forum</Link>, forum && forum.category ? <Link key={1} to={backRoute}>{forum.category.title}</Link> : '', 'Nội dung'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '',<Link key={0} to={categoryBackRoute}> Danh mục </Link>, forum ? <Link key={0} to={forumBackRoute}>{forum.title }</Link> : 'Bài viết','Nội dung'],
             content: forum ? <>
                 <div className='tile'>
                     {/* <small className='bg-secondary' style={createdDateStyle}>
@@ -128,6 +139,6 @@ class ForumCourseMessagePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum });
-const mapActionsToProps = { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage };
+const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, course: state.trainning.course });
+const mapActionsToProps = { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage, getCourse };
 export default connect(mapStateToProps, mapActionsToProps)(ForumCourseMessagePage);

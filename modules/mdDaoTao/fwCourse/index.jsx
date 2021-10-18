@@ -64,6 +64,18 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminFeedbackPage') })
         },
         {
+            path: '/user/course/:_id/forum',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdTruyenThong/fwForum/forumCourseCategoryPage') })
+        },
+        {
+            path: '/user/course/:_courseId/forum/:_categoryid', 
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdTruyenThong/fwForum/forumCoursePage') })
+        },
+        {
+            path: '/user/course/:_courseId/forum/:_forumId/message',
+            component: Loadable({ loading: Loading, loader: () => import('modules/mdTruyenThong/fwForum/forumCourseMessagePage') })
+        },
+        {
             path: '/user/course/:_id/your-students',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerStudentPage') })
         },
@@ -87,8 +99,6 @@ export default {
             path: '/user/course/:_id/chat',
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminChatPersonalPage') })
         },
-
-
         {
             path: '/user/hoc-vien/khoa-hoc/:_id',
             component: Loadable({ loading: Loading, loader: () => import('./userPageView') })

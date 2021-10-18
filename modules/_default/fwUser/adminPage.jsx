@@ -33,7 +33,7 @@ class UserModal extends AdminModal {
         this.itemIsCourseAdmin.value(item.isCourseAdmin);
         this.itemIsStaff.value(item.isStaff);
         this.itemIsLecturer.value(item.isLecturer);
-        item.isLecturer && this.itemIsTrustLecturer ? this.itemIsTrustLecturer.value(item.isTrustLecturer) : null;
+        item.isLecturer ? this.itemIsTrustLecturer.value(item.isTrustLecturer) : null;
         this.itemIsRepresenter.value(item.isRepresenter);
         this.itemSex.value(item.sex || 'male');
         this.itemDivision.value(item.division ? { id: item.division._id, text: item.division.title + (item.division.isOutside ? ' (cơ sở ngoài)' : '') } : null);
