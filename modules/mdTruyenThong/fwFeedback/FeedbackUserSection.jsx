@@ -48,7 +48,7 @@ class FeedbackSection extends React.Component {
                     </div>
                 </div>
                 <div className='tile-body'>
-                    {list.length ? list.map((item, index) => <div key={index} style={{ marginRight: 100 }}>
+                    {list.length ? list.map((item, index) => <div key={index} style={{ marginRight: 100,marginBottom:10 }}>
                         <div className='row'>
                             <div className='col-md-1' >
                                 <img src={item.user && item.user.image} style={{ height: '40px', borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5 }} alt='no image'></img>
