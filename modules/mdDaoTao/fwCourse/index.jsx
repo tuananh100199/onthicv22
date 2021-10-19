@@ -64,6 +64,10 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('./pages/adminFeedbackPage') })
         },
         {
+            path: '/user/course/:_id/feedback/:_feedbackId',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminFeedbackDetailPage') })
+        },
+        {
             path: '/user/course/:_id/your-students',
             component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerStudentPage') })
         },

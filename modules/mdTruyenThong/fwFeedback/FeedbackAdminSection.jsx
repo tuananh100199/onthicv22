@@ -117,7 +117,7 @@ class FeedbackSection extends React.Component {
                 </div>
             </div> */}
             <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                getPage={this.props.getFeedbackPage} />
+                getPage={this.props.getFeedbackPage} style={{left:320}} />
         </>;
     }
 }
