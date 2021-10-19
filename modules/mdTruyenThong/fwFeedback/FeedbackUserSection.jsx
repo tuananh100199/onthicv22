@@ -48,7 +48,7 @@ class FeedbackSection extends React.Component {
                     </div>
                 </div>
                 <div className='tile-body'>
-                    {list.length ? list.map((item, index) => <div key={index} style={{ margin: 10 }}>
+                    {list.length ? list.map((item, index) => <div key={index} style={{ marginRight: 100 }}>
                         <div className='row'>
                             <div className='col-md-1' >
                                 <img src={item.user && item.user.image} style={{ height: '40px', borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5 }} alt='no image'></img>
@@ -66,9 +66,9 @@ class FeedbackSection extends React.Component {
                             </div>
                         </div>
                         <div style={{ marginTop: 10 }}>
-                            {item.replies.length ? item.replies.map((reply, index) => <div className='row' style={{ margin: 10 }} key={index}>
+                            {item.replies.length ? item.replies.map((reply, index) => <div className='row' style={{ marginTop: 10 }} key={index}>
                                 <div className='col-md-1'>
-                                    <i className='fa fa-share'></i>
+                                    {/* <i className='fa fa-share'></i> */}
                                 </div>
                                 <div className='col-md-1'>
                                     <img src={reply.adminUser && reply.adminUser.image} style={{ height: '40px', borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5 }} alt='no image'></img>
