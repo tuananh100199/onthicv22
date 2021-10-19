@@ -3,6 +3,7 @@ import T from 'view/js/common';
 const FeedbackGetAll = 'FeedbackGetAll';
 const FeedbackChange = 'FeedbackChange';
 const FeedbackGetPage = 'FeedbackGetPage';
+const FeedbackGetItem = 'FeedbackGetItem';
 
 export default function feedbackReducer(state = {}, data) {
     switch (data.type) {
@@ -10,9 +11,9 @@ export default function feedbackReducer(state = {}, data) {
             return Object.assign({}, state, { list: data.list });
         case FeedbackGetPage:
             return Object.assign({}, state, { page: data.page });
-
-        // case FeedbackGetItem:
-        //     return Object.assign({}, state, { item: Object.assign({}, state ? state.item : {}, data.item || {}) });
+        case FeedbackGetItem: {
+            return Object.assign({}, state, { item: data.item });
+        }
 
         case FeedbackChange: {
             let updateItemState = state.slice();
@@ -55,8 +56,9 @@ export function updateFeedback(_id, changes, done) {
                 console.error('PUT: ' + url + '.', data.error);
                 done && done(data.error);
             } else {
-                const { type, _refId } = changes;
-                dispatch(getFeedbackPage(1, 50, { type, _refId }));
+                // const { type, _refId } = changes;
+                // dispatch(getFeedbackPage(1, 50, { type, _refId }));
+                dispatch({ type: FeedbackGetItem, item: data.item });
                 done && done(data.item);
             }
         }, error => console.error(error) || T.notify('Cập nhật phản hồi bị lỗi!', 'danger'));
@@ -89,6 +91,21 @@ export function getFeedbackPage(pageNumber, pageSize, pageCondition, done) {
                 if (pageCondition) data.page.pageCondition = pageCondition;
                 done && done(data.page);
                 dispatch({ type: FeedbackGetPage, page: data.page });
+            }
+        }, error => console.error(error) || T.notify('Lấy phản hồi bị lỗi!', 'danger'));
+    };
+}
+
+export function getFeedback(_id, done) {
+    return dispatch => {
+        const url = '/api/feedback';
+        T.get(url, { _id }, data => {
+            if (data.error) {
+                T.notify('Lấy phản hồi bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                done && done(data);
+                dispatch({ type: FeedbackGetItem, item: data.item });
             }
         }, error => console.error(error) || T.notify('Lấy phản hồi bị lỗi!', 'danger'));
     };

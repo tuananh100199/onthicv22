@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getLearingProgressByLecturer } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
+import { getLearningProgressByLecturer } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { AdminPage, FormSelect, renderTable, TableCell } from 'view/component/AdminPage';
 
@@ -18,7 +18,7 @@ class LecturerRatingPage extends AdminPage {
             });
         }
 
-        this.props.getLearingProgressByLecturer(this.props.courseId, data => {
+        this.props.getLearningProgressByLecturer(this.props.courseId, data => {
             this.setState({ listStudent: data.item });
         });
     }
@@ -69,5 +69,5 @@ class LecturerRatingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course });
-const mapActionsToProps = { getLearingProgressByLecturer, getSubject };
+const mapActionsToProps = { getLearningProgressByLecturer, getSubject };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerRatingPage);

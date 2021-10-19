@@ -19,5 +19,9 @@ export default {
             path: '/user/feedback/system',
             component: Loadable({ loading: Loading, loader: () => import('./adminFeedbackSystemPage') })
         },
+        {
+            path: '/user/feedback/system/:_id',
+            component: Loadable({ loading: Loading, loader: () => import('./adminFeedbackSystemDetailPage') })
+        },
     ],
 };

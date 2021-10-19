@@ -44,15 +44,15 @@ module.exports = app => {
             }
         }),
 
-        get: (condition, done) => typeof condition == 'string' ?
-            model.findById(condition, done) : model.findOne(condition, done),
+        get: (condition, done) => (typeof condition == 'string' ?
+            model.findById(condition, done) : model.findOne(condition, done)).populate('user', 'lastname firstname image').populate('replies.adminUser', 'lastname firstname image'),
 
         // changes = { $set, $unset, $push, $pull }
-        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done),
+        update: (_id, changes, done) => model.findOneAndUpdate({ _id }, changes, { new: true }, done).populate('user', 'lastname firstname image').populate('replies.adminUser', 'lastname firstname image'),
 
         addReply: (_id, reply, done) => {
             const { content, adminUser } = reply;
-            model.findOneAndUpdate({ _id }, { $push: { replies: { createdDate: new Date(), content, adminUser } } }, { new: true }).exec(done);
+            model.findOneAndUpdate({ _id }, { $push: { replies: { createdDate: new Date(), content, adminUser } } }, { new: true }).populate('user', 'lastname firstname image').populate('replies.adminUser', 'lastname firstname image').exec(done);
         },
 
         deleteReply: (_id, _replyId, done) => {

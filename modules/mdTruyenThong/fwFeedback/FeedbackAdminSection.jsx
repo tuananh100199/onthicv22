@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getFeedbackPage,updateFeedback } from './redux';
-// import { AdminPage, FormRichTextBox,TableCell, renderTable} from 'view/component/AdminPage';
-import { AdminPage,TableCell, renderTable} from 'view/component/AdminPage';
+import { getFeedbackPage, updateFeedback } from './redux';
+import { TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 
-class FeedbackSection extends AdminPage {
-    state={};
+class FeedbackSection extends React.Component {
+    state = {};
     componentDidMount() {
         const { type, _refId } = this.props;
         this.props.getFeedbackPage(1, 50, { type, _refId });
@@ -20,26 +19,14 @@ class FeedbackSection extends AdminPage {
     }
     onClick = (e, item) => {
         e.preventDefault();
-        !item.isSeen && this.props.updateFeedback(item._id,{isSeen:true});
-        this.setState({ _feedbackIdSelected:item._id });
-    }
-
-    replyFeedback = () => {
-        const content = this.newFeedback.value();
-        if (content == '') {
-            T.notify('Không thể gửi thông điệp không nội dung!', 'danger');
-            this.newFeedback.focus();
-        } else {
-            this.props.updateFeedback(this.props._id, content ,() => {
-                this.newFeedback.value('');
-            });
-        }
+        !item.isSeen && this.props.updateFeedback(item._id, { isSeen: true });
+        this.setState({ _feedbackIdSelected: item._id });
     }
 
     render() {
         // const permission = this.getUserPermission('feedback');
         let { pageNumber, pageSize, pageTotal, pageCondition, totalItem, list } = this.props.feedback && this.props.feedback.page ?
-        this.props.feedback.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
+            this.props.feedback.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, pageCondition: {}, totalItem: 0, list: [] };
         const table = renderTable({
             getDataSource: () => list, stickyHead: true,
             renderHead: () => (
@@ -53,13 +40,13 @@ class FeedbackSection extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell content={`${item.user && item.user.lastname} ${item.user && item.user.firstname}`} onClick={e => this.edit(e, item)} />
-                    <TableCell content={T.dateToText(item.createdDate)}/>
-                    <TableCell type='buttons' onEdit={`/user/feedback/system/${item._id}`} />
+                    <TableCell content={T.dateToText(item.createdDate)} />
+                    <TableCell type='buttons' onEdit={`${this.props.detailPageUrl}/${item._id}`} />
                 </tr>),
         });
         return <>
-         {table}
-                {/* <div className='row'>
+            {table}
+            {/* <div className='row'>
                 <div className='col-md-3' >
                     <h3 className='tile-title'>Danh sách phản hồi</h3>
                     <div style={{ borderWidth: 1, borderStyle: 'solid', borderColor: '#ddd', borderRadius: 5, padding: 12 }}>
@@ -130,7 +117,7 @@ class FeedbackSection extends AdminPage {
                 </div>
             </div> */}
             <Pagination pageCondition={pageCondition} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem}
-                getPage={this.props.getFeedbackPage} /> 
+                getPage={this.props.getFeedbackPage} />
         </>;
     }
 }
