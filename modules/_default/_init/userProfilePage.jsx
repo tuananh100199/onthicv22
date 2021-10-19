@@ -24,12 +24,12 @@ class UserProfilePage extends AdminPage {
                     {students && students.length ? <>
                         <PageIconHeader text='Khóa học của bạn' />
                         {students.map((student, index) => {
-                            const { _id, name, active } = student.course;
+                            const { _id, name, active } = student.course || {};
                             const text = () => <>
                                 <h4>Khóa học hạng {student.courseType && student.courseType.title ? student.courseType.title : ''}</h4>
                                 <p style={{ fontWeight: 'bold' }}>{active ? 'Lớp: ' + name : 'Đang chờ khóa'}</p>
                             </>;
-                            return <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${_id}`} icon='fa-cubes' iconBackgroundColor='#1488db' text={text} disabled={!active} />;
+                            return _id ? <PageIcon key={index} to={`/user/hoc-vien/khoa-hoc/${_id}`} icon='fa-cubes' iconBackgroundColor='#1488db' text={text} disabled={!active} /> : '';
                         })}
                     </> : null}
 

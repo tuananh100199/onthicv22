@@ -180,7 +180,7 @@ class SectionChat extends AdminPage {
 
         return (
             isChatAll ?
-                (<div className='messanger' style={{ minHeight: '300px' }}>
+                (<div className='messanger' style={{ height: '300px' }}>
                     <div className='messages' style={{ height: '300px', overflowY: 'scroll' }} >
                         {renderMess}
                         <div ref={e => this.scrollDown = e}></div>
