@@ -102,6 +102,15 @@ module.exports = (app) => {
 
     });
 
+    app.get('/api/rate/lesson/page/:pageNumber/:pageSize', app.permission.check('rate:read'), (req, res) => {
+        const pageNumber = parseInt(req.params.pageNumber),
+            pageSize = parseInt(req.params.pageSize),
+            condition = req.query.pageCondition || {};
+        app.model.rate.getPage(pageNumber, pageSize, condition, (error, page) => {
+            res.send({ error, page });
+        });
+    });
+
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'rate', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'rate:read');

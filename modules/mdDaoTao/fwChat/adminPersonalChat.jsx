@@ -11,7 +11,8 @@ class AdminPersonalChat extends AdminPage {
     state = { loading: true, listStudent: [], oldMessage: [], isLoading: true };
 
     componentDidMount() {
-        const courseId = this.props.courseId,
+        const route = T.routeMatcher('/user/chat/:_id'),
+            courseId = route.parse(window.location.pathname)._id,
             user = this.props.system.user;
         this.setState({ courseId, user });
         if (courseId) {
