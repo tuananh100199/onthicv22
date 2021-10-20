@@ -54,7 +54,7 @@ class CommentSection extends React.Component {
                         </ul>
                         {list.length == 0 && <p>Chưa có bình luận</p>}
                     </div>
-                    <Pagination name='comment' pageNumber={pageNumber} pageSize={this.pageSize} pageTotal={pageTotal} getPage={this.getData} />
+                    <Pagination name='pageComment' pageNumber={pageNumber} pageSize={this.pageSize} pageTotal={pageTotal} getPage={this.getData} />
                 </div>
             </div>
         );
