@@ -12,16 +12,12 @@ export default {
     },
     routes: [
         {
-            path: '/user/category/forum',
+            path: '/user/category/forum', 
             component: Loadable({ loading: Loading, loader: () => import('./adminCategoryPage') })
         },
         {
-            path: '/user/forum',
+            path: '/user/forum', 
             component: Loadable({ loading: Loading, loader: () => import('./forumCategoryPage') })
-        },
-        {
-            path: '/user/hoc-vien/khoa-hoc/:_courseId/forum',
-            component: Loadable({ loading: Loading, loader: () => import('./forumCourseCategoryPage') })
         },
         {
             path: '/user/forum/:_categoryId',
@@ -48,7 +44,7 @@ export class ForumButtons extends React.Component {
         if (!onChangeState) onChangeState = () => { };
         return permission ?
             <div style={{ position: 'absolute', right: 12, top: -12 }}>
-                {permission.write ?
+                {permission.forumOwner? // trustLecturer == true thì được quyền chuyển, không tin cậy thì như một học viên binh thường không làm được gì
                     <div className='btn-group btn-group-sm'>
                         {ForumStates.map((item, index) =>
                             <Tooltip key={index} placement='top' overlay={item.text}>
@@ -58,11 +54,11 @@ export class ForumButtons extends React.Component {
                             </Tooltip>)}
                     </div> : null}
                 <div className='btn-group btn-group-sm' style={{ marginLeft: 6 }} >
-                    {permission.write || permission.owner ?
+                    {(permission.forumOwner || permission.messageOwner) ?
                         <Tooltip placement='top' overlay='Chỉnh sửa'>
                             <a className='btn btn-primary' href='#' onClick={e => e.preventDefault() || onEdit()}><i className='fa fa-lg fa-edit' /></a>
                         </Tooltip> : null}
-                    {permission.write || permission.owner ?
+                    {(permission.forumOwner || permission.messageOwner) ?
                         <Tooltip placement='top' overlay='Xoá'>
                             <a className='btn btn-danger' href='#' onClick={e => e.preventDefault() || onDelete()}><i className='fa fa-lg fa-trash' /></a>
                         </Tooltip> : null}

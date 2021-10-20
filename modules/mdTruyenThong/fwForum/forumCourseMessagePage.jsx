@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage } from './redux';
+import { getCourse } from 'modules/mdDaoTao/fwCourse/redux';
 import { Link } from 'react-router-dom';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormRichTextBox, FormSelect } from 'view/component/AdminPage';
 import { ForumStates, ForumStatesMapper, ForumButtons } from './index';
 
-class MessageModal extends AdminModal {
+class CourseMessageModal extends AdminModal {
     state = {};
     componentDidMount() {
         $(document).ready(() => this.onShown(() => this.itemContent.focus()));
@@ -33,45 +34,53 @@ class MessageModal extends AdminModal {
                 T.notify('Trạng thái bài viết bị trống!', 'danger');
             } else {
                 if (data.content.length > 200) data.content = data.content.substring(0, 200);
-                new Promise(resolve => this.state._id ? this.props.update(this.state._id, data, resolve) : this.props.create(data, resolve)).then(data => {
+                new Promise(resolve => this.state._id ? this.props.update(this.state._id, data, resolve) : this.props.create(data, resolve)).then(() => {
                     this.hide();
-                    if (data.item && data.item.state == 'waiting') T.alert('Bạn vui lòng chờ Quản trị viên duyệt bài của bạn. Cảm ơn', 'success', false);
+                    if (!(this.props.permission && this.props.permission.forumOwner)) T.alert('Bạn vui lòng chờ Quản trị viên duyệt bài của bạn. Cảm ơn', 'success', false);
                 });
             }
         }
     }
 
     render = () => {
-        const permission = this.props.permission;
         return this.renderModal({
             title: 'Bài viết',
             body: <>
                 <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
-                {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
+                {this.props.permission && this.props.permission.forumOwner ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });
     }
 }
 
-class ForumMessagePage extends AdminPage {
+class ForumCourseMessagePage extends AdminPage {
     state = {};
     componentDidMount() {
-        T.ready('/user/forum', () => {
-            const params = T.routeMatcher('/user/forum/message/:_id').parse(window.location.pathname);
-            if (params && params._id) {
-                this.setState({ _id: params._id }, () => this.props.getForum(params._id) || this.getPage());
+        T.ready('/user/course', () => {
+            const params = T.routeMatcher('/user/course/:_courseId/forum/:_forumId/message').parse(window.location.pathname),
+                forumId = params._forumId;
+            if (forumId) {
+                this.setState({ forumId }, () => this.props.getForum(forumId) || this.getPage());
+                const course = this.props.course ? this.props.course.item : null;
+                if (!course) {
+                    this.props.getCourse(params._id, data => {
+                        if (data.error) {
+                            T.notify('Lấy khóa học bị lỗi!', 'danger');
+                            this.props.history.push('/user/course/' + params._id);
+                        }
+                    });
+                }
             } else {
                 this.props.history.goBack();
             }
         });
-
         // TODO: Hiển thị thanh tìm kiếm
         // T.ready(() => T.showSearchBox());
         // T.onSearch = (searchText) => this.props.getForumPage(1, 50, searchText);
     }
 
     getPage = (pageNumber, pageSize, pageCondition, done) => {
-        this.state._id && this.props.getForumMessagePage(this.state._id, pageNumber, pageSize, pageCondition, done);
+        this.state.forumId && this.props.getForumMessagePage(this.state.forumId, pageNumber, pageSize, pageCondition, done);
     }
 
     edit = (e, item) => e.preventDefault() || this.modal.show(item);
@@ -80,17 +89,23 @@ class ForumMessagePage extends AdminPage {
         isConfirm && this.props.deleteForumMessage(item._id));
 
     render() {
-        const permission = this.getUserPermission('forum');
-        const { user } = this.props.system;
+        const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
+        const adminPermission = this.getUserPermission('system', ['settings']);
+        const { user } = this.props.system,
+        { isLecturer, isTrustLecturer, isCourseAdmin } = user;
         const createdDateStyle = { textDecoration: 'none', position: 'absolute', top: 0, left: 0, padding: '6px 12px', color: 'white', borderTopLeftRadius: 3, borderBottomRightRadius: 3 };
         const { item: forum } = this.props.forum || {};
+        const forumOwner =  adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && user && forum && forum.user && (user._id == forum.user._id));
         const { pageNumber, pageSize, pageTotal, totalItem, list } = forum && forum.page ? forum.page : { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
+        const backRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/' + forum.category._id : null;
+        const courseBackRoute = '/user/course/' + courseItem._id; 
+        const categoryBackRoute = '/user/course/' + courseItem._id + '/forum'; 
+        const forumBackRoute = forum && forum.category ? '/user/course/' + courseItem._id + '/forum/'+ forum.category._id : null; 
 
-        const backRoute = forum && forum.category ? '/user/forum/' + forum.category._id : null;
         return this.renderPage({
             icon: 'fa fa-comments',
             title: forum ? <>{forum.title} <small style={{ fontSize: 13 }}>({forum.user ? `${forum.user.lastname} ${forum.user.firstname}` : ''} {forum.modifiedDate ? ' - ' + (new Date(forum.modifiedDate).getText()) : ''})</small></> : '...',
-            breadcrumb: [<Link key={0} to='/user/forum'>Forum</Link>, forum && forum.category ? <Link key={1} to={backRoute}>{forum.category.title}</Link> : '', 'Nội dung'],
+            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, courseItem._id ? <Link key={0} to={courseBackRoute}>{courseItem.name}</Link> : '',<Link key={0} to={categoryBackRoute}> Danh mục </Link>, forum ? <Link key={0} to={forumBackRoute}>{forum.title }</Link> : 'Bài viết','Nội dung'],
             content: forum ? <>
                 <div className='tile'>
                     {/* <small className='bg-secondary' style={createdDateStyle}>
@@ -106,16 +121,16 @@ class ForumMessagePage extends AdminPage {
                             <div className='tile-body'>
                                 <small className='bg-secondary' style={{ ...createdDateStyle }}>
                                     {item.user ? item.user.lastname + ' ' + item.user.firstname : ''} -&nbsp;
-                                    {new Date(forum.modifiedDate || forum.createdDate).getText()}&nbsp;&nbsp;
-                                    {permission.write && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
+                                    {new Date(item.createdDate).getText()}&nbsp;&nbsp;
+                                    {forumOwner && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                                 </small>
                                 <p style={{ margin: '12px 0 0 0' }}>{item.content}</p>
-                                <ForumButtons state={item.state} permission={{ ...permission, owner: user && item && item.user && user._id == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                                <ForumButtons state={item.state} permission={{ forumOwner, messageOwner: user && item && item.user && user._id == item.user._id }} onChangeState={(state) => this.props.updateForumMessage(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
                             </div>
                         </div>) :
                     <div className='tile' style={{ marginLeft: 20 }}>Chưa có bài viết!</div>}
                 <Pagination name='pageForumMessage' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <MessageModal ref={e => this.modal = e} forum={forum._id} permission={permission} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
+                <CourseMessageModal ref={e => this.modal = e} forum={forum._id} permission={{ forumOwner }} create={this.props.createForumMessage} update={this.props.updateForumMessage} getPage={this.getPage} />
             </> : '...',
             backRoute: backRoute,
             onCreate: this.edit,
@@ -123,6 +138,6 @@ class ForumMessagePage extends AdminPage {
     }
 }
 
-const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum });
-const mapActionsToProps = { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage };
-export default connect(mapStateToProps, mapActionsToProps)(ForumMessagePage);
+const mapStateToProps = state => ({ system: state.system, forum: state.communication.forum, course: state.trainning.course });
+const mapActionsToProps = { getForum, getForumMessagePage, createForumMessage, updateForumMessage, deleteForumMessage, getCourse };
+export default connect(mapStateToProps, mapActionsToProps)(ForumCourseMessagePage);
