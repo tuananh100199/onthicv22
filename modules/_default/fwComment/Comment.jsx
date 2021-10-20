@@ -92,7 +92,8 @@ class Comment extends React.Component {
                         </span>
                         {!editMode ?
                             <p style={{ whiteSpace: 'pre-line' }}>{comment.content}</p> :
-                            <CommentTextBox ref={e => this.editComment = e} user={user} refParentId={refParentId} refId={refId} comment={comment} style={{ marginTop: '10px' }} onChange={onChange} onCancel={() => this.cancelEdit('controlText')} rows={2} maxRows={4} hideAvatar />
+                            <CommentTextBox ref={e => this.editComment = e} user={user} refParentId={refParentId} refId={refId} comment={comment} style={{ marginTop: '10px' }}
+                                onChange={onChange} onCancel={() => this.cancelEdit('controlText')} rows={2} maxRows={4} hideAvatar />
                         }
                         <div ref={e => this.controlText = e}>
                             {comment.updatedDate && comment.createdDate != comment.updatedDate && <><small className='text-muted'>Đã chỉnh sửa</small><br /></>}
@@ -104,7 +105,7 @@ class Comment extends React.Component {
                 </div>
             </li>
             <li className='threaded-comments' ref={e => this.replyArea = e} style={{ display: 'none' }}>
-                <CommentTextBox ref={e => this.replyComment = e} refParentId={refParentId} refId={refId} onChange={this.onChange} onCancel={() => $(this.replyArea).hide(100)} rows={1} maxRows={2} parentId={comment._id} />
+                <CommentTextBox ref={e => this.replyComment = e} onChange={this.onChange} onCancel={() => $(this.replyArea).hide(100)} rows={1} maxRows={2} parentId={comment._id} />
             </li>
             {replies.map((comment, index) => {
                 const author = comment.author || {};
@@ -121,7 +122,7 @@ class Comment extends React.Component {
                                 </span>
                                 {!editMode ?
                                     <p style={{ whiteSpace: 'pre-line' }}>{comment.content}</p> :
-                                    <CommentTextBox ref={e => this['editComment' + comment._id] = e} refParentId={refParentId} refId={refId} comment={comment} style={{ marginTop: '10px' }} onChange={this.onChange} onCancel={() => this.cancelEditReply(comment._id, 'controlText' + comment._id)} rows={1} maxRows={2} hideAvatar />
+                                    <CommentTextBox ref={e => this['editComment' + comment._id] = e} comment={comment} style={{ marginTop: '10px' }} onChange={this.onChange} onCancel={() => this.cancelEditReply(comment._id, 'controlText' + comment._id)} rows={1} maxRows={2} hideAvatar />
                                 }
                                 <div ref={e => this['controlText' + comment._id] = e}>
                                     {comment.updatedDate && comment.createdDate != comment.updatedDate && <><small className='text-muted' style={{ cursor: 'pointer' }}>Đã chỉnh sửa</small><br /></>}
@@ -136,8 +137,7 @@ class Comment extends React.Component {
             {replies.length < totalReplies && (
                 <li className='threaded-comments'>
                     <small className='text-primary' style={{ cursor: 'pointer' }} onClick={e => e.preventDefault() || this.loadMoreComment()}>Tải thêm bình luận</small>
-                </li>
-            )}
+                </li>)}
         </>;
     }
 }

@@ -85,6 +85,7 @@ class CommentTextBox extends React.Component {
             refParentId, refId,
             content: $(this.commentArea).val()
         };
+        console.log(data);
 
         if (!data.content) {
             T.notify('Vui lòng nhập nội dung bình luận!', 'danger');

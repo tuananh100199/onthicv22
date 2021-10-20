@@ -8,7 +8,6 @@ module.exports = app => {
         createdDate: { type: Date, default: Date.now },
         updatedDate: Date,
         replies: [{ type: app.db.Schema.ObjectId, ref: 'Comment' }],
-        isReply: { type: Boolean, default: false }
     });
 
     const model = app.db.model('Comment', schema);
@@ -32,6 +31,7 @@ module.exports = app => {
         getAll: (condition, done) => model.find(condition).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
+            console.log(condition);
             if (error) {
                 done(error);
             } else {
@@ -46,7 +46,7 @@ module.exports = app => {
                     { $limit: result.pageSize },
                     {
                         $project: {
-                            author: true, content: true, createdDate: true, updatedDate: true, isReply: true,
+                            author: true, content: true, createdDate: true, updatedDate: true,
                             totalReplies: { $size: '$replies' },
                             replies: { $slice: ['$replies', 3] }
                         }
