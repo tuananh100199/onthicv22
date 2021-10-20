@@ -68,12 +68,16 @@ export default {
             component: Loadable({ loading: Loading, loader: () => import('modules/mdTruyenThong/fwForum/forumCourseCategoryPage') })
         },
         {
-            path: '/user/course/:_courseId/forum/:_categoryid', 
+            path: '/user/course/:_courseId/forum/:_categoryid',
             component: Loadable({ loading: Loading, loader: () => import('modules/mdTruyenThong/fwForum/forumCoursePage') })
         },
         {
             path: '/user/course/:_courseId/forum/:_forumId/message',
             component: Loadable({ loading: Loading, loader: () => import('modules/mdTruyenThong/fwForum/forumCourseMessagePage') })
+        },
+        {
+            path: '/user/course/:_id/feedback/:_feedbackId',
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminFeedbackDetailPage') })
         },
         {
             path: '/user/course/:_id/your-students',

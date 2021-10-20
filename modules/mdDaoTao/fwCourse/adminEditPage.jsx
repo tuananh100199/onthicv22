@@ -51,8 +51,8 @@ class EditCoursePage extends AdminPage {
                     <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/teacher`} icon='fa-user-circle' iconBackgroundColor='#CC0' text='Gán Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin && currentUser && currentUser.division && !currentUser.division.isOutside} to={`/user/course/${item._id}/representer`} icon='fa-user-circle-o' iconBackgroundColor='#CAC' text='Gán Giáo viên' />
 
-                    {isCourseAdmin || !isLecturer ? <PageIconHeader text='Học viên' /> : null}
-                    <PageIcon visible={isCourseAdmin || !isLecturer} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Cố vấn học tập' />
+                    {isCourseAdmin ? <PageIconHeader text='Học viên' /> : null}
+                    <PageIcon visible={isCourseAdmin} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin && permission.write && permissionFeedback.write} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
                     <PageIcon  to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
 

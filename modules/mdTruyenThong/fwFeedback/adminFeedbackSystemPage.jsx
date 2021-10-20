@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import FeedbackSection from './FeedbackAdminSection';
 import { AdminPage } from 'view/component/AdminPage';
 
-class adminFeedbackSystemPage extends AdminPage {
+class AdminFeedbackSystemPage extends AdminPage {
     componentDidMount() {
         T.ready('/user/feedback/system');
     }
@@ -12,11 +12,11 @@ class adminFeedbackSystemPage extends AdminPage {
             icon: 'fa fa-comments-o',
             title: 'Phản hồi',
             breadcrumb: ['Phản hồi'],
-            content:<div className='tile'><FeedbackSection type='system'/></div>,
+            content:<div className='tile'><FeedbackSection detailPageUrl='/user/feedback/system' type='system'/></div>,
         });
     }
 }
 
 const mapStateToProps = () => ({ });
 const mapActionsToProps = { };
-export default connect(mapStateToProps, mapActionsToProps)(adminFeedbackSystemPage);
+export default connect(mapStateToProps, mapActionsToProps)(AdminFeedbackSystemPage);
