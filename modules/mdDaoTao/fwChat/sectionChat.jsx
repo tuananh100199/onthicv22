@@ -42,7 +42,7 @@ class SectionChat extends AdminPage {
             this.props.getUserChats(_selectedUserId, sent, data => {
                 const loadedChats = data.chats;
                 this.setState(prevState => ({
-                    oldMessagePersonal: prevState.oldMessageAll.concat(loadedChats),
+                    oldMessagePersonal: prevState.oldMessagePersonal.concat(loadedChats),
                     isLastedChat: data.chats && data.chats.length < 20
                 }));
                 this.scrollToChat(chatLength - 1);
@@ -75,18 +75,18 @@ class SectionChat extends AdminPage {
     }
 
     selectUser = (student) => {
-        const studentId = student.user ? student.user._id : student._id;
+        const studentId = student.user._id;
         if (this.state._selectedUserId != studentId && this.props.system && this.props.system.user) {
             this.props.getUserChats(studentId, null, data => {
                 this.setState({
-                    oldMessagePersonal: data.chats.sort(() => -1),
+                    oldMessagePersonal: data.chats,
                     _selectedUserId: studentId,
                     isLastedChat: false,
                     userName: student.lastname + ' ' + student.firstname,
                     userImage: student.image
                 });
             });
-            !this.state.loading && T.socket.emit('chat:join', { _userId: studentId });
+            T.socket.emit('chat:join', { _userId: studentId });
         }
     }
 
@@ -205,7 +205,6 @@ class SectionChat extends AdminPage {
                     </div>
                 </div>);
         });
-        console.log(isLastedChat);
         return (
             !isLecturerChat ?
                 (<div className='messanger' style={{ height: '59vh' }}>
