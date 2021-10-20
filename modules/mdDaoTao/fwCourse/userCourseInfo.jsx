@@ -38,7 +38,7 @@ class UserCourseInfo extends AdminPage {
         return this.renderPage({
             icon: 'fa fa-cubes',
             title: 'Khóa học: ' + (this.state.name),
-            breadcrumb: [<Link key={0} to='/user/course'>Khóa học</Link>, 'Chi tiết khóa học'],
+            breadcrumb: [<Link key={0} to={userPageLink}>Khóa học</Link>, 'Chi tiết khóa học'],
             content: (
                 <div className='tile'>
                     <h3 className='tile-title'>Thông tin chung</h3>

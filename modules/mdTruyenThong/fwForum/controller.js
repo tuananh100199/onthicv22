@@ -13,9 +13,12 @@ module.exports = app => {
     app.get('/user/forum', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
     app.get('/user/forum/message/:_forumId', app.permission.check('user:login'), app.templates.admin);
-
+    app.get('/user/course/:_courseId/forum', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_courseId/forum/:_categoryId', app.permission.check('user:login'), app.templates.admin);
+    app.get('/user/course/:_courseId/forum/:_forumId/message', app.permission.check('user:login'), app.templates.admin);
+    
     // APIs -----------------------------------------------------------------------------------------------------------------------------------------
-    app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/forum/categories', app.permission.check('user:login'), (req, res) => {    
         const isForumWrite = req.session.user.permissions ? req.session.user.permissions.includes('forum:write') : false;
         let condition = { type: 'forum' };
         if (!isForumWrite) condition.active = true;
@@ -52,8 +55,10 @@ module.exports = app => {
     app.get('/api/forum/page/:pageNumber/:pageSize', app.permission.check('user:login'), (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { _categoryId, searchText } = req.query,
-            pageCondition = { category: _categoryId };
+            { categoryId, searchText, courseId } = req.query,
+            pageCondition = { category: categoryId };
+            pageCondition.course = courseId ? courseId : null;
+
         if (searchText) {
             pageCondition.title = new RegExp(searchText, 'i');
             pageCondition.content = new RegExp(searchText, 'i');
@@ -62,11 +67,10 @@ module.exports = app => {
             pageCondition.state = 'approved';
         }
 
-        app.model.category.get(_categoryId, (error, category) => {
+        app.model.category.get(categoryId, (error, category) => {
             if (error || category == null) {
                 res.send({ error: 'Danh mục không hợp lệ!' });
             } else {
-                console.log(pageCondition);
                 app.model.forum.getPage(pageNumber, pageSize, pageCondition, (error, page) => {
                     res.send({ error, category, page });
                 });
@@ -135,10 +139,11 @@ module.exports = app => {
             pageSize = parseInt(req.params.pageSize),
             { _forumId, searchText } = req.query,
             pageCondition = { forum: _forumId };
+            const user = req.session.user;
         if (searchText) {
             pageCondition.content = new RegExp(searchText, 'i');
         }
-        if (!(req.session.user.permissions && req.session.user.permissions.includes('forum:write'))) {
+        if (!(user.isCourseAdmin || user.isLecturer && user.isTrustLecturer || user.permissions && user.permissions.includes('forum:delete'))) {
             pageCondition.state = 'approved';
         }
 
@@ -222,4 +227,15 @@ module.exports = app => {
             }
         });
     });
+
+    // Hook permissionHooks -------------------------------------------------------------------------------------------
+    app.permissionHooks.add('lecturer', 'forum', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'forum:write');
+        resolve();
+    }));
+
+    app.permissionHooks.add('courseAdmin', 'forum', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'forum:write', 'forum:delete');
+        resolve();
+    }));
 };

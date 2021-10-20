@@ -161,7 +161,7 @@ export class FormCheckbox extends React.Component {
         let { className, label, style, isSwitch = false, trueClassName = 'text-primary', falseClassName = 'text-secondary' } = this.props;
         if (style == null) style = {};
         return isSwitch ? (
-            <div className={className} style={{ ...style, display: 'inline-flex' }}>
+            <div className={className} style={{ ...style, display: style.display ? style.display : 'inline-flex' }}>
                 <label style={{ cursor: 'pointer' }} onClick={this.onCheck}>{label}:&nbsp;</label>
                 <div className='toggle'>
                     <label style={{ marginBottom: 0 }}>
@@ -503,12 +503,12 @@ export class FormFileBox extends React.Component {
 // Page components ----------------------------------------------------------------------------------------------------
 export class CirclePageButton extends React.Component {
     render() {
-        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick } = this.props; // type = back | save | create | delete | export | import | custom
+        const { type = 'back', style = {}, to = '', tooltip = '', customIcon = '', customClassName = 'btn-warning', onClick = () => { } } = this.props; // type = back | save | create | delete | export | import | custom
         const properties = {
             type: 'button',
             style: { position: 'fixed', right: '10px', bottom: '10px', zIndex: 500, ...style },
             'data-toggle': 'tooltip', title: tooltip,
-            onClick: (e) => onClick && onClick(e),
+            onClick,
         };
         let result = null;
         if (type == 'save') {
@@ -526,7 +526,7 @@ export class CirclePageButton extends React.Component {
         } else if (type == 'custom') {
             result = <button {...properties} className={'btn btn-circle ' + customClassName}><i className={'fa fa-lg ' + customIcon} /></button>;
         } else { // back
-            if (onClick) {
+            if (!onClick) {
                 result = (
                     <a href='#' onClick={onClick} className='btn btn-secondary btn-circle' style={{ position: 'fixed', bottom: '10px', zIndex: 500, ...style }}>
                         <i className='fa fa-lg fa-reply' />
@@ -649,7 +649,6 @@ export class AdminPage extends React.Component {
 
     renderPage = ({ icon, title, subTitle, header, breadcrumb, advanceSearch, content, backRoute, onCreate, onSave, onExport, onImport, onBack }) => {
         if (breadcrumb == null) breadcrumb = [];
-
         let right = 10, createButton, saveButton, exportButton, importButton;
         if (onCreate) {
             createButton = <CirclePageButton type='create' onClick={onCreate} style={{ right }} />;

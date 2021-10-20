@@ -134,7 +134,7 @@ class AdminLearningProgressPage extends AdminPage {
                         {subjectPoints}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemThucHanh} />
-                        <TableCell type='text' style={{ textAlign: 'center' }} content={((diemLyThuyet + diemLyThuyet) / 2).toFixed(1)} />
+                        <TableCell type='text' style={{ textAlign: 'center' }} content={((diemLyThuyet + diemThucHanh) / 2).toFixed(1)} />
                         <TableCell type='buttons' style={{ textAlign: 'center' }} content={item} onEdit={this.edit} />
                     </tr>);
             },
