@@ -59,26 +59,22 @@ class LecturerRatingPage extends AdminPage {
 
     loadSubject = (subjectId, courseId) => {
         this.props.getSubject(subjectId, data => {
-            let listLessonId = data.item.lessons.length && data.item.lessons.map(lesson => lesson._id);
+            const listLessonId = data.item.lessons.length ? data.item.lessons.map(lesson => lesson._id) : null;
             this.props.getRateStudentByAdmin(courseId, listLessonId);
             this.setState({
                 currentSubject: data.item,
                 currentLessons: data.item && data.item.lessons
             });
         });
-
     }
 
     view = (e, item) => e.preventDefault() || this.modal.show(item);
-
 
     render() {
         const subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             course = this.props.course && this.props.course.item ? this.props.course.item : {},
             lessons = this.state.currentLessons ? this.state.currentLessons : [],
-            listSubjects = subjects.map((subject) =>
-                ({ id: subject._id, text: subject.title })
-            );
+            listSubjects = subjects.map((subject) => ({ id: subject._id, text: subject.title }));
         const students = this.props.course && this.props.course.students ? this.props.course.students : [],
             rate = this.props.rate;
         const select = <FormSelect data={listSubjects} label='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px !important' }} />;
@@ -90,7 +86,6 @@ class LecturerRatingPage extends AdminPage {
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
                     <th style={{ width: '100%', textAlign: 'center' }}>Tên học viên</th>
                     {lessons.length ? lessons.map((lesson, i) => (<th key={i} style={{ width: 'auto', textAlign: 'center' }} nowrap='true'>{lesson.title}</th>)) : null}
-
                 </tr>),
             renderRow: (item, index) => (
                 <tr key={index}>

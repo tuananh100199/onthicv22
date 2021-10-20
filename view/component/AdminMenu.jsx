@@ -78,7 +78,7 @@ class AdminMenu extends React.Component {
                 <Link to='/user' style={{ textDecoration: 'none' }}>
                     <div className='app-sidebar__user'>
                         <img className='app-sidebar__user-avatar' src={user.image} alt='Avatar' style={{ width: '48px', height: 'auto' }} />
-                        <p className='app-sidebar__user-name' style={{ marginBottom: 0 }}>{user.firstname + ' ' + user.lastname}</p>
+                        <p className='app-sidebar__user-name' style={{ marginBottom: 0 }}>{user.lastname + ' ' + user.firstname}</p>
                     </div>
                     <p className='app-sidebar__user-designation'>{user.email}</p>
                 </Link>
