@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getCoursePage, updateCourse, deleteCourse } from '../redux';
+import { getCoursePage, updateCourse, deleteCourse } from './redux';
 import { AdminPage, TableCell, renderTable } from 'view/component/AdminPage';
 import Pagination from 'view/component/Pagination';
 

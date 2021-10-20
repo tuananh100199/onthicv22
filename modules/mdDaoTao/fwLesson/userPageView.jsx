@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import YouTube from 'react-youtube';
 import { getLessonByStudent, rateLesson } from './redux';
 import { getStudentScore } from '../fwStudent/redux';
+import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
-// import 'view/component/ratingStar.scss';
+import CommentSection from 'modules/_default/fwComment/CommentSection';
 
 class adminEditPage extends AdminPage {
     state = { showQuestionButton: false, questionVisibility: 'hidden' };
@@ -58,7 +58,7 @@ class adminEditPage extends AdminPage {
             icon: 'fa fa-cubes',
             title: 'Bài học: ' + (title || '...'),
             breadcrumb: [<Link key={0} to={userPageLink}>Môn học</Link>, 'Bài học'],
-            content: lessonId ? (
+            content: lessonId ? <>
                 <div className='tile'>
                     <a href={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/thong-tin/' + lessonId} style={{ color: 'black' }}><h5>Thông tin bài học</h5></a>
                     <h3 className='tile-title'>Bài giảng</h3>
@@ -80,7 +80,12 @@ class adminEditPage extends AdminPage {
                             </div>
                         </div>
                     </div>
-                </div>) : null,
+                </div>
+
+                <div className='tile'>
+                    <div className='tile-body'><CommentSection refParentId={courseId} refId={subjectId} /></div>
+                </div>
+            </> : null,
             backRoute: userPageLink,
         });
     }
