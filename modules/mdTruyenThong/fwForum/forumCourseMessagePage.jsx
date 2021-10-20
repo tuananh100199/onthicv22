@@ -36,19 +36,18 @@ class CourseMessageModal extends AdminModal {
                 if (data.content.length > 200) data.content = data.content.substring(0, 200);
                 new Promise(resolve => this.state._id ? this.props.update(this.state._id, data, resolve) : this.props.create(data, resolve)).then(() => {
                     this.hide();
-                    if (!this.props.permission.forumOwner) T.alert('Bạn vui lòng chờ Quản trị viên duyệt bài của bạn. Cảm ơn', 'success', false);
+                    if (!(this.props.permission && this.props.permission.forumOwner)) T.alert('Bạn vui lòng chờ Quản trị viên duyệt bài của bạn. Cảm ơn', 'success', false);
                 });
             }
         }
     }
 
     render = () => {
-        const permission = this.props.permission;
         return this.renderModal({
             title: 'Bài viết',
             body: <>
                 <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
-                {permission.forumOwner ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
+                {this.props.permission && this.props.permission.forumOwner ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });
     }

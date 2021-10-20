@@ -48,13 +48,13 @@ class ForumModal extends AdminModal {
     }
 
     render = () => {
-        const permission = this.props.permission;
+        const forumCreator = this.props.forumCreator;
         return this.renderModal({
             title: 'Chủ đề',
             body: <>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên' readOnly={false} />
                 <FormRichTextBox ref={e => this.itemContent = e} label='Nội dung (200 từ)' readOnly={false} />
-                {permission.write ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
+                {forumCreator ? <FormSelect ref={e => this.itemState = e} label='Trạng thái' data={ForumStates} readOnly={false} /> : null}
             </>,
         });
     }
@@ -100,14 +100,14 @@ class ForumPage extends AdminPage {
         const courseItem = this.props.course && this.props.course.item ? this.props.course.item : {};
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isTrustLecturer, isCourseAdmin } = user;
-        let forumOwner;
         const adminPermission = this.getUserPermission('system', ['settings']);
+        let forumAdmin = adminPermission && adminPermission.settings || isCourseAdmin;
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const courseBackRoute = '/user/course/' + courseItem._id; 
         const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
         const listForums = list && list.length ? list.map((item, index) => {
-            forumOwner =  adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
+            const forumOwner =  forumAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
             return <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
@@ -144,11 +144,11 @@ class ForumPage extends AdminPage {
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} permission={forumOwner} history={this.props.history}
+                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} forumCreator={forumAdmin || isLecturer && isTrustLecturer } history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: categoryBackRoute,
-            onCreate: forumOwner ? this.edit : null,
+            onCreate: forumAdmin || isLecturer && isTrustLecturer ? this.edit : null,
         });
     }
 }
