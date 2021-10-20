@@ -1,0 +1,14 @@
+.practicePoint {
+    cursor: pointer;
+    width: 100%;
+
+    i {
+        visibility: hidden;
+    }
+
+    &:hover {
+        i {
+            visibility: visible;
+        }
+    }
+}
