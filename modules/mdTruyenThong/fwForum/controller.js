@@ -143,7 +143,7 @@ module.exports = app => {
         if (searchText) {
             pageCondition.content = new RegExp(searchText, 'i');
         }
-        if (!(user.isCourseAdmin || user.isTrustLecturer && user.permissions && user.permissions.includes('forum:write'))) {
+        if (!(user.isCourseAdmin || user.isLecturer && user.isTrustLecturer || user.permissions && user.permissions.includes('forum:delete'))) {
             pageCondition.state = 'approved';
         }
 

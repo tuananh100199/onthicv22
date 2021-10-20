@@ -101,13 +101,13 @@ class ForumPage extends AdminPage {
         const user = this.props.system ? this.props.system.user : null,
             { isLecturer, isTrustLecturer, isCourseAdmin } = user;
         let forumOwner;
-        const permission = this.getUserPermission('forum');
+        const adminPermission = this.getUserPermission('system', ['settings']);
         const { category, page } = this.props.forum || {};
         const { pageNumber, pageSize, pageTotal, totalItem, list } = page || { pageNumber: 1, pageSize: 50, pageTotal: 1, totalItem: 0 };
         const courseBackRoute = '/user/course/' + courseItem._id; 
         const categoryBackRoute = '/user/course/' + courseItem._id + '/forum';
         const listForums = list && list.length ? list.map((item, index) => {
-            forumOwner =  isCourseAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
+            forumOwner =  adminPermission && adminPermission.settings || isCourseAdmin || (isLecturer && isTrustLecturer && user && item && item.user && (user._id == item.user._id));
             return <div key={index} className='tile'>
                 <div style={{ display: 'inline-flex' }}>
                     <h4 className='tile-title'>
@@ -119,7 +119,7 @@ class ForumPage extends AdminPage {
                         {forumOwner && item.state && ForumStatesMapper[item.state] ? <b style={{ color: ForumStatesMapper[item.state].color }}>{ForumStatesMapper[item.state].text}</b> : ''}
                     </small>
                 </div>
-                <ForumButtons state={item.state} permission={{...permission, forumOwner : forumOwner }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
+                <ForumButtons state={item.state} permission={{ forumOwner }} onChangeState={(state) => this.props.updateForum(item._id, { state })} onEdit={() => this.modal.show(item)} onDelete={() => this.delete(item)} />
 
                 <div className='tile-body' style={{ marginBottom: 20 }}>
                     <h5 style={{ fontWeight: 'normal' }}>{item.content}</h5>
@@ -144,11 +144,11 @@ class ForumPage extends AdminPage {
             content: category ? <>
                 {listForums}
                 <Pagination name='pageForum' style={{ marginLeft: '70px' }} pageNumber={pageNumber} pageSize={pageSize} pageTotal={pageTotal} totalItem={totalItem} getPage={this.getPage} />
-                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} permission={permission} history={this.props.history}
+                <ForumModal ref={e => this.modal = e} courseId={courseItem._id} category={category._id} permission={forumOwner} history={this.props.history}
                     create={this.props.createForum} update={this.props.updateForum} />
             </> : '...',
             backRoute: categoryBackRoute,
-            onCreate: permission.write && forumOwner ? this.edit : null,
+            onCreate: forumOwner ? this.edit : null,
         });
     }
 }
