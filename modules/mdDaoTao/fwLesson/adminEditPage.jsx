@@ -4,6 +4,7 @@ import { getLesson, updateLesson, createLessonVideo, swapLessonVideo, deleteLess
 import { Link } from 'react-router-dom';
 import { QuestionView } from 'modules/_default/fwQuestion/index';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
+import CommentSection from 'modules/_default/fwComment/CommentSection';
 
 class VideoModal extends AdminModal {
     state = {};
@@ -136,7 +137,7 @@ class adminEditPage extends AdminPage {
             <div className='tile-body'>
                 <FormTextBox ref={e => this.itemTitle = e} label='Tên bài học' value={this.state.title} onChange={e => this.setState({ title: e.target.value })} readOnly={!permission.write} />
                 <FormRichTextBox ref={e => this.itemDescription = e} label='Mô tả ngắn gọn' rows='3' readOnly={!permission.write} />
-                <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion}  readOnly={!permission.write}></FormTextBox>
+                <FormTextBox ref={e => this.itemNumQuestion = e} type='number' label='Số lượng câu hỏi ôn tập' value={this.state.numQuestion} readOnly={!permission.write}></FormTextBox>
                 <FormEditor ref={e => this.itemEditor = e} label='Mô tả chi tiết' readOnly={!permission.write} />
                 {permission.write ? <CirclePageButton type='save' onClick={this.saveInfo} /> : null}
             </div>);
@@ -152,7 +153,14 @@ class adminEditPage extends AdminPage {
         const questions = this.props.lesson && this.props.lesson.item && this.props.lesson.item.questions,
             componentQuestion = <QuestionView type='lesson' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeLessonQuestions} />;
 
-        const tabs = [{ title: 'Thông tin chung', component: componentInfo }, { title: 'Video', component: componentVideo }, { title: 'Câu hỏi', component: componentQuestion }];
+        const componentComment = <CommentSection view='admin' refId={this.state._id} permission={permission} />;
+
+        const tabs = [
+            { title: 'Thông tin chung', component: componentInfo },
+            { title: 'Video', component: componentVideo },
+            { title: 'Câu hỏi', component: componentQuestion },
+            { title: 'Bình luận của học viên', component: componentComment },
+        ];
         return this.renderPage({
             icon: 'fa fa-book',
             title: 'Bài học: ' + (this.state.title || '...'),

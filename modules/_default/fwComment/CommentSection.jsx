@@ -35,18 +35,22 @@ class CommentSection extends React.Component {
     }
 
     render() {
-        const { refParentId, refId } = this.props;
+        //TODO: Sang xem lại chỗ này để chuyển state của comment, reply.
+        // Người có quyền comment:write, isCourseAdmin hay isLecturer thì mới được duyệt state=approved, còn lại create/update thì state=waiting => nhớ thông báo lên cho người ta biết là chờ admin duyệt
+        const { refParentId, refId, view = 'user' } = this.props;
         const { pageNumber, pageSize, pageTotal, list } = this.state;
         return (
             <div className={this.props.className}>
-                <div className='comment-respond'>
-                    <h3 className='comment-reply-title'>Để lại bình luận</h3>
-                    {refParentId && refId ? <CommentTextBox refParentId={refParentId} refId={refId} onChange={this.updateItem} rows={2} maxRows={4} /> : null}
-                </div>
+                {view == 'user' ? (
+                    <div className='comment-respond'>
+                        <h3 className='comment-reply-title'>Để lại bình luận</h3>
+                        {refParentId && refId ? <CommentTextBox refParentId={refParentId} refId={refId} onChange={this.updateItem} rows={2} maxRows={4} /> : null}
+                    </div>) : null}
                 <div className='comments-area' ref={e => this.commentArea = e}>
-                    <div className='comments-heading'>
-                        <h3>Bình luận</h3>
-                    </div>
+                    {view == 'user' ? (
+                        <div className='comments-heading'>
+                            <h3>Bình luận</h3>
+                        </div>) : null}
                     <div className='comments-list'>
                         {list && list.length ?
                             <ul style={{ listStyleType: 'none' }}>

@@ -7,6 +7,7 @@ module.exports = app => {
         content: String,
         createdDate: { type: Date, default: Date.now },
         updatedDate: Date,
+        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' }, // TODO: Sang => Chỉ có approved mới hiển thị lên cho user, admin thì thấy hết
         replies: [{ type: app.db.Schema.ObjectId, ref: 'Comment' }],
     });
 
@@ -31,7 +32,6 @@ module.exports = app => {
         getAll: (condition, done) => model.find(condition).exec(done),
 
         getPage: (pageNumber, pageSize, condition, done) => model.countDocuments(condition, (error, totalItem) => {
-            console.log(condition);
             if (error) {
                 done(error);
             } else {
