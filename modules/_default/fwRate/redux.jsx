@@ -46,6 +46,21 @@ export function getRateByUser(type, _refId, done) {
     };
 }
 
+export function getRateStudentByAdmin(courseId, listRefId, done) {
+    return dispatch => {
+        const url = '/api/rate/student';
+        T.get(url, { listRefId, courseId }, data => {
+            if (data.error) {
+                T.notify('Lấy đánh giá bị lỗi!', 'danger');
+                console.error('GET: ' + url + '.', data.error);
+            } else {
+                dispatch({ type: RateGetItem, item: data.item });
+                done && done(data.item);
+            }
+        }, error => console.error(error) || T.notify('Lấy đánh giá bị lỗi!', 'danger'));
+    };
+}
+
 export function updateRate(_id, changes, done) {
     return dispatch => {
         const url = '/api/rate/student';

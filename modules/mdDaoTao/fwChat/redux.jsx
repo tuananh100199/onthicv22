@@ -78,7 +78,6 @@ export function readAllChats(_selectedUserId) {
 
 export function getUserChats(_selectedUserId, sent, done) {
     return dispatch => {
-        // const language = T.language(texts);
         const url = '/api/chat/user';
         T.get(url, { _selectedUserId, sent }, data => {
             if (data.error) {

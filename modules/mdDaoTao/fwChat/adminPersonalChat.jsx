@@ -18,7 +18,7 @@ class AdminPersonalChat extends AdminPage {
             this.props.getChatByAdmin(courseId, data => {
                 this.props.getUserChats(data.item[0].user._id, null, data => {
                     this.setState({
-                        oldMessage: data.chats.sort(() => -1),
+                        oldMessage: data.chats,
                         isLoading: false
                     });
                 });
@@ -32,7 +32,7 @@ class AdminPersonalChat extends AdminPage {
     render() {
         const { isLoading, oldMessage, courseId, listStudent, _selectedUserId } = this.state;
         return (
-            !isLoading && <SectionChat oldMessagePersonal={oldMessage} courseId={courseId} listUser={listStudent} _selectedUserId={_selectedUserId}></SectionChat>
+            !isLoading && <SectionChat type={'teacher'} oldMessagePersonal={oldMessage} courseId={courseId} listUser={listStudent} _selectedUserId={_selectedUserId}></SectionChat>
         );
     }
 }
