@@ -9,7 +9,7 @@ class RateSection extends React.Component {
     componentDidMount() {
         this.props.getRateByUser(this.props.type, this.props._refId, (rate) => {
             rate && this.setState(rate);
-            this.note.value(rate.note || '');
+            this.note.value(rate && rate.note || '');
         });
     }
 

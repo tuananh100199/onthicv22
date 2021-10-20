@@ -85,7 +85,7 @@ class AdminTeacherPage extends AdminPage {
         e.preventDefault();
         const { _id, teacherGroups = [] } = this.props.course.item,
             _teacherId = this.selectTeacher.value();
-        if (_teacherId && teacherGroups.find(({ teacher }) => teacher._id == _teacherId) == null) {
+        if (_teacherId && teacherGroups.find(({ teacher }) => teacher && (teacher._id == _teacherId)) == null) {
             this.props.updateCourseTeacherGroup(_id, _teacherId, 'add', () => this.selectTeacher.value(null));
         } else {
             T.notify('Bạn chọn trùng cố vấn học tập', 'danger');

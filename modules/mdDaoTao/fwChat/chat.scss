@@ -13,11 +13,6 @@ img{ max-width:100%;}
 
 
 .recent_heading {float: left; width:100%;}
-// .srch_bar {
-//   display: inline-block;
-//   text-align: right;
-//   width: 40%;
-// }
 .headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
 
 .recent_heading h4 {
@@ -63,7 +58,7 @@ img{ max-width:100%;}
   display: none;
 }
 
-.inbox_chat { height: 300px; overflow-y: scroll;}
+.inbox_chat { height: 50vh; overflow-y: scroll;}
 
 .active_chat{ background:#ddd;}
 

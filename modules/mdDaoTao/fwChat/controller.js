@@ -62,14 +62,10 @@ module.exports = app => {
             if (error || !item) {
                 res.send({ error });
             } else {
-                const listAdmin = item.admins;
                 const lecturer = item.teacherGroups.filter(teacherGroup => teacherGroup.student && teacherGroup.student.findIndex(student =>
                     student.user._id == sessionUser._id
                 ) != -1);
-                if (lecturer.length && listAdmin.findIndex(admin => admin._id == lecturer[0].teacher._id) != -1) {
-                    listAdmin.push(lecturer[0].teacher);
-                }
-                res.send({ error, item: listAdmin.length ? listAdmin : null });
+                res.send({ error, item: lecturer.length ? lecturer[0].teacher : null });
             }
         });
     });

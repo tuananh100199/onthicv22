@@ -77,7 +77,7 @@ export default {
         },
         {
             path: '/user/course/:_id/rate-subject',
-            component: Loadable({ loading: Loading, loader: () => import('./pages/lecturerRatingPage') })
+            component: Loadable({ loading: Loading, loader: () => import('./pages/adminRatingPage') })
         },
         {
             path: '/user/course/:_id/chat-all',

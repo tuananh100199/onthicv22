@@ -5,6 +5,8 @@ import { getStudentScore } from '../fwStudent/redux';
 import YouTube from 'react-youtube';
 import { Link } from 'react-router-dom';
 import { AdminPage } from 'view/component/AdminPage';
+import RateModal from 'modules/_default/fwRate/RateModal';
+// import 'view/component/ratingStar.scss';
 import CommentSection from 'modules/_default/fwComment/CommentSection';
 
 class adminEditPage extends AdminPage {
@@ -66,14 +68,8 @@ class adminEditPage extends AdminPage {
                     <div className='tile-footer' >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={isShowRating ? 'visible' : 'invisible'}>
-                                <h6>Đánh giá cuối bài học</h6>
-                                <div className='starrating risingstar d-flex justify-content-center flex-row-reverse'>
-                                    <input type='radio' id='5' name='rating' value='5' onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor='5' title='5 star'></label>
-                                    <input type='radio' id='4' name='rating' value='4' onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor='4' title='4 star'></label>
-                                    <input type='radio' id='3' name='rating' value='3' onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor='3' title='3 star'></label>
-                                    <input type='radio' id='2' name='rating' value='2' onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor='2' title='2 star'></label>
-                                    <input type='radio' id='1' name='rating' value='1' onClick={(e) => this.saveRating(e.target.value)} /><label htmlFor='1' title='1 star'></label>
-                                </div>
+                                <button className='btn btn-primary' onClick={(e) => { e.preventDefault(); this.modal.show(); }}>Đánh giá bài học</button>
+                                <RateModal ref={e => this.modal = e} title='Đánh giá bài giảng' type='lesson' _refId={lessonId} />
                             </div>
                             <div>
                                 <Link to={'/user/hoc-vien/khoa-hoc/' + courseId + '/mon-hoc/' + subjectId + '/bai-hoc/cau-hoi/' + lessonId} className='btn btn-primary'>Câu hỏi ôn tập</Link>

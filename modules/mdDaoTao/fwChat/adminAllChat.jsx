@@ -15,7 +15,7 @@ class AdminAllChat extends AdminPage {
         if (courseId) {
             this.props.getAllChats(courseId, null, data => {
                 this.setState({
-                    oldMessage: data.chats.sort(() => -1),
+                    oldMessage: data.chats,
                     isLoadingAll: false
                 });
             });
