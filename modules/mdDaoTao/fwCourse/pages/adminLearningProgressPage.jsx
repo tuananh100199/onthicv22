@@ -133,7 +133,7 @@ class AdminLearningProgressPage extends AdminPage {
                         <TableCell type='text' content={item.identityCard} />
                         {subjectPoints}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
-                        <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}&nbsp;  <i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
+                        <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={((diemLyThuyet + diemLyThuyet) / 2).toFixed(1)} />
                     </tr>);
             },
