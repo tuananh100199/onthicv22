@@ -5,12 +5,17 @@ module.exports = app => {
     app.get('/api/comment/page/:pageNumber/:pageSize', (req, res) => {
         const pageNumber = parseInt(req.params.pageNumber),
             pageSize = parseInt(req.params.pageSize),
-            { refParentId, refId } = req.query;
-        app.model.comment.getPage(pageNumber, pageSize, { refParentId, refId, isReply: false }, (error, page) => res.send({ error, page }));
+            { refParentId, refId } = req.query,
+            condition = {};
+        if (refParentId) condition.refParentId = app.db.Types.ObjectId(refParentId);
+        if (refId) condition.refId = app.db.Types.ObjectId(refId);
+        app.model.comment.getPage(pageNumber, pageSize, condition, (error, page) => res.send({ error, page }));
     });
 
     app.get('/api/comment/scope/:commentId/:from/:limit', (req, res) => {
-        const commentId = req.params.commentId, from = parseInt(req.params.from), limit = parseInt(req.params.limit);
+        const commentId = req.params.commentId,
+            from = parseInt(req.params.from),
+            limit = parseInt(req.params.limit);
         app.model.comment.getRepliesInScope({ _id: app.db.Types.ObjectId(commentId) }, from, limit, (error, comment) => {
             if (error || !comment) {
                 res.send({ error: error || 'Invalid comment id' });
@@ -22,13 +27,12 @@ module.exports = app => {
 
     app.post('/api/comment', app.permission.check(), (req, res) => {
         let { _parentId, data } = req.body, user = req.session.user;
-        if (_parentId) {
-            data.isReply = true;
-        }
         if (user && (data.refId || _parentId)) {
             data.author = user._id;
             app.model.comment.create(data, (error, item) => {
                 if (item && _parentId) {
+                    delete data.refParentId;
+                    delete data.refId;
                     app.model.comment.get(_parentId, (error, parentItem) => {
                         if (parentItem) {
                             if (parentItem.replies) {

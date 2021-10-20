@@ -54,6 +54,8 @@ class EditCoursePage extends AdminPage {
                     {isCourseAdmin || !isLecturer ? <PageIconHeader text='Học viên' /> : null}
                     <PageIcon visible={isCourseAdmin || !isLecturer} to={`/user/course/${item._id}/rate-teacher`} icon='fa-star' iconBackgroundColor='orange' text='Đánh giá Cố vấn học tập' />
                     <PageIcon visible={isCourseAdmin && permission.write && permissionFeedback.write} to={`/user/course/${item._id}/feedback`} icon='fa-heartbeat' iconBackgroundColor='teal' text='Phản hồi' />
+                    <PageIcon  to={`/user/course/${item._id}/forum`} icon='fa-users' iconBackgroundColor='#9ced65' text='Forum' />
+
 
                     <PageIconHeader text='Đào tạo' />
                     <PageIcon visible={isLecturer} to={`/user/course/${item._id}/your-students`} icon='fa-graduation-cap' iconBackgroundColor='#18ffff' text='Học viên của bạn' />

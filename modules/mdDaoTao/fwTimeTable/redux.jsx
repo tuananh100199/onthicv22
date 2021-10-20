@@ -61,10 +61,10 @@ export function getTimeTable(_id, done) {
     };
 }
 
-export function getTimeTableDateNumber(student, date, startHour, done) {
+export function getTimeTableDateNumber(student, date, startHour, numOfHours, done) {
     return () => {
         const url = '/api/time-table/date-number';
-        T.get(url, { student, date, startHour }, data => {
+        T.get(url, { student, date, startHour, numOfHours }, data => {
             if (data.error) {
                 T.notify('Lấy thời khóa biểu bị lỗi!', 'danger');
                 console.error(`GET: ${url}. ${data.error}`);
@@ -83,6 +83,7 @@ export function createTimeTable(data, done) {
                 T.notify('Tạo thời khóa biểu bị lỗi!', 'danger');
                 console.error(`POST: ${url}. ${data.error}`);
             } else {
+                T.notify('Tạo thời khóa biểu thành công!', 'success');
                 done && done(data.item);
                 dispatch(getTimeTablePage());
             }

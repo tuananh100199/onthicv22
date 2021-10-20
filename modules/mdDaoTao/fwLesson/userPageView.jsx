@@ -79,8 +79,7 @@ class adminEditPage extends AdminPage {
                 </div>
 
                 <div className='tile'>
-                    <h3 className='tile-title'>Bình luận</h3>
-                    <div className='tile-body'><CommentSection parentId={courseId} refId={subjectId} /></div>
+                    <div className='tile-body'><CommentSection refParentId={courseId} refId={subjectId} /></div>
                 </div>
             </> : null,
             backRoute: userPageLink,

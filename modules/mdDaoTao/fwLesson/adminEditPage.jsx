@@ -6,7 +6,7 @@ import { QuestionView } from 'modules/_default/fwQuestion/index';
 import { getRateLessonByAdminPage } from 'modules/_default/fwRate/redux';
 import Pagination from 'view/component/Pagination';
 import { AdminPage, AdminModal, FormTabs, FormTextBox, FormRichTextBox, FormEditor, FormCheckbox, FormImageBox, CirclePageButton, TableCell, renderTable } from 'view/component/AdminPage';
-
+import CommentSection from 'modules/_default/fwComment/CommentSection';
 class VideoModal extends AdminModal {
     state = {};
     componentDidMount() {
@@ -185,11 +185,14 @@ class adminEditPage extends AdminPage {
         const questions = this.props.lesson && this.props.lesson.item && this.props.lesson.item.questions,
             componentQuestion = <QuestionView type='lesson' parentId={this.state._id} className='tile-body' permission={permission} questions={questions} changeQuestions={this.props.changeLessonQuestions} />;
 
+        const componentComment = <CommentSection view='admin' refId={this.state._id} permission={permission} />;
+
         const tabs = [
             { title: 'Thông tin chung', component: componentInfo },
             { title: 'Video', component: componentVideo },
             { title: 'Câu hỏi', component: componentQuestion },
-            { title: 'Đánh giá', component: componentRate }
+            { title: 'Đánh giá', component: componentRate },
+            { title: 'Bình luận của học viên', component: componentComment },
         ];
         return this.renderPage({
             icon: 'fa fa-book',

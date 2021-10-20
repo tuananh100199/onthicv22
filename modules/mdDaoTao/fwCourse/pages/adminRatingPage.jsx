@@ -4,8 +4,22 @@ import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgress } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
 import { getRateStudentByAdmin } from 'modules/_default/fwRate/redux';
-import { AdminPage, FormSelect, renderTable, TableCell } from 'view/component/AdminPage';
-
+import { AdminPage, FormSelect, renderTable, TableCell, AdminModal } from 'view/component/AdminPage';
+import './style.scss';
+class ViewNoteModal extends AdminModal {
+    state = {};
+    onShow = (item) => {
+        this.setState({
+            item
+        });
+    }
+    render = () => {
+        return this.renderModal({
+            title: 'Đánh giá của học viên',
+            body: <p>{this.state.item}</p>
+        });
+    }
+}
 class LecturerRatingPage extends AdminPage {
     state = {};
     componentDidMount() {
@@ -55,6 +69,9 @@ class LecturerRatingPage extends AdminPage {
 
     }
 
+    view = (e, item) => e.preventDefault() || this.modal.show(item);
+
+
     render() {
         const subjects = this.props.course && this.props.course.subjects ? this.props.course.subjects.sort((a, b) => a.monThucHanh - b.monThucHanh) : [],
             course = this.props.course && this.props.course.item ? this.props.course.item : {},
@@ -79,20 +96,13 @@ class LecturerRatingPage extends AdminPage {
                 <tr key={index}>
                     <TableCell type='number' content={index + 1} />
                     <TableCell type='text' content={item.lastname + ' ' + item.firstname} />
-                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='text' style={{ textAlign: 'center' }}
-                        // onMouseEnter={() => {
-                        //     $('#' + lesson._id + item.user._id).addClass('d-block');
-                        //     $('#' + lesson._id + item.user._id).removeClass('d-none');
-                        // }}
-                        // onMouseLeave={() => {
-                        //     $('#' + lesson._id + item.user._id).addClass('d-none');
-                        //     $('#' + lesson._id + item.user._id).removeClass('d-block');
-                        // }}
+                    {lessons.length ? lessons.map((lesson, i) => (<TableCell key={i} type='link' style={{ textAlign: 'center' }} className='practicePoint' onClick={e => this.view(e, rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).note)}
                         content={
                             rate && rate.item && rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)) ?
-                                <div>
-                                    <p data-toggle='tooltip' title={rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).note}>{rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}</p>
-                                </div> :
+                                <>
+                                    {rate.item.find(element => (element._refId == lesson._id && element.user._id == item.user._id)).value}
+                                </>
+                                :
                                 null} />)) :
                         null}
                 </tr>),
@@ -110,6 +120,7 @@ class LecturerRatingPage extends AdminPage {
                         </div>
                         {table}
                     </div>
+                    <ViewNoteModal ref={e => this.modal = e} />
                 </div>
             </>,
             backRoute,

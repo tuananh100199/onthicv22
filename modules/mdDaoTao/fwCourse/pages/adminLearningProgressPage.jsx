@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgress } from '../redux';
 import { updateStudent } from 'modules/mdDaoTao/fwStudent/redux';
 import { AdminPage, AdminModal, TableCell, renderTable, FormTextBox } from 'view/component/AdminPage';
+import './style.scss';
 
 class LearningProgressModal extends AdminModal {
     state = {};
@@ -114,13 +115,12 @@ class AdminLearningProgressPage extends AdminPage {
             renderHead: () => (
                 <tr>
                     <th style={{ width: 'auto', textAlign: 'center' }}>#</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Tên học viên</th>
+                    <th style={{ width: '100%' }} nowrap='true'>Tên học viên</th>
                     <th style={{ width: 'auto' }}>CMND/CCCD</th>
                     {subjectColumns}
                     <th style={{ width: 'auto' }} nowrap='true'>Điểm lý thuyết</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Điểm thực hành</th>
                     <th style={{ width: 'auto' }} nowrap='true'>Điểm trung bình</th>
-                    <th style={{ width: 'auto' }} nowrap='true'>Nhập điểm thực hành</th>
                 </tr>),
             renderRow: (item, index) => {
                 const student = students[index],
@@ -133,9 +133,8 @@ class AdminLearningProgressPage extends AdminPage {
                         <TableCell type='text' content={item.identityCard} />
                         {subjectPoints}
                         <TableCell type='text' style={{ textAlign: 'center' }} content={diemLyThuyet} />
-                        <TableCell type='text' style={{ textAlign: 'center' }} content={diemThucHanh} />
+                        <TableCell type='link' style={{ textAlign: 'center' }} content={<>{diemThucHanh}<i className='fa fa-lg fa-edit' /></>} className='practicePoint' onClick={e => this.edit(e, item)} />
                         <TableCell type='text' style={{ textAlign: 'center' }} content={((diemLyThuyet + diemLyThuyet) / 2).toFixed(1)} />
-                        <TableCell type='buttons' style={{ textAlign: 'center' }} content={item} onEdit={this.edit} />
                     </tr>);
             },
         });

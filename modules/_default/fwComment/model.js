@@ -7,8 +7,8 @@ module.exports = app => {
         content: String,
         createdDate: { type: Date, default: Date.now },
         updatedDate: Date,
+        state: { type: String, enum: ['approved', 'waiting', 'reject'], default: 'waiting' }, // TODO: Sang => Chỉ có approved mới hiển thị lên cho user, admin thì thấy hết
         replies: [{ type: app.db.Schema.ObjectId, ref: 'Comment' }],
-        isReply: { type: Boolean, default: false }
     });
 
     const model = app.db.model('Comment', schema);
@@ -46,7 +46,7 @@ module.exports = app => {
                     { $limit: result.pageSize },
                     {
                         $project: {
-                            author: true, content: true, createdDate: true, updatedDate: true, isReply: true,
+                            author: true, content: true, createdDate: true, updatedDate: true,
                             totalReplies: { $size: '$replies' },
                             replies: { $slice: ['$replies', 3] }
                         }
