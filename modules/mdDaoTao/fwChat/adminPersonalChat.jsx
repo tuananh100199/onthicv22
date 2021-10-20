@@ -18,7 +18,7 @@ class AdminPersonalChat extends AdminPage {
             this.props.getChatByAdmin(courseId, data => {
                 this.props.getUserChats(data.item[0].user._id, null, data => {
                     this.setState({
-                        oldMessage: data.chats.sort(() => -1),
+                        oldMessage: data.chats,
                         isLoading: false
                     });
                 });

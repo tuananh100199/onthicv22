@@ -46,9 +46,9 @@ export function getRateByUser(type, _refId, done) {
     };
 }
 
-export function getRateByLecturer(courseId, listRefId, done) {
+export function getRateStudentByAdmin(courseId, listRefId, done) {
     return dispatch => {
-        const url = '/api/rate/lecturer';
+        const url = '/api/rate/student';
         T.get(url, { listRefId, courseId }, data => {
             if (data.error) {
                 T.notify('Lấy đánh giá bị lỗi!', 'danger');

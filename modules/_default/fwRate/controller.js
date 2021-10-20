@@ -64,7 +64,7 @@ module.exports = (app) => {
         app.model.rate.get(condition, (error, item) => res.send({ error, item }));
     });
 
-    app.get('/api/rate/lecturer', app.permission.check('user:login'), (req, res) => {
+    app.get('/api/rate/student', app.permission.check('rate:read'), (req, res) => {
         const sessionUser = req.session.user,
             listRefId = req.query.listRefId;
         const ObjectId = require('mongodb').ObjectID;
@@ -104,6 +104,10 @@ module.exports = (app) => {
 
     // Hook permissionHooks -------------------------------------------------------------------------------------------
     app.permissionHooks.add('courseAdmin', 'rate', (user) => new Promise(resolve => {
+        app.permissionHooks.pushUserPermission(user, 'rate:read');
+        resolve();
+    }));
+    app.permissionHooks.add('lecturer', 'rate', (user) => new Promise(resolve => {
         app.permissionHooks.pushUserPermission(user, 'rate:read');
         resolve();
     }));

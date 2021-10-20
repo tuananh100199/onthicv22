@@ -18,7 +18,7 @@ class UserAllChat extends AdminPage {
         if (courseId) {
             T.ready('/user/hoc-vien/khoa-hoc/' + courseId, () => {
                 this.props.getAllChats(courseId, null, data => {
-                    this.setState({ oldMessage: data.chats.sort(() => -1), isLoadingAll: false });
+                    this.setState({ oldMessage: data.chats, isLoadingAll: false });
                 });
             });
         } else {

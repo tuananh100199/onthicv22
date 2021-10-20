@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getCourse, getLearningProgress } from '../redux'; // TODO: lỗi Vinh coi lại hàm này
 import { getSubject } from 'modules/mdDaoTao/fwSubject/redux';
-import { getRateByLecturer } from 'modules/_default/fwRate/redux';
+import { getRateStudentByAdmin } from 'modules/_default/fwRate/redux';
 import { AdminPage, FormSelect, renderTable, TableCell } from 'view/component/AdminPage';
 
 class LecturerRatingPage extends AdminPage {
@@ -15,16 +15,15 @@ class LecturerRatingPage extends AdminPage {
                 const course = this.props.course ? this.props.course.item : null;
                 if (course) {
                     this.getLearningProgress(course._id);
-                    this.loadSubject(course.subjects && course.subjects[0]._id);
+                    this.loadSubject(course.subjects && course.subjects[0]._id, course._id);
                 } else {
                     this.props.getCourse(params._id, data => {
                         if (data.error) {
                             T.notify('Lấy khóa học bị lỗi!', 'danger');
                             this.props.history.push('/user/course/' + params._id);
                         } else {
-                            this.setState({ courseId: params._id });
                             this.getLearningProgress(params._id);
-                            this.loadSubject(data.item && data.item.subjects && data.item.subjects[0]._id);
+                            this.loadSubject(data.item && data.item.subjects && data.item.subjects[0]._id, params._id);
                         }
                     });
                 }
@@ -43,10 +42,10 @@ class LecturerRatingPage extends AdminPage {
         });
     }
 
-    loadSubject = (subjectId) => {
+    loadSubject = (subjectId, courseId) => {
         this.props.getSubject(subjectId, data => {
             let listLessonId = data.item.lessons.length && data.item.lessons.map(lesson => lesson._id);
-            this.props.getRateByLecturer(this.state.courseId, listLessonId);
+            this.props.getRateStudentByAdmin(courseId, listLessonId);
             this.setState({
                 currentSubject: data.item,
                 currentLessons: data.item && data.item.lessons
@@ -64,7 +63,7 @@ class LecturerRatingPage extends AdminPage {
             );
         const students = this.props.course && this.props.course.students ? this.props.course.students : [],
             rate = this.props.rate;
-        const select = <FormSelect data={listSubjects} label='Môn học' onChange={data => this.loadSubject(data.id)} style={{ margin: 0, width: '200px !important' }} />;
+        const select = <FormSelect data={listSubjects} label='Môn học' onChange={data => this.loadSubject(data.id, course._id)} style={{ margin: 0, width: '200px !important' }} />;
         const table = renderTable({
             getDataSource: () => students, stickyHead: true,
             renderHead: () => (
@@ -102,5 +101,5 @@ class LecturerRatingPage extends AdminPage {
 }
 
 const mapStateToProps = state => ({ system: state.system, course: state.trainning.course, rate: state.framework.rate });
-const mapActionsToProps = { getCourse, getLearningProgress, getSubject, getRateByLecturer };
+const mapActionsToProps = { getCourse, getLearningProgress, getSubject, getRateStudentByAdmin };
 export default connect(mapStateToProps, mapActionsToProps)(LecturerRatingPage);
